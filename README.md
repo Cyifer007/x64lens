@@ -126,6 +126,37 @@ The initial `info` command is scaffolded. The next implementation phase replaces
 make test
 ```
 
+## Docker and devcontainer workflow
+
+The preferred daily development environment is WSL2 Ubuntu 24.04. Docker is the reproducibility layer for professor/reviewer setup, CI smoke checks, and future benchmark harness validation.
+
+Build the development image:
+
+```bash
+make docker-build
+```
+
+Open a shell without creating root-owned files in the bind-mounted repository:
+
+```bash
+make docker-shell
+```
+
+Run the full container smoke test:
+
+```bash
+make docker-test
+```
+
+If `make clean` fails with `Permission denied` under `build/`, a Docker container was likely run as root against the bind-mounted repository. Repair local generated artifact ownership with:
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" build tests/bin tests/toy-src
+make clean
+```
+
+See [`docs/troubleshooting.md`](docs/troubleshooting.md).
+
 ## Development cadence
 
 This project follows a two-week sprint cadence during the initial research and implementation phase.

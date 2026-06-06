@@ -12,7 +12,9 @@ Build the initial project skeleton and ELF64 header validation path.
 ## Planned deliverables
 
 - [ ] Stand up Ubuntu 24.04 development environment.
-- [ ] Verify WSL2, Docker/devcontainer, Codespaces, or VM build path.
+- [x] Verify WSL2 build path.
+- [x] Verify Docker Desktop/WSL2 build path.
+- [ ] Verify devcontainer path from VS Code.
 - [ ] Update local-only project context under `.local/project-context/` if maintained.
 - [ ] Add human-readable comments to current source and config scaffolding.
 - [x] Repository scaffold.
@@ -56,6 +58,7 @@ make test
 
 ## Risks
 
+- Docker bind-mounted builds can create root-owned generated artifacts if containers run as root. Mitigation: use `make docker-shell`, `make docker-test`, and `make ownership-check`.
 - NASM module organization may need refactoring.
 - Linux syscall details may slow file mapping.
 - ELF offset validation must be strict to prevent unsafe reads.
@@ -79,7 +82,8 @@ If Sprint 1 testing succeeds:
 If Sprint 1 testing fails:
 
 1. Capture exact command, output, exit code, and environment.
-2. Run `make print-vars`.
+2. If the failure is `Permission denied` under `build/`, run `make ownership-check` and see `docs/troubleshooting.md`.
+3. Run `make print-vars`.
 3. Confirm NASM and binutils versions.
 4. Confirm target machine is Linux x86_64.
 5. Debug with the smallest failing command first, usually `x64lens version` before `x64lens info`.

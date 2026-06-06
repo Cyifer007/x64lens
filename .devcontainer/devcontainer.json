@@ -5,6 +5,11 @@
     "context": ".."
   },
   "workspaceFolder": "/work",
+  "remoteUser": "ubuntu",
+  "updateRemoteUserUID": true,
+  "containerEnv": {
+    "HOME": "/home/ubuntu"
+  },
   "customizations": {
     "vscode": {
       "extensions": [

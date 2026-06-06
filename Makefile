@@ -15,6 +15,7 @@
 PROJECT      := x64lens
 VERSION      := 0.1.0-dev
 SCHEMA       := 0.1.0
+DOCKER_IMAGE ?= x64lens-dev
 BUILD_DIR    := build
 SRC_DIR      := src
 INC_DIR      := include
@@ -30,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke check-tools scaffold-check print-vars docker-build docker-shell diagrams-check
+.PHONY: all clean test samples bench-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -73,6 +74,7 @@ scaffold-check:
 	@test -f docs/contracts/release-contract.md
 	@test -f docs/environment.md
 	@test -f docs/visualization.md
+	@test -f docs/troubleshooting.md
 	@echo "scaffold-check: ok"
 
 diagrams-check:
@@ -82,10 +84,20 @@ diagrams-check:
 	@echo "diagrams-check: ok"
 
 docker-build:
-	docker build -t x64lens-dev .
+	docker build -t $(DOCKER_IMAGE) .
 
+# Use the caller's numeric UID/GID when bind-mounting the repository.
+# This prevents root-owned build artifacts when Docker Desktop or Docker
+# Engine runs container processes as root by default. HOME=/tmp avoids
+# tools trying to write into a missing or unwritable home directory when
+# Docker receives a numeric user id.
 docker-shell:
-	docker run --rm -it -v "$(PWD)":/work x64lens-dev bash
+	docker run --rm -it --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash
+
+# Reproducible smoke test inside Docker without leaving root-owned files.
+# Run `make docker-build` first after Dockerfile or dependency changes.
+docker-test:
+	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
 
 print-vars:
 	@echo PROJECT=$(PROJECT)
@@ -94,6 +106,31 @@ print-vars:
 	@echo ASM_SRCS=$(ASM_SRCS)
 	@echo OBJS=$(OBJS)
 
+ownership-check:
+	@echo "Checking generated artifact ownership..."
+	@bad="$$(find $(BUILD_DIR) tests/bin tests/toy-src -xdev \( -type f -o -type d \) ! -user "$$(id -u)" 2>/dev/null | head -n 20)"; \
+	if [ -n "$$bad" ]; then \
+		echo "error: generated files exist that are not owned by the current user:"; \
+		echo "$$bad"; \
+		echo ""; \
+		echo "Most likely cause: Docker was run as root against a bind-mounted repo."; \
+		echo "Fix once from WSL/Linux:"; \
+		echo "  sudo chown -R $$(id -u):$$(id -g) build tests/bin tests/toy-src"; \
+		echo "Then use: make docker-shell or make docker-test"; \
+		exit 1; \
+	else \
+		echo "ownership-check: ok"; \
+	fi
+
+# Convenience target for local development machines. This intentionally
+# touches only generated artifact locations and the toy-source directory
+# where generated sample binaries are produced. It does not chown .git.
+fix-perms:
+	@echo "Repairing ownership of generated local artifacts..."
+	@sudo chown -R "$$(id -u):$$(id -g)" $(BUILD_DIR) tests/bin tests/toy-src 2>/dev/null || true
+	@echo "fix-perms: done"
+
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf tests/bin
 	$(MAKE) -C tests/toy-src clean || true

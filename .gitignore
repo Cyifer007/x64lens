@@ -130,3 +130,6 @@ PROJECT_STATE.md
 
 # Keep deliberately malformed fixtures that are part of the public test suite.
 !/tests/invalid/*.bin
+
+# Windows Mark-of-the-Web alternate data streams exposed as files in WSL/Linux
+*:Zone.Identifier*

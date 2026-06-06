@@ -1,0 +1,68 @@
+# x64lens Docker build context filter
+#
+# Purpose:
+#   Keep Docker build contexts small, reproducible, and free of local-only
+#   project context. The Docker image should contain only public source,
+#   build scripts, tests, documentation, and benchmark scaffolding needed to
+#   build and validate the tool.
+
+# Git metadata is not needed inside the image and can make builds slower.
+.git/
+.gitignore
+
+# Local-only private context and course/session notes must never be copied
+# into the container image.
+.local/
+private-notes/
+local-context/
+*.private.md
+PROJECT_CONTEXT.md
+PROJECT_STATE.md
+*.docx
+*Syllabus*.pdf
+*syllabus*.pdf
+course-materials/
+
+# Generated build/test outputs. These should be recreated by make targets.
+build/
+dist/
+out/
+tests/bin/
+tests/toy-src/minimal_nopie
+tests/toy-src/minimal_pie_canary
+tests/toy-src/gadgets
+tests/toy-src/*.o
+tests/toy-src/*.bin
+tests/toy-src/*.elf
+benchmarks/results/*
+!benchmarks/results/.gitkeep
+
+# Large, sensitive, or non-reproducible artifacts.
+private/
+proprietary/
+malware/
+secrets/
+*.pcap
+*.pcapng
+*.ova
+*.ovf
+*.vmdk
+*.vdi
+*.qcow2
+*.iso
+*.zip
+
+# Editor/cache noise.
+.vscode/
+.idea/
+__pycache__/
+*.py[cod]
+.cache/
+.tmp/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

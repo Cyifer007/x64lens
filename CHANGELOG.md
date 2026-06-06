@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Prevented Docker bind-mounted development sessions from creating root-owned build artifacts by running Docker shells/tests with the caller's UID/GID.
+- Added `.dockerignore` to keep local context, generated artifacts, `.git/`, and private/course files out of Docker build contexts.
+- Added troubleshooting documentation for `make clean` permission failures caused by root-owned generated files.
+
+### Added
+
+- `make docker-test` for reproducible container smoke testing.
+- `make ownership-check` and `make fix-perms` for diagnosing and repairing local generated artifact ownership issues.
+
 All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.

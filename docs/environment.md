@@ -82,3 +82,51 @@ After `info` is implemented, the environment must also run:
 ```bash
 ./build/x64lens info /bin/ls
 ```
+
+## Docker bind-mount ownership rule
+
+When running Docker against a bind-mounted repository, never run the development container as root if the container will create build artifacts in the mounted tree. A root container can create files such as `build/*.o`, `build/x64lens`, and generated toy binaries that the WSL/Linux user cannot later delete with `make clean`.
+
+Preferred commands:
+
+```bash
+make docker-build
+make docker-shell
+```
+
+or directly:
+
+```bash
+docker run --rm -it \
+  --user "$(id -u):$(id -g)" \
+  -e HOME=/tmp \
+  -v "$PWD":/work \
+  -w /work \
+  x64lens-dev bash
+```
+
+Run Docker validation with:
+
+```bash
+make docker-test
+```
+
+If root-owned generated files already exist, repair them once from WSL/Linux:
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" build tests/bin tests/toy-src
+make clean
+```
+
+The repository also provides:
+
+```bash
+make ownership-check
+make fix-perms
+```
+
+`make fix-perms` is for local development convenience only. It should not be used in CI and it intentionally avoids changing `.git` ownership.
+
+## Docker context hygiene
+
+The `.dockerignore` file excludes `.git/`, `.local/`, generated build outputs, generated toy binaries, local course files, private context, proprietary samples, malware samples, and large VM artifacts. This keeps Docker images reproducible and prevents local-only project context from being copied into a container image.
