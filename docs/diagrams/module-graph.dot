@@ -1,0 +1,25 @@
+digraph x64lens_modules {
+  rankdir=LR;
+  node [shape=box];
+
+  main -> cli;
+  main -> version;
+  main -> errors;
+  cli -> print;
+  version -> print;
+  print -> syscalls;
+
+  cli -> filemap [label="Sprint 1"];
+  filemap -> syscalls;
+  filemap -> bounds;
+  filemap -> elf64;
+  elf64 -> bounds;
+  elf64 -> phdr [label="Sprint 2"];
+  phdr -> regions;
+  regions -> scanner [label="Sprint 3"];
+  scanner -> patterns;
+  patterns -> classifier [label="Sprint 4"];
+  classifier -> scoring [label="Sprint 5"];
+  scoring -> report_text;
+  scoring -> report_json;
+}

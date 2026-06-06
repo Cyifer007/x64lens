@@ -1,0 +1,113 @@
+# x64lens custom ignore file
+# There is no official NASM-specific GitHub template. This combines Linux,
+# assembly, C/C++, Python, LaTeX, benchmark, and editor ignores.
+
+# Build outputs
+/build/
+/dist/
+/out/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.bin
+*.elf
+*.map
+*.lst
+*.sym
+*.dbg
+*.dSYM/
+
+# Generated test binaries
+/tests/bin/
+/tests/toy-src/*.o
+/tests/toy-src/*.bin
+/tests/toy-src/*.elf
+/tests/toy-src/*_nopie
+/tests/toy-src/*_pie*
+/tests/toy-src/gadgets
+
+# Benchmark generated data
+/benchmarks/results/*.json
+/benchmarks/results/*.csv
+/benchmarks/results/*.txt
+/benchmarks/results/*.log
+/benchmarks/corpus/*.bin
+/benchmarks/corpus/*.elf
+/benchmarks/corpus/*.tar
+/benchmarks/corpus/*.tar.gz
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+.tmp/
+
+# Python helper environment
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+
+# LaTeX generated files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.pdf
+!paper/**/*.pdf.keep
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Sensitive or proprietary samples
+/private/
+/proprietary/
+/malware/
+/secrets/
+*.pcap
+*.pcapng
+
+
+# VM and large environment artifacts must not be committed.
+*.ova
+*.ovf
+*.vmdk
+*.vdi
+*.qcow2
+*.iso
+.vagrant/
+packer_cache/
+
+# Local project context exports and private notes.
+private-notes/
+local-context/
+*.private.md
+
+# Generated diagram images. Keep Mermaid/DOT source instead.
+docs/diagrams/*.png
+docs/diagrams/*.svg

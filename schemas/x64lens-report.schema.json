@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/x64lens-report.schema.json",
+  "title": "x64lens report schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tool",
+    "tool_version",
+    "target",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "$comment": "Version of the output data model, not necessarily the same as the tool binary version."
+    },
+    "tool": {
+      "const": "x64lens"
+    },
+    "tool_version": {
+      "type": "string",
+      "$comment": "Version of x64lens that produced the report."
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "path",
+        "format",
+        "arch",
+        "file_size"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "file_size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "mitigations": {
+      "type": "object"
+    },
+    "primitive_coverage": {
+      "type": "object"
+    },
+    "gadgets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$comment": "x64lens report schema. Keep schema_version stable and update docs/json-schema.md when fields change."
+}

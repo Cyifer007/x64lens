@@ -1,0 +1,36 @@
+flowchart TD
+    A[x64lens CLI] --> B[Argument parser]
+    B --> C{Command}
+    C -->|info| D[File mapper]
+    C -->|mitigations| D
+    C -->|gadgets| D
+    C -->|analyze| D
+    D --> E[Bounds-safe ELF64 parser]
+    E --> F[Program header parser]
+    F --> G[Executable region mapper]
+    G --> H[Fast gadget candidate scanner]
+    H --> I[Opcode pattern matcher]
+    I --> J[Semantic primitive classifier]
+    J --> K[Scoring and mitigation-aware interpretation]
+    K --> L[Text report]
+    K --> M[JSON report]
+    K --> N[Benchmark artifacts]
+
+    subgraph Sprint1[Sprint 1 Focus]
+        A
+        B
+        D
+        E
+    end
+
+    subgraph Future[Later Sprints]
+        F
+        G
+        H
+        I
+        J
+        K
+        L
+        M
+        N
+    end

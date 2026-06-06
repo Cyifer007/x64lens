@@ -1,0 +1,23 @@
+flowchart TD
+    A[_start receives argc and argv from Linux stack] --> B[Match command string]
+    B --> C{command == info?}
+    C -->|no| D[help/version/usage path]
+    C -->|yes| E[Require argv2 target path]
+    E --> F[openat target read-only]
+    F --> G[fstat target]
+    G --> H[reject too-small file]
+    H --> I[mmap target read-only private]
+    I --> J[validate ELF magic]
+    J --> K[validate ELFCLASS64]
+    K --> L[validate little-endian]
+    L --> M[validate EM_X86_64]
+    M --> N[print basic ELF metadata]
+    N --> O[munmap and close]
+    O --> P[exit 0]
+
+    F -->|failure| X[exit 3 file error]
+    J -->|failure| Y[exit 4 not ELF64 x86_64]
+    K -->|failure| Y
+    L -->|failure| Y
+    M -->|failure| Y
+    I -->|failure| X

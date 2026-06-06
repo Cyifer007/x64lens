@@ -1,0 +1,2 @@
+# Expected output placeholder for Sprint 1.
+# This file will be updated once `x64lens info` parses ELF64 headers.

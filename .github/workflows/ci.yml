@@ -1,0 +1,33 @@
+# CI workflow for x64lens.
+#
+# Purpose:
+#   Verify that the repository scaffold, NASM build, and test suite work on
+#   a clean Ubuntu runner. This is part of the reproducibility contract for
+#   both the CSC-732 implementation and CSC-773 research paper.
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm binutils gcc make python3
+
+      - name: Scaffold check
+        run: make scaffold-check
+
+      - name: Build
+        run: make
+
+      - name: Test
+        run: make test

@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.1.0",
+  "corpus_name": "x64lens initial test corpus",
+  "description": "Controlled local toy binaries and invalid inputs for early validation.",
+  "entries": [
+    {
+      "path": "tests/toy-src/minimal.c",
+      "type": "source",
+      "purpose": "valid ELF build input"
+    },
+    {
+      "path": "tests/toy-src/vuln_basic.c",
+      "type": "source",
+      "purpose": "future vulnerable toy binary"
+    },
+    {
+      "path": "tests/toy-src/gadgets.S",
+      "type": "source",
+      "purpose": "known gadget fixture"
+    },
+    {
+      "path": "tests/invalid/text.txt",
+      "type": "invalid",
+      "purpose": "not ELF"
+    },
+    {
+      "path": "tests/invalid/empty.bin",
+      "type": "invalid",
+      "purpose": "empty input"
+    }
+  ]
+}

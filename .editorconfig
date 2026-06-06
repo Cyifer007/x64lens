@@ -1,0 +1,26 @@
+# EditorConfig for x64lens.
+#
+# Purpose:
+#   Keep whitespace stable across Windows, macOS, Linux, WSL2, containers,
+#   and Codespaces. Stable whitespace matters for assembly readability and
+#   reviewable research artifacts.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+[*.{asm,inc}]
+indent_style = space
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,31 @@
+# Manual release dry-run workflow for x64lens.
+#
+# Purpose:
+#   Builds, tests, and prepares release artifacts. This remains manual until
+#   the project has a stable CLI, stable schema, and signed-release process.
+
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm binutils gcc make python3
+
+      - name: Build and test
+        run: |
+          make clean
+          make
+          make test
+
+      - name: Prepare release artifacts
+        run: bash tools/make-release-artifacts.sh
