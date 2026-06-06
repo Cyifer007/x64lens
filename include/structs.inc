@@ -1,14 +1,34 @@
 ; structs.inc
-; Internal record layout contract. These offsets are planned for Sprint 3.
+; Internal record layout contract.
 ;
 ; Purpose:
-;   Defines internal analysis record layouts and bitmaps used after the tool
-;   moves from direct printing to structured facts. These offsets are designed
-;   so text, JSON, benchmarking, and future SARIF output can all consume the
-;   same analysis records.
+;   Defines internal analysis record layouts and bitmaps used by x64lens.
+;   Sprint 1 uses the mapped-file record so filemap.asm can hand safe,
+;   normalized file facts to ELF parsing code. Sprint 3 will begin using
+;   gadget records so scanners, classifiers, reporters, and benchmarks all
+;   consume the same internal facts instead of scraping human-readable text.
+;
+; Maintenance rule:
+;   These offsets are ABI-like inside this repository. If any offset changes,
+;   update docs/architecture.md, docs/json-schema.md where applicable, tests,
+;   and the active sprint notes.
 
 %ifndef X64LENS_STRUCTS_INC
 %define X64LENS_STRUCTS_INC
+
+; mapped_file record offsets
+;
+; The mapped-file record is intentionally tiny:
+;   fd    = open file descriptor, or -1 after mmap succeeds and fd is closed
+;   size  = target file size in bytes from fstat(2)
+;   addr  = read-only mmap base address
+;
+; The record is owned by the command orchestrator. filemap.asm populates it,
+; elf64.asm validates the mapped bytes, and filemap.asm later unmaps it.
+%define FILEMAP_FD              0
+%define FILEMAP_SIZE            8
+%define FILEMAP_ADDR            16
+%define FILEMAP_RECORD_SIZE     24
 
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET       0

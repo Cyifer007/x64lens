@@ -4,16 +4,20 @@ digraph x64lens_modules {
 
   main -> cli;
   main -> version;
-  main -> errors;
+  main -> info;
   cli -> print;
   version -> print;
-  print -> syscalls;
-
-  cli -> filemap [label="Sprint 1"];
+  info -> filemap;
+  info -> elf64;
+  info -> report_text;
+  info -> errors;
   filemap -> syscalls;
-  filemap -> bounds;
-  filemap -> elf64;
   elf64 -> bounds;
+  errors -> print;
+  report_text -> print;
+  report_text -> hex;
+  hex -> print;
+
   elf64 -> phdr [label="Sprint 2"];
   phdr -> regions;
   regions -> scanner [label="Sprint 3"];

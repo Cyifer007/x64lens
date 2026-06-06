@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- Implemented the Sprint 1 `info <file>` path with read-only file mapping, ELF64 x86_64 validation, basic ELF metadata reporting, and invalid-input regression tests.
+- Added `src/info.asm` as the command orchestrator that preserves boundaries between file mapping, ELF validation, reporting, and cleanup.
+- Added a mapped-file internal record layout in `include/structs.inc`.
+- Added stable STDERR diagnostics for file, ELF identity, malformed ELF, unsupported, and bounds-related failures.
+- Added fixed-width `print_hex64` formatting for deterministic metadata output.
+
 ### Fixed
 
 - Prevented Docker bind-mounted development sessions from creating root-owned build artifacts by running Docker shells/tests with the caller's UID/GID.

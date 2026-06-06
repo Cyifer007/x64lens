@@ -1,20 +1,64 @@
 ; hex.asm
 ;
 ; Purpose:
-;   Future hexadecimal formatting helpers for addresses, offsets, sizes, and
+;   Hexadecimal formatting helpers for addresses, offsets, sizes, and future
 ;   raw gadget bytes. Keeping formatting separate from print.asm prevents
 ;   report emitters from duplicating conversion logic.
 ;
-; Next implementation step:
-;   Sprint 1 or Sprint 2 can add print_hex64 once ELF metadata output needs
-;   stable address formatting.
+; Current Sprint 1 export:
+;   print_hex64(value) prints a stable 0x-prefixed, 16-digit lowercase hex
+;   value to STDOUT. Fixed-width output is intentionally verbose but makes
+;   early parser demos and regression tests deterministic.
 
 bits 64
 default rel
 
-section .text
-global x64lens_hex_placeholder
+extern print_cstr
 
-; Placeholder symbol so the module participates in the build graph.
-x64lens_hex_placeholder:
+section .rodata
+hexchars: db "0123456789abcdef"
+
+section .bss
+hexbuf: resb 19                 ; "0x" + 16 digits + NUL
+
+section .text
+global print_hex64
+
+; print_hex64(rdi=value)
+;
+; Inputs:
+;   RDI = unsigned 64-bit value to render
+;
+; Output:
+;   writes 0x0000000000000000-style text to STDOUT
+;
+; Clobbers:
+;   RAX, RCX, RDX, RSI, RDI
+print_hex64:
+    push    rbx
+    push    r12
+
+    mov     rbx, rdi            ; RBX holds the shifting value
+    lea     r12, [hexbuf]
+    mov     byte [r12], '0'
+    mov     byte [r12 + 1], 'x'
+
+    lea     rsi, [r12 + 2]      ; output digit cursor
+    mov     rcx, 16             ; one nibble per hex digit
+    lea     rdx, [hexchars]
+.digit_loop:
+    mov     rax, rbx
+    shr     rax, 60             ; isolate the current high nibble
+    mov     al, [rdx + rax]
+    mov     [rsi], al
+    shl     rbx, 4
+    inc     rsi
+    loop    .digit_loop
+
+    mov     byte [r12 + 18], 0
+    mov     rdi, r12
+    call    print_cstr
+
+    pop     r12
+    pop     rbx
     ret

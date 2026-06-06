@@ -5,14 +5,14 @@
 ;   libc in the core binary, execution begins at `_start` and reads `argc`
 ;   and `argv` directly from the Linux process stack.
 ;
-; Current scaffold behavior:
+; Current behavior:
 ;   x64lens version
 ;   x64lens help
 ;   x64lens info <file>
 ;
 ; Sprint 1 implementation target:
-;   Replace `cli_command_info_stub` with the real file mapping and ELF64
-;   validation path while keeping command dispatch simple and auditable.
+;   Keep command dispatch simple while routing `info <file>` through the real
+;   file mapping and ELF64 validation path.
 ;
 ; Safety note:
 ;   This module should not parse target files directly. It should dispatch
@@ -26,7 +26,7 @@ default rel
 
 extern cstr_eq
 extern cli_print_help
-extern cli_command_info_stub
+extern x64lens_command_info
 extern version_print
 
 section .rodata
@@ -94,13 +94,14 @@ _start:
     jmp     .exit
 
 .info:
-    ; `info` requires a target file argument. The current stub only prints
-    ; the target path. Sprint 1 will route this to filemap.asm and elf64.asm.
+    ; `info` requires a target file argument and now routes through the
+    ; Sprint 1 file mapping and ELF64 validation path. The command returns a
+    ; stable x64lens exit code in RAX, which becomes the process exit code.
     cmp     rbx, 3
     jl      .show_help
     mov     rdi, [r12 + 16]
-    call    cli_command_info_stub
-    mov     rdi, EXIT_UNSUPPORTED
+    call    x64lens_command_info
+    mov     rdi, rax
     jmp     .exit
 
 .exit:

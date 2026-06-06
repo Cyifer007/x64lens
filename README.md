@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: research scaffold and early implementation foundation.
+> Status: Sprint 1 implementation in progress. The CLI, build system, Docker workflow, file mapping path, and initial ELF64 validation/reporting path now exist.
 >
 > Current version: `0.1.0-dev`
 >
@@ -115,10 +115,12 @@ make
 ```bash
 ./build/x64lens version
 ./build/x64lens help
-./build/x64lens info ./tests/toy-src/minimal.c
+make samples
+./build/x64lens info ./tests/bin/minimal_nopie
+./build/x64lens info /bin/ls
 ```
 
-The initial `info` command is scaffolded. The next implementation phase replaces it with file mapping and ELF64 validation.
+The `info` command now maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. Program-header interpretation, mitigation reporting, and gadget scanning remain later sprint work.
 
 ### Run tests
 
@@ -161,7 +163,7 @@ See [`docs/troubleshooting.md`](docs/troubleshooting.md).
 
 This project follows a two-week sprint cadence during the initial research and implementation phase.
 
-1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation.
+1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
 2. Sprint 2: program headers, executable regions, basic mitigations.
 3. Sprint 3: raw gadget candidate scanner and initial arena allocator.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary.

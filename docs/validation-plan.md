@@ -9,9 +9,18 @@ x64lens must be correct enough to support research claims and safe enough to par
 ### 1. Build validation
 
 ```bash
+make fix-perms
 make clean
 make
+make samples
 make test
+```
+
+Sprint 1 also validates the Docker path:
+
+```bash
+make docker-build
+make docker-test
 ```
 
 ### 2. Invalid input validation
@@ -26,17 +35,29 @@ Test cases:
 - impossible header count,
 - oversized section table.
 
-Expected outcome: graceful failure and nonzero exit code.
+Expected outcome: graceful failure and stable nonzero exit code.
+
+Sprint 1 expected codes:
+
+| Input | Expected exit code |
+|---|---:|
+| plain text file | 4 |
+| wrong-architecture ELF-like file | 4 |
+| truncated ELF magic/header | 5 |
+| empty file | 5 |
 
 ### 3. ELF metadata validation
 
 Compare `x64lens info` against:
 
 ```bash
-readelf -h <file>
-readelf -l <file>
-readelf -S <file>
+./build/x64lens info ./tests/bin/minimal_nopie
+./build/x64lens info /bin/ls
+readelf -h ./tests/bin/minimal_nopie
+readelf -h /bin/ls
 ```
+
+Sprint 1 only compares ELF identity and core ELF header metadata. Program-header semantics and section labels begin in Sprint 2.
 
 ### 4. Mitigation validation
 

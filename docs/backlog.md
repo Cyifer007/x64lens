@@ -2,20 +2,27 @@
 
 ## Sprint 0 / Environment and context
 
-- [ ] Stand up WSL2 Ubuntu 24.04 or equivalent Linux development environment.
-- [ ] Verify NASM, binutils, gcc, make, python3, git, and time are installed.
-- [ ] Verify Docker/devcontainer build path.
+- [x] Stand up WSL2 Ubuntu 24.04 or equivalent Linux development environment.
+- [x] Verify NASM, binutils, gcc, make, python3, git, and time are installed.
+- [x] Verify Docker/devcontainer build path.
 - [ ] Keep VM images out of repository.
 
 ## Sprint 1
 
-- [ ] Implement file open/stat/mmap.
-- [ ] Implement ELF magic validation.
-- [ ] Validate ELF64 class.
-- [ ] Validate little-endian encoding.
-- [ ] Validate `EM_X86_64` machine type.
-- [ ] Print basic ELF header metadata.
-- [ ] Add invalid input tests.
+- [x] Implement file open/stat/mmap.
+- [x] Implement ELF magic validation.
+- [x] Validate ELF64 class.
+- [x] Validate little-endian encoding.
+- [x] Validate `EM_X86_64` machine type.
+- [x] Print basic ELF header metadata.
+- [x] Add invalid input tests.
+
+## Sprint 1 follow-up hardening
+
+- [ ] Validate Sprint 1 implementation on WSL2 and Docker.
+- [ ] Compare `x64lens info /bin/ls` against `readelf -h /bin/ls`.
+- [ ] Add a small `tools/compare-readelf.sh` enhancement for automated header comparison.
+- [ ] Write `docs/sprints/sprint-01-retro.md` after local validation.
 
 ## Sprint 2
 

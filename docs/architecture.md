@@ -9,6 +9,7 @@ x64lens uses a hybrid architecture:
 
 ```text
 x64lens CLI
+  -> command orchestrator
   -> file mapper
   -> ELF64 parser
   -> executable region mapper
@@ -26,6 +27,7 @@ x64lens CLI
 | ------ | -------------- | ----------- |
 | `main.asm` | Entrypoint, dispatch, high-level flow | Deep parsing or scanning |
 | `cli.asm` | Argument parsing, command routing helpers | ELF parsing |
+| `info.asm` | Coordinate `info` command mapping, validation, reporting, and cleanup | Own ELF parsing or formatting internals |
 | `syscalls.asm` | Linux syscall wrappers | Business logic |
 | `filemap.asm` | Open, stat, mmap, munmap, close | Interpret binary format |
 | `bounds.asm` | Offset, size, and overflow checks | Print user reports |
@@ -40,6 +42,24 @@ x64lens CLI
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `report_text.asm` | Human-readable output | Analysis decisions |
 | `report_json.asm` | JSON output | Analysis decisions |
+
+
+## Sprint 1 implemented flow: `info <file>`
+
+The Sprint 1 `info` command now follows this flow:
+
+```text
+main.asm
+  -> x64lens_command_info(path) in info.asm
+     -> x64lens_file_map(path, record) in filemap.asm
+        -> openat/fstat/mmap/close through syscalls.asm
+     -> x64lens_elf64_validate(base, size) in elf64.asm
+        -> size/range checks through bounds.asm
+     -> x64lens_report_text_elf64_info(path, base, size) in report_text.asm
+     -> x64lens_file_unmap(record) in filemap.asm
+```
+
+This preserves module boundaries while still giving Sprint 1 a working, demonstrable command.
 
 ## Design decision 1: program headers are authoritative
 
@@ -92,7 +112,7 @@ The scanner finds candidate byte windows. The classifier explains what they mean
 
 ## Design decision 5: internal records by Sprint 3
 
-Sprint 1 may print directly. By Sprint 3, analysis facts should be stored in internal records.
+Sprint 1 may print directly after validation. By Sprint 3, analysis facts should be stored in internal records before being emitted as text, JSON, benchmark rows, or future SARIF.
 
 Initial gadget record contract:
 

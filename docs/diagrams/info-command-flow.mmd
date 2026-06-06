@@ -3,21 +3,29 @@ flowchart TD
     B --> C{command == info?}
     C -->|no| D[help/version/usage path]
     C -->|yes| E[Require argv2 target path]
-    E --> F[openat target read-only]
-    F --> G[fstat target]
-    G --> H[reject too-small file]
+    E --> F[x64lens_command_info]
+    F --> G[openat target read-only]
+    G --> H[fstat target]
     H --> I[mmap target read-only private]
-    I --> J[validate ELF magic]
-    J --> K[validate ELFCLASS64]
-    K --> L[validate little-endian]
-    L --> M[validate EM_X86_64]
-    M --> N[print basic ELF metadata]
-    N --> O[munmap and close]
-    O --> P[exit 0]
+    I --> J[close fd after successful mmap]
+    J --> K[validate at least 4 bytes]
+    K --> L[validate ELF magic]
+    L --> M[validate full ELF64 header size]
+    M --> N[validate ELFCLASS64]
+    N --> O[validate little-endian]
+    O --> P[validate EM_X86_64]
+    P --> Q[bounds-check PHDR and SHDR table ranges]
+    Q --> R[print basic ELF metadata]
+    R --> S[munmap mapped file]
+    S --> T[exit 0]
 
-    F -->|failure| X[exit 3 file error]
-    J -->|failure| Y[exit 4 not ELF64 x86_64]
-    K -->|failure| Y
-    L -->|failure| Y
-    M -->|failure| Y
+    G -->|failure| X[exit 3 file error]
+    H -->|failure| X
     I -->|failure| X
+    K -->|failure| Y[exit 5 malformed/truncated ELF]
+    L -->|failure| Z[exit 4 not ELF64 x86_64]
+    M -->|failure| Y
+    N -->|failure| Z
+    O -->|failure| Z
+    P -->|failure| Z
+    Q -->|failure| Y
