@@ -13,7 +13,7 @@ Build the initial project skeleton and ELF64 header validation path.
 
 - [ ] Stand up Ubuntu 24.04 development environment.
 - [ ] Verify WSL2, Docker/devcontainer, Codespaces, or VM build path.
-- [ ] Update `PROJECT_CONTEXT.md` and `PROJECT_STATE.md`.
+- [ ] Update local-only project context under `.local/project-context/` if maintained.
 - [ ] Add human-readable comments to current source and config scaffolding.
 - [x] Repository scaffold.
 - [x] Documentation skeleton.
@@ -72,8 +72,8 @@ If Sprint 1 testing succeeds:
 
 1. Commit and tag the Sprint 1 baseline.
 2. Update `docs/sprints/sprint-01-retro.md` with exact outputs.
-3. Update `PROJECT_STATE.md` with completed items and Sprint 2 focus.
-4. Send Dr. Kramer the sprint summary.
+3. Update local-only project state with completed items and Sprint 2 focus.
+4. Send the sprint summary to the appropriate academic or research reviewer if needed.
 5. Begin Sprint 2 by implementing program header parsing and executable region mapping.
 
 If Sprint 1 testing fails:

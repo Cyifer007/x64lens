@@ -35,9 +35,9 @@ x64lens contributes an assembly-first implementation and evaluation framework fo
 - IEEE paper source.
 
 
-## CSC-773 role
+## Research paper role
 
-The CSC-773 deliverable is the IEEE-style research paper. The repository should therefore preserve all experimental setup details needed to reproduce the paper:
+The repository should preserve all experimental setup details needed to reproduce a publication-quality paper:
 
 - corpus manifest,
 - target binary source/build commands,
@@ -49,7 +49,7 @@ The CSC-773 deliverable is the IEEE-style research paper. The repository should 
 - limitations,
 - threats to validity.
 
-## Paper framing for CSC-773
+## Paper framing
 
 The paper should frame `x64lens` as a mitigation-oriented solution for advanced cyberinfrastructure defense:
 

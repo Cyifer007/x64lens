@@ -3,7 +3,7 @@
 # Purpose:
 #   Verify that the repository scaffold, NASM build, and test suite work on
 #   a clean Ubuntu runner. This is part of the reproducibility contract for
-#   both the CSC-732 implementation and CSC-773 research paper.
+#   public research and future release engineering.
 
 name: ci
 

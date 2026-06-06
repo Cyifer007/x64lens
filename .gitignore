@@ -111,3 +111,22 @@ local-context/
 # Generated diagram images. Keep Mermaid/DOT source instead.
 docs/diagrams/*.png
 docs/diagrams/*.svg
+
+
+# Local-only project context and private course/session notes.
+# These files may exist in local working trees and patch bundles, but they
+# must not be committed to the public repository.
+.local/
+PROJECT_CONTEXT.md
+PROJECT_STATE.md
+/docs/project-context-upload-guide.md
+/docs/csc-773-integration.md
+/docs/contracts/context-persistence-contract.md
+/docs/ai-use-disclosure.md
+*.docx
+*Syllabus*.pdf
+*syllabus*.pdf
+/course-materials/
+
+# Keep deliberately malformed fixtures that are part of the public test suite.
+!/tests/invalid/*.bin

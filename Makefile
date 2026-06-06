@@ -4,7 +4,7 @@
 #   Build the NASM assembly sources into ELF64 object files and link them
 #   into the `build/x64lens` executable. This Makefile is intentionally
 #   boring and explicit because it is part of the reproducibility story for
-#   CSC-732, CSC-773, and future publication work.
+#   public research, publication artifacts, and future enterprise adoption.
 #
 # Design notes:
 #   - NASM emits ELF64 objects.
@@ -63,15 +63,14 @@ bench-smoke: all
 scaffold-check:
 	@echo "Checking required scaffold paths..."
 	@test -f README.md
-	@test -f PROJECT_CONTEXT.md
-	@test -f PROJECT_STATE.md
 	@test -f Makefile
 	@test -f src/main.asm
 	@test -f include/constants.inc
 	@test -f docs/project-charter.md
 	@test -f docs/contracts/development-contract.md
-	@test -f docs/contracts/context-persistence-contract.md
-	@test -f docs/csc-773-integration.md
+	@test -f docs/contracts/research-contract.md
+	@test -f docs/contracts/output-contract.md
+	@test -f docs/contracts/release-contract.md
 	@test -f docs/environment.md
 	@test -f docs/visualization.md
 	@echo "scaffold-check: ok"

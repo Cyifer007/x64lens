@@ -45,7 +45,7 @@ Variables:
 
 ## Stage 6: network infrastructure triage
 
-Connect the tool to CSC-773 and ISP operational security.
+Connect the tool to network-facing infrastructure and operational security.
 
 Possible research question:
 

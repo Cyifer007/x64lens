@@ -8,7 +8,7 @@
 ;
 ; Maintenance rule:
 ;   If a public exit code, version string, or syscall constant changes,
-;   update docs/cli-contract.md, docs/versioning.md, and PROJECT_STATE.md.
+;   update docs/cli-contract.md, docs/versioning.md, and the active project state notes.
 
 %ifndef X64LENS_CONSTANTS_INC
 %define X64LENS_CONSTANTS_INC

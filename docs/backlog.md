@@ -5,9 +5,6 @@
 - [ ] Stand up WSL2 Ubuntu 24.04 or equivalent Linux development environment.
 - [ ] Verify NASM, binutils, gcc, make, python3, git, and time are installed.
 - [ ] Verify Docker/devcontainer build path.
-- [ ] Upload or pin `PROJECT_CONTEXT.md` and `PROJECT_STATE.md` as project context.
-- [ ] Confirm CSC-773 paper framing with Dr. Begian if needed.
-- [ ] Confirm first Dr. Kramer checkpoint method: Zoom or email.
 - [ ] Keep VM images out of repository.
 
 ## Sprint 1
@@ -66,3 +63,7 @@
 - [ ] Produce final benchmark table.
 - [ ] Produce paper outline.
 - [ ] Produce final demo script.
+
+## Local-only/private process backlog
+
+Private context files, course-specific notes, and session-state tracking belong under `.local/project-context/` and are intentionally excluded from public commits.

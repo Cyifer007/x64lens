@@ -12,20 +12,11 @@ x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies e
 
 Build a long-term, maintainable, research-grade binary exploitability analysis platform that starts with a tightly scoped NASM-based ELF64 x86_64 analyzer and grows through measured, documented capabilities.
 
+## Public research model
 
+The public repository is the engineering and research artifact. It should be understandable without private course logistics, private planning notes, or tool-assisted development context. Public documentation should explain what the tool does, how it is built, how it is evaluated, and how others can reproduce results.
 
-## Unified CSC-732 and CSC-773 project model
-
-This project now intentionally joins CSC-732 and CSC-773 into one semester-long research and development effort with distinct deliverables.
-
-- CSC-732 evaluates the assembly implementation and technical sprint progress.
-- CSC-773 evaluates the independent research paper, solution framing, evaluation methodology, and IEEE-format presentation.
-
-The shared technical artifact is `x64lens`. The CSC-773 paper frames that artifact as a mitigation-oriented solution for prioritizing exploitability risk in advanced cyberinfrastructure.
-
-## Course alignment
-
-CSC-732 focuses on assembly language programming as it applies to reverse engineering and binary exploitation, specifically 64-bit x86 in a Linux environment. The syllabus also lists ELF/PE formats, NASM, GDB, Radare2, objdump, function calling conventions, system calls, shellcode, position-independent code, GOT/PLT, and CPU security extensions as relevant topics. x64lens directly targets those areas.
+Private planning notes, local sprint state, and course-specific coordination files belong in ignored local-only context files under `.local/project-context/`.
 
 ## Research alignment
 
@@ -48,7 +39,7 @@ The project is designed to eventually support:
 - vulnerability management enrichment,
 - supply-chain binary review,
 - network-facing service triage,
-- ISP and infrastructure software risk prioritization,
+- infrastructure software risk prioritization,
 - JSON output for automation,
 - SARIF output in a future release.
 
@@ -66,25 +57,25 @@ Can semantic primitive classification and mitigation-aware scoring provide more 
 
 Can a static, dependency-light, assembly-first binary analyzer be integrated into enterprise CI/CD or vulnerability management workflows to help prioritize binaries based on hardening posture and exploit primitive availability?
 
-## CSC-773 bridge
+## Cyberinfrastructure bridge
 
-Advanced Network Security and Mobile Communications can use the tool through the following framing:
+The strongest infrastructure-oriented framing is:
 
 > Can static binary exploitability analysis improve prioritization of network-exposed services and infrastructure software?
 
 Possible target domains:
 
-- ISP edge services,
+- network-facing Linux services,
+- cloud-hosted infrastructure services,
 - network appliances,
-- Linux daemons,
-- embedded network devices,
+- embedded Linux devices,
 - exposed service prioritization,
 - supply-chain binary review,
 - hardening validation.
 
-AI-based future work may include analyst summarization, corpus triage, or semantic clustering, but AI is not part of the Sprint 1 through Sprint 6 implementation contract.
+AI-based future work may include analyst summarization, corpus triage, or semantic clustering, but AI is not part of the initial implementation contract.
 
-## Semester deliverables
+## Initial implementation deliverables
 
 1. A buildable NASM-first CLI scaffold.
 2. ELF64 x86_64 validation.
@@ -111,7 +102,7 @@ AI-based future work may include analyst summarization, corpus triage, or semant
 - Peer-reviewed publication.
 - Dissertation-level exploitability modeling.
 
-## Non-goals for the first semester
+## Non-goals for the initial implementation phase
 
 - Full exploit generation.
 - Payload generation.
@@ -124,4 +115,4 @@ AI-based future work may include analyst summarization, corpus triage, or semant
 
 ## Success criteria
 
-The semester project succeeds if another technical user can clone the repository, build the tool, run the documented tests, analyze simple ELF64 binaries, inspect JSON output, reproduce benchmark commands, and understand the roadmap without private context.
+The initial project succeeds if another technical user can clone the repository, build the tool, run the documented tests, analyze simple ELF64 binaries, inspect JSON output, reproduce benchmark commands, and understand the roadmap without private context.

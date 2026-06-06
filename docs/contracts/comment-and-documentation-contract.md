@@ -46,7 +46,7 @@ Before each two-week checkpoint, review:
 
 - active sprint plan,
 - active sprint retrospective,
-- `PROJECT_STATE.md`,
+- active local project state, when maintained outside the public repo,
 - `docs/backlog.md`,
 - touched source files,
 - touched contracts.

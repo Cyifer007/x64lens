@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: research scaffold, CSC-732 tool-development foundation and CSC-773 IEEE research-paper foundation.
+> Status: research scaffold and early implementation foundation.
 >
 > Current version: `0.1.0-dev`
 >
@@ -10,7 +10,7 @@
 
 ## Why this project exists
 
-x64lens starts from a narrow but deliberate premise: build the hot path of binary exploitability analysis from the assembly layer upward. The first semester target is not a full replacement for ROPgadget, Ropper, radare2, Ghidra, angr, or other mature frameworks. Instead, the goal is to build a focused, transparent, fast, and research-measurable analyzer that performs:
+x64lens starts from a narrow but deliberate premise: build the hot path of binary exploitability analysis from the assembly layer upward. The initial target is not a full replacement for ROPgadget, Ropper, radare2, Ghidra, angr, or other mature frameworks. Instead, the goal is to build a focused, transparent, fast, and research-measurable analyzer that performs:
 
 1. ELF64 x86_64 parsing.
 2. Executable region discovery.
@@ -22,48 +22,15 @@ x64lens starts from a narrow but deliberate premise: build the hot path of binar
 
 The design intentionally separates the **speed-first scanning engine** from the **semantic exploitability value layer**.
 
+## Research framing
 
+The project evaluates whether a dependency-light, assembly-first analyzer can improve static binary exploitability triage for network-facing infrastructure software, secure build validation, and binary hardening assessment.
 
-## Course deliverable split
+Primary research questions:
 
-This repository supports one unified project across two courses:
-
-- **CSC-732 Assembly Language:** implementation deliverable. The focus is NASM, ELF64 parsing, executable region analysis, gadget scanning, semantic primitive classification, testing, and technical demonstration.
-- **CSC-773 Advanced Network Security and Mobile Communications:** research deliverable. The focus is an IEEE-style 5 to 6 page paper that identifies a cyberinfrastructure security issue, develops a mitigation-oriented solution, and evaluates that solution through testing, benchmarking, and analysis.
-
-The CSC-773 framing is:
-
-> Static binary exploitability analysis for network-facing cyberinfrastructure and infrastructure software.
-
-The tool-development work and paper-development work share the same technical core but produce different course artifacts.
-
-## Project context persistence
-
-Future chat sessions should load the project context files before making architecture or implementation decisions:
-
-- [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md)
-- [`PROJECT_STATE.md`](PROJECT_STATE.md)
-- [`docs/contracts/development-contract.md`](docs/contracts/development-contract.md)
-- [`docs/contracts/research-contract.md`](docs/contracts/research-contract.md)
-- [`docs/contracts/context-persistence-contract.md`](docs/contracts/context-persistence-contract.md)
-- [`docs/architecture.md`](docs/architecture.md)
-- [`docs/csc-773-integration.md`](docs/csc-773-integration.md)
-
-These files are part of the project, not side notes. They are updated as the implementation evolves.
-
-## Research questions
-
-### RQ1: performance
-
-Can an assembly-first ELF64 x86_64 gadget discovery engine outperform existing ROP gadget tooling in runtime and memory efficiency while maintaining comparable gadget discovery coverage?
-
-### RQ2: semantic value
-
-Can semantic primitive classification and mitigation-aware scoring provide more actionable binary exploitability triage than raw gadget enumeration alone?
-
-### RQ3: enterprise adoption
-
-Can a static, dependency-light, assembly-first binary analyzer be integrated into enterprise CI/CD or vulnerability management workflows to help prioritize binaries based on hardening posture and exploit primitive availability?
+1. **Performance:** Can an assembly-first ELF64 x86_64 gadget discovery engine outperform existing ROP gadget tooling in runtime and memory efficiency while maintaining comparable gadget discovery coverage?
+2. **Semantic value:** Can semantic primitive classification and mitigation-aware scoring provide more actionable binary exploitability triage than raw gadget enumeration alone?
+3. **Enterprise adoption:** Can a static, dependency-light, assembly-first binary analyzer be integrated into CI/CD or vulnerability management workflows to help prioritize binaries based on hardening posture and exploit primitive availability?
 
 ## Initial scope
 
@@ -78,9 +45,9 @@ Version `0.1.x` targets:
 - Human-readable and JSON output.
 - Controlled benchmark comparisons.
 
-## Explicit non-goals for the first semester
+## Explicit non-goals for the initial research prototype
 
-The first semester does **not** attempt to provide:
+The first implementation phase does **not** attempt to provide:
 
 - Full exploit generation.
 - Payload generation.
@@ -92,7 +59,7 @@ The first semester does **not** attempt to provide:
 - Dynamic tracing.
 - Automatic vulnerability discovery.
 
-Those may become future research directions, but they are not Sprint 1 through Sprint 6 deliverables.
+Those may become future research directions, but they are not part of the initial implementation contract.
 
 ## Tool name decision
 
@@ -151,7 +118,7 @@ make
 ./build/x64lens info ./tests/toy-src/minimal.c
 ```
 
-The initial `info` command is scaffolded. Sprint 1 implements file mapping and ELF64 validation.
+The initial `info` command is scaffolded. The next implementation phase replaces it with file mapping and ELF64 validation.
 
 ### Run tests
 
@@ -161,7 +128,7 @@ make test
 
 ## Development cadence
 
-This project follows a two-week sprint cadence during CSC-732 and feeds the CSC-773 IEEE-format research paper deliverable.
+This project follows a two-week sprint cadence during the initial research and implementation phase.
 
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation.
 2. Sprint 2: program headers, executable regions, basic mitigations.
