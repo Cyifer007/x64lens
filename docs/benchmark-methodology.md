@@ -99,3 +99,38 @@ Used for mitigation and hardening research.
 - Full disassembly tools may perform more work than x64lens.
 
 Benchmark conclusions must reflect these limitations.
+
+## Sprint 3 scanner smoke benchmark
+
+Sprint 3 introduces the first development-level scanner benchmark. This is a smoke benchmark, not a publication benchmark. Its purpose is to validate that repeated scanner runs can be captured with enough metadata to support later research-grade benchmark design.
+
+Run:
+
+```bash
+make bench-scanner-smoke
+```
+
+Optional controls:
+
+```bash
+RUNS=10 MAX_DEPTH=4 make bench-scanner-smoke
+RUNS=5 MAX_DEPTH=8 benchmarks/scripts/bench-scanner-smoke.sh ./build/x64lens ./tests/bin/gadgets /bin/ls
+```
+
+The script writes a TSV results file and metadata sidecar under `benchmarks/results/`. The results include:
+
+- tool name,
+- command,
+- max depth,
+- target path,
+- target size,
+- run number,
+- wall-clock runtime,
+- maximum RSS,
+- exit code,
+- candidate count,
+- `ret` count,
+- `ret imm16` count,
+- output byte count.
+
+The smoke benchmark must not be used to claim superiority over other tools. It exists to prove measurement plumbing before comparison against ROPgadget, Ropper, and ropr.

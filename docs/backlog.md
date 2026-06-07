@@ -64,9 +64,10 @@
 - [x] Extract bounded backward candidate windows.
 - [x] Output raw candidates.
 - [x] Add regression checks against `tests/bin/gadgets`.
-- [ ] Validate Patch 008 on WSL2 and Docker.
-- [ ] Add first scanner smoke measurement.
-- [ ] Decide whether simple arena allocator lands in Sprint 3 Phase B or carries forward.
+- [x] Validate Patch 008 on WSL2 and Docker.
+- [x] Add first scanner smoke benchmark harness.
+- [ ] Run first scanner smoke measurement and preserve generated TSV metadata.
+- [ ] Decide whether simple arena allocator lands in Sprint 3 Phase C or carries forward.
 
 ## Sprint 4
 

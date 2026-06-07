@@ -237,3 +237,11 @@ The Sprint 2 internal fact model is split into two record families:
 - `executable_region`, which stores file offsets, virtual addresses, sizes, and flags for executable `PT_LOAD + PF_X` regions.
 
 This keeps the later scanner from needing to rediscover executable byte ranges and keeps reporters from scraping human-readable output.
+
+## Sprint 3 raw scanner behavior
+
+Patch 008 introduced the raw byte scanner. The scanner walks executable `PT_LOAD + PF_X` file-backed ranges, detects return-terminator bytes, extracts bounded backward byte windows, and stores candidate facts in `gadget_record` records before reporting.
+
+Important limitation: this is a byte-pattern scanner, not a full instruction decoder. It may report unaligned raw candidates when a byte such as `0xc2` appears inside another instruction encoding. That is acceptable in Sprint 3 because the scanner's role is to discover candidate byte windows. Later `patterns.asm`, `classifier.asm`, and eventually a decoder integration layer will distinguish semantically meaningful gadgets from raw byte candidates.
+
+The current `--max-depth` means the maximum number of bytes considered before the terminator. Total printed window length can therefore be `max-depth + terminator_length`, where `ret` has length 1 and `ret imm16` has length 3.

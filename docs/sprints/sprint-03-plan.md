@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Patch 008 begins Sprint 3 with a fixed-capacity candidate buffer.
+In progress. Patch 008 Phase A validated locally and in Docker. Patch 009 Phase B adds the first scanner smoke benchmark and objdump-backed fixture validation helper.
 
 ## Sprint goal
 
@@ -22,25 +22,26 @@ Sprint 3 is expected to occur in phases. Phase A uses a fixed candidate buffer t
 - [x] Add bounded `--max-depth` option.
 - [x] Add raw gadget candidate output.
 - [x] Update toy assembly sample with known `ret` and `ret imm16` bytes.
-- [ ] Add first scanner smoke measurement.
+- [x] Add first scanner smoke benchmark harness.
+- [ ] Run first scanner smoke measurement locally and capture results.
 - [ ] Assess whether simple arena allocator can land safely in Sprint 3 Phase B.
 - [ ] Write Sprint 3 retrospective after local validation.
 
 ## Acceptance criteria
 
-- [ ] `make clean && make && make test` succeeds.
-- [ ] `make docker-test` succeeds.
-- [ ] `x64lens mitigations <file>` remains stable after scanner changes.
-- [ ] `x64lens gadgets ./tests/bin/gadgets` runs without crashing.
-- [ ] `x64lens gadgets --max-depth 4 ./tests/bin/gadgets` runs without crashing.
-- [ ] Raw `ret` candidate discovery works over executable regions only.
-- [ ] Raw `ret imm16` candidate discovery works over executable regions only.
-- [ ] Candidate output includes file offset and virtual address.
-- [ ] Candidate output includes bounded byte-window start and length.
-- [ ] Candidate extraction is bounded by default max depth.
-- [ ] Scanner does not read outside executable-region file bounds.
-- [ ] Invalid inputs fail safely through the `gadgets` command.
-- [ ] Sprint 3 retrospective is written.
+- [x] `make clean && make && make test` succeeds for Patch 008 Phase A.
+- [x] `make docker-test` succeeds for Patch 008 Phase A.
+- [x] `x64lens mitigations <file>` remains stable after scanner changes.
+- [x] `x64lens gadgets ./tests/bin/gadgets` runs without crashing.
+- [x] `x64lens gadgets --max-depth 4 ./tests/bin/gadgets` runs without crashing.
+- [x] Raw `ret` candidate discovery works over executable regions only.
+- [x] Raw `ret imm16` candidate discovery works over executable regions only.
+- [x] Candidate output includes file offset and virtual address.
+- [x] Candidate output includes bounded byte-window start and length.
+- [x] Candidate extraction is bounded by default max depth.
+- [x] Scanner does not read outside executable-region file bounds under current regression tests.
+- [x] Invalid inputs fail safely through the `gadgets` command.
+- [ ] Sprint 3 retrospective is updated through Phase B and finalized at sprint close.
 
 ## Suggested validation commands
 
@@ -109,3 +110,15 @@ If Patch 008 validates locally and in Docker:
 3. Add first scanner smoke measurement.
 4. Decide whether to add the arena allocator in Sprint 3 Phase B or carry it forward.
 5. Update `docs/sprints/sprint-03-retro.md` and local-only `PROJECT_STATE.md`.
+
+
+## Phase B implementation notes
+
+Patch 009 adds two validation and measurement layers:
+
+1. `tools/validate-gadget-fixture.sh` performs an objdump-backed correctness check against `tests/bin/gadgets`.
+2. `benchmarks/scripts/bench-scanner-smoke.sh` records repeated raw scanner runs into TSV benchmark smoke artifacts under `benchmarks/results/`.
+
+The smoke benchmark is intentionally limited. It proves benchmark plumbing and captures first development measurements, but it is not publication evidence by itself. Publication claims require baseline tool comparisons, a documented corpus, environment metadata, repeated runs, and statistical summaries.
+
+Phase B does not add semantic classification, scoring, JSON output, or the arena allocator. The arena allocator remains the next infrastructure decision after the scanner smoke benchmark validates.

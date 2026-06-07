@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -59,8 +59,21 @@ samples:
 test: all samples
 	bash tests/run-tests.sh
 
-bench-smoke: all
-	bash benchmarks/scripts/bench-x64lens.sh ./$(TARGET) ./$(TARGET)
+# Scanner correctness smoke test for the hand-authored gadget fixture.
+# This target is intentionally separate from `make test` so reviewers can run
+# the more explanatory objdump-backed check on demand.
+validate-gadget-fixture: all samples
+	bash tools/validate-gadget-fixture.sh ./$(TARGET) ./tests/bin/gadgets
+
+scanner-smoke: validate-gadget-fixture
+
+# First Sprint 3 scanner benchmark smoke target. This records repeated runs,
+# elapsed time, max RSS, exit code, candidate counts, and output size in
+# benchmarks/results/. It is development evidence, not a publication claim.
+bench-scanner-smoke: all samples
+	bash benchmarks/scripts/bench-scanner-smoke.sh ./$(TARGET)
+
+bench-smoke: bench-scanner-smoke
 
 scaffold-check:
 	@echo "Checking required scaffold paths..."

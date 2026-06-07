@@ -45,3 +45,17 @@ Sprint 2 validation confirmed the implemented baseline against controlled toy bi
 - `minimal_execstack` reports NX stack disabled, matching `GNU_STACK RWE`.
 - All tested targets reported one executable `PT_LOAD + PF_X` region, matching the executable `LOAD` segment in `readelf -l`.
 - Baseline RELRO is currently reported only from `PT_GNU_RELRO` presence. Full RELRO remains future work.
+
+## Sprint 3 fixture note: `tests/bin/gadgets`
+
+The hand-authored static gadget fixture may report:
+
+```text
+NX stack: unknown
+RELRO: not found
+Dynamic linking: no
+```
+
+This is expected for the current fixture. It is linked with `-nostdlib -static -no-pie` and exists to provide deterministic executable bytes for scanner validation, not to exercise dynamic-linker hardening metadata. If `PT_GNU_STACK` is absent, x64lens correctly reports NX stack as `unknown` rather than guessing. If `PT_GNU_RELRO` and `PT_DYNAMIC` are absent, x64lens correctly reports baseline RELRO as `not found` and dynamic linking as `no`.
+
+Controlled mitigation states are validated with the `minimal_nopie`, `minimal_pie_canary`, and `minimal_execstack` fixtures instead.

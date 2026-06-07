@@ -36,6 +36,8 @@
 /benchmarks/results/*.csv
 /benchmarks/results/*.txt
 /benchmarks/results/*.log
+/benchmarks/results/*.tsv
+/benchmarks/results/*.meta
 /benchmarks/corpus/*.bin
 /benchmarks/corpus/*.elf
 /benchmarks/corpus/*.tar

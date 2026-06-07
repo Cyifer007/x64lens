@@ -17,3 +17,21 @@ See `docs/benchmark-methodology.md`.
 ## Contract
 
 Benchmark results must be reproducible. Record tool versions, exact commands, CPU/RAM/platform, run count, and corpus manifest before using results in the paper.
+
+## Sprint 3 scanner smoke benchmark
+
+The first scanner smoke benchmark can be run with:
+
+```bash
+make bench-scanner-smoke
+```
+
+or directly:
+
+```bash
+RUNS=5 MAX_DEPTH=4 benchmarks/scripts/bench-scanner-smoke.sh ./build/x64lens ./tests/bin/gadgets /bin/ls
+```
+
+The script writes TSV results and a metadata file into `benchmarks/results/`. These files are ignored by Git unless explicitly promoted into a documented benchmark artifact.
+
+This benchmark is a development smoke test. It is not publication evidence by itself.

@@ -70,3 +70,81 @@ Complete this section after local validation:
 - Output contract:
 - Research contract:
 - Context persistence contract:
+
+## Phase A validation status
+
+Patch 008 was locally validated in WSL2 and Docker. The validation output showed:
+
+```text
+[test] raw gadget scanner default depth
+[test] raw gadget scanner custom max-depth
+tests: ok
+```
+
+Docker validation also completed with `tests: ok`.
+
+Manual fixture validation produced the expected scanner facts for `tests/bin/gadgets`:
+
+```text
+Candidate count: 0x0000000000000007
+ret count: 0x0000000000000006
+ret imm16 count: 0x0000000000000001
+```
+
+The `objdump -d -Mintel ./tests/bin/gadgets` check confirmed the fixture contains:
+
+```text
+401000: pop rdi
+401001: ret
+401002: pop rsi
+401003: ret
+401004: pop rdx
+401005: ret
+401006: pop rax
+401007: ret
+401008: leave
+401009: ret
+40100a: syscall
+40100c: ret
+40100d: ret 0x10
+```
+
+The `/bin/ls` spot check produced hundreds of raw candidates at max-depth 4. This is expected for a raw byte scanner over a real executable region. Many `ret imm16` observations are raw byte candidates, not confirmed instruction-boundary gadgets. Semantic filtering and decoder-aware interpretation are future work.
+
+## Mitigation note for `tests/bin/gadgets`
+
+The fixture reported:
+
+```text
+NX stack: unknown
+RELRO: not found
+Dynamic linking: no
+```
+
+This is expected. The fixture is a tiny static `-nostdlib` binary used for deterministic scanner bytes. It is not a mitigation fixture. Mitigation states are validated with `minimal_nopie`, `minimal_pie_canary`, and `minimal_execstack`.
+
+## Phase B, Patch 009 plan
+
+Patch 009 adds the first scanner smoke benchmark and an objdump-backed fixture validation helper. It does not introduce semantic classification, scoring, JSON output, or the arena allocator.
+
+Validation commands for Patch 009:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+```
+
+## Contract review after Phase A
+
+- Development contract: followed. Scanner facts are stored in records before reporting.
+- Parser safety contract: followed. Scanner reads only validated executable file-backed regions.
+- Comment/documentation contract: followed. Source files and docs were updated with human-readable rationale.
+- Output contract: followed. Output does not claim exploitability.
+- Research contract: followed. Runtime claims remain hypotheses until benchmark data exists.
+- Context persistence contract: followed. Sprint 3 state and backlog are being updated as the sprint progresses.

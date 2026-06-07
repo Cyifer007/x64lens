@@ -132,6 +132,19 @@ The `info` command maps the target read-only, validates ELF64 x86_64 identity, a
 make test
 ```
 
+### Scanner fixture validation and smoke benchmark
+
+Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchmark. These are separate from `make test` so they can preserve richer evidence without slowing the default regression path.
+
+```bash
+make validate-gadget-fixture
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+```
+
+The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel`. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
+
+The smoke benchmark is development evidence only. Do not use it as a publication claim without the full benchmark methodology, baseline tools, corpus manifest, repeated trials, and environment metadata.
+
 ## Docker and devcontainer workflow
 
 The preferred daily development environment is WSL2 Ubuntu 24.04. Docker is the reproducibility layer for reviewer setup, CI smoke checks, and future benchmark harness validation.

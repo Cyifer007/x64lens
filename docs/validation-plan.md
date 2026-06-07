@@ -143,3 +143,47 @@ Every bug fix should add a regression input or expected output file when practic
 ## Validation artifact policy
 
 Benchmark and validation outputs should be saved under `benchmarks/results/` only when they are small, reproducible, and non-sensitive. Large generated outputs should not be committed unless explicitly needed for a paper artifact.
+
+### 5. Sprint 3 raw gadget scanner validation
+
+Patch 008 validates the raw scanner against a hand-authored fixture and a real system binary.
+
+Core commands:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+./build/x64lens mitigations ./tests/bin/gadgets
+./build/x64lens gadgets ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+objdump -d -Mintel ./tests/bin/gadgets
+```
+
+Explanatory fixture check:
+
+```bash
+make validate-gadget-fixture
+```
+
+Expected fixture signals:
+
+| Signal | Expected value |
+| ------ | -------------- |
+| default max depth | `0x0000000000000008` |
+| custom max depth | `0x0000000000000004` |
+| candidate count | `0x0000000000000007` |
+| `ret` count | `0x0000000000000006` |
+| `ret imm16` count | `0x0000000000000001` |
+| known bytes | `5f c3`, `0f 05 c3`, `c2 10 00` |
+
+Scanner smoke benchmark:
+
+```bash
+make bench-scanner-smoke
+```
+
+The smoke benchmark records repeated local measurements but does not support publication claims until the benchmark corpus, baseline tools, environment metadata, and statistical summary are finalized.
