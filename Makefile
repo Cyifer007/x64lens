@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms diagrams-check
+.PHONY: all clean test samples bench-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -129,6 +129,28 @@ fix-perms:
 	@echo "Repairing ownership of generated local artifacts..."
 	@sudo chown -R "$$(id -u):$$(id -g)" $(BUILD_DIR) tests/bin tests/toy-src 2>/dev/null || true
 	@echo "fix-perms: done"
+
+# Normalize local file permissions after extracting patch bundles on Linux/WSL.
+# Some ZIP tools preserve permissive archive modes such as 0666/0777. Git only
+# tracks the executable bit, but local world-writable source files are noisy and
+# should be corrected before development continues. This target avoids .git,
+# build outputs, generated test binaries, and local-only project context.
+normalize-perms:
+	@echo "Normalizing local repository file permissions..."
+	@find . \
+		-path ./.git -prune -o \
+		-path ./.local -prune -o \
+		-path ./build -prune -o \
+		-path ./tests/bin -prune -o \
+		-type d -exec chmod 755 {} +
+	@find . \
+		-path ./.git -prune -o \
+		-path ./.local -prune -o \
+		-path ./build -prune -o \
+		-path ./tests/bin -prune -o \
+		-type f -exec chmod 644 {} +
+	@chmod 755 tests/run-tests.sh tools/*.sh benchmarks/scripts/*.sh 2>/dev/null || true
+	@echo "normalize-perms: done"
 
 clean:
 	rm -rf $(BUILD_DIR)

@@ -107,3 +107,22 @@ Then rebuild:
 ```bash
 make docker-build
 ```
+
+
+## Source files are world-writable after extracting a patch ZIP
+
+### Symptom
+
+`ls -l` shows source or documentation files with modes such as `-rw-rw-rw-` or directories with `drwxrwxrwx`.
+
+### Cause
+
+Some ZIP extraction paths preserve permissive archive modes. Git usually tracks only the executable bit, but local world-writable source files are noisy and should be corrected.
+
+### Fix
+
+```bash
+make normalize-perms
+```
+
+This target avoids `.git`, `.local`, `build`, and generated test binaries. It restores normal repository files to `0644`, directories to `0755`, and shell scripts to executable mode.

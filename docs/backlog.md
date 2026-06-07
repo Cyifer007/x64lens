@@ -19,10 +19,10 @@
 
 ## Sprint 1 follow-up hardening
 
-- [ ] Validate Sprint 1 implementation on WSL2 and Docker.
-- [ ] Compare `x64lens info /bin/ls` against `readelf -h /bin/ls`.
+- [x] Validate Sprint 1 implementation on WSL2 and Docker.
+- [x] Write `docs/sprints/sprint-01-retro.md` after local validation.
+- [ ] Compare `x64lens info /bin/ls` against `readelf -h /bin/ls`. This is a Sprint 2 validation hardening item, not a Sprint 1 blocker.
 - [ ] Add a small `tools/compare-readelf.sh` enhancement for automated header comparison.
-- [ ] Write `docs/sprints/sprint-01-retro.md` after local validation.
 
 ## Sprint 2
 

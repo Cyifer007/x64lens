@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 1 implementation in progress. The CLI, build system, Docker workflow, file mapping path, and initial ELF64 validation/reporting path now exist.
+> Status: Sprint 1 complete. The CLI, build system, Docker workflow, file mapping path, and initial ELF64 validation/reporting path are validated locally and in Docker. Sprint 2 begins program-header parsing, executable-region mapping, and baseline mitigation signals.
 >
 > Current version: `0.1.0-dev`
 >
@@ -110,7 +110,7 @@ See [`docs/cli-contract.md`](docs/cli-contract.md).
 make
 ```
 
-### Run the current scaffold
+### Run the current Sprint 1 implementation
 
 ```bash
 ./build/x64lens version
@@ -120,7 +120,7 @@ make samples
 ./build/x64lens info /bin/ls
 ```
 
-The `info` command now maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. Program-header interpretation, mitigation reporting, and gadget scanning remain later sprint work.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. Program-header interpretation, mitigation reporting, and gadget scanning remain Sprint 2 and later work.
 
 ### Run tests
 

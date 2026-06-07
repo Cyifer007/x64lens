@@ -123,9 +123,10 @@ The repository also provides:
 ```bash
 make ownership-check
 make fix-perms
+make normalize-perms
 ```
 
-`make fix-perms` is for local development convenience only. It should not be used in CI and it intentionally avoids changing `.git` ownership.
+`make fix-perms` is for generated-artifact ownership repair. It should not be used in CI and it intentionally avoids changing `.git` ownership. `make normalize-perms` is a local hygiene target for correcting overly permissive file modes after ZIP patch extraction; it avoids `.git`, `.local`, `build`, and generated test binaries.
 
 ## Docker context hygiene
 

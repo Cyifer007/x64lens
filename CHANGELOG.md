@@ -1,5 +1,9 @@
 # Changelog
 
+All notable public changes to x64lens will be documented in this file.
+
+The project follows semantic versioning once the first public release is cut.
+
 ## Unreleased
 
 ### Added
@@ -9,21 +13,16 @@
 - Added a mapped-file internal record layout in `include/structs.inc`.
 - Added stable STDERR diagnostics for file, ELF identity, malformed ELF, unsupported, and bounds-related failures.
 - Added fixed-width `print_hex64` formatting for deterministic metadata output.
+- Added `make docker-test` for reproducible container smoke testing.
+- Added `make ownership-check` and `make fix-perms` for diagnosing and repairing local generated artifact ownership issues.
+- Added `make normalize-perms` for local permission hygiene after extracting patch bundles.
+- Documented Sprint 1 closeout with actual WSL2 and Docker validation output.
 
 ### Fixed
 
 - Prevented Docker bind-mounted development sessions from creating root-owned build artifacts by running Docker shells/tests with the caller's UID/GID.
 - Added `.dockerignore` to keep local context, generated artifacts, `.git/`, and private/course files out of Docker build contexts.
 - Added troubleshooting documentation for `make clean` permission failures caused by root-owned generated files.
-
-### Added
-
-- `make docker-test` for reproducible container smoke testing.
-- `make ownership-check` and `make fix-perms` for diagnosing and repairing local generated artifact ownership issues.
-
-All notable public changes to x64lens will be documented in this file.
-
-The project follows semantic versioning once the first public release is cut.
 
 ## [0.1.0-dev] - Unreleased
 
@@ -47,8 +46,11 @@ The project follows semantic versioning once the first public release is cut.
 - Local-only planning/context files are expected under `.local/project-context/` and excluded by `.gitignore`.
 - Makefile scaffold checks now validate only public repository structure.
 
+### Completed
+
+- Sprint 1: repository foundation, build system, Docker workflow, CLI skeleton, file mapping, ELF64 validation, and basic `info <file>` reporting.
+
 ### Planned
 
-- Sprint 1: implement file mapping and ELF64 header validation.
 - Sprint 2: implement program header parsing, executable region discovery, and baseline mitigation reporting.
 - Sprint 3: implement raw gadget candidate scanning.

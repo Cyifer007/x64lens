@@ -85,9 +85,9 @@ Format:
 ## Next steps after success
 
 1. Capture sample `info` output in `docs/sprints/sprint-01-retro.md`.
-2. Compare fields against `readelf -h`.
+2. Optionally compare fields against `readelf -h` before or during Sprint 2 validation hardening.
 3. Commit Patch 004.
-4. Tag or note the Sprint 1 baseline once Dr. Kramer checkpoint documentation is ready.
+4. Tag or note the Sprint 1 baseline once checkpoint documentation is ready.
 5. Start Sprint 2: program-header parsing and executable-region mapping.
 
 ## Troubleshooting

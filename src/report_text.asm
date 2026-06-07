@@ -4,7 +4,7 @@
 ;   Human-readable report emitter.
 ;
 ; Module scope:
-;   Render stable text output for analysts, professors, and demos. Reporting
+;   Render stable text output for analysts, reviewers, and demos. Reporting
 ;   code formats facts discovered elsewhere; it should not perform file I/O,
 ;   ELF validation, gadget scanning, or scoring policy decisions.
 ;
