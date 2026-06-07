@@ -11,6 +11,7 @@
 ; Current exports:
 ;   x64lens_report_text_elf64_info(path, mapped_base, file_size)
 ;   x64lens_report_text_mitigations(path, mapped_base, file_size, summary, regions)
+;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base)
 ;
 ; Contract alignment:
 ;   Text output is allowed to evolve before 1.0.0, but changes must be tested
@@ -27,6 +28,7 @@ default rel
 extern print_cstr
 extern print_nl
 extern print_hex64
+extern print_hex8
 
 section .rodata
 header_tool:        db "x64lens ", X64LENS_VERSION, 10, 0
@@ -82,9 +84,28 @@ perms__w_:             db "-W-", 10, 0
 perms___x:             db "--X", 10, 0
 perms____:             db "---", 10, 0
 
+section_gadgets:       db 10, "Raw gadget candidates:", 10, 0
+label_max_depth:       db "  Max depth: ", 0
+label_capacity:        db "  Candidate capacity: ", 0
+label_candidate_count: db "  Candidate count: ", 0
+label_ret_count:       db "  ret count: ", 0
+label_ret_imm_count:   db "  ret imm16 count: ", 0
+no_candidates:         db "  none discovered in executable regions", 10, 0
+candidate_prefix:      db "  - VA ", 0
+candidate_file_off:    db ", file offset ", 0
+candidate_window:      db ", window start ", 0
+candidate_len:         db ", len ", 0
+candidate_term:        db ", terminator: ", 0
+candidate_bytes:       db ", bytes: ", 0
+term_ret:              db "ret", 0
+term_ret_imm16:        db "ret imm16", 0
+term_unknown:          db "unknown", 0
+space_str:             db " ", 0
+
 section .text
 global x64lens_report_text_elf64_info
 global x64lens_report_text_mitigations
+global x64lens_report_text_gadgets
 
 ; x64lens_report_text_elf64_info(path=rdi, mapped_base=rsi, file_size=rdx)
 ;
@@ -420,3 +441,186 @@ report_text_print_perms:
 .perms___x:
     lea     rdi, [perms___x]
     jmp     print_cstr
+
+
+; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx)
+;
+; Inputs:
+;   RDI = target path C string
+;   RSI = gadget_summary record
+;   RDX = gadget_record[] buffer
+;   RCX = mapped target base used only for rendering raw window bytes
+;
+; Output:
+;   Human-readable raw gadget candidate report on STDOUT.
+;
+; Scope:
+;   This report is intentionally raw. It renders candidate facts discovered by
+;   scanner.asm but does not classify, score, or infer exploitability.
+x64lens_report_text_gadgets:
+    push    rbp
+    push    rbx
+    push    r12
+    push    r13
+    push    r14
+    push    r15
+
+    mov     rbx, rdi            ; target path
+    mov     r12, rsi            ; gadget_summary
+    mov     r13, rdx            ; gadget_record[]
+    mov     r14, rcx            ; mapped file base
+
+    lea     rdi, [header_tool]
+    call    print_cstr
+    lea     rdi, [label_target]
+    call    print_cstr
+    mov     rdi, rbx
+    call    print_cstr
+    call    print_nl
+
+    lea     rdi, [section_gadgets]
+    call    print_cstr
+
+    lea     rdi, [label_max_depth]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_MAX_DEPTH]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_capacity]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_CAPACITY]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_candidate_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_ret_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_RET_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_ret_imm_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_RET_IMM_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    cmp     qword [r12 + GADGET_SUMMARY_COUNT], 0
+    jne     .candidate_loop_setup
+    lea     rdi, [no_candidates]
+    call    print_cstr
+    jmp     .gadgets_done
+
+.candidate_loop_setup:
+    xor     rbp, rbp
+.candidate_loop:
+    cmp     rbp, [r12 + GADGET_SUMMARY_COUNT]
+    jae     .gadgets_done
+
+    mov     rax, rbp
+    imul    rax, rax, GADGET_RECORD_SIZE
+    lea     r15, [r13 + rax]
+
+    lea     rdi, [candidate_prefix]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_VIRTUAL_ADDRESS]
+    call    print_hex64
+
+    lea     rdi, [candidate_file_off]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_FILE_OFFSET]
+    call    print_hex64
+
+    lea     rdi, [candidate_window]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_BYTE_START]
+    call    print_hex64
+
+    lea     rdi, [candidate_len]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_BYTE_LEN]
+    call    print_hex64
+
+    lea     rdi, [candidate_term]
+    call    print_cstr
+    mov     edi, [r15 + GADGET_TERMINATOR_TYPE]
+    call    report_text_print_terminator
+
+    lea     rdi, [candidate_bytes]
+    call    print_cstr
+    call    report_text_print_candidate_bytes
+    call    print_nl
+
+    inc     rbp
+    jmp     .candidate_loop
+
+.gadgets_done:
+    pop     r15
+    pop     r14
+    pop     r13
+    pop     r12
+    pop     rbx
+    pop     rbp
+    ret
+
+; report_text_print_terminator(edi=terminator_type)
+;
+; Prints a short terminator label without a trailing newline so caller can
+; continue the candidate line.
+report_text_print_terminator:
+    cmp     edi, GADGET_TERM_RET
+    je      .term_ret
+    cmp     edi, GADGET_TERM_RET_IMM16
+    je      .term_ret_imm16
+    lea     rdi, [term_unknown]
+    jmp     print_cstr
+.term_ret:
+    lea     rdi, [term_ret]
+    jmp     print_cstr
+.term_ret_imm16:
+    lea     rdi, [term_ret_imm16]
+    jmp     print_cstr
+
+; report_text_print_candidate_bytes()
+;
+; Inputs from surrounding x64lens_report_text_gadgets loop:
+;   R14 = mapped file base
+;   R15 = current gadget_record pointer
+;
+; Output:
+;   Space-separated lowercase hex byte sequence.
+;
+; Clobbers:
+;   RAX, RCX, RDX, RDI. Preserves RBX/R12-R15 because the caller loop uses them.
+report_text_print_candidate_bytes:
+    push    rbx
+    push    r12
+    push    r13
+
+    mov     rbx, [r15 + GADGET_BYTE_START]
+    mov     r12, [r15 + GADGET_BYTE_LEN]
+    xor     r13, r13
+.byte_loop:
+    cmp     r13, r12
+    jae     .bytes_done
+    test    r13, r13
+    je      .no_space
+    lea     rdi, [space_str]
+    call    print_cstr
+.no_space:
+    lea     rdx, [r14 + rbx]
+    movzx   rdi, byte [rdx + r13]
+    call    print_hex8
+    inc     r13
+    jmp     .byte_loop
+.bytes_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret

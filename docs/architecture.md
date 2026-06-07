@@ -168,6 +168,34 @@ Benchmarking is a first-class feature, not an afterthought. Every analysis chang
 - output size,
 - error count.
 
+
+
+## Sprint 3 implemented flow: `gadgets <file>`
+
+Patch 008 begins the Sprint 3 raw scanner path:
+
+```text
+main.asm
+  -> x64lens_command_gadgets(path, max_depth) in gadgets.asm
+     -> x64lens_file_map(path, record) in filemap.asm
+     -> x64lens_elf64_validate(base, size) in elf64.asm
+     -> x64lens_phdr_analyze(base, size, summary, regions, max_regions) in phdr.asm
+     -> x64lens_scanner_find_ret_candidates(base, size, phdr_summary, regions, gadget_summary, gadget_records) in scanner.asm
+     -> x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base) in report_text.asm
+     -> x64lens_file_unmap(record) in filemap.asm
+```
+
+The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in fixed-capacity `gadget_record` entries before output. This satisfies the internal-facts-before-output rule while keeping arena allocation as a Phase B decision.
+
+Current raw candidate semantics:
+
+- `GADGET_FILE_OFFSET` is the terminator byte file offset.
+- `GADGET_VIRTUAL_ADDRESS` is the terminator virtual address.
+- `GADGET_BYTE_START` is the beginning of the bounded backward byte window.
+- `GADGET_BYTE_LEN` is the full raw byte-window length including the terminator.
+- `GADGET_TERMINATOR_TYPE` is `ret` or `ret imm16`.
+- Semantic, register, stack, side-effect, and score fields are initialized but left unset for Sprint 4 and later.
+
 ## Future scalability model
 
 Long-term architecture should support:

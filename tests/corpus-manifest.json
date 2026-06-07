@@ -16,7 +16,7 @@
     {
       "path": "tests/toy-src/gadgets.S",
       "type": "source",
-      "purpose": "known gadget fixture"
+      "purpose": "known raw ret and ret-imm gadget fixture for Sprint 3 scanner and future semantic classification"
     },
     {
       "path": "tests/bin/minimal_nopie",
@@ -32,6 +32,11 @@
       "path": "tests/bin/minimal_execstack",
       "type": "generated",
       "purpose": "executable-stack mitigation fixture"
+    },
+    {
+      "path": "tests/bin/gadgets",
+      "type": "generated",
+      "purpose": "generated known-gadget binary used by raw scanner regression tests"
     },
     {
       "path": "tests/invalid/text.txt",

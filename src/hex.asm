@@ -9,6 +9,7 @@
 ;   print_hex64(value) prints a stable 0x-prefixed, 16-digit lowercase hex
 ;   value to STDOUT. Fixed-width output is intentionally verbose but makes
 ;   early parser demos and regression tests deterministic.
+;   Sprint 3 adds print_hex8(value) for raw gadget byte windows.
 
 bits 64
 default rel
@@ -20,9 +21,11 @@ hexchars: db "0123456789abcdef"
 
 section .bss
 hexbuf: resb 19                 ; "0x" + 16 digits + NUL
+hex8buf: resb 3                 ; two hex digits + NUL
 
 section .text
 global print_hex64
+global print_hex8
 
 ; print_hex64(rdi=value)
 ;
@@ -56,6 +59,45 @@ print_hex64:
     loop    .digit_loop
 
     mov     byte [r12 + 18], 0
+    mov     rdi, r12
+    call    print_cstr
+
+    pop     r12
+    pop     rbx
+    ret
+
+
+; print_hex8(rdi=value)
+;
+; Inputs:
+;   RDI = low byte to render
+;
+; Output:
+;   writes exactly two lowercase hex digits to STDOUT, without 0x prefix
+;
+; Clobbers:
+;   RAX, RBX, RDX, RSI, RDI
+print_hex8:
+    push    rbx
+    push    r12
+
+    mov     ebx, edi
+    and     ebx, 0xff
+    lea     r12, [hex8buf]
+    lea     rdx, [hexchars]
+
+    mov     eax, ebx
+    shr     eax, 4
+    and     eax, 0x0f
+    mov     al, [rdx + rax]
+    mov     [r12], al
+
+    mov     eax, ebx
+    and     eax, 0x0f
+    mov     al, [rdx + rax]
+    mov     [r12 + 1], al
+    mov     byte [r12 + 2], 0
+
     mov     rdi, r12
     call    print_cstr
 

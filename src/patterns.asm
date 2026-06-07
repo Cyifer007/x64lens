@@ -7,7 +7,8 @@
 ;   Match candidate windows against known useful x86_64 byte templates without pretending to be a full decoder.
 ;
 ; Next implementation step:
-;   Sprint 3/4: implement exact patterns such as pop rdi; ret and leave; ret.
+;   Sprint 4: consume raw candidate windows from scanner.asm and implement
+;   exact patterns such as pop rdi; ret and leave; ret.
 ;
 ; Contract:
 ;   Keep this module focused. Do not mix CLI parsing, reporting, and

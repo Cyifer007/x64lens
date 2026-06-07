@@ -68,6 +68,28 @@
 ; analyzer returns EXIT_UNSUPPORTED rather than silently truncating facts.
 %define EXEC_REGION_MAX             64
 
+
+; raw gadget scanner summary offsets
+;
+; Sprint 3 stores scanner-wide facts here before report_text.asm renders
+; them. This keeps the scanner independent from output formatting and gives
+; future JSON/benchmark emitters the same source of truth.
+%define GADGET_SUMMARY_COUNT          0
+%define GADGET_SUMMARY_RET_COUNT      8
+%define GADGET_SUMMARY_RET_IMM_COUNT  16
+%define GADGET_SUMMARY_MAX_DEPTH      24
+%define GADGET_SUMMARY_CAPACITY       32
+%define GADGET_SUMMARY_RECORD_SIZE    40
+
+; Sprint 3 fixed-capacity candidate buffer. This is the bridge before the
+; arena allocator. If the scanner reaches this limit it fails explicitly with
+; EXIT_UNSUPPORTED rather than silently truncating candidate facts.
+%define GADGET_RECORD_MAX             4096
+
+; raw scanner terminator types
+%define GADGET_TERM_RET               1
+%define GADGET_TERM_RET_IMM16         2
+
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
 %define GADGET_VIRTUAL_ADDRESS      8

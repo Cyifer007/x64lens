@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Began Sprint 3 with the `gadgets [--max-depth N] <file>` command path, fixed-capacity gadget candidate records, raw executable-region scanning, `ret` and `ret imm16` detection, bounded backward byte windows, and raw candidate text reporting.
+- Added scanner regression coverage against `tests/bin/gadgets`, including custom `--max-depth` validation and invalid-input coverage through the `gadgets` command.
+- Added `print_hex8` for deterministic raw byte-window rendering.
 - Completed and validated the Sprint 2 `mitigations <file>` command path with program-header parsing, executable PT_LOAD + PF_X region discovery, PIE reporting, NX stack reporting, RWX segment reporting, PT_GNU_RELRO baseline RELRO reporting, and PT_DYNAMIC dynamic-linking reporting.
 - Added `src/phdr.asm` program-header analysis and `src/regions.asm` executable-region record storage.
 - Added Sprint 2 tests for PIE/non-PIE behavior, NX stack enabled/disabled behavior, malformed program-header rejection, and mitigation output smoke checks.
@@ -57,4 +60,4 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Planned
 
-- Sprint 3: implement raw gadget candidate scanning over executable `PT_LOAD + PF_X` regions.
+- Sprint 3: continue hardening raw gadget candidate scanning, add first scanner smoke measurement, and decide whether the arena allocator lands in Sprint 3 phase 2 or carries into Sprint 4.

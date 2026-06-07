@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 2 complete. The CLI, build system, Docker workflow, file mapping path, ELF64 validation/reporting path, program-header parsing, executable-region mapping, and baseline mitigation reporting path are validated locally and in Docker.
+> Status: Sprint 3 in progress. Sprints 1 and 2 are complete. Patch 008 begins the raw gadget scanner with fixed-capacity candidate records, `ret` and `ret imm16` discovery, bounded backward byte windows, and the initial `gadgets` command path.
 >
 > Current version: `0.1.0-dev`
 >
@@ -74,7 +74,7 @@ Planned early commands:
 ```bash
 x64lens info <file>
 x64lens mitigations <file>
-x64lens gadgets <file>
+x64lens gadgets [--max-depth N] <file>
 x64lens analyze <file>
 x64lens bench <file>
 x64lens version
@@ -120,9 +120,11 @@ make samples
 ./build/x64lens info /bin/ls
 ./build/x64lens mitigations ./tests/bin/minimal_nopie
 ./build/x64lens mitigations ./tests/bin/minimal_pie_canary
+./build/x64lens gadgets ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ```
 
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. Gadget scanning remains Sprint 3 and later work.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The Sprint 3 `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates and reports bounded byte windows. Semantic classification remains Sprint 4 work.
 
 ### Run tests
 
@@ -167,7 +169,7 @@ This project follows a two-week sprint cadence during the initial research and i
 
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
-3. Sprint 3: raw gadget candidate scanner and initial candidate storage.
+3. Sprint 3: raw gadget candidate scanner and initial candidate storage. In progress with a fixed candidate buffer bridge before the arena allocator.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary.
 5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
@@ -217,7 +219,22 @@ Executable regions:
   - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x0000000000000161, mem size 0x0000000000000161, perms R-X
 ```
 
-Gadget scanning, primitive coverage, scoring, interpretation, and JSON output are later sprint targets. Sprint 3 begins raw candidate discovery over the executable regions introduced here.
+Current Sprint 3 `gadgets` output is raw candidate focused:
+
+```text
+x64lens 0.1.0-dev
+Target: ./tests/bin/gadgets
+
+Raw gadget candidates:
+  Max depth: 0x0000000000000008
+  Candidate capacity: 0x0000000000001000
+  Candidate count: ...
+  ret count: ...
+  ret imm16 count: ...
+  - VA ..., file offset ..., window start ..., len ..., terminator: ret, bytes: ...
+```
+
+Primitive coverage, scoring, mitigation-aware interpretation, and JSON output are later sprint targets.
 
 ## Ethics and safety
 

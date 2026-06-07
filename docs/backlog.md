@@ -55,16 +55,18 @@
 
 ## Sprint 3
 
-- [ ] Decide fixed candidate buffer vs immediate arena allocator for raw gadget candidates.
-- [ ] Implement arena allocator or fixed candidate record buffer.
-- [ ] Implement executable region scanner.
-- [ ] Detect `ret` terminators.
-- [ ] Detect `ret imm16` terminators.
-- [ ] Add `--max-depth` or internal default max-depth constant.
-- [ ] Extract bounded backward candidate windows.
-- [ ] Output raw candidates.
-- [ ] Validate against `tests/bin/gadgets`.
+- [x] Decide fixed candidate buffer vs immediate arena allocator for raw gadget candidates. Decision: fixed buffer first.
+- [x] Implement fixed candidate record buffer.
+- [x] Implement executable region scanner.
+- [x] Detect `ret` terminators.
+- [x] Detect `ret imm16` terminators.
+- [x] Add bounded `--max-depth` option.
+- [x] Extract bounded backward candidate windows.
+- [x] Output raw candidates.
+- [x] Add regression checks against `tests/bin/gadgets`.
+- [ ] Validate Patch 008 on WSL2 and Docker.
 - [ ] Add first scanner smoke measurement.
+- [ ] Decide whether simple arena allocator lands in Sprint 3 Phase B or carries forward.
 
 ## Sprint 4
 

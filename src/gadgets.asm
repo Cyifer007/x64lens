@@ -1,0 +1,131 @@
+; gadgets.asm
+;
+; Purpose:
+;   Command-level orchestration for `x64lens gadgets <file>`.
+;
+; Module scope:
+;   Map a target file, validate ELF64 identity, reuse the Sprint 2 program-
+;   header analyzer to discover executable PT_LOAD regions, run the Sprint 3
+;   raw gadget scanner, and emit bounded raw candidate records.
+;
+; Sprint 3 scope:
+;   This command discovers raw `ret` and `ret imm16` candidates only. It does
+;   not classify gadgets semantically, score gadgets, generate chains, or claim
+;   exploitability. Those layers belong to patterns.asm, classifier.asm,
+;   scoring.asm, and later analyze/report modules.
+
+bits 64
+default rel
+
+%include "errors.inc"
+%include "structs.inc"
+
+extern x64lens_file_map
+extern x64lens_file_unmap
+extern x64lens_elf64_validate
+extern x64lens_phdr_analyze
+extern x64lens_scanner_find_ret_candidates
+extern x64lens_report_text_gadgets
+extern x64lens_error_print_status
+
+section .bss
+gad_mapped_file:     resb FILEMAP_RECORD_SIZE
+gad_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
+gad_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
+gad_summary:         resb GADGET_SUMMARY_RECORD_SIZE
+gad_candidates:      resb GADGET_RECORD_SIZE * GADGET_RECORD_MAX
+
+section .text
+global x64lens_command_gadgets
+
+; x64lens_command_gadgets(path_cstr=rdi, max_depth=rsi) -> rax=status
+;
+; Inputs:
+;   RDI = target path C string from argv
+;   RSI = bounded maximum backward byte depth from each terminator
+;
+; Output:
+;   RAX = stable x64lens exit code
+;
+; Cleanup:
+;   The mapped file is always unmapped on the success and error paths once the
+;   mapping has been attempted. Error reporting remains centralized through
+;   x64lens_error_print_status.
+x64lens_command_gadgets:
+    push    rbx
+    push    r12
+    push    r13
+    push    r14
+
+    mov     r12, rdi            ; preserve target path for reporting
+    mov     r14, rsi            ; max depth from CLI or default
+
+    ; Map target file read-only. The scanner treats the mapped bytes as data,
+    ; never as executable code.
+    mov     rdi, r12
+    lea     rsi, [gad_mapped_file]
+    call    x64lens_file_map
+    test    rax, rax
+    jne     .error
+
+    ; Validate ELF64 x86_64 identity before reading ELF fields.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
+    call    x64lens_elf64_validate
+    test    rax, rax
+    jne     .error
+
+    ; Reuse the Sprint 2 loader-facing program-header model. This ensures the
+    ; scanner reads only executable PT_LOAD + PF_X file ranges.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
+    lea     rdx, [gad_phdr_summary]
+    lea     rcx, [gad_regions]
+    mov     r8, EXEC_REGION_MAX
+    call    x64lens_phdr_analyze
+    test    rax, rax
+    jne     .error
+
+    ; Scan executable regions and populate raw candidate records. The scanner
+    ; owns candidate discovery but does not print or classify.
+    ; Store the bounded scanner depth in the summary record before the scanner
+    ; resets count fields. This avoids adding a seventh call argument and keeps
+    ; the scanner interface simple for Sprint 3.
+    mov     [gad_summary + GADGET_SUMMARY_MAX_DEPTH], r14
+
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
+    lea     rdx, [gad_phdr_summary]
+    lea     rcx, [gad_regions]
+    lea     r8, [gad_summary]
+    lea     r9, [gad_candidates]
+    call    x64lens_scanner_find_ret_candidates
+    test    rax, rax
+    jne     .error
+
+    ; Emit raw candidate records for human inspection and test validation.
+    mov     rdi, r12
+    lea     rsi, [gad_summary]
+    lea     rdx, [gad_candidates]
+    mov     rcx, [gad_mapped_file + FILEMAP_ADDR]
+    call    x64lens_report_text_gadgets
+
+    lea     rdi, [gad_mapped_file]
+    call    x64lens_file_unmap
+    xor     rax, rax
+    jmp     .done
+
+.error:
+    mov     r13, rax
+    lea     rdi, [gad_mapped_file]
+    call    x64lens_file_unmap
+    mov     rdi, r13
+    call    x64lens_error_print_status
+    mov     rax, r13
+
+.done:
+    pop     r14
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret

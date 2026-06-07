@@ -54,4 +54,11 @@
 %define STATBUF_SIZE         160
 %define STAT_ST_SIZE         48
 
+; Sprint 3 scanner defaults. The first scanner is intentionally bounded so
+; raw candidate extraction cannot walk arbitrarily far backward from a
+; terminator byte. Larger values can be tested later once the arena allocator
+; and benchmark harness are in place.
+%define GADGET_DEFAULT_MAX_DEPTH 8
+%define GADGET_MAX_DEPTH_LIMIT   32
+
 %endif

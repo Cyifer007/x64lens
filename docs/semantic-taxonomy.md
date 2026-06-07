@@ -46,3 +46,17 @@ The taxonomy should eventually account for:
 - CET/IBT impact,
 - JOP/COP/SROP primitives,
 - multi-instruction semantic equivalence.
+
+
+## Sprint 3 raw candidate layer
+
+Sprint 3 intentionally stops before semantic classification. The `gadgets` command currently reports raw terminator-centered byte windows with these fields:
+
+- terminator virtual address,
+- terminator file offset,
+- bounded byte-window start,
+- byte-window length,
+- terminator type,
+- raw bytes.
+
+All Sprint 3 candidates use `SEM_UNKNOWN_CANDIDATE` internally. Sprint 4 will map raw byte windows into semantic classes such as `arg_control`, `syscall_trigger`, and `stack_pivot`.

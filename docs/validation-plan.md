@@ -104,7 +104,24 @@ The current `tools/compare-readelf.sh` provides side-by-side output. Future hard
 
 ### 5. Gadget validation
 
-Compare `x64lens gadgets` against:
+Sprint 3 validates raw scanner output first:
+
+```bash
+./build/x64lens gadgets ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+objdump -d -Mintel ./tests/bin/gadgets
+```
+
+Expected Sprint 3 signals:
+
+| Target | Expected signal |
+| ------ | --------------- |
+| `tests/bin/gadgets` | reports `Raw gadget candidates:` |
+| `tests/bin/gadgets` | reports at least one `terminator: ret` |
+| `tests/bin/gadgets` | reports at least one `terminator: ret imm16` |
+| `--max-depth 4` | reports `Max depth: 0x0000000000000004` |
+
+Later validation should compare `x64lens gadgets` against:
 
 ```bash
 ROPgadget --binary <file>

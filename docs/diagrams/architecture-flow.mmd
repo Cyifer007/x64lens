@@ -4,11 +4,12 @@ flowchart TD
 
     C -->|info| D[info command orchestrator]
     C -->|mitigations| M[mitigations command orchestrator]
-    C -->|gadgets| FUT1[future gadget command]
+    C -->|gadgets| G[gadgets command orchestrator]
     C -->|analyze| FUT2[future full analysis command]
 
     D --> FM[File mapper]
     M --> FM
+    G --> FM
     FM --> ELF[Bounds-safe ELF64 parser]
 
     ELF --> IR[Text info report]
@@ -18,8 +19,13 @@ flowchart TD
     MR --> MTR[Text mitigation report]
     ER --> MTR
 
-    ER --> SC[Future fast gadget candidate scanner]
-    SC --> PT[Future opcode pattern matcher]
+    ER --> SC[Fast raw gadget candidate scanner]
+    SC --> GS[Gadget summary record]
+    SC --> GR[Raw gadget candidate records]
+    GS --> GTR[Text raw gadget report]
+    GR --> GTR
+
+    GR --> PT[Future opcode pattern matcher]
     PT --> CL[Future semantic primitive classifier]
     CL --> SO[Future scoring engine]
     SO --> TXT[Future text report]

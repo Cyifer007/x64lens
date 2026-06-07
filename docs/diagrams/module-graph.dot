@@ -5,6 +5,7 @@ digraph x64lens_modules {
   main -> cli;
   main -> info;
   main -> mitigations;
+  main -> gadgets;
 
   info -> filemap;
   info -> elf64;
@@ -17,8 +18,16 @@ digraph x64lens_modules {
   mitigations -> report_text;
   mitigations -> errors;
 
+  gadgets -> filemap;
+  gadgets -> elf64;
+  gadgets -> phdr;
+  gadgets -> scanner;
+  gadgets -> report_text;
+  gadgets -> errors;
+
   phdr -> bounds;
   phdr -> regions;
+  scanner -> regions;
 
   filemap -> syscalls;
   elf64 -> bounds;
@@ -26,7 +35,6 @@ digraph x64lens_modules {
   report_text -> hex;
   errors -> print;
 
-  scanner -> patterns;
   patterns -> classifier;
   classifier -> scoring;
   scoring -> report_text;
