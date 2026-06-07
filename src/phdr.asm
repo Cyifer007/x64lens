@@ -1,25 +1,213 @@
 ; phdr.asm
 ;
 ; Purpose:
-;   Program header parser.
+;   ELF64 program-header analyzer.
 ;
 ; Module scope:
-;   Parse ELF64 program headers and expose runtime segment information to region and mitigation modules.
+;   Safely iterate validated program headers, derive loader-relevant facts,
+;   populate the Sprint 2 mitigation summary, and store executable PT_LOAD
+;   regions for later scanner use.
 ;
-; Next implementation step:
-;   Sprint 2: parse PT_LOAD, PT_GNU_STACK, PT_GNU_RELRO, and PT_DYNAMIC records.
+; Why program headers matter:
+;   Program headers describe what the Linux loader maps into memory. For
+;   exploitability analysis, PT_LOAD + PF_X is the authoritative source for
+;   executable runtime regions. Section headers remain useful labels later,
+;   but they are not runtime mapping authority.
+;
+; Current Sprint 2 export:
+;   x64lens_phdr_analyze(base, size, summary, regions, max_regions)
 ;
 ; Contract:
-;   Keep this module focused. Do not mix CLI parsing, reporting, and
-;   analysis policy into low-level parsing or scanning helpers.
+;   Do not print, parse CLI arguments, or classify gadgets here. This module
+;   produces normalized facts for mitigations.asm, regions.asm, scanners, and
+;   reporters.
 
 bits 64
 default rel
 
-section .text
-global x64lens_phdr_placeholder
+%include "elf64.inc"
+%include "errors.inc"
+%include "structs.inc"
 
-; Placeholder symbol so the module assembles before its real routines exist.
-; Remove this only when the first real exported routine is implemented.
-x64lens_phdr_placeholder:
+extern x64lens_bounds_range_valid
+extern x64lens_regions_store_from_phdr
+
+section .text
+global x64lens_phdr_analyze
+
+; x64lens_phdr_analyze(base=rdi, file_size=rsi, summary=rdx, regions=rcx, max_regions=r8)
+;
+; Inputs:
+;   RDI = mmap base for an already ELF64-validated target
+;   RSI = target file size
+;   RDX = writable phdr_summary record
+;   RCX = writable executable_region[] buffer
+;   R8  = max executable-region records available
+;
+; Output:
+;   RAX = stable x64lens status code
+;
+; Safety:
+;   The program-header table range is revalidated before iteration. Each
+;   PT_LOAD file range is validated before the segment contributes to region
+;   facts. This duplicate validation is intentional defense-in-depth.
+x64lens_phdr_analyze:
+    push    rbp
+    push    rbx
+    push    r12
+    push    r13
+    push    r14
+    push    r15
+
+    mov     r15, rdi            ; mapped base
+    mov     r14, rsi            ; file size
+    mov     r13, rdx            ; phdr_summary record
+    mov     r12, rcx            ; executable_region buffer
+    mov     rbp, r8             ; max region records
+
+    ; Initialize all qword fields in the summary record. Keeping the record
+    ; deterministic avoids stale values when analysis fails early.
+    mov     qword [r13 + PHDR_SUMMARY_PHNUM], 0
+    mov     qword [r13 + PHDR_SUMMARY_LOAD_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_EXEC_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_RWX_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_GNU_STACK_SEEN], 0
+    mov     qword [r13 + PHDR_SUMMARY_GNU_STACK_EXEC], 0
+    mov     qword [r13 + PHDR_SUMMARY_RELRO_SEEN], 0
+    mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    mov     qword [r13 + PHDR_SUMMARY_PIE], 0
+
+    ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
+    ; Shared objects are also ET_DYN, so user-facing wording must remain
+    ; careful and avoid overclaiming runtime exploitability.
+    cmp     word [r15 + E_TYPE], ET_DYN
+    jne     .pie_done
+    mov     qword [r13 + PHDR_SUMMARY_PIE], 1
+.pie_done:
+
+    movzx   rax, word [r15 + E_PHNUM]
+    mov     [r13 + PHDR_SUMMARY_PHNUM], rax
+    test    rax, rax
+    je      .ok                 ; unusual but safely analyzable as no PHDRs
+
+    ; Revalidate the PHDR table before iterating. This duplicates Sprint 1
+    ; ELF validation so this module remains safe when reused by future command
+    ; paths.
+    cmp     word [r15 + E_PHENTSIZE], ELF64_PHDR_SIZE
+    jne     .malformed
+    mov     rsi, [r15 + E_PHOFF]
+    test    rsi, rsi
+    je      .malformed
+    movzx   rdx, word [r15 + E_PHENTSIZE]
+    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
+    imul    rdx, rcx
+    mov     rdi, r14
+    call    x64lens_bounds_range_valid
+    cmp     rax, 1
+    jne     .malformed
+
+    xor     rbx, rbx            ; program-header index
+.loop:
+    cmp     rbx, [r13 + PHDR_SUMMARY_PHNUM]
+    jae     .ok
+
+    ; R10 = current program header pointer.
+    mov     rax, rbx
+    imul    rax, rax, ELF64_PHDR_SIZE
+    add     rax, [r15 + E_PHOFF]
+    lea     r10, [r15 + rax]
+
+    mov     eax, [r10 + P_TYPE]
+    cmp     eax, PT_LOAD
+    je      .handle_load
+    cmp     eax, PT_GNU_STACK
+    je      .handle_gnu_stack
+    cmp     eax, PT_GNU_RELRO
+    je      .handle_gnu_relro
+    cmp     eax, PT_DYNAMIC
+    je      .handle_dynamic
+    jmp     .next
+
+.handle_load:
+    inc     qword [r13 + PHDR_SUMMARY_LOAD_COUNT]
+
+    ; Validate that p_filesz does not exceed p_memsz and that the file-backed
+    ; part of the segment stays inside the mapped file.
+    mov     rax, [r10 + P_FILESZ]
+    cmp     rax, [r10 + P_MEMSZ]
+    ja      .malformed
+
+    mov     rdi, r14
+    mov     rsi, [r10 + P_OFFSET]
+    mov     rdx, [r10 + P_FILESZ]
+    call    x64lens_bounds_range_valid
+    cmp     rax, 1
+    jne     .malformed
+
+    ; Recompute R10 after the helper call to avoid relying on caller-saved
+    ; registers across module boundaries.
+    mov     rax, rbx
+    imul    rax, rax, ELF64_PHDR_SIZE
+    add     rax, [r15 + E_PHOFF]
+    lea     r10, [r15 + rax]
+
+    mov     eax, [r10 + P_FLAGS]
+    mov     ecx, eax
+    and     ecx, PF_W | PF_X
+    cmp     ecx, PF_W | PF_X
+    jne     .check_exec
+    inc     qword [r13 + PHDR_SUMMARY_RWX_COUNT]
+
+.check_exec:
+    test    eax, PF_X
+    jz      .next
+
+    ; Store executable region if capacity allows. Silent truncation would
+    ; corrupt later scanner and benchmark results, so fail explicitly instead.
+    mov     rax, [r13 + PHDR_SUMMARY_EXEC_COUNT]
+    cmp     rax, rbp
+    jae     .unsupported
+
+    mov     rdi, r12
+    mov     rsi, rax
+    mov     rdx, r10
+    call    x64lens_regions_store_from_phdr
+    inc     qword [r13 + PHDR_SUMMARY_EXEC_COUNT]
+    jmp     .next
+
+.handle_gnu_stack:
+    mov     qword [r13 + PHDR_SUMMARY_GNU_STACK_SEEN], 1
+    mov     eax, [r10 + P_FLAGS]
+    test    eax, PF_X
+    jz      .next
+    mov     qword [r13 + PHDR_SUMMARY_GNU_STACK_EXEC], 1
+    jmp     .next
+
+.handle_gnu_relro:
+    mov     qword [r13 + PHDR_SUMMARY_RELRO_SEEN], 1
+    jmp     .next
+
+.handle_dynamic:
+    mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 1
+    jmp     .next
+
+.next:
+    inc     rbx
+    jmp     .loop
+
+.ok:
+    xor     rax, rax
+    jmp     .done
+.malformed:
+    mov     rax, EXIT_MALFORMED_ELF
+    jmp     .done
+.unsupported:
+    mov     rax, EXIT_UNSUPPORTED
+.done:
+    pop     r15
+    pop     r14
+    pop     r13
+    pop     r12
+    pop     rbx
+    pop     rbp
     ret

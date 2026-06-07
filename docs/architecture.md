@@ -187,3 +187,25 @@ research/papers
 ```
 
 The current repository does not split modules that way yet because premature abstraction would slow Sprint 1. The documentation preserves the long-term seam.
+
+## Sprint 2 implemented flow: `mitigations <file>`
+
+The Sprint 2 `mitigations` command follows this flow:
+
+```text
+main.asm
+  -> x64lens_command_mitigations(path) in mitigations.asm
+     -> x64lens_file_map(path, record) in filemap.asm
+     -> x64lens_elf64_validate(base, size) in elf64.asm
+     -> x64lens_phdr_analyze(base, size, summary, regions, max_regions) in phdr.asm
+        -> x64lens_regions_store_from_phdr(regions, index, phdr) in regions.asm
+     -> x64lens_report_text_mitigations(path, base, size, summary, regions) in report_text.asm
+     -> x64lens_file_unmap(record) in filemap.asm
+```
+
+The Sprint 2 internal fact model is split into two record families:
+
+- `phdr_summary`, which stores mitigation and program-header counts.
+- `executable_region`, which stores file offsets, virtual addresses, sizes, and flags for executable `PT_LOAD + PF_X` regions.
+
+This keeps the later scanner from needing to rediscover executable byte ranges and keeps reporters from scraping human-readable output.

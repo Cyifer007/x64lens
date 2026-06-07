@@ -9,9 +9,10 @@
 ;   cstr_eq(a, b) -> 1 if equal, 0 otherwise
 ;   cli_print_help()
 ;
-; Sprint 1 status:
-;   The `info <file>` command is now routed through info.asm, which preserves
-;   a clean boundary between command orchestration and low-level parsing.
+; Sprint 2 status:
+;   The `info <file>` command routes through info.asm. The `mitigations <file>`
+;   command routes through mitigations.asm. CLI text should stay synchronized
+;   with docs/cli-contract.md and tests/run-tests.sh.
 
 bits 64
 default rel
@@ -26,9 +27,9 @@ help_text:
     db "  x64lens help", 10
     db "  x64lens version", 10
     db "  x64lens info <file>", 10
+    db "  x64lens mitigations <file>", 10
     db "", 10
     db "Planned commands:", 10
-    db "  x64lens mitigations <file>", 10
     db "  x64lens gadgets <file>", 10
     db "  x64lens analyze <file>", 10
     db "  x64lens bench <file>", 10, 0

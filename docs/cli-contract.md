@@ -15,7 +15,7 @@ x64lens <command> [options] <file>
 | Command | Purpose | Sprint target |
 | ------- | ------- | ------------- |
 | `info <file>` | Parse and print ELF64 metadata | Sprint 1 |
-| `mitigations <file>` | Print hardening and mitigation metadata | Sprint 2 |
+| `mitigations <file>` | Print hardening and mitigation metadata | Sprint 2, initial implementation |
 | `gadgets <file>` | Print gadget candidates and classified gadgets | Sprint 3 to 4 |
 | `analyze <file>` | Full semantic analysis report | Sprint 4 to 6 |
 | `bench <file>` | Benchmark x64lens against local target | Sprint 5 |

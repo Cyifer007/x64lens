@@ -26,6 +26,8 @@
 
 ## Sprint 2
 
+Patch 006 implements the first Sprint 2 code path. Items remain unchecked until local WSL2 and Docker validation succeeds.
+
 - [ ] Parse program headers.
 - [ ] Identify `PT_LOAD` segments.
 - [ ] Identify `PF_X` executable regions.

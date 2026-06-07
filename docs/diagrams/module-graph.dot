@@ -3,27 +3,32 @@ digraph x64lens_modules {
   node [shape=box];
 
   main -> cli;
-  main -> version;
   main -> info;
-  cli -> print;
-  version -> print;
+  main -> mitigations;
+
   info -> filemap;
   info -> elf64;
   info -> report_text;
   info -> errors;
+
+  mitigations -> filemap;
+  mitigations -> elf64;
+  mitigations -> phdr;
+  mitigations -> report_text;
+  mitigations -> errors;
+
+  phdr -> bounds;
+  phdr -> regions;
+
   filemap -> syscalls;
   elf64 -> bounds;
-  errors -> print;
   report_text -> print;
   report_text -> hex;
-  hex -> print;
+  errors -> print;
 
-  elf64 -> phdr [label="Sprint 2"];
-  phdr -> regions;
-  regions -> scanner [label="Sprint 3"];
   scanner -> patterns;
-  patterns -> classifier [label="Sprint 4"];
-  classifier -> scoring [label="Sprint 5"];
+  patterns -> classifier;
+  classifier -> scoring;
   scoring -> report_text;
   scoring -> report_json;
 }

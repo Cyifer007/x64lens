@@ -1,40 +1,27 @@
 flowchart TD
     A[x64lens CLI] --> B[Argument parser]
     B --> C{Command}
+
     C -->|info| D[info command orchestrator]
-    C -->|mitigations| D2[future command orchestrator]
-    C -->|gadgets| D2
-    C -->|analyze| D2
-    D --> E[File mapper]
-    E --> F[Bounds-safe ELF64 parser]
-    F --> G[Text info report]
-    F --> H[Program header parser]
-    H --> I[Executable region mapper]
-    I --> J[Fast gadget candidate scanner]
-    J --> K[Opcode pattern matcher]
-    K --> L[Semantic primitive classifier]
-    L --> M[Scoring and mitigation-aware interpretation]
-    M --> N[Text report]
-    M --> O[JSON report]
-    M --> P[Benchmark artifacts]
+    C -->|mitigations| M[mitigations command orchestrator]
+    C -->|gadgets| FUT1[future gadget command]
+    C -->|analyze| FUT2[future full analysis command]
 
-    subgraph Sprint1[Sprint 1 Focus]
-        A
-        B
-        D
-        E
-        F
-        G
-    end
+    D --> FM[File mapper]
+    M --> FM
+    FM --> ELF[Bounds-safe ELF64 parser]
 
-    subgraph Future[Later Sprints]
-        H
-        I
-        J
-        K
-        L
-        M
-        N
-        O
-        P
-    end
+    ELF --> IR[Text info report]
+    ELF --> PH[Program header analyzer]
+    PH --> MR[Mitigation summary record]
+    PH --> ER[Executable region records]
+    MR --> MTR[Text mitigation report]
+    ER --> MTR
+
+    ER --> SC[Future fast gadget candidate scanner]
+    SC --> PT[Future opcode pattern matcher]
+    PT --> CL[Future semantic primitive classifier]
+    CL --> SO[Future scoring engine]
+    SO --> TXT[Future text report]
+    SO --> JSON[Future JSON report]
+    SO --> BENCH[Future benchmark artifacts]

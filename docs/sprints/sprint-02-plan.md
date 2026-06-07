@@ -96,3 +96,45 @@ If Sprint 2 testing succeeds:
 3. Update `docs/sprints/sprint-02-retro.md`.
 4. Update local-only `PROJECT_STATE.md` with Sprint 2 status.
 5. Start Sprint 3 with raw executable-region scanning and `ret` candidate discovery.
+
+## Patch 006 implementation notes
+
+Patch 006 begins Sprint 2 implementation. It adds the first `mitigations <file>` command path and introduces the internal program-header summary and executable-region record model.
+
+Implemented in this patch, pending local validation:
+
+1. CLI routing for `x64lens mitigations <file>`.
+2. `src/mitigations.asm` command orchestration.
+3. `src/phdr.asm` safe program-header iteration.
+4. `src/regions.asm` executable-region record storage.
+5. `include/structs.inc` Sprint 2 summary and region record offsets.
+6. `src/report_text.asm` mitigation and executable-region text reporting.
+7. `tests/run-tests.sh` regression checks for baseline mitigation behavior.
+8. `minimal_execstack` toy binary for executable-stack/NX validation.
+
+The patch intentionally does not implement full RELRO, canary detection, section labels, JSON output, or gadget scanning. Full RELRO requires dynamic-section parsing and remains later work unless Sprint 2 capacity allows it.
+
+## Patch 006 validation commands
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+./build/x64lens mitigations ./tests/bin/minimal_nopie
+./build/x64lens mitigations ./tests/bin/minimal_pie_canary
+./build/x64lens mitigations ./tests/bin/minimal_execstack
+readelf -l ./tests/bin/minimal_nopie
+readelf -l ./tests/bin/minimal_pie_canary
+readelf -l ./tests/bin/minimal_execstack
+```
+
+## Next steps after Patch 006 validation succeeds
+
+1. Capture mitigation output for the three toy binaries.
+2. Compare `LOAD`, `GNU_STACK`, `GNU_RELRO`, and `DYNAMIC` observations against `readelf -l`.
+3. Update `docs/sprints/sprint-02-retro.md` with real command output.
+4. Update local-only `PROJECT_STATE.md`.
+5. Decide whether Sprint 2 needs one more hardening patch for `tools/compare-readelf.sh` automation before closing.

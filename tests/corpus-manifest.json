@@ -6,7 +6,7 @@
     {
       "path": "tests/toy-src/minimal.c",
       "type": "source",
-      "purpose": "valid ELF build input"
+      "purpose": "valid ELF build input used to produce PIE, non-PIE, NX, and executable-stack variants"
     },
     {
       "path": "tests/toy-src/vuln_basic.c",
@@ -19,6 +19,21 @@
       "purpose": "known gadget fixture"
     },
     {
+      "path": "tests/bin/minimal_nopie",
+      "type": "generated",
+      "purpose": "non-PIE noexecstack mitigation fixture"
+    },
+    {
+      "path": "tests/bin/minimal_pie_canary",
+      "type": "generated",
+      "purpose": "PIE noexecstack RELRO mitigation fixture"
+    },
+    {
+      "path": "tests/bin/minimal_execstack",
+      "type": "generated",
+      "purpose": "executable-stack mitigation fixture"
+    },
+    {
       "path": "tests/invalid/text.txt",
       "type": "invalid",
       "purpose": "not ELF"
@@ -27,6 +42,16 @@
       "path": "tests/invalid/empty.bin",
       "type": "invalid",
       "purpose": "empty input"
+    },
+    {
+      "path": "tests/invalid/truncated_elf.bin",
+      "type": "invalid",
+      "purpose": "truncated ELF identity/header input"
+    },
+    {
+      "path": "tests/invalid/wrong_arch_elf.bin",
+      "type": "invalid",
+      "purpose": "ELF-like input with unsupported architecture"
     }
   ]
 }

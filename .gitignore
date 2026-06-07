@@ -28,6 +28,7 @@
 /tests/toy-src/*.elf
 /tests/toy-src/*_nopie
 /tests/toy-src/*_pie*
+/tests/toy-src/minimal_execstack
 /tests/toy-src/gadgets
 
 # Benchmark generated data

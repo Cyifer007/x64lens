@@ -53,6 +53,7 @@ samples:
 	mkdir -p tests/bin
 	cp tests/toy-src/minimal_nopie tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/minimal_pie_canary tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/minimal_execstack tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets tests/bin/ 2>/dev/null || true
 
 test: all samples

@@ -25,7 +25,7 @@ The following content belongs outside public commits:
 
 - local project context files,
 - private project state notes,
-- professor-specific coordination notes,
+- private coordination notes,
 - course assignment PDFs or DOCX files,
 - unreleased personal planning notes,
 - proprietary binaries,

@@ -30,6 +30,7 @@ out/
 tests/bin/
 tests/toy-src/minimal_nopie
 tests/toy-src/minimal_pie_canary
+tests/toy-src/minimal_execstack
 tests/toy-src/gadgets
 tests/toy-src/*.o
 tests/toy-src/*.bin

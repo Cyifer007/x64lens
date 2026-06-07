@@ -9,7 +9,7 @@ CC ?= gcc
 
 .PHONY: all clean
 
-all: minimal_nopie minimal_pie_canary gadgets
+all: minimal_nopie minimal_pie_canary minimal_execstack gadgets
 
 minimal_nopie: minimal.c
 	$(CC) -no-pie -fno-stack-protector -z noexecstack -o $@ $<
@@ -17,8 +17,11 @@ minimal_nopie: minimal.c
 minimal_pie_canary: minimal.c
 	$(CC) -fPIE -pie -fstack-protector-all -Wl,-z,relro,-z,now -z noexecstack -o $@ $<
 
+minimal_execstack: minimal.c
+	$(CC) -no-pie -fno-stack-protector -z execstack -o $@ $<
+
 gadgets: gadgets.S
 	$(CC) -nostdlib -static -no-pie -o $@ $<
 
 clean:
-	rm -f minimal_nopie minimal_pie_canary gadgets
+	rm -f minimal_nopie minimal_pie_canary minimal_execstack gadgets

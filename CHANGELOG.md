@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added the initial Sprint 2 `mitigations <file>` command path with program-header parsing, executable PT_LOAD + PF_X region discovery, PIE reporting, NX stack reporting, RWX segment reporting, PT_GNU_RELRO baseline RELRO reporting, and PT_DYNAMIC dynamic-linking reporting.
+- Added `src/phdr.asm` program-header analysis and `src/regions.asm` executable-region record storage.
+- Added Sprint 2 tests for PIE/non-PIE behavior, NX stack enabled/disabled behavior, malformed program-header rejection, and mitigation output smoke checks.
+- Added a `minimal_execstack` toy binary variant to validate executable-stack detection.
 - Implemented the Sprint 1 `info <file>` path with read-only file mapping, ELF64 x86_64 validation, basic ELF metadata reporting, and invalid-input regression tests.
 - Added `src/info.asm` as the command orchestrator that preserves boundaries between file mapping, ELF validation, reporting, and cleanup.
 - Added a mapped-file internal record layout in `include/structs.inc`.
@@ -52,5 +56,5 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Planned
 
-- Sprint 2: implement program header parsing, executable region discovery, and baseline mitigation reporting.
+- Complete Sprint 2 local validation and retrospective after this implementation patch is tested in WSL2 and Docker.
 - Sprint 3: implement raw gadget candidate scanning.

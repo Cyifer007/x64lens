@@ -10,13 +10,14 @@ x64lens must be correct enough to support research claims and safe enough to par
 
 ```bash
 make fix-perms
+make normalize-perms
 make clean
 make
 make samples
 make test
 ```
 
-Sprint 1 also validates the Docker path:
+Docker path:
 
 ```bash
 make docker-build
@@ -37,13 +38,14 @@ Test cases:
 
 Expected outcome: graceful failure and stable nonzero exit code.
 
-Sprint 1 expected codes:
+Current expected codes:
 
 | Input | Expected exit code |
 |---|---:|
 | plain text file | 4 |
 | wrong-architecture ELF-like file | 4 |
 | truncated ELF magic/header | 5 |
+| malformed program-header range | 5 |
 | empty file | 5 |
 
 ### 3. ELF metadata validation
@@ -57,16 +59,34 @@ readelf -h ./tests/bin/minimal_nopie
 readelf -h /bin/ls
 ```
 
-Sprint 1 only compares ELF identity and core ELF header metadata. Program-header semantics and section labels begin in Sprint 2.
+### 4. Program-header and mitigation validation
 
-### 4. Mitigation validation
+Compare `x64lens mitigations` against `readelf -l` first:
 
-Compare `x64lens mitigations` against:
+```bash
+./build/x64lens mitigations ./tests/bin/minimal_nopie
+./build/x64lens mitigations ./tests/bin/minimal_pie_canary
+./build/x64lens mitigations ./tests/bin/minimal_execstack
+readelf -l ./tests/bin/minimal_nopie
+readelf -l ./tests/bin/minimal_pie_canary
+readelf -l ./tests/bin/minimal_execstack
+```
+
+When available, compare hardening indicators against:
 
 ```bash
 checksec --file=<file>
 rabin2 -I <file>
 ```
+
+Sprint 2 validation expectations:
+
+| Target | Expected signal |
+| ------ | --------------- |
+| `minimal_nopie` | PIE disabled, NX stack enabled |
+| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO present |
+| `minimal_execstack` | NX stack disabled |
+| malformed PHDR copy | exit code `5` |
 
 ### 5. Gadget validation
 

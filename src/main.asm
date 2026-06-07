@@ -9,10 +9,11 @@
 ;   x64lens version
 ;   x64lens help
 ;   x64lens info <file>
+;   x64lens mitigations <file>
 ;
-; Sprint 1 implementation target:
-;   Keep command dispatch simple while routing `info <file>` through the real
-;   file mapping and ELF64 validation path.
+; Sprint 2 implementation target:
+;   Keep command dispatch simple while routing `info <file>` and
+;   `mitigations <file>` through specialized command orchestrators.
 ;
 ; Safety note:
 ;   This module should not parse target files directly. It should dispatch
@@ -27,12 +28,14 @@ default rel
 extern cstr_eq
 extern cli_print_help
 extern x64lens_command_info
+extern x64lens_command_mitigations
 extern version_print
 
 section .rodata
 cmd_help:       db "help", 0
 cmd_version:    db "version", 0
 cmd_info:       db "info", 0
+cmd_mitigations: db "mitigations", 0
 
 section .text
 global _start
@@ -75,6 +78,12 @@ _start:
     cmp     rax, 1
     je      .info
 
+    mov     rdi, [r12 + 8]
+    lea     rsi, [cmd_mitigations]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .mitigations
+
     ; Unknown command. Show help and exit with usage error.
     jmp     .show_help
 
@@ -101,6 +110,17 @@ _start:
     jl      .show_help
     mov     rdi, [r12 + 16]
     call    x64lens_command_info
+    mov     rdi, rax
+    jmp     .exit
+
+.mitigations:
+    ; `mitigations` requires a target file argument and routes through the
+    ; Sprint 2 program-header analysis path. It reports loader-level
+    ; mitigation indicators and executable PT_LOAD regions.
+    cmp     rbx, 3
+    jl      .show_help
+    mov     rdi, [r12 + 16]
+    call    x64lens_command_mitigations
     mov     rdi, rax
     jmp     .exit
 

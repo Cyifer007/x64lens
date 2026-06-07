@@ -35,7 +35,7 @@ make test
 
 ## Why Docker/devcontainer second
 
-Docker is the reproducibility layer, not the only development layer. It lets the project define exactly what dependencies are needed and gives professors or reviewers a fast way to build the project without manually configuring a system.
+Docker is the reproducibility layer, not the only development layer. It lets the project define exactly what dependencies are needed and gives reviewers a fast way to build the project without manually configuring a system.
 
 Recommended commands:
 
@@ -55,7 +55,7 @@ Reasons:
 - VM images are large and hostile to Git history.
 - They quickly become stale.
 - They can accidentally contain credentials, shell history, SSH keys, proprietary files, or malware samples.
-- They are harder for professors and reviewers to inspect than a Dockerfile or devcontainer.
+- They are harder for reviewers to inspect than a Dockerfile or devcontainer.
 - They do not support reproducible research as well as declarative setup files.
 
 If a VM is needed later, document how to build it rather than storing the VM itself. Future options include Vagrant, Packer, or a short manual `docs/vm-setup.md`.

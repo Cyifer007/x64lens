@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 1 complete. The CLI, build system, Docker workflow, file mapping path, and initial ELF64 validation/reporting path are validated locally and in Docker. Sprint 2 begins program-header parsing, executable-region mapping, and baseline mitigation signals.
+> Status: Sprint 2 initial implementation patch. Sprint 1 is complete. The CLI, build system, Docker workflow, file mapping path, and ELF64 validation/reporting path are validated locally and in Docker. Sprint 2 now introduces program-header parsing, executable-region mapping, and baseline mitigation reporting.
 >
 > Current version: `0.1.0-dev`
 >
@@ -110,7 +110,7 @@ See [`docs/cli-contract.md`](docs/cli-contract.md).
 make
 ```
 
-### Run the current Sprint 1 implementation
+### Run the current implementation
 
 ```bash
 ./build/x64lens version
@@ -118,9 +118,11 @@ make
 make samples
 ./build/x64lens info ./tests/bin/minimal_nopie
 ./build/x64lens info /bin/ls
+./build/x64lens mitigations ./tests/bin/minimal_nopie
+./build/x64lens mitigations ./tests/bin/minimal_pie_canary
 ```
 
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. Program-header interpretation, mitigation reporting, and gadget scanning remain Sprint 2 and later work.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. Gadget scanning remains Sprint 3 and later work.
 
 ### Run tests
 
@@ -130,7 +132,7 @@ make test
 
 ## Docker and devcontainer workflow
 
-The preferred daily development environment is WSL2 Ubuntu 24.04. Docker is the reproducibility layer for professor/reviewer setup, CI smoke checks, and future benchmark harness validation.
+The preferred daily development environment is WSL2 Ubuntu 24.04. Docker is the reproducibility layer for reviewer setup, CI smoke checks, and future benchmark harness validation.
 
 Build the development image:
 
@@ -164,7 +166,7 @@ See [`docs/troubleshooting.md`](docs/troubleshooting.md).
 This project follows a two-week sprint cadence during the initial research and implementation phase.
 
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
-2. Sprint 2: program headers, executable regions, basic mitigations.
+2. Sprint 2: program headers, executable regions, basic mitigations. Initial implementation patch in progress.
 3. Sprint 3: raw gadget candidate scanner and initial arena allocator.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary.
 5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
@@ -174,40 +176,48 @@ See [`docs/sprints/`](docs/sprints/).
 
 ## Example target output
 
+Current `info` output is ELF metadata focused:
+
 ```text
-x64lens 0.1.0
-Target: ./toy
+x64lens 0.1.0-dev
+Target: ./tests/bin/minimal_nopie
 
 Format:
   Type: ELF64
   Endian: little
   Machine: x86_64
-  Entry: 0x401050
+  ELF Type: ET_EXEC
+  Entry: 0x0000000000401050
+  Program header offset: 0x0000000000000040
+  Program header entry size: 0x0000000000000038
+  Program header count: 0x000000000000000d
+  Section header offset: 0x0000000000003640
+  Section header entry size: 0x0000000000000040
+  Section header count: 0x000000000000001f
+  File size: 0x0000000000003e00
+```
 
-Executable regions:
-  [0] VA 0x401000-0x402000, file offset 0x1000-0x2000, perms R-X
+Current `mitigations` output is program-header and loader-mapping focused:
+
+```text
+x64lens 0.1.0-dev
+Target: ./tests/bin/minimal_nopie
 
 Mitigations:
-  NX stack: enabled
   PIE: disabled
-  RELRO: partial
-  Canary indicator: not found
+  NX stack: enabled
+  RELRO: present
   RWX load segment: no
+  Dynamic linking: yes
+  Program header count: 0x000000000000000d
+  LOAD segments: 0x0000000000000004
+  Executable LOAD regions: 0x0000000000000001
 
-Primitive coverage:
-  rdi control: yes, 3 candidates
-  rsi control: yes, 2 candidates
-  rdx control: no
-  rax control: yes, 1 candidate
-  syscall trigger: no
-  stack pivot: yes, 1 candidate
-
-Interpretation:
-  NX blocks direct stack shellcode under normal conditions.
-  PIE is disabled, so static code addresses are more stable.
-  Direct syscall-oriented ROP appears incomplete because no syscall trigger was found.
-  ret2libc-style analysis may be plausible if RIP control exists and libc/base information is available.
+Executable regions:
+  - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x000000000000015d, mem size 0x000000000000015d, perms R-X
 ```
+
+Gadget scanning, primitive coverage, scoring, interpretation, and JSON output are later sprint targets.
 
 ## Ethics and safety
 
