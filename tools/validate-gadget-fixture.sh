@@ -12,8 +12,8 @@
 #
 # Contract notes:
 #   - The fixture is intentionally tiny and deterministic.
-#   - This script does not validate semantic classification because Sprint 3
-#     Phase A only emits raw candidate facts.
+#   - This script validates exact pattern labels but does not validate semantic
+#     classification, because classifier.asm still owns that later phase.
 #   - This script exists to catch scanner regressions before benchmarking.
 set -euo pipefail
 
@@ -77,16 +77,22 @@ require_line 'Candidate capacity: 0x0000000000001000' "$DEFAULT_OUT" 'default ca
 require_line 'Candidate count: 0x0000000000000007' "$DEFAULT_OUT" 'default candidate count'
 require_line 'ret count: 0x0000000000000006' "$DEFAULT_OUT" 'default ret count'
 require_line 'ret imm16 count: 0x0000000000000001' "$DEFAULT_OUT" 'default ret imm16 count'
-require_line 'terminator: ret, bytes: 5f c3' "$DEFAULT_OUT" 'pop rdi; ret raw bytes'
-require_line 'terminator: ret, bytes: .*0f 05 c3' "$DEFAULT_OUT" 'syscall; ret raw bytes'
-require_line 'terminator: ret imm16, bytes: .*c2 10 00' "$DEFAULT_OUT" 'ret imm16 raw bytes'
+require_line 'Exact pattern count: 0x0000000000000007' "$DEFAULT_OUT" 'default exact pattern count'
+require_line 'pattern: pop rdi; ret, bytes: 5f c3' "$DEFAULT_OUT" 'pop rdi; ret exact pattern'
+require_line 'pattern: pop rsi; ret' "$DEFAULT_OUT" 'pop rsi; ret exact pattern'
+require_line 'pattern: pop rdx; ret' "$DEFAULT_OUT" 'pop rdx; ret exact pattern'
+require_line 'pattern: pop rax; ret' "$DEFAULT_OUT" 'pop rax; ret exact pattern'
+require_line 'pattern: leave; ret' "$DEFAULT_OUT" 'leave; ret exact pattern'
+require_line 'pattern: syscall; ret, bytes: .*0f 05 c3' "$DEFAULT_OUT" 'syscall; ret exact pattern'
+require_line 'pattern: ret imm16, bytes: .*c2 10 00' "$DEFAULT_OUT" 'ret imm16 exact pattern'
 
 # Validate custom-depth summary. A max depth of 4 means up to four bytes before
 # the terminator, so the total byte-window length may be max-depth + terminator
 # length. This distinction is documented because `ret imm16` is three bytes.
 require_line 'Max depth: 0x0000000000000004' "$DEPTH4_OUT" 'custom max depth'
 require_line 'Candidate count: 0x0000000000000007' "$DEPTH4_OUT" 'custom-depth candidate count'
-require_line 'terminator: ret imm16' "$DEPTH4_OUT" 'custom-depth ret imm16 candidate'
+require_line 'Exact pattern count: 0x0000000000000007' "$DEPTH4_OUT" 'custom-depth exact pattern count'
+require_line 'pattern: ret imm16' "$DEPTH4_OUT" 'custom-depth ret imm16 pattern'
 
 cat <<MSG
 validate-gadget-fixture: ok
@@ -95,4 +101,5 @@ validate-gadget-fixture: ok
   default candidates: 7
   default ret count: 6
   default ret imm16 count: 1
+  default exact pattern count: 7
 MSG

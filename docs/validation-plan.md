@@ -119,6 +119,8 @@ Expected Sprint 3 signals:
 | `tests/bin/gadgets` | reports `Raw gadget candidates:` |
 | `tests/bin/gadgets` | reports at least one `terminator: ret` |
 | `tests/bin/gadgets` | reports at least one `terminator: ret imm16` |
+| `tests/bin/gadgets` | reports `Exact pattern count: 0x0000000000000007` |
+| `tests/bin/gadgets` | reports exact patterns for `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16` |
 | `--max-depth 4` | reports `Max depth: 0x0000000000000004` |
 
 Later validation should compare `x64lens gadgets` against:
@@ -210,3 +212,29 @@ Expected fixture signals:
 | ret imm16 count | `0x0000000000000001` |
 
 The arena allocator does not change scanner semantics. It is infrastructure for command-lifetime analysis storage.
+
+
+### Sprint 3 Phase D pattern validation
+
+Patch 011 validates exact byte-template matching through the default regression suite and the objdump-backed fixture validator:
+
+```bash
+make test
+make validate-gadget-fixture
+make pattern-smoke
+```
+
+Expected fixture signals:
+
+| Target | Expected signal |
+| ------ | --------------- |
+| `tests/bin/gadgets` | `Exact pattern count: 0x0000000000000007` |
+| `tests/bin/gadgets` | `pattern: pop rdi; ret` |
+| `tests/bin/gadgets` | `pattern: pop rsi; ret` |
+| `tests/bin/gadgets` | `pattern: pop rdx; ret` |
+| `tests/bin/gadgets` | `pattern: pop rax; ret` |
+| `tests/bin/gadgets` | `pattern: leave; ret` |
+| `tests/bin/gadgets` | `pattern: syscall; ret` |
+| `tests/bin/gadgets` | `pattern: ret imm16` |
+
+This validates exact byte templates only. It does not validate semantic classes, register control, scoring, or exploitability interpretation.

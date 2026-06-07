@@ -6,15 +6,16 @@
 ; Module scope:
 ;   Map a target file, validate ELF64 identity, reuse the Sprint 2 program-
 ;   header analyzer to discover executable PT_LOAD regions, run the Sprint 3
-;   raw gadget scanner, and emit bounded raw candidate records.
+;   raw gadget scanner, run exact byte-template pattern matching, and emit
+;   bounded candidate records.
 ;
 ; Sprint 3 scope:
-;   This command discovers raw `ret` and `ret imm16` candidates only. It does
-;   not classify gadgets semantically, score gadgets, generate chains, or claim
-;   exploitability. Those layers belong to patterns.asm, classifier.asm,
-;   scoring.asm, and later analyze/report modules. Patch 010 moves candidate
-;   storage from a static .bss array to a tiny mmap-backed arena while keeping
-;   the same scanner and reporting contracts.
+;   This command discovers raw `ret` and `ret imm16` candidates, then tags
+;   recognized exact byte-template patterns. It does not classify gadgets
+;   semantically, score gadgets, generate chains, or claim exploitability. Those
+;   layers belong to classifier.asm, scoring.asm, and later analyze/report
+;   modules. Patch 010 moved candidate storage from static .bss to a tiny
+;   mmap-backed arena. Patch 011 adds the first pattern-matching seam.
 
 bits 64
 default rel
@@ -27,6 +28,7 @@ extern x64lens_file_unmap
 extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
 extern x64lens_scanner_find_ret_candidates
+extern x64lens_patterns_match_exact
 extern x64lens_report_text_gadgets
 extern x64lens_error_print_status
 extern x64lens_arena_init
@@ -127,7 +129,17 @@ x64lens_command_gadgets:
     test    rax, rax
     jne     .error
 
-    ; Emit raw candidate records for human inspection and test validation.
+    ; Tag raw candidates with exact byte-template pattern IDs. This is still
+    ; not semantic classification. patterns.asm records only what exact suffix
+    ; template matched so classifier.asm can interpret it in Sprint 4.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    lea     rsi, [gad_summary]
+    mov     rdx, r15
+    call    x64lens_patterns_match_exact
+    test    rax, rax
+    jne     .error
+
+    ; Emit candidate records for human inspection and test validation.
     mov     rdi, r12
     lea     rsi, [gad_summary]
     mov     rdx, r15

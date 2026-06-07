@@ -48,15 +48,16 @@ The taxonomy should eventually account for:
 - multi-instruction semantic equivalence.
 
 
-## Sprint 3 raw candidate layer
+## Sprint 3 raw candidate and exact pattern layer
 
-Sprint 3 intentionally stops before semantic classification. The `gadgets` command currently reports raw terminator-centered byte windows with these fields:
+Sprint 3 intentionally stops before semantic classification. The `gadgets` command currently reports raw terminator-centered byte windows and exact byte-template pattern labels with these fields:
 
 - terminator virtual address,
 - terminator file offset,
 - bounded byte-window start,
 - byte-window length,
 - terminator type,
+- exact pattern label,
 - raw bytes.
 
-All Sprint 3 candidates use `SEM_UNKNOWN_CANDIDATE` internally. Sprint 4 will map raw byte windows into semantic classes such as `arg_control`, `syscall_trigger`, and `stack_pivot`.
+Patch 011 adds exact `PATTERN_*` IDs for simple templates such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`. All Sprint 3 candidates still use `SEM_UNKNOWN_CANDIDATE` internally. Sprint 4 will map exact pattern IDs into semantic classes such as `arg_control`, `syscall_trigger`, and `stack_pivot`.

@@ -1,4 +1,20 @@
 {
   "schema_version": "0.1.0",
-  "note": "Placeholder expected gadget output for Sprint 3 and Sprint 4."
+  "note": "Development fixture expectations for Sprint 3 raw scanning and exact pattern matching. JSON report output is not implemented yet.",
+  "fixture": "tests/bin/gadgets",
+  "default_max_depth": 8,
+  "candidate_capacity": 4096,
+  "candidate_count": 7,
+  "ret_count": 6,
+  "ret_imm16_count": 1,
+  "exact_pattern_count": 7,
+  "expected_patterns": [
+    "pop rdi; ret",
+    "pop rsi; ret",
+    "pop rdx; ret",
+    "pop rax; ret",
+    "leave; ret",
+    "syscall; ret",
+    "ret imm16"
+  ]
 }

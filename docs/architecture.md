@@ -38,7 +38,7 @@ x64lens CLI
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
 | `scanner.asm` | Candidate byte window discovery | Semantic scoring |
-| `patterns.asm` | Opcode template matching | File parsing |
+| `patterns.asm` | Exact opcode-template matching and pattern IDs | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification | Raw file I/O |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `report_text.asm` | Human-readable output | Analysis decisions |
@@ -173,7 +173,7 @@ Benchmarking is a first-class feature, not an afterthought. Every analysis chang
 
 ## Sprint 3 implemented flow: `gadgets <file>`
 
-Patch 008 began the Sprint 3 raw scanner path. Patch 010 keeps the same scanner/reporting contract while moving candidate storage into an arena:
+Patch 008 began the Sprint 3 raw scanner path. Patch 010 kept the same scanner/reporting contract while moving candidate storage into an arena. Patch 011 tags raw candidates with exact byte-template pattern IDs:
 
 ```text
 main.asm
@@ -183,11 +183,12 @@ main.asm
      -> x64lens_phdr_analyze(base, size, summary, regions, max_regions) in phdr.asm
      -> x64lens_arena_init / x64lens_arena_alloc in arena.asm
      -> x64lens_scanner_find_ret_candidates(base, size, phdr_summary, regions, gadget_summary, gadget_records) in scanner.asm
+     -> x64lens_patterns_match_exact(mapped_base, gadget_summary, gadget_records) in patterns.asm
      -> x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base) in report_text.asm
      -> x64lens_file_unmap(record) in filemap.asm
 ```
 
-The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in bounded `gadget_record` entries before output. After Patch 010, the candidate buffer is arena-backed, but the scanner remains storage-agnostic and receives only a pointer plus capacity metadata.
+The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in bounded `gadget_record` entries before output. After Patch 010, the candidate buffer is arena-backed, but the scanner remains storage-agnostic and receives only a pointer plus capacity metadata. After Patch 011, pattern matching remains separate from semantic classification: `patterns.asm` assigns `PATTERN_*` IDs, while `classifier.asm` will later translate those IDs into semantic classes, register bitmaps, stack deltas, and side-effect facts.
 
 Current raw candidate semantics:
 
@@ -247,3 +248,17 @@ Patch 008 introduced the raw byte scanner. The scanner walks executable `PT_LOAD
 Important limitation: this is a byte-pattern scanner, not a full instruction decoder. It may report unaligned raw candidates when a byte such as `0xc2` appears inside another instruction encoding. That is acceptable in Sprint 3 because the scanner's role is to discover candidate byte windows. Later `patterns.asm`, `classifier.asm`, and eventually a decoder integration layer will distinguish semantically meaningful gadgets from raw byte candidates.
 
 The current `--max-depth` means the maximum number of bytes considered before the terminator. Total printed window length can therefore be `max-depth + terminator_length`, where `ret` has length 1 and `ret imm16` has length 3.
+
+
+## Sprint 3 exact pattern matching behavior
+
+Patch 011 introduces the first exact byte-template matcher. It recognizes suffix patterns around already-discovered raw return terminators. The implemented Sprint 3 patterns are:
+
+- `ret`,
+- `ret imm16`,
+- `pop rax; ret`, `pop rcx; ret`, `pop rdx; ret`, `pop rbx; ret`, `pop rsp; ret`, `pop rbp; ret`, `pop rsi; ret`, `pop rdi; ret`,
+- `pop r8; ret` through `pop r15; ret`,
+- `leave; ret`,
+- `syscall; ret`.
+
+This remains byte-template matching, not full decoding. On real binaries, especially for raw `ret imm16` candidates, some pattern labels can still correspond to unaligned byte sequences. Sprint 4 semantic classification and future decoder integration must preserve this limitation.

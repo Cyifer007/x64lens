@@ -2,13 +2,13 @@
 
 ## Status
 
-In progress. Patch 008 Phase A validated locally and in Docker. Patch 009 Phase B validated locally and added the first scanner smoke benchmark plus objdump-backed fixture validation helper. Patch 010 Phase C introduces the mmap-backed arena allocator for raw gadget candidate storage.
+In progress. Patch 008 Phase A, Patch 009 Phase B, and Patch 010 Phase C validated locally and in Docker. Patch 011 Phase D adds lightweight exact byte-template pattern matching while keeping semantic classification in Sprint 4.
 
 ## Sprint goal
 
 Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
 
-Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove scanner correctness. Phase B added fixture validation and a scanner smoke benchmark. Phase C introduces a simple arena allocator now that the raw scanner and benchmark harness have validated cleanly.
+Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove scanner correctness. Phase B added fixture validation and a scanner smoke benchmark. Phase C introduced a simple arena allocator after the raw scanner and benchmark harness validated cleanly. Phase D adds exact pattern IDs for simple byte templates so Sprint 4 can focus on semantic classification instead of raw suffix matching.
 
 ## Planned deliverables
 
@@ -26,8 +26,12 @@ Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove
 - [x] Run first scanner smoke measurement locally and capture results.
 - [x] Assess whether simple arena allocator can land safely in Sprint 3. Decision: proceed in Phase C.
 - [x] Add mmap-backed arena allocator for raw gadget candidate records.
-- [ ] Validate arena-backed scanner path locally and in Docker.
-- [ ] Write Sprint 3 retrospective after local validation.
+- [x] Validate arena-backed scanner path locally and in Docker.
+- [x] Add exact byte-template pattern IDs for known Sprint 3 fixture patterns.
+- [x] Update `gadgets` output with exact pattern labels and pattern count.
+- [x] Update fixture validator and scanner smoke benchmark for exact pattern count.
+- [ ] Validate exact pattern matcher locally and in Docker.
+- [ ] Write Sprint 3 retrospective after Phase D validation.
 
 ## Acceptance criteria
 
@@ -43,7 +47,7 @@ Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove
 - [x] Candidate extraction is bounded by default max depth.
 - [x] Scanner does not read outside executable-region file bounds under current regression tests.
 - [x] Invalid inputs fail safely through the `gadgets` command.
-- [ ] Sprint 3 retrospective is updated through Phase C and finalized at sprint close.
+- [ ] Sprint 3 retrospective is updated through Phase D and finalized at sprint close.
 
 ## Suggested validation commands
 
@@ -97,9 +101,9 @@ The only Sprint 2 follow-up directly worked into Sprint 3 is preparing executabl
 
 ## Non-goals
 
-- No semantic classification in Sprint 3 Phase A.
-- No scoring in Sprint 3 Phase A.
-- No JSON output in Sprint 3 Phase A.
+- No semantic classification in Sprint 3. Pattern IDs are not semantic classes.
+- No scoring in Sprint 3.
+- No JSON output in Sprint 3.
 - No full decoder work.
 - No full RELRO or canary implementation in Sprint 3 Phase A.
 
@@ -146,4 +150,34 @@ make arena-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens gadgets --max-depth 4 /bin/ls
+```
+
+
+## Phase D implementation notes
+
+Patch 011 adds the first lightweight exact pattern matcher. The matcher consumes raw candidate records and assigns `PATTERN_*` IDs for exact suffix templates. It recognizes:
+
+- `ret`,
+- `ret imm16`,
+- `pop rax; ret`, `pop rcx; ret`, `pop rdx; ret`, `pop rbx; ret`, `pop rsp; ret`, `pop rbp; ret`, `pop rsi; ret`, `pop rdi; ret`,
+- `pop r8; ret` through `pop r15; ret`,
+- `leave; ret`,
+- `syscall; ret`.
+
+Phase D deliberately does not set semantic classes, register bitmaps, stack deltas, side-effect flags, or scores. Those are Sprint 4 responsibilities. The pattern matcher gives Sprint 4 clean input facts without collapsing pattern recognition and semantic interpretation into one module.
+
+Additional validation commands for Patch 011:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make pattern-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 40
 ```

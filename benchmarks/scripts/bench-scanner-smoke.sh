@@ -4,8 +4,9 @@
 # Purpose:
 #   Capture the first reproducible scanner smoke measurements for Sprint 3.
 #   This is not a publication benchmark. It is a development benchmark used to
-#   prove that x64lens can run repeated gadget scans, preserve raw results, and
-#   produce a machine-readable timing table for later analysis.
+#   prove that x64lens can run repeated gadget scans, preserve raw results,
+#   preserve exact pattern counts, and produce a machine-readable timing table
+#   for later analysis.
 #
 # Usage:
 #   benchmarks/scripts/bench-scanner-smoke.sh [x64lens-binary] [target ...]
@@ -85,7 +86,7 @@ hex_value_from_line() {
   echo "gcc_version=$(gcc --version 2>/dev/null | head -n 1 || true)"
 } >"$META"
 
-printf 'tool\tcommand\tmax_depth\ttarget\ttarget_size_bytes\trun\twall_s\tmaxrss_kb\texit_code\tcandidate_count\tret_count\tret_imm16_count\toutput_bytes\n' >"$RESULTS"
+printf 'tool\tcommand\tmax_depth\ttarget\ttarget_size_bytes\trun\twall_s\tmaxrss_kb\texit_code\tcandidate_count\tret_count\tret_imm16_count\texact_pattern_count\toutput_bytes\n' >"$RESULTS"
 
 for target in "${TARGETS[@]}"; do
   if [[ ! -f "$target" ]]; then
@@ -109,11 +110,13 @@ for target in "${TARGETS[@]}"; do
     candidate_count="$(hex_value_from_line 'Candidate count:' "$out")"
     ret_count="$(hex_value_from_line 'ret count:' "$out")"
     ret_imm_count="$(hex_value_from_line 'ret imm16 count:' "$out")"
+    pattern_count="$(hex_value_from_line 'Exact pattern count:' "$out")"
     output_bytes="$(wc -c <"$out" | tr -d ' ')"
 
-    printf 'x64lens\tgadgets\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    printf 'x64lens\tgadgets\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$MAX_DEPTH" "$target" "$target_size" "$run" "$wall" "$maxrss" "$status" \
-      "${candidate_count:-NA}" "${ret_count:-NA}" "${ret_imm_count:-NA}" "$output_bytes" >>"$RESULTS"
+      "${candidate_count:-NA}" "${ret_count:-NA}" "${ret_imm_count:-NA}" \
+      "${pattern_count:-NA}" "$output_bytes" >>"$RESULTS"
 
     if [[ "$status" -ne 0 ]]; then
       echo "error: benchmark command failed for $target run $run with exit $status" >&2

@@ -69,11 +69,17 @@
 - [x] Run first scanner smoke measurement and preserve generated TSV metadata.
 - [x] Decide whether simple arena allocator lands in Sprint 3 Phase C or carries forward. Decision: implement in Phase C.
 - [x] Add mmap-backed arena allocator for raw gadget candidate storage.
-- [ ] Validate arena-backed scanner path locally and in Docker.
+- [x] Validate arena-backed scanner path locally and in Docker.
+- [x] Add exact byte-template pattern IDs.
+- [x] Add exact pattern labels to `gadgets` output.
+- [x] Add exact pattern count to scanner smoke benchmark output.
+- [x] Update fixture validator for exact pattern matching.
+- [ ] Validate Patch 011 exact pattern matcher locally and in Docker.
 
 ## Sprint 4
 
-- [ ] Add pattern table.
+- [x] Add initial exact pattern table. Completed early in Sprint 3 Phase D.
+- [ ] Map exact pattern IDs into semantic classes.
 - [ ] Classify `pop reg; ret` gadgets.
 - [ ] Classify `leave; ret`.
 - [ ] Classify `syscall`.

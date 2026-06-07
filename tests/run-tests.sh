@@ -7,7 +7,7 @@
 #   of invalid target files. Sprint 2 extended coverage to program-header
 #   analysis, baseline mitigation indicators, executable-region discovery,
 #   and malformed program-header rejection. Sprint 3 adds raw gadget scanner
-#   coverage for ret and ret-imm candidates.
+#   coverage for ret and ret-imm candidates. Sprint 3 Phase D adds exact pattern label checks.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -140,10 +140,17 @@ grep -q "Candidate capacity: 0x0000000000001000" "$GADGETS_OUT"
 grep -q "Candidate count: 0x0000000000000007" "$GADGETS_OUT"
 grep -q "ret count: 0x0000000000000006" "$GADGETS_OUT"
 grep -q "ret imm16 count: 0x0000000000000001" "$GADGETS_OUT"
+grep -q "Exact pattern count: 0x0000000000000007" "$GADGETS_OUT"
 grep -q "terminator: ret" "$GADGETS_OUT"
 grep -q "terminator: ret imm16" "$GADGETS_OUT"
-grep -q "bytes:" "$GADGETS_OUT"
-grep -q "terminator: ret, bytes: 5f c3" "$GADGETS_OUT"
+grep -q "pattern: pop rdi; ret" "$GADGETS_OUT"
+grep -q "pattern: pop rsi; ret" "$GADGETS_OUT"
+grep -q "pattern: pop rdx; ret" "$GADGETS_OUT"
+grep -q "pattern: pop rax; ret" "$GADGETS_OUT"
+grep -q "pattern: leave; ret" "$GADGETS_OUT"
+grep -q "pattern: syscall; ret" "$GADGETS_OUT"
+grep -q "pattern: ret imm16" "$GADGETS_OUT"
+grep -q "bytes: 5f c3" "$GADGETS_OUT"
 grep -q "c2 10 00" "$GADGETS_OUT"
 
 echo "[test] raw gadget scanner custom max-depth"
@@ -151,6 +158,8 @@ GADGETS_DEPTH_OUT="$TMPDIR/x64lens-gadgets-depth.txt"
 "$BIN" gadgets --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_DEPTH_OUT"
 grep -q "Max depth: 0x0000000000000004" "$GADGETS_DEPTH_OUT"
 grep -q "Candidate count: 0x0000000000000007" "$GADGETS_DEPTH_OUT"
+grep -q "Exact pattern count: 0x0000000000000007" "$GADGETS_DEPTH_OUT"
 grep -q "terminator: ret" "$GADGETS_DEPTH_OUT"
+grep -q "pattern: pop rdi; ret" "$GADGETS_DEPTH_OUT"
 
 echo "tests: ok"

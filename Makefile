@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -59,13 +59,17 @@ samples:
 test: all samples
 	bash tests/run-tests.sh
 
-# Scanner correctness smoke test for the hand-authored gadget fixture.
-# This target is intentionally separate from `make test` so reviewers can run
-# the more explanatory objdump-backed check on demand.
+# Scanner and exact-pattern correctness smoke test for the hand-authored
+# gadget fixture. This target is intentionally separate from `make test` so
+# reviewers can run the more explanatory objdump-backed check on demand.
 validate-gadget-fixture: all samples
 	bash tools/validate-gadget-fixture.sh ./$(TARGET) ./tests/bin/gadgets
 
 scanner-smoke: validate-gadget-fixture
+
+# Sprint 3 Phase D pattern smoke target. It verifies that the pattern matcher
+# labels the controlled fixture without claiming semantic classification.
+pattern-smoke: validate-gadget-fixture
 
 # Sprint 3 Phase C arena smoke target. It exercises the gadgets command path
 # after candidate storage moved from static .bss memory to an mmap-backed arena.
@@ -76,6 +80,7 @@ arena-smoke: all samples
 	@grep -q "Candidate capacity: 0x0000000000001000" /tmp/x64lens-arena-smoke.txt
 	@grep -q "Candidate count: 0x0000000000000007" /tmp/x64lens-arena-smoke.txt
 	@grep -q "ret imm16 count: 0x0000000000000001" /tmp/x64lens-arena-smoke.txt
+	@grep -q "Exact pattern count: 0x0000000000000007" /tmp/x64lens-arena-smoke.txt
 	@echo "arena-smoke: ok"
 
 # First Sprint 3 scanner benchmark smoke target. This records repeated runs,

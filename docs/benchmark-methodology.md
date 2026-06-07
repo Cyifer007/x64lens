@@ -56,6 +56,7 @@ Every benchmark run should record:
 - gadget count,
 - unique gadget count,
 - semantic primitive count,
+- exact pattern count,
 - output size,
 - exit code,
 - error count.
@@ -131,6 +132,7 @@ The script writes a TSV results file and metadata sidecar under `benchmarks/resu
 - candidate count,
 - `ret` count,
 - `ret imm16` count,
+- exact pattern count,
 - output byte count.
 
 The smoke benchmark must not be used to claim superiority over other tools. It exists to prove measurement plumbing before comparison against ROPgadget, Ropper, and ropr.
@@ -139,3 +141,6 @@ The smoke benchmark must not be used to claim superiority over other tools. It e
 ## Arena allocator note
 
 Sprint 3 Patch 010 introduces arena-backed candidate storage. Scanner smoke benchmark results before and after this change should be compared only as development sanity checks. Publication results require a clean benchmark environment and repeated runs after the scanner, classifier, and output modes stabilize.
+
+
+Patch 011 adds `exact_pattern_count` to the scanner smoke TSV. This is a development metric showing how many raw candidates were tagged with exact byte-template pattern IDs. It is not yet a semantic primitive count and must not be used as a claim about exploitable gadget availability.

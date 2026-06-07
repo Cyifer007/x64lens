@@ -63,4 +63,4 @@ Controlled mitigation states are validated with the `minimal_nopie`, `minimal_pi
 
 ## Sprint 3 carry-forward decision
 
-Sprint 3 Patch 010 does not implement full RELRO, canary indicators, section labels, `checksec` comparison, or `rabin2 -I` comparison. Those remain valid hardening follow-ups, but the active Sprint 3 risk is scanner and storage correctness. Mixing dynamic-section or symbol parsing into the arena allocator phase would create unnecessary scope coupling.
+Sprint 3 Patch 011 does not implement full RELRO, canary indicators, section labels, `checksec` comparison, or `rabin2 -I` comparison. Those remain valid hardening follow-ups, but the active Sprint 3 risk is scanner, storage, and exact-pattern correctness. Mixing dynamic-section or symbol parsing into the pattern matcher phase would create unnecessary scope coupling.

@@ -79,7 +79,8 @@
 %define GADGET_SUMMARY_RET_IMM_COUNT  16
 %define GADGET_SUMMARY_MAX_DEPTH      24
 %define GADGET_SUMMARY_CAPACITY       32
-%define GADGET_SUMMARY_RECORD_SIZE    40
+%define GADGET_SUMMARY_PATTERN_COUNT      40
+%define GADGET_SUMMARY_RECORD_SIZE    48
 
 ; arena record offsets
 ;
@@ -103,6 +104,35 @@
 %define GADGET_TERM_RET               1
 %define GADGET_TERM_RET_IMM16         2
 
+; exact byte-template pattern identifiers
+;
+; Sprint 3 Phase D records exact pattern matches separately from semantic
+; classes. patterns.asm owns these IDs. classifier.asm will later translate
+; recognized pattern IDs into semantic classes, register bitmaps, stack deltas,
+; and scoring inputs. Keeping this separation protects the module boundary
+; between byte-template recognition and exploitability interpretation.
+%define PATTERN_UNKNOWN               0
+%define PATTERN_RET                   1
+%define PATTERN_RET_IMM16             2
+%define PATTERN_POP_RAX_RET           3
+%define PATTERN_POP_RCX_RET           4
+%define PATTERN_POP_RDX_RET           5
+%define PATTERN_POP_RBX_RET           6
+%define PATTERN_POP_RSP_RET           7
+%define PATTERN_POP_RBP_RET           8
+%define PATTERN_POP_RSI_RET           9
+%define PATTERN_POP_RDI_RET           10
+%define PATTERN_POP_R8_RET            11
+%define PATTERN_POP_R9_RET            12
+%define PATTERN_POP_R10_RET           13
+%define PATTERN_POP_R11_RET           14
+%define PATTERN_POP_R12_RET           15
+%define PATTERN_POP_R13_RET           16
+%define PATTERN_POP_R14_RET           17
+%define PATTERN_POP_R15_RET           18
+%define PATTERN_LEAVE_RET             19
+%define PATTERN_SYSCALL_RET           20
+
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
 %define GADGET_VIRTUAL_ADDRESS      8
@@ -115,6 +145,7 @@
 %define GADGET_STACK_DELTA          56
 %define GADGET_SIDE_EFFECT_FLAGS    64
 %define GADGET_SCORE                72
+%define GADGET_PATTERN_ID           76
 %define GADGET_RECORD_SIZE          80
 
 ; register bitmap bits

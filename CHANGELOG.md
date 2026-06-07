@@ -8,6 +8,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added Sprint 3 Phase D exact pattern matching: `patterns.asm` now tags raw candidates with exact byte-template pattern IDs such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16` without performing semantic classification.
+- Updated `gadgets` text output, fixture validation, scanner smoke benchmarking, and regression tests to preserve exact pattern counts.
 - Added Sprint 3 Phase C arena allocator support: `src/arena.asm`, arena-backed raw gadget candidate storage for `x64lens gadgets`, and `make arena-smoke`.
 - Updated scanner capacity handling so `scanner.asm` consumes caller-supplied candidate capacity from `gadget_summary`.
 - Added Sprint 3 Phase B scanner validation and benchmark smoke tooling: `make validate-gadget-fixture`, `make bench-scanner-smoke`, `tools/validate-gadget-fixture.sh`, and `benchmarks/scripts/bench-scanner-smoke.sh`.
@@ -65,4 +67,4 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Planned
 
-- Sprint 3: validate arena-backed scanner storage, then decide whether to proceed to lightweight pattern matching or carry semantic classification into Sprint 4.
+- Sprint 3: validate exact pattern matching, then decide whether to close Sprint 3 or begin semantic classification in Sprint 4.

@@ -90,16 +90,39 @@ label_capacity:        db "  Candidate capacity: ", 0
 label_candidate_count: db "  Candidate count: ", 0
 label_ret_count:       db "  ret count: ", 0
 label_ret_imm_count:   db "  ret imm16 count: ", 0
+label_pattern_count:   db "  Exact pattern count: ", 0
 no_candidates:         db "  none discovered in executable regions", 10, 0
 candidate_prefix:      db "  - VA ", 0
 candidate_file_off:    db ", file offset ", 0
 candidate_window:      db ", window start ", 0
 candidate_len:         db ", len ", 0
 candidate_term:        db ", terminator: ", 0
+candidate_pattern:     db ", pattern: ", 0
 candidate_bytes:       db ", bytes: ", 0
 term_ret:              db "ret", 0
 term_ret_imm16:        db "ret imm16", 0
 term_unknown:          db "unknown", 0
+pattern_unknown:       db "unknown", 0
+pattern_ret:           db "ret", 0
+pattern_ret_imm16:     db "ret imm16", 0
+pattern_pop_rax_ret:   db "pop rax; ret", 0
+pattern_pop_rcx_ret:   db "pop rcx; ret", 0
+pattern_pop_rdx_ret:   db "pop rdx; ret", 0
+pattern_pop_rbx_ret:   db "pop rbx; ret", 0
+pattern_pop_rsp_ret:   db "pop rsp; ret", 0
+pattern_pop_rbp_ret:   db "pop rbp; ret", 0
+pattern_pop_rsi_ret:   db "pop rsi; ret", 0
+pattern_pop_rdi_ret:   db "pop rdi; ret", 0
+pattern_pop_r8_ret:    db "pop r8; ret", 0
+pattern_pop_r9_ret:    db "pop r9; ret", 0
+pattern_pop_r10_ret:   db "pop r10; ret", 0
+pattern_pop_r11_ret:   db "pop r11; ret", 0
+pattern_pop_r12_ret:   db "pop r12; ret", 0
+pattern_pop_r13_ret:   db "pop r13; ret", 0
+pattern_pop_r14_ret:   db "pop r14; ret", 0
+pattern_pop_r15_ret:   db "pop r15; ret", 0
+pattern_leave_ret:     db "leave; ret", 0
+pattern_syscall_ret:   db "syscall; ret", 0
 space_str:             db " ", 0
 
 section .text
@@ -511,6 +534,12 @@ x64lens_report_text_gadgets:
     call    print_hex64
     call    print_nl
 
+    lea     rdi, [label_pattern_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_PATTERN_COUNT]
+    call    print_hex64
+    call    print_nl
+
     cmp     qword [r12 + GADGET_SUMMARY_COUNT], 0
     jne     .candidate_loop_setup
     lea     rdi, [no_candidates]
@@ -552,6 +581,11 @@ x64lens_report_text_gadgets:
     mov     edi, [r15 + GADGET_TERMINATOR_TYPE]
     call    report_text_print_terminator
 
+    lea     rdi, [candidate_pattern]
+    call    print_cstr
+    mov     edi, [r15 + GADGET_PATTERN_ID]
+    call    report_text_print_pattern
+
     lea     rdi, [candidate_bytes]
     call    print_cstr
     call    report_text_print_candidate_bytes
@@ -585,6 +619,115 @@ report_text_print_terminator:
     jmp     print_cstr
 .term_ret_imm16:
     lea     rdi, [term_ret_imm16]
+    jmp     print_cstr
+
+; report_text_print_pattern(edi=pattern_id)
+;
+; Prints the exact byte-template pattern label without a trailing newline.
+; Pattern IDs are assigned by patterns.asm and are intentionally separate from
+; semantic classes, which classifier.asm will own in a later sprint.
+report_text_print_pattern:
+    cmp     edi, PATTERN_RET
+    je      .pattern_ret
+    cmp     edi, PATTERN_RET_IMM16
+    je      .pattern_ret_imm16
+    cmp     edi, PATTERN_POP_RAX_RET
+    je      .pattern_pop_rax_ret
+    cmp     edi, PATTERN_POP_RCX_RET
+    je      .pattern_pop_rcx_ret
+    cmp     edi, PATTERN_POP_RDX_RET
+    je      .pattern_pop_rdx_ret
+    cmp     edi, PATTERN_POP_RBX_RET
+    je      .pattern_pop_rbx_ret
+    cmp     edi, PATTERN_POP_RSP_RET
+    je      .pattern_pop_rsp_ret
+    cmp     edi, PATTERN_POP_RBP_RET
+    je      .pattern_pop_rbp_ret
+    cmp     edi, PATTERN_POP_RSI_RET
+    je      .pattern_pop_rsi_ret
+    cmp     edi, PATTERN_POP_RDI_RET
+    je      .pattern_pop_rdi_ret
+    cmp     edi, PATTERN_POP_R8_RET
+    je      .pattern_pop_r8_ret
+    cmp     edi, PATTERN_POP_R9_RET
+    je      .pattern_pop_r9_ret
+    cmp     edi, PATTERN_POP_R10_RET
+    je      .pattern_pop_r10_ret
+    cmp     edi, PATTERN_POP_R11_RET
+    je      .pattern_pop_r11_ret
+    cmp     edi, PATTERN_POP_R12_RET
+    je      .pattern_pop_r12_ret
+    cmp     edi, PATTERN_POP_R13_RET
+    je      .pattern_pop_r13_ret
+    cmp     edi, PATTERN_POP_R14_RET
+    je      .pattern_pop_r14_ret
+    cmp     edi, PATTERN_POP_R15_RET
+    je      .pattern_pop_r15_ret
+    cmp     edi, PATTERN_LEAVE_RET
+    je      .pattern_leave_ret
+    cmp     edi, PATTERN_SYSCALL_RET
+    je      .pattern_syscall_ret
+    lea     rdi, [pattern_unknown]
+    jmp     print_cstr
+.pattern_ret:
+    lea     rdi, [pattern_ret]
+    jmp     print_cstr
+.pattern_ret_imm16:
+    lea     rdi, [pattern_ret_imm16]
+    jmp     print_cstr
+.pattern_pop_rax_ret:
+    lea     rdi, [pattern_pop_rax_ret]
+    jmp     print_cstr
+.pattern_pop_rcx_ret:
+    lea     rdi, [pattern_pop_rcx_ret]
+    jmp     print_cstr
+.pattern_pop_rdx_ret:
+    lea     rdi, [pattern_pop_rdx_ret]
+    jmp     print_cstr
+.pattern_pop_rbx_ret:
+    lea     rdi, [pattern_pop_rbx_ret]
+    jmp     print_cstr
+.pattern_pop_rsp_ret:
+    lea     rdi, [pattern_pop_rsp_ret]
+    jmp     print_cstr
+.pattern_pop_rbp_ret:
+    lea     rdi, [pattern_pop_rbp_ret]
+    jmp     print_cstr
+.pattern_pop_rsi_ret:
+    lea     rdi, [pattern_pop_rsi_ret]
+    jmp     print_cstr
+.pattern_pop_rdi_ret:
+    lea     rdi, [pattern_pop_rdi_ret]
+    jmp     print_cstr
+.pattern_pop_r8_ret:
+    lea     rdi, [pattern_pop_r8_ret]
+    jmp     print_cstr
+.pattern_pop_r9_ret:
+    lea     rdi, [pattern_pop_r9_ret]
+    jmp     print_cstr
+.pattern_pop_r10_ret:
+    lea     rdi, [pattern_pop_r10_ret]
+    jmp     print_cstr
+.pattern_pop_r11_ret:
+    lea     rdi, [pattern_pop_r11_ret]
+    jmp     print_cstr
+.pattern_pop_r12_ret:
+    lea     rdi, [pattern_pop_r12_ret]
+    jmp     print_cstr
+.pattern_pop_r13_ret:
+    lea     rdi, [pattern_pop_r13_ret]
+    jmp     print_cstr
+.pattern_pop_r14_ret:
+    lea     rdi, [pattern_pop_r14_ret]
+    jmp     print_cstr
+.pattern_pop_r15_ret:
+    lea     rdi, [pattern_pop_r15_ret]
+    jmp     print_cstr
+.pattern_leave_ret:
+    lea     rdi, [pattern_leave_ret]
+    jmp     print_cstr
+.pattern_syscall_ret:
+    lea     rdi, [pattern_syscall_ret]
     jmp     print_cstr
 
 ; report_text_print_candidate_bytes()

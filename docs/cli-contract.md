@@ -16,7 +16,7 @@ x64lens <command> [options] <file>
 | ------- | ------- | ------------- |
 | `info <file>` | Parse and print ELF64 metadata | Sprint 1 |
 | `mitigations <file>` | Print hardening and mitigation metadata | Sprint 2, initial implementation |
-| `gadgets [--max-depth N] <file>` | Print raw gadget candidates first, then classified gadgets later | Sprint 3 to 4 |
+| `gadgets [--max-depth N] <file>` | Print raw gadget candidates and exact byte-template pattern labels first, then classified gadgets later | Sprint 3 to 4 |
 | `analyze <file>` | Full semantic analysis report | Sprint 4 to 6 |
 | `bench <file>` | Benchmark x64lens against local target | Sprint 5 |
 | `version` | Print tool version | Sprint 1 |

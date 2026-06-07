@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 3 in progress. Sprints 1 and 2 are complete. Patch 008 begins the raw gadget scanner with fixed-capacity candidate records, `ret` and `ret imm16` discovery, bounded backward byte windows, and the initial `gadgets` command path.
+> Status: Sprint 3 in progress. Sprints 1 and 2 are complete. Patch 008 added the raw gadget scanner, Patch 009 added scanner smoke benchmarking, Patch 010 added arena-backed candidate storage, and Patch 011 adds exact byte-template pattern matching.
 >
 > Current version: `0.1.0-dev`
 >
@@ -124,7 +124,7 @@ make samples
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ```
 
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The Sprint 3 `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates and reports bounded byte windows. Semantic classification remains Sprint 4 work.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The Sprint 3 `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, and tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`. Semantic classification remains Sprint 4 work.
 
 ### Run tests
 
@@ -183,7 +183,7 @@ This project follows a two-week sprint cadence during the initial research and i
 
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
-3. Sprint 3: raw gadget candidate scanner and initial candidate storage. In progress with a fixed candidate buffer bridge before the arena allocator.
+3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary.
 5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
@@ -245,10 +245,11 @@ Raw gadget candidates:
   Candidate count: ...
   ret count: ...
   ret imm16 count: ...
-  - VA ..., file offset ..., window start ..., len ..., terminator: ret, bytes: ...
+  Exact pattern count: ...
+  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, bytes: ...
 ```
 
-Primitive coverage, scoring, mitigation-aware interpretation, and JSON output are later sprint targets.
+Pattern labels are still not semantic classification. Primitive coverage, register bitmaps, scoring, mitigation-aware interpretation, and JSON output are later sprint targets.
 
 ## Ethics and safety
 
@@ -264,3 +265,8 @@ Apache License 2.0. See [`LICENSE`](LICENSE).
 ## Sprint 3 arena allocator note
 
 Sprint 3 Patch 010 introduces a small mmap-backed bump allocator for analysis records. The first consumer is the raw gadget candidate buffer used by `x64lens gadgets`. Candidate capacity remains bounded at 4096 records, but storage is now owned by a command-lifetime arena rather than a static `.bss` array. This keeps the scanner interface stable while preparing later sprints for larger internal records, JSON staging, and benchmark artifacts.
+
+
+## Sprint 3 pattern matcher note
+
+Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candidates. This is a pattern matching layer, not a semantic classifier. The current matcher recognizes small suffix templates such as `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`. Sprint 4 will map these pattern IDs into semantic primitive classes, register bitmaps, stack deltas, side-effect notes, and later scores.

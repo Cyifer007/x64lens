@@ -80,6 +80,7 @@ x64lens_scanner_find_ret_candidates:
     mov     qword [rbx + GADGET_SUMMARY_COUNT], 0
     mov     qword [rbx + GADGET_SUMMARY_RET_COUNT], 0
     mov     qword [rbx + GADGET_SUMMARY_RET_IMM_COUNT], 0
+    mov     qword [rbx + GADGET_SUMMARY_PATTERN_COUNT], 0
 
     xor     r11, r11            ; region index
 .region_loop:
@@ -198,6 +199,7 @@ x64lens_scanner_find_ret_candidates:
     mov     qword [rax + GADGET_STACK_DELTA], 0
     mov     qword [rax + GADGET_SIDE_EFFECT_FLAGS], 0
     mov     dword [rax + GADGET_SCORE], 0
+    mov     dword [rax + GADGET_PATTERN_ID], PATTERN_UNKNOWN
 
     inc     qword [rbx + GADGET_SUMMARY_COUNT]
     cmp     dword [rax + GADGET_TERMINATOR_TYPE], GADGET_TERM_RET
