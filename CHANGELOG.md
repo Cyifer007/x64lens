@@ -8,6 +8,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Closed Sprint 3 with validated raw gadget scanning, scanner smoke benchmarking, arena-backed candidate storage, exact suffix pattern matching, and updated Sprint 3 retrospective/context documentation.
+- Added extended Sprint 7 through Sprint 12 roadmap and candidate sprint plans for mitigation hardening, primitive expansion, compiler/hardening corpus, research benchmarks, integrated analysis, and publication/release preparation.
 - Added Sprint 3 Phase D exact pattern matching: `patterns.asm` now tags raw candidates with exact byte-template pattern IDs such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16` without performing semantic classification.
 - Updated `gadgets` text output, fixture validation, scanner smoke benchmarking, and regression tests to preserve exact pattern counts.
 - Added Sprint 3 Phase C arena allocator support: `src/arena.asm`, arena-backed raw gadget candidate storage for `x64lens gadgets`, and `make arena-smoke`.
@@ -67,4 +69,4 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Planned
 
-- Sprint 3: validate exact pattern matching, then decide whether to close Sprint 3 or begin semantic classification in Sprint 4.
+- Sprint 3: complete. Raw scanner, scanner smoke benchmark, arena-backed candidate storage, and exact suffix pattern matching are validated.

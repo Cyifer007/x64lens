@@ -1,16 +1,24 @@
 # Research Roadmap
 
+## Current checkpoint
+
+Sprint 3 is complete. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, and scanner smoke benchmark plumbing.
+
 ## Stage 1: CSC-732 foundation
 
 Build a working NASM-first ELF64 x86_64 analyzer.
 
 Primary outcome: functional scaffold and semester-grade tool.
 
+Current status: complete through ELF64 validation, program-header analysis, mitigation baseline reporting, and raw scanner foundation.
+
 ## Stage 2: benchmarkable scanner
 
 Compare x64lens against ROPgadget, Ropper, and ropr.
 
 Primary outcome: reproducible performance and coverage data.
+
+Current status: development smoke benchmark exists. Research-grade comparison remains future work.
 
 ## Stage 3: semantic primitive scoring
 
@@ -20,6 +28,8 @@ Possible research question:
 
 > Can semantic gadget usefulness be measured more accurately through side-effect and primitive-coverage analysis than through raw gadget count?
 
+Current status: exact pattern IDs exist. Semantic classification begins in Sprint 4. Scoring should wait until semantic classes, register bitmaps, stack deltas, and side-effect flags are populated.
+
 ## Stage 4: mitigation-aware exploitability modeling
 
 Connect NX, PIE, RELRO, canaries, RWX segments, CET, and IBT to plausible exploit strategy constraints.
@@ -27,6 +37,8 @@ Connect NX, PIE, RELRO, canaries, RWX segments, CET, and IBT to plausible exploi
 Possible research question:
 
 > How do modern mitigations change the practical usefulness of available gadget sets?
+
+Current status: baseline PIE, NX stack, RWX load segment, dynamic linking, and baseline RELRO are implemented. Full RELRO, canary indicators, section labels, and CET/IBT indicators remain future work.
 
 ## Stage 5: compiler and hardening comparison
 
@@ -51,6 +63,8 @@ Possible research question:
 
 > Can static binary exploitability analysis improve prioritization of network-exposed services and infrastructure software?
 
+This stage is the strongest CSC-773 bridge because it ties binary hardening and primitive availability to advanced cyberinfrastructure defense.
+
 ## Stage 7: dissertation-scale work
 
 Potential dissertation directions:
@@ -62,3 +76,20 @@ Potential dissertation directions:
 - network appliance binary triage,
 - firmware-scale exploitability modeling,
 - CET/IBT impact on code-reuse exploitability.
+
+## Expanded sprint mapping
+
+The near-term expanded plan is documented in `docs/roadmap-12-sprints.md`.
+
+The guiding sequence is:
+
+1. scanner correctness,
+2. semantic classification,
+3. scoring and JSON,
+4. semester checkpoint,
+5. mitigation hardening,
+6. primitive expansion,
+7. hardening corpus,
+8. research-grade benchmarks,
+9. integrated analysis,
+10. paper and release preparation.

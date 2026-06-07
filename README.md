@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 3 in progress. Sprints 1 and 2 are complete. Patch 008 added the raw gadget scanner, Patch 009 added scanner smoke benchmarking, Patch 010 added arena-backed candidate storage, and Patch 011 adds exact byte-template pattern matching.
+> Status: Sprint 3 complete. Sprints 1 and 2 are complete. Sprint 3 added the raw gadget scanner, scanner smoke benchmarking, arena-backed candidate storage, and exact byte-template suffix pattern matching.
 >
 > Current version: `0.1.0-dev`
 >
@@ -66,6 +66,18 @@ Those may become future research directions, but they are not part of the initia
 The name `x64lens` is intentionally narrow for the first major phase. The tool begins as a lens into x86_64 ELF binaries. If the project later grows into a multi-architecture platform, architecture-specific engines can be added under the same repository, or the project can later adopt a broader umbrella name. For now, `x64lens` keeps the initial research contribution precise, searchable, and technically honest.
 
 See [`docs/adr/0001-tool-name.md`](docs/adr/0001-tool-name.md).
+
+## Current implementation checkpoint
+
+Sprint 3 closes with this implemented pipeline:
+
+```text
+ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> text reporting
+```
+
+The current `gadgets` command reports raw terminator-centered byte windows and exact suffix pattern labels. These labels are not full semantic classifications yet. Sprint 4 maps recognized pattern IDs into semantic classes, register bitmaps, stack deltas, and primitive coverage.
+
+See [`docs/roadmap-12-sprints.md`](docs/roadmap-12-sprints.md) for the expanded semester roadmap.
 
 ## Current CLI contract
 

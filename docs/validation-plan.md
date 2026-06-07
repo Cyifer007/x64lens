@@ -238,3 +238,63 @@ Expected fixture signals:
 | `tests/bin/gadgets` | `pattern: ret imm16` |
 
 This validates exact byte templates only. It does not validate semantic classes, register control, scoring, or exploitability interpretation.
+
+### 6. Sprint 3 scanner, arena, and pattern validation
+
+Sprint 3 validation proved the raw scanner, arena-backed candidate storage, exact suffix pattern matcher, fixture validator, and scanner smoke benchmark path.
+
+Validation commands:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make pattern-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 40
+```
+
+Expected controlled fixture signals:
+
+| Signal | Expected value |
+| ------ | -------------- |
+| Candidate count | 7 |
+| ret count | 6 |
+| ret imm16 count | 1 |
+| Exact pattern count | 7 |
+| Known labels | `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, `ret imm16` |
+
+Sprint 3 validation evidence from local WSL2 and Docker runs:
+
+```text
+make test -> tests: ok
+make docker-test -> tests: ok
+make validate-gadget-fixture -> validate-gadget-fixture: ok
+make pattern-smoke -> validate-gadget-fixture: ok
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke -> scanner-smoke benchmark complete
+```
+
+Interpretation rule: exact pattern labels describe the recognized suffix ending at the terminator. They are not full semantic classifications and they are not exploitability claims.
+
+### 7. Sprint 4 semantic validation target
+
+Sprint 4 should add validation for:
+
+- semantic class labels,
+- controlled-register bitmaps,
+- stack-delta values,
+- primitive coverage summaries,
+- preservation of `unknown_candidate` for unsupported windows.
+
+Suggested commands after Sprint 4 implementation:
+
+```bash
+make semantic-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze ./tests/bin/gadgets
+```

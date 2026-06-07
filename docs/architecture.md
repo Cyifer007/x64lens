@@ -262,3 +262,83 @@ Patch 011 introduces the first exact byte-template matcher. It recognizes suffix
 - `syscall; ret`.
 
 This remains byte-template matching, not full decoding. On real binaries, especially for raw `ret imm16` candidates, some pattern labels can still correspond to unaligned byte sequences. Sprint 4 semantic classification and future decoder integration must preserve this limitation.
+
+## Sprint 3 closeout architecture checkpoint
+
+Sprint 3 completes the first full engine-side candidate path:
+
+```text
+filemap.asm
+  -> elf64.asm
+  -> phdr.asm
+  -> regions.asm
+  -> scanner.asm
+  -> arena.asm
+  -> patterns.asm
+  -> report_text.asm
+```
+
+The implemented layering is intentionally conservative:
+
+- `scanner.asm` discovers raw terminator-centered candidate windows.
+- `arena.asm` provides command-lifetime storage for candidate records.
+- `patterns.asm` tags exact suffix byte templates.
+- `classifier.asm` remains the future semantic layer.
+- `scoring.asm` remains the future usefulness layer.
+- `report_text.asm` renders facts but does not decide facts.
+
+This means Sprint 4 can add semantic classification without rewriting the scanner.
+
+## Exact pattern interpretation rule
+
+A Sprint 3 pattern label describes the exact suffix ending at the terminator, not necessarily the entire raw backward byte window.
+
+Example:
+
+```text
+bytes: 5f c3 5e c3
+pattern: pop rsi; ret
+```
+
+The pattern label means the suffix immediately before the terminator is `5e c3`. The earlier bytes are part of the bounded raw window retained for future decoding and analyst visibility.
+
+## Extension seams
+
+The current design should scale if future work follows these rules:
+
+1. Add semantic fields through `classifier.asm`, not `patterns.asm`.
+2. Add score fields through `scoring.asm`, not `classifier.asm`.
+3. Add full decoder output as side-car records keyed by candidate index, not by replacing raw candidate records.
+4. Add section labels as optional annotations, not as runtime mapping authority.
+5. Add JSON output from internal records, not from text output.
+6. Add benchmark summaries from raw TSV results, not from hand-edited tables.
+
+## Candidate record evolution guidance
+
+`gadget_record` is the raw candidate fact record. It should remain stable enough for tests and reporters. If future sprints need decoded instruction sequences, avoid bloating the raw record with variable-length fields. Prefer a side-car model such as:
+
+```text
+gadget_record[]
+semantic_record[] keyed by candidate index
+decode_record[] keyed by candidate index, optional future work
+```
+
+This preserves the current scanner while allowing a future decoder, richer classifier, or JSON reporter to evolve independently.
+
+## Sprint 4 insertion point
+
+Sprint 4 should add:
+
+```text
+patterns.asm -> classifier.asm -> report_text.asm
+```
+
+The first classifier should populate:
+
+- semantic class,
+- controlled-register bitmap,
+- stack delta,
+- side-effect flags where safe,
+- primitive coverage summary.
+
+It should not implement scoring or exploitability interpretation until those semantic facts are stable.

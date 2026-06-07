@@ -2,225 +2,101 @@
 
 ## Status
 
-In progress. Patch 008 Phase A, Patch 009 Phase B, and Patch 010 Phase C validated locally and in Docker. Patch 011 Phase D adds exact byte-template pattern matching and requires local validation.
+Complete.
+
+## Dates
+
+Start: 2026-06-07
+End: 2026-06-07
 
 ## Sprint goal
 
 Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
 
-## Phase A summary
+## Summary
 
-Patch 008 implements the first raw scanner path using a fixed-capacity candidate buffer. This is intentionally a bridge design. The goal is to prove scanner correctness and parser safety before adding an arena allocator.
+Sprint 3 successfully moved `x64lens` from loader-level executable-region discovery into the first working gadget discovery pipeline. The sprint produced a safe, bounded, record-backed raw scanner over executable `PT_LOAD + PF_X` regions, added repeatable scanner validation and smoke benchmarking, introduced mmap-backed arena storage for candidate records, and added exact byte-template suffix pattern labels.
 
-Implemented in Phase A:
+The most important architectural result is that the repository now has a clean multi-stage analysis pipeline:
+
+```text
+program headers -> executable regions -> raw candidate scanner -> exact pattern matcher -> future semantic classifier -> future scoring/reporting
+```
+
+This keeps the future semantic work isolated. Sprint 4 can now focus on semantic primitive classification without refactoring file mapping, program-header parsing, executable-region modeling, raw scanning, or exact suffix matching.
+
+## Phase A, raw scanner
+
+Patch 008 implemented the initial raw scanner with fixed-capacity candidate storage.
+
+Completed work:
 
 - `x64lens gadgets <file>` command routing.
-- `x64lens gadgets --max-depth N <file>` for `1 <= N <= 32`.
-- Fixed-capacity `gadget_record` buffer.
-- `gadget_summary` record for raw scanner counts.
-- Executable-region scanner over `PT_LOAD + PF_X` regions from Sprint 2.
-- Raw `ret` and `ret imm16` detection.
+- `x64lens gadgets --max-depth N <file>` with bounded values.
+- `gadget_record` and `gadget_summary` internal records.
+- Executable-region scanning over `PT_LOAD + PF_X` regions.
+- Raw `ret` and `ret imm16` terminator discovery.
 - Bounded backward byte-window extraction.
-- Raw text output with VA, file offset, window start, length, terminator type, and bytes.
-- Regression tests for raw scanner behavior against `tests/bin/gadgets`.
+- Raw candidate text output containing VA, file offset, window start, length, terminator type, and raw bytes.
+- Regression checks against `tests/bin/gadgets`.
 
-## Validation commands to run
+## Phase B, fixture validation and smoke benchmark
 
-```bash
-make normalize-perms
-make clean
-make
-make samples
-make test
-make docker-test
-./build/x64lens mitigations ./tests/bin/gadgets
-./build/x64lens gadgets ./tests/bin/gadgets
-./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
-objdump -d -Mintel ./tests/bin/gadgets
-```
+Patch 009 added repeatable validation and benchmark plumbing.
 
-## Expected validation signals
+Completed work:
 
-- `make test` ends with `tests: ok`.
-- `make docker-test` ends with `tests: ok`.
-- `x64lens gadgets ./tests/bin/gadgets` prints `Raw gadget candidates:`.
-- Default max depth prints `0x0000000000000008`.
-- Custom max depth prints `0x0000000000000004`.
-- Output includes at least one `terminator: ret`.
-- Output includes at least one `terminator: ret imm16`.
-- Output includes raw `bytes:` fields.
-- `objdump -d -Mintel` confirms the hand-authored fixture contains `ret` and `ret 0x10` instructions.
+- `make validate-gadget-fixture`.
+- `tools/validate-gadget-fixture.sh`.
+- `make bench-scanner-smoke`.
+- `benchmarks/scripts/bench-scanner-smoke.sh`.
+- TSV output for development-level scanner measurements.
+- Metadata sidecar output for host/tool environment details.
 
-## Known limitations
+This phase did not create publication claims. It created the measurement plumbing required before later claims can be made.
 
-- This is a pattern/terminator scanner, not a full x86_64 decoder.
-- Exact byte-template pattern labels are available after Patch 011, but raw candidates are not semantically classified yet.
-- Candidate scoring is not implemented yet.
-- JSON output is not implemented yet.
-- Candidate storage remains bounded at 4096 records and can return `EXIT_UNSUPPORTED` on very large binaries.
-- After Patch 010, candidate storage is arena-backed, but the scanner is still bounded and not growable yet.
+## Phase C, arena-backed candidate storage
 
-## Contract review placeholder
+Patch 010 added `src/arena.asm` and moved raw gadget candidate storage to command-lifetime mmap-backed arena memory.
 
-Current status through Patch 010:
+Completed work:
 
-- Development contract: followed. Scanner facts are stored in records before reporting, and Patch 010 kept storage infrastructure separate from scanner logic.
-- Parser safety contract: followed. Scanner reads only validated executable file-backed regions.
-- Comment/documentation contract: followed. Source files and docs were updated with human-readable rationale.
-- Output contract: followed. Output reports candidates and exact patterns without claiming exploitability.
-- Research contract: followed. Runtime claims remain hypotheses until benchmark data exists.
-- Context persistence contract: followed. Sprint 3 state and backlog are being updated as the sprint progresses.
+- `src/arena.asm` with a minimal anonymous mmap-backed allocator.
+- Arena-backed `gadget_record[]` allocation.
+- Preservation of the existing bounded capacity model.
+- `make arena-smoke`.
+- Continued local and Docker validation.
 
-## Phase A validation status
+This phase improved scalability without making candidate storage growable yet. That was the correct tradeoff because it avoided destabilizing the scanner while removing the static `.bss` candidate array.
 
-Patch 008 was locally validated in WSL2 and Docker. The validation output showed:
+## Phase D, exact pattern matcher
 
-```text
-[test] raw gadget scanner default depth
-[test] raw gadget scanner custom max-depth
-tests: ok
-```
+Patch 011 added `src/patterns.asm` and exact byte-template suffix labels.
 
-Docker validation also completed with `tests: ok`.
+Completed work:
 
-Manual fixture validation produced the expected scanner facts for `tests/bin/gadgets`:
+- `x64lens_patterns_match_exact`.
+- Exact `PATTERN_*` IDs for:
+  - `ret`
+  - `ret imm16`
+  - `pop rax; ret`
+  - `pop rcx; ret`
+  - `pop rdx; ret`
+  - `pop rbx; ret`
+  - `pop rsp; ret`
+  - `pop rbp; ret`
+  - `pop rsi; ret`
+  - `pop rdi; ret`
+  - `pop r8; ret` through `pop r15; ret`
+  - `leave; ret`
+  - `syscall; ret`
+- `Exact pattern count` in text output.
+- `exact_pattern_count` in scanner smoke benchmark TSV output.
+- Fixture validator updates for exact pattern count and known pattern labels.
 
-```text
-Candidate count: 0x0000000000000007
-ret count: 0x0000000000000006
-ret imm16 count: 0x0000000000000001
-```
+Important interpretation rule: Sprint 3 pattern labels describe the exact suffix ending at the terminator. They do not mean the entire raw backward byte window is a clean decoded instruction sequence. Full semantic classification begins in Sprint 4.
 
-The `objdump -d -Mintel ./tests/bin/gadgets` check confirmed the fixture contains:
-
-```text
-401000: pop rdi
-401001: ret
-401002: pop rsi
-401003: ret
-401004: pop rdx
-401005: ret
-401006: pop rax
-401007: ret
-401008: leave
-401009: ret
-40100a: syscall
-40100c: ret
-40100d: ret 0x10
-```
-
-The `/bin/ls` spot check produced hundreds of raw candidates at max-depth 4. This is expected for a raw byte scanner over a real executable region. Many `ret imm16` observations are raw byte candidates, not confirmed instruction-boundary gadgets. Semantic filtering and decoder-aware interpretation are future work.
-
-## Mitigation note for `tests/bin/gadgets`
-
-The fixture reported:
-
-```text
-NX stack: unknown
-RELRO: not found
-Dynamic linking: no
-```
-
-This is expected. The fixture is a tiny static `-nostdlib` binary used for deterministic scanner bytes. It is not a mitigation fixture. Mitigation states are validated with `minimal_nopie`, `minimal_pie_canary`, and `minimal_execstack`.
-
-## Phase B, Patch 009 plan
-
-Patch 009 added the first scanner smoke benchmark and an objdump-backed fixture validation helper. It did not introduce semantic classification, scoring, JSON output, or the arena allocator. Patch 010 is the follow-on arena allocator phase.
-
-Validation commands for Patch 009:
-
-```bash
-make normalize-perms
-make clean
-make
-make samples
-make test
-make docker-test
-make validate-gadget-fixture
-RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
-```
-
-## Contract review after Phase A
-
-- Development contract: followed. Scanner facts are stored in records before reporting.
-- Parser safety contract: followed. Scanner reads only validated executable file-backed regions.
-- Comment/documentation contract: followed. Source files and docs were updated with human-readable rationale.
-- Output contract: followed. Output does not claim exploitability.
-- Research contract: followed. Runtime claims remain hypotheses until benchmark data exists.
-- Context persistence contract: followed. Sprint 3 state and backlog are being updated as the sprint progresses.
-
-
-## Phase B validation status
-
-Patch 009 validated locally and in Docker. The validation output showed:
-
-```text
-[test] raw gadget scanner default depth
-[test] raw gadget scanner custom max-depth
-tests: ok
-validate-gadget-fixture: ok
-scanner-smoke benchmark complete
-```
-
-The first scanner smoke benchmark produced TSV and metadata files under `benchmarks/results/` and recorded tool version, command, run count, timestamp, WSL2 kernel, NASM version, GNU ld version, and GCC version. These artifacts are development evidence and are intentionally ignored by Git unless explicitly promoted into a research artifact.
-
-## Phase C plan
-
-Patch 010 moves raw gadget candidate storage from a static `.bss` array to an mmap-backed arena. The expected scanner-visible behavior should remain unchanged:
-
-- candidate capacity: 4096 records,
-- hand-authored fixture candidate count: 7,
-- ret count: 6,
-- ret imm16 count: 1.
-
-Validation commands for Patch 010:
-
-```bash
-make normalize-perms
-make clean
-make
-make samples
-make test
-make docker-test
-make validate-gadget-fixture
-make arena-smoke
-RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
-```
-
-
-## Phase C validation status
-
-Patch 010 validated locally and in Docker. The user-provided terminal output showed:
-
-```text
-[test] raw gadget scanner default depth
-[test] raw gadget scanner custom max-depth
-tests: ok
-validate-gadget-fixture: ok
-arena-smoke: ok
-scanner-smoke benchmark complete
-```
-
-Manual checks confirmed that `./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets` still reports:
-
-```text
-Candidate capacity: 0x0000000000001000
-Candidate count: 0x0000000000000007
-ret count: 0x0000000000000006
-ret imm16 count: 0x0000000000000001
-```
-
-Patch 010 was committed and pushed as:
-
-```text
-106af47 feat: add Sprint 3 arena-backed candidate storage
-```
-
-## Phase D plan
-
-Patch 011 adds exact byte-template pattern matching. The matcher should tag raw candidates with pattern IDs such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`, while leaving `SEM_UNKNOWN_CANDIDATE` unchanged. This keeps Sprint 3 focused on scanner and pattern facts, and leaves semantic primitive classification for Sprint 4.
-
-Validation commands for Patch 011:
+## Validation commands run
 
 ```bash
 make normalize-perms
@@ -233,4 +109,126 @@ make validate-gadget-fixture
 make pattern-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 40
 ```
+
+## Key validation output
+
+### Standard tests
+
+```text
+[test] version
+[test] help
+[test] usage failure
+[test] valid ELF64 info
+[test] system ELF64 info
+[test] non-ELF rejection
+[test] truncated ELF rejection
+[test] wrong architecture rejection
+[test] malformed program header rejection
+[test] mitigations non-PIE noexecstack
+[test] mitigations PIE RELRO
+[test] mitigations executable stack
+[test] raw gadget scanner default depth
+[test] raw gadget scanner custom max-depth
+tests: ok
+```
+
+### Docker tests
+
+```text
+make docker-test
+...
+[test] raw gadget scanner default depth
+[test] raw gadget scanner custom max-depth
+tests: ok
+```
+
+### Fixture validation
+
+```text
+validate-gadget-fixture: ok
+  fixture: ./tests/bin/gadgets
+  x64lens: ./build/x64lens
+  default candidates: 7
+  default ret count: 6
+  default ret imm16 count: 1
+  default exact pattern count: 7
+```
+
+### Pattern smoke
+
+```text
+make pattern-smoke
+...
+validate-gadget-fixture: ok
+  default candidates: 7
+  default ret count: 6
+  default ret imm16 count: 1
+  default exact pattern count: 7
+```
+
+### Scanner smoke benchmark
+
+```text
+scanner-smoke benchmark complete
+  results: /home/cyifer007/x64lens/benchmarks/results/scanner-smoke-20260607T215830Z.tsv
+  metadata: /home/cyifer007/x64lens/benchmarks/results/scanner-smoke-20260607T215830Z.meta
+  runs: 5
+  max_depth: 4
+```
+
+### Controlled fixture output
+
+```text
+Candidate count: 0x0000000000000007
+ret count: 0x0000000000000006
+ret imm16 count: 0x0000000000000001
+Exact pattern count: 0x0000000000000007
+pattern: pop rdi; ret
+pattern: pop rsi; ret
+pattern: pop rdx; ret
+pattern: pop rax; ret
+pattern: leave; ret
+pattern: syscall; ret
+pattern: ret imm16
+```
+
+### `/bin/ls` smoke output
+
+`/bin/ls` returned many raw candidates and exact pattern labels. This is expected for a byte-template scanner. The labels remain raw suffix labels, not final semantic claims.
+
+## Contract review
+
+- **Development contract:** followed. The scanner, pattern matcher, classifier, scoring, and reporting boundaries remained separate.
+- **Parser safety contract:** followed. File-derived offsets and executable regions are validated before scanning.
+- **Internal-facts-before-output rule:** followed. Scanner and pattern facts are stored in internal records before report rendering.
+- **Comment and documentation contract:** followed. Touched source, test, benchmark, and documentation files were updated together.
+- **Output contract:** followed. Text output reports raw facts and exact patterns without claiming exploitability.
+- **Research contract:** followed. Smoke benchmark output is treated as development evidence, not publication evidence.
+- **Context persistence contract:** followed. Sprint state, backlog, validation plan, benchmark methodology, and project context were updated.
+
+## Known limitations after Sprint 3
+
+- The scanner is pattern-based, not a full x86_64 decoder.
+- Raw windows may include extra bytes before the exact suffix pattern.
+- `ret imm16` can appear as a byte sequence inside other instructions because full decoding is not implemented yet.
+- `Exact pattern count` is not the same as semantic primitive count.
+- Register bitmaps are not populated yet.
+- Stack deltas are not populated yet.
+- Side-effect flags are not populated yet.
+- Scores are not populated yet.
+- JSON output is not implemented yet.
+- Candidate storage is arena-backed but still bounded by `GADGET_RECORD_MAX`.
+
+## Sprint 4 handoff
+
+Sprint 4 should implement the first semantic classifier. The first classifier should consume `PATTERN_*` IDs and populate:
+
+- `GADGET_SEMANTIC_CLASS`,
+- `GADGET_REGS_CONTROLLED`,
+- `GADGET_STACK_DELTA`,
+- `GADGET_SIDE_EFFECT_FLAGS`,
+- primitive coverage summary.
+
+Do not implement scoring before semantic facts exist. Do not implement full JSON before the semantic record model stabilizes.

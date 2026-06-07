@@ -2,15 +2,22 @@
 
 ## Status
 
-In progress. Patch 008 Phase A, Patch 009 Phase B, and Patch 010 Phase C validated locally and in Docker. Patch 011 Phase D adds lightweight exact byte-template pattern matching while keeping semantic classification in Sprint 4.
+Complete. Patch 008 Phase A, Patch 009 Phase B, Patch 010 Phase C, and Patch 011 Phase D were validated locally and in Docker.
 
 ## Sprint goal
 
 Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
 
-Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove scanner correctness. Phase B added fixture validation and a scanner smoke benchmark. Phase C introduced a simple arena allocator after the raw scanner and benchmark harness validated cleanly. Phase D adds exact pattern IDs for simple byte templates so Sprint 4 can focus on semantic classification instead of raw suffix matching.
+Sprint 3 was completed in four intentionally narrow phases:
 
-## Planned deliverables
+1. **Phase A, Patch 008:** implement the raw scanner with a fixed-capacity buffer.
+2. **Phase B, Patch 009:** add fixture validation and scanner smoke benchmarking.
+3. **Phase C, Patch 010:** replace fixed static backing with mmap-backed arena candidate storage.
+4. **Phase D, Patch 011:** add exact byte-template pattern IDs and pattern labels while keeping semantic classification deferred to Sprint 4.
+
+The sprint intentionally stops at raw candidate discovery plus exact suffix pattern tagging. Semantic primitive classification, register bitmaps, stack deltas, side-effect metadata, scoring, and JSON reports remain downstream work.
+
+## Completed deliverables
 
 - [x] Decide fixed candidate buffer vs immediate arena allocator. Decision: fixed buffer first.
 - [x] Add `gadgets [--max-depth N] <file>` CLI routing.
@@ -30,13 +37,13 @@ Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove
 - [x] Add exact byte-template pattern IDs for known Sprint 3 fixture patterns.
 - [x] Update `gadgets` output with exact pattern labels and pattern count.
 - [x] Update fixture validator and scanner smoke benchmark for exact pattern count.
-- [ ] Validate exact pattern matcher locally and in Docker.
-- [ ] Write Sprint 3 retrospective after Phase D validation.
+- [x] Validate exact pattern matcher locally and in Docker.
+- [x] Write Sprint 3 retrospective after Phase D validation.
 
 ## Acceptance criteria
 
-- [x] `make clean && make && make test` succeeds for Patch 008 Phase A.
-- [x] `make docker-test` succeeds for Patch 008 Phase A.
+- [x] `make clean && make && make test` succeeds.
+- [x] `make docker-test` succeeds.
 - [x] `x64lens mitigations <file>` remains stable after scanner changes.
 - [x] `x64lens gadgets ./tests/bin/gadgets` runs without crashing.
 - [x] `x64lens gadgets --max-depth 4 ./tests/bin/gadgets` runs without crashing.
@@ -47,126 +54,10 @@ Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove
 - [x] Candidate extraction is bounded by default max depth.
 - [x] Scanner does not read outside executable-region file bounds under current regression tests.
 - [x] Invalid inputs fail safely through the `gadgets` command.
-- [ ] Sprint 3 retrospective is updated through Phase D and finalized at sprint close.
+- [x] Exact pattern matcher tags the controlled gadget fixture.
+- [x] Sprint 3 retrospective is finalized.
 
-## Suggested validation commands
-
-```bash
-make normalize-perms
-make clean
-make
-make samples
-make test
-make docker-test
-./build/x64lens mitigations ./tests/bin/gadgets
-./build/x64lens gadgets ./tests/bin/gadgets
-./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
-objdump -d -Mintel ./tests/bin/gadgets
-```
-
-## Phase A implementation notes
-
-Patch 008 starts with fixed candidate storage because scanner correctness is the highest-risk technical item. The scanner now stores raw candidate facts before reporting, satisfying the internal-facts-before-output rule without prematurely introducing allocator complexity.
-
-Implemented in Phase A:
-
-1. `x64lens gadgets <file>` command path.
-2. `x64lens gadgets --max-depth N <file>` with `1 <= N <= 32`.
-3. Fixed `gadget_record` buffer with explicit capacity failure instead of truncation.
-4. `gadget_summary` record for scanner counts and reporting.
-5. Executable-region scanner over Sprint 2 `PT_LOAD + PF_X` regions.
-6. `ret` and `ret imm16` terminator detection.
-7. Bounded backward byte-window extraction.
-8. Raw text report with VA, file offset, window start, length, terminator type, and bytes.
-
-## Sprint 2 follow-up items assessed for Sprint 3
-
-The following Sprint 2 follow-up items are not Sprint 3 Phase A blockers:
-
-- Automated structured `readelf` comparison: useful validation hardening, but not required for scanner implementation.
-- `checksec` comparison: useful once mitigation reporting expands, but not scanner-critical.
-- `rabin2 -I` comparison: useful once external tool comparison begins, but not scanner-critical.
-- Full RELRO detection: requires dynamic-section parsing and should not be mixed into raw scanner work.
-- Canary detection: requires dynamic symbol or section/symbol parsing and should not be mixed into raw scanner work.
-- Section labels for executable regions: useful for readability, but scanner correctness depends on program headers, not labels.
-
-The only Sprint 2 follow-up directly worked into Sprint 3 is preparing executable-region records for scanner consumption. That dependency is already satisfied by Sprint 2.
-
-## Risks
-
-- Scanner bugs can easily become out-of-bounds reads. Region file offset plus region size must be validated before scanning.
-- A full x86 decoder is not a Sprint 3 goal. Keep this sprint focused on raw candidate discovery.
-- The bounded candidate capacity can be exceeded on large binaries. The correct behavior is explicit `EXIT_UNSUPPORTED`, not silent truncation.
-- The scanner is byte-pattern based. It may find unaligned raw candidates, which is acceptable for this phase and must be documented as a limitation.
-
-## Non-goals
-
-- No semantic classification in Sprint 3. Pattern IDs are not semantic classes.
-- No scoring in Sprint 3.
-- No JSON output in Sprint 3.
-- No full decoder work.
-- No full RELRO or canary implementation in Sprint 3 Phase A.
-
-## Next steps after Phase A validation
-
-If Patch 008 validates locally and in Docker:
-
-1. Capture `gadgets` output for `tests/bin/gadgets`.
-2. Compare candidate bytes against `objdump -d -Mintel tests/bin/gadgets`.
-3. Add first scanner smoke measurement.
-4. Decide whether to add the arena allocator in Sprint 3 Phase B or carry it forward.
-5. Update `docs/sprints/sprint-03-retro.md` and local-only `PROJECT_STATE.md`.
-
-
-## Phase B implementation notes
-
-Patch 009 adds two validation and measurement layers:
-
-1. `tools/validate-gadget-fixture.sh` performs an objdump-backed correctness check against `tests/bin/gadgets`.
-2. `benchmarks/scripts/bench-scanner-smoke.sh` records repeated raw scanner runs into TSV benchmark smoke artifacts under `benchmarks/results/`.
-
-The smoke benchmark is intentionally limited. It proves benchmark plumbing and captures first development measurements, but it is not publication evidence by itself. Publication claims require baseline tool comparisons, a documented corpus, environment metadata, repeated runs, and statistical summaries.
-
-Phase B did not add semantic classification, scoring, JSON output, or the arena allocator. After Phase B validation, Phase C proceeds with the arena allocator while keeping semantic classification and scoring out of scope.
-
-
-## Phase C implementation notes
-
-Patch 010 introduces `src/arena.asm`, a minimal mmap-backed bump allocator. The first consumer is the `gadgets` command candidate buffer. The scanner itself remains storage-agnostic: it receives a pointer to `gadget_record[]` and reads the candidate capacity from `gadget_summary`. This preserves module boundaries and prepares later sprints for larger analysis records without changing raw scanner semantics.
-
-Phase C deliberately does not add semantic classification, scoring, JSON output, full RELRO detection, canary detection, or a full decoder. Those remain future work.
-
-Additional validation commands for Patch 010:
-
-```bash
-make normalize-perms
-make clean
-make
-make samples
-make test
-make docker-test
-make validate-gadget-fixture
-make arena-smoke
-RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
-./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
-./build/x64lens gadgets --max-depth 4 /bin/ls
-```
-
-
-## Phase D implementation notes
-
-Patch 011 adds the first lightweight exact pattern matcher. The matcher consumes raw candidate records and assigns `PATTERN_*` IDs for exact suffix templates. It recognizes:
-
-- `ret`,
-- `ret imm16`,
-- `pop rax; ret`, `pop rcx; ret`, `pop rdx; ret`, `pop rbx; ret`, `pop rsp; ret`, `pop rbp; ret`, `pop rsi; ret`, `pop rdi; ret`,
-- `pop r8; ret` through `pop r15; ret`,
-- `leave; ret`,
-- `syscall; ret`.
-
-Phase D deliberately does not set semantic classes, register bitmaps, stack deltas, side-effect flags, or scores. Those are Sprint 4 responsibilities. The pattern matcher gives Sprint 4 clean input facts without collapsing pattern recognition and semantic interpretation into one module.
-
-Additional validation commands for Patch 011:
+## Final validation commands
 
 ```bash
 make normalize-perms
@@ -181,3 +72,37 @@ RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 40
 ```
+
+## Final validation signals
+
+The controlled gadget fixture produced the expected count model:
+
+```text
+Candidate count: 0x0000000000000007
+ret count: 0x0000000000000006
+ret imm16 count: 0x0000000000000001
+Exact pattern count: 0x0000000000000007
+```
+
+The fixture validator reported:
+
+```text
+validate-gadget-fixture: ok
+  default candidates: 7
+  default ret count: 6
+  default ret imm16 count: 1
+  default exact pattern count: 7
+```
+
+## Design notes carried forward
+
+- `scanner.asm` owns raw candidate discovery only.
+- `patterns.asm` owns exact byte-template suffix IDs only.
+- `classifier.asm` will map exact pattern IDs into semantic records in Sprint 4.
+- `scoring.asm` remains deferred until semantic facts exist.
+- `report_text.asm` prints facts but does not decide facts.
+- `report_json.asm` must later emit from internal records, not from text scraping.
+
+## Sprint 4 handoff
+
+Sprint 4 should begin with semantic classification over existing `PATTERN_*` IDs. The first implementation should populate semantic class, controlled-register bitmap, stack delta, and primitive coverage summary for the exact patterns already recognized in Sprint 3.

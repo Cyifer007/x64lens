@@ -144,3 +144,27 @@ Sprint 3 Patch 010 introduces arena-backed candidate storage. Scanner smoke benc
 
 
 Patch 011 adds `exact_pattern_count` to the scanner smoke TSV. This is a development metric showing how many raw candidates were tagged with exact byte-template pattern IDs. It is not yet a semantic primitive count and must not be used as a claim about exploitable gadget availability.
+
+## Sprint 3 closeout benchmark status
+
+Sprint 3 created benchmark plumbing but not publication results. The scanner smoke benchmark now records raw candidate counts, `ret` counts, `ret imm16` counts, exact pattern counts, wall time, max RSS, target size, command, run count, and environment metadata.
+
+Current interpretation boundaries:
+
+- `candidate_count` is a raw terminator-centered candidate-window count.
+- `exact_pattern_count` is an exact suffix pattern tag count.
+- `exact_pattern_count` is not semantic primitive coverage.
+- `semantic_primitive_count` begins only after Sprint 4 classifier work.
+- Publication claims require repeated baseline comparisons after the scanner, classifier, scoring, and output modes stabilize.
+
+## Expanded benchmark roadmap
+
+Future benchmark phases should proceed in this order:
+
+1. controlled fixture correctness,
+2. scanner smoke measurements,
+3. semantic primitive coverage measurement,
+4. baseline tool comparison,
+5. compiler and hardening matrix measurement,
+6. network-facing infrastructure binary case study,
+7. publication summary tables with raw result preservation.

@@ -62,3 +62,15 @@ x64lens version
 ## Output stability
 
 Human-readable text output may change before `1.0.0`. JSON output must include `schema_version` and should remain backward-compatible within the same schema major version.
+
+## Current Sprint 3 `gadgets` behavior
+
+The current `gadgets` command emits raw candidate windows and exact suffix pattern labels. It does not yet emit final semantic classes, scores, or JSON output.
+
+Important interpretation details:
+
+- `--max-depth` limits the bytes considered before the terminator, not necessarily the total printed byte count when the terminator itself is included.
+- `pattern: ret` means the candidate ends in a recognized `ret` suffix.
+- `pattern: pop rdi; ret` means the suffix immediately before the terminator matches `5f c3`.
+- Pattern labels are not exploitability claims.
+- Full semantic classification starts in Sprint 4.

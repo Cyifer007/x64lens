@@ -74,11 +74,12 @@
 - [x] Add exact pattern labels to `gadgets` output.
 - [x] Add exact pattern count to scanner smoke benchmark output.
 - [x] Update fixture validator for exact pattern matching.
-- [ ] Validate Patch 011 exact pattern matcher locally and in Docker.
+- [x] Validate Patch 011 exact pattern matcher locally and in Docker.
 
 ## Sprint 4
 
 - [x] Add initial exact pattern table. Completed early in Sprint 3 Phase D.
+- [ ] Implement first real classifier routine in `src/classifier.asm`.
 - [ ] Map exact pattern IDs into semantic classes.
 - [ ] Classify `pop reg; ret` gadgets.
 - [ ] Classify `leave; ret`.
@@ -107,3 +108,13 @@
 ## Local-only/private process backlog
 
 Private context files, course-specific notes, and session-state tracking belong under `.local/project-context/` and are intentionally excluded from public commits.
+
+
+## Sprint 7 through Sprint 12 candidate expansion
+
+- [ ] Sprint 7: dynamic-section parsing for full RELRO, canary indicators, section labels, and external mitigation comparison helpers.
+- [ ] Sprint 8: expanded primitive templates, multi-pop patterns, conservative register-transfer and memory templates, and larger fixture corpus.
+- [ ] Sprint 9: compiler and hardening matrix corpus with reproducible build commands.
+- [ ] Sprint 10: repeated research-grade baseline benchmarks against ROPgadget, Ropper, and ropr.
+- [ ] Sprint 11: integrated `analyze` report with mitigation context, primitive coverage, scoring, JSON parity, and limitations.
+- [ ] Sprint 12: IEEE paper draft, reproduction package, release-candidate artifacts, checksums, and extended-semester retrospective.

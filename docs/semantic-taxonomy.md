@@ -61,3 +61,30 @@ Sprint 3 intentionally stops before semantic classification. The `gadgets` comma
 - raw bytes.
 
 Patch 011 adds exact `PATTERN_*` IDs for simple templates such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`. All Sprint 3 candidates still use `SEM_UNKNOWN_CANDIDATE` internally. Sprint 4 will map exact pattern IDs into semantic classes such as `arg_control`, `syscall_trigger`, and `stack_pivot`.
+
+## Sprint 4 classifier mapping target
+
+Sprint 4 should translate exact pattern IDs into semantic facts conservatively:
+
+| Exact pattern family | Semantic class | Controlled registers | Initial stack delta model |
+| -------------------- | -------------- | -------------------- | ------------------------- |
+| `ret` | `alignment` | none | 8 |
+| `ret imm16` | `alignment` | none | `8 + imm16` later, unknown until immediate extraction is modeled |
+| `pop rdi; ret` | `arg_control` | `rdi` | 16 |
+| `pop rsi; ret` | `arg_control` | `rsi` | 16 |
+| `pop rdx; ret` | `arg_control` | `rdx` | 16 |
+| `pop rcx; ret` | `arg_control` | `rcx` | 16 |
+| `pop r8; ret` | `arg_control` | `r8` | 16 |
+| `pop r9; ret` | `arg_control` | `r9` | 16 |
+| `pop rax; ret` | `syscall_num_control` | `rax` | 16 |
+| `pop rsp; ret` | `stack_pivot` | `rsp` | special case |
+| `leave; ret` | `stack_pivot` | `rsp`, `rbp` relationship | special case |
+| `syscall; ret` | `syscall_trigger` | none | 8 after syscall path returns, but syscall behavior is runtime-dependent |
+
+## Suffix pattern warning
+
+Sprint 3 pattern labels are exact suffix labels, not full decoded instruction sequences. A raw candidate window can include extra bytes before the recognized suffix. The classifier must therefore treat `PATTERN_*` as a trusted exact suffix ID, but it must not assume the whole raw window is decoded unless a future decoder record says so.
+
+## Conservative classification rule
+
+When a candidate does not match a supported exact pattern, or when the supported pattern is ambiguous under the current model, leave the semantic class as `unknown_candidate`. Overclassification is worse than underclassification because it corrupts primitive coverage metrics and later scoring.
