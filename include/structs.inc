@@ -81,10 +81,23 @@
 %define GADGET_SUMMARY_CAPACITY       32
 %define GADGET_SUMMARY_RECORD_SIZE    40
 
-; Sprint 3 fixed-capacity candidate buffer. This is the bridge before the
-; arena allocator. If the scanner reaches this limit it fails explicitly with
-; EXIT_UNSUPPORTED rather than silently truncating candidate facts.
+; arena record offsets
+;
+; Sprint 3 Phase C uses a tiny mmap-backed arena for analysis records that are
+; too large or too lifecycle-sensitive to keep in fixed .bss buffers. The first
+; consumer is the raw gadget candidate array. Future consumers may include
+; semantic records, JSON staging buffers, or benchmark facts.
+%define ARENA_BASE                    0
+%define ARENA_SIZE                    8
+%define ARENA_USED                    16
+%define ARENA_RECORD_SIZE             24
+
+; Sprint 3 candidate capacity. The scanner now receives an arena-backed buffer
+; from gadgets.asm, but capacity is still bounded to keep behavior stable and
+; testable. Later sprints may make this configurable or growable.
 %define GADGET_RECORD_MAX             4096
+%define GADGET_RECORD_ARENA_BYTES     (GADGET_RECORD_SIZE * GADGET_RECORD_MAX)
+%define GADGET_RECORD_ALIGN           16
 
 ; raw scanner terminator types
 %define GADGET_TERM_RET               1

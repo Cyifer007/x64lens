@@ -66,8 +66,10 @@
 - [x] Add regression checks against `tests/bin/gadgets`.
 - [x] Validate Patch 008 on WSL2 and Docker.
 - [x] Add first scanner smoke benchmark harness.
-- [ ] Run first scanner smoke measurement and preserve generated TSV metadata.
-- [ ] Decide whether simple arena allocator lands in Sprint 3 Phase C or carries forward.
+- [x] Run first scanner smoke measurement and preserve generated TSV metadata.
+- [x] Decide whether simple arena allocator lands in Sprint 3 Phase C or carries forward. Decision: implement in Phase C.
+- [x] Add mmap-backed arena allocator for raw gadget candidate storage.
+- [ ] Validate arena-backed scanner path locally and in Docker.
 
 ## Sprint 4
 

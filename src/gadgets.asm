@@ -12,7 +12,9 @@
 ;   This command discovers raw `ret` and `ret imm16` candidates only. It does
 ;   not classify gadgets semantically, score gadgets, generate chains, or claim
 ;   exploitability. Those layers belong to patterns.asm, classifier.asm,
-;   scoring.asm, and later analyze/report modules.
+;   scoring.asm, and later analyze/report modules. Patch 010 moves candidate
+;   storage from a static .bss array to a tiny mmap-backed arena while keeping
+;   the same scanner and reporting contracts.
 
 bits 64
 default rel
@@ -27,13 +29,16 @@ extern x64lens_phdr_analyze
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_report_text_gadgets
 extern x64lens_error_print_status
+extern x64lens_arena_init
+extern x64lens_arena_alloc
+extern x64lens_arena_destroy
 
 section .bss
 gad_mapped_file:     resb FILEMAP_RECORD_SIZE
 gad_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
 gad_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 gad_summary:         resb GADGET_SUMMARY_RECORD_SIZE
-gad_candidates:      resb GADGET_RECORD_SIZE * GADGET_RECORD_MAX
+gad_candidate_arena: resb ARENA_RECORD_SIZE
 
 section .text
 global x64lens_command_gadgets
@@ -56,9 +61,11 @@ x64lens_command_gadgets:
     push    r12
     push    r13
     push    r14
+    push    r15
 
     mov     r12, rdi            ; preserve target path for reporting
     mov     r14, rsi            ; max depth from CLI or default
+    xor     r15, r15            ; arena-backed gadget_record[] pointer
 
     ; Map target file read-only. The scanner treats the mapped bytes as data,
     ; never as executable code.
@@ -86,19 +93,36 @@ x64lens_command_gadgets:
     test    rax, rax
     jne     .error
 
+    ; Allocate candidate storage from the Sprint 3 arena. The scanner still
+    ; receives a plain gadget_record[] pointer, so later callers do not care
+    ; whether storage came from .bss, mmap, or a growable allocator.
+    lea     rdi, [gad_candidate_arena]
+    mov     rsi, GADGET_RECORD_ARENA_BYTES
+    call    x64lens_arena_init
+    test    rax, rax
+    jne     .error
+
+    lea     rdi, [gad_candidate_arena]
+    mov     rsi, GADGET_RECORD_ARENA_BYTES
+    mov     rdx, GADGET_RECORD_ALIGN
+    call    x64lens_arena_alloc
+    test    rax, rax
+    jz      .arena_alloc_failed
+    mov     r15, rax            ; arena-backed gadget_record[] pointer
+
     ; Scan executable regions and populate raw candidate records. The scanner
-    ; owns candidate discovery but does not print or classify.
-    ; Store the bounded scanner depth in the summary record before the scanner
-    ; resets count fields. This avoids adding a seventh call argument and keeps
-    ; the scanner interface simple for Sprint 3.
+    ; owns candidate discovery but does not print or classify. Store the
+    ; bounded scanner depth and candidate capacity in the summary record before
+    ; the scanner resets count fields.
     mov     [gad_summary + GADGET_SUMMARY_MAX_DEPTH], r14
+    mov     qword [gad_summary + GADGET_SUMMARY_CAPACITY], GADGET_RECORD_MAX
 
     mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
     mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
     lea     rdx, [gad_phdr_summary]
     lea     rcx, [gad_regions]
     lea     r8, [gad_summary]
-    lea     r9, [gad_candidates]
+    mov     r9, r15
     call    x64lens_scanner_find_ret_candidates
     test    rax, rax
     jne     .error
@@ -106,17 +130,24 @@ x64lens_command_gadgets:
     ; Emit raw candidate records for human inspection and test validation.
     mov     rdi, r12
     lea     rsi, [gad_summary]
-    lea     rdx, [gad_candidates]
+    mov     rdx, r15
     mov     rcx, [gad_mapped_file + FILEMAP_ADDR]
     call    x64lens_report_text_gadgets
 
+    lea     rdi, [gad_candidate_arena]
+    call    x64lens_arena_destroy
     lea     rdi, [gad_mapped_file]
     call    x64lens_file_unmap
     xor     rax, rax
     jmp     .done
 
+.arena_alloc_failed:
+    mov     rax, EXIT_BOUNDS
+
 .error:
     mov     r13, rax
+    lea     rdi, [gad_candidate_arena]
+    call    x64lens_arena_destroy
     lea     rdi, [gad_mapped_file]
     call    x64lens_file_unmap
     mov     rdi, r13
@@ -124,6 +155,7 @@ x64lens_command_gadgets:
     mov     rax, r13
 
 .done:
+    pop     r15
     pop     r14
     pop     r13
     pop     r12

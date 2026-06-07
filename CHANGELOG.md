@@ -8,6 +8,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added Sprint 3 Phase C arena allocator support: `src/arena.asm`, arena-backed raw gadget candidate storage for `x64lens gadgets`, and `make arena-smoke`.
+- Updated scanner capacity handling so `scanner.asm` consumes caller-supplied candidate capacity from `gadget_summary`.
 - Added Sprint 3 Phase B scanner validation and benchmark smoke tooling: `make validate-gadget-fixture`, `make bench-scanner-smoke`, `tools/validate-gadget-fixture.sh`, and `benchmarks/scripts/bench-scanner-smoke.sh`.
 - Strengthened raw gadget scanner regression checks with exact expected fixture counts for `tests/bin/gadgets`.
 - Documented that `NX stack: unknown` and `RELRO: not found` are expected for the static `tests/bin/gadgets` fixture because it is a scanner fixture, not a mitigation fixture.
@@ -63,4 +65,4 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Planned
 
-- Sprint 3: continue hardening raw gadget candidate scanning, add first scanner smoke measurement, and decide whether the arena allocator lands in Sprint 3 phase 2 or carries into Sprint 4.
+- Sprint 3: validate arena-backed scanner storage, then decide whether to proceed to lightweight pattern matching or carry semantic classification into Sprint 4.

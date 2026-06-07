@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -66,6 +66,17 @@ validate-gadget-fixture: all samples
 	bash tools/validate-gadget-fixture.sh ./$(TARGET) ./tests/bin/gadgets
 
 scanner-smoke: validate-gadget-fixture
+
+# Sprint 3 Phase C arena smoke target. It exercises the gadgets command path
+# after candidate storage moved from static .bss memory to an mmap-backed arena.
+# The fixture count remains the same; this target ensures allocator plumbing did
+# not change scanner-visible behavior.
+arena-smoke: all samples
+	@./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-arena-smoke.txt
+	@grep -q "Candidate capacity: 0x0000000000001000" /tmp/x64lens-arena-smoke.txt
+	@grep -q "Candidate count: 0x0000000000000007" /tmp/x64lens-arena-smoke.txt
+	@grep -q "ret imm16 count: 0x0000000000000001" /tmp/x64lens-arena-smoke.txt
+	@echo "arena-smoke: ok"
 
 # First Sprint 3 scanner benchmark smoke target. This records repeated runs,
 # elapsed time, max RSS, exit code, candidate counts, and output size in

@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Patch 008 begins Phase A implementation and requires local validation.
+In progress. Patch 008 Phase A and Patch 009 Phase B validated locally and in Docker. Patch 010 Phase C introduces the arena allocator and requires local validation.
 
 ## Sprint goal
 
@@ -57,8 +57,8 @@ objdump -d -Mintel ./tests/bin/gadgets
 - Raw candidates are not semantically classified yet.
 - Candidate scoring is not implemented yet.
 - JSON output is not implemented yet.
-- Fixed-capacity candidate storage can return `EXIT_UNSUPPORTED` on very large binaries.
-- Arena allocation remains Phase B or later.
+- Candidate storage remains bounded at 4096 records and can return `EXIT_UNSUPPORTED` on very large binaries.
+- After Patch 010, candidate storage is arena-backed, but the scanner is still bounded and not growable yet.
 
 ## Contract review placeholder
 
@@ -125,7 +125,7 @@ This is expected. The fixture is a tiny static `-nostdlib` binary used for deter
 
 ## Phase B, Patch 009 plan
 
-Patch 009 adds the first scanner smoke benchmark and an objdump-backed fixture validation helper. It does not introduce semantic classification, scoring, JSON output, or the arena allocator.
+Patch 009 added the first scanner smoke benchmark and an objdump-backed fixture validation helper. It did not introduce semantic classification, scoring, JSON output, or the arena allocator. Patch 010 is the follow-on arena allocator phase.
 
 Validation commands for Patch 009:
 
@@ -148,3 +148,41 @@ RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 - Output contract: followed. Output does not claim exploitability.
 - Research contract: followed. Runtime claims remain hypotheses until benchmark data exists.
 - Context persistence contract: followed. Sprint 3 state and backlog are being updated as the sprint progresses.
+
+
+## Phase B validation status
+
+Patch 009 validated locally and in Docker. The validation output showed:
+
+```text
+[test] raw gadget scanner default depth
+[test] raw gadget scanner custom max-depth
+tests: ok
+validate-gadget-fixture: ok
+scanner-smoke benchmark complete
+```
+
+The first scanner smoke benchmark produced TSV and metadata files under `benchmarks/results/` and recorded tool version, command, run count, timestamp, WSL2 kernel, NASM version, GNU ld version, and GCC version. These artifacts are development evidence and are intentionally ignored by Git unless explicitly promoted into a research artifact.
+
+## Phase C plan
+
+Patch 010 moves raw gadget candidate storage from a static `.bss` array to an mmap-backed arena. The expected scanner-visible behavior should remain unchanged:
+
+- candidate capacity: 4096 records,
+- hand-authored fixture candidate count: 7,
+- ret count: 6,
+- ret imm16 count: 1.
+
+Validation commands for Patch 010:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make arena-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+```

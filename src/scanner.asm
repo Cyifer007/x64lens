@@ -11,7 +11,9 @@
 ; Sprint 3 scope:
 ;   Detect `ret` (0xc3) and `ret imm16` (0xc2 xx xx) terminators over the
 ;   executable regions created by phdr.asm/regions.asm. This module does not
-;   classify semantic primitives, score gadgets, or render text output.
+;   classify semantic primitives, score gadgets, or render text output. Patch
+;   010 keeps the scanner storage-agnostic by consuming a caller-provided
+;   capacity and candidate-record pointer.
 ;
 ; Safety model:
 ;   Target binaries are untrusted. The scanner revalidates every executable
@@ -38,7 +40,7 @@ global x64lens_scanner_find_ret_candidates
 ;   RDX = phdr_summary record containing executable-region count
 ;   RCX = executable_region[] buffer
 ;   R8  = writable gadget_summary record. MAX_DEPTH must be pre-filled.
-;   R9  = writable gadget_record[] buffer with GADGET_RECORD_MAX capacity
+;   R9  = writable gadget_record[] buffer with caller-supplied capacity
 ;
 ; Output:
 ;   RAX = stable x64lens exit code
@@ -67,12 +69,17 @@ x64lens_scanner_find_ret_candidates:
     cmp     rbp, GADGET_MAX_DEPTH_LIMIT
     ja      .unsupported
 
-    ; Initialize scanner summary fields. Keep MAX_DEPTH as the user/default
-    ; value so report_text.asm can render it later.
+    ; Initialize scanner summary fields. Keep MAX_DEPTH and CAPACITY values
+    ; supplied by the command layer so report_text.asm and future benchmark
+    ; emitters can render the actual storage contract. If capacity was not
+    ; supplied, fall back to the default Sprint 3 candidate limit.
+    cmp     qword [rbx + GADGET_SUMMARY_CAPACITY], 0
+    jne     .capacity_ready
+    mov     qword [rbx + GADGET_SUMMARY_CAPACITY], GADGET_RECORD_MAX
+.capacity_ready:
     mov     qword [rbx + GADGET_SUMMARY_COUNT], 0
     mov     qword [rbx + GADGET_SUMMARY_RET_COUNT], 0
     mov     qword [rbx + GADGET_SUMMARY_RET_IMM_COUNT], 0
-    mov     qword [rbx + GADGET_SUMMARY_CAPACITY], GADGET_RECORD_MAX
 
     xor     r11, r11            ; region index
 .region_loop:
@@ -131,7 +138,7 @@ x64lens_scanner_find_ret_candidates:
 .store_candidate:
     ; Capacity check. Silent truncation would invalidate research counts.
     mov     rdx, [rbx + GADGET_SUMMARY_COUNT]
-    cmp     rdx, GADGET_RECORD_MAX
+    cmp     rdx, [rbx + GADGET_SUMMARY_CAPACITY]
     jae     .unsupported
 
     ; Preserve terminator type and length while we reuse RAX/RCX as scratch

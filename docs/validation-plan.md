@@ -187,3 +187,26 @@ make bench-scanner-smoke
 ```
 
 The smoke benchmark records repeated local measurements but does not support publication claims until the benchmark corpus, baseline tools, environment metadata, and statistical summary are finalized.
+
+
+### 6. Arena allocator validation
+
+Sprint 3 Patch 010 moves raw gadget candidate records from static `.bss` storage to an mmap-backed arena. The scanner-visible behavior should remain unchanged. Validate with:
+
+```bash
+make arena-smoke
+make validate-gadget-fixture
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls
+```
+
+Expected fixture signals:
+
+| Signal | Expected |
+| ------ | -------- |
+| Candidate capacity | `0x0000000000001000` |
+| Candidate count | `0x0000000000000007` |
+| ret count | `0x0000000000000006` |
+| ret imm16 count | `0x0000000000000001` |
+
+The arena allocator does not change scanner semantics. It is infrastructure for command-lifetime analysis storage.

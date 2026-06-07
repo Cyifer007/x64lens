@@ -2,13 +2,13 @@
 
 ## Status
 
-In progress. Patch 008 Phase A validated locally and in Docker. Patch 009 Phase B adds the first scanner smoke benchmark and objdump-backed fixture validation helper.
+In progress. Patch 008 Phase A validated locally and in Docker. Patch 009 Phase B validated locally and added the first scanner smoke benchmark plus objdump-backed fixture validation helper. Patch 010 Phase C introduces the mmap-backed arena allocator for raw gadget candidate storage.
 
 ## Sprint goal
 
 Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
 
-Sprint 3 is expected to occur in phases. Phase A uses a fixed candidate buffer to prove scanner correctness. Phase B should attempt the arena allocator if Phase A validates cleanly and does not create avoidable scope risk. If the arena allocator would destabilize the scanner, it should carry forward as a Sprint 4 or Sprint 5 infrastructure item.
+Sprint 3 is proceeding in phases. Phase A used a fixed candidate buffer to prove scanner correctness. Phase B added fixture validation and a scanner smoke benchmark. Phase C introduces a simple arena allocator now that the raw scanner and benchmark harness have validated cleanly.
 
 ## Planned deliverables
 
@@ -23,8 +23,10 @@ Sprint 3 is expected to occur in phases. Phase A uses a fixed candidate buffer t
 - [x] Add raw gadget candidate output.
 - [x] Update toy assembly sample with known `ret` and `ret imm16` bytes.
 - [x] Add first scanner smoke benchmark harness.
-- [ ] Run first scanner smoke measurement locally and capture results.
-- [ ] Assess whether simple arena allocator can land safely in Sprint 3 Phase B.
+- [x] Run first scanner smoke measurement locally and capture results.
+- [x] Assess whether simple arena allocator can land safely in Sprint 3. Decision: proceed in Phase C.
+- [x] Add mmap-backed arena allocator for raw gadget candidate records.
+- [ ] Validate arena-backed scanner path locally and in Docker.
 - [ ] Write Sprint 3 retrospective after local validation.
 
 ## Acceptance criteria
@@ -41,7 +43,7 @@ Sprint 3 is expected to occur in phases. Phase A uses a fixed candidate buffer t
 - [x] Candidate extraction is bounded by default max depth.
 - [x] Scanner does not read outside executable-region file bounds under current regression tests.
 - [x] Invalid inputs fail safely through the `gadgets` command.
-- [ ] Sprint 3 retrospective is updated through Phase B and finalized at sprint close.
+- [ ] Sprint 3 retrospective is updated through Phase C and finalized at sprint close.
 
 ## Suggested validation commands
 
@@ -90,7 +92,7 @@ The only Sprint 2 follow-up directly worked into Sprint 3 is preparing executabl
 
 - Scanner bugs can easily become out-of-bounds reads. Region file offset plus region size must be validated before scanning.
 - A full x86 decoder is not a Sprint 3 goal. Keep this sprint focused on raw candidate discovery.
-- A fixed buffer can overflow on large binaries. The correct behavior is explicit `EXIT_UNSUPPORTED`, not silent truncation.
+- The bounded candidate capacity can be exceeded on large binaries. The correct behavior is explicit `EXIT_UNSUPPORTED`, not silent truncation.
 - The scanner is byte-pattern based. It may find unaligned raw candidates, which is acceptable for this phase and must be documented as a limitation.
 
 ## Non-goals
@@ -121,4 +123,27 @@ Patch 009 adds two validation and measurement layers:
 
 The smoke benchmark is intentionally limited. It proves benchmark plumbing and captures first development measurements, but it is not publication evidence by itself. Publication claims require baseline tool comparisons, a documented corpus, environment metadata, repeated runs, and statistical summaries.
 
-Phase B does not add semantic classification, scoring, JSON output, or the arena allocator. The arena allocator remains the next infrastructure decision after the scanner smoke benchmark validates.
+Phase B did not add semantic classification, scoring, JSON output, or the arena allocator. After Phase B validation, Phase C proceeds with the arena allocator while keeping semantic classification and scoring out of scope.
+
+
+## Phase C implementation notes
+
+Patch 010 introduces `src/arena.asm`, a minimal mmap-backed bump allocator. The first consumer is the `gadgets` command candidate buffer. The scanner itself remains storage-agnostic: it receives a pointer to `gadget_record[]` and reads the candidate capacity from `gadget_summary`. This preserves module boundaries and prepares later sprints for larger analysis records without changing raw scanner semantics.
+
+Phase C deliberately does not add semantic classification, scoring, JSON output, full RELRO detection, canary detection, or a full decoder. Those remain future work.
+
+Additional validation commands for Patch 010:
+
+```bash
+make normalize-perms
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make arena-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls
+```

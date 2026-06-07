@@ -59,3 +59,8 @@ Dynamic linking: no
 This is expected for the current fixture. It is linked with `-nostdlib -static -no-pie` and exists to provide deterministic executable bytes for scanner validation, not to exercise dynamic-linker hardening metadata. If `PT_GNU_STACK` is absent, x64lens correctly reports NX stack as `unknown` rather than guessing. If `PT_GNU_RELRO` and `PT_DYNAMIC` are absent, x64lens correctly reports baseline RELRO as `not found` and dynamic linking as `no`.
 
 Controlled mitigation states are validated with the `minimal_nopie`, `minimal_pie_canary`, and `minimal_execstack` fixtures instead.
+
+
+## Sprint 3 carry-forward decision
+
+Sprint 3 Patch 010 does not implement full RELRO, canary indicators, section labels, `checksec` comparison, or `rabin2 -I` comparison. Those remain valid hardening follow-ups, but the active Sprint 3 risk is scanner and storage correctness. Mixing dynamic-section or symbol parsing into the arena allocator phase would create unnecessary scope coupling.

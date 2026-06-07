@@ -33,9 +33,13 @@
 %define AT_FDCWD             -100
 %define O_RDONLY             0
 
-; mmap constants for read-only private target mapping.
+; mmap constants. Target files are mapped read-only, while internal
+; analysis arenas are mapped read/write and anonymous. No mapped target bytes
+; are ever executed by x64lens.
 %define PROT_READ            0x1
+%define PROT_WRITE           0x2
 %define MAP_PRIVATE          0x02
+%define MAP_ANONYMOUS        0x20
 
 ; Linux syscall mmap returns a negative errno encoded in RAX on failure.
 ; Success addresses for normal user mappings are non-negative canonical user

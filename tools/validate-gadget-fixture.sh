@@ -73,6 +73,7 @@ require_line '40100d:.*ret[[:space:]]+0x10' "$OBJDUMP_OUT" 'objdump ret imm16 fi
 # the current hand-authored tests/toy-src/gadgets.S fixture and the Sprint 3
 # Phase A scanner policy.
 require_line 'Max depth: 0x0000000000000008' "$DEFAULT_OUT" 'default max depth'
+require_line 'Candidate capacity: 0x0000000000001000' "$DEFAULT_OUT" 'default candidate capacity'
 require_line 'Candidate count: 0x0000000000000007' "$DEFAULT_OUT" 'default candidate count'
 require_line 'ret count: 0x0000000000000006' "$DEFAULT_OUT" 'default ret count'
 require_line 'ret imm16 count: 0x0000000000000001' "$DEFAULT_OUT" 'default ret imm16 count'

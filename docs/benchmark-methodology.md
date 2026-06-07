@@ -134,3 +134,8 @@ The script writes a TSV results file and metadata sidecar under `benchmarks/resu
 - output byte count.
 
 The smoke benchmark must not be used to claim superiority over other tools. It exists to prove measurement plumbing before comparison against ROPgadget, Ropper, and ropr.
+
+
+## Arena allocator note
+
+Sprint 3 Patch 010 introduces arena-backed candidate storage. Scanner smoke benchmark results before and after this change should be compared only as development sanity checks. Publication results require a clean benchmark environment and repeated runs after the scanner, classifier, and output modes stabilize.

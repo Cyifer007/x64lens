@@ -138,6 +138,7 @@ Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchma
 
 ```bash
 make validate-gadget-fixture
+make arena-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ```
 
@@ -258,3 +259,8 @@ See [`docs/ethics-and-safety.md`](docs/ethics-and-safety.md).
 ## License
 
 Apache License 2.0. See [`LICENSE`](LICENSE).
+
+
+## Sprint 3 arena allocator note
+
+Sprint 3 Patch 010 introduces a small mmap-backed bump allocator for analysis records. The first consumer is the raw gadget candidate buffer used by `x64lens gadgets`. Candidate capacity remains bounded at 4096 records, but storage is now owned by a command-lifetime arena rather than a static `.bss` array. This keeps the scanner interface stable while preparing later sprints for larger internal records, JSON staging, and benchmark artifacts.

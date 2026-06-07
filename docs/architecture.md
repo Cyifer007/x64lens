@@ -30,6 +30,7 @@ x64lens CLI
 | `info.asm` | Coordinate `info` command mapping, validation, reporting, and cleanup | Own ELF parsing or formatting internals |
 | `syscalls.asm` | Linux syscall wrappers | Business logic |
 | `filemap.asm` | Open, stat, mmap, munmap, close | Interpret binary format |
+| `arena.asm` | Command-lifetime mmap-backed allocation for analysis records | Interpret binary format or emit reports |
 | `bounds.asm` | Offset, size, and overflow checks | Print user reports |
 | `elf64.asm` | ELF64 header validation and metadata | Scan gadgets |
 | `phdr.asm` | Program header parsing | Section label formatting |
@@ -154,7 +155,7 @@ bit 15 r15
 
 ## Design decision 6: arena allocator by the end of Sprint 3
 
-Fixed buffers are acceptable during Sprint 1 and Sprint 2. By Sprint 3, gadget records should be stored through a simple arena allocator backed by `mmap`.
+Fixed buffers were acceptable during Sprint 1 and Sprint 2. Sprint 3 Phase A used a fixed candidate buffer to validate scanner correctness first. Sprint 3 Phase C introduces `src/arena.asm`, a minimal mmap-backed bump allocator. The first consumer is the raw `gadget_record` array used by `x64lens gadgets`. Capacity remains bounded, but storage is now command-lifetime arena memory rather than static `.bss` storage.
 
 ## Design decision 7: benchmark-first research design
 
@@ -172,7 +173,7 @@ Benchmarking is a first-class feature, not an afterthought. Every analysis chang
 
 ## Sprint 3 implemented flow: `gadgets <file>`
 
-Patch 008 begins the Sprint 3 raw scanner path:
+Patch 008 began the Sprint 3 raw scanner path. Patch 010 keeps the same scanner/reporting contract while moving candidate storage into an arena:
 
 ```text
 main.asm
@@ -180,12 +181,13 @@ main.asm
      -> x64lens_file_map(path, record) in filemap.asm
      -> x64lens_elf64_validate(base, size) in elf64.asm
      -> x64lens_phdr_analyze(base, size, summary, regions, max_regions) in phdr.asm
+     -> x64lens_arena_init / x64lens_arena_alloc in arena.asm
      -> x64lens_scanner_find_ret_candidates(base, size, phdr_summary, regions, gadget_summary, gadget_records) in scanner.asm
      -> x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base) in report_text.asm
      -> x64lens_file_unmap(record) in filemap.asm
 ```
 
-The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in fixed-capacity `gadget_record` entries before output. This satisfies the internal-facts-before-output rule while keeping arena allocation as a Phase B decision.
+The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in bounded `gadget_record` entries before output. After Patch 010, the candidate buffer is arena-backed, but the scanner remains storage-agnostic and receives only a pointer plus capacity metadata.
 
 Current raw candidate semantics:
 
