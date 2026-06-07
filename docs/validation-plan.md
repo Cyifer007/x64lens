@@ -88,6 +88,20 @@ Sprint 2 validation expectations:
 | `minimal_execstack` | NX stack disabled |
 | malformed PHDR copy | exit code `5` |
 
+
+### Sprint 2 validation evidence
+
+Sprint 2 validation succeeded locally and in Docker. The following high-level observations were confirmed:
+
+| Target | x64lens observation | readelf comparison |
+| ------ | ------------------- | ------------------ |
+| `minimal_nopie` | PIE disabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `minimal_execstack` | PIE disabled, NX stack disabled, RELRO present, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RWE`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `/bin/ls` | PIE enabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+
+The current `tools/compare-readelf.sh` provides side-by-side output. Future hardening should parse and compare fields automatically.
+
 ### 5. Gadget validation
 
 Compare `x64lens gadgets` against:

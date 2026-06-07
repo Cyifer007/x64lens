@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 2 initial implementation patch. Sprint 1 is complete. The CLI, build system, Docker workflow, file mapping path, and ELF64 validation/reporting path are validated locally and in Docker. Sprint 2 now introduces program-header parsing, executable-region mapping, and baseline mitigation reporting.
+> Status: Sprint 2 complete. The CLI, build system, Docker workflow, file mapping path, ELF64 validation/reporting path, program-header parsing, executable-region mapping, and baseline mitigation reporting path are validated locally and in Docker.
 >
 > Current version: `0.1.0-dev`
 >
@@ -166,8 +166,8 @@ See [`docs/troubleshooting.md`](docs/troubleshooting.md).
 This project follows a two-week sprint cadence during the initial research and implementation phase.
 
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
-2. Sprint 2: program headers, executable regions, basic mitigations. Initial implementation patch in progress.
-3. Sprint 3: raw gadget candidate scanner and initial arena allocator.
+2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
+3. Sprint 3: raw gadget candidate scanner and initial candidate storage.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary.
 5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
@@ -214,10 +214,10 @@ Mitigations:
   Executable LOAD regions: 0x0000000000000001
 
 Executable regions:
-  - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x000000000000015d, mem size 0x000000000000015d, perms R-X
+  - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x0000000000000161, mem size 0x0000000000000161, perms R-X
 ```
 
-Gadget scanning, primitive coverage, scoring, interpretation, and JSON output are later sprint targets.
+Gadget scanning, primitive coverage, scoring, interpretation, and JSON output are later sprint targets. Sprint 3 begins raw candidate discovery over the executable regions introduced here.
 
 ## Ethics and safety
 

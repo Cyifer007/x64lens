@@ -34,3 +34,14 @@ This binary exposes primitives consistent with certain exploit strategies, assum
 ## Sprint 2 wording rule
 
 Sprint 2 output reports loader-level facts and mitigation indicators only. It must not claim exploitability, vulnerability, or exploit success. Strategy interpretation begins later when primitive coverage and mitigation context can be evaluated together.
+
+
+## Sprint 2 validation status
+
+Sprint 2 validation confirmed the implemented baseline against controlled toy binaries and `/bin/ls` using `readelf -h` and `readelf -l` side-by-side review. The most important validation points were:
+
+- `minimal_nopie` reports PIE disabled and NX stack enabled.
+- `minimal_pie_canary` reports PIE enabled and NX stack enabled.
+- `minimal_execstack` reports NX stack disabled, matching `GNU_STACK RWE`.
+- All tested targets reported one executable `PT_LOAD + PF_X` region, matching the executable `LOAD` segment in `readelf -l`.
+- Baseline RELRO is currently reported only from `PT_GNU_RELRO` presence. Full RELRO remains future work.

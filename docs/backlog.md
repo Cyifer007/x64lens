@@ -21,30 +21,50 @@
 
 - [x] Validate Sprint 1 implementation on WSL2 and Docker.
 - [x] Write `docs/sprints/sprint-01-retro.md` after local validation.
-- [ ] Compare `x64lens info /bin/ls` against `readelf -h /bin/ls`. This is a Sprint 2 validation hardening item, not a Sprint 1 blocker.
-- [ ] Add a small `tools/compare-readelf.sh` enhancement for automated header comparison.
+- [x] Compare `x64lens info` against `readelf -h` using toy binaries and `/bin/ls`.
+- [x] Add `tools/compare-readelf.sh` helper for repeatable side-by-side review.
 
 ## Sprint 2
 
-Patch 006 implements the first Sprint 2 code path. Items remain unchecked until local WSL2 and Docker validation succeeds.
+- [x] Parse program headers.
+- [x] Identify `PT_LOAD` segments.
+- [x] Identify `PF_X` executable regions.
+- [x] Create executable-region record model.
+- [x] Detect `PT_GNU_STACK`.
+- [x] Detect NX stack.
+- [x] Detect executable stack.
+- [x] Detect PIE.
+- [x] Detect RWX load segments.
+- [x] Detect baseline RELRO using `PT_GNU_RELRO`.
+- [x] Detect dynamic linking using `PT_DYNAMIC`.
+- [x] Add `x64lens mitigations <file>` command.
+- [x] Add `minimal_execstack` toy corpus target.
+- [x] Add malformed program-header rejection test.
+- [x] Validate Sprint 2 implementation on WSL2 and Docker.
+- [x] Compare mitigation findings against `readelf -l` for toy binaries and `/bin/ls`.
+- [x] Write `docs/sprints/sprint-02-retro.md`.
 
-- [ ] Parse program headers.
-- [ ] Identify `PT_LOAD` segments.
-- [ ] Identify `PF_X` executable regions.
-- [ ] Detect `PT_GNU_STACK`.
-- [ ] Detect NX stack.
-- [ ] Detect PIE.
-- [ ] Detect RWX load segments.
-- [ ] Detect baseline RELRO.
+## Sprint 2 follow-up hardening
+
+- [ ] Automate `readelf` field comparison instead of side-by-side review.
+- [ ] Add `checksec` comparison when available.
+- [ ] Add `rabin2 -I` comparison when available.
+- [ ] Add full RELRO detection through dynamic-section parsing.
+- [ ] Add canary indicator detection through dynamic symbol or symbol-table parsing.
+- [ ] Add section-header labels for executable regions.
 
 ## Sprint 3
 
-- [ ] Implement arena allocator.
+- [ ] Decide fixed candidate buffer vs immediate arena allocator for raw gadget candidates.
+- [ ] Implement arena allocator or fixed candidate record buffer.
 - [ ] Implement executable region scanner.
 - [ ] Detect `ret` terminators.
 - [ ] Detect `ret imm16` terminators.
-- [ ] Add `--max-depth`.
+- [ ] Add `--max-depth` or internal default max-depth constant.
+- [ ] Extract bounded backward candidate windows.
 - [ ] Output raw candidates.
+- [ ] Validate against `tests/bin/gadgets`.
+- [ ] Add first scanner smoke measurement.
 
 ## Sprint 4
 

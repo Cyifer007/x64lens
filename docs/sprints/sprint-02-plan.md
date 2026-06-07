@@ -2,8 +2,8 @@
 
 ## Dates
 
-Start: TBD
-End: TBD
+Start: 2026-06-06
+End: 2026-06-06
 
 ## Sprint goal
 
@@ -13,33 +13,33 @@ Sprint 1 proved that `x64lens info <file>` can safely map and validate ELF64 x86
 
 ## Planned deliverables
 
-- [ ] Parse ELF64 program headers in `src/phdr.asm`.
-- [ ] Validate `e_phoff`, `e_phentsize`, and `e_phnum` before iterating.
-- [ ] Identify `PT_LOAD` segments.
-- [ ] Identify `PF_X` executable regions.
-- [ ] Create an internal executable-region record model in `src/regions.asm` or `include/structs.inc`.
-- [ ] Detect `PT_GNU_STACK`.
-- [ ] Detect NX stack vs executable stack.
-- [ ] Detect PIE using ELF type.
-- [ ] Detect RWX load segments.
-- [ ] Detect baseline RELRO using `PT_GNU_RELRO`.
-- [ ] Add the initial `x64lens mitigations <file>` command path.
-- [ ] Update `docs/mitigation-model.md` if interpretation changes.
-- [ ] Update `docs/validation-plan.md` with program-header validation commands.
-- [ ] Add tests for PIE/non-PIE and NX/executable-stack fixture behavior where feasible.
+- [x] Parse ELF64 program headers in `src/phdr.asm`.
+- [x] Validate `e_phoff`, `e_phentsize`, and `e_phnum` before iterating.
+- [x] Identify `PT_LOAD` segments.
+- [x] Identify `PF_X` executable regions.
+- [x] Create an internal executable-region record model in `src/regions.asm` or `include/structs.inc`.
+- [x] Detect `PT_GNU_STACK`.
+- [x] Detect NX stack vs executable stack.
+- [x] Detect PIE using ELF type.
+- [x] Detect RWX load segments.
+- [x] Detect baseline RELRO using `PT_GNU_RELRO`.
+- [x] Add the initial `x64lens mitigations <file>` command path.
+- [x] Update `docs/mitigation-model.md` if interpretation changes.
+- [x] Update `docs/validation-plan.md` with program-header validation commands.
+- [x] Add tests for PIE/non-PIE and NX/executable-stack fixture behavior where feasible.
 
 ## Acceptance criteria
 
-- [ ] `make clean && make && make test` succeeds.
-- [ ] `make docker-test` succeeds.
-- [ ] `x64lens info <file>` remains stable after program-header changes.
-- [ ] `x64lens mitigations ./tests/bin/minimal_nopie` runs without crashing.
-- [ ] `x64lens mitigations ./tests/bin/minimal_pie_canary` runs without crashing.
-- [ ] Executable `PT_LOAD` ranges are reported or internally discoverable.
-- [ ] PIE differs correctly between `minimal_nopie` and `minimal_pie_canary`.
-- [ ] NX stack detection reflects the toy corpus compile flags.
-- [ ] Malformed program-header offsets fail safely.
-- [ ] Sprint 2 retrospective is written.
+- [x] `make clean && make && make test` succeeds.
+- [x] `make docker-test` succeeds.
+- [x] `x64lens info <file>` remains stable after program-header changes.
+- [x] `x64lens mitigations ./tests/bin/minimal_nopie` runs without crashing.
+- [x] `x64lens mitigations ./tests/bin/minimal_pie_canary` runs without crashing.
+- [x] Executable `PT_LOAD` ranges are reported or internally discoverable.
+- [x] PIE differs correctly between `minimal_nopie` and `minimal_pie_canary`.
+- [x] NX stack detection reflects the toy corpus compile flags.
+- [x] Malformed program-header offsets fail safely.
+- [x] Sprint 2 retrospective is written.
 
 ## Demo commands
 
@@ -99,9 +99,9 @@ If Sprint 2 testing succeeds:
 
 ## Patch 006 implementation notes
 
-Patch 006 begins Sprint 2 implementation. It adds the first `mitigations <file>` command path and introduces the internal program-header summary and executable-region record model.
+Patch 006 completed Sprint 2 implementation after local WSL2 and Docker validation. It adds the first `mitigations <file>` command path and introduces the internal program-header summary and executable-region record model.
 
-Implemented in this patch, pending local validation:
+Implemented and validated in this patch:
 
 1. CLI routing for `x64lens mitigations <file>`.
 2. `src/mitigations.asm` command orchestration.
@@ -112,7 +112,7 @@ Implemented in this patch, pending local validation:
 7. `tests/run-tests.sh` regression checks for baseline mitigation behavior.
 8. `minimal_execstack` toy binary for executable-stack/NX validation.
 
-The patch intentionally does not implement full RELRO, canary detection, section labels, JSON output, or gadget scanning. Full RELRO requires dynamic-section parsing and remains later work unless Sprint 2 capacity allows it.
+The patch intentionally does not implement full RELRO, canary detection, section labels, JSON output, or gadget scanning. Full RELRO requires dynamic-section parsing and remains later work.
 
 ## Patch 006 validation commands
 
@@ -131,10 +131,12 @@ readelf -l ./tests/bin/minimal_pie_canary
 readelf -l ./tests/bin/minimal_execstack
 ```
 
-## Next steps after Patch 006 validation succeeds
+## Patch 006 validation result
 
-1. Capture mitigation output for the three toy binaries.
-2. Compare `LOAD`, `GNU_STACK`, `GNU_RELRO`, and `DYNAMIC` observations against `readelf -l`.
-3. Update `docs/sprints/sprint-02-retro.md` with real command output.
-4. Update local-only `PROJECT_STATE.md`.
-5. Decide whether Sprint 2 needs one more hardening patch for `tools/compare-readelf.sh` automation before closing.
+Validation succeeded locally and through `make docker-test`. Mitigation output was captured for `minimal_nopie`, `minimal_pie_canary`, `minimal_execstack`, and `/bin/ls`. Program-header observations were compared against `readelf -l`. Sprint 2 does not need another implementation patch before closeout.
+
+## Next steps after Sprint 2
+
+1. Commit the validated Sprint 2 implementation and closeout docs.
+2. Keep full RELRO, canary indicators, `checksec`, and `rabin2` comparison as follow-up backlog.
+3. Begin Sprint 3 with raw executable-region scanning and `ret` candidate discovery.
