@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### Documentation and planning
+
+- Added reviewer-readiness design notes under `docs/design/`.
+- Added ADR 0005 for reviewer readiness and future seams.
+- Documented the NASM rationale without claiming unsupported performance superiority.
+- Documented the future decoder seam and the limits of exact suffix pattern matching.
+- Documented raw, exact, semantic, and scored metric boundaries.
+- Added parser safety and mutation smoke/fuzzing plan for later hardening.
+- Added contributor maintainability guidance for NASM-heavy development.
+- Refined Sprint 4 through Sprint 12 planning around semantic classification, JSON, malformed-input safety, baseline comparison, and publication readiness.
+- Restored executable permission intent for shell helper scripts and added a script permission check target.
+
+
 All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.

@@ -64,3 +64,17 @@ Controlled mitigation states are validated with the `minimal_nopie`, `minimal_pi
 ## Sprint 3 carry-forward decision
 
 Sprint 3 Patch 011 does not implement full RELRO, canary indicators, section labels, `checksec` comparison, or `rabin2 -I` comparison. Those remain valid hardening follow-ups, but the active Sprint 3 risk is scanner, storage, and exact-pattern correctness. Mixing dynamic-section or symbol parsing into the pattern matcher phase would create unnecessary scope coupling.
+
+## Reviewer-facing mitigation limits
+
+Mitigation detection is an evidence layer, not a verdict layer. A binary with useful primitives is not automatically exploitable, and a binary with mitigations is not automatically safe.
+
+Future hardening work should distinguish:
+
+- baseline RELRO from full RELRO,
+- canary indicators from proof of complete stack protection,
+- executable stack from practical exploitability,
+- PIE presence from runtime address disclosure resistance,
+- CET/IBT indicators from complete control-flow integrity.
+
+The paper should state these as static indicators and strategy constraints, not final security judgments.

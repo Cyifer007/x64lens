@@ -54,3 +54,20 @@ The repository should preserve all experimental setup details needed to reproduc
 The paper should frame `x64lens` as a mitigation-oriented solution for advanced cyberinfrastructure defense:
 
 > Static binary exploitability analysis can enrich prioritization of network-facing infrastructure software by measuring hardening posture, gadget primitive availability, semantic exploit primitive coverage, and tool runtime/memory cost.
+
+## Reviewer-risk sections to include
+
+The paper should include explicit short sections or paragraphs for:
+
+- assembly-first design rationale,
+- parser safety and malformed-input validation,
+- exact pattern matching limitations,
+- raw/exact/semantic metric separation,
+- baseline comparison methodology,
+- threats to validity,
+- architecture and format scope limitations,
+- future decoder and multi-architecture work.
+
+## Paper claim discipline
+
+Do not claim that x64lens is faster, more accurate, or more useful until repeated benchmark data supports that claim. Frame early results as evidence for a bounded prototype, not as universal superiority over mature tools.

@@ -76,3 +76,21 @@ Schema version and tool version are separate. Tool behavior can change without b
 - Every report must include `limitations`.
 - Every report must include `schema_version`.
 - Future SARIF output must be generated from internal analysis records, not from text output.
+
+## Future count fields
+
+Future JSON reports should expose distinct counters for raw, exact, semantic, unknown, and scored candidates. This avoids ambiguity in automation and benchmark processing.
+
+Candidate future shape:
+
+```json
+"summary": {
+  "raw_candidate_count": 0,
+  "exact_pattern_count": 0,
+  "semantic_candidate_count": 0,
+  "unknown_candidate_count": 0,
+  "scored_candidate_count": 0
+}
+```
+
+Do not expose a single ambiguous `gadget_count` field without defining what it means.

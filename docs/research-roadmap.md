@@ -93,3 +93,18 @@ The guiding sequence is:
 8. research-grade benchmarks,
 9. integrated analysis,
 10. paper and release preparation.
+
+## Reviewer-readiness additions
+
+The current roadmap should explicitly answer likely reviewer objections:
+
+| Concern | Roadmap response |
+|---|---|
+| NASM is hard to justify | Add NASM rationale and measure performance/memory instead of assuming superiority. |
+| Assembly parser safety | Add malformed-input regression and mutation smoke testing. |
+| Exact patterns are brittle | Keep exact suffix patterns as a stage and add a decoder roadmap. |
+| Raw counts are noisy | Separate raw candidates, exact patterns, semantic primitives, unknown candidates, and scores. |
+| Tool is hard to maintain | Add contributor maintainability guidance and module extension notes. |
+| x86_64 is narrow | Treat architecture scope as an explicit limitation and future engine seam. |
+
+These additions refine the roadmap without changing the near-term implementation order.

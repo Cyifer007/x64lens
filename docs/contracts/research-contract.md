@@ -33,3 +33,16 @@ Every paper draft must include limitations and threats to validity.
 ## Ethics
 
 The research must avoid unauthorized targets, payload generation, and exploit delivery automation in the semester scope.
+
+## Reviewer-preview rule
+
+When a design critique identifies a likely peer-review objection, convert the objection into one of:
+
+- an explicit limitation,
+- a validation task,
+- a benchmark metric,
+- a roadmap item,
+- an ADR,
+- a paper threats-to-validity note.
+
+Do not respond by broadening scope unless the current research question requires it.

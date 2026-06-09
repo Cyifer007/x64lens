@@ -68,3 +68,14 @@ RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 - Create a tagged `v0.1.0-dev-checkpoint` release candidate.
 - Generate checksums for a local release artifact.
 - Add an artifact generation script that does not require private files.
+
+## Patch 14 reviewer-readiness additions
+
+Sprint 6 checkpoint documentation should include:
+
+- an assembly-first rationale section,
+- a pattern-scanner limitation section,
+- a malformed-input safety status section,
+- a metric-boundary summary,
+- an explicit list of unsupported features,
+- a reviewer-facing threats-to-validity draft for the paper scaffold.

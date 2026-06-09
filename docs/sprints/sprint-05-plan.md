@@ -65,3 +65,13 @@ RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 - Add `make json-smoke`.
 - Add `make benchmark-baselines-smoke`.
 - Add first benchmark summary script output that computes median and max RSS from TSV.
+
+## Patch 14 reviewer-readiness additions
+
+Sprint 5 JSON and scoring work should include limitations by design:
+
+- JSON must include `limitations`,
+- JSON should separate raw, exact, semantic, unknown, and scored counts,
+- scores must be omitted or clearly neutral for `unknown_candidate`,
+- benchmark scripts must record output size so printing cost is visible,
+- comparison tooling must record baseline versions and exact commands.

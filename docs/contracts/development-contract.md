@@ -66,3 +66,13 @@ Markdown documentation is equal to code. If the code changes the CLI, output sch
 ## Contract review cadence
 
 Contracts must be reviewed at the end of every sprint. The sprint retrospective should explicitly state whether any contract changed or whether contract drift was detected.
+
+## Reviewer-readiness rules
+
+1. Implementation language is not a result. NASM is a design choice to evaluate.
+2. Parser safety must be tested, not asserted.
+3. Exact suffix matching must not be described as full decoding.
+4. Raw candidate counts must not be treated as semantic primitive counts.
+5. Future decoder support must be added through side-car records, not scanner rewrites.
+6. Script executable bits are part of the repository contract for shell helpers.
+7. New public claims must map to evidence, not optimism.

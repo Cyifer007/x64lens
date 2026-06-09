@@ -168,3 +168,34 @@ Future benchmark phases should proceed in this order:
 5. compiler and hardening matrix measurement,
 6. network-facing infrastructure binary case study,
 7. publication summary tables with raw result preservation.
+
+## Metric boundary requirements
+
+Benchmark rows must avoid collapsing unlike concepts into one ambiguous `gadget_count` field. Prefer explicit fields:
+
+```text
+raw_candidate_count
+exact_pattern_count
+semantic_candidate_count
+unknown_candidate_count
+scored_candidate_count
+primitive_coverage_count
+```
+
+This matters because x64lens, ROPgadget, Ropper, and ropr may define candidate windows, gadgets, and useful primitives differently.
+
+## Assembly-first benchmark caution
+
+The NASM implementation is a hypothesis to evaluate, not a conclusion. Benchmark analysis must consider:
+
+- disk cache effects,
+- page faults,
+- output size,
+- formatting cost,
+- executable-region size,
+- whether baseline tools use native decoder libraries,
+- whether baseline tools perform more semantic work than x64lens at the measured stage.
+
+## Future ablation option
+
+If reviewers challenge whether NASM matters, consider a small C or Rust reference scanner as an ablation baseline. This should be optional and narrow. It should not become a rewrite or replacement for the assembly-first engine.

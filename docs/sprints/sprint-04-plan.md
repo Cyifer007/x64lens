@@ -70,3 +70,16 @@ These are useful only if the core classifier lands cleanly:
 - Add `analyze <file>` as an alias or orchestration wrapper over mitigations plus gadgets plus primitive coverage.
 - Add first JSON draft behind `--format json` for controlled internal use.
 - Add a fixture that contains `pop r8; ret` through `pop r15; ret` to exercise REX-prefixed patterns.
+
+## Patch 14 reviewer-readiness additions
+
+Sprint 4 must explicitly protect metric quality:
+
+- preserve `unknown_candidate`,
+- count raw candidates separately from semantic primitives,
+- classify only exact patterns with clear evidence,
+- avoid any score output unless scoring lands in Sprint 5,
+- avoid any exploitability wording,
+- document suffix-label limitations in the retrospective.
+
+A successful Sprint 4 should make the tool more honest, not just more verbose.

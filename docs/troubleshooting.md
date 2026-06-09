@@ -126,3 +126,31 @@ make normalize-perms
 ```
 
 This target avoids `.git`, `.local`, `build`, and generated test binaries. It restores normal repository files to `0644`, directories to `0755`, and shell scripts to executable mode.
+
+## Shell script executable bits changed unexpectedly
+
+Symptom:
+
+```text
+modified: benchmarks/scripts/*.sh
+modified: tools/*.sh
+modified: tests/run-tests.sh
+```
+
+with no content diff except mode changes.
+
+Cause: ZIP extraction, Windows filesystem handling, or a cross-platform file operation may drop executable bits.
+
+Fix:
+
+```bash
+make normalize-perms
+make script-perms-check
+git status
+```
+
+Expected tracked shell helpers should be executable. If Git still shows mode-only changes, inspect with:
+
+```bash
+git diff --summary
+```

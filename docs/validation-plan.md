@@ -298,3 +298,30 @@ make semantic-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens analyze ./tests/bin/gadgets
 ```
+
+## Parser safety and mutation smoke plan
+
+Sprint 7 should add a deterministic malformed-input mutation smoke harness before deeper parsing expands the trusted code surface.
+
+Proposed command shape:
+
+```bash
+make malformed-smoke
+make fuzz-mutated-elf-smoke
+```
+
+Minimum acceptance criteria:
+
+```text
+no SIGSEGV
+no SIGBUS
+no unbounded runtime
+stable nonzero exit code for malformed inputs
+regression fixture added for every parser crash
+```
+
+The first version does not need coverage-guided fuzzing. A deterministic mutation smoke runner over known valid and malformed ELF seeds is enough to catch obvious parser regressions and support reviewer-facing safety discipline.
+
+## Script permission validation
+
+Patch extraction, Windows tooling, or cross-platform ZIP workflows can accidentally drop executable bits from shell helpers. `make scaffold-check` should validate that expected scripts remain executable through `make script-perms-check`.

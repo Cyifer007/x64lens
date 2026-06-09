@@ -88,3 +88,18 @@ Sprint 3 pattern labels are exact suffix labels, not full decoded instruction se
 ## Conservative classification rule
 
 When a candidate does not match a supported exact pattern, or when the supported pattern is ambiguous under the current model, leave the semantic class as `unknown_candidate`. Overclassification is worse than underclassification because it corrupts primitive coverage metrics and later scoring.
+
+## Conservative classifier rule
+
+Sprint 4 must prefer `unknown_candidate` over overclassification. A raw byte window is not automatically a semantic primitive. An exact suffix pattern is evidence, but it is still not a full decoded instruction sequence.
+
+Classifier rules:
+
+- map only recognized `PATTERN_*` IDs to semantic classes,
+- leave ambiguous candidates as `unknown_candidate`,
+- separate suffix labels from full-window semantics,
+- report primitive coverage separately from raw candidate counts,
+- avoid scoring until semantic facts are present,
+- avoid exploitability verdicts entirely.
+
+This protects the research metrics from false precision.

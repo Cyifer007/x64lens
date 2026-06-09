@@ -79,6 +79,21 @@ The current `gadgets` command reports raw terminator-centered byte windows and e
 
 See [`docs/roadmap-12-sprints.md`](docs/roadmap-12-sprints.md) for the expanded semester roadmap.
 
+## Reviewer-facing design posture
+
+The current plan treats common reviewer objections as design inputs rather than late-stage surprises.
+
+Key planning commitments:
+
+- NASM is an evaluated implementation choice, not an assumed proof of superiority.
+- Parser safety is a mandatory design constraint because the tool parses untrusted binaries.
+- Exact suffix matching is a Sprint 3 stage, not a full instruction decoder.
+- Raw candidate counts, exact pattern counts, semantic primitive counts, and scored gadget counts are separate metrics.
+- External tools are comparison baselines first, not required runtime dependencies.
+- ARM64, PE, Mach-O, full decoding, and embedded decoder support remain future seams, not near-term scope creep.
+
+See the planning notes under [`docs/design/`](docs/design/) and [`docs/adr/0005-reviewer-readiness-and-future-seams.md`](docs/adr/0005-reviewer-readiness-and-future-seams.md).
+
 ## Current CLI contract
 
 Planned early commands:
@@ -282,3 +297,7 @@ Sprint 3 Patch 010 introduces a small mmap-backed bump allocator for analysis re
 ## Sprint 3 pattern matcher note
 
 Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candidates. This is a pattern matching layer, not a semantic classifier. The current matcher recognizes small suffix templates such as `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`. Sprint 4 will map these pattern IDs into semantic primitive classes, register bitmaps, stack deltas, side-effect notes, and later scores.
+
+## Patch 14 planning note
+
+Patch 14 is a planning and documentation alignment patch. It does not change the scanner engine. It records reviewer-facing rationale and future seams for NASM implementation, parser safety, decoder integration, metric boundaries, contributor maintainability, and long-arc roadmap planning.

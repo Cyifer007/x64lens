@@ -118,3 +118,23 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [ ] Sprint 10: repeated research-grade baseline benchmarks against ROPgadget, Ropper, and ropr.
 - [ ] Sprint 11: integrated `analyze` report with mitigation context, primitive coverage, scoring, JSON parity, and limitations.
 - [ ] Sprint 12: IEEE paper draft, reproduction package, release-candidate artifacts, checksums, and extended-semester retrospective.
+
+## Reviewer-readiness and future-proofing backlog
+
+- [x] Add NASM rationale planning document.
+- [x] Add decoder roadmap and future decoder seam.
+- [x] Add raw/exact/semantic/scored metric boundary document.
+- [x] Add parser safety and mutation smoke/fuzzing plan.
+- [x] Add contributor maintainability planning document.
+- [x] Add ADR for reviewer readiness and future seams.
+- [ ] Add `make script-perms-check` to default scaffold validation. Patch 14 introduces this target.
+- [ ] Add malformed-input mutation smoke harness in Sprint 7.
+- [ ] Add automated readelf field comparison in Sprint 7.
+- [ ] Add optional checksec comparison in Sprint 7.
+- [ ] Add optional rabin2 comparison in Sprint 7.
+- [ ] Add full RELRO detection through dynamic-section parsing.
+- [ ] Add canary indicator detection through dynamic symbol or symbol-table parsing.
+- [ ] Add section labels as analyst annotations, not runtime authority.
+- [ ] Add public contributor guidance for pattern and semantic-class extension.
+- [ ] Add optional C or Rust reference scanner only if benchmark ablation is needed.
+- [ ] Keep ARM64 and non-ELF formats as future work unless the research scope changes.

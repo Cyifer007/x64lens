@@ -74,3 +74,16 @@ Important interpretation details:
 - `pattern: pop rdi; ret` means the suffix immediately before the terminator matches `5f c3`.
 - Pattern labels are not exploitability claims.
 - Full semantic classification starts in Sprint 4.
+
+## Reporting distinction rule
+
+The CLI should keep analysis stages explicit in output and JSON:
+
+- raw candidates,
+- exact suffix patterns,
+- semantic primitives,
+- scored candidates,
+- mitigation indicators,
+- limitations.
+
+When a command emits partial or heuristic analysis, the output should say so. `gadgets` may report raw candidates and exact pattern labels before semantic classification is complete. `analyze` should not imply full exploitability unless a future version has enough independent vulnerability and runtime context, which is outside the current scope.

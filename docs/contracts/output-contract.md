@@ -35,3 +35,15 @@ Every output should include limitations when the analysis is incomplete or heuri
 ## Exploitability wording
 
 The tool may report primitive availability and plausible exploit strategy constraints. It must not state that a binary is exploitable without an independent vulnerability and runtime context.
+
+## Count separation in output
+
+Reports should separate:
+
+- raw candidate count,
+- exact pattern count,
+- semantic primitive count,
+- unknown candidate count,
+- scored candidate count.
+
+If a field is unavailable in the current version, omit it or mark it clearly as not implemented. Do not infer semantic value from raw scanner output alone.

@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke check-tools scaffold-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke check-tools scaffold-check script-perms-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -91,7 +91,23 @@ bench-scanner-smoke: all samples
 
 bench-smoke: bench-scanner-smoke
 
-scaffold-check:
+script-perms-check:
+	@echo "Checking shell helper executable bits..."
+	@test -x tests/run-tests.sh
+	@test -x benchmarks/scripts/bench-ropgadget.sh
+	@test -x benchmarks/scripts/bench-ropper.sh
+	@test -x benchmarks/scripts/bench-ropr.sh
+	@test -x benchmarks/scripts/bench-scanner-smoke.sh
+	@test -x benchmarks/scripts/bench-x64lens.sh
+	@test -x tools/compare-checksec.sh
+	@test -x tools/compare-objdump.sh
+	@test -x tools/compare-readelf.sh
+	@test -x tools/compare-ropgadget.sh
+	@test -x tools/make-release-artifacts.sh
+	@test -x tools/validate-gadget-fixture.sh
+	@echo "script-perms-check: ok"
+
+scaffold-check: script-perms-check
 	@echo "Checking required scaffold paths..."
 	@test -f README.md
 	@test -f Makefile

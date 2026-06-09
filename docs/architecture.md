@@ -342,3 +342,36 @@ The first classifier should populate:
 - primitive coverage summary.
 
 It should not implement scoring or exploitability interpretation until those semantic facts are stable.
+
+## Reviewer-readiness architecture seams
+
+Patch 14 records several future-facing seams that should prevent large refactors later.
+
+### NASM engine boundary
+
+The NASM implementation is the first engine, not a claim that every future layer must be pure assembly. The engine should remain small, measurable, and explicit. Higher-level value comes from semantic classification, mitigation-aware interpretation, JSON contracts, and reproducible benchmarks.
+
+### Raw, exact, semantic, and decoded records
+
+Do not collapse all gadget facts into one overloaded record. Preserve this conceptual split:
+
+```text
+gadget_record[]        raw candidate facts from scanner.asm
+semantic_record[]      semantic facts from classifier.asm, keyed by candidate index
+decode_record[]        optional future decoder facts, keyed by candidate index
+score_record[]         optional scoring facts, keyed by candidate index
+```
+
+This lets a future decoder augment the pipeline without replacing the raw scanner.
+
+### Decoder seam
+
+The future decoder interface should consume candidate windows and produce decoded instruction facts. It should not own file mapping, program-header parsing, executable-region discovery, or raw candidate enumeration.
+
+### Safety seam
+
+Any future parser expansion, especially dynamic-section, symbol-table, string-table, note, and section-label parsing, must preserve the same explicit bounds-checking discipline used by the ELF and program-header paths.
+
+### Metric seam
+
+Raw candidate count, exact pattern count, semantic primitive count, and scored gadget count must remain distinct in internal records, benchmark TSVs, JSON reports, and paper tables.

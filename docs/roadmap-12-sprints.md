@@ -73,3 +73,23 @@ The long arc remains:
 5. compare against established tools,
 6. evaluate hardening profiles and network-facing infrastructure binaries,
 7. prepare the work for publication and later dissertation-scale expansion.
+
+## Reviewer-driven refinements
+
+Patch 14 adds reviewer-facing planning without changing the core twelve-sprint direction.
+
+| Sprint | Added planning emphasis |
+|---|---|
+| Sprint 4 | Conservative semantic classification, unknown candidates preserved, no overclassification. |
+| Sprint 5 | JSON limitations and separate raw/exact/semantic/scored counts. |
+| Sprint 6 | Public checkpoint includes NASM rationale and pattern-scanner limitations. |
+| Sprint 7 | Parser safety hardening, malformed-input mutation smoke, full RELRO and canary indicators. |
+| Sprint 8 | Pattern expansion with false-positive tracking. |
+| Sprint 9 | Compiler and hardening matrix for controlled corpus evidence. |
+| Sprint 10 | Repeated baseline comparisons against ROPgadget, Ropper, ropr, and selected metadata tools. |
+| Sprint 11 | Integrated analysis while preserving limitations and metric separation. |
+| Sprint 12 | IEEE paper, reproduction package, raw results, release artifacts, and reviewer response posture. |
+
+## Do-not-refactor-yet list
+
+Do not rewrite in Rust, C, or Go before the assembly-first research question is measured. Do not add ARM64, PE, or Mach-O before the ELF64 x86_64 pipeline is research-grade. Do not embed a full decoder before external comparison data shows that exact-pattern limitations materially affect the paper claims.

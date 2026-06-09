@@ -6,7 +6,7 @@ Complete.
 
 ## Dates
 
-Start: 2026-06-06
+Start: 2026-06-05
 End: 2026-06-06
 
 ## Sprint goal
