@@ -129,6 +129,7 @@ PROJECT_STATE.md
 *.docx
 *Syllabus*.pdf
 *syllabus*.pdf
+/paper/csc773/*
 /course-materials/
 
 # Keep deliberately malformed fixtures that are part of the public test suite.
