@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 3 complete. Sprints 1 and 2 are complete. Sprint 3 added the raw gadget scanner, scanner smoke benchmarking, arena-backed candidate storage, and exact byte-template suffix pattern matching.
+> Status: Sprint 4 in progress. Patch 015 adds the first semantic classifier over Sprint 3 exact suffix pattern IDs. Sprints 1 through 3 are complete.
 >
 > Current version: `0.1.0-dev`
 >
@@ -69,13 +69,13 @@ See [`docs/adr/0001-tool-name.md`](docs/adr/0001-tool-name.md).
 
 ## Current implementation checkpoint
 
-Sprint 3 closes with this implemented pipeline:
+Patch 015 advances the implemented pipeline to the first semantic layer:
 
 ```text
-ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> text reporting
+ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> text reporting
 ```
 
-The current `gadgets` command reports raw terminator-centered byte windows and exact suffix pattern labels. These labels are not full semantic classifications yet. Sprint 4 maps recognized pattern IDs into semantic classes, register bitmaps, stack deltas, and primitive coverage.
+The current `gadgets` command reports raw terminator-centered byte windows, exact suffix pattern labels, conservative semantic classes, controlled-register bitmaps, stack deltas, and primitive coverage counts. This is still not full instruction decoding and does not emit exploitability verdicts.
 
 See [`docs/roadmap-12-sprints.md`](docs/roadmap-12-sprints.md) for the expanded semester roadmap.
 
@@ -149,9 +149,10 @@ make samples
 ./build/x64lens mitigations ./tests/bin/minimal_pie_canary
 ./build/x64lens gadgets ./tests/bin/gadgets
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+make semantic-smoke
 ```
 
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The Sprint 3 `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, and tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`. Semantic classification remains Sprint 4 work.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`, then maps supported exact patterns into first-pass semantic primitive classes.
 
 ### Run tests
 
@@ -166,10 +167,11 @@ Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchma
 ```bash
 make validate-gadget-fixture
 make arena-smoke
+make semantic-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ```
 
-The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel`. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
+The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
 
 The smoke benchmark is development evidence only. Do not use it as a publication claim without the full benchmark methodology, baseline tools, corpus manifest, repeated trials, and environment metadata.
 
@@ -211,7 +213,7 @@ This project follows a two-week sprint cadence during the initial research and i
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
 3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
-4. Sprint 4: semantic primitive classifier and primitive coverage summary.
+4. Sprint 4: semantic primitive classifier and primitive coverage summary. In progress through Patch 015.
 5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
 
@@ -260,7 +262,7 @@ Executable regions:
   - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x0000000000000161, mem size 0x0000000000000161, perms R-X
 ```
 
-Current Sprint 3 `gadgets` output is raw candidate focused:
+Current Sprint 4 `gadgets` output keeps raw, exact, and semantic facts separate:
 
 ```text
 x64lens 0.1.0-dev
@@ -273,10 +275,18 @@ Raw gadget candidates:
   ret count: ...
   ret imm16 count: ...
   Exact pattern count: ...
-  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, bytes: ...
+  Semantic primitive count: ...
+  unknown_candidate count: ...
+  arg_control count: ...
+  syscall_num_control count: ...
+  syscall_trigger count: ...
+  stack_pivot count: ...
+  alignment count: ...
+  Register coverage: rax|rdx|rsi|rdi|rsp
+  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010, bytes: ...
 ```
 
-Pattern labels are still not semantic classification. Primitive coverage, register bitmaps, scoring, mitigation-aware interpretation, and JSON output are later sprint targets.
+Pattern labels are still exact suffix labels, not full decoded instruction sequences. Semantic classification is conservative and scoring, mitigation-aware exploitability interpretation, and JSON output remain later sprint targets.
 
 ## Ethics and safety
 
@@ -296,7 +306,11 @@ Sprint 3 Patch 010 introduces a small mmap-backed bump allocator for analysis re
 
 ## Sprint 3 pattern matcher note
 
-Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candidates. This is a pattern matching layer, not a semantic classifier. The current matcher recognizes small suffix templates such as `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`. Sprint 4 will map these pattern IDs into semantic primitive classes, register bitmaps, stack deltas, side-effect notes, and later scores.
+Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candidates. This is a pattern matching layer, not a semantic classifier. The matcher recognizes small suffix templates such as `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`.
+
+## Sprint 4 semantic classifier note
+
+Sprint 4 Patch 015 adds the first classifier pass. `classifier.asm` consumes `PATTERN_*` IDs and populates semantic classes, controlled-register bitmaps, stack deltas, side-effect flags, per-class summary counts, and register coverage. Unsupported patterns remain `unknown_candidate`; scoring and JSON output remain future work.
 
 ## Patch 14 planning note
 

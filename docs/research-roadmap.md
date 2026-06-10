@@ -10,7 +10,7 @@ Build a working NASM-first ELF64 x86_64 analyzer.
 
 Primary outcome: functional scaffold and semester-grade tool.
 
-Current status: complete through ELF64 validation, program-header analysis, mitigation baseline reporting, and raw scanner foundation.
+Current status: complete through ELF64 validation, program-header analysis, mitigation baseline reporting, raw scanner foundation, exact suffix pattern matching, and first-pass semantic classification.
 
 ## Stage 2: benchmarkable scanner
 
@@ -28,7 +28,7 @@ Possible research question:
 
 > Can semantic gadget usefulness be measured more accurately through side-effect and primitive-coverage analysis than through raw gadget count?
 
-Current status: exact pattern IDs exist. Semantic classification begins in Sprint 4. Scoring should wait until semantic classes, register bitmaps, stack deltas, and side-effect flags are populated.
+Current status: exact pattern IDs and the first Sprint 4 semantic classifier exist. Patch 015 populates semantic classes, register bitmaps, stack deltas, side-effect flags, semantic counts, unknown counts, and register coverage for supported exact suffix patterns. Scoring should wait until these classifier facts validate locally and the JSON/scoring contract lands in Sprint 5.
 
 ## Stage 4: mitigation-aware exploitability modeling
 

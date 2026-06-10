@@ -91,6 +91,14 @@ label_candidate_count: db "  Candidate count: ", 0
 label_ret_count:       db "  ret count: ", 0
 label_ret_imm_count:   db "  ret imm16 count: ", 0
 label_pattern_count:   db "  Exact pattern count: ", 0
+label_semantic_count:  db "  Semantic primitive count: ", 0
+label_unknown_count:   db "  unknown_candidate count: ", 0
+label_arg_count:       db "  arg_control count: ", 0
+label_sysnum_count:    db "  syscall_num_control count: ", 0
+label_systrig_count:   db "  syscall_trigger count: ", 0
+label_pivot_count:     db "  stack_pivot count: ", 0
+label_align_count:     db "  alignment count: ", 0
+label_reg_coverage:    db "  Register coverage: ", 0
 no_candidates:         db "  none discovered in executable regions", 10, 0
 candidate_prefix:      db "  - VA ", 0
 candidate_file_off:    db ", file offset ", 0
@@ -98,6 +106,9 @@ candidate_window:      db ", window start ", 0
 candidate_len:         db ", len ", 0
 candidate_term:        db ", terminator: ", 0
 candidate_pattern:     db ", pattern: ", 0
+candidate_semantic:    db ", semantic: ", 0
+candidate_regs:        db ", regs: ", 0
+candidate_stack_delta: db ", stack delta: ", 0
 candidate_bytes:       db ", bytes: ", 0
 term_ret:              db "ret", 0
 term_ret_imm16:        db "ret imm16", 0
@@ -123,6 +134,34 @@ pattern_pop_r14_ret:   db "pop r14; ret", 0
 pattern_pop_r15_ret:   db "pop r15; ret", 0
 pattern_leave_ret:     db "leave; ret", 0
 pattern_syscall_ret:   db "syscall; ret", 0
+semantic_unknown:      db "unknown_candidate", 0
+semantic_arg_control:  db "arg_control", 0
+semantic_syscall_num:  db "syscall_num_control", 0
+semantic_syscall_trig: db "syscall_trigger", 0
+semantic_stack_pivot:  db "stack_pivot", 0
+semantic_memory_write: db "memory_write", 0
+semantic_memory_read:  db "memory_read", 0
+semantic_reg_transfer: db "reg_transfer", 0
+semantic_alignment:    db "alignment", 0
+semantic_clobber:      db "clobber_heavy", 0
+regs_none:             db "none", 0
+reg_sep:               db "|", 0
+reg_rax:               db "rax", 0
+reg_rbx:               db "rbx", 0
+reg_rcx:               db "rcx", 0
+reg_rdx:               db "rdx", 0
+reg_rsi:               db "rsi", 0
+reg_rdi:               db "rdi", 0
+reg_rbp:               db "rbp", 0
+reg_rsp:               db "rsp", 0
+reg_r8:                db "r8", 0
+reg_r9:                db "r9", 0
+reg_r10:               db "r10", 0
+reg_r11:               db "r11", 0
+reg_r12:               db "r12", 0
+reg_r13:               db "r13", 0
+reg_r14:               db "r14", 0
+reg_r15:               db "r15", 0
 space_str:             db " ", 0
 
 section .text
@@ -478,8 +517,9 @@ report_text_print_perms:
 ;   Human-readable raw gadget candidate report on STDOUT.
 ;
 ; Scope:
-;   This report is intentionally raw. It renders candidate facts discovered by
-;   scanner.asm but does not classify, score, or infer exploitability.
+;   This report renders raw scanner facts, exact pattern facts, and first-pass
+;   semantic classifier facts. It does not score gadgets, decode full
+;   instruction streams, or infer exploitability.
 x64lens_report_text_gadgets:
     push    rbp
     push    rbx
@@ -540,6 +580,54 @@ x64lens_report_text_gadgets:
     call    print_hex64
     call    print_nl
 
+    lea     rdi, [label_semantic_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_unknown_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_UNKNOWN_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_arg_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_ARG_CONTROL_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_sysnum_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_SYSCALL_NUM_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_systrig_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_pivot_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_STACK_PIVOT_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_align_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_ALIGNMENT_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_reg_coverage]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_REGS_CONTROLLED]
+    call    report_text_print_regs_bitmap
+    call    print_nl
+
     cmp     qword [r12 + GADGET_SUMMARY_COUNT], 0
     jne     .candidate_loop_setup
     lea     rdi, [no_candidates]
@@ -586,6 +674,21 @@ x64lens_report_text_gadgets:
     mov     edi, [r15 + GADGET_PATTERN_ID]
     call    report_text_print_pattern
 
+    lea     rdi, [candidate_semantic]
+    call    print_cstr
+    mov     edi, [r15 + GADGET_SEMANTIC_CLASS]
+    call    report_text_print_semantic
+
+    lea     rdi, [candidate_regs]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_REGS_CONTROLLED]
+    call    report_text_print_regs_bitmap
+
+    lea     rdi, [candidate_stack_delta]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_STACK_DELTA]
+    call    print_hex64
+
     lea     rdi, [candidate_bytes]
     call    print_cstr
     call    report_text_print_candidate_bytes
@@ -624,8 +727,8 @@ report_text_print_terminator:
 ; report_text_print_pattern(edi=pattern_id)
 ;
 ; Prints the exact byte-template pattern label without a trailing newline.
-; Pattern IDs are assigned by patterns.asm and are intentionally separate from
-; semantic classes, which classifier.asm will own in a later sprint.
+; Pattern IDs are assigned by patterns.asm and remain separate from semantic
+; classes, which classifier.asm now populates as a downstream layer.
 report_text_print_pattern:
     cmp     edi, PATTERN_RET
     je      .pattern_ret
@@ -729,6 +832,111 @@ report_text_print_pattern:
 .pattern_syscall_ret:
     lea     rdi, [pattern_syscall_ret]
     jmp     print_cstr
+
+
+; report_text_print_semantic(edi=semantic_class)
+;
+; Prints a semantic primitive label without a trailing newline.
+report_text_print_semantic:
+    cmp     edi, SEM_ARG_CONTROL
+    je      .semantic_arg_control
+    cmp     edi, SEM_SYSCALL_NUM_CONTROL
+    je      .semantic_syscall_num
+    cmp     edi, SEM_SYSCALL_TRIGGER
+    je      .semantic_syscall_trig
+    cmp     edi, SEM_STACK_PIVOT
+    je      .semantic_stack_pivot
+    cmp     edi, SEM_MEMORY_WRITE
+    je      .semantic_memory_write
+    cmp     edi, SEM_MEMORY_READ
+    je      .semantic_memory_read
+    cmp     edi, SEM_REG_TRANSFER
+    je      .semantic_reg_transfer
+    cmp     edi, SEM_ALIGNMENT
+    je      .semantic_alignment
+    cmp     edi, SEM_CLOBBER_HEAVY
+    je      .semantic_clobber
+    lea     rdi, [semantic_unknown]
+    jmp     print_cstr
+.semantic_arg_control:
+    lea     rdi, [semantic_arg_control]
+    jmp     print_cstr
+.semantic_syscall_num:
+    lea     rdi, [semantic_syscall_num]
+    jmp     print_cstr
+.semantic_syscall_trig:
+    lea     rdi, [semantic_syscall_trig]
+    jmp     print_cstr
+.semantic_stack_pivot:
+    lea     rdi, [semantic_stack_pivot]
+    jmp     print_cstr
+.semantic_memory_write:
+    lea     rdi, [semantic_memory_write]
+    jmp     print_cstr
+.semantic_memory_read:
+    lea     rdi, [semantic_memory_read]
+    jmp     print_cstr
+.semantic_reg_transfer:
+    lea     rdi, [semantic_reg_transfer]
+    jmp     print_cstr
+.semantic_alignment:
+    lea     rdi, [semantic_alignment]
+    jmp     print_cstr
+.semantic_clobber:
+    lea     rdi, [semantic_clobber]
+    jmp     print_cstr
+
+%macro PRINT_REG_IF_SET 2
+    mov     rax, rbx
+    test    rax, (1 << %1)
+    jz      %%skip
+    test    r12, r12
+    jz      %%no_sep
+    lea     rdi, [reg_sep]
+    call    print_cstr
+%%no_sep:
+    lea     rdi, [%2]
+    call    print_cstr
+    mov     r12, 1
+%%skip:
+%endmacro
+
+; report_text_print_regs_bitmap(rdi=register_bitmap)
+;
+; Prints a compact pipe-separated register list such as rdi|rsi. Prints none
+; when the bitmap is zero. The bitmap order follows include/structs.inc.
+report_text_print_regs_bitmap:
+    push    rbx
+    push    r12
+
+    mov     rbx, rdi
+    xor     r12, r12
+
+    PRINT_REG_IF_SET REG_RAX_BIT, reg_rax
+    PRINT_REG_IF_SET REG_RBX_BIT, reg_rbx
+    PRINT_REG_IF_SET REG_RCX_BIT, reg_rcx
+    PRINT_REG_IF_SET REG_RDX_BIT, reg_rdx
+    PRINT_REG_IF_SET REG_RSI_BIT, reg_rsi
+    PRINT_REG_IF_SET REG_RDI_BIT, reg_rdi
+    PRINT_REG_IF_SET REG_RBP_BIT, reg_rbp
+    PRINT_REG_IF_SET REG_RSP_BIT, reg_rsp
+    PRINT_REG_IF_SET REG_R8_BIT, reg_r8
+    PRINT_REG_IF_SET REG_R9_BIT, reg_r9
+    PRINT_REG_IF_SET REG_R10_BIT, reg_r10
+    PRINT_REG_IF_SET REG_R11_BIT, reg_r11
+    PRINT_REG_IF_SET REG_R12_BIT, reg_r12
+    PRINT_REG_IF_SET REG_R13_BIT, reg_r13
+    PRINT_REG_IF_SET REG_R14_BIT, reg_r14
+    PRINT_REG_IF_SET REG_R15_BIT, reg_r15
+
+    test    r12, r12
+    jne     .regs_done
+    lea     rdi, [regs_none]
+    call    print_cstr
+.regs_done:
+    pop     r12
+    pop     rbx
+    ret
 
 ; report_text_print_candidate_bytes()
 ;

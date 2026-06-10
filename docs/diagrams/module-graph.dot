@@ -22,12 +22,16 @@ digraph x64lens_modules {
   gadgets -> elf64;
   gadgets -> phdr;
   gadgets -> scanner;
+  gadgets -> patterns;
+  gadgets -> classifier;
   gadgets -> report_text;
   gadgets -> errors;
 
   phdr -> bounds;
   phdr -> regions;
   scanner -> regions;
+  patterns -> scanner;
+  classifier -> patterns;
 
   filemap -> syscalls;
   elf64 -> bounds;
@@ -35,8 +39,7 @@ digraph x64lens_modules {
   report_text -> hex;
   errors -> print;
 
-  patterns -> classifier;
-  classifier -> scoring;
+  scoring -> classifier;
   scoring -> report_text;
   scoring -> report_json;
 }

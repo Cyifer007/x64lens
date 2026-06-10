@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned.
+In progress. Patch 015 implements the first semantic classifier pass and awaits local WSL2/Docker validation.
 
 ## Sprint goal
 
@@ -12,23 +12,37 @@ Sprint 4 should not expand scanning breadth first. The highest-value next step i
 
 ## Planned deliverables
 
-- [ ] Implement first real `classifier.asm` routine.
-- [ ] Call classifier from `gadgets.asm` after `patterns.asm` and before reporting.
-- [ ] Map exact pattern IDs into semantic classes:
+- [x] Implement first real `classifier.asm` routine.
+- [x] Call classifier from `gadgets.asm` after `patterns.asm` and before reporting.
+- [x] Map exact pattern IDs into semantic classes:
   - `ret` -> `alignment`
-  - `ret imm16` -> `alignment` plus nonstandard stack adjustment note later
+  - `ret imm16` -> `alignment` with `8 + imm16` stack adjustment
   - `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rcx; ret`, `pop r8; ret`, `pop r9; ret` -> `arg_control`
   - `pop rax; ret` -> `syscall_num_control`
   - `syscall; ret` -> `syscall_trigger`
   - `leave; ret` and `pop rsp; ret` -> `stack_pivot`
-- [ ] Populate `GADGET_REGS_CONTROLLED` bitmap for exact pop patterns.
-- [ ] Populate first stack-delta values for exact patterns.
-- [ ] Populate first side-effect flags if a minimal flag model is added.
-- [ ] Add primitive coverage summary record or extend an existing summary with explicit coverage fields.
-- [ ] Add text output for semantic class and controlled registers.
-- [ ] Add regression tests for semantic labels and register bitmap behavior.
-- [ ] Update `docs/semantic-taxonomy.md` and `docs/scoring-model.md` based on actual classifier behavior.
-- [ ] Update `docs/json-schema.md` only if JSON output is implemented in this sprint.
+- [x] Populate `GADGET_REGS_CONTROLLED` bitmap for exact pop patterns.
+- [x] Populate first stack-delta values for exact patterns.
+- [x] Populate first side-effect flags if a minimal flag model is added.
+- [x] Add primitive coverage summary record or extend an existing summary with explicit coverage fields.
+- [x] Add text output for semantic class and controlled registers.
+- [x] Add regression tests for semantic labels and register bitmap behavior.
+- [x] Update `docs/semantic-taxonomy.md` and `docs/scoring-model.md` based on actual classifier behavior.
+- [x] Leave `docs/json-schema.md` implementation status unchanged because JSON output is not implemented in Patch 015.
+
+## Patch 015 implemented subset
+
+Patch 015 implements the classifier subset without scoring or JSON. Validation expectations are tracked in `docs/sprints/sprint-04-patch-015-validation.md`.
+
+Patch 015 implements:
+
+- exact pattern to semantic class mapping,
+- controlled-register bitmap population,
+- stack delta for `ret`, `ret imm16`, and pop-ret patterns,
+- minimal side-effect flags,
+- semantic summary counts,
+- register coverage summary,
+- fixture validation and smoke target updates.
 
 ## Acceptance criteria
 
@@ -51,6 +65,7 @@ make samples
 make test
 make docker-test
 make validate-gadget-fixture
+make semantic-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 60
 ```

@@ -56,6 +56,7 @@ Every benchmark run should record:
 - gadget count,
 - unique gadget count,
 - semantic primitive count,
+- unknown candidate count,
 - exact pattern count,
 - output size,
 - exit code,
@@ -199,3 +200,20 @@ The NASM implementation is a hypothesis to evaluate, not a conclusion. Benchmark
 ## Future ablation option
 
 If reviewers challenge whether NASM matters, consider a small C or Rust reference scanner as an ablation baseline. This should be optional and narrow. It should not become a rewrite or replacement for the assembly-first engine.
+
+
+## Sprint 4 smoke benchmark fields
+
+Patch 015 extends `benchmarks/scripts/bench-scanner-smoke.sh` so development smoke TSV rows include:
+
+```text
+candidate_count
+ret_count
+ret_imm16_count
+exact_pattern_count
+semantic_primitive_count
+unknown_candidate_count
+output_bytes
+```
+
+These fields remain development evidence. They are useful for regression tracking and later benchmark design, but they are not publication claims until baseline tools, corpus manifests, repeated trials, and summary statistics are captured under the full methodology.

@@ -94,3 +94,8 @@ Candidate future shape:
 ```
 
 Do not expose a single ambiguous `gadget_count` field without defining what it means.
+
+
+## Sprint 4 classifier status
+
+Patch 015 implements semantic classifier facts in internal records and text output only. JSON output is still future work. When JSON lands in Sprint 5, it should expose raw candidate counts, exact pattern counts, semantic primitive counts, unknown candidate counts, per-class primitive counts, controlled-register bitmaps, stack deltas, and `limitations` without scraping text output.

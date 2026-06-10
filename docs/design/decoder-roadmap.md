@@ -10,7 +10,7 @@ Sprint 3 introduced a byte-oriented raw scanner and exact suffix pattern matcher
 executable regions -> raw candidate scanner -> exact suffix pattern matcher -> text report
 ```
 
-The current scanner finds return-terminated byte windows inside executable `PT_LOAD + PF_X` regions. The exact matcher assigns small `PATTERN_*` IDs to suffix byte templates such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, `ret`, and `ret imm16`.
+The current scanner finds return-terminated byte windows inside executable `PT_LOAD + PF_X` regions. The exact matcher assigns small `PATTERN_*` IDs to suffix byte templates such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, `ret`, and `ret imm16`. Patch 015 then maps supported exact pattern IDs into first-pass semantic facts while preserving the same decoder limitation.
 
 ## Important limitation
 
@@ -77,3 +77,8 @@ Do not add an embedded decoder until the project can answer these questions:
 Sprint 4 should not implement a full decoder. It should conservatively classify only exact pattern IDs and leave ambiguous candidates as `unknown_candidate`.
 
 Sprint 8 or later can expand patterns. Sprint 10 can quantify gaps against baseline tools. A full decoder belongs after those measurements unless a critical correctness issue appears earlier.
+
+
+## Sprint 4 classifier and future decoder
+
+Patch 015 does not remove the need for a future decoder. It adds a conservative classifier over exact suffix evidence. Future decoder work should augment candidate records with decoded instruction facts and let `classifier.asm` prefer decoder-backed facts when they exist. The raw scanner and exact pattern matcher should remain useful as fast prefilter stages.

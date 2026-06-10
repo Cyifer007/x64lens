@@ -87,3 +87,22 @@ The CLI should keep analysis stages explicit in output and JSON:
 - limitations.
 
 When a command emits partial or heuristic analysis, the output should say so. `gadgets` may report raw candidates and exact pattern labels before semantic classification is complete. `analyze` should not imply full exploitability unless a future version has enough independent vulnerability and runtime context, which is outside the current scope.
+
+
+## Sprint 4 `gadgets` semantic output status
+
+Patch 015 keeps the command form unchanged:
+
+```bash
+x64lens gadgets [--max-depth N] <file>
+```
+
+The text output now includes first-pass semantic fields in addition to raw and exact pattern fields:
+
+- semantic primitive count,
+- unknown candidate count,
+- per-class primitive counts,
+- register coverage,
+- per-candidate semantic class, controlled registers, and stack delta.
+
+This is still experimental text output before `1.0.0`. JSON output remains future work.

@@ -12,10 +12,10 @@ x64lens must keep raw scanner facts, exact pattern facts, semantic primitive fac
 | `ret_count` | Raw candidates ending in `ret`. | Sprint 3 |
 | `ret_imm16_count` | Raw candidates ending in `ret imm16`. | Sprint 3 |
 | `exact_pattern_count` | Raw candidates with a recognized exact suffix pattern. | Sprint 3 |
-| `semantic_candidate_count` | Candidates classified into semantic primitive classes. | Sprint 4 target |
-| `unknown_candidate_count` | Candidates intentionally left unclassified. | Sprint 4 target |
+| `semantic_candidate_count` | Candidates classified into semantic primitive classes. | Sprint 4, Patch 015 |
+| `unknown_candidate_count` | Candidates intentionally left unclassified. | Sprint 4, Patch 015 |
 | `scored_candidate_count` | Candidates assigned a usefulness score. | Sprint 5 target |
-| `primitive_coverage` | Binary-level availability of useful primitive classes. | Sprint 4 to 5 target |
+| `primitive_coverage` | Binary-level availability of useful primitive classes and controlled-register coverage. | Sprint 4 initial text summary, Sprint 5 JSON target |
 
 ## Why separation matters
 
@@ -53,4 +53,6 @@ Do not claim that x64lens has better gadget coverage unless the comparison defin
 
 ## Sprint impact
 
-Sprint 4 should report primitive coverage separately from raw candidate counts. Sprint 5 JSON should expose limitations and separate counts. Sprint 10 research benchmarks should compute summary statistics over these separate fields rather than collapsing them into one count.
+Patch 015 implements the first semantic-count layer in text output and benchmark smoke TSVs. `x64lens gadgets` now emits raw candidate count, exact pattern count, semantic primitive count, unknown candidate count, per-class semantic counts, and register coverage separately.
+
+Sprint 5 JSON should expose the same separation with explicit `limitations`. Sprint 10 research benchmarks should compute summary statistics over these separate fields rather than collapsing them into one count.

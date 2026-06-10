@@ -15,7 +15,7 @@ Each sprint must produce one bounded, testable improvement. Do not implement fea
 | 1 | ELF64 identity | Safe file mapping and `info <file>` |
 | 2 | Loader mapping | Program headers, executable regions, baseline mitigations |
 | 3 | Scanner foundation | Raw candidates, arena storage, exact suffix patterns |
-| 4 | Semantic classification | Primitive classes, register bitmaps, stack deltas |
+| 4 | Semantic classification | Primitive classes, register bitmaps, stack deltas, semantic summary counts |
 | 5 | Scoring and JSON | Initial score model and schema-versioned reports |
 | 6 | Semester checkpoint | Demo path, documentation, benchmark seed, paper scaffold |
 | 7 | Mitigation hardening | Full RELRO, canary indicators, section labels, external comparison helpers |
@@ -27,12 +27,12 @@ Each sprint must produce one bounded, testable improvement. Do not implement fea
 
 ## Architecture checkpoints
 
-### After Sprint 3
+### After Sprint 4 Patch 015
 
-The pipeline is ready for semantic work:
+The pipeline now reaches the first semantic layer:
 
 ```text
-ELF parser -> PHDR analyzer -> executable regions -> scanner -> exact pattern matcher
+ELF parser -> PHDR analyzer -> executable regions -> scanner -> exact pattern matcher -> semantic classifier
 ```
 
 ### After Sprint 6

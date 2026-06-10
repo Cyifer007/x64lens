@@ -22,11 +22,12 @@ flowchart TD
     ER --> SC[Fast raw gadget candidate scanner]
     SC --> GS[Gadget summary record]
     SC --> GR[Raw gadget candidate records]
-    GS --> GTR[Text raw gadget report]
+    GR --> PT[Exact suffix pattern matcher]
+    PT --> CL[Semantic primitive classifier]
+    CL --> GS
+    GS --> GTR[Text gadget report]
     GR --> GTR
 
-    GR --> PT[Future opcode pattern matcher]
-    PT --> CL[Future semantic primitive classifier]
     CL --> SO[Future scoring engine]
     SO --> TXT[Future text report]
     SO --> JSON[Future JSON report]

@@ -79,13 +79,16 @@
 ## Sprint 4
 
 - [x] Add initial exact pattern table. Completed early in Sprint 3 Phase D.
-- [ ] Implement first real classifier routine in `src/classifier.asm`.
-- [ ] Map exact pattern IDs into semantic classes.
-- [ ] Classify `pop reg; ret` gadgets.
-- [ ] Classify `leave; ret`.
-- [ ] Classify `syscall`.
-- [ ] Add register bitmap.
-- [ ] Add primitive coverage summary.
+- [x] Implement first real classifier routine in `src/classifier.asm`.
+- [x] Map exact pattern IDs into semantic classes.
+- [x] Classify `pop reg; ret` gadgets.
+- [x] Classify `leave; ret`.
+- [x] Classify `syscall`.
+- [x] Add register bitmap.
+- [x] Add primitive coverage summary.
+- [ ] Validate Patch 015 semantic classifier locally and in Docker.
+- [ ] Write Sprint 4 retrospective after local validation.
+- [ ] Decide whether `analyze <file>` orchestration belongs in late Sprint 4 or Sprint 5.
 
 ## Sprint 5
 

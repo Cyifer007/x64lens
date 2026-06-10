@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "note": "Development fixture expectations for Sprint 3 raw scanning and exact pattern matching. JSON report output is not implemented yet.",
+  "note": "Development fixture expectations for Sprint 4 raw scanning, exact pattern matching, and first-pass semantic classification. JSON report output is not implemented yet.",
   "fixture": "tests/bin/gadgets",
   "default_max_depth": 8,
   "candidate_capacity": 4096,
@@ -8,6 +8,22 @@
   "ret_count": 6,
   "ret_imm16_count": 1,
   "exact_pattern_count": 7,
+  "semantic_primitive_count": 7,
+  "unknown_candidate_count": 0,
+  "semantic_counts": {
+    "arg_control": 3,
+    "syscall_num_control": 1,
+    "syscall_trigger": 1,
+    "stack_pivot": 1,
+    "alignment": 1
+  },
+  "register_coverage": [
+    "rax",
+    "rdx",
+    "rsi",
+    "rdi",
+    "rsp"
+  ],
   "expected_patterns": [
     "pop rdi; ret",
     "pop rsi; ret",
@@ -16,5 +32,14 @@
     "leave; ret",
     "syscall; ret",
     "ret imm16"
+  ],
+  "expected_semantics": [
+    "arg_control",
+    "arg_control",
+    "arg_control",
+    "syscall_num_control",
+    "stack_pivot",
+    "syscall_trigger",
+    "alignment"
   ]
 }

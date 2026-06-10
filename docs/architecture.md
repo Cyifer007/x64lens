@@ -171,9 +171,9 @@ Benchmarking is a first-class feature, not an afterthought. Every analysis chang
 
 
 
-## Sprint 3 implemented flow: `gadgets <file>`
+## Sprint 3 and Sprint 4 implemented flow: `gadgets <file>`
 
-Patch 008 began the Sprint 3 raw scanner path. Patch 010 kept the same scanner/reporting contract while moving candidate storage into an arena. Patch 011 tags raw candidates with exact byte-template pattern IDs:
+Patch 008 began the Sprint 3 raw scanner path. Patch 010 kept the same scanner/reporting contract while moving candidate storage into an arena. Patch 011 tags raw candidates with exact byte-template pattern IDs. Patch 015 adds Sprint 4 semantic classification over those pattern IDs:
 
 ```text
 main.asm
@@ -184,11 +184,12 @@ main.asm
      -> x64lens_arena_init / x64lens_arena_alloc in arena.asm
      -> x64lens_scanner_find_ret_candidates(base, size, phdr_summary, regions, gadget_summary, gadget_records) in scanner.asm
      -> x64lens_patterns_match_exact(mapped_base, gadget_summary, gadget_records) in patterns.asm
+     -> x64lens_classifier_apply_exact(gadget_summary, gadget_records, mapped_base) in classifier.asm
      -> x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base) in report_text.asm
      -> x64lens_file_unmap(record) in filemap.asm
 ```
 
-The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in bounded `gadget_record` entries before output. After Patch 010, the candidate buffer is arena-backed, but the scanner remains storage-agnostic and receives only a pointer plus capacity metadata. After Patch 011, pattern matching remains separate from semantic classification: `patterns.asm` assigns `PATTERN_*` IDs, while `classifier.asm` will later translate those IDs into semantic classes, register bitmaps, stack deltas, and side-effect facts.
+The Sprint 3 scanner operates only over executable regions produced from `PT_LOAD + PF_X`. It stores raw facts in bounded `gadget_record` entries before output. After Patch 010, the candidate buffer is arena-backed, but the scanner remains storage-agnostic and receives only a pointer plus capacity metadata. After Patch 011, pattern matching remains separate from semantic classification: `patterns.asm` assigns `PATTERN_*` IDs. Patch 015 implements the first classifier path in `classifier.asm`, which translates supported exact pattern IDs into semantic classes, register bitmaps, stack deltas, side-effect flags, and semantic summary counts.
 
 Current raw candidate semantics:
 
@@ -197,7 +198,23 @@ Current raw candidate semantics:
 - `GADGET_BYTE_START` is the beginning of the bounded backward byte window.
 - `GADGET_BYTE_LEN` is the full raw byte-window length including the terminator.
 - `GADGET_TERMINATOR_TYPE` is `ret` or `ret imm16`.
-- Semantic, register, stack, side-effect, and score fields are initialized but left unset for Sprint 4 and later.
+- Semantic, register, stack, and side-effect fields are populated by `classifier.asm` for supported exact patterns as of Patch 015.
+- Score fields remain unset until Sprint 5.
+
+
+## Sprint 4 classifier boundary
+
+The Sprint 4 classifier is intentionally conservative. It consumes `PATTERN_*` IDs, not raw text output, and populates semantic facts only when the exact suffix pattern supports a clear primitive claim. Unsupported exact patterns remain `unknown_candidate`. This preserves the metric boundary between raw candidate discovery, exact suffix labeling, semantic primitive classification, and future scoring.
+
+The current classifier maps:
+
+- `ret` and `ret imm16` to `alignment`,
+- `pop rdi/rsi/rdx/rcx/r8/r9; ret` to `arg_control`,
+- `pop rax; ret` to `syscall_num_control`,
+- `syscall; ret` to `syscall_trigger`,
+- `leave; ret` and `pop rsp; ret` to `stack_pivot`.
+
+The classifier does not perform full instruction decoding and does not claim exploitability.
 
 ## Future scalability model
 
@@ -245,7 +262,7 @@ This keeps the later scanner from needing to rediscover executable byte ranges a
 
 Patch 008 introduced the raw byte scanner. The scanner walks executable `PT_LOAD + PF_X` file-backed ranges, detects return-terminator bytes, extracts bounded backward byte windows, and stores candidate facts in `gadget_record` records before reporting.
 
-Important limitation: this is a byte-pattern scanner, not a full instruction decoder. It may report unaligned raw candidates when a byte such as `0xc2` appears inside another instruction encoding. That is acceptable in Sprint 3 because the scanner's role is to discover candidate byte windows. Later `patterns.asm`, `classifier.asm`, and eventually a decoder integration layer will distinguish semantically meaningful gadgets from raw byte candidates.
+Important limitation: this is a byte-pattern scanner, not a full instruction decoder. It may report unaligned raw candidates when a byte such as `0xc2` appears inside another instruction encoding. That remains acceptable because the scanner's role is to discover candidate byte windows. `patterns.asm` and `classifier.asm` add exact suffix labels and first-pass semantic facts, but a future decoder integration layer will be needed before claiming full instruction-sequence validity.
 
 The current `--max-depth` means the maximum number of bytes considered before the terminator. Total printed window length can therefore be `max-depth + terminator_length`, where `ret` has length 1 and `ret imm16` has length 3.
 
@@ -261,11 +278,11 @@ Patch 011 introduces the first exact byte-template matcher. It recognizes suffix
 - `leave; ret`,
 - `syscall; ret`.
 
-This remains byte-template matching, not full decoding. On real binaries, especially for raw `ret imm16` candidates, some pattern labels can still correspond to unaligned byte sequences. Sprint 4 semantic classification and future decoder integration must preserve this limitation.
+This remains byte-template matching, not full decoding. On real binaries, especially for raw `ret imm16` candidates, some pattern labels can still correspond to unaligned byte sequences. Sprint 4 semantic classification preserves this limitation by mapping only supported exact suffix evidence and keeping unsupported cases as `unknown_candidate`.
 
-## Sprint 3 closeout architecture checkpoint
+## Sprint 4 architecture checkpoint
 
-Sprint 3 completes the first full engine-side candidate path:
+Sprint 4 extends the first full engine-side candidate path with semantic classification:
 
 ```text
 filemap.asm
@@ -275,6 +292,7 @@ filemap.asm
   -> scanner.asm
   -> arena.asm
   -> patterns.asm
+  -> classifier.asm
   -> report_text.asm
 ```
 
@@ -283,11 +301,11 @@ The implemented layering is intentionally conservative:
 - `scanner.asm` discovers raw terminator-centered candidate windows.
 - `arena.asm` provides command-lifetime storage for candidate records.
 - `patterns.asm` tags exact suffix byte templates.
-- `classifier.asm` remains the future semantic layer.
+- `classifier.asm` maps supported exact pattern IDs into semantic primitive facts.
 - `scoring.asm` remains the future usefulness layer.
 - `report_text.asm` renders facts but does not decide facts.
 
-This means Sprint 4 can add semantic classification without rewriting the scanner.
+This means Sprint 5 can add scoring and JSON without rewriting the scanner, pattern matcher, or classifier.
 
 ## Exact pattern interpretation rule
 
@@ -325,23 +343,24 @@ decode_record[] keyed by candidate index, optional future work
 
 This preserves the current scanner while allowing a future decoder, richer classifier, or JSON reporter to evolve independently.
 
-## Sprint 4 insertion point
+## Sprint 4 implemented classifier layer
 
-Sprint 4 should add:
+Patch 015 adds:
 
 ```text
 patterns.asm -> classifier.asm -> report_text.asm
 ```
 
-The first classifier should populate:
+The first classifier populates:
 
 - semantic class,
 - controlled-register bitmap,
 - stack delta,
-- side-effect flags where safe,
-- primitive coverage summary.
+- minimal side-effect flags,
+- semantic summary counts,
+- controlled-register coverage.
 
-It should not implement scoring or exploitability interpretation until those semantic facts are stable.
+It intentionally does not implement scoring or exploitability interpretation. Those remain Sprint 5 and later work.
 
 ## Reviewer-readiness architecture seams
 

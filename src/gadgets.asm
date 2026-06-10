@@ -11,11 +11,12 @@
 ;
 ; Sprint 3 scope:
 ;   This command discovers raw `ret` and `ret imm16` candidates, then tags
-;   recognized exact byte-template patterns. It does not classify gadgets
-;   semantically, score gadgets, generate chains, or claim exploitability. Those
-;   layers belong to classifier.asm, scoring.asm, and later analyze/report
-;   modules. Patch 010 moved candidate storage from static .bss to a tiny
-;   mmap-backed arena. Patch 011 adds the first pattern-matching seam.
+;   recognized exact byte-template patterns and run the first semantic
+;   classifier over those pattern facts. It does not score gadgets, generate
+;   chains, or claim exploitability. Those layers belong to scoring.asm and
+;   later analyze/report modules. Patch 010 moved candidate storage from static
+;   .bss to a tiny mmap-backed arena. Patch 011 added the first pattern-
+;   matching seam. Patch 015 adds Sprint 4 semantic classification.
 
 bits 64
 default rel
@@ -29,6 +30,7 @@ extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
+extern x64lens_classifier_apply_exact
 extern x64lens_report_text_gadgets
 extern x64lens_error_print_status
 extern x64lens_arena_init
@@ -129,13 +131,22 @@ x64lens_command_gadgets:
     test    rax, rax
     jne     .error
 
-    ; Tag raw candidates with exact byte-template pattern IDs. This is still
-    ; not semantic classification. patterns.asm records only what exact suffix
-    ; template matched so classifier.asm can interpret it in Sprint 4.
+    ; Tag raw candidates with exact byte-template pattern IDs. patterns.asm
+    ; records what suffix template matched without deciding exploit semantics.
     mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
     lea     rsi, [gad_summary]
     mov     rdx, r15
     call    x64lens_patterns_match_exact
+    test    rax, rax
+    jne     .error
+
+    ; Translate exact pattern facts into conservative semantic primitive facts.
+    ; classifier.asm owns this interpretation layer so scanners and pattern
+    ; matching remain reusable when a future decoder side-car is introduced.
+    lea     rdi, [gad_summary]
+    mov     rsi, r15
+    mov     rdx, [gad_mapped_file + FILEMAP_ADDR]
+    call    x64lens_classifier_apply_exact
     test    rax, rax
     jne     .error
 

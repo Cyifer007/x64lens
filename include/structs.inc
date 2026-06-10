@@ -80,7 +80,15 @@
 %define GADGET_SUMMARY_MAX_DEPTH      24
 %define GADGET_SUMMARY_CAPACITY       32
 %define GADGET_SUMMARY_PATTERN_COUNT      40
-%define GADGET_SUMMARY_RECORD_SIZE    48
+%define GADGET_SUMMARY_SEMANTIC_COUNT     48
+%define GADGET_SUMMARY_UNKNOWN_COUNT      56
+%define GADGET_SUMMARY_ARG_CONTROL_COUNT  64
+%define GADGET_SUMMARY_SYSCALL_NUM_COUNT  72
+%define GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT 80
+%define GADGET_SUMMARY_STACK_PIVOT_COUNT  88
+%define GADGET_SUMMARY_ALIGNMENT_COUNT    96
+%define GADGET_SUMMARY_REGS_CONTROLLED    104
+%define GADGET_SUMMARY_RECORD_SIZE        112
 
 ; arena record offsets
 ;
@@ -177,5 +185,20 @@
 %define SEM_REG_TRANSFER            7
 %define SEM_ALIGNMENT               8
 %define SEM_CLOBBER_HEAVY           9
+
+; stack delta constants for first-pass semantic classification. Values are in
+; bytes and describe the suffix pattern effect. STACK_DELTA_UNKNOWN is used for
+; pivot primitives where RSP becomes input-dependent.
+%define STACK_DELTA_UNKNOWN         0
+%define STACK_DELTA_RET             8
+%define STACK_DELTA_POP_RET         16
+
+; side-effect flags. These are intentionally minimal in Sprint 4 and should be
+; extended only when classifier/scoring behavior needs the distinction.
+%define SIDE_EFFECT_NONE            0
+%define SIDE_EFFECT_STACK_READ      (1 << 0)
+%define SIDE_EFFECT_STACK_PIVOT     (1 << 1)
+%define SIDE_EFFECT_SYSCALL         (1 << 2)
+%define SIDE_EFFECT_RET_IMM16       (1 << 3)
 
 %endif

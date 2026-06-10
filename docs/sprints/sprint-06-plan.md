@@ -48,6 +48,7 @@ make test
 make docker-test
 make validate-gadget-fixture
 make pattern-smoke
+make semantic-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ./build/x64lens version
 ./build/x64lens help

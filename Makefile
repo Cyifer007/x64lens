@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke check-tools scaffold-check script-perms-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke check-tools scaffold-check script-perms-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -68,8 +68,13 @@ validate-gadget-fixture: all samples
 scanner-smoke: validate-gadget-fixture
 
 # Sprint 3 Phase D pattern smoke target. It verifies that the pattern matcher
-# labels the controlled fixture without claiming semantic classification.
+# labels the controlled fixture. Sprint 4 semantic checks are now included in
+# validate-gadget-fixture, so this remains a compatibility alias.
 pattern-smoke: validate-gadget-fixture
+
+# Sprint 4 semantic smoke target. It validates classifier facts for the known
+# gadget fixture without broadening scan coverage or invoking scoring.
+semantic-smoke: validate-gadget-fixture
 
 # Sprint 3 Phase C arena smoke target. It exercises the gadgets command path
 # after candidate storage moved from static .bss memory to an mmap-backed arena.

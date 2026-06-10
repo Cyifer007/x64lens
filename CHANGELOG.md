@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- Began Sprint 4 with Patch 015 semantic classification over exact pattern IDs.
+- Implemented `x64lens_classifier_apply_exact` in `src/classifier.asm`.
+- Added semantic class, controlled-register bitmap, stack-delta, and side-effect population for supported exact suffix patterns.
+- Added semantic summary counts, unknown candidate counts, per-class primitive counts, and register coverage to gadget text output.
+- Added `make semantic-smoke` and expanded fixture validation to check semantic classifier facts.
+- Extended scanner smoke TSV output with semantic primitive and unknown-candidate counts.
+
 ### Documentation and planning
 
 - Added reviewer-readiness design notes under `docs/design/`.

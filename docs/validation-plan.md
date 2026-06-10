@@ -281,9 +281,9 @@ RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke -> scanner-smoke benchmark complete
 
 Interpretation rule: exact pattern labels describe the recognized suffix ending at the terminator. They are not full semantic classifications and they are not exploitability claims.
 
-### 7. Sprint 4 semantic validation target
+### 7. Sprint 4 semantic validation status
 
-Sprint 4 should add validation for:
+Patch 015 adds validation for:
 
 - semantic class labels,
 - controlled-register bitmaps,
@@ -291,13 +291,15 @@ Sprint 4 should add validation for:
 - primitive coverage summaries,
 - preservation of `unknown_candidate` for unsupported windows.
 
-Suggested commands after Sprint 4 implementation:
+Current commands:
 
 ```bash
+make validate-gadget-fixture
 make semantic-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
-./build/x64lens analyze ./tests/bin/gadgets
 ```
+
+`analyze <file>` is not implemented yet and should not be used as a Sprint 4 validation requirement until a later patch adds it.
 
 ## Parser safety and mutation smoke plan
 
@@ -325,3 +327,33 @@ The first version does not need coverage-guided fuzzing. A deterministic mutatio
 ## Script permission validation
 
 Patch extraction, Windows tooling, or cross-platform ZIP workflows can accidentally drop executable bits from shell helpers. `make scaffold-check` should validate that expected scripts remain executable through `make script-perms-check`.
+
+
+### 8. Sprint 4 Patch 015 semantic classifier validation
+
+Sprint 4 Patch 015 validates first-pass semantic classification through the controlled `tests/bin/gadgets` fixture.
+
+Commands:
+
+```bash
+make validate-gadget-fixture
+make semantic-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+```
+
+Expected controlled fixture signals:
+
+| Signal | Expected value |
+| ------ | -------------- |
+| Candidate count | `0x0000000000000007` |
+| Exact pattern count | `0x0000000000000007` |
+| Semantic primitive count | `0x0000000000000007` |
+| unknown_candidate count | `0x0000000000000000` |
+| arg_control count | `0x0000000000000003` |
+| syscall_num_control count | `0x0000000000000001` |
+| syscall_trigger count | `0x0000000000000001` |
+| stack_pivot count | `0x0000000000000001` |
+| alignment count | `0x0000000000000001` |
+| Register coverage | `rax|rdx|rsi|rdi|rsp` |
+
+This validation confirms classifier plumbing and fixture behavior. It is not a full decoder validation and does not establish exploitability.
