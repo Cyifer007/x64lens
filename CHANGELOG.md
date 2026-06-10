@@ -1,29 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Added
-
-- Began Sprint 4 with Patch 015 semantic classification over exact pattern IDs.
-- Implemented `x64lens_classifier_apply_exact` in `src/classifier.asm`.
-- Added semantic class, controlled-register bitmap, stack-delta, and side-effect population for supported exact suffix patterns.
-- Added semantic summary counts, unknown candidate counts, per-class primitive counts, and register coverage to gadget text output.
-- Added `make semantic-smoke` and expanded fixture validation to check semantic classifier facts.
-- Extended scanner smoke TSV output with semantic primitive and unknown-candidate counts.
-
-### Documentation and planning
-
-- Added reviewer-readiness design notes under `docs/design/`.
-- Added ADR 0005 for reviewer readiness and future seams.
-- Documented the NASM rationale without claiming unsupported performance superiority.
-- Documented the future decoder seam and the limits of exact suffix pattern matching.
-- Documented raw, exact, semantic, and scored metric boundaries.
-- Added parser safety and mutation smoke/fuzzing plan for later hardening.
-- Added contributor maintainability guidance for NASM-heavy development.
-- Refined Sprint 4 through Sprint 12 planning around semantic classification, JSON, malformed-input safety, baseline comparison, and publication readiness.
-- Restored executable permission intent for shell helper scripts and added a script permission check target.
-
-
 All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.
@@ -32,6 +8,21 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Closed Sprint 4 Patch 015 validation with local WSL2 and Docker evidence for the first semantic classifier pass.
+- Added `x64lens_classifier_apply_exact` in `src/classifier.asm` to map supported exact suffix pattern IDs into conservative semantic primitive facts.
+- Added semantic class, controlled-register bitmap, stack-delta, and side-effect population for supported exact suffix patterns.
+- Added semantic summary counts, unknown candidate counts, per-class primitive counts, and register coverage to gadget text output.
+- Added `make semantic-smoke` and expanded fixture validation to check semantic classifier facts.
+- Extended scanner smoke TSV output with semantic primitive and unknown-candidate counts.
+- Added reviewer-readiness design notes under `docs/design/`.
+- Added ADR 0005 for reviewer readiness and future seams.
+- Added NASM rationale documentation without claiming unsupported performance superiority.
+- Added decoder roadmap documentation and the limits of exact suffix pattern matching.
+- Added raw, exact, semantic, and scored metric boundary documentation.
+- Added parser safety and mutation smoke/fuzzing plan for later hardening.
+- Added contributor maintainability guidance for NASM-heavy development.
+- Refined Sprint 4 through Sprint 12 planning around semantic classification, JSON, malformed-input safety, baseline comparison, and publication readiness.
+- Restored executable permission intent for shell helper scripts and added a script permission check target.
 - Closed Sprint 3 with validated raw gadget scanning, scanner smoke benchmarking, arena-backed candidate storage, exact suffix pattern matching, and updated Sprint 3 retrospective/context documentation.
 - Added extended Sprint 7 through Sprint 12 roadmap and candidate sprint plans for mitigation hardening, primitive expansion, compiler/hardening corpus, research benchmarks, integrated analysis, and publication/release preparation.
 - Added Sprint 3 Phase D exact pattern matching: `patterns.asm` now tags raw candidates with exact byte-template pattern IDs such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16` without performing semantic classification.
@@ -58,11 +49,19 @@ The project follows semantic versioning once the first public release is cut.
 - Added `make normalize-perms` for local permission hygiene after extracting patch bundles.
 - Documented Sprint 1 closeout with actual WSL2 and Docker validation output.
 
+### Changed
+
+- Public documentation is now separated from local-only private project context.
+- Local-only planning/context files are expected under `.local/project-context/` and excluded by `.gitignore`.
+- Makefile scaffold checks now validate only public repository structure.
+- Sprint planning now treats Sprint 5 as scoring, JSON, benchmark comparison, and classifier fixture hardening rather than additional raw scanner breadth.
+
 ### Fixed
 
 - Prevented Docker bind-mounted development sessions from creating root-owned build artifacts by running Docker shells/tests with the caller's UID/GID.
 - Added `.dockerignore` to keep local context, generated artifacts, `.git/`, and private/course files out of Docker build contexts.
 - Added troubleshooting documentation for `make clean` permission failures caused by root-owned generated files.
+- Consolidated duplicate `Unreleased` changelog sections introduced during rapid sprint patching.
 
 ## [0.1.0-dev] - Unreleased
 
@@ -80,17 +79,9 @@ The project follows semantic versioning once the first public release is cut.
 - Human-readable comments across current assembly, config, script, and workflow scaffolding.
 - `.devcontainer/devcontainer.json` for reproducible development environments.
 
-### Changed
-
-- Public documentation is now separated from local-only private project context.
-- Local-only planning/context files are expected under `.local/project-context/` and excluded by `.gitignore`.
-- Makefile scaffold checks now validate only public repository structure.
-
 ### Completed
 
 - Sprint 1: repository foundation, build system, Docker workflow, CLI skeleton, file mapping, ELF64 validation, and basic `info <file>` reporting.
 - Sprint 2: program-header parsing, executable-region mapping, baseline mitigation reporting, readelf comparison workflow, and local/Docker validation.
-
-### Planned
-
-- Sprint 3: complete. Raw scanner, scanner smoke benchmark, arena-backed candidate storage, and exact suffix pattern matching are validated.
+- Sprint 3: raw scanner, scanner smoke benchmark, arena-backed candidate storage, and exact suffix pattern matching.
+- Sprint 4: first-pass semantic classifier, semantic summary counts, controlled-register coverage, stack deltas, semantic smoke validation, and Sprint 4 closeout documentation.

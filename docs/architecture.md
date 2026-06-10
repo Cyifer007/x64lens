@@ -394,3 +394,13 @@ Any future parser expansion, especially dynamic-section, symbol-table, string-ta
 ### Metric seam
 
 Raw candidate count, exact pattern count, semantic primitive count, and scored gadget count must remain distinct in internal records, benchmark TSVs, JSON reports, and paper tables.
+
+
+## Sprint 4 closeout architecture note
+
+Patch 015 validation confirms that semantic classification landed without collapsing module boundaries. The classifier consumes exact pattern IDs from internal records, writes semantic facts back into `gadget_record` and `gadget_summary`, and leaves scoring and JSON generation for later modules.
+
+Two future seams should be preserved:
+
+1. a decode side-car record for future instruction-boundary validation,
+2. an explicit stack-delta-known or stack-delta-kind field for JSON and possible text output improvements.

@@ -86,9 +86,15 @@
 - [x] Classify `syscall`.
 - [x] Add register bitmap.
 - [x] Add primitive coverage summary.
-- [ ] Validate Patch 015 semantic classifier locally and in Docker.
-- [ ] Write Sprint 4 retrospective after local validation.
-- [ ] Decide whether `analyze <file>` orchestration belongs in late Sprint 4 or Sprint 5.
+- [x] Validate Patch 015 semantic classifier locally and in Docker.
+- [x] Write Sprint 4 retrospective after local validation.
+- [x] Decide whether `analyze <file>` orchestration belongs in late Sprint 4 or Sprint 5. Decision: defer to Sprint 5 or Sprint 6 after JSON/scoring structure lands.
+
+## Sprint 4 follow-up hardening
+
+- [ ] Add a semantic fixture that exercises `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`.
+- [ ] Add a clearer representation for unknown stack deltas in text/JSON output.
+- [ ] Add a packaging hygiene check or release script guard that excludes `.git/`, `build/`, `tests/bin/`, generated benchmark results, and local-only context from distributable bundles.
 
 ## Sprint 5
 
@@ -130,7 +136,7 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [x] Add parser safety and mutation smoke/fuzzing plan.
 - [x] Add contributor maintainability planning document.
 - [x] Add ADR for reviewer readiness and future seams.
-- [ ] Add `make script-perms-check` to default scaffold validation. Patch 14 introduces this target.
+- [x] Add `make script-perms-check` to default scaffold validation. Patch 14 introduced this target and Patch 015 validation confirmed it.
 - [ ] Add malformed-input mutation smoke harness in Sprint 7.
 - [ ] Add automated readelf field comparison in Sprint 7.
 - [ ] Add optional checksec comparison in Sprint 7.

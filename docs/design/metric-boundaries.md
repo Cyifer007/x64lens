@@ -56,3 +56,8 @@ Do not claim that x64lens has better gadget coverage unless the comparison defin
 Patch 015 implements the first semantic-count layer in text output and benchmark smoke TSVs. `x64lens gadgets` now emits raw candidate count, exact pattern count, semantic primitive count, unknown candidate count, per-class semantic counts, and register coverage separately.
 
 Sprint 5 JSON should expose the same separation with explicit `limitations`. Sprint 10 research benchmarks should compute summary statistics over these separate fields rather than collapsing them into one count.
+
+
+## Sprint 4 closeout note
+
+Patch 015 validation confirmed that the text reporter and scanner smoke benchmark preserve raw, exact, semantic, and unknown counts separately. On real binaries such as `/bin/ls`, many `alignment` records may be exact byte-suffix observations rather than confirmed instruction-boundary gadgets. This is acceptable for the current stage only because the output remains explicit about the scanner model and no exploitability verdict is emitted.

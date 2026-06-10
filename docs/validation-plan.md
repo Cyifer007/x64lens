@@ -357,3 +357,44 @@ Expected controlled fixture signals:
 | Register coverage | `rax|rdx|rsi|rdi|rsp` |
 
 This validation confirms classifier plumbing and fixture behavior. It is not a full decoder validation and does not establish exploitability.
+
+
+### Sprint 4 semantic classifier validation
+
+Patch 015 validation succeeded locally and in Docker. Required commands:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make semantic-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls | head -n 80
+```
+
+Expected controlled fixture semantic signals:
+
+| Signal | Expected value |
+|---|---:|
+| Candidate count | `0x0000000000000007` |
+| Exact pattern count | `0x0000000000000007` |
+| Semantic primitive count | `0x0000000000000007` |
+| unknown_candidate count | `0x0000000000000000` |
+| arg_control count | `0x0000000000000003` |
+| syscall_num_control count | `0x0000000000000001` |
+| syscall_trigger count | `0x0000000000000001` |
+| stack_pivot count | `0x0000000000000001` |
+| alignment count | `0x0000000000000001` |
+| Register coverage | `rax|rdx|rsi|rdi|rsp` |
+
+`/bin/ls` is a smoke target only. Its exact counts can vary across systems, but it should complete without crashing and should preserve raw/exact/semantic/unknown metric separation.
+
+Future validation should add a richer controlled fixture for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` before score values are treated as stable.

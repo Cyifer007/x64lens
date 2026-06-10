@@ -2,9 +2,9 @@
 
 ## Status
 
-Pending local validation.
+Validated locally in WSL2 and in Docker from user-provided terminal output on 2026-06-10.
 
-Patch 015 adds the first semantic classifier pass. The implementation should be validated locally in WSL2 and in Docker before commit.
+Patch 015 adds the first semantic classifier pass. The required local and Docker validation path completed successfully.
 
 ## What changed
 
@@ -67,13 +67,13 @@ pattern: ret imm16, semantic: alignment, regs: none, stack delta: 0x000000000000
 
 ## Acceptance decision
 
-Patch 015 should not be considered complete until:
+Patch 015 is accepted for Sprint 4 closeout. The required evidence shows:
 
-- local `make test` passes,
-- Docker `make docker-test` passes,
-- `make validate-gadget-fixture` passes,
-- `make semantic-smoke` passes,
-- the generated benchmark TSV includes `semantic_primitive_count` and `unknown_candidate_count` columns.
+- local `make test` passed,
+- Docker `make docker-test` passed,
+- `make validate-gadget-fixture` passed,
+- `make semantic-smoke` passed,
+- the generated scanner smoke benchmark completed with semantic columns enabled.
 
 ## Known limitations
 
@@ -82,3 +82,62 @@ Patch 015 should not be considered complete until:
 - Scores remain unset.
 - JSON output is still future work.
 - No exploitability verdict is emitted.
+
+
+## User-provided validation summary
+
+The validated command sequence included:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make clean
+make
+make samples
+make test
+make docker-test
+make validate-gadget-fixture
+make semantic-smoke
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --max-depth 4 /bin/ls
+```
+
+Observed controlled fixture summary:
+
+```text
+Candidate count: 0x0000000000000007
+ret count: 0x0000000000000006
+ret imm16 count: 0x0000000000000001
+Exact pattern count: 0x0000000000000007
+Semantic primitive count: 0x0000000000000007
+unknown_candidate count: 0x0000000000000000
+arg_control count: 0x0000000000000003
+syscall_num_control count: 0x0000000000000001
+syscall_trigger count: 0x0000000000000001
+stack_pivot count: 0x0000000000000001
+alignment count: 0x0000000000000001
+Register coverage: rax|rdx|rsi|rdi|rsp
+```
+
+Observed `/bin/ls` spot-check summary:
+
+```text
+Candidate count: 0x00000000000002c7
+ret count: 0x0000000000000175
+ret imm16 count: 0x0000000000000152
+Exact pattern count: 0x00000000000002c7
+Semantic primitive count: 0x000000000000026a
+unknown_candidate count: 0x000000000000005d
+stack_pivot count: 0x0000000000000006
+alignment count: 0x0000000000000264
+Register coverage: rsp
+```
+
+The `/bin/ls` run is a smoke test, not a correctness oracle. It proves the semantic summary path works on a real system binary and that stack-pivot classification can surface `rsp` register coverage. Because the scanner is still exact-suffix and not a full decoder, the high `ret imm16` and `alignment` counts must remain interpreted as first-pass byte-pattern facts.
+
+## Closeout decision
+
+No additional Sprint 4 validation is required before commit. The remaining useful checks are future hardening tasks, not Sprint 4 blockers.

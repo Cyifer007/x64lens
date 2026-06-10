@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Patch 015 implements the first semantic classifier pass and awaits local WSL2/Docker validation.
+Complete. Patch 015 implemented and validated the first semantic classifier pass locally in WSL2 and in Docker.
 
 ## Sprint goal
 
@@ -46,14 +46,14 @@ Patch 015 implements:
 
 ## Acceptance criteria
 
-- [ ] `make clean && make && make test` succeeds.
-- [ ] `make docker-test` succeeds.
-- [ ] `make validate-gadget-fixture` succeeds.
-- [ ] `x64lens gadgets --max-depth 4 ./tests/bin/gadgets` reports semantic classes for the known fixture patterns.
-- [ ] Primitive coverage includes at least argument-register control, syscall-number control, syscall trigger, stack pivot, and alignment.
-- [ ] No exploitability verdicts are emitted.
-- [ ] Unknown byte windows remain `unknown_candidate` rather than being forced into incorrect classes.
-- [ ] Sprint 4 retrospective is written.
+- [x] `make clean && make && make test` succeeds.
+- [x] `make docker-test` succeeds.
+- [x] `make validate-gadget-fixture` succeeds.
+- [x] `x64lens gadgets --max-depth 4 ./tests/bin/gadgets` reports semantic classes for the known fixture patterns.
+- [x] Primitive coverage includes at least argument-register control, syscall-number control, syscall trigger, stack pivot, and alignment.
+- [x] No exploitability verdicts are emitted.
+- [x] Unknown byte windows remain `unknown_candidate` rather than being forced into incorrect classes.
+- [x] Sprint 4 retrospective is written.
 
 ## Suggested validation commands
 
@@ -98,3 +98,14 @@ Sprint 4 must explicitly protect metric quality:
 - document suffix-label limitations in the retrospective.
 
 A successful Sprint 4 should make the tool more honest, not just more verbose.
+
+
+## Closeout decision
+
+Sprint 4 is complete after Patch 015 validation. The controlled fixture, Docker path, semantic smoke target, and `/bin/ls` real-binary spot check all succeeded. No additional required validation remains before committing Patch 015 and the Sprint 4 closeout documentation.
+
+Optional follow-up coverage should move into Sprint 5 or Sprint 8 rather than extending Sprint 4:
+
+- add a richer semantic fixture that covers `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`,
+- make unknown stack-delta rendering less ambiguous in JSON/text output,
+- keep full decoding, full RELRO, canary detection, and section labels deferred to their planned future sprints.

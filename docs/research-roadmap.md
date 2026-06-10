@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprint 3 is complete. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, and scanner smoke benchmark plumbing.
+Sprint 4 is complete. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, first-pass semantic classification, semantic summary counts, register coverage, and scanner smoke benchmark plumbing.
 
 ## Stage 1: CSC-732 foundation
 
@@ -28,7 +28,7 @@ Possible research question:
 
 > Can semantic gadget usefulness be measured more accurately through side-effect and primitive-coverage analysis than through raw gadget count?
 
-Current status: exact pattern IDs and the first Sprint 4 semantic classifier exist. Patch 015 populates semantic classes, register bitmaps, stack deltas, side-effect flags, semantic counts, unknown counts, and register coverage for supported exact suffix patterns. Scoring should wait until these classifier facts validate locally and the JSON/scoring contract lands in Sprint 5.
+Current status: exact pattern IDs and the first Sprint 4 semantic classifier are implemented and validated. Patch 015 populates semantic classes, register bitmaps, stack deltas, side-effect flags, semantic counts, unknown counts, and register coverage for supported exact suffix patterns. Scoring should begin in Sprint 5 and consume these internal facts directly.
 
 ## Stage 4: mitigation-aware exploitability modeling
 

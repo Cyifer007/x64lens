@@ -54,3 +54,8 @@ Scoring should consume these internal fields in Sprint 5. It must not infer scor
 ## Research warning
 
 The scoring model is heuristic until validated. It should be treated as a research hypothesis, not ground truth.
+
+
+## Sprint 5 entry note
+
+Patch 015 validation provides enough internal semantic facts to begin scoring, but score output must remain conservative. Sprint 5 should not assign high-confidence scores to `unknown_candidate`, ambiguous suffix-only windows, or stack-pivot records without preserving uncertainty. JSON should expose enough fields for consumers to distinguish raw candidates, exact suffix matches, semantic primitives, unknown candidates, and scored candidates.

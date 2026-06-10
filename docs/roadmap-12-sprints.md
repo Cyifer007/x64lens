@@ -29,7 +29,7 @@ Each sprint must produce one bounded, testable improvement. Do not implement fea
 
 ### After Sprint 4 Patch 015
 
-The pipeline now reaches the first semantic layer:
+Validated. The pipeline now reaches the first semantic layer:
 
 ```text
 ELF parser -> PHDR analyzer -> executable regions -> scanner -> exact pattern matcher -> semantic classifier
@@ -81,7 +81,7 @@ Patch 14 adds reviewer-facing planning without changing the core twelve-sprint d
 | Sprint | Added planning emphasis |
 |---|---|
 | Sprint 4 | Conservative semantic classification, unknown candidates preserved, no overclassification. |
-| Sprint 5 | JSON limitations and separate raw/exact/semantic/scored counts. |
+| Sprint 5 | JSON limitations, explicit unknown stack-delta representation, classifier fixture hardening, and separate raw/exact/semantic/scored counts. |
 | Sprint 6 | Public checkpoint includes NASM rationale and pattern-scanner limitations. |
 | Sprint 7 | Parser safety hardening, malformed-input mutation smoke, full RELRO and canary indicators. |
 | Sprint 8 | Pattern expansion with false-positive tracking. |

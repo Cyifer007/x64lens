@@ -8,10 +8,12 @@ Planned.
 
 Add scoring, JSON output, and research-grade comparison scaffolding after semantic classification exists.
 
-Sprint 5 should begin only after Sprint 4 produces stable semantic primitive records. Scoring and JSON should be generated from internal facts, not from text output. Benchmark work should transition from development smoke tests toward reproducible research measurements.
+Sprint 5 should begin only after Sprint 4 produces stable semantic primitive records. Patch 015 validation satisfies that prerequisite. Scoring and JSON should be generated from internal facts, not from text output. Benchmark work should transition from development smoke tests toward reproducible research measurements.
 
 ## Planned deliverables
 
+- [ ] Add or update a controlled semantic fixture that exercises `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` before scores are exposed.
+- [ ] Add explicit unknown stack-delta handling for JSON, and consider text output rendering for pivot records.
 - [ ] Implement initial `scoring.asm` routine over semantic records.
 - [ ] Populate `GADGET_SCORE` for exact classified patterns.
 - [ ] Add explicit uncertainty or raw-pattern penalties where the scanner has not performed full decoding.
@@ -75,3 +77,16 @@ Sprint 5 JSON and scoring work should include limitations by design:
 - scores must be omitted or clearly neutral for `unknown_candidate`,
 - benchmark scripts must record output size so printing cost is visible,
 - comparison tooling must record baseline versions and exact commands.
+
+
+## Sprint 5 entry conditions
+
+Sprint 5 may begin after Patch 015 is committed and the Sprint 4 closeout/context patch is applied. The semantic classifier is stable enough for initial scoring and JSON, but score values should remain explicitly heuristic.
+
+The recommended implementation order is:
+
+1. add fixture coverage for currently unexercised semantic mappings,
+2. define score fields and sentinel behavior for `unknown_candidate`,
+3. add JSON object shape and `limitations`,
+4. add schema validation smoke test,
+5. expand benchmark metadata and baseline wiring.

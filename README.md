@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 4 in progress. Patch 015 adds the first semantic classifier over Sprint 3 exact suffix pattern IDs. Sprints 1 through 3 are complete.
+> Status: Sprint 4 complete. Patch 015 adds and validates the first semantic classifier over Sprint 3 exact suffix pattern IDs. Sprints 1 through 4 are complete.
 >
 > Current version: `0.1.0-dev`
 >
@@ -213,8 +213,8 @@ This project follows a two-week sprint cadence during the initial research and i
 1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
 3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
-4. Sprint 4: semantic primitive classifier and primitive coverage summary. In progress through Patch 015.
-5. Sprint 5: scoring, JSON output, benchmark harness, comparison tooling.
+4. Sprint 4: semantic primitive classifier and primitive coverage summary. Complete through Patch 015 validation.
+5. Sprint 5: scoring, JSON output, semantic fixture hardening, benchmark harness, comparison tooling.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
 
 See [`docs/sprints/`](docs/sprints/).
@@ -315,3 +315,14 @@ Sprint 4 Patch 015 adds the first classifier pass. `classifier.asm` consumes `PA
 ## Patch 14 planning note
 
 Patch 14 is a planning and documentation alignment patch. It does not change the scanner engine. It records reviewer-facing rationale and future seams for NASM implementation, parser safety, decoder integration, metric boundaries, contributor maintainability, and long-arc roadmap planning.
+
+
+## Sprint 4 validation note
+
+Patch 015 was validated locally in WSL2 and in Docker using the controlled `tests/bin/gadgets` fixture, `make validate-gadget-fixture`, `make semantic-smoke`, scanner smoke benchmarking, and a `/bin/ls` real-binary spot check. The semantic classifier is still exact-suffix based and should not be described as full instruction decoding.
+
+Known near-term follow-ups:
+
+- add fixture coverage for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`,
+- represent unknown stack deltas more explicitly in JSON and possibly text output,
+- keep score and JSON generation sourced from internal records, not text output.
