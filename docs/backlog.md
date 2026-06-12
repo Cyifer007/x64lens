@@ -92,18 +92,27 @@
 
 ## Sprint 4 follow-up hardening
 
-- [ ] Add a semantic fixture that exercises `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`.
-- [ ] Add a clearer representation for unknown stack deltas in text/JSON output.
-- [ ] Add a packaging hygiene check or release script guard that excludes `.git/`, `build/`, `tests/bin/`, generated benchmark results, and local-only context from distributable bundles.
+- [x] Add a semantic fixture that exercises `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`.
+- [x] Add a clearer representation for unknown stack deltas in JSON output.
+- [x] Add a packaging hygiene check or release script guard that excludes `.git/`, `build/`, `tests/bin/`, generated benchmark results, and local-only context from distributable bundles.
 
 ## Sprint 5
 
-- [ ] Add scoring model.
-- [ ] Add JSON output.
-- [ ] Add benchmark harness.
+- [x] Add initial scoring model.
+- [x] Add initial JSON output for `gadgets --format json`.
+- [x] Add JSON smoke validation.
+- [x] Extend scanner smoke benchmark with scored candidate count.
+- [x] Add reusable JSON report validator.
+- [x] Add real-system-binary smoke validation.
+- [x] Add local `validation-smoke` aggregate target.
+- [x] Add Docker availability triage target.
+- [x] Add patch bundle hygiene checker.
+- [ ] Expand benchmark harness beyond scanner smoke.
 - [ ] Compare with ROPgadget.
 - [ ] Compare with Ropper.
 - [ ] Compare with ropr if available.
+- [ ] Add dedicated baseline tool version capture.
+- [ ] Add corpus manifest checksum capture in benchmark metadata.
 
 ## Sprint 6
 
@@ -129,6 +138,8 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [ ] Sprint 12: IEEE paper draft, reproduction package, release-candidate artifacts, checksums, and extended-semester retrospective.
 
 ## Reviewer-readiness and future-proofing backlog
+
+- [x] Add public repository voice rule to documentation contracts.
 
 - [x] Add NASM rationale planning document.
 - [x] Add decoder roadmap and future decoder seam.

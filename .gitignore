@@ -117,8 +117,8 @@ docs/diagrams/*.svg
 
 
 # Local-only project context and private course/session notes.
-# These files may exist in local working trees and patch bundles, but they
-# must not be committed to the public repository.
+# These files may exist in local working trees, but they must not be
+# committed to the public repository or included in public source patch bundles.
 .local/
 PROJECT_CONTEXT.md
 PROJECT_STATE.md

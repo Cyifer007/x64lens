@@ -2,9 +2,21 @@
 
 ## Status
 
-Scoring is **not implemented yet**. Sprint 4 Patch 015 adds the first semantic classifier layer so Sprint 5 can score from internal facts instead of from raw text or exact pattern labels alone.
+Patch 017 implements the first conservative scoring pass in `src/scoring.asm`.
 
-## Initial formula
+Scoring now consumes internal fields populated by the scanner, exact pattern matcher, and semantic classifier:
+
+- `GADGET_PATTERN_ID`,
+- `GADGET_SEMANTIC_CLASS`,
+- `GADGET_REGS_CONTROLLED`,
+- `GADGET_STACK_DELTA`,
+- `GADGET_SIDE_EFFECT_FLAGS`.
+
+The text reporter renders `score: <n>` for each candidate. The JSON reporter emits numeric scores for scored candidates and `null` for unscored candidates.
+
+## Formula
+
+The long-term model remains:
 
 ```text
 score = semantic_base
@@ -16,46 +28,46 @@ score = semantic_base
       - uncertain_decode_penalty
 ```
 
-## Initial base scores
+Patch 017 implements a fixed first-pass table rather than the full formula. The fixed table already includes a small uncertainty penalty because the current classifier is exact-suffix based, not decoder-backed.
 
-| Gadget type | Initial score |
-| ----------- | ------------: |
-| `pop rdi; ret` | 95 |
-| `pop rsi; ret` | 95 |
-| `pop rdx; ret` | 95 |
-| `pop rax; ret` | 90 |
-| `syscall; ret` | 90 |
-| `leave; ret` | 80 |
-| `pop rsp; ret` | 75 |
-| `ret` | 50 |
-| multi-pop gadget | 60 to 85 depending on side effects |
-| memory write gadget | 70 to 95 depending on controllability |
+## Patch 017 implemented scores
 
-## Sprint 4 classifier inputs now available
+| Pattern | Semantic class | Score | Rationale |
+|---|---|---:|---|
+| `pop rdi; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
+| `pop rsi; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
+| `pop rdx; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
+| `pop rcx; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
+| `pop r8; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
+| `pop r9; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
+| `pop rax; ret` | `syscall_num_control` | 85 | Useful syscall-number setup, exact suffix only. |
+| `syscall; ret` | `syscall_trigger` | 85 | Useful syscall trigger, exact suffix only. |
+| `leave; ret` | `stack_pivot` | 75 | Stack pivot with input-dependent stack delta. |
+| `pop rsp; ret` | `stack_pivot` | 70 | Direct stack-pointer overwrite with higher uncertainty. |
+| `ret` | `alignment` | 45 | Alignment or chain-spacing utility. |
+| `ret imm16` | `alignment` | 40 | Alignment/stack adjustment with extra side effect. |
 
-Patch 015 provides these scoring inputs in `gadget_record`:
+Unsupported exact patterns and `unknown_candidate` records remain unscored with score `0` internally and `null` in JSON.
 
-- `GADGET_SEMANTIC_CLASS`,
-- `GADGET_REGS_CONTROLLED`,
-- `GADGET_STACK_DELTA`,
-- `GADGET_SIDE_EFFECT_FLAGS`,
-- semantic summary counts and register coverage in `gadget_summary`.
-
-Scoring should consume these internal fields in Sprint 5. It must not infer score values by scraping text output or by treating all raw candidates as equivalent.
-
-## Scoring constraints for Sprint 5
+## Scoring constraints
 
 - Score only records with justified semantic classes.
-- Keep `unknown_candidate` unscored or neutral.
-- Apply uncertainty penalties because Sprint 4 classification is exact-suffix based, not full decoder based.
-- Keep raw candidate count, exact pattern count, semantic primitive count, and scored candidate count separate.
+- Keep `unknown_candidate` unscored.
+- Preserve `scored_candidate_count` separately from raw, exact, semantic, and unknown counts.
+- Preserve limitations in JSON output.
 - Do not claim exploitability from score alone.
 
 ## Research warning
 
-The scoring model is heuristic until validated. It should be treated as a research hypothesis, not ground truth.
+The scoring model is heuristic until validated through benchmark and analyst-utility experiments. A score means “relative utility under the current model,” not “this binary is exploitable.”
 
+## Future scoring work
 
-## Sprint 5 entry note
+Later sprints should add:
 
-Patch 015 validation provides enough internal semantic facts to begin scoring, but score output must remain conservative. Sprint 5 should not assign high-confidence scores to `unknown_candidate`, ambiguous suffix-only windows, or stack-pivot records without preserving uncertainty. JSON should expose enough fields for consumers to distinguish raw candidates, exact suffix matches, semantic primitives, unknown candidates, and scored candidates.
+- bad-byte penalties,
+- clobber penalties,
+- memory dereference penalties,
+- full decoder confidence adjustments,
+- mitigation-aware score interpretation,
+- score calibration against baseline tools and controlled exploit-development exercises.

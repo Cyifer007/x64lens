@@ -29,6 +29,7 @@ extern print_cstr
 extern print_nl
 extern print_hex64
 extern print_hex8
+extern print_u64_dec
 
 section .rodata
 header_tool:        db "x64lens ", X64LENS_VERSION, 10, 0
@@ -92,6 +93,7 @@ label_ret_count:       db "  ret count: ", 0
 label_ret_imm_count:   db "  ret imm16 count: ", 0
 label_pattern_count:   db "  Exact pattern count: ", 0
 label_semantic_count:  db "  Semantic primitive count: ", 0
+label_scored_count:    db "  Scored candidate count: ", 0
 label_unknown_count:   db "  unknown_candidate count: ", 0
 label_arg_count:       db "  arg_control count: ", 0
 label_sysnum_count:    db "  syscall_num_control count: ", 0
@@ -109,6 +111,7 @@ candidate_pattern:     db ", pattern: ", 0
 candidate_semantic:    db ", semantic: ", 0
 candidate_regs:        db ", regs: ", 0
 candidate_stack_delta: db ", stack delta: ", 0
+candidate_score:      db ", score: ", 0
 candidate_bytes:       db ", bytes: ", 0
 term_ret:              db "ret", 0
 term_ret_imm16:        db "ret imm16", 0
@@ -517,9 +520,9 @@ report_text_print_perms:
 ;   Human-readable raw gadget candidate report on STDOUT.
 ;
 ; Scope:
-;   This report renders raw scanner facts, exact pattern facts, and first-pass
-;   semantic classifier facts. It does not score gadgets, decode full
-;   instruction streams, or infer exploitability.
+;   This report renders raw scanner facts, exact pattern facts, first-pass
+;   semantic classifier facts, and Sprint 5 scoring facts. It does not decode
+;   full instruction streams or infer exploitability.
 x64lens_report_text_gadgets:
     push    rbp
     push    rbx
@@ -583,6 +586,12 @@ x64lens_report_text_gadgets:
     lea     rdi, [label_semantic_count]
     call    print_cstr
     mov     rdi, [r12 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_scored_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_SCORED_COUNT]
     call    print_hex64
     call    print_nl
 
@@ -688,6 +697,11 @@ x64lens_report_text_gadgets:
     call    print_cstr
     mov     rdi, [r15 + GADGET_STACK_DELTA]
     call    print_hex64
+
+    lea     rdi, [candidate_score]
+    call    print_cstr
+    mov     edi, [r15 + GADGET_SCORE]
+    call    print_u64_dec
 
     lea     rdi, [candidate_bytes]
     call    print_cstr

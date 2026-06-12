@@ -7,7 +7,8 @@
 #   of invalid target files. Sprint 2 extended coverage to program-header
 #   analysis, baseline mitigation indicators, executable-region discovery,
 #   and malformed program-header rejection. Sprint 3 adds raw gadget scanner
-#   coverage for ret and ret-imm candidates. Sprint 3 Phase D adds exact pattern label checks.
+#   coverage for ret and ret-imm candidates. Sprint 4 adds semantic checks.
+#   Sprint 5 adds scoring and JSON output checks.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -49,7 +50,7 @@ echo "[test] version"
 echo "[test] help"
 "$BIN" help | grep -q "x64lens info <file>"
 "$BIN" help | grep -q "x64lens mitigations <file>"
-"$BIN" help | grep -q "x64lens gadgets \[--max-depth N\] <file>"
+"$BIN" help | grep -q "x64lens gadgets \[--format text|json\] \[--max-depth N\] <file>"
 
 echo "[test] usage failure"
 expect_exit 2 "$BIN"
@@ -59,6 +60,9 @@ expect_exit 2 "$BIN" gadgets --max-depth
 expect_exit 2 "$BIN" gadgets --max-depth 0 "$ROOT/tests/bin/gadgets"
 expect_exit 2 "$BIN" gadgets --max-depth 33 "$ROOT/tests/bin/gadgets"
 expect_exit 2 "$BIN" gadgets --max-depth nope "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" gadgets --format
+expect_exit 2 "$BIN" gadgets --format xml "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" gadgets --format json --max-depth 0 "$ROOT/tests/bin/gadgets"
 
 echo "[test] valid ELF64 info"
 INFO_OUT="$TMPDIR/x64lens-info-valid.txt"
@@ -137,32 +141,41 @@ GADGETS_OUT="$TMPDIR/x64lens-gadgets-default.txt"
 grep -q "Raw gadget candidates:" "$GADGETS_OUT"
 grep -q "Max depth: 0x0000000000000008" "$GADGETS_OUT"
 grep -q "Candidate capacity: 0x0000000000001000" "$GADGETS_OUT"
-grep -q "Candidate count: 0x0000000000000007" "$GADGETS_OUT"
-grep -q "ret count: 0x0000000000000006" "$GADGETS_OUT"
+grep -q "Candidate count: 0x000000000000000b" "$GADGETS_OUT"
+grep -q "ret count: 0x000000000000000a" "$GADGETS_OUT"
 grep -q "ret imm16 count: 0x0000000000000001" "$GADGETS_OUT"
-grep -q "Exact pattern count: 0x0000000000000007" "$GADGETS_OUT"
-grep -q "Semantic primitive count: 0x0000000000000007" "$GADGETS_OUT"
+grep -q "Exact pattern count: 0x000000000000000b" "$GADGETS_OUT"
+grep -q "Semantic primitive count: 0x000000000000000b" "$GADGETS_OUT"
+grep -q "Scored candidate count: 0x000000000000000b" "$GADGETS_OUT"
 grep -q "unknown_candidate count: 0x0000000000000000" "$GADGETS_OUT"
-grep -q "arg_control count: 0x0000000000000003" "$GADGETS_OUT"
+grep -q "arg_control count: 0x0000000000000006" "$GADGETS_OUT"
 grep -q "syscall_num_control count: 0x0000000000000001" "$GADGETS_OUT"
 grep -q "syscall_trigger count: 0x0000000000000001" "$GADGETS_OUT"
-grep -q "stack_pivot count: 0x0000000000000001" "$GADGETS_OUT"
+grep -q "stack_pivot count: 0x0000000000000002" "$GADGETS_OUT"
 grep -q "alignment count: 0x0000000000000001" "$GADGETS_OUT"
-grep -q "Register coverage: rax|rdx|rsi|rdi|rsp" "$GADGETS_OUT"
+grep -q "Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9" "$GADGETS_OUT"
 grep -q "terminator: ret" "$GADGETS_OUT"
 grep -q "terminator: ret imm16" "$GADGETS_OUT"
 grep -q "pattern: pop rdi; ret" "$GADGETS_OUT"
 grep -q "pattern: pop rsi; ret" "$GADGETS_OUT"
 grep -q "pattern: pop rdx; ret" "$GADGETS_OUT"
+grep -q "pattern: pop rcx; ret" "$GADGETS_OUT"
+grep -q "pattern: pop r8; ret" "$GADGETS_OUT"
+grep -q "pattern: pop r9; ret" "$GADGETS_OUT"
 grep -q "pattern: pop rax; ret" "$GADGETS_OUT"
+grep -q "pattern: pop rsp; ret" "$GADGETS_OUT"
 grep -q "pattern: leave; ret" "$GADGETS_OUT"
 grep -q "pattern: syscall; ret" "$GADGETS_OUT"
 grep -q "pattern: ret imm16" "$GADGETS_OUT"
-grep -q "semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010" "$GADGETS_OUT"
-grep -q "semantic: syscall_num_control, regs: rax, stack delta: 0x0000000000000010" "$GADGETS_OUT"
-grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000" "$GADGETS_OUT"
-grep -q "semantic: syscall_trigger, regs: none, stack delta: 0x0000000000000008" "$GADGETS_OUT"
-grep -q "semantic: alignment, regs: none, stack delta: 0x0000000000000018" "$GADGETS_OUT"
+grep -q "semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010, score: 90" "$GADGETS_OUT"
+grep -q "semantic: arg_control, regs: rcx, stack delta: 0x0000000000000010, score: 90" "$GADGETS_OUT"
+grep -q "semantic: arg_control, regs: r8, stack delta: 0x0000000000000010, score: 90" "$GADGETS_OUT"
+grep -q "semantic: arg_control, regs: r9, stack delta: 0x0000000000000010, score: 90" "$GADGETS_OUT"
+grep -q "semantic: syscall_num_control, regs: rax, stack delta: 0x0000000000000010, score: 85" "$GADGETS_OUT"
+grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, score: 70" "$GADGETS_OUT"
+grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, score: 75" "$GADGETS_OUT"
+grep -q "semantic: syscall_trigger, regs: none, stack delta: 0x0000000000000008, score: 85" "$GADGETS_OUT"
+grep -q "semantic: alignment, regs: none, stack delta: 0x0000000000000018, score: 40" "$GADGETS_OUT"
 grep -q "bytes: 5f c3" "$GADGETS_OUT"
 grep -q "c2 10 00" "$GADGETS_OUT"
 
@@ -170,10 +183,21 @@ echo "[test] raw gadget scanner custom max-depth"
 GADGETS_DEPTH_OUT="$TMPDIR/x64lens-gadgets-depth.txt"
 "$BIN" gadgets --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_DEPTH_OUT"
 grep -q "Max depth: 0x0000000000000004" "$GADGETS_DEPTH_OUT"
-grep -q "Candidate count: 0x0000000000000007" "$GADGETS_DEPTH_OUT"
-grep -q "Exact pattern count: 0x0000000000000007" "$GADGETS_DEPTH_OUT"
-grep -q "Semantic primitive count: 0x0000000000000007" "$GADGETS_DEPTH_OUT"
+grep -q "Candidate count: 0x000000000000000b" "$GADGETS_DEPTH_OUT"
+grep -q "Exact pattern count: 0x000000000000000b" "$GADGETS_DEPTH_OUT"
+grep -q "Semantic primitive count: 0x000000000000000b" "$GADGETS_DEPTH_OUT"
+grep -q "Scored candidate count: 0x000000000000000b" "$GADGETS_DEPTH_OUT"
 grep -q "terminator: ret" "$GADGETS_DEPTH_OUT"
 grep -q "pattern: pop rdi; ret" "$GADGETS_DEPTH_OUT"
+
+
+echo "[test] gadget JSON output"
+GADGETS_JSON="$TMPDIR/x64lens-gadgets.json"
+"$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_JSON"
+python3 -m json.tool "$GADGETS_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$GADGETS_JSON" >/dev/null
+
+"$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
 
 echo "tests: ok"

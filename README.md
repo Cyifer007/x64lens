@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 4 complete. Patch 015 adds and validates the first semantic classifier over Sprint 3 exact suffix pattern IDs. Sprints 1 through 4 are complete.
+> Status: Sprint 5 Patch 018 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthens JSON, system-binary, Docker-availability, and patch-bundle validation.
 >
 > Current version: `0.1.0-dev`
 >
@@ -69,13 +69,13 @@ See [`docs/adr/0001-tool-name.md`](docs/adr/0001-tool-name.md).
 
 ## Current implementation checkpoint
 
-Patch 015 advances the implemented pipeline to the first semantic layer:
+Patch 017 advanced the implemented pipeline to scoring and initial JSON output; Patch 018 strengthens validation around that pipeline:
 
 ```text
-ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> text reporting
+ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> scoring -> text/JSON reporting
 ```
 
-The current `gadgets` command reports raw terminator-centered byte windows, exact suffix pattern labels, conservative semantic classes, controlled-register bitmaps, stack deltas, and primitive coverage counts. This is still not full instruction decoding and does not emit exploitability verdicts.
+The current `gadgets` command reports raw terminator-centered byte windows, exact suffix pattern labels, conservative semantic classes, controlled-register bitmaps, stack deltas, heuristic scores, primitive coverage counts, and initial schema-versioned JSON. This is still not full instruction decoding and does not emit exploitability verdicts.
 
 See [`docs/roadmap-12-sprints.md`](docs/roadmap-12-sprints.md) for the expanded semester roadmap.
 
@@ -101,7 +101,7 @@ Planned early commands:
 ```bash
 x64lens info <file>
 x64lens mitigations <file>
-x64lens gadgets [--max-depth N] <file>
+x64lens gadgets [--format text|json] [--max-depth N] <file>
 x64lens analyze <file>
 x64lens bench <file>
 x64lens version
@@ -149,10 +149,15 @@ make samples
 ./build/x64lens mitigations ./tests/bin/minimal_pie_canary
 ./build/x64lens gadgets ./tests/bin/gadgets
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
+python3 -m json.tool /tmp/x64lens-gadgets.json >/dev/null
 make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
 ```
 
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`, then maps supported exact patterns into first-pass semantic primitive classes.
+The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`, then maps supported exact patterns into first-pass semantic primitive classes and heuristic scores. `--format json` emits machine-readable records with explicit counts, primitive coverage, scored candidates, and limitations.
 
 ### Run tests
 
@@ -160,7 +165,7 @@ The `info` command maps the target read-only, validates ELF64 x86_64 identity, a
 make test
 ```
 
-### Scanner fixture validation and smoke benchmark
+### Fixture, JSON, system-binary validation, and smoke benchmark
 
 Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchmark. These are separate from `make test` so they can preserve richer evidence without slowing the default regression path.
 
@@ -168,10 +173,13 @@ Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchma
 make validate-gadget-fixture
 make arena-smoke
 make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 ```
 
-The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
+The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, scored candidate counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
 
 The smoke benchmark is development evidence only. Do not use it as a publication claim without the full benchmark methodology, baseline tools, corpus manifest, repeated trials, and environment metadata.
 
@@ -191,11 +199,14 @@ Open a shell without creating root-owned files in the bind-mounted repository:
 make docker-shell
 ```
 
-Run the full container smoke test:
+Check Docker availability and run the full container smoke test:
 
 ```bash
+make docker-available-check
 make docker-test
 ```
+
+If `docker-available-check` fails, fix Docker Desktop WSL integration or Docker Engine availability before treating `docker-test` as an implementation failure.
 
 If `make clean` fails with `Permission denied` under `build/`, a Docker container was likely run as root against the bind-mounted repository. Repair local generated artifact ownership with:
 
@@ -214,7 +225,7 @@ This project follows a two-week sprint cadence during the initial research and i
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
 3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary. Complete through Patch 015 validation.
-5. Sprint 5: scoring, JSON output, semantic fixture hardening, benchmark harness, comparison tooling.
+5. Sprint 5: scoring, JSON output, semantic fixture hardening, validation hardening, benchmark harness, comparison tooling. Patch 017 implements the first scoring and JSON slice; Patch 018 strengthens validation around it.
 6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
 
 See [`docs/sprints/`](docs/sprints/).
@@ -262,7 +273,7 @@ Executable regions:
   - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x0000000000000161, mem size 0x0000000000000161, perms R-X
 ```
 
-Current Sprint 4 `gadgets` output keeps raw, exact, and semantic facts separate:
+Current Sprint 5 `gadgets` output keeps raw, exact, semantic, and scored facts separate:
 
 ```text
 x64lens 0.1.0-dev
@@ -282,11 +293,12 @@ Raw gadget candidates:
   syscall_trigger count: ...
   stack_pivot count: ...
   alignment count: ...
-  Register coverage: rax|rdx|rsi|rdi|rsp
-  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010, bytes: ...
+  Scored candidate count: ...
+  Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9
+  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010, score: 90, bytes: ...
 ```
 
-Pattern labels are still exact suffix labels, not full decoded instruction sequences. Semantic classification is conservative and scoring, mitigation-aware exploitability interpretation, and JSON output remain later sprint targets.
+Pattern labels are still exact suffix labels, not full decoded instruction sequences. Semantic classification and scoring are conservative. Mitigation-aware exploitability interpretation and full decoder-backed validation remain later sprint targets.
 
 ## Ethics and safety
 
@@ -310,7 +322,7 @@ Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candida
 
 ## Sprint 4 semantic classifier note
 
-Sprint 4 Patch 015 adds the first classifier pass. `classifier.asm` consumes `PATTERN_*` IDs and populates semantic classes, controlled-register bitmaps, stack deltas, side-effect flags, per-class summary counts, and register coverage. Unsupported patterns remain `unknown_candidate`; scoring and JSON output remain future work.
+Sprint 4 Patch 015 adds the first classifier pass. `classifier.asm` consumes `PATTERN_*` IDs and populates semantic classes, controlled-register bitmaps, stack deltas, side-effect flags, per-class summary counts, and register coverage. Unsupported patterns remain `unknown_candidate`.
 
 ## Patch 14 planning note
 
@@ -326,3 +338,16 @@ Known near-term follow-ups:
 - add fixture coverage for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`,
 - represent unknown stack deltas more explicitly in JSON and possibly text output,
 - keep score and JSON generation sourced from internal records, not text output.
+
+
+## Sprint 5 scoring, JSON, and validation note
+
+Sprint 5 Patch 017 adds first-pass heuristic scoring and schema-versioned `gadgets --format json` output from internal records. Patch 018 strengthens validation with:
+
+- reusable JSON report validation through `tools/validate-json-report.py`,
+- real-system-binary smoke validation through `make system-smoke`,
+- local aggregate validation through `make validation-smoke`,
+- Docker environment triage through `make docker-available-check`,
+- patch ZIP hygiene validation through `make patch-bundle-hygiene`.
+
+Patch bundles should exclude `.git/`, `.local/`, `build/`, `tests/bin/`, generated benchmark results, and private/course files. Local project context should be distributed separately from public source patches.

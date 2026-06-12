@@ -88,7 +88,8 @@
 %define GADGET_SUMMARY_STACK_PIVOT_COUNT  88
 %define GADGET_SUMMARY_ALIGNMENT_COUNT    96
 %define GADGET_SUMMARY_REGS_CONTROLLED    104
-%define GADGET_SUMMARY_RECORD_SIZE        112
+%define GADGET_SUMMARY_SCORED_COUNT       112
+%define GADGET_SUMMARY_RECORD_SIZE        120
 
 ; arena record offsets
 ;
@@ -193,7 +194,7 @@
 %define STACK_DELTA_RET             8
 %define STACK_DELTA_POP_RET         16
 
-; side-effect flags. These are intentionally minimal in Sprint 4 and should be
+; side-effect flags. These are intentionally minimal and should be
 ; extended only when classifier/scoring behavior needs the distinction.
 %define SIDE_EFFECT_NONE            0
 %define SIDE_EFFECT_STACK_READ      (1 << 0)

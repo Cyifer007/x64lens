@@ -16,7 +16,7 @@ Each sprint must produce one bounded, testable improvement. Do not implement fea
 | 2 | Loader mapping | Program headers, executable regions, baseline mitigations |
 | 3 | Scanner foundation | Raw candidates, arena storage, exact suffix patterns |
 | 4 | Semantic classification | Primitive classes, register bitmaps, stack deltas, semantic summary counts |
-| 5 | Scoring and JSON | Initial score model and schema-versioned reports |
+| 5 | Scoring and JSON | Initial score model and schema-versioned gadget reports |
 | 6 | Semester checkpoint | Demo path, documentation, benchmark seed, paper scaffold |
 | 7 | Mitigation hardening | Full RELRO, canary indicators, section labels, external comparison helpers |
 | 8 | Primitive expansion | Multi-pop, register-transfer, limited memory templates |
@@ -93,3 +93,12 @@ Patch 14 adds reviewer-facing planning without changing the core twelve-sprint d
 ## Do-not-refactor-yet list
 
 Do not rewrite in Rust, C, or Go before the assembly-first research question is measured. Do not add ARM64, PE, or Mach-O before the ELF64 x86_64 pipeline is research-grade. Do not embed a full decoder before external comparison data shows that exact-pattern limitations materially affect the paper claims.
+
+
+## Sprint 5 Patch 017 checkpoint
+
+Patch 017 adds the first scoring model and initial `gadgets --format json` output while preserving scanner, pattern, classifier, scoring, and reporting boundaries.
+
+## Sprint 5 validation-hardening checkpoint
+
+Patch 018 adds a validation-hardening layer inside Sprint 5. This does not change the twelve-sprint direction. It reduces downstream refactor and publication risk by making JSON, scoring, system-binary smoke testing, Docker availability, and patch bundle hygiene repeatable before deeper benchmark and mitigation work begins.

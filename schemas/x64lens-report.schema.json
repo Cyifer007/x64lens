@@ -12,15 +12,13 @@
   ],
   "properties": {
     "schema_version": {
-      "type": "string",
-      "$comment": "Version of the output data model, not necessarily the same as the tool binary version."
+      "type": "string"
     },
     "tool": {
       "const": "x64lens"
     },
     "tool_version": {
-      "type": "string",
-      "$comment": "Version of x64lens that produced the report."
+      "type": "string"
     },
     "target": {
       "type": "object",
@@ -28,48 +26,94 @@
         "path",
         "format",
         "arch",
-        "file_size"
+        "file_size",
+        "entry"
       ],
       "properties": {
-        "path": {
-          "type": "string"
-        },
-        "format": {
-          "type": "string"
-        },
-        "arch": {
-          "type": "string"
-        },
-        "file_size": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "entry": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
+        "path": { "type": "string" },
+        "format": { "const": "ELF64" },
+        "arch": { "const": "x86_64" },
+        "file_size": { "type": "integer", "minimum": 0 },
+        "entry": { "type": "string" }
       },
       "additionalProperties": true
     },
     "mitigations": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "nx_stack": { "type": ["boolean", "null"] },
+        "pie": { "type": "boolean" },
+        "relro": { "type": "string" },
+        "rwx_load_segment": { "type": "boolean" },
+        "dynamic_linking": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "raw_candidate_count": { "type": "integer", "minimum": 0 },
+        "ret_count": { "type": "integer", "minimum": 0 },
+        "ret_imm16_count": { "type": "integer", "minimum": 0 },
+        "exact_pattern_count": { "type": "integer", "minimum": 0 },
+        "semantic_candidate_count": { "type": "integer", "minimum": 0 },
+        "unknown_candidate_count": { "type": "integer", "minimum": 0 },
+        "scored_candidate_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
     },
     "primitive_coverage": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "arg_control": { "type": "boolean" },
+        "syscall_num_control": { "type": "boolean" },
+        "syscall_trigger": { "type": "boolean" },
+        "stack_pivot": { "type": "boolean" },
+        "alignment": { "type": "boolean" },
+        "registers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
     },
     "gadgets": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": [
+          "va",
+          "file_offset",
+          "bytes",
+          "terminator",
+          "pattern",
+          "semantic_class",
+          "controls",
+          "stack_delta",
+          "stack_delta_known",
+          "score"
+        ],
+        "properties": {
+          "va": { "type": "string" },
+          "file_offset": { "type": "string" },
+          "bytes": { "type": "string" },
+          "terminator": { "type": "string" },
+          "pattern": { "type": "string" },
+          "semantic_class": { "type": "string" },
+          "controls": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "stack_delta": { "type": ["integer", "null"], "minimum": 0 },
+          "stack_delta_known": { "type": "boolean" },
+          "score": { "type": ["integer", "null"], "minimum": 0 }
+        },
+        "additionalProperties": true
       }
     },
     "limitations": {
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     }
   },
   "additionalProperties": true,

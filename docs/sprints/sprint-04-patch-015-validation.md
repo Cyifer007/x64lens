@@ -2,7 +2,7 @@
 
 ## Status
 
-Validated locally in WSL2 and in Docker from user-provided terminal output on 2026-06-10.
+Validated locally in WSL2 and in Docker on 2026-06-10.
 
 Patch 015 adds the first semantic classifier pass. The required local and Docker validation path completed successfully.
 
@@ -84,7 +84,7 @@ Patch 015 is accepted for Sprint 4 closeout. The required evidence shows:
 - No exploitability verdict is emitted.
 
 
-## User-provided validation summary
+## Validation summary
 
 The validated command sequence included:
 

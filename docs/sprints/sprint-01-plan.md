@@ -76,7 +76,7 @@ Sprint 1 testing succeeded. Completed closeout actions:
 1. Commit the Sprint 1 baseline. Complete: `cb4d649`.
 2. Update `docs/sprints/sprint-01-retro.md` with exact outputs. Complete.
 3. Update local-only project state with completed items and Sprint 2 focus. Complete in closeout patch.
-4. Send the sprint summary to the appropriate academic or research reviewer if needed. Pending user action.
+4. Send the sprint summary to the appropriate academic or research reviewer if needed. Pending maintainer action.
 5. Begin Sprint 2 by implementing program header parsing and executable region mapping. Next technical step.
 
 If Sprint 1 testing fails:

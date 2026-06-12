@@ -57,7 +57,7 @@ Patch 015 moved the project from raw byte-window reporting into first-pass primi
 
 ## Validation evidence
 
-User-provided terminal output confirmed:
+Local validation output confirmed:
 
 ```text
 make script-perms-check -> script-perms-check: ok
@@ -97,11 +97,11 @@ Register coverage: rsp
 
 ## Bugs or issues found
 
-No Sprint 4 blocking implementation bugs were identified from the supplied validation output.
+No Sprint 4 blocking implementation bugs were identified from the validation output.
 
 Two non-blocking issues should be tracked:
 
-1. **Packaging hygiene:** user-created whole-repository zip snapshots can include `.git/`, `build/`, `tests/bin/`, and generated benchmark results. These are ignored by Git and should not be included in clean patch or release bundles.
+1. **Packaging hygiene:** patch and release bundles should exclude `.git/`, `build/`, `tests/bin/`, and generated benchmark results. These are ignored by Git and should not be included in clean patch or release bundles.
 2. **Unknown stack delta rendering:** `STACK_DELTA_UNKNOWN` is encoded as `0`, so text output currently prints `stack delta: 0x0000000000000000` for pivots. This is test-expected for Patch 015, but Sprint 5 JSON should add an explicit `stack_delta_known` or `stack_delta_kind` field, and text output can later render `unknown` for pivots.
 
 ## Contract review

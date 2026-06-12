@@ -10,7 +10,7 @@
 ;   x64lens help
 ;   x64lens info <file>
 ;   x64lens mitigations <file>
-;   x64lens gadgets [--max-depth N] <file>
+;   x64lens gadgets [--format text|json] [--max-depth N] <file>
 ;
 ; Sprint 3 implementation target:
 ;   Keep command dispatch simple while routing `info <file>`,
@@ -33,6 +33,7 @@ extern cli_print_help
 extern x64lens_command_info
 extern x64lens_command_mitigations
 extern x64lens_command_gadgets
+extern x64lens_command_gadgets_json
 extern version_print
 
 section .rodata
@@ -42,6 +43,9 @@ cmd_info:       db "info", 0
 cmd_mitigations: db "mitigations", 0
 cmd_gadgets:     db "gadgets", 0
 flag_max_depth:  db "--max-depth", 0
+flag_format:     db "--format", 0
+format_text:     db "text", 0
+format_json:     db "json", 0
 
 section .text
 global _start
@@ -137,21 +141,27 @@ _start:
     jmp     .exit
 
 .gadgets:
-    ; `gadgets` requires a target file argument and optionally accepts the
-    ; narrow Sprint 3 form: `gadgets --max-depth N <file>`. The scanner stays
-    ; bounded even when the user supplies a depth, and invalid depth values
-    ; are rejected as usage errors before analysis begins.
+    ; `gadgets` requires a target file argument. Sprint 5 adds the narrow
+    ; machine-readable form `--format json` while preserving the existing text
+    ; output and `--max-depth N` behavior.
     cmp     rbx, 3
     je      .gadgets_default
     cmp     rbx, 5
-    je      .gadgets_with_depth
+    je      .gadgets_one_flag
+    cmp     rbx, 7
+    je      .gadgets_two_flags
     jmp     .show_help
 
 .gadgets_default:
-    ; Treat a bare flag without its required value and target as usage error,
-    ; not as an attempted filename.
+    ; Treat a bare known flag without its required value and target as usage
+    ; error, not as an attempted filename.
     mov     rdi, [r12 + 16]
     lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .show_help
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
     call    cstr_eq
     cmp     rax, 1
     je      .show_help
@@ -162,9 +172,132 @@ _start:
     mov     rdi, rax
     jmp     .exit
 
-.gadgets_with_depth:
+.gadgets_one_flag:
     mov     rdi, [r12 + 16]
     lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_depth_text
+
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_default_depth
+
+    jmp     .show_help
+
+.gadgets_depth_text:
+    mov     rdi, [r12 + 24]
+    call    cli_parse_u64
+    cmp     rdx, 1
+    jne     .show_help
+    test    rax, rax
+    jz      .show_help
+    cmp     rax, GADGET_MAX_DEPTH_LIMIT
+    ja      .show_help
+
+    mov     rsi, rax            ; parsed max depth
+    mov     rdi, [r12 + 32]     ; target path
+    call    x64lens_command_gadgets
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_format_default_depth:
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_default_depth_json
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_default_depth_text
+
+    jmp     .show_help
+
+.gadgets_format_default_depth_json:
+    mov     rdi, [r12 + 32]
+    mov     rsi, GADGET_DEFAULT_MAX_DEPTH
+    call    x64lens_command_gadgets_json
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_format_default_depth_text:
+    mov     rdi, [r12 + 32]
+    mov     rsi, GADGET_DEFAULT_MAX_DEPTH
+    call    x64lens_command_gadgets
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_two_flags:
+    ; Supported orders:
+    ;   gadgets --format json --max-depth N <file>
+    ;   gadgets --max-depth N --format json <file>
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_then_depth
+
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_depth_then_format
+
+    jmp     .show_help
+
+.gadgets_format_then_depth:
+    mov     rdi, [r12 + 32]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    jne     .show_help
+
+    mov     rdi, [r12 + 40]
+    call    cli_parse_u64
+    cmp     rdx, 1
+    jne     .show_help
+    test    rax, rax
+    jz      .show_help
+    cmp     rax, GADGET_MAX_DEPTH_LIMIT
+    ja      .show_help
+    mov     r14, rax            ; parsed max depth
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_then_depth_json
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_format_then_depth_text
+
+    jmp     .show_help
+
+.gadgets_format_then_depth_json:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_gadgets_json
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_format_then_depth_text:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_gadgets
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_depth_then_format:
+    mov     rdi, [r12 + 32]
+    lea     rsi, [flag_format]
     call    cstr_eq
     cmp     rax, 1
     jne     .show_help
@@ -177,9 +310,32 @@ _start:
     jz      .show_help
     cmp     rax, GADGET_MAX_DEPTH_LIMIT
     ja      .show_help
+    mov     r14, rax            ; parsed max depth
 
-    mov     rsi, rax            ; parsed max depth
-    mov     rdi, [r12 + 32]     ; target path
+    mov     rdi, [r12 + 40]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_depth_then_format_json
+
+    mov     rdi, [r12 + 40]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .gadgets_depth_then_format_text
+
+    jmp     .show_help
+
+.gadgets_depth_then_format_json:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_gadgets_json
+    mov     rdi, rax
+    jmp     .exit
+
+.gadgets_depth_then_format_text:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
     call    x64lens_command_gadgets
     mov     rdi, rax
     jmp     .exit

@@ -4,8 +4,8 @@
  * Purpose:
  *   Hand-authored x86_64 gadget corpus with known byte patterns. Sprint 3
  *   scanner tests verify that x64lens detects raw ret and ret-imm terminators
- *   from executable PT_LOAD regions. Sprint 4 classifier tests will reuse this
- *   same file for semantic primitives such as pop-reg-ret and leave-ret.
+ *   from executable PT_LOAD regions. Sprint 4 and Sprint 5 tests reuse this
+ *   same file for semantic primitives, score output, and JSON output.
  */
 
 .global _start
@@ -21,7 +21,19 @@ _start:
     pop %rdx
     ret
 
+    pop %rcx
+    ret
+
+    pop %r8
+    ret
+
+    pop %r9
+    ret
+
     pop %rax
+    ret
+
+    pop %rsp
     ret
 
     leave
@@ -33,7 +45,7 @@ _start:
     /* AT&T syntax for `ret imm16`; expected bytes are c2 10 00. */
     ret $0x10
 
-    /* Exit cleanly if the fixture is accidentally executed. */
+    /* Exit cleanly only if control reaches this point. The fixture is analyzed, not executed. */
     mov $60, %rax
     xor %rdi, %rdi
     syscall

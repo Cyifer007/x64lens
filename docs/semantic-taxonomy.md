@@ -85,7 +85,7 @@ Classifier rules:
 - preserve `unknown_candidate`,
 - separate suffix labels from full-window semantics,
 - report primitive coverage separately from raw candidate counts,
-- avoid scoring until Sprint 5,
+- score only after semantic facts have been populated,
 - avoid exploitability verdicts entirely.
 
 ## Future expansion
@@ -101,3 +101,10 @@ The taxonomy should eventually account for:
 - JOP/COP/SROP primitives,
 - multi-instruction semantic equivalence,
 - future decoder-backed validation.
+
+
+## Sprint 5 fixture coverage
+
+Patch 017 expands the controlled gadget fixture so the regression suite now exercises the implemented mappings for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` in addition to the earlier `rdi`, `rsi`, `rdx`, `rax`, `leave`, `syscall`, and `ret imm16` cases.
+
+The semantic taxonomy remains separate from scoring. A semantic class explains the primitive type. A score is a later heuristic utility value assigned by `scoring.asm`.

@@ -302,10 +302,10 @@ The implemented layering is intentionally conservative:
 - `arena.asm` provides command-lifetime storage for candidate records.
 - `patterns.asm` tags exact suffix byte templates.
 - `classifier.asm` maps supported exact pattern IDs into semantic primitive facts.
-- `scoring.asm` remains the future usefulness layer.
-- `report_text.asm` renders facts but does not decide facts.
+- `scoring.asm` adds the first usefulness layer from semantic facts.
+- `report_text.asm` and `report_json.asm` render facts but do not decide facts.
 
-This means Sprint 5 can add scoring and JSON without rewriting the scanner, pattern matcher, or classifier.
+This means later sprints can add richer scoring, JSON parity, baseline comparison, and integrated `analyze` output without rewriting the scanner, pattern matcher, or classifier.
 
 ## Exact pattern interpretation rule
 
@@ -404,3 +404,38 @@ Two future seams should be preserved:
 
 1. a decode side-car record for future instruction-boundary validation,
 2. an explicit stack-delta-known or stack-delta-kind field for JSON and possible text output improvements.
+
+
+## Design decision 8: scoring and JSON from internal records
+
+Sprint 5 adds the first scoring and JSON output path. Scoring consumes semantic facts in `gadget_record`; JSON consumes internal records and summaries directly. JSON must not scrape text output.
+
+Implemented Sprint 5 pipeline:
+
+```text
+scanner -> exact pattern matcher -> semantic classifier -> scoring -> text reporter
+                                                     \-> JSON reporter
+```
+
+This keeps the repository adaptable because future decoder records, mitigation-aware interpretation, or SARIF output can be added as side-car consumers of the same internal fact model.
+
+Patch 017 intentionally implements JSON first for `gadgets --format json`. The future `analyze` command should reuse the same record model and add integrated mitigation-aware interpretation rather than duplicating scanner/classifier/scoring logic.
+
+## Validation architecture added in Sprint 5 Patch 018
+
+Patch 018 does not change the analyzer pipeline. It adds validation infrastructure around the existing pipeline:
+
+```text
+controlled fixture -> text report checks -> JSON report validator
+system binaries -> info/mitigations/gadgets/json smoke -> JSON report validator
+patch ZIP -> hygiene checker -> public source bundle gate
+Docker environment -> availability check -> container validation
+```
+
+The analyzer boundary remains unchanged:
+
+```text
+scanner -> patterns -> classifier -> scoring -> text/json reporters
+```
+
+The new validators consume public outputs and generated patch artifacts. They do not become part of the runtime analyzer and do not alter analysis decisions.

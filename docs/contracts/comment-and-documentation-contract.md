@@ -4,6 +4,27 @@
 
 x64lens is a learning project, a research artifact, and a production-oriented security tool. Human-readable comments and documentation are therefore first-class deliverables.
 
+## Public repository voice
+
+Public repository content must be written from the project perspective for maintainers, reviewers, contributors, and users.
+
+Public files must not include:
+
+- private coordination or tool-assisted workflow references,
+- personal coordination context,
+- attachment history,
+- wording that depends on a specific private discussion,
+- comments that describe how a patch was discussed outside the repository.
+
+Acceptable public wording describes:
+
+- what changed,
+- why the design exists,
+- how to build and test it,
+- what the known limitations are,
+- what future work remains,
+- what validation evidence supports the change.
+
 ## Code comment requirements
 
 Every assembly file must include:
@@ -50,3 +71,7 @@ Before each two-week checkpoint, review:
 - `docs/backlog.md`,
 - touched source files,
 - touched contracts.
+
+## Validation documentation rule
+
+Validation documents should describe reproducible repository commands and observed technical outcomes. They should not depend on private coordination context. Environment failures should be described as environment facts, for example Docker availability or missing toolchain dependencies, not as personal workflow details.

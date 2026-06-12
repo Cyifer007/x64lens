@@ -56,6 +56,7 @@ Every benchmark run should record:
 - gadget count,
 - unique gadget count,
 - semantic primitive count,
+- scored candidate count,
 - unknown candidate count,
 - exact pattern count,
 - output size,
@@ -217,3 +218,28 @@ output_bytes
 ```
 
 These fields remain development evidence. They are useful for regression tracking and later benchmark design, but they are not publication claims until baseline tools, corpus manifests, repeated trials, and summary statistics are captured under the full methodology.
+
+
+## Sprint 5 JSON and scoring smoke
+
+Patch 017 extends development benchmark output with `scored_candidate_count`. This remains smoke evidence, not a publication claim. The scoring model is heuristic and exact-suffix based, so benchmark tables must keep score-related counts separate from raw and semantic counts.
+
+Patch 017 also adds `gadgets --format json`; future benchmark scripts should prefer JSON for machine-readable extraction once the JSON path is validated across the corpus. Text parsing remains acceptable only for development smoke checks.
+
+## System binary smoke validation
+
+Patch 018 adds `make system-smoke` as a development validation target over installed ELF64 x86_64 binaries. This is not a research benchmark and must not be used for performance claims.
+
+The purpose is to catch real-binary regressions in:
+
+- ELF metadata reporting,
+- mitigation reporting,
+- gadget text output,
+- gadget JSON output,
+- JSON count relationships,
+- primitive coverage structure,
+- score and unknown-stack-delta encoding.
+
+The target intentionally validates shape and invariants instead of exact gadget counts because `/bin/ls`, `/bin/cat`, `/bin/sh`, and similar binaries vary across Linux distributions and compiler builds.
+
+Publication benchmarks still require fixed corpus manifests, tool versions, repeated runs, environment metadata, raw results, summary statistics, and baseline comparison against ROPgadget, Ropper, and ropr.

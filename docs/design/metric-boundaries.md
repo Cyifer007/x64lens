@@ -14,8 +14,8 @@ x64lens must keep raw scanner facts, exact pattern facts, semantic primitive fac
 | `exact_pattern_count` | Raw candidates with a recognized exact suffix pattern. | Sprint 3 |
 | `semantic_candidate_count` | Candidates classified into semantic primitive classes. | Sprint 4, Patch 015 |
 | `unknown_candidate_count` | Candidates intentionally left unclassified. | Sprint 4, Patch 015 |
-| `scored_candidate_count` | Candidates assigned a usefulness score. | Sprint 5 target |
-| `primitive_coverage` | Binary-level availability of useful primitive classes and controlled-register coverage. | Sprint 4 initial text summary, Sprint 5 JSON target |
+| `scored_candidate_count` | Candidates assigned a usefulness score. | Sprint 5 Patch 017 |
+| `primitive_coverage` | Binary-level availability of useful primitive classes and controlled-register coverage. | Sprint 4 text summary, Sprint 5 JSON output |
 
 ## Why separation matters
 
@@ -61,3 +61,16 @@ Sprint 5 JSON should expose the same separation with explicit `limitations`. Spr
 ## Sprint 4 closeout note
 
 Patch 015 validation confirmed that the text reporter and scanner smoke benchmark preserve raw, exact, semantic, and unknown counts separately. On real binaries such as `/bin/ls`, many `alignment` records may be exact byte-suffix observations rather than confirmed instruction-boundary gadgets. This is acceptable for the current stage only because the output remains explicit about the scanner model and no exploitability verdict is emitted.
+
+
+## Sprint 5 scoring boundary
+
+Patch 017 adds `scored_candidate_count` and per-candidate score fields. A scored candidate is not the same thing as an exploitable gadget. It means the current model assigned a relative utility value to a candidate whose semantic class was justified by the classifier.
+
+`unknown_candidate` records remain unscored. JSON should represent those scores as `null`, while the internal score field remains `0` as a sentinel.
+
+## Patch 018 validation boundary
+
+Patch 018 strengthens validation without changing metric meaning. `tools/validate-json-report.py` checks relationships between raw, exact, semantic, unknown, and scored counts. `tools/system-binary-smoke.sh` validates those relationships on real system binaries while avoiding brittle distro-specific count expectations.
+
+This preserves the research boundary: system-binary smoke output is regression evidence, not publication evidence. Publication claims still require the benchmark methodology's controlled corpus, repeated runs, baseline tool versions, and summary statistics.

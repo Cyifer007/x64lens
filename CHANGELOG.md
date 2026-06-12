@@ -8,6 +8,23 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added Sprint 5 Patch 018 validation hardening.
+- Added `tools/validate-json-report.py` for reusable JSON report contract validation.
+- Added `tools/system-binary-smoke.sh` and `make system-smoke` for installed ELF64 x86_64 binary smoke coverage.
+- Added `make validation-smoke` as a local pre-commit validation aggregate.
+- Added `make docker-available-check` to distinguish Docker environment availability from implementation failures.
+- Added `tools/check-patch-bundle-hygiene.sh` and `make patch-bundle-hygiene` to detect generated or local-only files in patch ZIPs.
+- Strengthened `make json-smoke` to validate both supported `--format`/`--max-depth` flag orders with the reusable JSON validator.
+- Added Sprint 5 Patch 017 scoring and JSON implementation candidate.
+- Implemented `x64lens_scoring_apply` in `src/scoring.asm` for first-pass heuristic scores over classified exact suffix patterns.
+- Added `Scored candidate count` and per-candidate `score` fields to gadget text output.
+- Added `gadgets --format json` with schema-versioned JSON generated from internal records.
+- Added JSON `counts`, `primitive_coverage`, per-gadget score fields, explicit stack-delta uncertainty, and `limitations`.
+- Added `GADGET_SUMMARY_SCORED_COUNT` to the gadget summary model.
+- Expanded the controlled gadget fixture to exercise `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`.
+- Added `make json-smoke` and JSON parsing checks in `tests/run-tests.sh`.
+- Extended scanner smoke benchmark TSV output with `scored_candidate_count`.
+- Added a public repository voice rule to documentation and output contracts.
 - Closed Sprint 4 Patch 015 validation with local WSL2 and Docker evidence for the first semantic classifier pass.
 - Added `x64lens_classifier_apply_exact` in `src/classifier.asm` to map supported exact suffix pattern IDs into conservative semantic primitive facts.
 - Added semantic class, controlled-register bitmap, stack-delta, and side-effect population for supported exact suffix patterns.

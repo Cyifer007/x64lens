@@ -10,6 +10,7 @@
 ;   value to STDOUT. Fixed-width output is intentionally verbose but makes
 ;   early parser demos and regression tests deterministic.
 ;   Sprint 3 adds print_hex8(value) for raw gadget byte windows.
+;   Sprint 5 adds print_u64_dec(value) for JSON numeric fields.
 
 bits 64
 default rel
@@ -22,10 +23,12 @@ hexchars: db "0123456789abcdef"
 section .bss
 hexbuf: resb 19                 ; "0x" + 16 digits + NUL
 hex8buf: resb 3                 ; two hex digits + NUL
+decbuf:  resb 21                ; 20 decimal digits + NUL
 
 section .text
 global print_hex64
 global print_hex8
+global print_u64_dec
 
 ; print_hex64(rdi=value)
 ;
@@ -98,6 +101,49 @@ print_hex8:
     mov     [r12 + 1], al
     mov     byte [r12 + 2], 0
 
+    mov     rdi, r12
+    call    print_cstr
+
+    pop     r12
+    pop     rbx
+    ret
+
+
+; print_u64_dec(rdi=value)
+;
+; Inputs:
+;   RDI = unsigned 64-bit value to render in base 10
+;
+; Output:
+;   writes ASCII decimal digits to STDOUT without a trailing newline
+;
+; Clobbers:
+;   RAX, RBX, RCX, RDX, RDI, R12
+print_u64_dec:
+    push    rbx
+    push    r12
+
+    mov     rax, rdi
+    lea     r12, [decbuf + 20]
+    mov     byte [r12], 0
+
+    test    rax, rax
+    jne     .dec_loop
+    dec     r12
+    mov     byte [r12], '0'
+    jmp     .emit
+
+.dec_loop:
+    xor     rdx, rdx
+    mov     rbx, 10
+    div     rbx
+    add     dl, '0'
+    dec     r12
+    mov     [r12], dl
+    test    rax, rax
+    jne     .dec_loop
+
+.emit:
     mov     rdi, r12
     call    print_cstr
 

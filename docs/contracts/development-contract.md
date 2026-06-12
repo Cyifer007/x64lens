@@ -44,6 +44,11 @@ Every new feature must fit a sprint goal, backlog item, research question, or ex
 
 Review this contract at the end of each two-week sprint.
 
+
+## Rule 11: public repository voice
+
+Public repository content must read as project documentation, not as private coordination notes. Do not include private discussion context, attachment history, tool-assisted workflow details, or informal back-and-forth wording in committed code, comments, docs, tests, or examples.
+
 ## Comment and documentation rule
 
 Every source file and configuration file must carry human-readable comments explaining what the file is for, how it participates in the build or analysis pipeline, and what future work belongs there. Assembly comments are not decorative. They are part of the learning and review surface.
@@ -76,3 +81,14 @@ Contracts must be reviewed at the end of every sprint. The sprint retrospective 
 5. Future decoder support must be added through side-car records, not scanner rewrites.
 6. Script executable bits are part of the repository contract for shell helpers.
 7. New public claims must map to evidence, not optimism.
+
+## Validation escalation rule
+
+When a validation issue or near-miss appears, the next patch should strengthen the validation surface rather than only fixing the immediate symptom. Prefer reusable validators, regression fixtures, and clear environment checks over one-off command transcripts.
+
+Current examples:
+
+- JSON output is validated by `tools/validate-json-report.py`.
+- Real-binary smoke coverage is validated by `tools/system-binary-smoke.sh`.
+- Docker availability is checked separately through `make docker-available-check`.
+- Patch ZIP contents are checked through `tools/check-patch-bundle-hygiene.sh`.

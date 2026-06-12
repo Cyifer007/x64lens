@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke check-tools scaffold-check script-perms-check print-vars docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -72,20 +72,43 @@ scanner-smoke: validate-gadget-fixture
 # validate-gadget-fixture, so this remains a compatibility alias.
 pattern-smoke: validate-gadget-fixture
 
-# Sprint 4 semantic smoke target. It validates classifier facts for the known
-# gadget fixture without broadening scan coverage or invoking scoring.
+# Sprint 4/5 semantic smoke target. It validates classifier and score facts for
+# the known gadget fixture without broadening scan coverage.
 semantic-smoke: validate-gadget-fixture
 
-# Sprint 3 Phase C arena smoke target. It exercises the gadgets command path
-# after candidate storage moved from static .bss memory to an mmap-backed arena.
-# The fixture count remains the same; this target ensures allocator plumbing did
-# not change scanner-visible behavior.
+
+# Sprint 5 JSON smoke target. This verifies that machine-readable gadget output
+# parses as JSON and satisfies the report invariants checked by the repository
+# validator. The fixture mode asserts exact expected semantic and score facts.
+json-smoke: all samples
+	@./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-json-smoke.json
+	@python3 -m json.tool /tmp/x64lens-json-smoke.json >/dev/null
+	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke.json >/dev/null
+	@./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > /tmp/x64lens-json-smoke-order2.json
+	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke-order2.json >/dev/null
+	@echo "json-smoke: ok"
+
+# Real-binary smoke target. This runs the current pipeline against installed
+# system ELF64 binaries and validates shape/invariants rather than brittle,
+# distribution-specific candidate counts.
+system-smoke: all
+	bash tools/system-binary-smoke.sh ./$(TARGET)
+
+# Local pre-commit validation bundle. Docker remains a separate reproducibility
+# check because Docker Desktop/Engine availability is environment-dependent.
+validation-smoke: script-perms-check scaffold-check diagrams-check test validate-gadget-fixture semantic-smoke json-smoke system-smoke
+	@echo "validation-smoke: ok"
+
+# Arena smoke target. It exercises the gadgets command path after candidate
+# storage moved from static .bss memory to an mmap-backed arena. The expected
+# counts follow the current controlled gadget fixture.
 arena-smoke: all samples
 	@./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-arena-smoke.txt
 	@grep -q "Candidate capacity: 0x0000000000001000" /tmp/x64lens-arena-smoke.txt
-	@grep -q "Candidate count: 0x0000000000000007" /tmp/x64lens-arena-smoke.txt
+	@grep -q "Candidate count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
 	@grep -q "ret imm16 count: 0x0000000000000001" /tmp/x64lens-arena-smoke.txt
-	@grep -q "Exact pattern count: 0x0000000000000007" /tmp/x64lens-arena-smoke.txt
+	@grep -q "Exact pattern count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
+	@grep -q "Scored candidate count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
 	@echo "arena-smoke: ok"
 
 # First Sprint 3 scanner benchmark smoke target. This records repeated runs,
@@ -110,6 +133,9 @@ script-perms-check:
 	@test -x tools/compare-ropgadget.sh
 	@test -x tools/make-release-artifacts.sh
 	@test -x tools/validate-gadget-fixture.sh
+	@test -x tools/validate-json-report.py
+	@test -x tools/system-binary-smoke.sh
+	@test -x tools/check-patch-bundle-hygiene.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -134,7 +160,22 @@ diagrams-check:
 	@test -f docs/diagrams/module-graph.dot
 	@echo "diagrams-check: ok"
 
-docker-build:
+patch-bundle-hygiene:
+	@test -n "$(BUNDLE)" || { echo "error: set BUNDLE=/path/to/patch.zip"; exit 2; }
+	bash tools/check-patch-bundle-hygiene.sh "$(BUNDLE)"
+
+docker-available-check:
+	@command -v docker >/dev/null 2>&1 || { \
+		echo "error: docker command was not found. Enable Docker Desktop WSL integration or install Docker Engine."; \
+		exit 127; \
+	}
+	@docker info >/dev/null 2>&1 || { \
+		echo "error: Docker is installed but not reachable. Start Docker Desktop/Engine and retry."; \
+		exit 127; \
+	}
+	@echo "docker-available-check: ok"
+
+docker-build: docker-available-check
 	docker build -t $(DOCKER_IMAGE) .
 
 # Use the caller's numeric UID/GID when bind-mounting the repository.
@@ -142,12 +183,12 @@ docker-build:
 # Engine runs container processes as root by default. HOME=/tmp avoids
 # tools trying to write into a missing or unwritable home directory when
 # Docker receives a numeric user id.
-docker-shell:
+docker-shell: docker-available-check
 	docker run --rm -it --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash
 
 # Reproducible smoke test inside Docker without leaving root-owned files.
 # Run `make docker-build` first after Dockerfile or dependency changes.
-docker-test:
+docker-test: docker-available-check
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
 
 print-vars:
@@ -200,7 +241,7 @@ normalize-perms:
 		-path ./build -prune -o \
 		-path ./tests/bin -prune -o \
 		-type f -exec chmod 644 {} +
-	@chmod 755 tests/run-tests.sh tools/*.sh benchmarks/scripts/*.sh 2>/dev/null || true
+	@chmod 755 tests/run-tests.sh tools/*.sh tools/*.py benchmarks/scripts/*.sh 2>/dev/null || true
 	@echo "normalize-perms: done"
 
 clean:

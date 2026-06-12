@@ -27,3 +27,27 @@ Future release artifacts should include:
 ## Signing
 
 Signed releases are future work.
+
+## Patch and release bundle hygiene
+
+Patch and release bundles must exclude local-only and generated state unless the artifact is explicitly designed to contain it.
+
+Forbidden in public source patch bundles:
+
+- `.git/`,
+- `.local/`,
+- `build/`,
+- `tests/bin/`,
+- generated toy binaries,
+- generated benchmark results,
+- object files,
+- private/course documents,
+- nested ZIP files.
+
+Validate generated patch bundles with:
+
+```bash
+BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
+```
+
+Project context bundles are separate from public source patch bundles.

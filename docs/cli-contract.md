@@ -10,29 +10,46 @@ The CLI is experimental until version `1.0.0`, but every breaking change must be
 x64lens <command> [options] <file>
 ```
 
-## Initial commands
+## Implemented commands
+
+| Command | Purpose | Status |
+| ------- | ------- | ------ |
+| `info <file>` | Parse and print ELF64 metadata | Implemented in Sprint 1 |
+| `mitigations <file>` | Print hardening and mitigation metadata | Implemented in Sprint 2 |
+| `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts | Text implemented through Sprint 5, JSON implemented in Patch 017 |
+| `version` | Print tool and schema version | Implemented in Sprint 1 |
+| `help` | Print usage | Implemented in Sprint 1 |
+
+## Planned commands
 
 | Command | Purpose | Sprint target |
 | ------- | ------- | ------------- |
-| `info <file>` | Parse and print ELF64 metadata | Sprint 1 |
-| `mitigations <file>` | Print hardening and mitigation metadata | Sprint 2, initial implementation |
-| `gadgets [--max-depth N] <file>` | Print raw gadget candidates and exact byte-template pattern labels first, then classified gadgets later | Sprint 3 to 4 |
-| `analyze <file>` | Full semantic analysis report | Sprint 4 to 6 |
-| `bench <file>` | Benchmark x64lens against local target | Sprint 5 |
-| `version` | Print tool version | Sprint 1 |
-| `help` | Print usage | Sprint 1 |
+| `analyze <file>` | Full mitigation-aware semantic analysis report | Sprint 6 to 11 |
+| `bench <file>` | Benchmark x64lens against local target | Sprint 5 to 10 |
 
-## Initial global flags
+## Implemented flags
 
-| Flag | Meaning | Sprint target |
-| ---- | ------- | ------------- |
-| `--format text|json` | Select output format | Sprint 4 to 5 |
-| `--max-depth <N>` | Maximum bytes or instruction window before terminator | Sprint 3 |
-| `--badbytes <hex-list>` | Mark gadgets whose addresses contain bad bytes | Sprint 4 to 5 |
-| `--quiet` | Minimal output | Sprint 5 |
-| `--verbose` | More diagnostic output | Sprint 2 |
-| `--no-color` | Disable color output | Sprint 5 |
-| `--schema-version` | Print JSON schema version | Sprint 5 |
+| Flag | Meaning | Status |
+| ---- | ------- | ------ |
+| `--max-depth <N>` | Maximum bytes considered before a return terminator | Implemented in Sprint 3 |
+| `--format text|json` | Select text or JSON output for `gadgets` | JSON implemented in Patch 017 |
+
+`--format` and `--max-depth` may be used together in either order:
+
+```bash
+x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets
+x64lens gadgets --max-depth 4 --format json ./tests/bin/gadgets
+```
+
+## Planned flags
+
+| Flag | Meaning | Target |
+| ---- | ------- | ------ |
+| `--badbytes <hex-list>` | Mark gadgets whose addresses contain bad bytes | Future scoring refinement |
+| `--quiet` | Minimal output | Future output refinement |
+| `--verbose` | More diagnostic output | Future output refinement |
+| `--no-color` | Disable color output | Future output refinement |
+| `--schema-version` | Print JSON schema version directly | Future CLI refinement |
 
 ## Exit codes
 
@@ -54,26 +71,34 @@ x64lens info ./toy
 x64lens mitigations ./toy
 x64lens gadgets ./toy
 x64lens gadgets --max-depth 8 ./toy
-x64lens analyze --format json ./toy > report.json
-x64lens bench ./toy
+x64lens gadgets --format json ./toy > report.json
+x64lens gadgets --format json --max-depth 4 ./toy > report.json
 x64lens version
 ```
 
 ## Output stability
 
-Human-readable text output may change before `1.0.0`. JSON output must include `schema_version` and should remain backward-compatible within the same schema major version.
+Human-readable text output may change before `1.0.0`. JSON output must include `schema_version`, `tool_version`, `target`, and `limitations`, and should remain backward-compatible within the same schema major version.
 
-## Current Sprint 3 `gadgets` behavior
+## Current `gadgets` behavior
 
-The current `gadgets` command emits raw candidate windows and exact suffix pattern labels. It does not yet emit final semantic classes, scores, or JSON output.
+The `gadgets` command emits the current staged analysis pipeline:
+
+1. raw return-terminated candidate windows,
+2. exact suffix pattern labels,
+3. conservative semantic primitive classes,
+4. controlled-register coverage,
+5. stack-delta facts,
+6. heuristic score values,
+7. limitations in JSON output.
 
 Important interpretation details:
 
 - `--max-depth` limits the bytes considered before the terminator, not necessarily the total printed byte count when the terminator itself is included.
-- `pattern: ret` means the candidate ends in a recognized `ret` suffix.
 - `pattern: pop rdi; ret` means the suffix immediately before the terminator matches `5f c3`.
-- Pattern labels are not exploitability claims.
-- Full semantic classification starts in Sprint 4.
+- Pattern labels are not proof that the entire printed byte window is a fully decoded instruction sequence.
+- Score values are heuristic relative-utility values, not exploitability verdicts.
+- JSON output is generated from internal records, not from text output.
 
 ## Reporting distinction rule
 
@@ -82,27 +107,23 @@ The CLI should keep analysis stages explicit in output and JSON:
 - raw candidates,
 - exact suffix patterns,
 - semantic primitives,
+- unknown candidates,
 - scored candidates,
 - mitigation indicators,
 - limitations.
 
-When a command emits partial or heuristic analysis, the output should say so. `gadgets` may report raw candidates and exact pattern labels before semantic classification is complete. `analyze` should not imply full exploitability unless a future version has enough independent vulnerability and runtime context, which is outside the current scope.
+When a command emits partial or heuristic analysis, the output should say so. `analyze` should not imply full exploitability unless a future version has enough independent vulnerability and runtime context, which is outside the current scope.
 
+## Validation commands added in Patch 018
 
-## Sprint 4 `gadgets` semantic output status
-
-Patch 015 keeps the command form unchanged:
+The following make targets are part of the development and validation workflow, not the end-user CLI:
 
 ```bash
-x64lens gadgets [--max-depth N] <file>
+make json-smoke
+make system-smoke
+make validation-smoke
+make docker-available-check
+BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
-The text output now includes first-pass semantic fields in addition to raw and exact pattern fields:
-
-- semantic primitive count,
-- unknown candidate count,
-- per-class primitive counts,
-- register coverage,
-- per-candidate semantic class, controlled registers, and stack delta.
-
-This is still experimental text output before `1.0.0`. JSON output remains future work.
+`system-smoke` exercises the implemented commands against installed ELF64 x86_64 system binaries. It validates output shape and count invariants instead of exact distro-specific gadget totals.

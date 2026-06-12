@@ -30,7 +30,7 @@ help_text:
     db "  x64lens version", 10
     db "  x64lens info <file>", 10
     db "  x64lens mitigations <file>", 10
-    db "  x64lens gadgets [--max-depth N] <file>", 10
+    db "  x64lens gadgets [--format text|json] [--max-depth N] <file>", 10
     db "", 10
     db "Planned commands:", 10
     db "  x64lens analyze <file>", 10

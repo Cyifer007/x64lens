@@ -119,7 +119,7 @@ Expected Sprint 3 signals:
 | `tests/bin/gadgets` | reports `Raw gadget candidates:` |
 | `tests/bin/gadgets` | reports at least one `terminator: ret` |
 | `tests/bin/gadgets` | reports at least one `terminator: ret imm16` |
-| `tests/bin/gadgets` | reports `Exact pattern count: 0x0000000000000007` |
+| `tests/bin/gadgets` | reports `Exact pattern count: 0x000000000000000b` |
 | `tests/bin/gadgets` | reports exact patterns for `pop rdi; ret`, `leave; ret`, `syscall; ret`, and `ret imm16` |
 | `--max-depth 4` | reports `Max depth: 0x0000000000000004` |
 
@@ -177,8 +177,8 @@ Expected fixture signals:
 | ------ | -------------- |
 | default max depth | `0x0000000000000008` |
 | custom max depth | `0x0000000000000004` |
-| candidate count | `0x0000000000000007` |
-| `ret` count | `0x0000000000000006` |
+| candidate count | `0x000000000000000b` |
+| `ret` count | `0x000000000000000a` |
 | `ret imm16` count | `0x0000000000000001` |
 | known bytes | `5f c3`, `0f 05 c3`, `c2 10 00` |
 
@@ -207,8 +207,8 @@ Expected fixture signals:
 | Signal | Expected |
 | ------ | -------- |
 | Candidate capacity | `0x0000000000001000` |
-| Candidate count | `0x0000000000000007` |
-| ret count | `0x0000000000000006` |
+| Candidate count | `0x000000000000000b` |
+| ret count | `0x000000000000000a` |
 | ret imm16 count | `0x0000000000000001` |
 
 The arena allocator does not change scanner semantics. It is infrastructure for command-lifetime analysis storage.
@@ -228,7 +228,7 @@ Expected fixture signals:
 
 | Target | Expected signal |
 | ------ | --------------- |
-| `tests/bin/gadgets` | `Exact pattern count: 0x0000000000000007` |
+| `tests/bin/gadgets` | `Exact pattern count: 0x000000000000000b` |
 | `tests/bin/gadgets` | `pattern: pop rdi; ret` |
 | `tests/bin/gadgets` | `pattern: pop rsi; ret` |
 | `tests/bin/gadgets` | `pattern: pop rdx; ret` |
@@ -345,16 +345,16 @@ Expected controlled fixture signals:
 
 | Signal | Expected value |
 | ------ | -------------- |
-| Candidate count | `0x0000000000000007` |
-| Exact pattern count | `0x0000000000000007` |
-| Semantic primitive count | `0x0000000000000007` |
+| Candidate count | `0x000000000000000b` |
+| Exact pattern count | `0x000000000000000b` |
+| Semantic primitive count | `0x000000000000000b` |
 | unknown_candidate count | `0x0000000000000000` |
-| arg_control count | `0x0000000000000003` |
+| arg_control count | `0x0000000000000006` |
 | syscall_num_control count | `0x0000000000000001` |
 | syscall_trigger count | `0x0000000000000001` |
-| stack_pivot count | `0x0000000000000001` |
+| stack_pivot count | `0x0000000000000002` |
 | alignment count | `0x0000000000000001` |
-| Register coverage | `rax|rdx|rsi|rdi|rsp` |
+| Register coverage | `rax|rcx|rdx|rsi|rdi|rsp|r8|r9` |
 
 This validation confirms classifier plumbing and fixture behavior. It is not a full decoder validation and does not establish exploitability.
 
@@ -384,17 +384,97 @@ Expected controlled fixture semantic signals:
 
 | Signal | Expected value |
 |---|---:|
-| Candidate count | `0x0000000000000007` |
-| Exact pattern count | `0x0000000000000007` |
-| Semantic primitive count | `0x0000000000000007` |
+| Candidate count | `0x000000000000000b` |
+| Exact pattern count | `0x000000000000000b` |
+| Semantic primitive count | `0x000000000000000b` |
 | unknown_candidate count | `0x0000000000000000` |
-| arg_control count | `0x0000000000000003` |
+| arg_control count | `0x0000000000000006` |
 | syscall_num_control count | `0x0000000000000001` |
 | syscall_trigger count | `0x0000000000000001` |
-| stack_pivot count | `0x0000000000000001` |
+| stack_pivot count | `0x0000000000000002` |
 | alignment count | `0x0000000000000001` |
-| Register coverage | `rax|rdx|rsi|rdi|rsp` |
+| Register coverage | `rax|rcx|rdx|rsi|rdi|rsp|r8|r9` |
 
 `/bin/ls` is a smoke target only. Its exact counts can vary across systems, but it should complete without crashing and should preserve raw/exact/semantic/unknown metric separation.
 
-Future validation should add a richer controlled fixture for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` before score values are treated as stable.
+Patch 017 expands the controlled fixture to include `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` before score values are exposed.
+
+## Sprint 5 scoring and JSON validation
+
+Patch 017 adds scoring and initial JSON output. Validate both text and JSON paths:
+
+```bash
+make validate-gadget-fixture
+make semantic-smoke
+make json-smoke
+./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
+python3 -m json.tool /tmp/x64lens-gadgets.json >/dev/null
+```
+
+Expected controlled fixture signals:
+
+| Field | Expected value |
+|---|---:|
+| candidate count | 11 |
+| ret count | 10 |
+| ret imm16 count | 1 |
+| exact pattern count | 11 |
+| semantic primitive count | 11 |
+| scored candidate count | 11 |
+| unknown candidate count | 0 |
+| arg_control count | 6 |
+| stack_pivot count | 2 |
+
+The JSON output must include `schema_version`, `tool`, `tool_version`, `target`, `mitigations`, `counts`, `primitive_coverage`, `gadgets`, and `limitations`. Stack-pivot records should expose `stack_delta: null` and `stack_delta_known: false`.
+
+### Sprint 5 Patch 018 validation hardening
+
+Patch 018 adds reusable validation targets so scoring and JSON output are not validated only through inline shell checks.
+
+Core local validation:
+
+```bash
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make test
+make validate-gadget-fixture
+make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
+```
+
+Docker environment triage:
+
+```bash
+make docker-available-check
+make docker-test
+```
+
+`docker-available-check` distinguishes Docker Desktop/Engine availability from implementation failures. A missing `docker` command or unreachable daemon should be fixed as an environment issue before treating `docker-test` as a code failure.
+
+JSON validation:
+
+```bash
+./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
+python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-gadgets.json
+```
+
+System binary smoke:
+
+```bash
+make system-smoke
+MAX_DEPTH=4 bash tools/system-binary-smoke.sh ./build/x64lens /bin/ls /bin/cat
+```
+
+The system smoke target validates output shape and internal count invariants against installed ELF64 x86_64 binaries. It must not assert exact candidate counts because those vary by distribution, compiler, and binary version.
+
+Patch bundle hygiene:
+
+```bash
+BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
+```
+
+Patch/release bundles should exclude `.git/`, `.local/`, `build/`, `tests/bin/`, generated benchmark results, generated toy binaries, object files, private/course documents, and nested ZIPs.
