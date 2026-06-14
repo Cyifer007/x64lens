@@ -102,3 +102,8 @@ Patch 017 adds the first scoring model and initial `gadgets --format json` outpu
 ## Sprint 5 validation-hardening checkpoint
 
 Patch 018 adds a validation-hardening layer inside Sprint 5. This does not change the twelve-sprint direction. It reduces downstream refactor and publication risk by making JSON, scoring, system-binary smoke testing, Docker availability, and patch bundle hygiene repeatable before deeper benchmark and mitigation work begins.
+
+
+## Sprint 5 Patch 019 checkpoint
+
+Patch 019 advances Sprint 5 from scanner-only smoke measurement to baseline comparison smoke measurement. This does not complete the research benchmark sprint. It creates the reproducible capture path needed before Sprint 10 publication-grade repeated comparisons.

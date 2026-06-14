@@ -243,3 +243,31 @@ The purpose is to catch real-binary regressions in:
 The target intentionally validates shape and invariants instead of exact gadget counts because `/bin/ls`, `/bin/cat`, `/bin/sh`, and similar binaries vary across Linux distributions and compiler builds.
 
 Publication benchmarks still require fixed corpus manifests, tool versions, repeated runs, environment metadata, raw results, summary statistics, and baseline comparison against ROPgadget, Ropper, and ropr.
+
+
+## Sprint 5 Patch 019 baseline comparison smoke
+
+Patch 019 adds a development-level baseline comparison harness:
+
+```bash
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
+```
+
+The harness always measures x64lens with:
+
+```bash
+x64lens gadgets --format json --max-depth <N> <target>
+```
+
+It optionally measures these baseline tools when installed:
+
+```bash
+ROPgadget --binary <target>
+ropper --file <target>
+ropr <target>
+```
+
+Missing optional baseline tools are recorded in metadata and skipped by default. This behavior keeps daily development validation stable while preserving environment evidence. Set `REQUIRE_BASELINES=1` when the test environment is expected to provide at least one baseline tool.
+
+Patch 019 rows preserve raw timing and memory evidence, but they do not establish superiority or coverage equivalence. Research-grade comparisons still require fixed baseline versions, normalized gadget definitions, repeated trials, corpus manifests, environment metadata, raw rows, and summary statistics.

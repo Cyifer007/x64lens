@@ -478,3 +478,29 @@ BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
 Patch/release bundles should exclude `.git/`, `.local/`, `build/`, `tests/bin/`, generated benchmark results, generated toy binaries, object files, private/course documents, and nested ZIPs.
+
+
+### Sprint 5 Patch 019 baseline comparison smoke validation
+
+Patch 019 validates benchmark-comparison plumbing without making publication claims. Run:
+
+```bash
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
+```
+
+Expected behavior:
+
+- x64lens always runs through `gadgets --format json --max-depth <N>`.
+- x64lens JSON is validated after timed execution.
+- ROPgadget, Ropper, and ropr are run only when installed.
+- Missing optional baselines are recorded in metadata and skipped by default.
+- Generated TSV and metadata files remain ignored under `benchmarks/results/`.
+
+Strict optional-baseline check:
+
+```bash
+REQUIRE_BASELINES=1 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+```
+
+This command should fail clearly when no optional baseline tool is installed.

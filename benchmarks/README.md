@@ -45,3 +45,17 @@ Patch 010 moves raw gadget candidate records into an mmap-backed arena. The scan
 ## Sprint 3 exact pattern count
 
 Patch 011 adds an `exact_pattern_count` column to scanner smoke TSV output. This metric counts raw candidates tagged by `patterns.asm` with exact byte-template IDs. It is not a semantic primitive count and should not be interpreted as exploitability evidence until the classifier and scoring layers are implemented.
+
+
+## Sprint 5 Patch 019 baseline comparison smoke
+
+Patch 019 adds a development-level baseline comparison harness:
+
+```bash
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
+```
+
+The harness always runs x64lens and optionally runs ROPgadget, Ropper, and ropr when those tools are installed. Missing optional baseline tools are recorded in the metadata sidecar and skipped by default. Set `REQUIRE_BASELINES=1` only in environments where at least one optional baseline tool is expected.
+
+The baseline smoke TSV records tool path, tool version, exact command, target size, target SHA256, run number, wall-clock time, max RSS, exit code, output size, and x64lens JSON-derived raw/exact/semantic/unknown/scored counts. It is not a publication benchmark by itself.

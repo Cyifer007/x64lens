@@ -92,3 +92,15 @@ Current examples:
 - Real-binary smoke coverage is validated by `tools/system-binary-smoke.sh`.
 - Docker availability is checked separately through `make docker-available-check`.
 - Patch ZIP contents are checked through `tools/check-patch-bundle-hygiene.sh`.
+
+
+## Public validation transcript rule
+
+Public validation snippets should use generic prompts and repository-relative paths where possible. Avoid committing personal hostnames, local usernames, local home-directory paths, private attachment names, or dialogue-style context. Prefer examples such as:
+
+```text
+$ make test
+tests: ok
+```
+
+Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.

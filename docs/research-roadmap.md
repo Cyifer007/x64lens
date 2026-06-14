@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprint 5 Patch 017 is the current implementation candidate. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, first-pass semantic classification, semantic summary counts, register coverage, initial scoring, JSON output for gadgets, and scanner smoke benchmark plumbing.
+Sprint 5 Patch 019 is the current implementation candidate. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, first-pass semantic classification, semantic summary counts, register coverage, initial scoring, JSON output for gadgets, scanner smoke benchmark plumbing, validation hardening, and baseline comparison smoke scaffolding.
 
 ## Stage 1: CSC-732 foundation
 
@@ -114,3 +114,8 @@ These additions refine the roadmap without changing the near-term implementation
 Patch 018 improves the evidence trail before broader baseline comparisons begin. The repository now has reusable validation for JSON report invariants, controlled-fixture scoring facts, real-system-binary smoke behavior, Docker environment availability, and patch bundle hygiene.
 
 This keeps Sprint 5 aligned with the research contract: reproducible claims require tool versions, schema versions, commands, corpus details, environment metadata, raw results, and summary statistics. Patch 018 is not a publication benchmark; it is the validation foundation needed before Sprint 6 checkpoint work and later Sprint 10 research benchmarks.
+
+
+## Patch 019 benchmark scaffolding note
+
+Patch 019 adds comparison scaffolding before research-grade benchmark execution. The goal is to prove that tool versions, exact commands, target hashes, run counts, timing, memory, and x64lens JSON-derived counts can be captured consistently. These rows remain development evidence until baseline tool definitions and corpus selection are finalized.

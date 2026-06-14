@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 5 Patch 018 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthens JSON, system-binary, Docker-availability, and patch-bundle validation.
+> Status: Sprint 5 Patch 019 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 adds baseline comparison smoke benchmarking against optional external tools.
 >
 > Current version: `0.1.0-dev`
 >
@@ -69,10 +69,10 @@ See [`docs/adr/0001-tool-name.md`](docs/adr/0001-tool-name.md).
 
 ## Current implementation checkpoint
 
-Patch 017 advanced the implemented pipeline to scoring and initial JSON output; Patch 018 strengthens validation around that pipeline:
+Patch 017 advanced the implemented pipeline to scoring and initial JSON output. Patch 018 strengthened validation around that pipeline. Patch 019 adds development-level baseline comparison plumbing:
 
 ```text
-ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> scoring -> text/JSON reporting
+ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> scoring -> text/JSON reporting -> benchmark smoke evidence
 ```
 
 The current `gadgets` command reports raw terminator-centered byte windows, exact suffix pattern labels, conservative semantic classes, controlled-register bitmaps, stack deltas, heuristic scores, primitive coverage counts, and initial schema-versioned JSON. This is still not full instruction decoding and does not emit exploitability verdicts.
@@ -177,7 +177,19 @@ make json-smoke
 make system-smoke
 make validation-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 ```
+
+### Baseline comparison smoke benchmark
+
+Patch 019 adds a development-level baseline comparison harness. It always runs x64lens and optionally runs ROPgadget, Ropper, and ropr when those tools are installed:
+
+```bash
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
+```
+
+Missing optional baseline tools are recorded in metadata and skipped by default. Set `REQUIRE_BASELINES=1` when the environment is expected to contain at least one optional baseline tool. These rows are smoke evidence for benchmark plumbing, not publication claims.
 
 The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, scored candidate counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
 

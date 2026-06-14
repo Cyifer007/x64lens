@@ -75,3 +75,15 @@ Before each two-week checkpoint, review:
 ## Validation documentation rule
 
 Validation documents should describe reproducible repository commands and observed technical outcomes. They should not depend on private coordination context. Environment failures should be described as environment facts, for example Docker availability or missing toolchain dependencies, not as personal workflow details.
+
+
+## Public validation transcript rule
+
+Public validation snippets should use generic prompts and repository-relative paths where possible. Avoid committing personal hostnames, local usernames, local home-directory paths, private attachment names, or dialogue-style context. Prefer examples such as:
+
+```text
+$ make test
+tests: ok
+```
+
+Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.

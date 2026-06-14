@@ -8,6 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added Sprint 5 Patch 019 baseline comparison smoke harness.
+- Added `benchmarks/scripts/bench-baselines-smoke.sh` and `make bench-baselines-smoke` for x64lens plus optional ROPgadget, Ropper, and ropr timing rows.
+- Added a standard-library benchmark summarizer through `benchmarks/scripts/summarize.py` and `make bench-summary`.
+- Added ADR 0007 for baseline comparison harness design.
+- Sanitized public validation transcripts to avoid personal hostnames and local home-directory paths.
 - Added Sprint 5 Patch 018 validation hardening.
 - Added `tools/validate-json-report.py` for reusable JSON report contract validation.
 - Added `tools/system-binary-smoke.sh` and `make system-smoke` for installed ELF64 x86_64 binary smoke coverage.

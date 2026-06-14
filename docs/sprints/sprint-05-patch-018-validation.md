@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation candidate.
+Validated.
 
 ## Sprint goal
 
@@ -102,15 +102,15 @@ BUNDLE=/path/to/018_x64lens_sprint5_validation_hardening_patch.zip make patch-bu
 
 ## Acceptance criteria
 
-- [ ] `make test` passes.
-- [ ] `make validate-gadget-fixture` passes.
-- [ ] `make semantic-smoke` passes.
-- [ ] `make json-smoke` passes with the new validator.
-- [ ] `make system-smoke` passes against at least one installed ELF64 x86_64 system binary.
-- [ ] `make validation-smoke` passes locally.
-- [ ] `make docker-available-check` correctly distinguishes Docker environment availability.
-- [ ] `make docker-test` passes when Docker is available.
-- [ ] Patch bundle hygiene check passes against the generated patch ZIP.
+- [x] `make test` passes.
+- [x] `make validate-gadget-fixture` passes.
+- [x] `make semantic-smoke` passes.
+- [x] `make json-smoke` passes with the new validator.
+- [x] `make system-smoke` passes against installed ELF64 x86_64 system binaries.
+- [x] `make validation-smoke` passes locally.
+- [x] `make docker-available-check` correctly distinguishes Docker environment availability.
+- [x] `make docker-test` passes when Docker is available.
+- [x] Patch bundle hygiene check passes against the generated patch ZIP.
 
 ## Failure triage
 
@@ -125,3 +125,20 @@ BUNDLE=/path/to/018_x64lens_sprint5_validation_hardening_patch.zip make patch-bu
 ## Non-goals
 
 Patch 018 does not implement a full decoder, baseline tool comparison, canary detection, full RELRO detection, or mitigation-aware `analyze` orchestration. Those remain roadmap items.
+
+
+## Validation result
+
+Patch 018 validation confirmed the strengthened validation path:
+
+```text
+make test -> tests: ok
+make validate-gadget-fixture -> validate-gadget-fixture: ok
+make semantic-smoke -> validate-gadget-fixture: ok
+make json-smoke -> json-smoke: ok
+make system-smoke -> system-binary-smoke: ok
+make validation-smoke -> validation-smoke: ok
+make docker-available-check -> docker-available-check: ok
+make docker-test -> tests: ok
+make patch-bundle-hygiene -> patch-bundle-hygiene: ok
+```

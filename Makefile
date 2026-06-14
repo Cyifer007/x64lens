@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -119,6 +119,20 @@ bench-scanner-smoke: all samples
 
 bench-smoke: bench-scanner-smoke
 
+# Sprint 5 Patch 019 baseline-comparison smoke target. Optional baseline
+# tools are skipped when absent; set REQUIRE_BASELINES=1 to require at least
+# one of ROPgadget, ropper, or ropr. Results are development evidence only.
+bench-baselines-smoke: all samples
+	bash benchmarks/scripts/bench-baselines-smoke.sh ./$(TARGET)
+
+bench-summary:
+	@files="$$(ls benchmarks/results/*.tsv 2>/dev/null || true)"; \
+	if [ -z "$$files" ]; then \
+		echo "error: no benchmark TSV files found under benchmarks/results"; \
+		exit 1; \
+	fi; \
+	python3 benchmarks/scripts/summarize.py $$files
+
 script-perms-check:
 	@echo "Checking shell helper executable bits..."
 	@test -x tests/run-tests.sh
@@ -126,6 +140,8 @@ script-perms-check:
 	@test -x benchmarks/scripts/bench-ropper.sh
 	@test -x benchmarks/scripts/bench-ropr.sh
 	@test -x benchmarks/scripts/bench-scanner-smoke.sh
+	@test -x benchmarks/scripts/bench-baselines-smoke.sh
+	@test -x benchmarks/scripts/summarize.py
 	@test -x benchmarks/scripts/bench-x64lens.sh
 	@test -x tools/compare-checksec.sh
 	@test -x tools/compare-objdump.sh
@@ -241,7 +257,7 @@ normalize-perms:
 		-path ./build -prune -o \
 		-path ./tests/bin -prune -o \
 		-type f -exec chmod 644 {} +
-	@chmod 755 tests/run-tests.sh tools/*.sh tools/*.py benchmarks/scripts/*.sh 2>/dev/null || true
+	@chmod 755 tests/run-tests.sh tools/*.sh tools/*.py benchmarks/scripts/*.sh benchmarks/scripts/*.py 2>/dev/null || true
 	@echo "normalize-perms: done"
 
 clean:

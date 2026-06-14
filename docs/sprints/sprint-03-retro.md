@@ -172,8 +172,8 @@ validate-gadget-fixture: ok
 
 ```text
 scanner-smoke benchmark complete
-  results: /home/cyifer007/x64lens/benchmarks/results/scanner-smoke-20260607T215830Z.tsv
-  metadata: /home/cyifer007/x64lens/benchmarks/results/scanner-smoke-20260607T215830Z.meta
+  results: <repo>/benchmarks/results/scanner-smoke-20260607T215830Z.tsv
+  metadata: <repo>/benchmarks/results/scanner-smoke-20260607T215830Z.meta
   runs: 5
   max_depth: 4
 ```

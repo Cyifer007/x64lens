@@ -59,3 +59,15 @@ The tool may report primitive availability and plausible exploit strategy constr
 ## Public repository voice
 
 Public output, documentation, comments, tests, and examples must be written as repository-facing project material. They must not reference private coordination context, attachment history, or tool-assisted workflow details. Public wording should describe repository facts, implementation decisions, validation evidence, and reproducible commands from the project perspective.
+
+
+## Public validation transcript rule
+
+Public validation snippets should use generic prompts and repository-relative paths where possible. Avoid committing personal hostnames, local usernames, local home-directory paths, private attachment names, or dialogue-style context. Prefer examples such as:
+
+```text
+$ make test
+tests: ok
+```
+
+Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.

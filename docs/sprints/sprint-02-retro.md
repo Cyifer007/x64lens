@@ -104,7 +104,7 @@ readelf -l /bin/ls
 ### Build
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make
+$ make
 mkdir -p build
 nasm -f elf64 -g -F dwarf -Iinclude/ src/bounds.asm -o build/bounds.o
 nasm -f elf64 -g -F dwarf -Iinclude/ src/classifier.asm -o build/classifier.o
@@ -133,11 +133,11 @@ ld  -o build/x64lens build/bounds.o build/classifier.o build/cli.o build/elf64.o
 ### Test suite
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make test
+$ make test
 make -C tests/toy-src
-make[1]: Entering directory '/home/cyifer007/x64lens/tests/toy-src'
+make[1]: Entering directory '<repo>/tests/toy-src'
 make[1]: Nothing to be done for 'all'.
-make[1]: Leaving directory '/home/cyifer007/x64lens/tests/toy-src'
+make[1]: Leaving directory '<repo>/tests/toy-src'
 mkdir -p tests/bin
 cp tests/toy-src/minimal_nopie tests/bin/ 2>/dev/null || true
 cp tests/toy-src/minimal_pie_canary tests/bin/ 2>/dev/null || true
@@ -162,8 +162,8 @@ tests: ok
 ### Docker validation
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make docker-test
-docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "/home/cyifer007/x64lens":/work -w /work x64lens-dev bash -lc 'make clean && make && make test'
+$ make docker-test
+docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "<repo>":/work -w /work x64lens-dev bash -lc 'make clean && make && make test'
 rm -rf build
 rm -rf tests/bin
 make -C tests/toy-src clean || true
@@ -193,7 +193,7 @@ The omitted middle section is the expected NASM object build and `ld` link step,
 ### `minimal_nopie` mitigation report
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens mitigations ./tests/bin/minimal_nopie
+$ ./build/x64lens mitigations ./tests/bin/minimal_nopie
 x64lens 0.1.0-dev
 Target: ./tests/bin/minimal_nopie
 
@@ -216,7 +216,7 @@ Executable regions:
 ### `minimal_pie_canary` mitigation report
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens mitigations ./tests/bin/minimal_pie_canary
+$ ./build/x64lens mitigations ./tests/bin/minimal_pie_canary
 x64lens 0.1.0-dev
 Target: ./tests/bin/minimal_pie_canary
 
@@ -239,7 +239,7 @@ Executable regions:
 ### `minimal_execstack` mitigation report
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens mitigations ./tests/bin/minimal_execstack
+$ ./build/x64lens mitigations ./tests/bin/minimal_execstack
 x64lens 0.1.0-dev
 Target: ./tests/bin/minimal_execstack
 
@@ -262,7 +262,7 @@ Executable regions:
 ### System binary spot check: `/bin/ls`
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens mitigations /bin/ls
+$ ./build/x64lens mitigations /bin/ls
 x64lens 0.1.0-dev
 Target: /bin/ls
 

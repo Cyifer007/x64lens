@@ -87,7 +87,7 @@ make docker-test
 ### Build
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make
+$ make
 mkdir -p build
 nasm -f elf64 -g -F dwarf -Iinclude/ src/bounds.asm -o build/bounds.o
 nasm -f elf64 -g -F dwarf -Iinclude/ src/classifier.asm -o build/classifier.o
@@ -116,11 +116,11 @@ ld  -o build/x64lens build/bounds.o build/classifier.o build/cli.o build/elf64.o
 ### Test suite
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make test
+$ make test
 make -C tests/toy-src
-make[1]: Entering directory '/home/cyifer007/x64lens/tests/toy-src'
+make[1]: Entering directory '<repo>/tests/toy-src'
 make[1]: Nothing to be done for 'all'.
-make[1]: Leaving directory '/home/cyifer007/x64lens/tests/toy-src'
+make[1]: Leaving directory '<repo>/tests/toy-src'
 mkdir -p tests/bin
 cp tests/toy-src/minimal_nopie tests/bin/ 2>/dev/null || true
 cp tests/toy-src/minimal_pie_canary tests/bin/ 2>/dev/null || true
@@ -140,10 +140,10 @@ tests: ok
 ### Version and help
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens version
+$ ./build/x64lens version
 x64lens 0.1.0-dev schema 0.1.0
 
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens help
+$ ./build/x64lens help
 x64lens 0.1.0-dev
 
 Usage:
@@ -161,7 +161,7 @@ Planned commands:
 ### Valid toy ELF64 target
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens info ./tests/bin/minimal_nopie
+$ ./build/x64lens info ./tests/bin/minimal_nopie
 x64lens 0.1.0-dev
 Target: ./tests/bin/minimal_nopie
 
@@ -183,7 +183,7 @@ Format:
 ### Valid system ELF64 target
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens info /bin/ls
+$ ./build/x64lens info /bin/ls
 x64lens 0.1.0-dev
 Target: /bin/ls
 
@@ -205,15 +205,15 @@ Format:
 ### Invalid input exit codes
 
 ```text
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens info ./tests/invalid/text.txt ; echo $?
+$ ./build/x64lens info ./tests/invalid/text.txt ; echo $?
 error: target is not an ELF64 x86_64 little-endian binary
 4
 
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens info ./tests/invalid/truncated_elf.bin ; echo $?
+$ ./build/x64lens info ./tests/invalid/truncated_elf.bin ; echo $?
 error: malformed or truncated ELF
 5
 
-cyifer007@Cyifer:~/x64lens$ ./build/x64lens info ./tests/invalid/wrong_arch_elf.bin ; echo $?
+$ ./build/x64lens info ./tests/invalid/wrong_arch_elf.bin ; echo $?
 error: target is not an ELF64 x86_64 little-endian binary
 4
 ```
@@ -221,8 +221,8 @@ error: target is not an ELF64 x86_64 little-endian binary
 ### Docker validation
 
 ```text
-cyifer007@Cyifer:~/x64lens$ make docker-test
-docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "/home/cyifer007/x64lens":/work -w /work x64lens-dev bash -lc 'make clean && make && make test'
+$ make docker-test
+docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "<repo>":/work -w /work x64lens-dev bash -lc 'make clean && make && make test'
 rm -rf build
 rm -rf tests/bin
 make -C tests/toy-src clean || true
@@ -267,7 +267,7 @@ message: feat: implement Sprint 1 ELF64 info path
 The remote reported that the repository moved to:
 
 ```text
-git@github.com:Cyifer007/x64lens.git
+git@github.com:<owner>/x64lens.git
 ```
 
 ## Acceptance criteria review

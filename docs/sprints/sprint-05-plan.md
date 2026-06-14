@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Patch 017 implemented and validated the first scoring and JSON slice. Patch 018 is the Sprint 5 validation-hardening candidate.
+In progress. Patch 017 implemented and validated the first scoring and JSON slice. Patch 018 validated the Sprint 5 validation-hardening slice. Patch 019 is the baseline comparison harness candidate.
 
 ## Sprint goal
 
@@ -43,18 +43,34 @@ Patch 018 strengthens the validation process after Patch 017 scoring and JSON ou
 - [x] Add patch bundle hygiene validation for generated ZIPs.
 - [x] Document Patch 017 validation evidence and Patch 018 validation expectations.
 
+
+
+## Patch 019 baseline comparison harness scope
+
+Patch 019 adds development-level comparison scaffolding without changing analyzer semantics:
+
+- [x] Add `benchmarks/scripts/bench-baselines-smoke.sh`.
+- [x] Add `make bench-baselines-smoke`.
+- [x] Run x64lens through JSON output so raw, exact, semantic, unknown, and scored counts are extracted from the machine-readable report.
+- [x] Optionally run ROPgadget, Ropper, and ropr when installed.
+- [x] Record missing optional baseline tools as environment metadata instead of default failures.
+- [x] Add target SHA256 and corpus-manifest hash capture.
+- [x] Add `benchmarks/scripts/summarize.py` for TSV summary tables.
+- [x] Add ADR 0007 for the benchmark harness design.
+- [x] Sanitize public validation transcripts so public docs do not expose personal hostnames or local home-directory paths.
+
 ## Deferred Sprint 5 work
 
-These remain Sprint 5 follow-up items after Patch 017 validates:
+These remain Sprint 5 follow-up items after Patch 019:
 
-- [ ] Add schema validation through a dedicated JSON Schema validator if available in the environment.
-- [ ] Expand benchmark harness beyond scanner smoke.
-- [ ] Add ROPgadget comparison script wiring.
-- [ ] Add Ropper comparison script wiring.
-- [ ] Add ropr comparison script wiring if available.
-- [ ] Record baseline tool versions in benchmark metadata.
-- [ ] Add corpus manifest hash or manifest checksum capture.
-- [ ] Update benchmark methodology with exact baseline commands once baseline tooling is exercised.
+- [x] Expand benchmark harness beyond scanner smoke with development-level baseline smoke rows.
+- [x] Add ROPgadget comparison script wiring in the baseline smoke harness.
+- [x] Add Ropper comparison script wiring in the baseline smoke harness.
+- [x] Add ropr comparison script wiring when available in the baseline smoke harness.
+- [x] Record baseline tool versions in benchmark metadata when tools are installed.
+- [x] Add corpus manifest hash or manifest checksum capture.
+- [x] Update benchmark methodology with exact baseline smoke commands.
+- [ ] Normalize baseline gadget counts and tool-specific output definitions.
 - [ ] Write Sprint 5 retrospective after validation.
 
 ## Acceptance criteria for Patch 017
@@ -89,6 +105,8 @@ make validate-gadget-fixture
 make semantic-smoke
 make json-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
 python3 -m json.tool /tmp/x64lens-gadgets.json >/dev/null
@@ -129,3 +147,12 @@ These values include a small uncertainty penalty because the current implementat
 - [ ] `make docker-available-check` gives a clear environment result.
 - [ ] `BUNDLE=<patch.zip> make patch-bundle-hygiene` passes for the generated Patch 018 bundle.
 - [ ] Public patch bundles exclude local-only context and generated artifacts; project context is distributed separately.
+
+
+## Additional Patch 019 acceptance criteria
+
+- [ ] `RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke` succeeds with x64lens even when optional baseline tools are absent.
+- [ ] `benchmarks/results/baseline-smoke-*.tsv` and `.meta` are generated and ignored by Git.
+- [ ] `python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv` emits a summary table.
+- [ ] `REQUIRE_BASELINES=1 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke` fails clearly if no optional baseline tools are available.
+- [ ] No benchmark superiority claim is made from smoke rows alone.
