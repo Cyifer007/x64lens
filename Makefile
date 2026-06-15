@@ -31,13 +31,45 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
-check-tools:
-	@command -v $(NASM) >/dev/null 2>&1 || { echo "error: nasm is required"; exit 127; }
-	@command -v $(LD) >/dev/null 2>&1 || { echo "error: ld is required"; exit 127; }
+# Build-only dependency check. This intentionally checks only the tools needed
+# to assemble and link x64lens. Broader development checks are available through
+# dev-tools-check, validation-smoke, and doctor.
+check-tools: build-tools-check
+
+build-tools-check:
+	bash tools/check-dev-tools.sh --build
+
+sample-tools-check:
+	bash tools/check-dev-tools.sh --samples
+
+dev-tools-check:
+	bash tools/check-dev-tools.sh --dev
+
+baseline-tools-check:
+	bash tools/check-dev-tools.sh --baselines
+
+full-tools-check:
+	REQUIRE_BASELINES=1 bash tools/check-dev-tools.sh --all
+
+doctor:
+	bash tools/check-dev-tools.sh --doctor
+
+install-dev-deps-ubuntu:
+	sudo apt update
+	sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+	python3 -m pipx ensurepath 2>/dev/null || pipx ensurepath 2>/dev/null || true
+
+install-baseline-tools-user:
+	bash tools/check-dev-tools.sh --dev
+	command -v pipx >/dev/null 2>&1 || { echo "error: pipx is required. Run make install-dev-deps-ubuntu first."; exit 127; }
+	pipx install ROPGadget || pipx upgrade ROPGadget
+	pipx install ropper || pipx upgrade ropper
+	command -v cargo >/dev/null 2>&1 || { echo "error: cargo is required for ropr. Run make install-dev-deps-ubuntu first."; exit 127; }
+	cargo install ropr
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -48,7 +80,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
-samples:
+samples: sample-tools-check
 	$(MAKE) -C tests/toy-src
 	mkdir -p tests/bin
 	cp tests/toy-src/minimal_nopie tests/bin/ 2>/dev/null || true
@@ -56,7 +88,7 @@ samples:
 	cp tests/toy-src/minimal_execstack tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets tests/bin/ 2>/dev/null || true
 
-test: all samples
+test: dev-tools-check all samples
 	bash tests/run-tests.sh
 
 # Scanner and exact-pattern correctness smoke test for the hand-authored
@@ -80,7 +112,7 @@ semantic-smoke: validate-gadget-fixture
 # Sprint 5 JSON smoke target. This verifies that machine-readable gadget output
 # parses as JSON and satisfies the report invariants checked by the repository
 # validator. The fixture mode asserts exact expected semantic and score facts.
-json-smoke: all samples
+json-smoke: dev-tools-check all samples
 	@./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-json-smoke.json
 	@python3 -m json.tool /tmp/x64lens-json-smoke.json >/dev/null
 	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke.json >/dev/null
@@ -91,7 +123,7 @@ json-smoke: all samples
 # Real-binary smoke target. This runs the current pipeline against installed
 # system ELF64 binaries and validates shape/invariants rather than brittle,
 # distribution-specific candidate counts.
-system-smoke: all
+system-smoke: dev-tools-check all
 	bash tools/system-binary-smoke.sh ./$(TARGET)
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
@@ -114,7 +146,7 @@ arena-smoke: all samples
 # First Sprint 3 scanner benchmark smoke target. This records repeated runs,
 # elapsed time, max RSS, exit code, candidate counts, and output size in
 # benchmarks/results/. It is development evidence, not a publication claim.
-bench-scanner-smoke: all samples
+bench-scanner-smoke: dev-tools-check all samples
 	bash benchmarks/scripts/bench-scanner-smoke.sh ./$(TARGET)
 
 bench-smoke: bench-scanner-smoke
@@ -122,7 +154,7 @@ bench-smoke: bench-scanner-smoke
 # Sprint 5 Patch 019 baseline-comparison smoke target. Optional baseline
 # tools are skipped when absent; set REQUIRE_BASELINES=1 to require at least
 # one of ROPgadget, ropper, or ropr. Results are development evidence only.
-bench-baselines-smoke: all samples
+bench-baselines-smoke: dev-tools-check baseline-tools-check all samples
 	bash benchmarks/scripts/bench-baselines-smoke.sh ./$(TARGET)
 
 bench-summary:
@@ -152,6 +184,7 @@ script-perms-check:
 	@test -x tools/validate-json-report.py
 	@test -x tools/system-binary-smoke.sh
 	@test -x tools/check-patch-bundle-hygiene.sh
+	@test -x tools/check-dev-tools.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -168,6 +201,7 @@ scaffold-check: script-perms-check
 	@test -f docs/environment.md
 	@test -f docs/visualization.md
 	@test -f docs/troubleshooting.md
+	@test -f docs/onboarding.md
 	@echo "scaffold-check: ok"
 
 diagrams-check:

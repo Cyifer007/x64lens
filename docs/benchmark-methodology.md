@@ -245,9 +245,9 @@ The target intentionally validates shape and invariants instead of exact gadget 
 Publication benchmarks still require fixed corpus manifests, tool versions, repeated runs, environment metadata, raw results, summary statistics, and baseline comparison against ROPgadget, Ropper, and ropr.
 
 
-## Sprint 5 Patch 019 baseline comparison smoke
+## Sprint 5 Patch 019 and Patch 020 baseline comparison smoke
 
-Patch 019 adds a development-level baseline comparison harness:
+Patch 019 adds a development-level baseline comparison harness. Patch 020 broadens the default target list and adds development toolchain diagnostics:
 
 ```bash
 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
@@ -260,6 +260,19 @@ The harness always measures x64lens with:
 x64lens gadgets --format json --max-depth <N> <target>
 ```
 
+Default Patch 020 smoke targets are:
+
+```text
+tests/bin/gadgets
+/bin/ls
+/bin/cat
+/bin/sh
+/usr/bin/env
+/usr/bin/printf
+```
+
+These targets intentionally match the real-binary smoke set where possible. The controlled fixture provides known semantic expectations; the system binaries provide shape, timing, memory, and exit-code evidence across common installed ELF64 binaries.
+
 It optionally measures these baseline tools when installed:
 
 ```bash
@@ -270,4 +283,4 @@ ropr <target>
 
 Missing optional baseline tools are recorded in metadata and skipped by default. This behavior keeps daily development validation stable while preserving environment evidence. Set `REQUIRE_BASELINES=1` when the test environment is expected to provide at least one baseline tool.
 
-Patch 019 rows preserve raw timing and memory evidence, but they do not establish superiority or coverage equivalence. Research-grade comparisons still require fixed baseline versions, normalized gadget definitions, repeated trials, corpus manifests, environment metadata, raw rows, and summary statistics.
+Patch 019 and Patch 020 rows preserve raw timing and memory evidence, but they do not establish superiority or coverage equivalence. Research-grade comparisons still require fixed baseline versions, normalized gadget definitions, repeated trials, corpus manifests, environment metadata, raw rows, and summary statistics.

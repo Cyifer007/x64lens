@@ -104,3 +104,8 @@ tests: ok
 ```
 
 Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.
+
+
+## Development environment checks
+
+Development environment checks are part of the contract. Build, test, JSON validation, system-binary smoke tests, Docker checks, and benchmark smoke targets should fail with actionable messages when required tools are missing. Optional baseline tools should be reported clearly and should not block normal development unless explicitly required.

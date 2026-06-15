@@ -107,3 +107,8 @@ Patch 018 adds a validation-hardening layer inside Sprint 5. This does not chang
 ## Sprint 5 Patch 019 checkpoint
 
 Patch 019 advances Sprint 5 from scanner-only smoke measurement to baseline comparison smoke measurement. This does not complete the research benchmark sprint. It creates the reproducible capture path needed before Sprint 10 publication-grade repeated comparisons.
+
+
+## Sprint 5 Patch 020 update
+
+Patch 020 adds development-environment dependency checks, Ubuntu onboarding instructions, optional baseline-tool installation guidance, and broader default system-binary coverage for the baseline smoke harness.

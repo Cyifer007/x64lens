@@ -87,3 +87,8 @@ tests: ok
 ```
 
 Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.
+
+
+## Repository-facing voice
+
+Documentation must be repository-facing, written from the project maintainer perspective for future users, contributors, reviewers, and operators. Public files must not include private coordination details, chat-session context, personal workflow narration, private file names, hostnames, usernames, or dialogue-style references.

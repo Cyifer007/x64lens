@@ -504,3 +504,39 @@ REQUIRE_BASELINES=1 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 ```
 
 This command should fail clearly when no optional baseline tool is installed.
+
+## Sprint 5 Patch 020 development-environment validation
+
+Patch 020 adds explicit dependency and onboarding checks so a new development environment can fail early with actionable installation guidance.
+
+New checks:
+
+```bash
+make build-tools-check
+make sample-tools-check
+make dev-tools-check
+make baseline-tools-check
+make doctor
+```
+
+Expected behavior:
+
+- `build-tools-check` fails if NASM or GNU ld are missing.
+- `sample-tools-check` fails if the toy corpus cannot be built.
+- `dev-tools-check` fails if the standard local validation toolchain is incomplete.
+- `baseline-tools-check` reports optional ROPgadget, Ropper, and ropr availability without failing by default.
+- `REQUIRE_BASELINES=1 make baseline-tools-check` fails when optional baseline tools are required but unavailable.
+- `doctor` prints a full environment report suitable for setup troubleshooting.
+
+Patch 020 also broadens `bench-baselines-smoke` default targets to include the controlled gadget fixture plus common system binaries:
+
+```text
+tests/bin/gadgets
+/bin/ls
+/bin/cat
+/bin/sh
+/usr/bin/env
+/usr/bin/printf
+```
+
+The baseline smoke harness continues to validate measurement plumbing, not research claims. Optional baselines are skipped unless explicitly required.

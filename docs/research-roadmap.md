@@ -119,3 +119,8 @@ This keeps Sprint 5 aligned with the research contract: reproducible claims requ
 ## Patch 019 benchmark scaffolding note
 
 Patch 019 adds comparison scaffolding before research-grade benchmark execution. The goal is to prove that tool versions, exact commands, target hashes, run counts, timing, memory, and x64lens JSON-derived counts can be captured consistently. These rows remain development evidence until baseline tool definitions and corpus selection are finalized.
+
+
+## Sprint 5 Patch 020 update
+
+Patch 020 adds development-environment dependency checks, Ubuntu onboarding instructions, optional baseline-tool installation guidance, and broader default system-binary coverage for the baseline smoke harness.

@@ -8,6 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Added Sprint 5 Patch 020 developer onboarding and dependency validation.
+- Added `tools/check-dev-tools.sh` plus Make targets for build, sample, development, baseline, and full toolchain checks.
+- Added explicit Ubuntu dependency bootstrap and optional baseline-tool installation guidance.
+- Added `docs/onboarding.md` with a complete first-run checklist and Make target tour.
+- Broadened baseline smoke defaults to include `/bin/sh`, `/usr/bin/env`, and `/usr/bin/printf` in addition to the controlled fixture, `/bin/ls`, and `/bin/cat`.
 - Added Sprint 5 Patch 019 baseline comparison smoke harness.
 - Added `benchmarks/scripts/bench-baselines-smoke.sh` and `make bench-baselines-smoke` for x64lens plus optional ROPgadget, Ropper, and ropr timing rows.
 - Added a standard-library benchmark summarizer through `benchmarks/scripts/summarize.py` and `make bench-summary`.
@@ -73,6 +78,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- `make test`, JSON smoke, system smoke, and benchmark targets now perform clearer prerequisite checks before running.
+- README startup instructions now distinguish required build tools, required validation tools, and optional baseline tools.
 - Public documentation is now separated from local-only private project context.
 - Local-only planning/context files are expected under `.local/project-context/` and excluded by `.gitignore`.
 - Makefile scaffold checks now validate only public repository structure.

@@ -16,6 +16,9 @@
 #   OUT_DIR=...             Output directory for result files.
 #   STAMP=...               Override timestamp for reproducible file names.
 #   REQUIRE_BASELINES=0     If 1, fail when no optional baseline tool is found.
+#
+# Default targets:
+#   tests/bin/gadgets, /bin/ls, /bin/cat, /bin/sh, /usr/bin/env, /usr/bin/printf
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -52,8 +55,9 @@ if [[ $# -gt 0 ]]; then
   TARGETS=("$@")
 else
   [[ -f "$ROOT/tests/bin/gadgets" ]] && TARGETS+=("$ROOT/tests/bin/gadgets")
-  [[ -x /bin/ls ]] && TARGETS+=("/bin/ls")
-  [[ -x /bin/cat ]] && TARGETS+=("/bin/cat")
+  for candidate in /bin/ls /bin/cat /bin/sh /usr/bin/env /usr/bin/printf; do
+    [[ -x "$candidate" ]] && TARGETS+=("$candidate")
+  done
 fi
 
 if [[ ${#TARGETS[@]} -eq 0 ]]; then

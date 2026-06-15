@@ -1,0 +1,169 @@
+# Onboarding and Local Development Checklist
+
+This document provides a reproducible path for setting up a new Ubuntu-based development environment, validating required tools, building x64lens, running the test suite, and exercising every public Make target.
+
+## Supported baseline environment
+
+The primary development target is Ubuntu 24.04 on x86_64. WSL2 Ubuntu 24.04, a native Ubuntu host, or an Ubuntu VM are all acceptable for development. Docker is used as a reproducibility layer, not as the only supported development environment.
+
+## Install development dependencies on Ubuntu
+
+Install the baseline development packages:
+
+```bash
+sudo apt update
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+pipx ensurepath
+```
+
+The repository also provides an explicit helper target:
+
+```bash
+make install-dev-deps-ubuntu
+```
+
+This target uses `sudo apt` and should be run only on a development machine where installing packages is expected.
+
+## Validate the local toolchain
+
+Run the environment diagnostics before building:
+
+```bash
+make build-tools-check
+make sample-tools-check
+make dev-tools-check
+make doctor
+```
+
+The build-only check verifies the tools needed to assemble and link x64lens. The development check verifies the broader local validation toolchain used by tests, JSON validation, system-binary smoke checks, and benchmark smoke runs.
+
+## Optional baseline tools
+
+The baseline comparison harness can optionally compare x64lens against ROPgadget, Ropper, and ropr. These tools are not required to build or test x64lens.
+
+Install them for user-local benchmarking:
+
+```bash
+make install-baseline-tools-user
+```
+
+Manual equivalent:
+
+```bash
+pipx install ROPGadget
+pipx install ropper
+cargo install ropr
+export PATH="$HOME/.cargo/bin:$PATH"
+```
+
+Validate optional baseline availability:
+
+```bash
+make baseline-tools-check
+REQUIRE_BASELINES=1 make baseline-tools-check
+```
+
+The first command reports optional tool status and succeeds even when the tools are missing. The second command fails when none of the optional baseline tools are available.
+
+## First build and validation sequence
+
+A new contributor should run the following sequence from the repository root:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make dev-tools-check
+make clean
+make
+make samples
+make test
+make validate-gadget-fixture
+make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
+```
+
+If Docker is available:
+
+```bash
+make docker-available-check
+make docker-build
+make docker-test
+```
+
+Run smoke benchmarks after the correctness path passes:
+
+```bash
+RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+make bench-summary
+```
+
+## Make target tour
+
+The table below lists the public Make targets. A new development environment should exercise the checks first, then the build/test targets, then Docker and benchmark targets as needed.
+
+| Target | Purpose |
+|---|---|
+| `make` or `make all` | Build `build/x64lens`. |
+| `make check-tools` | Compatibility alias for build-only dependency checking. |
+| `make build-tools-check` | Verify NASM and GNU ld are available. |
+| `make sample-tools-check` | Verify sample-corpus build tools are available. |
+| `make dev-tools-check` | Verify the normal local validation toolchain. |
+| `make baseline-tools-check` | Report optional baseline tool availability. |
+| `make full-tools-check` | Require development tools and optional baseline tools. |
+| `make doctor` | Print a full local environment report. |
+| `make install-dev-deps-ubuntu` | Install Ubuntu development packages through `apt`. |
+| `make install-baseline-tools-user` | Install optional baseline tools through `pipx` and `cargo`. |
+| `make samples` | Build controlled toy binaries under `tests/bin/`. |
+| `make test` | Run the core regression suite. |
+| `make validate-gadget-fixture` | Validate controlled gadget fixture output. |
+| `make scanner-smoke` | Compatibility alias for fixture validation. |
+| `make pattern-smoke` | Compatibility alias for fixture validation after pattern matching. |
+| `make arena-smoke` | Validate arena-backed candidate storage invariants. |
+| `make semantic-smoke` | Validate semantic and scoring facts for the controlled fixture. |
+| `make json-smoke` | Validate JSON output for the controlled fixture. |
+| `make system-smoke` | Validate installed system ELF64 binaries. |
+| `make validation-smoke` | Run the local pre-commit validation bundle. |
+| `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
+| `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
+| `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
+| `make bench-summary` | Summarize generated benchmark TSV files. |
+| `make script-perms-check` | Verify executable bits on shell/Python helper scripts. |
+| `make scaffold-check` | Verify required repository structure. |
+| `make diagrams-check` | Verify diagram source files exist. |
+| `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
+| `make docker-available-check` | Verify Docker is installed and reachable. |
+| `make docker-build` | Build the development Docker image. |
+| `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |
+| `make docker-test` | Run clean build and tests in Docker. |
+| `make ownership-check` | Detect root-owned generated artifacts. |
+| `make fix-perms` | Repair generated artifact ownership. |
+| `make normalize-perms` | Normalize local source/script file permissions after ZIP extraction. |
+| `make print-vars` | Print build variables. |
+| `make clean` | Remove generated build and test outputs. |
+
+## Expected validation posture
+
+A local implementation patch should generally pass:
+
+```bash
+make validation-smoke
+make docker-test
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
+```
+
+A documentation-only patch may use the lighter path:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+```
+
+Benchmark smoke results are development evidence only. Publication claims require the full benchmark methodology, controlled corpus documentation, repeated runs, baseline tool versions, exact commands, host metadata, raw result preservation, and explicit limitations.

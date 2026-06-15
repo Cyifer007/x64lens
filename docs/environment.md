@@ -25,7 +25,7 @@ Then inside Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 time git curl ca-certificates
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
 git clone <repo-url>
 cd x64lens
 make scaffold-check
@@ -63,6 +63,38 @@ If a VM is needed later, document how to build it rather than storing the VM its
 ## Benchmark caveat
 
 WSL2 and Docker are excellent for development, but final publication benchmarks should be run on one stable, documented environment. Prefer native Ubuntu 24.04 or a clean VM where CPU model, RAM, storage, OS version, kernel version, and tool versions are recorded.
+
+
+## Ubuntu dependency bootstrap
+
+Install the standard development toolchain on Ubuntu 24.04 with:
+
+```bash
+sudo apt update
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+pipx ensurepath
+```
+
+The repository provides explicit dependency-checking targets:
+
+```bash
+make build-tools-check
+make sample-tools-check
+make dev-tools-check
+make baseline-tools-check
+make doctor
+```
+
+Optional baseline tools are installed separately because they are not required to build or test x64lens:
+
+```bash
+pipx install ROPGadget
+pipx install ropper
+cargo install ropr
+export PATH="$HOME/.cargo/bin:$PATH"
+```
+
+Use `make install-dev-deps-ubuntu` and `make install-baseline-tools-user` only on development hosts where installing packages and user-local tools is expected.
 
 ## Sprint 1 environment acceptance criteria
 

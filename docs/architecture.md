@@ -439,3 +439,24 @@ scanner -> patterns -> classifier -> scoring -> text/json reporters
 ```
 
 The new validators consume public outputs and generated patch artifacts. They do not become part of the runtime analyzer and do not alter analysis decisions.
+
+## Development-environment guardrail layer
+
+The repository treats development-environment validation as part of the architecture around the analyzer. The assembly engine remains independent of these helper scripts, but the project requires predictable setup and validation before benchmark evidence can be trusted.
+
+Patch 020 adds a diagnostic layer around the build and validation workflow:
+
+```text
+Makefile -> tools/check-dev-tools.sh -> build/test/benchmark targets
+```
+
+This layer separates:
+
+- build-only requirements,
+- toy-corpus sample requirements,
+- normal development validation requirements,
+- optional baseline comparison tools,
+- Docker availability,
+- patch-bundle hygiene.
+
+This keeps missing tools from being misdiagnosed as analyzer defects and supports reproducible onboarding for future contributors and reviewers.

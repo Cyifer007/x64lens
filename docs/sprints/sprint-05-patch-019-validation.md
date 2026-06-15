@@ -119,3 +119,25 @@ The TSV rows preserve development evidence. They are not publication claims unti
 ## Non-goals
 
 Patch 019 does not normalize baseline gadget counts, claim performance superiority, add a full decoder, add canary detection, add full RELRO detection, or implement `analyze` orchestration.
+
+## Validation result
+
+Patch 019 validated successfully in a prepared WSL2 Ubuntu development environment. The baseline smoke harness produced x64lens rows and recorded optional baseline tools as unavailable when ROPgadget, Ropper, and ropr were not installed.
+
+Observed successful targets included:
+
+```text
+make test
+make validate-gadget-fixture
+make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
+make docker-available-check
+make docker-test
+BUNDLE=<patch zip> make patch-bundle-hygiene
+```
+
+Patch 020 follows from this result by improving onboarding, dependency diagnostics, optional baseline installation guidance, and default baseline target coverage.

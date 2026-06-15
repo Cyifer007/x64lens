@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 5 Patch 019 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 adds baseline comparison smoke benchmarking against optional external tools.
+> Status: Sprint 5 Patch 020 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 added baseline comparison smoke benchmarking. Patch 020 adds developer onboarding, dependency checks, optional baseline installation guidance, and broader default baseline smoke targets.
 >
 > Current version: `0.1.0-dev`
 >
@@ -121,15 +121,67 @@ Planned early global flags:
 
 See [`docs/cli-contract.md`](docs/cli-contract.md).
 
+## New environment quick start
+
+### Ubuntu development dependencies
+
+The primary development target is Ubuntu 24.04 on x86_64. Install the baseline development packages with:
+
+```bash
+sudo apt update
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+pipx ensurepath
+```
+
+The repository also provides explicit helper targets:
+
+```bash
+make install-dev-deps-ubuntu
+make dev-tools-check
+make doctor
+```
+
+### Optional baseline tools
+
+ROPgadget, Ropper, and ropr are optional comparison baselines. They are not required to build or test x64lens. Install them for benchmarking with:
+
+```bash
+make install-baseline-tools-user
+```
+
+Manual equivalent:
+
+```bash
+pipx install ROPGadget
+pipx install ropper
+cargo install ropr
+export PATH="$HOME/.cargo/bin:$PATH"
+```
+
+Validate optional baseline availability with:
+
+```bash
+make baseline-tools-check
+REQUIRE_BASELINES=1 make baseline-tools-check
+```
+
+See [`docs/onboarding.md`](docs/onboarding.md) for the complete first-run checklist and Make target tour.
+
 ## Build
 
-### Requirements
+### Build requirements
 
 - Linux x86_64.
-- `make`.
 - `nasm`.
 - GNU `ld` from binutils.
-- `gcc`, only for test corpus compilation.
+- `make`.
+
+### Test and validation requirements
+
+- `gcc` for controlled toy corpus compilation.
+- `python3` for JSON validation and malformed fixture generation.
+- GNU `time` at `/usr/bin/time` for benchmark measurements.
+- `readelf` and `objdump` from binutils for manual comparison and fixture validation.
 
 ### Build command
 
@@ -194,6 +246,40 @@ Missing optional baseline tools are recorded in metadata and skipped by default.
 The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, scored candidate counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
 
 The smoke benchmark is development evidence only. Do not use it as a publication claim without the full benchmark methodology, baseline tools, corpus manifest, repeated trials, and environment metadata.
+
+## Make target tour
+
+A new development environment should walk through the targets in this order:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make dev-tools-check
+make clean
+make
+make samples
+make test
+make validate-gadget-fixture
+make semantic-smoke
+make json-smoke
+make system-smoke
+make validation-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+make bench-summary
+```
+
+Docker and patch-bundle checks are environment-specific but should be run before publishing implementation patches:
+
+```bash
+make docker-available-check
+make docker-build
+make docker-test
+BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
+```
+
+Every public Make target is documented in [`docs/onboarding.md`](docs/onboarding.md).
 
 ## Docker and devcontainer workflow
 

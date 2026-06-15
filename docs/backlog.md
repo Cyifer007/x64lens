@@ -1,5 +1,12 @@
 # Backlog
 
+## Completed in Sprint 5 Patch 020
+
+- Added developer dependency diagnostics and onboarding documentation.
+- Added explicit Ubuntu bootstrap targets and optional baseline-tool installation guidance.
+- Expanded baseline smoke defaults to include controlled fixture plus five common system binaries.
+
+
 ## Sprint 0 / Environment and context
 
 - [x] Stand up WSL2 Ubuntu 24.04 or equivalent Linux development environment.

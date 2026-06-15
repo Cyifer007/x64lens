@@ -156,3 +156,25 @@ These values include a small uncertainty penalty because the current implementat
 - [ ] `python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv` emits a summary table.
 - [ ] `REQUIRE_BASELINES=1 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke` fails clearly if no optional baseline tools are available.
 - [ ] No benchmark superiority claim is made from smoke rows alone.
+
+## Patch 020 onboarding and dependency-check scope
+
+Patch 020 strengthens project setup and benchmark readiness without changing analyzer semantics:
+
+- [ ] Add explicit build, sample, development, baseline, full-toolchain, and doctor checks.
+- [ ] Add Ubuntu dependency bootstrap instructions and helper targets.
+- [ ] Add optional baseline installation guidance for ROPGadget, Ropper, and ropr.
+- [ ] Add `docs/onboarding.md` with a complete first-run checklist and public Make target tour.
+- [ ] Expand default baseline smoke targets to include the controlled fixture plus `/bin/ls`, `/bin/cat`, `/bin/sh`, `/usr/bin/env`, and `/usr/bin/printf` when present.
+- [ ] Keep optional baseline tools non-blocking unless `REQUIRE_BASELINES=1` is set.
+
+## Additional Patch 020 acceptance criteria
+
+- [ ] `make build-tools-check` succeeds on a prepared development system.
+- [ ] `make sample-tools-check` succeeds on a prepared development system.
+- [ ] `make dev-tools-check` succeeds on a prepared development system.
+- [ ] `make baseline-tools-check` succeeds whether optional baseline tools are present or absent.
+- [ ] `make doctor` emits a readable environment report.
+- [ ] `RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke` includes rows for the controlled fixture plus available default system targets.
+- [ ] `make validation-smoke` continues to pass.
+- [ ] Public docs avoid private hostnames, local usernames, private paths, personal coordination context, or dialogue-style wording.
