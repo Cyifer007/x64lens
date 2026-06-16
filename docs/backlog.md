@@ -165,3 +165,11 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [ ] Add public contributor guidance for pattern and semantic-class extension.
 - [ ] Add optional C or Rust reference scanner only if benchmark ablation is needed.
 - [ ] Keep ARM64 and non-ELF formats as future work unless the research scope changes.
+
+
+## Sprint 5 closeout follow-up
+
+- [ ] In Sprint 6, decide whether `analyze` should be introduced as an integrated report or deferred until mitigation hardening is stronger.
+- [ ] Preserve optional baseline installation status in benchmark metadata for every future comparison run.
+- [ ] Keep ropr optional until the project decides whether rustup-managed Rust should be part of the documented benchmark host.
+- [ ] Add full RELRO, canary, and dynamic-table hardening to the Sprint 7 mitigation backlog.

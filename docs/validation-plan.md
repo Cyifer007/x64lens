@@ -540,3 +540,12 @@ tests/bin/gadgets
 ```
 
 The baseline smoke harness continues to validate measurement plumbing, not research claims. Optional baselines are skipped unless explicitly required.
+
+## Sprint 5 closeout environment validation
+
+Patch 021 adds two environment hardening requirements:
+
+1. Docker validation must use a current development image. `make docker-test` therefore depends on `make docker-build` so Dockerfile dependency updates are not tested against stale cached images.
+2. Optional baseline enforcement must happen only in baseline-aware checks. `REQUIRE_BASELINES=1` should not make `dev-tools-check` fail because ROPgadget, Ropper, and ropr are outside the required development toolchain.
+
+ropr remains optional. If Cargo is too old, `make install-ropr-user` must fail with a clear rustup remediation path rather than exposing a long dependency-resolution failure from Cargo.

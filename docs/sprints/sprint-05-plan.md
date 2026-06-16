@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress. Patch 017 implemented and validated the first scoring and JSON slice. Patch 018 validated the Sprint 5 validation-hardening slice. Patch 019 is the baseline comparison harness candidate.
+Complete after Patch 021. Patch 017 implemented scoring and JSON output. Patch 018 hardened validation. Patch 019 added baseline comparison smoke benchmarking. Patch 020 added onboarding and dependency checks. Patch 021 closed the sprint by hardening Docker dependency parity, ropr installation guidance, and optional-baseline enforcement behavior.
 
 ## Sprint goal
 

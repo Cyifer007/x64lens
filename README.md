@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
 
-> Status: Sprint 5 Patch 020 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 added baseline comparison smoke benchmarking. Patch 020 adds developer onboarding, dependency checks, optional baseline installation guidance, and broader default baseline smoke targets.
+> Status: Sprint 5 Patch 021 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 added baseline comparison smoke benchmarking. Patch 020 added developer onboarding, dependency checks, optional baseline installation guidance, and broader default baseline smoke targets. Patch 021 closes Sprint 5 by hardening Docker dependency parity, ropr installation guidance, and optional-baseline enforcement behavior.
 >
 > Current version: `0.1.0-dev`
 >
@@ -129,7 +129,7 @@ The primary development target is Ubuntu 24.04 on x86_64. Install the baseline d
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -141,9 +141,11 @@ make dev-tools-check
 make doctor
 ```
 
+`make install-dev-deps-ubuntu` installs the required development dependencies only. Optional comparison tools are installed separately so the base toolchain remains small and predictable.
+
 ### Optional baseline tools
 
-ROPgadget, Ropper, and ropr are optional comparison baselines. They are not required to build or test x64lens. Install them for benchmarking with:
+ROPgadget, Ropper, and ropr are optional comparison baselines. They are not required to build or test x64lens. ROPgadget and Ropper are installed through `pipx`; ropr is installed through a current Rust/Cargo toolchain. Install available baselines with:
 
 ```bash
 make install-baseline-tools-user
@@ -154,8 +156,12 @@ Manual equivalent:
 ```bash
 pipx install ROPGadget
 pipx install ropper
-cargo install ropr
-export PATH="$HOME/.cargo/bin:$PATH"
+# ropr may require a newer Rust/Cargo than Ubuntu 24.04 apt provides.
+# Prefer rustup stable for the ropr baseline.
+make install-rustup-user
+. "$HOME/.cargo/env"
+make install-ropr-user
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 ```
 
 Validate optional baseline availability with:
@@ -164,6 +170,8 @@ Validate optional baseline availability with:
 make baseline-tools-check
 REQUIRE_BASELINES=1 make baseline-tools-check
 ```
+
+Ubuntu 24.04 apt-provided Cargo may be too old for the current ropr crate. Use `make install-rustup-user`, reload `~/.cargo/env`, then run `make install-ropr-user` when ropr is required.
 
 See [`docs/onboarding.md`](docs/onboarding.md) for the complete first-run checklist and Make target tour.
 
@@ -279,7 +287,7 @@ make docker-test
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
-Every public Make target is documented in [`docs/onboarding.md`](docs/onboarding.md).
+`make docker-test` depends on `make docker-build`, so Dockerfile dependency updates are validated against a current image. Every public Make target is documented in [`docs/onboarding.md`](docs/onboarding.md).
 
 ## Docker and devcontainer workflow
 

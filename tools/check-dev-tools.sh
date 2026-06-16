@@ -18,13 +18,27 @@ set -euo pipefail
 
 MODE="${1:---dev}"
 REQUIRE_BASELINES="${REQUIRE_BASELINES:-0}"
+ROPR_MIN_CARGO="${ROPR_MIN_CARGO:-1.85.0}"
 
 missing_required=0
 missing_optional=0
 baseline_found=0
+baseline_mode=0
 
 have_command() {
   command -v "$1" >/dev/null 2>&1
+}
+
+version_ge() {
+  # Return success when version $1 is greater than or equal to version $2.
+  # sort -V is provided by GNU coreutils on supported Ubuntu systems.
+  local actual="$1"
+  local required="$2"
+  [[ "$(printf '%s\n%s\n' "$required" "$actual" | sort -V | head -n 1)" == "$required" ]]
+}
+
+cargo_version() {
+  cargo --version 2>/dev/null | awk '{print $2}'
 }
 
 check_cmd() {
@@ -72,22 +86,51 @@ check_baseline_tool() {
   fi
 }
 
+check_cargo_for_ropr() {
+  if ! have_command cargo; then
+    printf 'optional-missing: %-5s %s\n' "cargo" "Rust installer/build tool for ropr" >&2
+    missing_optional=1
+    return 0
+  fi
+
+  local version
+  version="$(cargo_version || true)"
+  if [[ -z "$version" ]]; then
+    printf 'optional-warning: %-5s %s\n' "cargo" "cargo version could not be parsed for ropr readiness" >&2
+    missing_optional=1
+    return 0
+  fi
+
+  if version_ge "$version" "$ROPR_MIN_CARGO"; then
+    printf 'ok: %-18s %s\n' "cargo $version" "Rust installer/build tool is new enough for ropr"
+  else
+    printf 'optional-warning: %-5s %s\n' "cargo $version" "may be too old for ropr; use rustup stable for ropr" >&2
+    missing_optional=1
+  fi
+}
+
 print_install_hint() {
-  cat >&2 <<'EOF'
+  cat >&2 <<'EOF_HINT'
 
 Ubuntu 24.04 development dependency install:
   sudo apt update
-  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 
-Optional baseline gadget tools:
+Optional Python baseline gadget tools:
   pipx ensurepath
+  export PATH="$HOME/.local/bin:$PATH"
   pipx install ROPGadget
   pipx install ropper
-  cargo install ropr
 
-After installing cargo tools, make sure this is in PATH:
-  export PATH="$HOME/.cargo/bin:$PATH"
-EOF
+Optional ropr baseline:
+  Ubuntu 24.04 apt cargo may be too old for ropr. Prefer rustup stable:
+  make install-rustup-user
+  . "$HOME/.cargo/env"
+  make install-ropr-user
+
+After installing user-local tools, make sure these paths are visible:
+  export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+EOF_HINT
 }
 
 check_build() {
@@ -114,11 +157,12 @@ check_dev() {
 }
 
 check_baselines() {
+  baseline_mode=1
   check_baseline_tool ROPgadget "optional ROPgadget baseline comparator"
   check_baseline_tool ropper "optional Ropper baseline comparator"
   check_baseline_tool ropr "optional ropr baseline comparator"
   check_optional_cmd pipx "recommended installer for Python CLI baselines"
-  check_optional_cmd cargo "Rust installer/build tool for ropr"
+  check_cargo_for_ropr
 }
 
 case "$MODE" in
@@ -164,7 +208,7 @@ case "$MODE" in
     ;;
 esac
 
-if [[ "$REQUIRE_BASELINES" == "1" && "$baseline_found" -eq 0 ]]; then
+if [[ "$REQUIRE_BASELINES" == "1" && "$baseline_mode" -eq 1 && "$baseline_found" -eq 0 ]]; then
   echo "error: REQUIRE_BASELINES=1 but none of ROPgadget, ropper, or ropr were found" >&2
   print_install_hint
   exit 127

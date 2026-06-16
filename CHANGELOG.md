@@ -4,6 +4,24 @@ All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.
 
+## [0.1.0-dev] - Sprint 05 Patch 021
+
+### Added
+- Added `tools/install-ropr-user.sh` to provide a clearer ropr installation path when Cargo is too old.
+- Added `docs/sprints/sprint-05-patch-021-validation.md` and `docs/sprints/sprint-05-retro.md`.
+
+### Changed
+- Added `zip` and `unzip` to the Docker development image so Docker validation matches the local development dependency contract.
+- Made `docker-test` rebuild the development image before running container validation.
+- Scoped `REQUIRE_BASELINES=1` enforcement to baseline-aware checks instead of normal development checks.
+- Updated onboarding and environment documentation to separate required development dependencies from optional Rust/ropr baseline setup.
+
+### Fixed
+- Fixed Docker validation failure caused by missing archive tools inside the container image.
+- Fixed false `REQUIRE_BASELINES=1` failures when the variable propagated into `dev-tools-check`.
+- Replaced the brittle `cargo install ropr` onboarding path with a rustup-aware helper and explicit remediation guidance.
+
+
 ## Unreleased
 
 ### Added

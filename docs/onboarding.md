@@ -12,7 +12,7 @@ Install the baseline development packages:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -52,8 +52,12 @@ Manual equivalent:
 ```bash
 pipx install ROPGadget
 pipx install ropper
-cargo install ropr
-export PATH="$HOME/.cargo/bin:$PATH"
+# ropr may require a newer Rust/Cargo than Ubuntu 24.04 apt provides.
+# Prefer rustup stable for the ropr baseline.
+make install-rustup-user
+. "$HOME/.cargo/env"
+make install-ropr-user
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 ```
 
 Validate optional baseline availability:
@@ -63,7 +67,7 @@ make baseline-tools-check
 REQUIRE_BASELINES=1 make baseline-tools-check
 ```
 
-The first command reports optional tool status and succeeds even when the tools are missing. The second command fails when none of the optional baseline tools are available.
+The first command reports optional tool status and succeeds even when the tools are missing. The second command fails when none of the optional baseline tools are available. `REQUIRE_BASELINES=1` is enforced only by baseline-aware checks and benchmark targets; normal development checks do not fail because optional baseline tools are absent.
 
 ## First build and validation sequence
 
@@ -94,6 +98,8 @@ make docker-build
 make docker-test
 ```
 
+`make docker-test` rebuilds the development image before running tests, so Dockerfile dependency changes are not accidentally validated against a stale local image. Docker layer caching keeps repeat runs fast once the image is current.
+
 Run smoke benchmarks after the correctness path passes:
 
 ```bash
@@ -117,7 +123,9 @@ The table below lists the public Make targets. A new development environment sho
 | `make full-tools-check` | Require development tools and optional baseline tools. |
 | `make doctor` | Print a full local environment report. |
 | `make install-dev-deps-ubuntu` | Install Ubuntu development packages through `apt`. |
-| `make install-baseline-tools-user` | Install optional baseline tools through `pipx` and `cargo`. |
+| `make install-baseline-tools-user` | Install optional baseline tools through `pipx`; attempts ropr when Cargo is ready. |
+| `make install-rustup-user` | Install or update the user-local Rust stable toolchain through rustup. |
+| `make install-ropr-user` | Install the optional ropr baseline when Cargo is new enough. |
 | `make samples` | Build controlled toy binaries under `tests/bin/`. |
 | `make test` | Run the core regression suite. |
 | `make validate-gadget-fixture` | Validate controlled gadget fixture output. |
@@ -139,7 +147,7 @@ The table below lists the public Make targets. A new development environment sho
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
 | `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |
-| `make docker-test` | Run clean build and tests in Docker. |
+| `make docker-test` | Rebuild the development Docker image, then run clean build and tests in Docker. |
 | `make ownership-check` | Detect root-owned generated artifacts. |
 | `make fix-perms` | Repair generated artifact ownership. |
 | `make normalize-perms` | Normalize local source/script file permissions after ZIP extraction. |

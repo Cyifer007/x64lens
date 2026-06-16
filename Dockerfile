@@ -20,10 +20,10 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install only the baseline tools needed for Sprint 1 through Sprint 3.
-# Additional optional comparison tools such as ROPgadget, Ropper, ropr,
-# checksec, radare2, or Ghidra helpers should be added intentionally later
-# when benchmark methodology requires them.
+# Install the baseline tools needed for local build/test parity.
+# Optional comparison tools such as ROPgadget, Ropper, and ropr remain
+# intentionally outside the image because publication baseline environments
+# should record tool installation and versions explicitly.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        build-essential \
@@ -37,6 +37,8 @@ RUN apt-get update \
        nasm \
        python3 \
        time \
+       unzip \
+       zip \
     && rm -rf /var/lib/apt/lists/*
 
 # Ubuntu 24.04 images commonly provide an `ubuntu` user. This fallback keeps

@@ -112,3 +112,8 @@ Patch 019 advances Sprint 5 from scanner-only smoke measurement to baseline comp
 ## Sprint 5 Patch 020 update
 
 Patch 020 adds development-environment dependency checks, Ubuntu onboarding instructions, optional baseline-tool installation guidance, and broader default system-binary coverage for the baseline smoke harness.
+
+
+## Sprint 5 closeout
+
+Sprint 5 completed the first scoring and JSON layer, validation hardening, baseline smoke benchmarking, onboarding, dependency checks, Docker parity hardening, and optional baseline installation guidance. Sprint 6 should now act as a checkpoint and integration sprint rather than a large refactor.

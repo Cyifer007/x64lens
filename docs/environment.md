@@ -25,7 +25,7 @@ Then inside Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 git clone <repo-url>
 cd x64lens
 make scaffold-check
@@ -71,7 +71,7 @@ Install the standard development toolchain on Ubuntu 24.04 with:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -85,16 +85,20 @@ make baseline-tools-check
 make doctor
 ```
 
-Optional baseline tools are installed separately because they are not required to build or test x64lens:
+Optional baseline tools are installed separately because they are not required to build or test x64lens. ROPgadget and Ropper are Python CLI tools installed through `pipx`; ropr is a Rust CLI tool and may require a newer Cargo than the Ubuntu 24.04 apt package provides:
 
 ```bash
 pipx install ROPGadget
 pipx install ropper
-cargo install ropr
-export PATH="$HOME/.cargo/bin:$PATH"
+# ropr may require a newer Rust/Cargo than Ubuntu 24.04 apt provides.
+# Prefer rustup stable for the ropr baseline.
+make install-rustup-user
+. "$HOME/.cargo/env"
+make install-ropr-user
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 ```
 
-Use `make install-dev-deps-ubuntu` and `make install-baseline-tools-user` only on development hosts where installing packages and user-local tools is expected.
+Use `make install-dev-deps-ubuntu` and `make install-baseline-tools-user` only on development hosts where installing packages and user-local tools is expected. Use `make install-rustup-user` followed by `make install-ropr-user` when ropr is required and apt-provided Cargo is too old.
 
 ## Sprint 1 environment acceptance criteria
 
@@ -142,6 +146,8 @@ Run Docker validation with:
 ```bash
 make docker-test
 ```
+
+`make docker-test` rebuilds the development image first. This prevents a dependency update in the Dockerfile from being tested against a stale local image.
 
 If root-owned generated files already exist, repair them once from WSL/Linux:
 

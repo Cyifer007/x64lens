@@ -124,3 +124,8 @@ Patch 019 adds comparison scaffolding before research-grade benchmark execution.
 ## Sprint 5 Patch 020 update
 
 Patch 020 adds development-environment dependency checks, Ubuntu onboarding instructions, optional baseline-tool installation guidance, and broader default system-binary coverage for the baseline smoke harness.
+
+
+## Sprint 5 research contribution
+
+Sprint 5 created the first machine-readable evidence path for RQ1 and RQ2 by adding schema-versioned JSON, explicit count boundaries, scoring fields, system-binary smoke validation, and baseline smoke TSV generation. These outputs remain development evidence until the full benchmark methodology is run with controlled corpus documentation, repeated runs, exact tool versions, and preserved raw results.

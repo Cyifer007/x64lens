@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -60,7 +60,7 @@ doctor:
 
 install-dev-deps-ubuntu:
 	sudo apt update
-	sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip cargo
+	sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 	python3 -m pipx ensurepath 2>/dev/null || pipx ensurepath 2>/dev/null || true
 
 install-baseline-tools-user:
@@ -68,8 +68,24 @@ install-baseline-tools-user:
 	command -v pipx >/dev/null 2>&1 || { echo "error: pipx is required. Run make install-dev-deps-ubuntu first."; exit 127; }
 	pipx install ROPGadget || pipx upgrade ROPGadget
 	pipx install ropper || pipx upgrade ropper
-	command -v cargo >/dev/null 2>&1 || { echo "error: cargo is required for ropr. Run make install-dev-deps-ubuntu first."; exit 127; }
-	cargo install ropr
+	@bash tools/install-ropr-user.sh || { \
+		echo "warning: ropr was not installed. ROPgadget and ropper are enough for baseline smoke comparisons."; \
+		echo "warning: run 'make install-rustup-user' and then 'make install-ropr-user' when ropr is needed."; \
+		true; \
+	}
+	@bash tools/check-dev-tools.sh --baselines
+
+install-rustup-user:
+	@echo "Installing or updating user-local Rust stable toolchain through rustup..."
+	@command -v curl >/dev/null 2>&1 || { echo "error: curl is required. Run make install-dev-deps-ubuntu first."; exit 127; }
+	@if ! command -v rustup >/dev/null 2>&1; then \
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal; \
+	fi
+	@. "$$HOME/.cargo/env" 2>/dev/null || true; rustup install stable; rustup default stable
+	@echo 'rustup stable toolchain installed. Restart the shell or run: . "$$HOME/.cargo/env"'
+
+install-ropr-user:
+	bash tools/install-ropr-user.sh
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -185,6 +201,7 @@ script-perms-check:
 	@test -x tools/system-binary-smoke.sh
 	@test -x tools/check-patch-bundle-hygiene.sh
 	@test -x tools/check-dev-tools.sh
+	@test -x tools/install-ropr-user.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -237,8 +254,10 @@ docker-shell: docker-available-check
 	docker run --rm -it --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash
 
 # Reproducible smoke test inside Docker without leaving root-owned files.
-# Run `make docker-build` first after Dockerfile or dependency changes.
-docker-test: docker-available-check
+# docker-test depends on docker-build so Dockerfile dependency changes are not
+# accidentally tested against a stale local image. Docker layer caching keeps
+# repeat runs fast once the image is current.
+docker-test: docker-build
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
 
 print-vars:
