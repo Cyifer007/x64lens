@@ -43,3 +43,18 @@ v0.1.0
 ## Changelog rules
 
 Every sprint retrospective should update `CHANGELOG.md` under `Unreleased`.
+
+## Local Sprint 6 checkpoint tag
+
+The first integrated checkpoint uses the annotated tag `v0.1.0-dev`. Create it only after Patch 023 is committed and the working tree is clean:
+
+```bash
+make checkpoint-tag-help
+git status --short
+git tag -a v0.1.0-dev   -m "x64lens v0.1.0-dev integrated checkpoint"
+git show --stat --decorate v0.1.0-dev
+git rev-parse v0.1.0-dev^{}
+git rev-parse HEAD
+```
+
+The final two commit identifiers should match. The tag remains local until `git push origin v0.1.0-dev` is run explicitly.

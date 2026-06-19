@@ -86,3 +86,7 @@ BUNDLE=/path/to/022_x64lens_sprint6_analyze_checkpoint_patch.zip make patch-bund
 ## Non-goals
 
 Patch 022 does not add a full decoder, full RELRO/canary hardening, SARIF output, bad-byte scoring, exploit-chain generation, or a new JSON schema major version.
+
+## Patch 023 follow-on
+
+Patch 022 established functional integrated output. Patch 023 preserves the same analysis facts and JSON shape while collapsing repeated text banners through shared report-section wrappers.

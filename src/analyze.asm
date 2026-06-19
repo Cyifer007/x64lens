@@ -36,8 +36,8 @@ extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_scoring_apply
 extern x64lens_report_text_elf64_info
-extern x64lens_report_text_mitigations
-extern x64lens_report_text_gadgets
+extern x64lens_report_text_mitigations_body
+extern x64lens_report_text_gadgets_body
 extern x64lens_report_json_gadgets
 extern x64lens_error_print_status
 extern x64lens_arena_init
@@ -165,9 +165,9 @@ x64lens_command_analyze_with_format:
     je      .emit_json
 
 .emit_text:
-    ; The Sprint 6 checkpoint text report reuses the established section
-    ; renderers. Later polish can collapse repeated headers without changing
-    ; internal analysis records.
+    ; Emit one complete top-level header through the information reporter,
+    ; then reuse body-only mitigation and gadget sections. The integrated path
+    ; does not duplicate formatting or analysis logic.
     mov     rdi, r12
     mov     rsi, [ana_mapped_file + FILEMAP_ADDR]
     mov     rdx, [ana_mapped_file + FILEMAP_SIZE]
@@ -178,13 +178,13 @@ x64lens_command_analyze_with_format:
     mov     rdx, [ana_mapped_file + FILEMAP_SIZE]
     lea     rcx, [ana_phdr_summary]
     lea     r8, [ana_regions]
-    call    x64lens_report_text_mitigations
+    call    x64lens_report_text_mitigations_body
 
     mov     rdi, r12
     lea     rsi, [ana_gadget_summary]
     mov     rdx, r15
     mov     rcx, [ana_mapped_file + FILEMAP_ADDR]
-    call    x64lens_report_text_gadgets
+    call    x64lens_report_text_gadgets_body
     jmp     .emit_done
 
 .emit_json:

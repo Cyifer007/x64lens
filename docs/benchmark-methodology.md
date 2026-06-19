@@ -295,3 +295,9 @@ ROPgadget and Ropper are Python CLI baselines and are normally installed through
 Sprint 6 Patch 022 adds `analyze` as an integrated checkpoint command. The baseline gadget-discovery smoke harness should continue using `gadgets --format json` for apples-to-apples comparison against ROPgadget, Ropper, and ropr because those tools primarily enumerate gadgets.
 
 `analyze` should be benchmarked separately when the question is end-to-end defensive triage cost. That benchmark should make clear that x64lens is producing target metadata, mitigation facts, primitive coverage, scored candidate facts, and limitations in one command, while the baseline tools may be doing a narrower or different task.
+
+## Sprint 6 smoke interpretation
+
+Current smoke artifacts validate harness operation and provide early development evidence. They are not final comparative results. Use `make bench-summary-latest` for one newest run and review `docs/benchmark-smoke-interpretation.md` before interpreting timing or RSS differences.
+
+The final campaign must not aggregate historical artifacts from different hosts or environments as a single experiment unless the methodology explicitly models those environments as separate strata.

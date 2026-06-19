@@ -17,3 +17,5 @@ These documents exist to make reviewer-facing tradeoffs explicit before they bec
 ## Design rule
 
 A design note may introduce a future seam, but it must not imply that a future feature already exists. The public repository must remain clear about the difference between implemented behavior, planned behavior, and research hypotheses.
+
+- [`../adr/0011-composable-text-report-sections.md`](../adr/0011-composable-text-report-sections.md): shared section rendering for integrated text reports.

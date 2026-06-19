@@ -225,6 +225,8 @@ grep -q "Candidate count: 0x000000000000000b" "$ANALYZE_OUT"
 grep -q "Semantic primitive count: 0x000000000000000b" "$ANALYZE_OUT"
 grep -q "Scored candidate count: 0x000000000000000b" "$ANALYZE_OUT"
 grep -q "Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9" "$ANALYZE_OUT"
+test "$(grep -c '^x64lens ' "$ANALYZE_OUT")" -eq 1
+test "$(grep -c '^Target: ' "$ANALYZE_OUT")" -eq 1
 
 
 echo "[test] analyze JSON output"

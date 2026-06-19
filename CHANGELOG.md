@@ -4,6 +4,20 @@ All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.
 
+## Unreleased
+
+### Added
+
+- Repeatable Sprint 6 checkpoint demonstration through `make checkpoint-demo`.
+- `make bench-summary-latest`, `make checkpoint-tag-help`, and `make public-docs-check`.
+- Composable body-only text reporter wrappers in `src/report_context.asm`.
+- Checkpoint demo, benchmark interpretation, ADR, validation, retrospective, and paper-alignment documentation.
+
+### Changed
+
+- `analyze` text output now emits one version and target banner while preserving all existing report sections.
+- Sprint 6 planning and validation documentation now reflects the completed integrated checkpoint.
+
 ## [0.1.0-dev] - Sprint 06 Patch 022
 
 ### Added

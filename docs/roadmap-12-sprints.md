@@ -131,3 +131,7 @@ This preserves the later Sprint 7 through Sprint 12 arc:
 - Sprint 10 scales benchmark methodology.
 - Sprint 11 polishes `analyze` into a stronger integrated report.
 - Sprint 12 prepares release and publication artifacts.
+
+## Sprint 6 completion note
+
+Sprint 6 is complete through Patch 023. The repository now has an integrated `analyze` command, validated text and JSON output, a repeatable demo, baseline smoke evidence, and local checkpoint tag guidance. The next planning patch may refine the remaining sprint boundaries without changing completed metric contracts.

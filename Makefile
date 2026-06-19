@@ -20,6 +20,7 @@ BUILD_DIR    := build
 SRC_DIR      := src
 INC_DIR      := include
 TARGET       := $(BUILD_DIR)/$(PROJECT)
+DEMO_TARGET  ?= ./tests/bin/gadgets
 
 NASM         ?= nasm
 LD           ?= ld
@@ -31,7 +32,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -161,7 +162,7 @@ system-smoke: dev-tools-check all
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -189,6 +190,35 @@ bench-smoke: bench-scanner-smoke
 # one of ROPgadget, ropper, or ropr. Results are development evidence only.
 bench-baselines-smoke: dev-tools-check baseline-tools-check all samples
 	bash benchmarks/scripts/bench-baselines-smoke.sh ./$(TARGET)
+
+checkpoint-demo: dev-tools-check all samples
+	bash tools/demo-checkpoint.sh ./$(TARGET) "$(DEMO_TARGET)"
+
+# Summarize only the newest baseline smoke artifact. This avoids accidentally
+# combining separate development environments or historical runs.
+bench-summary-latest:
+	@file="$$(ls -1t benchmarks/results/baseline-smoke-*.tsv 2>/dev/null | head -n 1)"; \
+	if [ -z "$$file" ]; then \
+		file="$$(ls -1t benchmarks/results/*.tsv 2>/dev/null | head -n 1)"; \
+	fi; \
+	if [ -z "$$file" ]; then \
+		echo "error: no benchmark TSV files found under benchmarks/results"; \
+		exit 1; \
+	fi; \
+	echo "benchmark artifact: $$file"; \
+	python3 benchmarks/scripts/summarize.py "$$file"
+
+checkpoint-tag-help:
+	@echo "Create the local annotated checkpoint tag only after Patch 023 is committed:"
+	@echo "  git status --short"
+	@echo "  git tag -a v0.1.0-dev -m 'x64lens v0.1.0-dev integrated checkpoint'"
+	@echo "  git show --stat --decorate v0.1.0-dev"
+	@echo "  git rev-parse v0.1.0-dev^{}"
+	@echo "  git rev-parse HEAD"
+	@echo "A normal git push does not publish the tag."
+
+public-docs-check:
+	bash tools/check-public-docs.sh
 
 bench-summary:
 	@files="$$(ls benchmarks/results/*.tsv 2>/dev/null || true)"; \
@@ -219,6 +249,8 @@ script-perms-check:
 	@test -x tools/check-patch-bundle-hygiene.sh
 	@test -x tools/check-dev-tools.sh
 	@test -x tools/install-ropr-user.sh
+	@test -x tools/demo-checkpoint.sh
+	@test -x tools/check-public-docs.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -236,6 +268,9 @@ scaffold-check: script-perms-check
 	@test -f docs/visualization.md
 	@test -f docs/troubleshooting.md
 	@test -f docs/onboarding.md
+	@test -f docs/demo.md
+	@test -f docs/benchmark-smoke-interpretation.md
+	@test -f docs/adr/0011-composable-text-report-sections.md
 	@echo "scaffold-check: ok"
 
 diagrams-check:

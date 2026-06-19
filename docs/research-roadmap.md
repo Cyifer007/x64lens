@@ -142,3 +142,7 @@ x64lens can generate dependency-light, record-backed static triage reports for E
 ```
 
 Performance, usefulness, and coverage claims still require benchmark evidence and comparison against baselines. The `analyze` command should be used in demos and defensive-triage framing, while `gadgets --format json` remains the more direct apples-to-apples comparison path against gadget discovery tools.
+
+## Sprint 6 checkpoint closeout
+
+Patch 023 completes the integrated `0.1.0-dev` checkpoint with a repeatable demo, one-header text composition, current-state paper framing, and conservative smoke-benchmark interpretation. Patch 024 reviews Sprints 7 through 12 and defines Sprints 13 through 18 before the next implementation tranche.

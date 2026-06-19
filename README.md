@@ -425,6 +425,41 @@ Raw gadget candidates:
 
 Pattern labels are still exact suffix labels, not full decoded instruction sequences. Semantic classification and scoring are conservative. Mitigation-aware exploitability interpretation and full decoder-backed validation remain later sprint targets.
 
+## Sprint 6 integrated checkpoint demonstration
+
+The current checkpoint combines target metadata, mitigation facts, executable-region discovery, semantic gadget records, scores, and JSON output through `analyze`.
+
+Run the complete controlled demonstration:
+
+```bash
+make checkpoint-demo
+```
+
+Run the same path against an installed system binary:
+
+```bash
+DEMO_TARGET=/bin/ls MAX_DEPTH=4 make checkpoint-demo
+```
+
+Run the integrated command directly:
+
+```bash
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4   ./tests/bin/gadgets > /tmp/x64lens-analyze.json
+python3 tools/validate-json-report.py   --mode fixture /tmp/x64lens-analyze.json
+```
+
+`analyze` emits one top-level banner in text mode. Focused commands retain their complete standalone banners. See [docs/demo.md](docs/demo.md) for the full demonstration guide and [docs/benchmark-smoke-interpretation.md](docs/benchmark-smoke-interpretation.md) for the current evidence boundary.
+
+Create the local checkpoint tag after committing Patch 023:
+
+```bash
+make checkpoint-tag-help
+git tag -a v0.1.0-dev   -m "x64lens v0.1.0-dev integrated checkpoint"
+```
+
+A normal `git push` does not publish the tag.
+
 ## Ethics and safety
 
 x64lens is intended for educational research, defensive binary triage, secure build validation, and authorized reverse engineering. It does not include exploit delivery, payload generation, remote scanning, or unauthorized target interaction.

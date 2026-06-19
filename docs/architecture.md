@@ -492,3 +492,16 @@ cleanup arena and mapping
 This keeps the checkpoint feature from becoming a second analysis implementation. Text output currently reuses the existing section renderers. JSON output reuses the existing schema-backed gadget report because it already includes target metadata, mitigation facts, metric counts, primitive coverage, scored candidates, and limitations.
 
 Future polish may add a dedicated `analysis` JSON wrapper or cleaner text section headings, but that should be an output-layer change. Scanner, classifier, scoring, and mitigation records should remain shared.
+
+## Integrated text report composition
+
+`analyze` owns orchestration but not section formatting. It emits the complete information report once, then calls body-only mitigation and gadget wrappers from `src/report_context.asm`.
+
+```text
+analyze.asm
+  -> x64lens_report_text_elf64_info
+  -> x64lens_report_text_mitigations_body
+  -> x64lens_report_text_gadgets_body
+```
+
+The wrappers set a short-lived single-threaded report-context flag. `report_text.asm` skips only the repeated banner and preserves the established section implementations. This avoids duplicate formatting logic and keeps focused command behavior stable.

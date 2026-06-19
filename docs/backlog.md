@@ -180,3 +180,9 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [ ] Polish `analyze` text output so the checkpoint report has a single top-level header instead of reused section headers.
 - [ ] Consider adding a top-level JSON `report_type` or `command` field in a future schema revision, not in the current `0.1.0` schema unless backward compatibility is handled.
 - [ ] Add `analyze` rows to benchmark harnesses only when comparing integrated reports, not when performing gadget-discovery apples-to-apples comparisons.
+
+## Post-checkpoint planning review
+
+- Review Sprints 7 through 12 against the implemented checkpoint.
+- Define Sprints 13 through 18 with explicit architecture seams and evidence gates.
+- Prioritize mitigation hardening, hostile-input regression, higher-resolution benchmarking, semantic expansion, and release reproducibility.

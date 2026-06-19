@@ -109,3 +109,7 @@ Use repository facts, reproducible commands, and observed technical outcomes ins
 ## Development environment checks
 
 Development environment checks are part of the contract. Build, test, JSON validation, system-binary smoke tests, Docker checks, and benchmark smoke targets should fail with actionable messages when required tools are missing. Optional baseline tools should be reported clearly and should not block normal development unless explicitly required.
+
+## Integrated reporter reuse rule
+
+Integrated commands must consume internal records and reuse report-section implementations. They must not scrape focused command text output or copy formatter logic into a second path.

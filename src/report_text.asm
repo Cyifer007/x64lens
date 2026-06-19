@@ -13,6 +13,10 @@
 ;   x64lens_report_text_mitigations(path, mapped_base, file_size, summary, regions)
 ;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base)
 ;
+; Integrated-report seam:
+;   report_context.asm exposes body-only wrappers. The wrappers set a narrow
+;   process-local flag so these same reporters omit only their repeated banner.
+;
 ; Contract alignment:
 ;   Text output is allowed to evolve before 1.0.0, but changes must be tested
 ;   and documented. JSON output later must be emitted from internal records,
@@ -30,6 +34,7 @@ extern print_nl
 extern print_hex64
 extern print_hex8
 extern print_u64_dec
+extern report_body_only_flag
 
 section .rodata
 header_tool:        db "x64lens ", X64LENS_VERSION, 10, 0
@@ -190,6 +195,9 @@ x64lens_report_text_elf64_info:
     mov     r12, rsi            ; mapped base
     mov     r13, rdx            ; file size
 
+    cmp     byte [rel report_body_only_flag], 0
+    jne     .info_body_start
+
     lea     rdi, [header_tool]
     call    print_cstr
     lea     rdi, [label_target]
@@ -198,6 +206,7 @@ x64lens_report_text_elf64_info:
     call    print_cstr
     call    print_nl
 
+.info_body_start:
     lea     rdi, [section_format]
     call    print_cstr
     lea     rdi, [label_type]
@@ -288,6 +297,9 @@ x64lens_report_text_mitigations:
     mov     r14, rcx            ; summary record
     mov     r15, r8             ; executable region buffer
 
+    cmp     byte [rel report_body_only_flag], 0
+    jne     .mitigations_body_start
+
     lea     rdi, [header_tool]
     call    print_cstr
     lea     rdi, [label_target]
@@ -296,6 +308,7 @@ x64lens_report_text_mitigations:
     call    print_cstr
     call    print_nl
 
+.mitigations_body_start:
     lea     rdi, [section_mitigations]
     call    print_cstr
 
@@ -536,6 +549,9 @@ x64lens_report_text_gadgets:
     mov     r13, rdx            ; gadget_record[]
     mov     r14, rcx            ; mapped file base
 
+    cmp     byte [rel report_body_only_flag], 0
+    jne     .gadgets_body_start
+
     lea     rdi, [header_tool]
     call    print_cstr
     lea     rdi, [label_target]
@@ -544,6 +560,7 @@ x64lens_report_text_gadgets:
     call    print_cstr
     call    print_nl
 
+.gadgets_body_start:
     lea     rdi, [section_gadgets]
     call    print_cstr
 

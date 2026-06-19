@@ -189,3 +189,15 @@ python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
 ```
 
 Use `analyze` for demos and end-to-end defensive triage examples. Use `gadgets --format json` when comparing directly against gadget enumeration baselines.
+
+## Integrated checkpoint tour
+
+After the normal build and validation tour, run:
+
+```bash
+make checkpoint-demo
+DEMO_TARGET=/bin/ls MAX_DEPTH=4 make checkpoint-demo
+make checkpoint-tag-help
+```
+
+The demo validates both human-readable and JSON integrated output. `checkpoint-tag-help` prints the local annotated tag commands without mutating the repository.

@@ -1,9 +1,9 @@
+
 % x64lens IEEE paper scaffold
 %
 % Purpose:
-%   Starting point for an IEEE-format research paper. Keep this file
-%   aligned with docs/publication-plan.md, benchmark results, and the final
-%   measured claims.
+%   Current-state scaffold for the x64lens research paper. Implemented facts
+%   are stated directly; unmeasured comparative claims remain hypotheses.
 
 \documentclass[conference]{IEEEtran}
 
@@ -12,7 +12,7 @@
 \usepackage{graphicx}
 \usepackage{url}
 
-\title{x64lens: An Assembly-First Semantic Gadget and Exploitability Analyzer for ELF64 x86\_64 Binaries}
+\title{x64lens: An Assembly-First, Mitigation-Aware Semantic Gadget Analyzer for ELF64 x86\_64 Binaries}
 
 \author{\IEEEauthorblockN{Kyle Pifer}
 \IEEEauthorblockA{Dakota State University\\
@@ -22,36 +22,42 @@ Email: TBD}}
 \maketitle
 
 \begin{abstract}
-This paper presents x64lens, an assembly-first ELF64 x86\_64 binary analysis tool designed to identify exploit-relevant code primitives, classify their semantic usefulness, evaluate mitigation context, and produce reproducible reports for offensive research, defensive triage, and binary hardening assessment. The initial study evaluates whether an assembly-first gadget discovery engine can improve runtime and memory efficiency compared to existing tooling while preserving comparable gadget coverage and adding semantic primitive analysis.
+This paper presents x64lens, an assembly-first static analyzer for ELF64 x86\_64 binaries. The current prototype maps binaries read-only, validates ELF identity and program-header ranges, discovers executable \texttt{PT\_LOAD} regions, reports a bounded mitigation subset, scans return-terminated byte windows, applies exact suffix patterns, assigns conservative semantic classes, scores supported candidates, and emits human-readable or versioned JSON reports. The study evaluates runtime, memory use, candidate coverage, semantic coverage, and defensive triage value against established gadget tools. Comparative performance and usefulness remain hypotheses until the controlled benchmark campaign is complete.
 \end{abstract}
 
 \begin{IEEEkeywords}
-assembly language, binary analysis, exploitability, ROP, ELF, x86\_64, reverse engineering, software security
+assembly language, binary analysis, ELF, ROP, semantic classification, defensive triage, software security
 \end{IEEEkeywords}
 
 \section{Introduction}
-TBD.
+Raw gadget enumerators provide valuable offensive-analysis data but can produce large outputs that require substantial interpretation. x64lens investigates a staged alternative: preserve raw discovery facts, add conservative semantic labels and mitigation context, and expose one integrated report suitable for defensive binary triage.
 
-\section{Related Work}
-TBD.
+\section{Research Questions}
+The evaluation asks whether the assembly-first implementation changes runtime and memory behavior, whether semantic and mitigation context improves prioritization over raw candidate lists, and whether the resulting report is practical for automated infrastructure workflows.
 
 \section{Design}
-TBD.
+The prototype is implemented in NASM without libc and uses direct Linux system calls. The pipeline separates file mapping, bounds validation, ELF parsing, program-header analysis, executable-region discovery, raw scanning, exact pattern matching, semantic classification, scoring, and reporting. Program headers are authoritative for mapped executable ranges. Internal records are populated before text or JSON formatting.
+
+\subsection{Current Checkpoint}
+The \texttt{analyze} command runs the validated pipeline once and emits target metadata, mitigation facts, executable regions, raw and semantic counts, scored candidate records, register coverage, and explicit limitations. Text sections share the focused reporters, while JSON follows schema version \texttt{0.1.0}.
+
+\subsection{Pattern and Decoder Boundary}
+The current scanner is not a full x86\_64 decoder. Exact suffix labels may include unaligned byte streams and do not prove that the complete displayed window is a valid intended instruction sequence. Raw candidate, exact pattern, semantic candidate, and score metrics are therefore reported separately.
 
 \section{Evaluation Methodology}
-TBD.
+The controlled methodology uses a hand-authored fixture, selected Linux system binaries, and later compiler/hardening and larger-binary corpus tiers. Measurements include repeated wall time, maximum RSS, output size, exit status, raw candidate count, exact pattern count, semantic coverage, and mitigation agreement. ROPgadget, Ropper, and ropr are external baselines. Tool versions, commands, host facts, corpus manifests, and raw artifacts are retained.
 
 \section{Results}
-TBD.
+The Sprint 6 smoke harness demonstrates that all four tools can be invoked reproducibly on the current development corpus. Final comparative values are intentionally deferred until run counts, timing resolution, cache policy, corpus selection, and comparable output modes are frozen.
 
 \section{Discussion and Threats to Validity}
-TBD.
+The tools perform different work and may use different gadget definitions. Python startup cost, native decoder dependencies, output formatting, cache state, WSL2 behavior, small-target timer granularity, and corpus bias can affect comparisons. Assembly parsing of untrusted input also requires empirical hostile-input testing. The current prototype explicitly preserves unknown states instead of inferring unsupported facts.
 
 \section{Future Work}
-TBD.
+Planned work includes mitigation hardening, mutation-based parser-safety regression, broader semantic primitives, compiler and hardening corpus matrices, higher-resolution benchmarks, integrated defensive prioritization, decoder side-car experiments, and release-quality reproducibility artifacts.
 
 \section{Conclusion}
-TBD.
+The implemented checkpoint establishes a modular assembly-first analyzer and a reproducible path from raw executable bytes to mitigation-aware semantic reports. The remaining work evaluates whether those design choices produce measurable performance and triage benefits without overstating the limits of exact pattern matching.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}

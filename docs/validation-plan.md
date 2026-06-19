@@ -575,3 +575,15 @@ Patch 021 adds two environment hardening requirements:
 2. Optional baseline enforcement must happen only in baseline-aware checks. `REQUIRE_BASELINES=1` should not make `dev-tools-check` fail because ROPgadget, Ropper, and ropr are outside the required development toolchain.
 
 ropr remains optional. If Cargo is too old, `make install-ropr-user` must fail with a clear rustup remediation path rather than exposing a long dependency-resolution failure from Cargo.
+
+## Sprint 6 checkpoint validation
+
+```bash
+make public-docs-check
+make analyze-smoke
+make checkpoint-demo
+DEMO_TARGET=/bin/ls MAX_DEPTH=4 make checkpoint-demo
+make bench-summary-latest
+```
+
+The integrated text regression requires exactly one version line and one target line while preserving all major sections. Public-documentation validation is part of `make validation-smoke`.
