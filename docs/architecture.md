@@ -26,6 +26,7 @@ x64lens CLI
 | Module | Responsibility | Must not do |
 | ------ | -------------- | ----------- |
 | `main.asm` | Entrypoint, dispatch, high-level flow | Deep parsing or scanning |
+| `analyze.asm` | Integrated command orchestration over shared records | Duplicate parser, scanner, classifier, score, or formatter logic |
 | `cli.asm` | Argument parsing, command routing helpers | ELF parsing |
 | `info.asm` | Coordinate `info` command mapping, validation, reporting, and cleanup | Own ELF parsing or formatting internals |
 | `syscalls.asm` | Linux syscall wrappers | Business logic |
@@ -41,6 +42,7 @@ x64lens CLI
 | `patterns.asm` | Exact opcode-template matching and pattern IDs | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification | Raw file I/O |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
+| `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
 | `report_text.asm` | Human-readable output | Analysis decisions |
 | `report_json.asm` | JSON output | Analysis decisions |
 
@@ -84,7 +86,7 @@ This aligns with the assembly-first goal and avoids unnecessary runtime dependen
 
 ## Design decision 3: pattern-based scanner first
 
-Sprint 1 through Sprint 6 will not implement a full x86_64 instruction decoder. The first scanner will:
+The validated `0.1.0-dev` checkpoint does not implement a full x86_64 instruction decoder. The first scanner will:
 
 1. find terminator bytes,
 2. walk backward up to `--max-depth`,
@@ -130,6 +132,7 @@ gadget_record:
   stack_delta                       qword
   side_effect_flags                 qword
   score                             dword
+  pattern_id                        dword
 ```
 
 Register bitmap:
@@ -199,7 +202,7 @@ Current raw candidate semantics:
 - `GADGET_BYTE_LEN` is the full raw byte-window length including the terminator.
 - `GADGET_TERMINATOR_TYPE` is `ret` or `ret imm16`.
 - Semantic, register, stack, and side-effect fields are populated by `classifier.asm` for supported exact patterns as of Patch 015.
-- Score fields remain unset until Sprint 5.
+- Score fields are populated by `scoring.asm` for supported semantic records. Unknown candidates remain unscored.
 
 
 ## Sprint 4 classifier boundary
@@ -360,7 +363,7 @@ The first classifier populates:
 - semantic summary counts,
 - controlled-register coverage.
 
-It intentionally does not implement scoring or exploitability interpretation. Those remain Sprint 5 and later work.
+The Sprint 4 classifier intentionally does not decide scores or exploitability. Sprint 5 added scoring in a separate module, and exploitability verdicts remain out of scope.
 
 ## Reviewer-readiness architecture seams
 
@@ -491,7 +494,7 @@ cleanup arena and mapping
 
 This keeps the checkpoint feature from becoming a second analysis implementation. Text output currently reuses the existing section renderers. JSON output reuses the existing schema-backed gadget report because it already includes target metadata, mitigation facts, metric counts, primitive coverage, scored candidates, and limitations.
 
-Future polish may add a dedicated `analysis` JSON wrapper or cleaner text section headings, but that should be an output-layer change. Scanner, classifier, scoring, and mitigation records should remain shared.
+Patch 023 completed the single-banner text composition path. A future JSON report identity and evidence wrapper is planned for schema `0.2.0`; that remains an output and provenance change over shared analysis records.
 
 ## Integrated text report composition
 
@@ -505,3 +508,56 @@ analyze.asm
 ```
 
 The wrappers set a short-lived single-threaded report-context flag. `report_text.asm` skips only the repeated banner and preserves the established section implementations. This avoids duplicate formatting logic and keeps focused command behavior stable.
+
+
+## Post-checkpoint architecture plan
+
+Patch 024 preserves the validated engine and adds explicit seams for Sprints 7 through 18.
+
+### Bounded parser views
+
+New dynamic, symbol, string, note, and section parsers should consume validated table views rather than repeating open-coded pointer arithmetic. A bounded view should carry enough information to prove each dereference is inside the mapped file:
+
+```text
+bounded_table_view:
+  file_base
+  file_size
+  table_offset
+  entry_size
+  entry_count
+  table_end
+```
+
+The exact implementation may remain a set of assembly helpers rather than a public record, but the safety invariant is fixed: validate the complete table range and each derived entry before use.
+
+### Evidence side-car records
+
+The raw `gadget_record` remains the scanner-owned candidate fact. Candidate validity and provenance should be added through side-car records keyed by candidate index:
+
+```text
+gadget_record[]
+candidate_evidence_record[]
+decode_record[]          optional
+```
+
+This preserves existing raw, exact, semantic, unknown, and scored metrics while allowing decoder-backed facts to be added later.
+
+### Analysis completeness
+
+Research reports must state whether the scan completed within configured capacity. Future summary state should expose candidate capacity, truncation, dropped count when known, scanned region count, total region count, and overall completion. Silent truncation is not permitted for preview or release evidence.
+
+### Schema boundary
+
+Schema `0.1.0` remains valid for the current checkpoint and compatible mitigation additions. Evidence provenance, report identity, and completeness state are the planned trigger for schema `0.2.0` in Sprint 9.
+
+### Release architecture
+
+The release path is staged:
+
+```text
+v0.1.0-dev  integrated checkpoint
+v0.1.0-rc1  hardened preview with corpus and high-resolution benchmark tooling
+v0.1.0      fixed research campaign, case study, replication package, and paper-ready evidence
+```
+
+See `docs/roadmap-18-sprints.md`, `docs/design/evidence-provenance-model.md`, `docs/design/schema-evolution.md`, and `docs/research-release-plan.md`.

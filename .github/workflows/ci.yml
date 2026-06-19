@@ -23,8 +23,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y nasm binutils gcc make python3 time git curl unzip zip
 
-      - name: Scaffold check
-        run: make scaffold-check
+      - name: Repository contract checks
+        run: |
+          make scaffold-check
+          make diagrams-check
+          make public-docs-check
+          make planning-docs-check
 
       - name: Build
         run: make

@@ -8,7 +8,7 @@ Benchmarking is a first-class research feature of x64lens. The goal is to evalua
 
 ### H1
 
-An assembly-first gadget scanning engine can outperform Python-heavy gadget discovery tools in raw runtime and memory footprint for ELF64 x86_64 binaries.
+An assembly-first gadget scanning engine may reduce runtime and memory footprint relative to established gadget tools for bounded ELF64 x86_64 discovery tasks.
 
 ### H2
 
@@ -43,13 +43,21 @@ Every benchmark run should record:
 - compiler versions,
 - NASM version,
 - corpus manifest hash,
+- target SHA-256 hash,
+- tool binary or package hash when available,
+- timer and resource-measurement implementation,
+- CPU governor or power-policy state when available,
+- process-affinity policy when used,
 - run count,
+- warmup count,
+- tool execution order,
 - warm or cold cache condition.
 
 ## Required metrics
 
-- wall-clock runtime,
-- CPU time,
+- wall-clock runtime in nanoseconds,
+- user CPU time,
+- system CPU time,
 - max RSS,
 - input file size,
 - throughput MiB/s,
@@ -71,7 +79,9 @@ For each tool and binary:
 - prefer 20 or more trials for publication results,
 - report median,
 - report p95,
-- report min and max where useful.
+- report min and max where useful,
+- report median absolute deviation for publication campaigns,
+- report confidence intervals only when the sampling and method justify them.
 
 ## Corpus tiers
 
@@ -301,3 +311,73 @@ Sprint 6 Patch 022 adds `analyze` as an integrated checkpoint command. The basel
 Current smoke artifacts validate harness operation and provide early development evidence. They are not final comparative results. Use `make bench-summary-latest` for one newest run and review `docs/benchmark-smoke-interpretation.md` before interpreting timing or RSS differences.
 
 The final campaign must not aggregate historical artifacts from different hosts or environments as a single experiment unless the methodology explicitly models those environments as separate strata.
+
+
+## Patch 024 higher-resolution benchmark plan
+
+The Sprint 5 and Sprint 6 smoke harnesses use GNU `time` and correctly validate command execution, max RSS capture, version metadata, target coverage, and result summarization. They are not sufficient for final small-binary timing because elapsed output can round to `0.00` seconds.
+
+Sprint 12 should introduce a standard-library Python runner that uses a monotonic nanosecond clock and per-child resource information. On Linux, the preferred implementation is a spawn/wait path that obtains the child's `rusage` instead of using cumulative parent-process measurements.
+
+Required runner behavior:
+
+- record start and end with a monotonic nanosecond clock,
+- capture child user time, system time, and max RSS,
+- redirect tool output to controlled files or `/dev/null` according to the benchmark mode,
+- preserve output byte count and exit status,
+- hash the target and tool under test,
+- support warmup runs that are excluded from measured rows,
+- randomize or counterbalance tool order,
+- record the selected cache policy,
+- write one row per process execution,
+- never discard failed rows silently.
+
+### Resolution floor
+
+Before a campaign, measure the runner's practical timing floor. When a target completes too quickly for stable single-process measurement, use one of these documented strategies:
+
+1. choose a larger corpus target,
+2. execute a fixed batch of independent tool invocations and divide only the wall-time aggregate, while retaining batch metadata,
+3. report the result as below the reliable single-run resolution floor.
+
+Do not convert `0.00` smoke values into performance claims.
+
+### Benchmark modes
+
+Use separate modes because task scope differs:
+
+| Mode | x64lens command | Research purpose |
+|---|---|---|
+| Raw discovery | future quiet/raw scanner path if implemented | Isolate scanner engine cost. |
+| Gadget report | `gadgets --format json` | Closest comparison with ROPgadget, Ropper, and ropr. |
+| Integrated triage | `analyze --format json` | Measure end-to-end metadata, mitigation, semantic, score, and reporting cost. |
+
+A baseline row belongs in a comparison only when the compared task and output scope are stated.
+
+### Campaign freeze
+
+Before Sprint 13 repeated trials:
+
+- freeze corpus manifest and hashes,
+- freeze baseline versions and commands,
+- freeze x64lens commit and schema,
+- freeze benchmark runner version,
+- freeze output mode and max depth,
+- record the host as a distinct experimental stratum.
+
+Any method change after the freeze requires a new campaign identifier. Historical smoke rows and publication rows must not be merged.
+
+### Coverage reconciliation
+
+Runtime and memory are only part of the comparison. For each baseline, document:
+
+- terminators included,
+- maximum instruction or byte depth,
+- aligned and unaligned behavior,
+- duplicate handling,
+- canonicalization,
+- invalid-instruction filtering,
+- whether output formatting is included,
+- whether semantic or mitigation work is performed.
+
+Coverage tables should compare explicitly named metrics, not a generic `gadget_count`.

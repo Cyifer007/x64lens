@@ -1,78 +1,96 @@
-# Gadget Scoring Model
+# Scoring Model
 
-## Status
+## Purpose
 
-Patch 017 implements the first conservative scoring pass in `src/scoring.asm`.
+The score is a bounded heuristic for relative candidate utility under the current semantic model. It is not a vulnerability severity, exploitability probability, or binary-level risk rating.
 
-Scoring now consumes internal fields populated by the scanner, exact pattern matcher, and semantic classifier:
+## Current model
 
-- `GADGET_PATTERN_ID`,
-- `GADGET_SEMANTIC_CLASS`,
-- `GADGET_REGS_CONTROLLED`,
-- `GADGET_STACK_DELTA`,
-- `GADGET_SIDE_EFFECT_FLAGS`.
+Sprint 5 introduced a fixed table over supported semantic-exact patterns:
 
-The text reporter renders `score: <n>` for each candidate. The JSON reporter emits numeric scores for scored candidates and `null` for unscored candidates.
+| Pattern | Semantic class | Score |
+|---|---|---:|
+| `pop rdi; ret` | `arg_control` | 90 |
+| `pop rsi; ret` | `arg_control` | 90 |
+| `pop rdx; ret` | `arg_control` | 90 |
+| `pop rcx; ret` | `arg_control` | 90 |
+| `pop r8; ret` | `arg_control` | 90 |
+| `pop r9; ret` | `arg_control` | 90 |
+| `pop rax; ret` | `syscall_num_control` | 85 |
+| `syscall; ret` | `syscall_trigger` | 85 |
+| `leave; ret` | `stack_pivot` | 75 |
+| `pop rsp; ret` | `stack_pivot` | 70 |
+| `ret` | `alignment` | 45 |
+| `ret imm16` | `alignment` | 40 |
 
-## Formula
+Unknown candidates and supported patterns without an explicit score entry remain unscored. The internal sentinel is `0`; JSON uses `null` for unscored records.
 
-The long-term model remains:
+## Module boundary
 
 ```text
-score = semantic_base
-      + rare_primitive_bonus
-      - clobber_penalty
-      - memory_deref_penalty
-      - stack_delta_penalty
-      - bad_byte_penalty
-      - uncertain_decode_penalty
+scanner -> pattern matcher -> classifier -> scoring -> reporter
 ```
 
-Patch 017 implements a fixed first-pass table rather than the full formula. The fixed table already includes a small uncertainty penalty because the current classifier is exact-suffix based, not decoder-backed.
+`scoring.asm` consumes semantic facts. It does not discover bytes, decide semantic class, parse mitigations, or format output. `analyze` reuses the same scores as `gadgets`.
 
-## Patch 017 implemented scores
+## Current constraints
 
-| Pattern | Semantic class | Score | Rationale |
-|---|---|---:|---|
-| `pop rdi; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
-| `pop rsi; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
-| `pop rdx; ret` | `arg_control` | 90 | High-value argument-register control, exact suffix only. |
-| `pop rcx; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
-| `pop r8; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
-| `pop r9; ret` | `arg_control` | 90 | Useful argument-register control, exact suffix only. |
-| `pop rax; ret` | `syscall_num_control` | 85 | Useful syscall-number setup, exact suffix only. |
-| `syscall; ret` | `syscall_trigger` | 85 | Useful syscall trigger, exact suffix only. |
-| `leave; ret` | `stack_pivot` | 75 | Stack pivot with input-dependent stack delta. |
-| `pop rsp; ret` | `stack_pivot` | 70 | Direct stack-pointer overwrite with higher uncertainty. |
-| `ret` | `alignment` | 45 | Alignment or chain-spacing utility. |
-| `ret imm16` | `alignment` | 40 | Alignment/stack adjustment with extra side effect. |
+- Score only justified semantic candidates.
+- Preserve `scored_candidate_count` separately from semantic and raw counts.
+- Keep unknown candidates unscored.
+- Keep evidence provenance visible.
+- Do not promote a score into an exploitability verdict.
+- Do not assign mitigation-aware bonuses or penalties until mitigation evidence is complete enough to support them.
 
-Unsupported exact patterns and `unknown_candidate` records remain unscored with score `0` internally and `null` in JSON.
+## Planned factor model
 
-## Scoring constraints
+Later score evolution may use:
 
-- Score only records with justified semantic classes.
-- Keep `unknown_candidate` unscored.
-- Preserve `scored_candidate_count` separately from raw, exact, semantic, and unknown counts.
-- Preserve limitations in JSON output.
-- Do not claim exploitability from score alone.
+```text
+candidate_score = semantic_base
+                + rare_primitive_bonus
+                - clobber_penalty
+                - memory_dereference_penalty
+                - stack_uncertainty_penalty
+                - bad_byte_penalty
+                - decode_uncertainty_penalty
+```
 
-## Research warning
+Every factor requires a corresponding fact in internal records. A score rule must not infer facts from human-readable text or from absent metadata.
 
-The scoring model is heuristic until validated through benchmark and analyst-utility experiments. A score means “relative utility under the current model,” not “this binary is exploitable.”
+## Provenance interaction
 
-## Future scoring work
+Schema `0.2.0` should allow score interpretation to reference evidence kind:
 
-Later sprints should add:
+- semantic-exact candidate,
+- decoder-backed semantic candidate,
+- unknown candidate.
 
-- bad-byte penalties,
-- clobber penalties,
-- memory dereference penalties,
-- full decoder confidence adjustments,
-- mitigation-aware score interpretation,
-- score calibration against baseline tools and controlled exploit-development exercises.
+A decoder-backed candidate may receive a different uncertainty adjustment, but existing scores should not silently change. Any recalibration requires documented score-model versioning or explicit changelog notes and fixture updates.
 
+## Primitive expansion interaction
 
-## Analyze command scoring boundary
+Sprint 10 may add score entries only after:
 
-`analyze` does not introduce a separate scoring model. It reports the same candidate scores produced for `gadgets`, using the same internal records and score values. This keeps score interpretation stable across command names.
+1. exact or decoded evidence is validated,
+2. controlled and clobbered registers are known,
+3. memory effects are known when applicable,
+4. stack delta is known or explicitly unknown,
+5. a controlled fixture exists,
+6. score rationale is documented.
+
+## Binary-level triage separation
+
+A future binary triage summary is not an aggregate candidate score. It may consider mitigation facts, primitive coverage, representative candidate quality, provenance, completeness, and limitations. That model belongs in a separate record and document.
+
+## Validation and research
+
+The current values are hypotheses. Calibration may use:
+
+- controlled exploit-development exercises,
+- analyst ranking agreement,
+- decoder-backed side-effect validation,
+- comparison against baseline gadget quality filters,
+- mitigation-aware case studies.
+
+Until validated, the correct wording is “relative utility under the current model.”

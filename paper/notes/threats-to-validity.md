@@ -17,3 +17,13 @@
 - Very short smoke runs can round to zero at the current timer resolution.
 - Historical benchmark artifacts from different hosts must not be pooled without stratification.
 - The body-only text report seam assumes the current single-threaded process model.
+
+
+## Post-checkpoint evidence controls
+
+- Candidate capacity and analysis completeness must be explicit before large-target count claims.
+- Raw byte candidates, exact suffix observations, semantic classifications, and decoder-validated candidates must not be compared as though they are identical populations.
+- Schema and corpus versions must be frozen before the publication benchmark campaign.
+- Tool order, timer resolution, per-child resource capture, and host state can materially affect performance results.
+- Mitigation indicators derived from incomplete metadata must expose uncertainty rather than a guessed negative.
+- Operational triage conclusions require a documented analyst workflow and cannot be inferred from toy fixtures alone.

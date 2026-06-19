@@ -1,115 +1,118 @@
 # Semantic Primitive Taxonomy
 
-The semantic taxonomy is one of the most important research components in x64lens. It defines how raw gadget candidates become useful exploit-primitive facts without overstating what the current scanner can prove.
+## Purpose
 
-## Semantic classes
+The taxonomy defines when a byte-level candidate can be promoted into an exploit-relevant primitive fact. The model is conservative because overclassification corrupts coverage metrics, score interpretation, and later defensive triage.
 
-| Class | Meaning | Sprint 4 status |
-| ----- | ------- | --------------- |
-| `arg_control` | Controls ABI argument registers such as `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`. | Implemented for exact supported pop patterns. |
-| `syscall_num_control` | Controls `rax` for Linux syscall number setup. | Implemented for `pop rax; ret`. |
-| `syscall_trigger` | Provides `syscall` instruction path. | Implemented for `syscall; ret`. |
-| `stack_pivot` | Changes `rsp` or uses `leave; ret` style pivot. | Implemented for `leave; ret` and `pop rsp; ret`. |
-| `memory_write` | Writes controlled register data into memory. | Future work. |
-| `memory_read` | Reads from memory into register. | Future work. |
-| `reg_transfer` | Moves or exchanges register values. | Future work. |
-| `alignment` | Simple `ret` or `ret imm16` suffix useful for stack alignment or stack adjustment. | Implemented. |
-| `clobber_heavy` | Useful but destroys many registers or stack values. | Future work. |
-| `unknown_candidate` | Ret-terminated sequence not classified yet. | Preserved deliberately. |
+## Current classes
 
-## Initial x86_64 pattern table
+| Class | Meaning | Current status |
+|---|---|---|
+| `arg_control` | Controls supported System V argument registers. | Implemented for exact `pop rdi/rsi/rdx/rcx/r8/r9; ret` suffixes. |
+| `syscall_num_control` | Controls `rax` for Linux syscall-number setup. | Implemented for `pop rax; ret`. |
+| `syscall_trigger` | Provides a `syscall; ret` suffix. | Implemented. |
+| `stack_pivot` | Makes `rsp` input-dependent or derives it through a pivot sequence. | Implemented for `pop rsp; ret` and `leave; ret`. |
+| `alignment` | Return or stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret` and `ret imm16`. |
+| `memory_write` | Writes data to memory with known operand roles. | Planned. |
+| `memory_read` | Reads memory into a register with known operand roles. | Planned. |
+| `reg_transfer` | Moves or exchanges values between known registers. | Planned. |
+| `clobber_heavy` | Potentially useful sequence with substantial side effects. | Planned as a qualifier or class after side-effect modeling. |
+| `unknown_candidate` | Candidate without a justified semantic mapping. | Implemented and deliberately preserved. |
 
-| Pattern | Bytes | Sprint 4 classifier behavior |
-| ------- | ----- | ---------------------------- |
-| `ret` | `c3` | `alignment`, stack delta `8` |
-| `ret imm16` | `c2 xx xx` | `alignment`, stack delta `8 + imm16` |
-| `pop rax; ret` | `58 c3` | `syscall_num_control`, controls `rax`, stack delta `16` |
-| `pop rcx; ret` | `59 c3` | `arg_control`, controls `rcx`, stack delta `16` |
-| `pop rdx; ret` | `5a c3` | `arg_control`, controls `rdx`, stack delta `16` |
-| `pop rbx; ret` | `5b c3` | exact pattern only, semantic remains `unknown_candidate` |
-| `pop rsp; ret` | `5c c3` | `stack_pivot`, controls `rsp`, stack delta unknown |
-| `pop rbp; ret` | `5d c3` | exact pattern only, semantic remains `unknown_candidate` |
-| `pop rsi; ret` | `5e c3` | `arg_control`, controls `rsi`, stack delta `16` |
-| `pop rdi; ret` | `5f c3` | `arg_control`, controls `rdi`, stack delta `16` |
-| `pop r8; ret` | `41 58 c3` | `arg_control`, controls `r8`, stack delta `16` |
-| `pop r9; ret` | `41 59 c3` | `arg_control`, controls `r9`, stack delta `16` |
-| `pop r10; ret` through `pop r15; ret` | `41 5a c3` through `41 5f c3` | exact pattern only, semantic remains `unknown_candidate` until syscall-argument and callee-saved models are added |
-| `syscall; ret` | `0f 05 c3` | `syscall_trigger`, stack delta `8` after syscall path returns |
-| `leave; ret` | `c9 c3` | `stack_pivot`, controls `rsp`, stack delta unknown |
+## Current exact patterns
 
-## Sprint 4 implemented semantic layer
+The matcher recognizes:
 
-Patch 015 adds `x64lens_classifier_apply_exact` in `src/classifier.asm`. The classifier runs after `patterns.asm` and before text reporting:
+- `ret`,
+- `ret imm16`,
+- `pop rax` through `pop r15` followed by `ret`,
+- `leave; ret`,
+- `syscall; ret`.
+
+Only the currently documented subset receives semantic promotion. For example, `pop rbx; ret`, `pop rbp; ret`, and several extended-register patterns remain exact observations but may remain `unknown_candidate` until their semantic role and score policy are defined.
+
+## Evidence boundary
+
+A pattern label describes the exact suffix ending at the terminator. It does not prove that the full backward byte window is one decoded instruction sequence.
+
+Current evidence flow:
 
 ```text
-scanner.asm -> patterns.asm -> classifier.asm -> report_text.asm
+raw candidate
+  -> exact suffix
+  -> semantic-exact rule or unknown_candidate
 ```
 
-The classifier populates these existing `gadget_record` fields:
+Future flow:
 
-- `GADGET_SEMANTIC_CLASS`,
-- `GADGET_REGS_CONTROLLED`,
-- `GADGET_STACK_DELTA`,
-- `GADGET_SIDE_EFFECT_FLAGS`.
+```text
+raw candidate
+  -> exact suffix
+  -> optional decoder record
+  -> semantic-exact or semantic-decoded rule
+```
 
-It also extends `gadget_summary` with:
+Reports must preserve the evidence source.
 
-- `Semantic primitive count`,
-- `unknown_candidate count`,
-- per-class counts for implemented classes,
-- register coverage bitmap.
+## Conservative promotion rule
 
-The controlled fixture currently validates seven candidates:
+Promote a candidate only when the available evidence justifies:
 
-| Pattern | Semantic class | Register facts | Stack delta |
-| ------- | -------------- | -------------- | ----------- |
-| `pop rdi; ret` | `arg_control` | `rdi` | `16` |
-| `pop rsi; ret` | `arg_control` | `rsi` | `16` |
-| `pop rdx; ret` | `arg_control` | `rdx` | `16` |
-| `pop rax; ret` | `syscall_num_control` | `rax` | `16` |
-| `leave; ret` | `stack_pivot` | `rsp` | unknown, encoded as `0` |
-| `syscall; ret` | `syscall_trigger` | none | `8` |
-| `ret imm16` | `alignment` | none | `8 + imm16` |
+- primitive class,
+- controlled registers,
+- clobbered registers where relevant,
+- stack effect or explicit uncertainty,
+- memory effect where relevant,
+- side-effect flags.
 
-## Suffix pattern warning
+Otherwise preserve `unknown_candidate`.
 
-Pattern labels are exact suffix labels, not full decoded instruction sequences. A raw candidate window can include extra bytes before the recognized suffix. The classifier may therefore treat `PATTERN_*` as trusted exact suffix evidence, but it must not assume the whole raw window has been decoded unless a future decoder record says so.
+## Stack-delta rules
 
-## Conservative classification rule
+- `ret`: known delta `8`.
+- `ret imm16`: known delta `8 + imm16` only when the terminator bytes are the intended suffix evidence.
+- `pop reg; ret`: known suffix delta `16` for supported non-pivot registers.
+- `pop rsp; ret` and `leave; ret`: input-dependent, represented as unknown.
 
-When a candidate does not match a supported semantic mapping, leave the semantic class as `unknown_candidate`. Overclassification is worse than underclassification because it corrupts primitive coverage metrics and later scoring.
+Schema output must distinguish a known zero from an unknown value.
 
-Classifier rules:
+## Sprint 10 expansion gate
 
-- map only recognized `PATTERN_*` IDs to semantic classes,
-- preserve `unknown_candidate`,
-- separate suffix labels from full-window semantics,
-- report primitive coverage separately from raw candidate counts,
-- score only after semantic facts have been populated,
-- avoid exploitability verdicts entirely.
+Every new family requires:
 
-## Future expansion
+1. controlled source fixture,
+2. expected disassembly,
+3. evidence kind,
+4. semantic mapping,
+5. control and clobber facts,
+6. stack and memory effects,
+7. text and JSON validation,
+8. false-positive notes,
+9. independent score decision.
 
-The taxonomy should eventually account for:
+Planned bounded families:
 
-- side effects,
-- clobbered registers,
-- memory dereferences,
-- richer stack delta modeling,
-- bad byte constraints,
-- CET/IBT impact,
-- JOP/COP/SROP primitives,
-- multi-instruction semantic equivalence,
-- future decoder-backed validation.
+- selected multi-pop sequences,
+- unambiguous register transfers,
+- narrowly defined memory read/write templates.
 
+JOP, COP, SROP, symbolic equivalence, and broad instruction-sequence reasoning remain outside the pre-`v0.1.0` core unless the research scope changes.
 
-## Sprint 5 fixture coverage
+## Metric rule
 
-Patch 017 expands the controlled gadget fixture so the regression suite now exercises the implemented mappings for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` in addition to the earlier `rdi`, `rsi`, `rdx`, `rax`, `leave`, `syscall`, and `ret imm16` cases.
+Do not treat these as interchangeable:
 
-The semantic taxonomy remains separate from scoring. A semantic class explains the primitive type. A score is a later heuristic utility value assigned by `scoring.asm`.
+```text
+raw candidate
+exact pattern
+semantic-exact candidate
+decoder-validated candidate
+semantic-decoded candidate
+scored candidate
+```
 
+See [`design/metric-boundaries.md`](design/metric-boundaries.md) and [`design/evidence-provenance-model.md`](design/evidence-provenance-model.md).
 
-## Analyze command semantic boundary
+## Exploitability rule
 
-`analyze` reuses the same semantic classes as `gadgets`. It does not add new primitive meanings or infer exploitability. Unsupported or ambiguous candidates must continue to remain `unknown_candidate`.
+Primitive availability does not establish vulnerability or exploitability. Any strategy interpretation assumes an independent vulnerability, reachable control, required disclosures, and relevant runtime conditions.

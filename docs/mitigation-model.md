@@ -1,54 +1,80 @@
 # Mitigation Detection Model
 
-## Sprint 2 implemented baseline
+## Purpose
 
-| Mitigation or signal | Static detection strategy | Confidence | Sprint 2 status |
-| ---------- | ------------------------- | ---------- | --------------- |
-| NX stack | `PT_GNU_STACK` exists and lacks `PF_X` | High | Implemented |
-| Executable stack | `PT_GNU_STACK` exists and includes `PF_X` | High | Implemented as `NX stack: disabled` |
-| PIE | ELF type `ET_DYN` | High for common PIE executable identification, but shared libraries are also `ET_DYN` | Implemented |
-| RELRO baseline | `PT_GNU_RELRO` present | High for baseline RELRO presence | Implemented |
-| RWX segment | Any `PT_LOAD` with both `PF_W` and `PF_X` | High | Implemented |
+Mitigation reporting is an evidence layer. x64lens reports static indicators and the evidence used to derive them. It does not treat one indicator as a vulnerability, a proof of safety, or an exploitability verdict.
+
+## Current implemented baseline
+
+| Signal | Static evidence | Confidence | Status |
+|---|---|---|---|
+| NX stack enabled | `PT_GNU_STACK` exists without `PF_X` | High | Implemented |
+| Executable stack | `PT_GNU_STACK` exists with `PF_X` | High | Implemented as NX disabled |
+| NX stack unknown | `PT_GNU_STACK` absent | Explicit unknown | Implemented |
+| PIE indicator | ELF type `ET_DYN` | High for common PIE executables, but shared objects also use `ET_DYN` | Implemented |
+| Baseline RELRO present | `PT_GNU_RELRO` present | High for RELRO region presence | Implemented |
+| RWX load segment | `PT_LOAD` has `PF_W` and `PF_X` | High | Implemented |
 | Dynamic linking | `PT_DYNAMIC` present | High | Implemented |
-| Executable region | `PT_LOAD` with `PF_X` | High | Implemented |
+| Executable region | `PT_LOAD` has `PF_X` | High | Implemented |
 
-## Future mitigation work
+## Sprint 8 mitigation depth
 
-| Mitigation | Static detection strategy | Confidence | Notes |
-| ---------- | ------------------------- | ---------- | ----- |
-| Full RELRO | `PT_GNU_RELRO` plus `BIND_NOW` or `DF_BIND_NOW` dynamic info | Medium-high | Requires dynamic-section parsing |
-| Canary indicator | `__stack_chk_fail` import or symbol reference | Medium | Requires dynamic symbol or symbol-table parsing |
-| Stripped | missing or limited symbol table | Medium | Requires section/symbol parsing |
-| CET/IBT indicators | GNU property notes and relevant instruction/symbol patterns | Medium | Later research target |
+| Signal | Planned evidence | Reporting rule |
+|---|---|---|
+| No RELRO | no `PT_GNU_RELRO` | Report `none` only when the program-header table was parsed completely. |
+| Partial RELRO | `PT_GNU_RELRO` without immediate binding evidence | Report `partial`; preserve evidence source. |
+| Full RELRO | `PT_GNU_RELRO` plus `DT_BIND_NOW`, `DF_BIND_NOW`, or equivalent validated evidence | Report `full`; record which dynamic fact justified it. |
+| Canary indicator | validated import, symbol, or relocation evidence for stack-check routines | Report indicator presence, not complete stack protection. |
+| Stripped indicator | absent or limited symbol-table evidence | Report as a metadata indicator with confidence. |
+| Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
+| CET/IBT indicator | validated GNU property notes and supported instruction evidence | Planned after core Sprint 8 work if bounded parsing and fixtures are ready. |
 
-## Interpretation rule
+## Evidence and confidence
 
-Mitigations should be connected to exploit strategy constraints, not treated as standalone final verdicts.
+Future schema output should separate state from evidence:
+
+```json
+{
+  "relro": "full",
+  "canary": "present",
+  "evidence": {
+    "relro": ["PT_GNU_RELRO", "DF_BIND_NOW"],
+    "canary": ["__stack_chk_fail"]
+  }
+}
+```
+
+Missing evidence should produce `unknown` when the parser cannot justify a negative. A completed search with no relevant evidence may produce an explicit negative when the detection model defines one.
+
+## Interpretation rules
+
+- NX constrains injected-code strategies but does not prevent code reuse.
+- PIE changes address predictability but does not guarantee secrecy.
+- RELRO constrains selected relocation targets but does not remove memory corruption.
+- Canary indicators suggest stack-protector linkage but do not prove every vulnerable function is protected.
+- CET/IBT indicators do not prove complete control-flow integrity.
+- Useful primitives do not imply an exploitable vulnerability.
 
 Preferred wording:
 
 ```text
-This binary exposes primitives consistent with certain exploit strategies, assuming an independent vulnerability and necessary runtime conditions.
+The binary exposes static facts and primitive evidence consistent with selected exploit-strategy constraints, assuming an independent vulnerability and required runtime conditions.
 ```
 
-## Sprint 2 wording rule
+## Controlled fixtures
 
-Sprint 2 output reports loader-level facts and mitigation indicators only. It must not claim exploitability, vulnerability, or exploit success. Strategy interpretation begins later when primitive coverage and mitigation context can be evaluated together.
+Mitigation validation should use dedicated builds rather than the scanner-only gadget fixture:
 
+- non-PIE with NX stack,
+- PIE with stack protector and full RELRO,
+- executable stack,
+- no RELRO,
+- partial RELRO,
+- full RELRO,
+- canary-present and canary-absent variants,
+- static and dynamic linkage where practical.
 
-## Sprint 2 validation status
-
-Sprint 2 validation confirmed the implemented baseline against controlled toy binaries and `/bin/ls` using `readelf -h` and `readelf -l` side-by-side review. The most important validation points were:
-
-- `minimal_nopie` reports PIE disabled and NX stack enabled.
-- `minimal_pie_canary` reports PIE enabled and NX stack enabled.
-- `minimal_execstack` reports NX stack disabled, matching `GNU_STACK RWE`.
-- All tested targets reported one executable `PT_LOAD + PF_X` region, matching the executable `LOAD` segment in `readelf -l`.
-- Baseline RELRO is currently reported only from `PT_GNU_RELRO` presence. Full RELRO remains future work.
-
-## Sprint 3 fixture note: `tests/bin/gadgets`
-
-The hand-authored static gadget fixture may report:
+The hand-authored static gadget fixture may correctly report:
 
 ```text
 NX stack: unknown
@@ -56,25 +82,18 @@ RELRO: not found
 Dynamic linking: no
 ```
 
-This is expected for the current fixture. It is linked with `-nostdlib -static -no-pie` and exists to provide deterministic executable bytes for scanner validation, not to exercise dynamic-linker hardening metadata. If `PT_GNU_STACK` is absent, x64lens correctly reports NX stack as `unknown` rather than guessing. If `PT_GNU_RELRO` and `PT_DYNAMIC` are absent, x64lens correctly reports baseline RELRO as `not found` and dynamic linking as `no`.
+It is a deterministic code-byte fixture, not a mitigation fixture.
 
-Controlled mitigation states are validated with the `minimal_nopie`, `minimal_pie_canary`, and `minimal_execstack` fixtures instead.
+## Parser-safety dependency
 
+Dynamic, symbol, string, relocation, section, and GNU property parsing must use validated ranges and bounded iteration. Sprint 7 hostile-input infrastructure precedes Sprint 8 mitigation depth for this reason.
 
-## Sprint 3 carry-forward decision
+## Comparison plan
 
-Sprint 3 Patch 011 does not implement full RELRO, canary indicators, section labels, `checksec` comparison, or `rabin2 -I` comparison. Those remain valid hardening follow-ups, but the active Sprint 3 risk is scanner, storage, and exact-pattern correctness. Mixing dynamic-section or symbol parsing into the pattern matcher phase would create unnecessary scope coupling.
+Mitigation output should be compared against controlled linker commands and selected external tools:
 
-## Reviewer-facing mitigation limits
+- `readelf -h -l -d -s -n`,
+- optional `checksec`,
+- optional `rabin2 -I`.
 
-Mitigation detection is an evidence layer, not a verdict layer. A binary with useful primitives is not automatically exploitable, and a binary with mitigations is not automatically safe.
-
-Future hardening work should distinguish:
-
-- baseline RELRO from full RELRO,
-- canary indicators from proof of complete stack protection,
-- executable stack from practical exploitability,
-- PIE presence from runtime address disclosure resistance,
-- CET/IBT indicators from complete control-flow integrity.
-
-The paper should state these as static indicators and strategy constraints, not final security judgments.
+Disagreements should be investigated by evidence source rather than resolved by copying another tool's label.

@@ -46,3 +46,15 @@ When a design critique identifies a likely peer-review objection, convert the ob
 - a paper threats-to-validity note.
 
 Do not respond by broadening scope unless the current research question requires it.
+
+## Campaign freeze rule
+
+Publication-grade experiments require a frozen corpus, tool versions, commands, schema, benchmark runner, and environment stratum. A method change after freeze creates a new campaign identifier or requires a complete rerun of affected conditions.
+
+## Provenance rule
+
+Candidate coverage claims must identify the evidence layer being measured: raw, exact suffix, semantic exact, decoder validated, semantic decoded, unknown, or scored. A generic gadget count is insufficient for cross-tool claims.
+
+## Release evidence rule
+
+Research preview and final release claims must satisfy the gates in `docs/research-release-plan.md`. Smoke results demonstrate plumbing and regression stability, not universal performance or coverage.

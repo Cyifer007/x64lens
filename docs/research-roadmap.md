@@ -2,147 +2,116 @@
 
 ## Current checkpoint
 
-Sprint 5 Patch 019 is the current implementation candidate. The repository now has a working NASM-first ELF64 x86_64 foundation, loader-relevant executable-region mapping, baseline mitigation reporting, raw gadget candidate scanning, arena-backed candidate storage, exact suffix pattern labels, first-pass semantic classification, semantic summary counts, register coverage, initial scoring, JSON output for gadgets, scanner smoke benchmark plumbing, validation hardening, and baseline comparison smoke scaffolding.
+Sprints 1 through 6 are complete. Patch 024 is the planning and architecture review candidate that governs the transition into Sprint 7. The repository now provides:
 
-## Stage 1: CSC-732 foundation
+- a NASM-first ELF64 x86_64 parser and read-only mapping path,
+- program-header-authoritative executable regions,
+- baseline mitigation facts,
+- raw return-terminator candidate discovery,
+- arena-backed candidate records,
+- exact suffix pattern recognition,
+- conservative semantic classes and register coverage,
+- heuristic scores,
+- schema-versioned JSON,
+- an integrated `analyze` command,
+- controlled, system-binary, Docker, and public-documentation validation,
+- baseline comparison smoke plumbing,
+- a repeatable checkpoint demonstration.
 
-Build a working NASM-first ELF64 x86_64 analyzer with a usable integrated checkpoint command.
+The local `v0.1.0-dev` tag marks an integrated prototype. It is not a research release or evidence of universal performance superiority.
 
-Primary outcome: functional scaffold and semester-grade tool.
+## Research stages
 
-Current status: complete through ELF64 validation, program-header analysis, mitigation baseline reporting, raw scanner foundation, exact suffix pattern matching, and first-pass semantic classification.
+### Stage 1: deterministic binary facts
 
-## Stage 2: benchmarkable scanner
+Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Compare x64lens against ROPgadget, Ropper, and ropr.
+Status: implemented, with deeper hostile-input and metadata hardening planned for Sprints 7 and 8.
 
-Primary outcome: reproducible performance and coverage data.
+### Stage 2: candidate discovery and semantics
 
-Current status: development smoke benchmark exists. Research-grade comparison remains future work.
+Discover bounded candidate windows, recognize exact suffixes, classify supported primitive types, preserve unknowns, and assign bounded heuristic scores.
 
-## Stage 3: semantic primitive scoring
+Status: implemented for the initial exact-pattern set. Evidence provenance and broader primitives remain future work.
 
-Move beyond raw gadget counts into semantic utility.
+### Stage 3: evidence provenance and validity
 
-Possible research question:
+Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-> Can semantic gadget usefulness be measured more accurately through side-effect and primitive-coverage analysis than through raw gadget count?
+Status: planned for Sprint 9. This stage is the intended trigger for schema `0.2.0`.
 
-Current status: exact pattern IDs and the first Sprint 4 semantic classifier are implemented and validated. Patch 015 populates semantic classes, register bitmaps, stack deltas, side-effect flags, semantic counts, unknown counts, and register coverage for supported exact suffix patterns. Patch 017 begins scoring from these internal facts directly.
+### Stage 4: mitigation-aware triage
 
-## Stage 4: mitigation-aware exploitability modeling
+Connect static mitigation evidence and primitive coverage to defensive constraints without claiming vulnerability or exploitability.
 
-Connect NX, PIE, RELRO, canaries, RWX segments, CET, and IBT to plausible exploit strategy constraints.
+Status: baseline indicators exist. Full RELRO, canary, stripped, section-label, evidence, and triage work spans Sprints 8 and 14.
 
-Possible research question:
+### Stage 5: reproducible measurement
 
-> How do modern mitigations change the practical usefulness of available gadget sets?
+Use a fixed corpus, baseline versions, high-resolution timing, per-child resource measurements, raw result preservation, and generated summaries.
 
-Current status: baseline PIE, NX stack, RWX load segment, dynamic linking, and baseline RELRO are implemented. Full RELRO, canary indicators, section labels, and CET/IBT indicators remain future work.
+Status: smoke plumbing exists. Corpus and high-resolution infrastructure are planned for Sprints 11 and 12, with the comparative campaign in Sprint 13.
 
-## Stage 5: compiler and hardening comparison
+### Stage 6: operational case study
 
-Evaluate how compiler flags and hardening profiles change semantic primitive availability.
+Evaluate whether semantic and mitigation-aware reports improve triage of public network-facing infrastructure binaries.
 
-Variables:
+Status: planned for Sprint 16 after the measurement and schema surfaces stabilize.
 
-- GCC vs Clang,
-- `-O0`, `-O1`, `-O2`, `-O3`, `-Os`,
-- PIE vs non-PIE,
-- stack protector variants,
-- partial vs full RELRO,
-- CET flags,
-- LTO,
-- static vs dynamic linking.
+### Stage 7: publication and release
 
-## Stage 6: network infrastructure triage
+Freeze the evidence, reproduce the core workflow on a clean environment, audit claims, publish checksummed artifacts, and prepare the paper submission package.
 
-Connect the tool to network-facing infrastructure and operational security.
+Status: planned across Sprints 17 and 18.
 
-Possible research question:
+## Research questions
 
-> Can static binary exploitability analysis improve prioritization of network-exposed services and infrastructure software?
+### RQ1: performance and resource efficiency
 
-This stage is the strongest CSC-773 bridge because it ties binary hardening and primitive availability to advanced cyberinfrastructure defense.
+How do runtime, CPU cost, max RSS, throughput, and output size compare with established gadget tools under a fixed corpus and methodology?
 
-## Stage 7: dissertation-scale work
+### RQ2: semantic and evidence value
 
-Potential dissertation directions:
+Does separating raw candidates, exact suffix observations, semantic primitives, evidence tiers, unknowns, and scores provide more useful triage than raw gadget enumeration alone?
 
-- semantic exploitability scoring,
-- binary hardening effectiveness metrics,
-- architecture-specific primitive modeling,
-- AI-assisted analyst interpretation over deterministic low-level facts,
-- network appliance binary triage,
-- firmware-scale exploitability modeling,
-- CET/IBT impact on code-reuse exploitability.
+### RQ3: operational adoption
 
-## Expanded sprint mapping
+Can a dependency-light static analyzer support CI, vulnerability-management enrichment, or infrastructure-binary prioritization with clear limitations and stable machine-readable contracts?
 
-The near-term expanded plan is documented in `docs/roadmap-12-sprints.md`.
+## Reviewer-risk conversion
 
-The guiding sequence is:
-
-1. scanner correctness,
-2. semantic classification,
-3. scoring and JSON,
-4. semester checkpoint,
-5. mitigation hardening,
-6. primitive expansion,
-7. hardening corpus,
-8. research-grade benchmarks,
-9. integrated analysis,
-10. paper and release preparation.
-
-## Reviewer-readiness additions
-
-The current roadmap should explicitly answer likely reviewer objections:
-
-| Concern | Roadmap response |
+| Likely objection | Research response |
 |---|---|
-| NASM is hard to justify | Add NASM rationale and measure performance/memory instead of assuming superiority. |
-| Assembly parser safety | Add malformed-input regression and mutation smoke testing. |
-| Exact patterns are brittle | Keep exact suffix patterns as a stage and add a decoder roadmap. |
-| Raw counts are noisy | Separate raw candidates, exact patterns, semantic primitives, unknown candidates, and scores. |
-| Tool is hard to maintain | Add contributor maintainability guidance and module extension notes. |
-| x86_64 is narrow | Treat architecture scope as an explicit limitation and future engine seam. |
+| NASM may not provide meaningful benefit | Measure runtime and memory, include task-equivalence caveats, and consider a narrow C/Rust ablation only if needed. |
+| Assembly parser safety is weak | Add deterministic mutation smoke tests, parser regressions, explicit bounds invariants, and no formal memory-safety claim. |
+| Exact suffix matching is brittle | Preserve evidence tiers, quantify decoder gaps, and add a decoder only through the measured decision gate. |
+| Raw counts are noisy | Keep raw, exact, semantic, decoder-valid, unknown, and scored metrics separate. |
+| Mitigation findings can be overstated | Report evidence and confidence, distinguish indicators from proof, and avoid exploitability verdicts. |
+| Benchmarks are not comparable | Separate gadget-discovery and end-to-end tasks, freeze commands and corpus, and reconcile definitions. |
+| Results are not reproducible | Preserve hashes, versions, commands, raw rows, generated summaries, and a clean-environment rehearsal. |
+| x86_64 scope is narrow | State it as a bounded research scope and keep architecture/format expansion as post-release work. |
 
-These additions refine the roadmap without changing the near-term implementation order.
+## Release-linked milestones
 
-## Patch 018 validation maturity checkpoint
+| Milestone | Research outcome |
+|---|---|
+| `v0.1.0-dev` | Functional integrated prototype and known-good checkpoint. |
+| `v0.1.0-rc1` | Hardened preview with provenance-aware output, reproducible corpus, and high-resolution pilot measurement. |
+| `v0.1.0` | Fixed benchmark campaign, operational case study, replication package, paper-ready evidence, and checksummed release. |
 
-Patch 018 improves the evidence trail before broader baseline comparisons begin. The repository now has reusable validation for JSON report invariants, controlled-fixture scoring facts, real-system-binary smoke behavior, Docker environment availability, and patch bundle hygiene.
+## Long-arc directions after `v0.1.0`
 
-This keeps Sprint 5 aligned with the research contract: reproducible claims require tool versions, schema versions, commands, corpus details, environment metadata, raw results, and summary statistics. Patch 018 is not a publication benchmark; it is the validation foundation needed before Sprint 6 checkpoint work and later Sprint 10 research benchmarks.
+Potential future research includes:
 
+- optional embedded decoder integration,
+- ARM64 and other architecture engines,
+- PE and Mach-O formats,
+- JOP, COP, and SROP primitive models,
+- CET/IBT-aware semantic analysis,
+- firmware and network-appliance case studies,
+- AI-assisted interpretation over deterministic low-level facts,
+- larger analyst-utility experiments.
 
-## Patch 019 benchmark scaffolding note
+These are post-release research decisions, not hidden requirements for the current roadmap.
 
-Patch 019 adds comparison scaffolding before research-grade benchmark execution. The goal is to prove that tool versions, exact commands, target hashes, run counts, timing, memory, and x64lens JSON-derived counts can be captured consistently. These rows remain development evidence until baseline tool definitions and corpus selection are finalized.
-
-
-## Sprint 5 Patch 020 update
-
-Patch 020 adds development-environment dependency checks, Ubuntu onboarding instructions, optional baseline-tool installation guidance, and broader default system-binary coverage for the baseline smoke harness.
-
-
-## Sprint 5 research contribution
-
-Sprint 5 created the first machine-readable evidence path for RQ1 and RQ2 by adding schema-versioned JSON, explicit count boundaries, scoring fields, system-binary smoke validation, and baseline smoke TSV generation. These outputs remain development evidence until the full benchmark methodology is run with controlled corpus documentation, repeated runs, exact tool versions, and preserved raw results.
-
-
-## Sprint 6 checkpoint update
-
-Patch 022 adds `analyze` as the first integrated product checkpoint. For research framing, this matters because the user-facing value proposition is no longer limited to isolated command slices. The tool can now produce one static report containing target metadata, mitigation indicators, primitive coverage, scored candidate facts, and limitations.
-
-The research claim remains conservative:
-
-```text
-x64lens can generate dependency-light, record-backed static triage reports for ELF64 x86_64 binaries.
-```
-
-Performance, usefulness, and coverage claims still require benchmark evidence and comparison against baselines. The `analyze` command should be used in demos and defensive-triage framing, while `gadgets --format json` remains the more direct apples-to-apples comparison path against gadget discovery tools.
-
-## Sprint 6 checkpoint closeout
-
-Patch 023 completes the integrated `0.1.0-dev` checkpoint with a repeatable demo, one-header text composition, current-state paper framing, and conservative smoke-benchmark interpretation. Patch 024 reviews Sprints 7 through 12 and defines Sprints 13 through 18 before the next implementation tranche.
+See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan.md`](research-release-plan.md).

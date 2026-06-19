@@ -2,22 +2,39 @@
 
 ## Status
 
-Candidate extended-semester sprint.
+Planned.
 
 ## Sprint goal
 
-Integrate mitigation context, primitive coverage, and scoring into a coherent analysis report.
+Create a reproducible corpus and manifest that can support fixed research experiments rather than host-dependent smoke checks.
 
 ## Planned deliverables
 
-- [ ] Produce a single `analyze` report combining target metadata, mitigations, primitive coverage, representative gadgets, scores, and limitations.
-- [ ] Add mitigation-aware interpretation without claiming exploitability.
-- [ ] Add JSON output parity for the text report.
-- [ ] Add limitations block to every JSON report.
-- [ ] Add optional CI-friendly nonzero policy modes only if clearly documented.
+- [ ] Build controlled binaries across GCC and Clang when available.
+- [ ] Include selected optimization levels and linkage modes.
+- [ ] Include PIE, stack-protector, RELRO, executable-stack, and static/dynamic variants.
+- [ ] Include CET/IBT build variants when the host toolchain supports them.
+- [ ] Record source hash, compiler version, exact command, output hash, file size, and expected mitigation facts.
+- [ ] Add a manifest validator.
+- [ ] Add corpus regeneration commands that do not depend on private inputs.
+- [ ] Define fixed Tier 1 through Tier 4 corpus membership for the preview campaign.
+- [ ] Record license and redistribution status for larger open-source targets.
 
 ## Acceptance criteria
 
-- [ ] `analyze` output is useful for defensive triage.
-- [ ] Output distinguishes facts, heuristics, limitations, and future work.
-- [ ] JSON validates against the repository schema.
+- [ ] Controlled corpus outputs can be regenerated from public source and commands.
+- [ ] Every benchmark target has a SHA-256 hash.
+- [ ] Expected mitigation states are machine-checkable.
+- [ ] Corpus membership is versioned and reviewable.
+- [ ] Benchmark scripts consume the manifest without manual target edits.
+- [ ] Private or proprietary binaries are not required for core reproduction.
+
+## Out of scope
+
+- Final repeated benchmark campaign.
+- Network infrastructure case-study conclusions.
+- Multi-architecture corpus support.
+
+## Handoff
+
+Sprint 12 freezes a preview corpus and adds higher-resolution benchmark infrastructure before the `v0.1.0-rc1` gate.

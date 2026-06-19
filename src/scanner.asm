@@ -189,7 +189,7 @@ x64lens_scanner_find_ret_candidates:
     add     rcx, [rsp + 8]
     mov     [rax + GADGET_BYTE_LEN], rcx
 
-    ; Store raw terminator type and clear future semantic/scoring fields so
+    ; Store raw terminator type and clear downstream semantic/scoring fields so
     ; downstream code never reads stale data.
     mov     edx, [rsp]
     mov     [rax + GADGET_TERMINATOR_TYPE], edx

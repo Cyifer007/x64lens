@@ -78,6 +78,8 @@ make normalize-perms
 make script-perms-check
 make scaffold-check
 make diagrams-check
+make public-docs-check
+make planning-docs-check
 make dev-tools-check
 make clean
 make
@@ -135,15 +137,21 @@ The table below lists the public Make targets. A new development environment sho
 | `make arena-smoke` | Validate arena-backed candidate storage invariants. |
 | `make semantic-smoke` | Validate semantic and scoring facts for the controlled fixture. |
 | `make json-smoke` | Validate JSON output for the controlled fixture. |
+| `make analyze-smoke` | Validate integrated text and JSON analysis output. |
 | `make system-smoke` | Validate installed system ELF64 binaries. |
 | `make validation-smoke` | Run the local pre-commit validation bundle. |
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
 | `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
-| `make bench-summary` | Summarize generated benchmark TSV files. |
+| `make bench-summary` | Summarize all generated benchmark TSV files. |
+| `make bench-summary-latest` | Summarize only the newest baseline-smoke TSV artifact. |
+| `make checkpoint-demo` | Run the integrated controlled or system-binary checkpoint demonstration. |
+| `make checkpoint-tag-help` | Print non-mutating local annotated-tag guidance. |
 | `make script-perms-check` | Verify executable bits on shell/Python helper scripts. |
 | `make scaffold-check` | Verify required repository structure. |
 | `make diagrams-check` | Verify diagram source files exist. |
+| `make public-docs-check` | Reject private or dialogue-style wording in public repository files. |
+| `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 18 planning structure. |
 | `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
@@ -173,6 +181,8 @@ make normalize-perms
 make script-perms-check
 make scaffold-check
 make diagrams-check
+make public-docs-check
+make planning-docs-check
 ```
 
 Benchmark smoke results are development evidence only. Publication claims require the full benchmark methodology, controlled corpus documentation, repeated runs, baseline tool versions, exact commands, host metadata, raw result preservation, and explicit limitations.
@@ -201,3 +211,8 @@ make checkpoint-tag-help
 ```
 
 The demo validates both human-readable and JSON integrated output. `checkpoint-tag-help` prints the local annotated tag commands without mutating the repository.
+
+
+## Roadmap orientation
+
+The canonical development plan is `docs/roadmap-18-sprints.md`. The earlier twelve-sprint file is retained only as a superseded compatibility reference. New implementation work should be checked against the active sprint plan, the research release plan, and the relevant design contracts before code changes begin.

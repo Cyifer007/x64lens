@@ -136,7 +136,7 @@ alignment count: 0x0000000000000264
 Register coverage: rsp
 ```
 
-The `/bin/ls` run is a smoke test, not a correctness oracle. It proves the semantic summary path works on a real system binary and that stack-pivot classification can surface `rsp` register coverage. Because the scanner is still exact-suffix and not a full decoder, the high `ret imm16` and `alignment` counts must remain interpreted as first-pass byte-pattern facts.
+The `/bin/ls` run is a smoke test, not a correctness oracle. It demonstrates that the semantic summary path executes on a real system binary and that stack-pivot classification can surface `rsp` register coverage. Because the scanner is still exact-suffix and not a full decoder, the high `ret imm16` and `alignment` counts must remain interpreted as first-pass byte-pattern facts.
 
 ## Closeout decision
 

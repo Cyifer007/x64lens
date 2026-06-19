@@ -113,3 +113,17 @@ Development environment checks are part of the contract. Build, test, JSON valid
 ## Integrated reporter reuse rule
 
 Integrated commands must consume internal records and reuse report-section implementations. They must not scrape focused command text output or copy formatter logic into a second path.
+
+## Roadmap and release-gate rule
+
+After the Sprint 6 checkpoint, feature work must map to the canonical eighteen-sprint roadmap or an explicit ADR. The current priority order is parser safety, mitigation depth, evidence provenance, primitive expansion, corpus reproducibility, benchmark infrastructure, comparative experiments, triage, and release.
+
+A planned release date does not override an unmet evidence gate. `v0.1.0-rc1` and `v0.1.0` require the artifacts and checks defined in `docs/research-release-plan.md`.
+
+## Schema transition rule
+
+Schema `0.1.0` may receive compatible optional fields. Evidence provenance, analysis completeness, candidate truncation, or changed count meaning requires the planned schema `0.2.0` transition and full validator/documentation parity.
+
+## Planning-document validation rule
+
+`make planning-docs-check` verifies the canonical roadmap, release plan, design seams, ADR, and Sprint 7 through Sprint 18 plans. It is a structural guardrail, not a substitute for technical review.

@@ -2,83 +2,137 @@
 
 ## Purpose
 
-Sprint 3 introduced a byte-oriented raw scanner and exact suffix pattern matcher. This is useful, but it is not a full instruction decoder. This document defines the future decoder seam so the repository can grow without rewriting the scanner.
+The current scanner is byte-oriented and the current matcher recognizes exact suffix templates. This design is intentionally narrower than full x86_64 decoding. The decoder roadmap defines how validity evidence can be added without replacing the raw scanner or weakening the dependency-light research design.
 
 ## Current implemented layers
 
 ```text
-executable regions -> raw candidate scanner -> exact suffix pattern matcher -> text report
+executable region
+  -> raw terminator-centered candidate
+  -> exact suffix pattern
+  -> conservative semantic-exact class
+  -> heuristic score
 ```
 
-The current scanner finds return-terminated byte windows inside executable `PT_LOAD + PF_X` regions. The exact matcher assigns small `PATTERN_*` IDs to suffix byte templates such as `pop rdi; ret`, `leave; ret`, `syscall; ret`, `ret`, and `ret imm16`. Patch 015 then maps supported exact pattern IDs into first-pass semantic facts while preserving the same decoder limitation.
+A pattern label proves only that the suffix bytes match the documented template. It does not prove that every byte in the printed backward window belongs to one valid instruction sequence from the window start.
 
-## Important limitation
+## Preserved facts
 
-A Sprint 3 pattern label describes a recognized suffix ending at the terminator. It does not prove that the entire printed byte window is a single intended instruction sequence.
+Future decoder work must preserve:
 
-Example:
+- raw candidate offsets and windows,
+- exact suffix pattern IDs,
+- semantic-exact classes,
+- unknown candidates,
+- raw and exact benchmark metrics,
+- independent scanner timing.
 
-```text
-bytes: 5f c3 5e c3
-pattern: pop rsi; ret
-```
+Decoder output is additional evidence, not a replacement history.
 
-The label means the suffix `5e c3` matches `pop rsi; ret`. Earlier bytes remain part of the raw candidate window.
+## Side-car integration model
 
-## Why this is acceptable now
-
-The current design deliberately separates four concepts:
-
-1. raw byte candidate discovery,
-2. exact suffix pattern recognition,
-3. semantic primitive classification,
-4. future full instruction decoding.
-
-This staged model lets the tool become useful before it becomes a full disassembler.
-
-## Future decoder seam
-
-A future decoder should be added as an optional side-car path, not by replacing raw candidate records.
-
-Recommended model:
+Recommended record families:
 
 ```text
 gadget_record[]
-semantic_record[] keyed by candidate index
-decode_record[] keyed by candidate index, optional future work
+  raw scanner facts
+
+candidate_evidence_record[]
+  evidence kind, matched suffix range, completeness, validator identity
+
+decode_record[]
+  selected start, decoded length, instruction count, validity, operand facts
 ```
 
-The scanner remains responsible for finding candidate windows. The decoder should explain whether a window corresponds to a valid instruction sequence from a selected start offset.
+Variable-length instruction or operand data should use arena-backed offset/length references rather than pointers embedded in persistent output structures.
 
-## External decoder strategy
+## Decoder responsibilities
 
-Before adding a runtime decoder dependency, use external tools as validators and baselines:
+A future decoder may:
 
-- `objdump -d -Mintel` for fixture review,
-- ROPgadget for common gadget comparison,
-- Ropper for common gadget comparison,
-- ropr where available,
-- radare2/rabin2 where useful for metadata comparison.
+- validate a selected candidate start,
+- decode through the terminator,
+- reject invalid or truncated encodings,
+- report instruction count and length,
+- report operand roles and memory access,
+- report controlled and clobbered registers,
+- support decoder-backed semantic classification.
 
-This preserves the dependency-light research claim while still providing evidence against established tools.
+A decoder must not own:
 
-## Full decoder decision gate
+- file mapping,
+- ELF identity,
+- program-header parsing,
+- executable-region discovery,
+- raw terminator enumeration,
+- mitigation analysis,
+- score policy,
+- output formatting.
 
-Do not add an embedded decoder until the project can answer these questions:
+## External validation before embedding
 
-- Which correctness gap requires decoding?
-- Which baseline shows that exact patterns undercount or overcount in a way that affects research claims?
-- Can the decoder be optional?
-- Will decoder-backed output be represented as side-car records rather than replacing raw scanner output?
-- How will runtime and memory impact be measured separately from raw scanning?
+Before adding a runtime decoder dependency, use controlled fixtures and external tools to measure the gap:
 
-## Near-term sprint impact
+- `objdump -d -Mintel`,
+- ROPgadget,
+- Ropper,
+- ropr,
+- optional radare2 or another decoder-backed validator.
 
-Sprint 4 should not implement a full decoder. It should conservatively classify only exact pattern IDs and leave ambiguous candidates as `unknown_candidate`.
+The purpose is not to force exact count equality. The purpose is to identify why candidates differ and whether the difference affects x64lens claims or defensive usefulness.
 
-Sprint 8 or later can expand patterns. Sprint 10 can quantify gaps against baseline tools. A full decoder belongs after those measurements unless a critical correctness issue appears earlier.
+## Sprint 9 decision evidence
 
+Sprint 9 should measure at least:
 
-## Sprint 4 classifier and future decoder
+- raw candidates that do not decode from the selected start,
+- exact suffix matches embedded in unrelated instruction bytes,
+- semantically useful baseline gadgets not represented by current patterns,
+- differences caused by max-depth definitions,
+- duplicate or canonicalization differences,
+- runtime and memory cost of external decoder validation.
 
-Patch 015 does not remove the need for a future decoder. It adds a conservative classifier over exact suffix evidence. Future decoder work should augment candidate records with decoded instruction facts and let `classifier.asm` prefer decoder-backed facts when they exist. The raw scanner and exact pattern matcher should remain useful as fast prefilter stages.
+## Embedded decoder decision gate
+
+An embedded decoder is approved only when all conditions are met:
+
+1. a quantified correctness or coverage gap affects a release claim or user-facing result,
+2. the dependency and license are acceptable,
+3. decoder facts fit the side-car model,
+4. raw scanner operation remains independently available,
+5. decoder-backed and pattern-backed metrics remain separate,
+6. runtime and memory impact can be measured as an ablation,
+7. failure and malformed-input behavior are covered by tests.
+
+## Integration options
+
+### Optional external verification mode
+
+A development or research helper may invoke an external decoder and write comparison artifacts. This keeps the runtime binary dependency-light but is not suitable as the only source of release-time facts.
+
+### Optional linked decoder adapter
+
+A future build profile may link a mature decoder behind an internal adapter. This requires clear build metadata and separate benchmark rows.
+
+### Minimal internal decoder
+
+A limited internal decoder may be justified for a tightly bounded instruction subset. This is high maintenance and should not be selected merely to preserve pure-assembly branding.
+
+## Timeline
+
+- Sprint 9: provenance records, gap measurement, and decision gate.
+- Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
+- Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
+- Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
+
+## Classification preference
+
+When multiple evidence sources exist, the classifier should prefer the strongest justified source while reporting provenance:
+
+```text
+decoder-backed semantic fact
+  > exact-suffix semantic fact
+  > unknown candidate
+```
+
+A decoder disagreement must remain visible. The tool should not hide raw or exact facts simply because a stronger validator rejected semantic promotion.

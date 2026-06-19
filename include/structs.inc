@@ -116,7 +116,7 @@
 ; exact byte-template pattern identifiers
 ;
 ; Sprint 3 Phase D records exact pattern matches separately from semantic
-; classes. patterns.asm owns these IDs. classifier.asm will later translate
+; classes. patterns.asm owns these IDs. classifier.asm translates
 ; recognized pattern IDs into semantic classes, register bitmaps, stack deltas,
 ; and scoring inputs. Keeping this separation protects the module boundary
 ; between byte-template recognition and exploitability interpretation.

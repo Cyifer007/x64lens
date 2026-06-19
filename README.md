@@ -1,140 +1,95 @@
 # x64lens
 
-**x64lens is an assembly-first ELF64 x86_64 binary analysis tool that identifies exploit-relevant code primitives, classifies their semantic usefulness, evaluates mitigation context, and produces reproducible reports for offensive research, defensive triage, and binary hardening assessment.**
+**x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 5 Patch 021 candidate. Sprints 1 through 4 are complete; Patch 017 added and validated the first scoring pass plus initial `gadgets --format json` output. Patch 018 strengthened JSON, system-binary, Docker-availability, and patch-bundle validation. Patch 019 added baseline comparison smoke benchmarking. Patch 020 added developer onboarding, dependency checks, optional baseline installation guidance, and broader default baseline smoke targets. Patch 021 closes Sprint 5 by hardening Docker dependency parity, ropr installation guidance, and optional-baseline enforcement behavior.
+> Status: Sprint 6 Patch 024 planning and architecture review candidate. Sprints 1 through 6 are complete. The integrated `analyze` command, schema-versioned JSON, controlled fixture validation, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
 >
-> Current version: `0.1.0-dev`
+> Tool version: `0.1.0-dev`
 >
-> Output schema version: `0.1.0`
+> JSON schema version: `0.1.0`
+>
+> Canonical roadmap: [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md)
 
 ## Why this project exists
 
-x64lens starts from a narrow but deliberate premise: build the hot path of binary exploitability analysis from the assembly layer upward. The initial target is not a full replacement for ROPgadget, Ropper, radare2, Ghidra, angr, or other mature frameworks. Instead, the goal is to build a focused, transparent, fast, and research-measurable analyzer that performs:
+Most gadget tools emphasize enumeration for exploit development. x64lens studies a different question: can a dependency-light, assembly-first engine turn deterministic ELF and code-reuse facts into a fast, reproducible, mitigation-aware report that is useful for defensive binary triage?
 
-1. ELF64 x86_64 parsing.
-2. Executable region discovery.
-3. Gadget candidate scanning.
-4. Semantic primitive classification.
-5. Mitigation-aware exploitability interpretation.
-6. Reproducible text and JSON reporting.
-7. Benchmark comparisons against existing tooling.
+The project evaluates three research questions:
 
-The design intentionally separates the **speed-first scanning engine** from the **semantic exploitability value layer**.
+1. **Performance:** How do runtime, CPU cost, memory use, and throughput compare with established gadget tools under controlled conditions?
+2. **Semantic value:** Does separating raw candidates, exact suffix observations, semantic primitives, unknown candidates, and scores provide more actionable evidence than a raw gadget dump?
+3. **Operational use:** Can the resulting report support CI, vulnerability-management enrichment, or infrastructure-binary prioritization without claiming exploitability?
 
-## Research framing
+NASM is an implementation choice to evaluate, not a result. Performance and usefulness remain hypotheses until the fixed benchmark methodology and corpus support them.
 
-The project evaluates whether a dependency-light, assembly-first analyzer can improve static binary exploitability triage for network-facing infrastructure software, secure build validation, and binary hardening assessment.
-
-Primary research questions:
-
-1. **Performance:** Can an assembly-first ELF64 x86_64 gadget discovery engine outperform existing ROP gadget tooling in runtime and memory efficiency while maintaining comparable gadget discovery coverage?
-2. **Semantic value:** Can semantic primitive classification and mitigation-aware scoring provide more actionable binary exploitability triage than raw gadget enumeration alone?
-3. **Enterprise adoption:** Can a static, dependency-light, assembly-first binary analyzer be integrated into CI/CD or vulnerability management workflows to help prioritize binaries based on hardening posture and exploit primitive availability?
-
-## Initial scope
-
-Version `0.1.x` targets:
-
-- ELF64.
-- x86_64.
-- Linux.
-- Static local binary analysis.
-- NASM-first implementation.
-- Pattern-based gadget discovery.
-- Human-readable and JSON output.
-- Controlled benchmark comparisons.
-
-## Explicit non-goals for the initial research prototype
-
-The first implementation phase does **not** attempt to provide:
-
-- Full exploit generation.
-- Payload generation.
-- Remote target interaction.
-- Malware deployment or execution.
-- A full x86_64 instruction decoder.
-- Symbolic execution.
-- Multi-architecture support.
-- Dynamic tracing.
-- Automatic vulnerability discovery.
-
-Those may become future research directions, but they are not part of the initial implementation contract.
-
-## Tool name decision
-
-The name `x64lens` is intentionally narrow for the first major phase. The tool begins as a lens into x86_64 ELF binaries. If the project later grows into a multi-architecture platform, architecture-specific engines can be added under the same repository, or the project can later adopt a broader umbrella name. For now, `x64lens` keeps the initial research contribution precise, searchable, and technically honest.
-
-See [`docs/adr/0001-tool-name.md`](docs/adr/0001-tool-name.md).
-
-## Current implementation checkpoint
-
-Patch 017 advanced the implemented pipeline to scoring and initial JSON output. Patch 018 strengthened validation around that pipeline. Patch 019 adds development-level baseline comparison plumbing:
+## Current implemented pipeline
 
 ```text
-ELF64 validation -> program-header analysis -> executable-region mapping -> raw gadget scanner -> exact suffix pattern matcher -> semantic classifier -> scoring -> text/JSON reporting -> benchmark smoke evidence
+read-only file mapping
+  -> ELF64 x86_64 validation
+  -> program-header analysis
+  -> executable PT_LOAD + PF_X regions
+  -> raw ret and ret imm16 candidate windows
+  -> exact suffix pattern IDs
+  -> conservative semantic classes
+  -> heuristic scores
+  -> text or JSON reporting
+  -> integrated analyze report
 ```
 
-The current `gadgets` command reports raw terminator-centered byte windows, exact suffix pattern labels, conservative semantic classes, controlled-register bitmaps, stack deltas, heuristic scores, primitive coverage counts, and initial schema-versioned JSON. This is still not full instruction decoding and does not emit exploitability verdicts.
+Implemented commands:
 
-See [`docs/roadmap-12-sprints.md`](docs/roadmap-12-sprints.md) for the expanded semester roadmap.
-
-## Reviewer-facing design posture
-
-The current plan treats common reviewer objections as design inputs rather than late-stage surprises.
-
-Key planning commitments:
-
-- NASM is an evaluated implementation choice, not an assumed proof of superiority.
-- Parser safety is a mandatory design constraint because the tool parses untrusted binaries.
-- `analyze` is a checkpoint integration command, not an exploitability verdict.
-- Exact suffix matching is a Sprint 3 stage, not a full instruction decoder.
-- Raw candidate counts, exact pattern counts, semantic primitive counts, and scored gadget counts are separate metrics.
-- External tools are comparison baselines first, not required runtime dependencies.
-- ARM64, PE, Mach-O, full decoding, and embedded decoder support remain future seams, not near-term scope creep.
-
-See the planning notes under [`docs/design/`](docs/design/) and [`docs/adr/0005-reviewer-readiness-and-future-seams.md`](docs/adr/0005-reviewer-readiness-and-future-seams.md).
-
-## Current CLI contract
-
-Implemented checkpoint commands:
-
-```bash
+```text
+x64lens help
+x64lens version
 x64lens info <file>
 x64lens mitigations <file>
 x64lens gadgets [--format text|json] [--max-depth N] <file>
 x64lens analyze [--format text|json] [--max-depth N] <file>
-x64lens bench <file>
-x64lens version
 ```
 
-Planned early global flags:
+A `bench` CLI command is deferred until after `v0.1.0`. Research measurement remains under repository Make targets and scripts so orchestration stays independent from the analyzer being measured.
 
-```bash
---format text|json
---max-depth <N>
---badbytes <hex-list>
---quiet
---verbose
---no-color
---schema-version
-```
+## Scope
 
-See [`docs/cli-contract.md`](docs/cli-contract.md).
+The current `0.1.x` research line targets:
 
-## New environment quick start
+- Linux ELF64,
+- x86_64,
+- static local analysis,
+- direct-syscall NASM core,
+- program-header-authoritative executable mappings,
+- pattern-based candidate discovery,
+- conservative semantic classification,
+- text and JSON output,
+- reproducible comparison tooling.
 
-### Ubuntu development dependencies
+The current line does not implement exploit generation, payload generation, remote interaction, symbolic execution, dynamic tracing, automatic vulnerability discovery, a mandatory full decoder, multi-architecture support, PE, or Mach-O.
 
-The primary development target is Ubuntu 24.04 on x86_64. Install the baseline development packages with:
+## Important interpretation boundaries
+
+- A **raw candidate** is a terminator-centered byte window.
+- An **exact pattern** is a recognized suffix, not proof that the full window is one decoded instruction sequence.
+- A **semantic primitive** is assigned only when the current classifier has a supported rule.
+- An **unknown candidate** is preserved rather than overclassified.
+- A **score** is relative utility under the current heuristic model, not exploitability.
+- A mitigation result is a static indicator, not a final security verdict.
+- Exploitability requires an independent vulnerability and relevant runtime conditions.
+
+See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
+
+## Quick start on Ubuntu 24.04
+
+Install required development tools:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc gdb make python3 python3-venv \
+  python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
-The repository also provides explicit helper targets:
+Repository helpers:
 
 ```bash
 make install-dev-deps-ubuntu
@@ -142,323 +97,181 @@ make dev-tools-check
 make doctor
 ```
 
-`make install-dev-deps-ubuntu` installs the required development dependencies only. Optional comparison tools are installed separately so the base toolchain remains small and predictable.
+Build and validate:
 
-### Optional baseline tools
+```bash
+make clean
+make
+make samples
+make test
+make validation-smoke
+```
 
-ROPgadget, Ropper, and ropr are optional comparison baselines. They are not required to build or test x64lens. ROPgadget and Ropper are installed through `pipx`; ropr is installed through a current Rust/Cargo toolchain. Install available baselines with:
+Run the checkpoint demo:
+
+```bash
+make checkpoint-demo
+DEMO_TARGET=/bin/ls MAX_DEPTH=4 make checkpoint-demo
+```
+
+See [`docs/onboarding.md`](docs/onboarding.md) for the full Make target tour and [`docs/demo.md`](docs/demo.md) for the checkpoint demonstration.
+
+## Optional baseline tools
+
+ROPgadget, Ropper, and ropr are comparison baselines. They are not runtime dependencies.
 
 ```bash
 make install-baseline-tools-user
+make baseline-tools-check
 ```
 
-Manual equivalent:
+Manual setup:
 
 ```bash
 pipx install ROPGadget
 pipx install ropper
-# ropr may require a newer Rust/Cargo than Ubuntu 24.04 apt provides.
-# Prefer rustup stable for the ropr baseline.
 make install-rustup-user
 . "$HOME/.cargo/env"
 make install-ropr-user
 export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 ```
 
-Validate optional baseline availability with:
+Ubuntu's apt-provided Cargo may be too old for the current ropr release. The rustup helper installs a current user-local stable toolchain.
 
-```bash
-make baseline-tools-check
-REQUIRE_BASELINES=1 make baseline-tools-check
-```
-
-Ubuntu 24.04 apt-provided Cargo may be too old for the current ropr crate. Use `make install-rustup-user`, reload `~/.cargo/env`, then run `make install-ropr-user` when ropr is required.
-
-See [`docs/onboarding.md`](docs/onboarding.md) for the complete first-run checklist and Make target tour.
-
-## Build
-
-### Build requirements
-
-- Linux x86_64.
-- `nasm`.
-- GNU `ld` from binutils.
-- `make`.
-
-### Test and validation requirements
-
-- `gcc` for controlled toy corpus compilation.
-- `python3` for JSON validation and malformed fixture generation.
-- GNU `time` at `/usr/bin/time` for benchmark measurements.
-- `readelf` and `objdump` from binutils for manual comparison and fixture validation.
-
-### Build command
-
-```bash
-make
-```
-
-### Run the current implementation
+## Example usage
 
 ```bash
 ./build/x64lens version
-./build/x64lens help
-make samples
-./build/x64lens info ./tests/bin/minimal_nopie
 ./build/x64lens info /bin/ls
-./build/x64lens mitigations ./tests/bin/minimal_nopie
-./build/x64lens mitigations ./tests/bin/minimal_pie_canary
-./build/x64lens gadgets ./tests/bin/gadgets
+./build/x64lens mitigations /bin/ls
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
-./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
-python3 -m json.tool /tmp/x64lens-gadgets.json >/dev/null
-./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
-./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze.json
-python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
+./build/x64lens analyze --max-depth 4 /bin/ls
+```
+
+Generate and validate JSON:
+
+```bash
+./build/x64lens analyze --format json --max-depth 4 \
+  ./tests/bin/gadgets > /tmp/x64lens-analysis.json
+python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
+python3 tools/validate-json-report.py \
+  --mode fixture /tmp/x64lens-analysis.json
+```
+
+The same flags are accepted in either documented order:
+
+```bash
+./build/x64lens analyze --max-depth 4 --format json <file>
+./build/x64lens analyze --format json --max-depth 4 <file>
+```
+
+## Validation surface
+
+Core checks:
+
+```bash
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make public-docs-check
+make planning-docs-check
+make build-tools-check
+make sample-tools-check
+make dev-tools-check
+make test
+make validate-gadget-fixture
 make semantic-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
 make validation-smoke
-```
-
-The `info` command maps the target read-only, validates ELF64 x86_64 identity, and prints basic ELF header metadata. The `mitigations` command builds on that path by parsing program headers, identifying executable `PT_LOAD + PF_X` regions, and reporting baseline mitigation indicators such as PIE, NX stack, RELRO presence, RWX load segments, and dynamic linking. The `gadgets` command scans executable regions for raw `ret` and `ret imm16` candidates, reports bounded byte windows, tags exact byte-template patterns such as `pop rdi; ret`, `leave; ret`, and `syscall; ret`, then maps supported exact patterns into first-pass semantic primitive classes and heuristic scores. `--format json` emits machine-readable records with explicit counts, primitive coverage, scored candidates, and limitations.
-
-### Run tests
-
-```bash
-make test
-```
-
-### Fixture, JSON, system-binary validation, and smoke benchmark
-
-Sprint 3 adds an explanatory fixture validator and a first scanner smoke benchmark. These are separate from `make test` so they can preserve richer evidence without slowing the default regression path.
-
-```bash
-make validate-gadget-fixture
-make arena-smoke
-make semantic-smoke
-make json-smoke
-make system-smoke
-make validation-smoke
-RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
-RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
-```
-
-### Baseline comparison smoke benchmark
-
-Patch 019 adds a development-level baseline comparison harness. It always runs x64lens and optionally runs ROPgadget, Ropper, and ropr when those tools are installed:
-
-```bash
-RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
-python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
-```
-
-Missing optional baseline tools are recorded in metadata and skipped by default. Set `REQUIRE_BASELINES=1` when the environment is expected to contain at least one optional baseline tool. These rows are smoke evidence for benchmark plumbing, not publication claims.
-
-The fixture validator compares `x64lens gadgets` output for `tests/bin/gadgets` against `objdump -d -Mintel` and now validates first-pass semantic classifier facts. The smoke benchmark writes TSV results and metadata under `benchmarks/results/`, including raw candidate counts, exact pattern counts, semantic primitive counts, scored candidate counts, and unknown candidate counts. These generated results are ignored by Git unless intentionally promoted into a documented benchmark artifact.
-
-The smoke benchmark is development evidence only. Do not use it as a publication claim without the full benchmark methodology, baseline tools, corpus manifest, repeated trials, and environment metadata.
-
-## Make target tour
-
-A new development environment should walk through the targets in this order:
-
-```bash
-make normalize-perms
-make script-perms-check
-make scaffold-check
-make diagrams-check
-make dev-tools-check
-make clean
-make
-make samples
-make test
-make validate-gadget-fixture
-make semantic-smoke
-make json-smoke
-make system-smoke
-make validation-smoke
-RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
-make bench-summary
-```
-
-Docker and patch-bundle checks are environment-specific but should be run before publishing implementation patches:
-
-```bash
-make docker-available-check
-make docker-build
 make docker-test
+```
+
+`make validation-smoke` is the local aggregate. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+
+Patch bundle hygiene:
+
+```bash
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
-`make docker-test` depends on `make docker-build`, so Dockerfile dependency updates are validated against a current image. Every public Make target is documented in [`docs/onboarding.md`](docs/onboarding.md).
+## Benchmark smoke workflow
 
-## Docker and devcontainer workflow
-
-The preferred daily development environment is WSL2 Ubuntu 24.04. Docker is the reproducibility layer for reviewer setup, CI smoke checks, and future benchmark harness validation.
-
-Build the development image:
+Development smoke comparison:
 
 ```bash
-make docker-build
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
+make bench-summary-latest
 ```
 
-Open a shell without creating root-owned files in the bind-mounted repository:
+These results verify measurement plumbing. They are not publication results. Small x64lens runs can fall below GNU `time` display resolution. Sprint 12 replaces this with a higher-resolution runner before the research preview candidate.
 
-```bash
-make docker-shell
-```
+See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
 
-Check Docker availability and run the full container smoke test:
+## Architecture
 
-```bash
-make docker-available-check
-make docker-test
-```
-
-If `docker-available-check` fails, fix Docker Desktop WSL integration or Docker Engine availability before treating `docker-test` as an implementation failure.
-
-If `make clean` fails with `Permission denied` under `build/`, a Docker container was likely run as root against the bind-mounted repository. Repair local generated artifact ownership with:
-
-```bash
-sudo chown -R "$(id -u):$(id -g)" build tests/bin tests/toy-src
-make clean
-```
-
-See [`docs/troubleshooting.md`](docs/troubleshooting.md).
-
-## Development cadence
-
-This project follows a two-week sprint cadence during the initial research and implementation phase.
-
-1. Sprint 1: repository, build system, CLI skeleton, file mapping, ELF64 validation, and basic `info` reporting.
-2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
-3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
-4. Sprint 4: semantic primitive classifier and primitive coverage summary. Complete through Patch 015 validation.
-5. Sprint 5: scoring, JSON output, semantic fixture hardening, validation hardening, benchmark harness, comparison tooling, onboarding, and environment hardening. Complete through Patch 021.
-6. Sprint 6: integrated `analyze` checkpoint, documentation polish, benchmark summary, demo path, and paper scaffold alignment.
-
-See [`docs/sprints/`](docs/sprints/).
-
-## Integrated analyze checkpoint
-
-Sprint 6 introduces `analyze` as the first complete checkpoint command. It runs the current validated pipeline once and reports target metadata, mitigation facts, executable regions, raw candidates, exact suffix patterns, semantic primitive classes, register coverage, stack deltas, scores, and limitations.
-
-Recommended text and JSON examples:
-
-```bash
-./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
-./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > report.json
-python3 tools/validate-json-report.py --mode fixture report.json
-```
-
-The JSON shape is intentionally the same record-backed report currently used by `gadgets --format json`, because that report already includes the checkpoint facts needed for defensive triage and automation.
-
-## Example target output
-
-Current `info` output is ELF metadata focused:
+The core separation is mandatory:
 
 ```text
-x64lens 0.1.0-dev
-Target: ./tests/bin/minimal_nopie
-
-Format:
-  Type: ELF64
-  Endian: little
-  Machine: x86_64
-  ELF Type: ET_EXEC
-  Entry: 0x0000000000401050
-  Program header offset: 0x0000000000000040
-  Program header entry size: 0x0000000000000038
-  Program header count: 0x000000000000000d
-  Section header offset: 0x0000000000003640
-  Section header entry size: 0x0000000000000040
-  Section header count: 0x000000000000001f
-  File size: 0x0000000000003e00
+file mapping and bounds
+  -> ELF and loader facts
+  -> raw scanner
+  -> exact pattern matcher
+  -> semantic classifier
+  -> scoring
+  -> text/JSON adapters
 ```
 
-Current `mitigations` output is program-header and loader-mapping focused:
+Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
+
+See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), and [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md).
+
+## Roadmap and release gates
+
+The canonical eighteen-sprint roadmap defines:
+
+- Sprint 7 hostile-input hardening,
+- Sprint 8 mitigation and metadata depth,
+- Sprint 9 evidence provenance and schema `0.2.0`,
+- Sprint 10 primitive expansion,
+- Sprint 11 reproducible corpus,
+- Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
+- Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.
+
+See [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md) and [`docs/research-release-plan.md`](docs/research-release-plan.md).
+
+## Versioning
+
+The current integrated checkpoint is `v0.1.0-dev`. The tag remains local unless explicitly pushed.
+
+Planned release sequence:
 
 ```text
-x64lens 0.1.0-dev
-Target: ./tests/bin/minimal_nopie
-
-Mitigations:
-  PIE: disabled
-  NX stack: enabled
-  RELRO: present
-  RWX load segment: no
-  Dynamic linking: yes
-  Program header count: 0x000000000000000d
-  LOAD segments: 0x0000000000000004
-  Executable LOAD regions: 0x0000000000000001
-
-Executable regions:
-  - VA 0x0000000000401000, file offset 0x0000000000001000, file size 0x0000000000000161, mem size 0x0000000000000161, perms R-X
+v0.1.0-dev   integrated development checkpoint
+v0.1.0-rc1   research preview candidate
+v0.1.0       first research release
 ```
 
-Current Sprint 5 `gadgets` output keeps raw, exact, semantic, and scored facts separate:
+Schema `0.1.0` remains active through compatible mitigation additions. Evidence provenance, report identity, and truncation/completeness state are the planned trigger for schema `0.2.0`.
+
+See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
+
+## Research and publication
+
+The repository preserves the chain from implementation to evidence to paper:
 
 ```text
-x64lens 0.1.0-dev
-Target: ./tests/bin/gadgets
-
-Raw gadget candidates:
-  Max depth: 0x0000000000000008
-  Candidate capacity: 0x0000000000001000
-  Candidate count: ...
-  ret count: ...
-  ret imm16 count: ...
-  Exact pattern count: ...
-  Semantic primitive count: ...
-  unknown_candidate count: ...
-  arg_control count: ...
-  syscall_num_control count: ...
-  syscall_trigger count: ...
-  stack_pivot count: ...
-  alignment count: ...
-  Scored candidate count: ...
-  Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9
-  - VA ..., file offset ..., window start ..., len ..., terminator: ret, pattern: pop rdi; ret, semantic: arg_control, regs: rdi, stack delta: 0x0000000000000010, score: 90, bytes: ...
+source and fixtures
+  -> validators
+  -> corpus manifest
+  -> raw benchmark rows
+  -> generated summaries
+  -> claim-to-evidence matrix
+  -> paper and release artifacts
 ```
 
-Pattern labels are still exact suffix labels, not full decoded instruction sequences. Semantic classification and scoring are conservative. Mitigation-aware exploitability interpretation and full decoder-backed validation remain later sprint targets.
-
-## Sprint 6 integrated checkpoint demonstration
-
-The current checkpoint combines target metadata, mitigation facts, executable-region discovery, semantic gadget records, scores, and JSON output through `analyze`.
-
-Run the complete controlled demonstration:
-
-```bash
-make checkpoint-demo
-```
-
-Run the same path against an installed system binary:
-
-```bash
-DEMO_TARGET=/bin/ls MAX_DEPTH=4 make checkpoint-demo
-```
-
-Run the integrated command directly:
-
-```bash
-./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
-./build/x64lens analyze --format json --max-depth 4   ./tests/bin/gadgets > /tmp/x64lens-analyze.json
-python3 tools/validate-json-report.py   --mode fixture /tmp/x64lens-analyze.json
-```
-
-`analyze` emits one top-level banner in text mode. Focused commands retain their complete standalone banners. See [docs/demo.md](docs/demo.md) for the full demonstration guide and [docs/benchmark-smoke-interpretation.md](docs/benchmark-smoke-interpretation.md) for the current evidence boundary.
-
-Create the local checkpoint tag after committing Patch 023:
-
-```bash
-make checkpoint-tag-help
-git tag -a v0.1.0-dev   -m "x64lens v0.1.0-dev integrated checkpoint"
-```
-
-A normal `git push` does not publish the tag.
+See [`docs/publication-plan.md`](docs/publication-plan.md), [`docs/research-roadmap.md`](docs/research-roadmap.md), and [`docs/contracts/research-contract.md`](docs/contracts/research-contract.md).
 
 ## Ethics and safety
 
@@ -469,45 +282,3 @@ See [`docs/ethics-and-safety.md`](docs/ethics-and-safety.md).
 ## License
 
 Apache License 2.0. See [`LICENSE`](LICENSE).
-
-
-## Sprint 3 arena allocator note
-
-Sprint 3 Patch 010 introduces a small mmap-backed bump allocator for analysis records. The first consumer is the raw gadget candidate buffer used by `x64lens gadgets`. Candidate capacity remains bounded at 4096 records, but storage is now owned by a command-lifetime arena rather than a static `.bss` array. This keeps the scanner interface stable while preparing later sprints for larger internal records, JSON staging, and benchmark artifacts.
-
-
-## Sprint 3 pattern matcher note
-
-Sprint 3 Patch 011 adds exact byte-template pattern labels to raw gadget candidates. This is a pattern matching layer, not a semantic classifier. The matcher recognizes small suffix templates such as `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, and `ret imm16`.
-
-## Sprint 4 semantic classifier note
-
-Sprint 4 Patch 015 adds the first classifier pass. `classifier.asm` consumes `PATTERN_*` IDs and populates semantic classes, controlled-register bitmaps, stack deltas, side-effect flags, per-class summary counts, and register coverage. Unsupported patterns remain `unknown_candidate`.
-
-## Patch 14 planning note
-
-Patch 14 is a planning and documentation alignment patch. It does not change the scanner engine. It records reviewer-facing rationale and future seams for NASM implementation, parser safety, decoder integration, metric boundaries, contributor maintainability, and long-arc roadmap planning.
-
-
-## Sprint 4 validation note
-
-Patch 015 was validated locally in WSL2 and in Docker using the controlled `tests/bin/gadgets` fixture, `make validate-gadget-fixture`, `make semantic-smoke`, scanner smoke benchmarking, and a `/bin/ls` real-binary spot check. The semantic classifier is still exact-suffix based and should not be described as full instruction decoding.
-
-Known near-term follow-ups:
-
-- add fixture coverage for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret`,
-- represent unknown stack deltas more explicitly in JSON and possibly text output,
-- keep score and JSON generation sourced from internal records, not text output.
-
-
-## Sprint 5 scoring, JSON, and validation note
-
-Sprint 5 Patch 017 adds first-pass heuristic scoring and schema-versioned `gadgets --format json` output from internal records. Patch 018 strengthens validation with:
-
-- reusable JSON report validation through `tools/validate-json-report.py`,
-- real-system-binary smoke validation through `make system-smoke`,
-- local aggregate validation through `make validation-smoke`,
-- Docker environment triage through `make docker-available-check`,
-- patch ZIP hygiene validation through `make patch-bundle-hygiene`.
-
-Patch bundles should exclude `.git/`, `.local/`, `build/`, `tests/bin/`, generated benchmark results, and private/course files. Local project context should be distributed separately from public source patches.

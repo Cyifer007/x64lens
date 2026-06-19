@@ -16,8 +16,8 @@ x64lens <command> [options] <file>
 | ------- | ------- | ------ |
 | `info <file>` | Parse and print ELF64 metadata | Implemented in Sprint 1 |
 | `mitigations <file>` | Print hardening and mitigation metadata | Implemented in Sprint 2 |
-| `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts | Text implemented through Sprint 5, JSON implemented in Patch 017 |
-| `analyze [--format text|json] [--max-depth N] <file>` | Integrated checkpoint report with target metadata, mitigation facts, primitive coverage, scores, and limitations | Implemented in Sprint 6 Patch 022 |
+| `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts | Implemented; JSON schema `0.1.0` |
+| `analyze [--format text|json] [--max-depth N] <file>` | Integrated checkpoint report with target metadata, mitigation facts, primitive coverage, scores, and limitations | Implemented in Sprint 6; composable text reporting completed in Patch 023 |
 | `version` | Print tool and schema version | Implemented in Sprint 1 |
 | `help` | Print usage | Implemented in Sprint 1 |
 
@@ -25,14 +25,14 @@ x64lens <command> [options] <file>
 
 | Command | Purpose | Sprint target |
 | ------- | ------- | ------------- |
-| `bench <file>` | Benchmark x64lens against local target | Sprint 6 to 10 |
+| `bench <file>` | Optional in-process benchmark command | Deferred until after `v0.1.0`; external scripts remain authoritative for research measurement |
 
 ## Implemented flags
 
 | Flag | Meaning | Status |
 | ---- | ------- | ------ |
 | `--max-depth <N>` | Maximum bytes considered before a return terminator | Implemented in Sprint 3 |
-| `--format text|json` | Select text or JSON output for `gadgets` | JSON implemented in Patch 017 |
+| `--format text|json` | Select text or JSON output for `gadgets` and `analyze` | Implemented |
 
 `--format` and `--max-depth` may be used together in either order for `gadgets` and `analyze`:
 
@@ -108,7 +108,7 @@ Important interpretation details:
 
 The `analyze` command is the Sprint 6 checkpoint command. It runs the same internal record pipeline as `gadgets`, while also exposing target metadata and mitigation facts in one command path.
 
-Text output currently reuses the established `info`, `mitigations`, and `gadgets` section emitters. JSON output uses the same schema-backed report as `gadgets --format json`, because that report already contains the integrated target, mitigation, primitive, scoring, and limitation fields. This is acceptable for the `0.1.0-dev` checkpoint and may be polished later without changing scanner, classifier, or scoring records.
+Text output uses composable body-only wrappers around the established `info`, `mitigations`, and `gadgets` section emitters, which preserves one top-level banner without duplicating report logic. JSON output uses the same schema-backed report as `gadgets --format json`, because that report already contains the integrated target, mitigation, primitive, scoring, and limitation fields. This is the `0.1.0-dev` checkpoint contract and can evolve only through reporter-level changes that preserve scanner, classifier, scoring, and schema facts.
 
 `analyze` must not be interpreted as an exploitability verdict. It is a static triage report.
 
@@ -139,3 +139,8 @@ BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
 `system-smoke` exercises the implemented commands against installed ELF64 x86_64 system binaries. It validates output shape and count invariants instead of exact distro-specific gadget totals.
+
+
+## Benchmark command deferral
+
+The research benchmark harness remains under `benchmarks/scripts/` rather than inside the analyzer process. This keeps measurement orchestration, tool ordering, target manifests, raw-row preservation, and baseline execution independent from the implementation being measured. A future `bench` CLI command is not required for the first research release.

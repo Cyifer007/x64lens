@@ -34,3 +34,8 @@ Use `make bench-summary` only when intentionally aggregating compatible artifact
 ## Research benchmark requirements
 
 The publication campaign must use a frozen corpus manifest, pinned tool versions, warm-up policy, repeated runs, higher-resolution timing, captured output size, comparable output modes where possible, median and percentile statistics, and explicit threats-to-validity analysis.
+
+
+## Transition to research measurement
+
+The current smoke rows verify harness execution and demonstrate that timing resolution is too coarse for some small-target conditions. They do not establish a speed or memory superiority claim. Sprint 12 replaces this path for research evidence with monotonic nanosecond timing, per-child resource capture, fixed target hashes, explicit cache and warmup policy, and a frozen corpus. See `docs/benchmark-methodology.md` and `docs/roadmap-18-sprints.md`.

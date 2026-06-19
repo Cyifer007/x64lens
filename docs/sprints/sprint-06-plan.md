@@ -1,13 +1,12 @@
-
 # Sprint 06 Plan
 
 ## Status
 
-Complete through Patch 023.
+Implementation complete through Patch 023. Patch 024 is the final planning and architecture alignment candidate before Sprint 7.
 
 ## Sprint goal
 
-Produce the first coherent integrated checkpoint: one `analyze` command, stable text and JSON paths, repeatable validation and demonstration commands, current-state paper framing, and a documented transition into the expanded roadmap.
+Produce the first coherent integrated checkpoint: one `analyze` command, stable text and JSON paths, repeatable validation and demonstration commands, current-state paper framing, and a documented transition into evidence-driven hardening and research work.
 
 ## Delivered
 
@@ -23,17 +22,22 @@ Produce the first coherent integrated checkpoint: one `analyze` command, stable 
 - [x] Add local `v0.1.0-dev` tag guidance.
 - [x] Add public-documentation hygiene validation.
 - [x] Write the Sprint 6 retrospective.
+- [x] Reassess Sprints 7 through 12 against the implemented checkpoint.
+- [x] Define Sprints 13 through 18 and evidence-based release milestones.
+- [x] Define parser-safety, mitigation, provenance, decoder, primitive, corpus, benchmark, schema, and publication gates.
+- [x] Add automated planning-document consistency validation.
 
 ## Acceptance criteria
 
-- [x] Native build and automated tests pass.
-- [x] Fixture, semantic, JSON, analyze, and system-binary smoke targets pass.
+- [x] Native build and automated tests pass for the Patch 023 checkpoint.
+- [x] Fixture, semantic, JSON, analyze, and system-binary smoke targets pass for the Patch 023 checkpoint.
 - [x] Docker remains a separate reproducibility check.
 - [x] `analyze` contains one banner while retaining all report sections.
 - [x] README usage matches actual CLI behavior.
 - [x] Benchmark notes distinguish development evidence from research results.
 - [x] Paper scaffold avoids claims not supported by measured evidence.
 - [x] Remaining limitations are explicit.
+- [ ] Patch 024 planning, documentation, and regression validation passes.
 
 ## Checkpoint commands
 
@@ -46,18 +50,19 @@ make bench-summary-latest
 make docker-test
 ```
 
-## Local tag
+## Local checkpoint tag
 
-After Patch 023 is committed:
+The local annotated tag should identify the clean Patch 023 checkpoint commit:
 
 ```bash
 make checkpoint-tag-help
-git tag -a v0.1.0-dev   -m "x64lens v0.1.0-dev integrated checkpoint"
 git show --stat --decorate v0.1.0-dev
+git rev-parse v0.1.0-dev^{}
+git rev-parse HEAD
 ```
 
-The tag remains local until explicitly pushed.
+A normal branch push does not publish the tag. Tag publication remains a separate release decision.
 
 ## Transition
 
-Patch 024 performs the architecture and roadmap review for Sprints 7 through 18. Sprint 7 implementation then begins with mitigation and hostile-input hardening.
+Patch 024 freezes the post-checkpoint roadmap and release gates. Once validated, Sprint 7 begins with hostile-input hardening, bounded parser infrastructure, and regression-corpus preservation. Additional presentation work is not the next priority.

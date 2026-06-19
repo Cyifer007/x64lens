@@ -32,7 +32,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -162,7 +162,7 @@ system-smoke: dev-tools-check all
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -220,6 +220,9 @@ checkpoint-tag-help:
 public-docs-check:
 	bash tools/check-public-docs.sh
 
+planning-docs-check:
+	bash tools/check-planning-docs.sh
+
 bench-summary:
 	@files="$$(ls benchmarks/results/*.tsv 2>/dev/null || true)"; \
 	if [ -z "$$files" ]; then \
@@ -251,6 +254,7 @@ script-perms-check:
 	@test -x tools/install-ropr-user.sh
 	@test -x tools/demo-checkpoint.sh
 	@test -x tools/check-public-docs.sh
+	@test -x tools/check-planning-docs.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -271,6 +275,11 @@ scaffold-check: script-perms-check
 	@test -f docs/demo.md
 	@test -f docs/benchmark-smoke-interpretation.md
 	@test -f docs/adr/0011-composable-text-report-sections.md
+	@test -f docs/adr/0012-roadmap-expansion-and-research-release-gates.md
+	@test -f docs/roadmap-18-sprints.md
+	@test -f docs/research-release-plan.md
+	@test -f docs/design/evidence-provenance-model.md
+	@test -f docs/design/schema-evolution.md
 	@echo "scaffold-check: ok"
 
 diagrams-check:

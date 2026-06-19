@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y nasm binutils gcc make python3 time git curl unzip zip time git curl unzip zip
+          sudo apt-get install -y nasm binutils gcc make python3 time git curl unzip zip
 
       - name: Build
         run: make

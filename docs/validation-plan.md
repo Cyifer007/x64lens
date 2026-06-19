@@ -587,3 +587,49 @@ make bench-summary-latest
 ```
 
 The integrated text regression requires exactly one version line and one target line while preserving all major sections. Public-documentation validation is part of `make validation-smoke`.
+
+## Sprint 6 Patch 024 planning and architecture validation
+
+Patch 024 adds a structural planning check and preserves the entire runtime regression ladder:
+
+```bash
+make planning-docs-check
+make validation-smoke
+make docker-test
+BUNDLE=/path/to/024_x64lens_sprint6_roadmap_architecture_review_patch.zip \
+  make patch-bundle-hygiene
+```
+
+The planning check confirms that the canonical roadmap, evidence gates, schema transition, and Sprint 7 through Sprint 18 plans are present and internally connected. It does not replace editorial review or runtime testing.
+
+The Patch 024 runtime acceptance rule is no regression from the validated Sprint 6 checkpoint. Fixture counts, JSON schema `0.1.0`, single-banner `analyze` text output, and system-binary smoke behavior remain unchanged.
+
+## Sprint 7 hostile-input validation direction
+
+Sprint 7 should introduce a deterministic malformed-input runner with these minimum assertions:
+
+- no SIGSEGV,
+- no SIGBUS,
+- no unbounded execution,
+- stable failure classification,
+- bounded output,
+- preserved input and seed for every discovered defect,
+- a regression test for every parser crash or incorrect acceptance,
+- explicit distinction between malformed, unsupported, and internal bounds failures.
+
+Mutation coverage should begin with ELF identification, header sizes and counts, program-header ranges, executable-region file ranges, and overlapping or overflow-prone table calculations. Later sprints extend the same model to dynamic, section, symbol, and string metadata.
+
+## Higher-resolution benchmark validation direction
+
+The publication runner planned for Sprint 12 must validate its own measurement contract:
+
+- monotonic nanosecond wall-clock timestamps,
+- per-child user CPU, system CPU, and maximum RSS,
+- documented warmup and cache policy,
+- tool and target hashes,
+- randomized or counterbalanced tool order,
+- batching or larger targets when the timer floor dominates,
+- separation of raw scanner, JSON gadget, and integrated analysis modes,
+- raw rows preserved before summaries are generated.
+
+Smoke benchmark rows remain development evidence and must not be merged with frozen research-campaign rows.

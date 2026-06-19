@@ -1,6 +1,6 @@
 # Changelog
 
-All notable public changes to x64lens will be documented in this file.
+All notable public changes to x64lens are documented in this file.
 
 The project follows semantic versioning once the first public release is cut.
 
@@ -8,15 +8,38 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Repeatable Sprint 6 checkpoint demonstration through `make checkpoint-demo`.
+- Canonical eighteen-sprint roadmap covering Sprints 7 through 18.
+- Research preview and first-release evidence gates for `v0.1.0-rc1` and `v0.1.0`.
+- Evidence provenance and schema evolution design plans.
+- Detailed Sprint 7 through Sprint 18 implementation plans.
+- ADR 0012 for roadmap expansion and evidence-based release gates.
+- `make planning-docs-check` and a repository planning-document consistency validator.
+- Sprint 6 Patch 024 validation and closeout planning documentation.
+
+### Changed
+
+- Reordered near-term work so hostile-input safety and mitigation accuracy precede primitive expansion.
+- Replaced the twelve-sprint roadmap as the canonical plan while retaining a compatibility document.
+- Defined schema `0.2.0` as the planned provenance and completeness transition.
+- Refined benchmark methodology for nanosecond timing, per-child resource use, corpus freezes, and campaign separation.
+- Updated release, publication, architecture, mitigation, scoring, semantic, and validation documentation for the post-checkpoint plan.
+- Updated the README to describe the validated Sprint 6 checkpoint and current release path.
+- Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
+
+
+## [0.1.0-dev] - Sprint 06 Patch 023
+
+### Added
+
+- Repeatable checkpoint demonstration through `make checkpoint-demo`.
 - `make bench-summary-latest`, `make checkpoint-tag-help`, and `make public-docs-check`.
 - Composable body-only text reporter wrappers in `src/report_context.asm`.
 - Checkpoint demo, benchmark interpretation, ADR, validation, retrospective, and paper-alignment documentation.
 
 ### Changed
 
-- `analyze` text output now emits one version and target banner while preserving all existing report sections.
-- Sprint 6 planning and validation documentation now reflects the completed integrated checkpoint.
+- `analyze` text output emits one version and target banner while preserving all report sections.
+- Sprint 6 planning and validation documentation reflects the integrated checkpoint.
 
 ## [0.1.0-dev] - Sprint 06 Patch 022
 
@@ -49,7 +72,7 @@ The project follows semantic versioning once the first public release is cut.
 - Replaced the brittle `cargo install ropr` onboarding path with a rustup-aware helper and explicit remediation guidance.
 
 
-## Unreleased
+## [0.1.0-dev] - Development history through Sprint 05 Patch 020
 
 ### Added
 
@@ -137,7 +160,7 @@ The project follows semantic versioning once the first public release is cut.
 - Added troubleshooting documentation for `make clean` permission failures caused by root-owned generated files.
 - Consolidated duplicate `Unreleased` changelog sections introduced during rapid sprint patching.
 
-## [0.1.0-dev] - Unreleased
+## [0.1.0-dev] - Initial scaffold history
 
 ### Added
 

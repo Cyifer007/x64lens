@@ -21,11 +21,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y nasm binutils gcc make python3 time git curl unzip zip
 
-      - name: Build and test
+      - name: Release validation
         run: |
           make clean
           make
-          make test
+          make validation-smoke
 
       - name: Prepare release artifacts
         run: bash tools/make-release-artifacts.sh

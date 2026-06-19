@@ -2,84 +2,163 @@
 
 ## Purpose
 
-x64lens parses untrusted binary files. Because the implementation is assembly-first, parser safety must be visible, testable, and documented. This document defines the safety posture and future fuzzing plan.
+x64lens parses untrusted binary files in assembly. Parser safety must therefore be explicit, testable, reproducible, and visible in release evidence. This plan defines the safety invariants, deterministic hostile-input campaign, regression policy, and future fuzzing gates.
 
 ## Current safety model
 
-The current parser model is conservative:
+The validated checkpoint already uses these controls:
 
-- map targets read-only,
-- validate file size before reading structured fields,
-- validate ELF identity before deeper parsing,
-- validate offset plus size ranges before table iteration,
-- treat malformed files as expected input classes,
-- return stable nonzero exit codes for invalid inputs,
-- avoid exploitability claims from parser metadata alone.
+- target files are mapped read-only,
+- ELF identity is validated before deeper parsing,
+- file-derived offsets and table ranges are checked before dereference,
+- executable scanning is restricted to file-backed `PT_LOAD + PF_X` ranges,
+- internal candidate storage uses a bounded command-lifetime arena,
+- malformed files are expected input classes,
+- invalid inputs return stable nonzero exit codes,
+- target bytes are never executed.
+
+These controls reduce risk, but they are not formal memory-safety guarantees.
 
 ## Mandatory safety invariants
 
-Every file-derived value must be treated as hostile until validated:
+Every file-derived value remains hostile until validated:
 
 - offsets,
 - sizes,
 - counts,
 - entry sizes,
-- virtual addresses used for reporting,
-- file offsets used for scanning,
-- table boundaries,
-- string-table offsets,
-- dynamic-section offsets,
-- symbol-table offsets.
+- offset-plus-size arithmetic,
+- count-times-entry-size arithmetic,
+- string offsets and terminators,
+- dynamic entries,
+- symbol entries,
+- relocation entries,
+- section entries,
+- note headers and property lengths,
+- executable-region ranges,
+- candidate window boundaries.
 
-Pointer arithmetic must be range-checked before dereference.
+Before dereference, code must prove:
 
-## Existing invalid input categories
+```text
+offset <= file_size
+size <= file_size - offset
+entry_size != 0 when count != 0
+count <= bounded implementation limit when one exists
+count * entry_size does not overflow
+table_end <= file_size
+```
 
-The validation corpus already tracks or plans these malformed input categories:
+Each derived entry must also remain inside the validated table range.
+
+## Bounded table direction
+
+Dynamic, symbol, string, relocation, section, and note parsing should share one documented bounded-table discipline. The implementation may use reusable helpers or repeated macros, but every parser must expose the same proof obligations.
+
+Conceptual bounded view:
+
+```text
+file_base
+file_size
+table_offset
+entry_size
+entry_count
+table_end
+```
+
+Parser modules should consume validated views rather than recomputing unchecked pointer arithmetic from raw ELF fields.
+
+## Existing regression categories
+
+The committed invalid corpus covers or plans coverage for:
 
 - empty file,
 - plain text file,
-- truncated ELF magic or header,
-- wrong architecture,
+- truncated ELF identity or header,
+- wrong class, endianness, or architecture,
 - malformed program-header offset,
-- impossible header counts,
-- oversized section table.
+- invalid entry size,
+- impossible header count,
+- arithmetic overflow,
+- range extending beyond end of file,
+- oversized section table,
+- malformed dynamic table,
+- malformed symbol or string table,
+- malformed GNU property note,
+- executable segment with inconsistent file size.
 
-## Future mutation smoke target
+## Sprint 7 deterministic mutation smoke
 
-Sprint 7 should add a lightweight mutation smoke harness before deeper mitigation parsing expands the attack surface.
-
-Candidate layout:
+Sprint 7 should add:
 
 ```text
-tests/malformed/
+tests/malformed/seeds/
+tests/malformed/regressions/
 tools/fuzz-mutated-elf-smoke.sh
-benchmarks/results/fuzz-smoke-*.tsv
+make malformed-smoke
 ```
 
-Minimum acceptance criteria:
+The first campaign should be deterministic and reproducible. For each seed, apply a fixed mutation catalog to fields such as:
+
+- ELF class, data encoding, machine, and type,
+- program-header offset, count, and entry size,
+- segment offset, file size, memory size, and flags,
+- section-header offset, count, and entry size,
+- dynamic tag/value pairs,
+- symbol and string table links and sizes,
+- note lengths and alignments,
+- candidate-bearing executable bytes near region boundaries.
+
+## Required per-case evidence
+
+Each mutation case should record:
 
 ```text
-no SIGSEGV
-no SIGBUS
-no unbounded runtime
-stable nonzero exit code for malformed inputs
-regression fixture added for every parser crash
-mutation seed list documented
+case_id
+seed_hash
+mutation_description
+command
+exit_code
+signal
+timeout
+wall_time
+stderr_size
 ```
 
-## Fuzzing scope
+Generated mutations remain ignored by default. Only minimized, reviewed regressions are committed.
 
-The first fuzzing harness does not need to be a full coverage-guided fuzzer. A deterministic mutation smoke test is enough to catch common parser safety regressions while keeping the toolchain simple.
+## Acceptance criteria
 
-Future work may add AFL++, honggfuzz, libFuzzer-backed helper binaries, or corpus minimization. Those are not required before the first semester checkpoint.
+- no SIGSEGV,
+- no SIGBUS,
+- no unbounded runtime,
+- no unexpected zero exit code for malformed input,
+- stable documented failure class,
+- no write or execute mapping of target bytes,
+- regression fixture added for every crash or incorrect bounds acceptance,
+- native and Docker results agree on pass/fail behavior.
+
+## Resource limits
+
+Hostile files can encode extreme counts even when arithmetic is technically in range. Parser modules should define explicit implementation limits where iteration or allocation could become unbounded. Exceeding a documented limit should return `EXIT_UNSUPPORTED` or another stable error instead of consuming uncontrolled resources.
+
+Candidate storage also requires explicit completeness state. Research reports must never silently stop at capacity.
+
+## Future coverage-guided fuzzing gate
+
+AFL++, honggfuzz, or another coverage-guided workflow may be added after:
+
+- deterministic mutation smoke is stable,
+- regression promotion and minimization rules exist,
+- the build can expose useful instrumentation or a compatible harness,
+- corpus and crash artifacts can be handled without polluting normal release bundles.
+
+Coverage-guided fuzzing is not required for the `v0.1.0-dev` checkpoint. Hostile-input regression evidence is required before the research preview candidate.
 
 ## Paper language
 
-The paper should say that parser safety is handled through explicit range validation and malformed-input regression testing. It should not claim formal memory safety.
-
-Recommended wording:
+Approved posture:
 
 ```text
-The prototype uses explicit bounds checks and malformed-input regression tests to reduce parser crash risk. It does not provide language-level memory safety guarantees.
+The prototype uses read-only target mappings, explicit bounds checks, bounded internal storage, deterministic malformed-input testing, and regression fixtures to reduce parser crash risk. It does not provide language-level or formally verified memory-safety guarantees.
 ```

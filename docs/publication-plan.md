@@ -1,73 +1,111 @@
 # Publication Plan
 
-## Candidate paper title
+## Candidate title
 
-x64lens: An Assembly-First Semantic Gadget and Exploitability Analyzer for ELF64 x86_64 Binaries
+x64lens: An Assembly-First Semantic Gadget and Mitigation-Aware Analyzer for ELF64 x86_64 Binaries
 
-## Target paper shape
+## Paper shape
 
-IEEE-style 5 to 6 page paper.
+The initial target is an IEEE-style paper with a bounded systems-security contribution and a public replication package.
 
-## Sections
+Planned sections:
 
 1. Introduction.
 2. Related work.
-3. Design.
-4. Evaluation methodology.
-5. Results.
-6. Discussion and threats to validity.
-7. Future work.
-8. Conclusion.
+3. Design and implementation.
+4. Safety and evidence model.
+5. Evaluation methodology.
+6. Results.
+7. Defensive triage case study.
+8. Discussion and threats to validity.
+9. Future work.
+10. Conclusion.
 
-## Core contribution statement
+## Core contribution
 
-x64lens contributes an assembly-first implementation and evaluation framework for ELF64 x86_64 gadget discovery, semantic primitive classification, and mitigation-aware exploitability reporting.
+The intended contribution is not simply that the implementation uses assembly. The contribution is an evaluated, dependency-light pipeline that separates:
+
+- loader-relevant ELF facts,
+- raw gadget candidate discovery,
+- exact suffix evidence,
+- semantic primitive coverage,
+- candidate provenance,
+- mitigation context,
+- heuristic utility scores,
+- reproducible measurement.
+
+## Claim discipline
+
+The paper may claim only what the preserved evidence supports.
+
+Examples:
+
+- Runtime and memory claims require fixed versions, commands, corpus hashes, repeated trials, raw rows, and generated statistics.
+- Coverage claims require explicit gadget definitions and reconciliation with baseline tools.
+- Parser robustness claims require hostile-input and regression evidence.
+- Defensive usefulness claims require defined analyst tasks and a reproducible case study.
+- The paper must not claim exploitability without an independent vulnerability and runtime context.
 
 ## Required artifacts
 
-- Public repository.
-- Release tag.
-- Benchmark corpus manifest.
-- Benchmark scripts.
-- Raw benchmark results.
-- Summary tables.
-- Reproduction commands.
-- IEEE paper source.
+- public repository,
+- release tag,
+- source and Linux x86_64 artifacts,
+- SHA-256 checksums,
+- corpus manifest and build commands,
+- baseline versions and exact commands,
+- raw benchmark results,
+- generated summaries, tables, and figures,
+- JSON schema and validators,
+- hostile-input regression evidence,
+- case-study materials,
+- reproduction instructions,
+- IEEE source and bibliography,
+- claim-to-evidence matrix.
 
+## Milestones
 
-## Research paper role
+| Sprint | Publication milestone |
+|---|---|
+| 8 | Mitigation accuracy fixtures and comparison evidence. |
+| 9 | Provenance model and schema `0.2.0`. |
+| 11 | Reproducible corpus and manifest freeze candidate. |
+| 12 | High-resolution pilot results and `v0.1.0-rc1` preview package. |
+| 13 | Publication-grade comparative campaign and raw-result freeze. |
+| 16 | Infrastructure case study and analyst-utility evidence. |
+| 17 | Paper, figures, claim matrix, and replication freeze. |
+| 18 | `v0.1.0` release and submission package. |
 
-The repository should preserve all experimental setup details needed to reproduce a publication-quality paper:
+## Reviewer-risk sections
 
-- corpus manifest,
-- target binary source/build commands,
-- tool versions,
-- benchmark commands,
-- platform details,
-- raw results,
-- summary tables,
-- limitations,
-- threats to validity.
+The paper should address:
 
-## Paper framing
-
-The paper should frame `x64lens` as a mitigation-oriented solution for advanced cyberinfrastructure defense:
-
-> Static binary exploitability analysis can enrich prioritization of network-facing infrastructure software by measuring hardening posture, gadget primitive availability, semantic exploit primitive coverage, and tool runtime/memory cost.
-
-## Reviewer-risk sections to include
-
-The paper should include explicit short sections or paragraphs for:
-
-- assembly-first design rationale,
-- parser safety and malformed-input validation,
-- exact pattern matching limitations,
-- raw/exact/semantic metric separation,
-- baseline comparison methodology,
-- threats to validity,
-- architecture and format scope limitations,
+- why NASM is evaluated,
+- parser safety without language-level memory safety,
+- exact suffix versus decoded validity,
+- evidence provenance,
+- raw/exact/semantic/validated/scored metric separation,
+- candidate truncation and completeness,
+- baseline task and output differences,
+- timing resolution and cache policy,
+- corpus selection bias,
+- x86_64 and ELF64 scope,
 - future decoder and multi-architecture work.
 
-## Paper claim discipline
+## Evaluation split
 
-Do not claim that x64lens is faster, more accurate, or more useful until repeated benchmark data supports that claim. Frame early results as evidence for a bounded prototype, not as universal superiority over mature tools.
+Use separate evaluation questions:
+
+1. **Engine cost:** raw or gadget-report runtime, CPU, RSS, and throughput.
+2. **Coverage:** candidate and semantic differences under explicit definitions.
+3. **Mitigation accuracy:** controlled fixture and external-tool agreement.
+4. **Robustness:** malformed-input outcomes and regression coverage.
+5. **Operational value:** analyst task performance or structured case-study interpretation.
+
+Do not combine these into a single superiority claim.
+
+## Release relationship
+
+`v0.1.0-rc1` is a research preview suitable for faculty and external feedback. `v0.1.0` is the first research release intended to accompany the final replication and submission package.
+
+See [`research-release-plan.md`](research-release-plan.md) and [`roadmap-18-sprints.md`](roadmap-18-sprints.md).

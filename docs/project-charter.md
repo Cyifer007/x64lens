@@ -75,6 +75,17 @@ Possible target domains:
 
 AI-based future work may include analyst summarization, corpus triage, or semantic clustering, but AI is not part of the initial implementation contract.
 
+
+## Current release path
+
+The project uses evidence-based milestone gates:
+
+- `v0.1.0-dev`: integrated development checkpoint, complete through Sprint 6.
+- `v0.1.0-rc1`: research preview candidate after parser hardening, mitigation depth, provenance-aware output, reproducible corpus construction, and high-resolution benchmark infrastructure.
+- `v0.1.0`: first research release after comparative experiments, an operational case study, replication rehearsal, and paper claim audit.
+
+The canonical implementation plan is `docs/roadmap-18-sprints.md`.
+
 ## Initial implementation deliverables
 
 1. A buildable NASM-first CLI scaffold.

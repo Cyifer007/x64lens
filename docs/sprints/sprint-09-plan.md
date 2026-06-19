@@ -2,24 +2,40 @@
 
 ## Status
 
-Candidate extended-semester sprint.
+Planned.
 
 ## Sprint goal
 
-Build a compiler and hardening matrix corpus for research evaluation.
+Make candidate validity, evidence source, and analysis completeness explicit before adding more primitive families.
 
 ## Planned deliverables
 
-- [ ] Generate fixture binaries across compiler flags.
-- [ ] Include PIE and non-PIE variants.
-- [ ] Include stack-protector variants.
-- [ ] Include RELRO variants.
-- [ ] Include static and dynamic linking where practical.
-- [ ] Document all build commands in the corpus manifest.
-- [ ] Add benchmark metadata fields for compiler and hardening profile.
+- [ ] Add an evidence side-car record keyed by candidate index.
+- [ ] Distinguish raw candidates, exact suffix observations, semantic-exact classifications, and future decoder-validated facts.
+- [ ] Add candidate capacity, truncation, dropped-count when known, and analysis-complete facts.
+- [ ] Add per-candidate evidence kind and validator identity to JSON.
+- [ ] Add a top-level report type or command identity.
+- [ ] Introduce schema `0.2.0` and migration notes.
+- [ ] Add compatibility validation for schema `0.1.0` historical fixtures where practical.
+- [ ] Measure exact-suffix false-positive and undercount risk on controlled and selected system binaries.
+- [ ] Define the embedded-decoder decision gate from measured gaps.
+- [ ] Keep raw scanner output independently measurable.
 
 ## Acceptance criteria
 
-- [ ] Corpus can be regenerated from source.
-- [ ] Manifest captures build commands and expected hardening signals.
-- [ ] Benchmark scripts can run across the matrix without manual path edits.
+- [ ] Existing raw, exact, semantic, unknown, and scored counts retain their documented meanings.
+- [ ] New decoder-validity metrics are additive, not replacements.
+- [ ] Reports state whether analysis completed without capacity truncation.
+- [ ] Schema validators reject internally inconsistent provenance or completeness state.
+- [ ] `gadgets` and `analyze` maintain JSON parity.
+- [ ] The decoder decision is documented from evidence, not preference.
+
+## Out of scope
+
+- Mandatory embedded decoder dependency.
+- Broad primitive expansion.
+- Publication-grade benchmark campaign.
+
+## Handoff
+
+Sprint 10 expands primitive coverage only through evidence-aware records and fixtures established here.

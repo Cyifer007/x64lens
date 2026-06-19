@@ -1,21 +1,13 @@
-# Design Planning Documents
+# Design Notes
 
-This directory captures design rationale that is larger than a single sprint but smaller than the whole architecture document.
+This directory records future-facing architecture seams that should be understood before implementation changes begin.
 
-These documents exist to make reviewer-facing tradeoffs explicit before they become hidden assumptions in the codebase.
+- [`nasm-rationale.md`](nasm-rationale.md): why the assembly-first engine is being evaluated and how to avoid unsupported claims.
+- [`parser-safety-and-fuzzing.md`](parser-safety-and-fuzzing.md): hostile-input invariants, deterministic mutation testing, regression policy, and future fuzzing gates.
+- [`decoder-roadmap.md`](decoder-roadmap.md): optional decoder integration without replacing the raw scanner.
+- [`evidence-provenance-model.md`](evidence-provenance-model.md): raw, suffix, semantic, decoder, completeness, and truncation evidence layers.
+- [`metric-boundaries.md`](metric-boundaries.md): required separation between discovery, recognition, validation, semantic, score, and triage metrics.
+- [`schema-evolution.md`](schema-evolution.md): schema `0.1.0` compatibility rules and the planned `0.2.0` transition.
+- [`contributor-maintainability.md`](contributor-maintainability.md): maintainability expectations for NASM-heavy development.
 
-## Current documents
-
-| Document | Purpose |
-|---|---|
-| `nasm-rationale.md` | Explains why the first engine is written in NASM and how that claim should be evaluated. |
-| `decoder-roadmap.md` | Defines the boundary between raw scanning, exact suffix matching, semantic classification, and future decoding. |
-| `metric-boundaries.md` | Separates raw candidate count, exact pattern count, semantic primitive count, and scored gadget count. |
-| `parser-safety-and-fuzzing.md` | Defines parser safety invariants and the future malformed-input smoke/fuzz plan. |
-| `contributor-maintainability.md` | Captures maintainability practices for a NASM-heavy public repository. |
-
-## Design rule
-
-A design note may introduce a future seam, but it must not imply that a future feature already exists. The public repository must remain clear about the difference between implemented behavior, planned behavior, and research hypotheses.
-
-- [`../adr/0011-composable-text-report-sections.md`](../adr/0011-composable-text-report-sections.md): shared section rendering for integrated text reports.
+These documents are architecture constraints, not implementation claims. Code, tests, schemas, and release artifacts must be updated when a planned seam becomes implemented behavior.
