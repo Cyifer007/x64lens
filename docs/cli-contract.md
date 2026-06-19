@@ -17,6 +17,7 @@ x64lens <command> [options] <file>
 | `info <file>` | Parse and print ELF64 metadata | Implemented in Sprint 1 |
 | `mitigations <file>` | Print hardening and mitigation metadata | Implemented in Sprint 2 |
 | `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts | Text implemented through Sprint 5, JSON implemented in Patch 017 |
+| `analyze [--format text|json] [--max-depth N] <file>` | Integrated checkpoint report with target metadata, mitigation facts, primitive coverage, scores, and limitations | Implemented in Sprint 6 Patch 022 |
 | `version` | Print tool and schema version | Implemented in Sprint 1 |
 | `help` | Print usage | Implemented in Sprint 1 |
 
@@ -24,8 +25,7 @@ x64lens <command> [options] <file>
 
 | Command | Purpose | Sprint target |
 | ------- | ------- | ------------- |
-| `analyze <file>` | Full mitigation-aware semantic analysis report | Sprint 6 to 11 |
-| `bench <file>` | Benchmark x64lens against local target | Sprint 5 to 10 |
+| `bench <file>` | Benchmark x64lens against local target | Sprint 6 to 10 |
 
 ## Implemented flags
 
@@ -34,11 +34,13 @@ x64lens <command> [options] <file>
 | `--max-depth <N>` | Maximum bytes considered before a return terminator | Implemented in Sprint 3 |
 | `--format text|json` | Select text or JSON output for `gadgets` | JSON implemented in Patch 017 |
 
-`--format` and `--max-depth` may be used together in either order:
+`--format` and `--max-depth` may be used together in either order for `gadgets` and `analyze`:
 
 ```bash
 x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets
 x64lens gadgets --max-depth 4 --format json ./tests/bin/gadgets
+x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets
+x64lens analyze --max-depth 4 --format json ./tests/bin/gadgets
 ```
 
 ## Planned flags
@@ -72,7 +74,9 @@ x64lens mitigations ./toy
 x64lens gadgets ./toy
 x64lens gadgets --max-depth 8 ./toy
 x64lens gadgets --format json ./toy > report.json
-x64lens gadgets --format json --max-depth 4 ./toy > report.json
+x64lens gadgets --format json --max-depth 4 ./toy > gadgets.json
+x64lens analyze ./toy
+x64lens analyze --format json --max-depth 4 ./toy > analyze.json
 x64lens version
 ```
 
@@ -100,6 +104,14 @@ Important interpretation details:
 - Score values are heuristic relative-utility values, not exploitability verdicts.
 - JSON output is generated from internal records, not from text output.
 
+## Current `analyze` behavior
+
+The `analyze` command is the Sprint 6 checkpoint command. It runs the same internal record pipeline as `gadgets`, while also exposing target metadata and mitigation facts in one command path.
+
+Text output currently reuses the established `info`, `mitigations`, and `gadgets` section emitters. JSON output uses the same schema-backed report as `gadgets --format json`, because that report already contains the integrated target, mitigation, primitive, scoring, and limitation fields. This is acceptable for the `0.1.0-dev` checkpoint and may be polished later without changing scanner, classifier, or scoring records.
+
+`analyze` must not be interpreted as an exploitability verdict. It is a static triage report.
+
 ## Reporting distinction rule
 
 The CLI should keep analysis stages explicit in output and JSON:
@@ -112,7 +124,7 @@ The CLI should keep analysis stages explicit in output and JSON:
 - mitigation indicators,
 - limitations.
 
-When a command emits partial or heuristic analysis, the output should say so. `analyze` should not imply full exploitability unless a future version has enough independent vulnerability and runtime context, which is outside the current scope.
+When a command emits partial or heuristic analysis, the output should say so. `analyze` does not imply full exploitability because that would require an independent vulnerability and runtime context, which are outside the current scope.
 
 ## Validation commands added in Patch 018
 

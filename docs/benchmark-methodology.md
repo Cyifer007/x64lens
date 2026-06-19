@@ -288,3 +288,10 @@ Patch 019 and Patch 020 rows preserve raw timing and memory evidence, but they d
 ## Optional baseline toolchain note
 
 ROPgadget and Ropper are Python CLI baselines and are normally installed through `pipx`. ropr is a Rust CLI baseline and may require a newer Cargo than the Ubuntu 24.04 apt package provides. Benchmark metadata must record which optional baselines were present and the version strings reported by each tool. Missing optional baselines are acceptable for development smoke tests but must be disclosed in any benchmark interpretation.
+
+
+## Analyze command benchmarking boundary
+
+Sprint 6 Patch 022 adds `analyze` as an integrated checkpoint command. The baseline gadget-discovery smoke harness should continue using `gadgets --format json` for apples-to-apples comparison against ROPgadget, Ropper, and ropr because those tools primarily enumerate gadgets.
+
+`analyze` should be benchmarked separately when the question is end-to-end defensive triage cost. That benchmark should make clear that x64lens is producing target metadata, mitigation facts, primitive coverage, scored candidate facts, and limitations in one command, while the baseline tools may be doing a narrower or different task.

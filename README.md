@@ -87,6 +87,7 @@ Key planning commitments:
 
 - NASM is an evaluated implementation choice, not an assumed proof of superiority.
 - Parser safety is a mandatory design constraint because the tool parses untrusted binaries.
+- `analyze` is a checkpoint integration command, not an exploitability verdict.
 - Exact suffix matching is a Sprint 3 stage, not a full instruction decoder.
 - Raw candidate counts, exact pattern counts, semantic primitive counts, and scored gadget counts are separate metrics.
 - External tools are comparison baselines first, not required runtime dependencies.
@@ -96,13 +97,13 @@ See the planning notes under [`docs/design/`](docs/design/) and [`docs/adr/0005-
 
 ## Current CLI contract
 
-Planned early commands:
+Implemented checkpoint commands:
 
 ```bash
 x64lens info <file>
 x64lens mitigations <file>
 x64lens gadgets [--format text|json] [--max-depth N] <file>
-x64lens analyze <file>
+x64lens analyze [--format text|json] [--max-depth N] <file>
 x64lens bench <file>
 x64lens version
 ```
@@ -211,8 +212,12 @@ make samples
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ./build/x64lens gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
 python3 -m json.tool /tmp/x64lens-gadgets.json >/dev/null
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze.json
+python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
 make semantic-smoke
 make json-smoke
+make analyze-smoke
 make system-smoke
 make validation-smoke
 ```
@@ -331,10 +336,24 @@ This project follows a two-week sprint cadence during the initial research and i
 2. Sprint 2: program headers, executable regions, and basic mitigations. Complete and locally validated.
 3. Sprint 3: raw gadget candidate scanner, scanner smoke benchmark, arena-backed candidate storage, and exact byte-template pattern matching.
 4. Sprint 4: semantic primitive classifier and primitive coverage summary. Complete through Patch 015 validation.
-5. Sprint 5: scoring, JSON output, semantic fixture hardening, validation hardening, benchmark harness, comparison tooling. Patch 017 implements the first scoring and JSON slice; Patch 018 strengthens validation around it.
-6. Sprint 6: final analyzer, documentation, benchmark results, research paper outline.
+5. Sprint 5: scoring, JSON output, semantic fixture hardening, validation hardening, benchmark harness, comparison tooling, onboarding, and environment hardening. Complete through Patch 021.
+6. Sprint 6: integrated `analyze` checkpoint, documentation polish, benchmark summary, demo path, and paper scaffold alignment.
 
 See [`docs/sprints/`](docs/sprints/).
+
+## Integrated analyze checkpoint
+
+Sprint 6 introduces `analyze` as the first complete checkpoint command. It runs the current validated pipeline once and reports target metadata, mitigation facts, executable regions, raw candidates, exact suffix patterns, semantic primitive classes, register coverage, stack deltas, scores, and limitations.
+
+Recommended text and JSON examples:
+
+```bash
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > report.json
+python3 tools/validate-json-report.py --mode fixture report.json
+```
+
+The JSON shape is intentionally the same record-backed report currently used by `gadgets --format json`, because that report already includes the checkpoint facts needed for defensive triage and automation.
 
 ## Example target output
 

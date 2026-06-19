@@ -31,7 +31,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -136,6 +136,23 @@ json-smoke: dev-tools-check all samples
 	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke-order2.json >/dev/null
 	@echo "json-smoke: ok"
 
+
+# Sprint 6 integrated analyze smoke target. This verifies that analyze combines
+# target metadata, mitigation facts, raw candidates, semantic facts, scoring,
+# and JSON report shape without changing the underlying scanner contract.
+analyze-smoke: dev-tools-check all samples
+	@./$(TARGET) analyze --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke.txt
+	@grep -q "Format:" /tmp/x64lens-analyze-smoke.txt
+	@grep -q "Mitigations:" /tmp/x64lens-analyze-smoke.txt
+	@grep -q "Raw gadget candidates:" /tmp/x64lens-analyze-smoke.txt
+	@grep -q "Candidate count: 0x000000000000000b" /tmp/x64lens-analyze-smoke.txt
+	@grep -q "Scored candidate count: 0x000000000000000b" /tmp/x64lens-analyze-smoke.txt
+	@./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke.json
+	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze-smoke.json >/dev/null
+	@./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke-order2.json
+	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze-smoke-order2.json >/dev/null
+	@echo "analyze-smoke: ok"
+
 # Real-binary smoke target. This runs the current pipeline against installed
 # system ELF64 binaries and validates shape/invariants rather than brittle,
 # distribution-specific candidate counts.
@@ -144,7 +161,7 @@ system-smoke: dev-tools-check all
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check test validate-gadget-fixture semantic-smoke json-smoke system-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate

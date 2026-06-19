@@ -74,3 +74,8 @@ Patch 017 adds `scored_candidate_count` and per-candidate score fields. A scored
 Patch 018 strengthens validation without changing metric meaning. `tools/validate-json-report.py` checks relationships between raw, exact, semantic, unknown, and scored counts. `tools/system-binary-smoke.sh` validates those relationships on real system binaries while avoiding brittle distro-specific count expectations.
 
 This preserves the research boundary: system-binary smoke output is regression evidence, not publication evidence. Publication claims still require the benchmark methodology's controlled corpus, repeated runs, baseline tool versions, and summary statistics.
+
+
+## Analyze metric boundary
+
+Sprint 6 Patch 022 does not create new metric definitions. `analyze` reports the same raw candidate, exact pattern, semantic candidate, unknown candidate, and scored candidate metrics that already exist in the `gadgets` pipeline. Benchmark scripts should distinguish gadget-discovery comparisons from end-to-end analyze report comparisons.

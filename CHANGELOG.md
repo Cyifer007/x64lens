@@ -4,6 +4,19 @@ All notable public changes to x64lens will be documented in this file.
 
 The project follows semantic versioning once the first public release is cut.
 
+## [0.1.0-dev] - Sprint 06 Patch 022
+
+### Added
+- Added `analyze [--format text|json] [--max-depth N] <file>` as the first integrated checkpoint command.
+- Added `src/analyze.asm` to orchestrate ELF validation, mitigation analysis, executable region discovery, gadget scanning, exact pattern matching, semantic classification, scoring, and reporting through shared internal records.
+- Added `make analyze-smoke` and expanded system-binary smoke validation to cover text and JSON `analyze` output.
+- Added ADR 0010 and Sprint 6 Patch 022 validation documentation.
+
+### Changed
+- Updated help text, CLI contract, architecture diagrams, roadmap, validation plan, onboarding, and benchmark methodology for the integrated checkpoint command.
+- Clarified that `analyze` is a static defensive triage report, not an exploitability verdict.
+
+
 ## [0.1.0-dev] - Sprint 05 Patch 021
 
 ### Added

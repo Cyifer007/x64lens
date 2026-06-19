@@ -108,3 +108,8 @@ The taxonomy should eventually account for:
 Patch 017 expands the controlled gadget fixture so the regression suite now exercises the implemented mappings for `pop rcx; ret`, `pop r8; ret`, `pop r9; ret`, and `pop rsp; ret` in addition to the earlier `rdi`, `rsi`, `rdx`, `rax`, `leave`, `syscall`, and `ret imm16` cases.
 
 The semantic taxonomy remains separate from scoring. A semantic class explains the primitive type. A score is a later heuristic utility value assigned by `scoring.asm`.
+
+
+## Analyze command semantic boundary
+
+`analyze` reuses the same semantic classes as `gadgets`. It does not add new primitive meanings or infer exploitability. Unsupported or ambiguous candidates must continue to remain `unknown_candidate`.

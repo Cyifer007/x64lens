@@ -5,11 +5,12 @@ flowchart TD
     C -->|info| D[info command orchestrator]
     C -->|mitigations| M[mitigations command orchestrator]
     C -->|gadgets| G[gadgets command orchestrator]
-    C -->|analyze| FUT2[future full analysis command]
+    C -->|analyze| AN[analyze integrated orchestrator]
 
     D --> FM[File mapper]
     M --> FM
     G --> FM
+    AN --> FM
     FM --> ELF[Bounds-safe ELF64 parser]
 
     ELF --> IR[Text info report]
@@ -24,11 +25,19 @@ flowchart TD
     SC --> GR[Raw gadget candidate records]
     GR --> PT[Exact suffix pattern matcher]
     PT --> CL[Semantic primitive classifier]
-    CL --> GS
+    CL --> SCORE[Scoring engine]
+    SCORE --> GS
+
     GS --> GTR[Text gadget report]
     GR --> GTR
+    GS --> JSON[JSON report]
+    GR --> JSON
+    MR --> JSON
+    ELF --> JSON
 
-    CL --> SO[Future scoring engine]
-    SO --> TXT[Future text report]
-    SO --> JSON[Future JSON report]
-    SO --> BENCH[Future benchmark artifacts]
+    AN --> IR
+    AN --> MTR
+    AN --> GTR
+    AN --> JSON
+
+    JSON --> BENCH[Benchmark and validation artifacts]

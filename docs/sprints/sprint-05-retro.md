@@ -82,7 +82,7 @@ WSL2/native Ubuntu remains the preferred daily development path. Docker is used 
 Sprint 6 should be a checkpoint and integration sprint. The recommended goals are:
 
 1. Freeze and document the current CLI, JSON, scoring, validation, and benchmark-smoke state.
-2. Add `analyze` as an integrated text report if it can be done without destabilizing existing commands.
+2. Add `analyze` as an integrated checkpoint report in Sprint 6 while preserving existing command behavior.
 3. Improve report interpretation while preserving conservative language.
 4. Prepare a professor/reviewer demo path using controlled fixtures and a small system-binary corpus.
 5. Update paper notes with current evidence, limitations, and next benchmark requirements.

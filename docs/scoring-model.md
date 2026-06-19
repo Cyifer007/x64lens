@@ -71,3 +71,8 @@ Later sprints should add:
 - full decoder confidence adjustments,
 - mitigation-aware score interpretation,
 - score calibration against baseline tools and controlled exploit-development exercises.
+
+
+## Analyze command scoring boundary
+
+`analyze` does not introduce a separate scoring model. It reports the same candidate scores produced for `gadgets`, using the same internal records and score values. This keeps score interpretation stable across command names.

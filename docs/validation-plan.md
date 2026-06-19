@@ -299,7 +299,32 @@ make semantic-smoke
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
 ```
 
-`analyze <file>` is not implemented yet and should not be used as a Sprint 4 validation requirement until a later patch adds it.
+`analyze <file>` is implemented in Sprint 6 Patch 022 as the integrated checkpoint command. Validation now covers text and JSON `analyze` output against the controlled fixture and installed system binaries.
+
+
+### 10. Sprint 6 analyze checkpoint validation status
+
+Patch 022 adds validation for:
+
+- `analyze --max-depth 4 <file>` text output,
+- `analyze --format json --max-depth 4 <file>` JSON output,
+- flag-order parity for `analyze --max-depth 4 --format json <file>`,
+- invalid input rejection parity with `info`, `mitigations`, and `gadgets`,
+- system-binary smoke coverage for text and JSON `analyze` reports.
+
+Current commands:
+
+```bash
+make test
+make analyze-smoke
+make system-smoke
+make validation-smoke
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze.json
+python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
+```
+
+Validation remains shape-and-contract based for system binaries. Distro-specific candidate counts are intentionally not asserted.
 
 ## Parser safety and mutation smoke plan
 
@@ -442,6 +467,7 @@ make test
 make validate-gadget-fixture
 make semantic-smoke
 make json-smoke
+make analyze-smoke
 make system-smoke
 make validation-smoke
 ```

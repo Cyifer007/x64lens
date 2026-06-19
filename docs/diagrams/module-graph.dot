@@ -6,6 +6,7 @@ digraph x64lens_modules {
   main -> info;
   main -> mitigations;
   main -> gadgets;
+  main -> analyze;
 
   info -> filemap;
   info -> elf64;
@@ -24,22 +25,37 @@ digraph x64lens_modules {
   gadgets -> scanner;
   gadgets -> patterns;
   gadgets -> classifier;
+  gadgets -> scoring;
   gadgets -> report_text;
+  gadgets -> report_json;
+  gadgets -> arena;
   gadgets -> errors;
+
+  analyze -> filemap;
+  analyze -> elf64;
+  analyze -> phdr;
+  analyze -> scanner;
+  analyze -> patterns;
+  analyze -> classifier;
+  analyze -> scoring;
+  analyze -> report_text;
+  analyze -> report_json;
+  analyze -> arena;
+  analyze -> errors;
 
   phdr -> bounds;
   phdr -> regions;
   scanner -> regions;
   patterns -> scanner;
   classifier -> patterns;
+  scoring -> classifier;
 
   filemap -> syscalls;
+  arena -> syscalls;
   elf64 -> bounds;
   report_text -> print;
   report_text -> hex;
+  report_json -> print;
+  report_json -> hex;
   errors -> print;
-
-  scoring -> classifier;
-  scoring -> report_text;
-  scoring -> report_json;
 }

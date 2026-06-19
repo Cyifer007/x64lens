@@ -2,8 +2,8 @@
 # Validate x64lens against installed ELF64 system binaries.
 #
 # Purpose:
-#   Exercise info, mitigations, text gadgets, and JSON gadgets against real
-#   binaries that vary across Linux distributions. This is a smoke/regression
+#   Exercise info, mitigations, text gadgets, JSON gadgets, and integrated
+#   analyze reports against real binaries that vary across Linux distributions. This is a smoke/regression
 #   check, not a publication benchmark. It intentionally validates invariants
 #   and output shape instead of asserting distro-specific gadget counts.
 set -euo pipefail
@@ -41,6 +41,8 @@ for target in "${TARGETS[@]}"; do
   mitigations_out="$TMPDIR/x64lens-system-mitigations-$(basename "$target").txt"
   gadgets_out="$TMPDIR/x64lens-system-gadgets-$(basename "$target").txt"
   json_out="$TMPDIR/x64lens-system-gadgets-$(basename "$target").json"
+  analyze_out="$TMPDIR/x64lens-system-analyze-$(basename "$target").txt"
+  analyze_json_out="$TMPDIR/x64lens-system-analyze-$(basename "$target").json"
 
   set +e
   "$TOOL" info "$target" >"$info_out" 2>"$TMPDIR/x64lens-system-info.err"
@@ -67,6 +69,14 @@ for target in "${TARGETS[@]}"; do
 
   "$TOOL" gadgets --format json --max-depth "$MAX_DEPTH" "$target" >"$json_out"
   python3 "$ROOT/tools/validate-json-report.py" --mode system "$json_out" >/dev/null
+
+  "$TOOL" analyze --max-depth "$MAX_DEPTH" "$target" >"$analyze_out"
+  grep -q "Format:" "$analyze_out"
+  grep -q "Mitigations:" "$analyze_out"
+  grep -q "Raw gadget candidates:" "$analyze_out"
+
+  "$TOOL" analyze --format json --max-depth "$MAX_DEPTH" "$target" >"$analyze_json_out"
+  python3 "$ROOT/tools/validate-json-report.py" --mode system "$analyze_json_out" >/dev/null
 
   tested=$((tested + 1))
   echo "system-binary-smoke: ok target=$target"

@@ -2,19 +2,19 @@
 
 ## Status
 
-Planned.
+In progress through Patch 022.
 
 ## Sprint goal
 
-Produce a coherent semester checkpoint: stable demo path, reproducible benchmark seed, updated paper scaffold, and a roadmap for the expanded Sprint 7 through Sprint 12 arc.
+Produce a coherent semester checkpoint: integrated `analyze` command, stable demo path, reproducible benchmark seed, updated paper scaffold, and a roadmap for the expanded Sprint 7 through Sprint 12 arc.
 
 Sprint 6 should not be treated as the end of the project if the semester schedule allows more work. It should be the first major public-quality checkpoint: the repository should be understandable, buildable, testable, and ready for deeper research expansion.
 
 ## Planned deliverables
 
-- [ ] Finalize current CLI behavior for the `0.1.0-dev` semester checkpoint.
-- [ ] Finalize text report behavior for `info`, `mitigations`, `gadgets`, and possibly `analyze`.
-- [ ] Finalize initial JSON report if Sprint 5 lands JSON.
+- [x] Add `analyze` as the first integrated `0.1.0-dev` checkpoint command.
+- [ ] Polish text report behavior for `info`, `mitigations`, `gadgets`, and `analyze`.
+- [x] Reuse the Sprint 5 JSON report for `analyze --format json` checkpoint output.
 - [ ] Produce development benchmark summary table from controlled fixtures and selected system binaries.
 - [ ] Produce a repeatable demo script.
 - [ ] Polish README.
@@ -28,9 +28,9 @@ Sprint 6 should not be treated as the end of the project if the semester schedul
 
 ## Acceptance criteria
 
-- [ ] `make clean && make && make test` succeeds.
+- [ ] `make clean && make && make test` succeeds after Patch 022.
 - [ ] `make docker-test` succeeds.
-- [ ] All documented demo commands run successfully.
+- [ ] All documented demo commands, including `analyze`, run successfully.
 - [ ] README usage matches actual CLI behavior.
 - [ ] CHANGELOG reflects all completed sprint work.
 - [ ] Benchmark methodology reflects what was actually measured.
@@ -49,12 +49,20 @@ make docker-test
 make validate-gadget-fixture
 make pattern-smoke
 make semantic-smoke
+make json-smoke
+make analyze-smoke
+make system-smoke
+make validation-smoke
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
+RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 ./build/x64lens version
 ./build/x64lens help
 ./build/x64lens info ./tests/bin/minimal_nopie
 ./build/x64lens mitigations ./tests/bin/minimal_nopie
 ./build/x64lens gadgets --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze.json
+python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
 ```
 
 ## Design constraints
@@ -80,3 +88,10 @@ Sprint 6 checkpoint documentation should include:
 - a metric-boundary summary,
 - an explicit list of unsupported features,
 - a reviewer-facing threats-to-validity draft for the paper scaffold.
+
+
+## Patch 022 scope
+
+Patch 022 introduces `analyze` now instead of deferring it until later mitigation hardening. The reason is practical: Sprint 5 already delivered scoring, JSON, validation hardening, baseline smoke comparisons, and onboarding checks. A checkpoint command makes the current tool usable as a single defensive triage report while preserving explicit limitations.
+
+The command does not overclaim. It is a static report over the current facts. Sprint 7 remains responsible for mitigation and parser-safety hardening.

@@ -305,7 +305,7 @@ The implemented layering is intentionally conservative:
 - `scoring.asm` adds the first usefulness layer from semantic facts.
 - `report_text.asm` and `report_json.asm` render facts but do not decide facts.
 
-This means later sprints can add richer scoring, JSON parity, baseline comparison, and integrated `analyze` output without rewriting the scanner, pattern matcher, or classifier.
+This layering allowed Sprint 5 scoring/JSON and Sprint 6 `analyze` integration to land without rewriting the scanner, pattern matcher, or classifier.
 
 ## Exact pattern interpretation rule
 
@@ -419,7 +419,7 @@ scanner -> exact pattern matcher -> semantic classifier -> scoring -> text repor
 
 This keeps the repository adaptable because future decoder records, mitigation-aware interpretation, or SARIF output can be added as side-car consumers of the same internal fact model.
 
-Patch 017 intentionally implements JSON first for `gadgets --format json`. The future `analyze` command should reuse the same record model and add integrated mitigation-aware interpretation rather than duplicating scanner/classifier/scoring logic.
+Patch 017 intentionally implemented JSON first for `gadgets --format json`. Patch 022 follows the planned seam by implementing `analyze` through the same record model rather than duplicating scanner/classifier/scoring logic.
 
 ## Validation architecture added in Sprint 5 Patch 018
 
@@ -460,3 +460,35 @@ This layer separates:
 - patch-bundle hygiene.
 
 This keeps missing tools from being misdiagnosed as analyzer defects and supports reproducible onboarding for future contributors and reviewers.
+
+
+## Sprint 6 integrated analyze command
+
+Patch 022 introduces `src/analyze.asm` as a command-level orchestrator for the first integrated checkpoint report.
+
+The command owns orchestration only:
+
+```text
+map target read-only
+validate ELF64 x86_64 identity
+analyze program headers
+allocate bounded candidate arena
+scan executable PT_LOAD regions
+match exact suffix patterns
+classify semantic primitives
+apply scores
+emit text or JSON
+cleanup arena and mapping
+```
+
+`analyze` deliberately reuses the same internal records used by `info`, `mitigations`, and `gadgets`:
+
+- `mapped_file`,
+- `phdr_summary`,
+- `executable_region[]`,
+- `gadget_summary`,
+- arena-backed `gadget_record[]`.
+
+This keeps the checkpoint feature from becoming a second analysis implementation. Text output currently reuses the existing section renderers. JSON output reuses the existing schema-backed gadget report because it already includes target metadata, mitigation facts, metric counts, primitive coverage, scored candidates, and limitations.
+
+Future polish may add a dedicated `analysis` JSON wrapper or cleaner text section headings, but that should be an output-layer change. Scanner, classifier, scoring, and mitigation records should remain shared.

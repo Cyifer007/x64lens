@@ -86,6 +86,7 @@ make test
 make validate-gadget-fixture
 make semantic-smoke
 make json-smoke
+make analyze-smoke
 make system-smoke
 make validation-smoke
 ```
@@ -175,3 +176,16 @@ make diagrams-check
 ```
 
 Benchmark smoke results are development evidence only. Publication claims require the full benchmark methodology, controlled corpus documentation, repeated runs, baseline tool versions, exact commands, host metadata, raw result preservation, and explicit limitations.
+
+
+## Integrated analyze checkpoint
+
+After the base validation path succeeds, run the checkpoint command directly:
+
+```bash
+./build/x64lens analyze --max-depth 4 ./tests/bin/gadgets
+./build/x64lens analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze.json
+python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze.json
+```
+
+Use `analyze` for demos and end-to-end defensive triage examples. Use `gadgets --format json` when comparing directly against gadget enumeration baselines.

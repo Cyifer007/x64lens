@@ -8,7 +8,8 @@
 #   analysis, baseline mitigation indicators, executable-region discovery,
 #   and malformed program-header rejection. Sprint 3 adds raw gadget scanner
 #   coverage for ret and ret-imm candidates. Sprint 4 adds semantic checks.
-#   Sprint 5 adds scoring and JSON output checks.
+#   Sprint 5 adds scoring and JSON output checks. Sprint 6 adds the integrated
+#   analyze checkpoint command.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -51,6 +52,7 @@ echo "[test] help"
 "$BIN" help | grep -q "x64lens info <file>"
 "$BIN" help | grep -q "x64lens mitigations <file>"
 "$BIN" help | grep -q "x64lens gadgets \[--format text|json\] \[--max-depth N\] <file>"
+"$BIN" help | grep -q "x64lens analyze \[--format text|json\] \[--max-depth N\] <file>"
 
 echo "[test] usage failure"
 expect_exit 2 "$BIN"
@@ -63,6 +65,14 @@ expect_exit 2 "$BIN" gadgets --max-depth nope "$ROOT/tests/bin/gadgets"
 expect_exit 2 "$BIN" gadgets --format
 expect_exit 2 "$BIN" gadgets --format xml "$ROOT/tests/bin/gadgets"
 expect_exit 2 "$BIN" gadgets --format json --max-depth 0 "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" analyze
+expect_exit 2 "$BIN" analyze --max-depth
+expect_exit 2 "$BIN" analyze --max-depth 0 "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" analyze --max-depth 33 "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" analyze --max-depth nope "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" analyze --format
+expect_exit 2 "$BIN" analyze --format xml "$ROOT/tests/bin/gadgets"
+expect_exit 2 "$BIN" analyze --format json --max-depth 0 "$ROOT/tests/bin/gadgets"
 
 echo "[test] valid ELF64 info"
 INFO_OUT="$TMPDIR/x64lens-info-valid.txt"
@@ -83,16 +93,19 @@ echo "[test] non-ELF rejection"
 expect_exit 4 "$BIN" info "$ROOT/tests/invalid/text.txt"
 expect_exit 4 "$BIN" mitigations "$ROOT/tests/invalid/text.txt"
 expect_exit 4 "$BIN" gadgets "$ROOT/tests/invalid/text.txt"
+expect_exit 4 "$BIN" analyze "$ROOT/tests/invalid/text.txt"
 
 echo "[test] truncated ELF rejection"
 expect_exit 5 "$BIN" info "$ROOT/tests/invalid/truncated_elf.bin"
 expect_exit 5 "$BIN" mitigations "$ROOT/tests/invalid/truncated_elf.bin"
 expect_exit 5 "$BIN" gadgets "$ROOT/tests/invalid/truncated_elf.bin"
+expect_exit 5 "$BIN" analyze "$ROOT/tests/invalid/truncated_elf.bin"
 
 echo "[test] wrong architecture rejection"
 expect_exit 4 "$BIN" info "$ROOT/tests/invalid/wrong_arch_elf.bin"
 expect_exit 4 "$BIN" mitigations "$ROOT/tests/invalid/wrong_arch_elf.bin"
 expect_exit 4 "$BIN" gadgets "$ROOT/tests/invalid/wrong_arch_elf.bin"
+expect_exit 4 "$BIN" analyze "$ROOT/tests/invalid/wrong_arch_elf.bin"
 
 echo "[test] malformed program header rejection"
 require_python3
@@ -113,6 +126,7 @@ PY
 expect_exit 5 "$BIN" info "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" mitigations "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" gadgets "$MALFORMED_PHDR"
+expect_exit 5 "$BIN" analyze "$MALFORMED_PHDR"
 
 echo "[test] mitigations non-PIE noexecstack"
 MIT_NOPIE="$TMPDIR/x64lens-mitigations-nopie.txt"
@@ -199,5 +213,27 @@ python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$GADGETS_JSON" >/d
 
 "$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
+
+
+echo "[test] analyze integrated text output"
+ANALYZE_OUT="$TMPDIR/x64lens-analyze.txt"
+"$BIN" analyze --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_OUT"
+grep -q "Format:" "$ANALYZE_OUT"
+grep -q "Mitigations:" "$ANALYZE_OUT"
+grep -q "Raw gadget candidates:" "$ANALYZE_OUT"
+grep -q "Candidate count: 0x000000000000000b" "$ANALYZE_OUT"
+grep -q "Semantic primitive count: 0x000000000000000b" "$ANALYZE_OUT"
+grep -q "Scored candidate count: 0x000000000000000b" "$ANALYZE_OUT"
+grep -q "Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9" "$ANALYZE_OUT"
+
+
+echo "[test] analyze JSON output"
+ANALYZE_JSON="$TMPDIR/x64lens-analyze.json"
+"$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_JSON"
+python3 -m json.tool "$ANALYZE_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$ANALYZE_JSON" >/dev/null
+
+"$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
 
 echo "tests: ok"

@@ -169,3 +169,14 @@ make normalize-perms
 ## Docker context hygiene
 
 The `.dockerignore` file excludes `.git/`, `.local/`, generated build outputs, generated toy binaries, local course files, private context, proprietary samples, malware samples, and large VM artifacts. This keeps Docker images reproducible and prevents local-only project context from being copied into a container image.
+
+
+## Analyze command environment requirements
+
+`analyze` has no additional runtime dependency beyond the existing x64lens binary. It reuses the same build tools, fixture tools, JSON validation helper, and optional baseline tooling already documented for Sprint 5. The command is covered by:
+
+```bash
+make analyze-smoke
+make system-smoke
+make validation-smoke
+```

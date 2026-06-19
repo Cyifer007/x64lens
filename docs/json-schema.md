@@ -117,7 +117,7 @@ This preserves the difference between noisy raw byte windows, exact suffix match
 
 Patch 017 JSON is intentionally initial and narrow:
 
-- JSON is implemented for `gadgets --format json`, not the future integrated `analyze` command.
+- JSON is implemented for `gadgets --format json` and reused by Sprint 6 `analyze --format json`.
 - The scanner is exact-suffix based and not a full instruction decoder.
 - `nx_stack` may be `null` when `PT_GNU_STACK` is absent.
 - Canary and full RELRO are not implemented yet.
@@ -142,3 +142,8 @@ python3 tools/validate-json-report.py --mode system /tmp/x64lens-ls.json
 ```
 
 The validator checks required fields, count relationships, primitive coverage shape, gadget record fields, score ranges, unknown stack-delta representation, and non-empty limitations. Fixture mode additionally checks the controlled `tests/bin/gadgets` semantic and scoring facts.
+
+
+## Analyze JSON compatibility
+
+Sprint 6 Patch 022 uses the existing `0.1.0` JSON report for `analyze --format json`. This is intentional because the report already contains target metadata, mitigation indicators, separated counts, primitive coverage, scored candidate records, and limitations. A future schema revision may add a top-level report type or command field, but Patch 022 avoids changing the schema solely for command naming.

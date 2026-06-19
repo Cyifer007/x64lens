@@ -6,7 +6,7 @@ Sprint 5 Patch 019 is the current implementation candidate. The repository now h
 
 ## Stage 1: CSC-732 foundation
 
-Build a working NASM-first ELF64 x86_64 analyzer.
+Build a working NASM-first ELF64 x86_64 analyzer with a usable integrated checkpoint command.
 
 Primary outcome: functional scaffold and semester-grade tool.
 
@@ -129,3 +129,16 @@ Patch 020 adds development-environment dependency checks, Ubuntu onboarding inst
 ## Sprint 5 research contribution
 
 Sprint 5 created the first machine-readable evidence path for RQ1 and RQ2 by adding schema-versioned JSON, explicit count boundaries, scoring fields, system-binary smoke validation, and baseline smoke TSV generation. These outputs remain development evidence until the full benchmark methodology is run with controlled corpus documentation, repeated runs, exact tool versions, and preserved raw results.
+
+
+## Sprint 6 checkpoint update
+
+Patch 022 adds `analyze` as the first integrated product checkpoint. For research framing, this matters because the user-facing value proposition is no longer limited to isolated command slices. The tool can now produce one static report containing target metadata, mitigation indicators, primitive coverage, scored candidate facts, and limitations.
+
+The research claim remains conservative:
+
+```text
+x64lens can generate dependency-light, record-backed static triage reports for ELF64 x86_64 binaries.
+```
+
+Performance, usefulness, and coverage claims still require benchmark evidence and comparison against baselines. The `analyze` command should be used in demos and defensive-triage framing, while `gadgets --format json` remains the more direct apples-to-apples comparison path against gadget discovery tools.

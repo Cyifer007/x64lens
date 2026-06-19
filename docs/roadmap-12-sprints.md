@@ -22,7 +22,7 @@ Each sprint must produce one bounded, testable improvement. Do not implement fea
 | 8 | Primitive expansion | Multi-pop, register-transfer, limited memory templates |
 | 9 | Compiler/hardening corpus | Build matrix and corpus manifest |
 | 10 | Research benchmarks | Repeated baseline comparisons and summary tables |
-| 11 | Integrated analysis | Mitigation-aware `analyze` report and JSON parity |
+| 11 | Integrated analysis hardening | Refined `analyze` report, richer mitigation context, and release-ready JSON parity |
 | 12 | Publication/release | IEEE paper draft, release artifacts, reproduction package |
 
 ## Architecture checkpoints
@@ -117,3 +117,17 @@ Patch 020 adds development-environment dependency checks, Ubuntu onboarding inst
 ## Sprint 5 closeout
 
 Sprint 5 completed the first scoring and JSON layer, validation hardening, baseline smoke benchmarking, onboarding, dependency checks, Docker parity hardening, and optional baseline installation guidance. Sprint 6 should now act as a checkpoint and integration sprint rather than a large refactor.
+
+
+## Sprint 6 Patch 022 adjustment
+
+The integrated `analyze` command moved earlier than the original long-roadmap placement because Sprint 5 delivered scoring, JSON output, validation hardening, and baseline comparison plumbing ahead of schedule. The earlier command is intentionally a checkpoint integration, not a claim that all mitigation hardening or full decoding work is complete.
+
+This preserves the later Sprint 7 through Sprint 12 arc:
+
+- Sprint 7 hardens mitigation and parser safety facts used by `analyze`.
+- Sprint 8 expands primitive templates.
+- Sprint 9 broadens compiler and hardening corpus coverage.
+- Sprint 10 scales benchmark methodology.
+- Sprint 11 polishes `analyze` into a stronger integrated report.
+- Sprint 12 prepares release and publication artifacts.

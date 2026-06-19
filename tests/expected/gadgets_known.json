@@ -1,34 +1,42 @@
 {
   "schema_version": "0.1.0",
-  "note": "Development fixture expectations for Sprint 4 raw scanning, exact pattern matching, and first-pass semantic classification. JSON report output is not implemented yet.",
+  "note": "Development fixture expectations for raw scanning, exact pattern matching, semantic classification, scoring, JSON output, and analyze checkpoint validation.",
   "fixture": "tests/bin/gadgets",
   "default_max_depth": 8,
   "candidate_capacity": 4096,
-  "candidate_count": 7,
-  "ret_count": 6,
+  "candidate_count": 11,
+  "ret_count": 10,
   "ret_imm16_count": 1,
-  "exact_pattern_count": 7,
-  "semantic_primitive_count": 7,
+  "exact_pattern_count": 11,
+  "semantic_primitive_count": 11,
+  "scored_candidate_count": 11,
   "unknown_candidate_count": 0,
   "semantic_counts": {
-    "arg_control": 3,
+    "arg_control": 6,
     "syscall_num_control": 1,
     "syscall_trigger": 1,
-    "stack_pivot": 1,
+    "stack_pivot": 2,
     "alignment": 1
   },
   "register_coverage": [
     "rax",
+    "rcx",
     "rdx",
     "rsi",
     "rdi",
-    "rsp"
+    "rsp",
+    "r8",
+    "r9"
   ],
   "expected_patterns": [
     "pop rdi; ret",
     "pop rsi; ret",
     "pop rdx; ret",
+    "pop rcx; ret",
+    "pop r8; ret",
+    "pop r9; ret",
     "pop rax; ret",
+    "pop rsp; ret",
     "leave; ret",
     "syscall; ret",
     "ret imm16"
@@ -37,9 +45,14 @@
     "arg_control",
     "arg_control",
     "arg_control",
+    "arg_control",
+    "arg_control",
+    "arg_control",
     "syscall_num_control",
+    "stack_pivot",
     "stack_pivot",
     "syscall_trigger",
     "alignment"
-  ]
+  ],
+  "expected_scores": [90, 90, 90, 90, 90, 90, 85, 70, 75, 85, 40]
 }

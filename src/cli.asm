@@ -31,9 +31,9 @@ help_text:
     db "  x64lens info <file>", 10
     db "  x64lens mitigations <file>", 10
     db "  x64lens gadgets [--format text|json] [--max-depth N] <file>", 10
+    db "  x64lens analyze [--format text|json] [--max-depth N] <file>", 10
     db "", 10
     db "Planned commands:", 10
-    db "  x64lens analyze <file>", 10
     db "  x64lens bench <file>", 10, 0
 
 section .text

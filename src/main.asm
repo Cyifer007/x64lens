@@ -11,11 +11,12 @@
 ;   x64lens info <file>
 ;   x64lens mitigations <file>
 ;   x64lens gadgets [--format text|json] [--max-depth N] <file>
+;   x64lens analyze [--format text|json] [--max-depth N] <file>
 ;
-; Sprint 3 implementation target:
-;   Keep command dispatch simple while routing `info <file>`,
-;   `mitigations <file>`, and raw `gadgets` scanning through specialized
-;   command orchestrators.
+; Sprint 6 implementation target:
+;   Keep command dispatch simple while routing `info`, `mitigations`,
+;   `gadgets`, and integrated `analyze` reports through specialized command
+;   orchestrators.
 ;
 ; Safety note:
 ;   This module should not parse target files directly. It should dispatch
@@ -34,6 +35,8 @@ extern x64lens_command_info
 extern x64lens_command_mitigations
 extern x64lens_command_gadgets
 extern x64lens_command_gadgets_json
+extern x64lens_command_analyze
+extern x64lens_command_analyze_json
 extern version_print
 
 section .rodata
@@ -42,6 +45,7 @@ cmd_version:    db "version", 0
 cmd_info:       db "info", 0
 cmd_mitigations: db "mitigations", 0
 cmd_gadgets:     db "gadgets", 0
+cmd_analyze:     db "analyze", 0
 flag_max_depth:  db "--max-depth", 0
 flag_format:     db "--format", 0
 format_text:     db "text", 0
@@ -99,6 +103,12 @@ _start:
     call    cstr_eq
     cmp     rax, 1
     je      .gadgets
+
+    mov     rdi, [r12 + 8]
+    lea     rsi, [cmd_analyze]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze
 
     ; Unknown command. Show help and exit with usage error.
     jmp     .show_help
@@ -337,6 +347,206 @@ _start:
     mov     rdi, [r12 + 48]
     mov     rsi, r14
     call    x64lens_command_gadgets
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze:
+    ; `analyze` requires a target file argument. Sprint 6 exposes the
+    ; integrated checkpoint report while preserving the existing text/JSON
+    ; output and `--max-depth N` behavior.
+    cmp     rbx, 3
+    je      .analyze_default
+    cmp     rbx, 5
+    je      .analyze_one_flag
+    cmp     rbx, 7
+    je      .analyze_two_flags
+    jmp     .show_help
+
+.analyze_default:
+    ; Treat a bare known flag without its required value and target as usage
+    ; error, not as an attempted filename.
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .show_help
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .show_help
+
+    mov     rdi, [r12 + 16]
+    mov     rsi, GADGET_DEFAULT_MAX_DEPTH
+    call    x64lens_command_analyze
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_one_flag:
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_depth_text
+
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_default_depth
+
+    jmp     .show_help
+
+.analyze_depth_text:
+    mov     rdi, [r12 + 24]
+    call    cli_parse_u64
+    cmp     rdx, 1
+    jne     .show_help
+    test    rax, rax
+    jz      .show_help
+    cmp     rax, GADGET_MAX_DEPTH_LIMIT
+    ja      .show_help
+
+    mov     rsi, rax            ; parsed max depth
+    mov     rdi, [r12 + 32]     ; target path
+    call    x64lens_command_analyze
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_format_default_depth:
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_default_depth_json
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_default_depth_text
+
+    jmp     .show_help
+
+.analyze_format_default_depth_json:
+    mov     rdi, [r12 + 32]
+    mov     rsi, GADGET_DEFAULT_MAX_DEPTH
+    call    x64lens_command_analyze_json
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_format_default_depth_text:
+    mov     rdi, [r12 + 32]
+    mov     rsi, GADGET_DEFAULT_MAX_DEPTH
+    call    x64lens_command_analyze
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_two_flags:
+    ; Supported orders:
+    ;   analyze --format json --max-depth N <file>
+    ;   analyze --max-depth N --format json <file>
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_then_depth
+
+    mov     rdi, [r12 + 16]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_depth_then_format
+
+    jmp     .show_help
+
+.analyze_format_then_depth:
+    mov     rdi, [r12 + 32]
+    lea     rsi, [flag_max_depth]
+    call    cstr_eq
+    cmp     rax, 1
+    jne     .show_help
+
+    mov     rdi, [r12 + 40]
+    call    cli_parse_u64
+    cmp     rdx, 1
+    jne     .show_help
+    test    rax, rax
+    jz      .show_help
+    cmp     rax, GADGET_MAX_DEPTH_LIMIT
+    ja      .show_help
+    mov     r14, rax            ; parsed max depth
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_then_depth_json
+
+    mov     rdi, [r12 + 24]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_format_then_depth_text
+
+    jmp     .show_help
+
+.analyze_format_then_depth_json:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_analyze_json
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_format_then_depth_text:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_analyze
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_depth_then_format:
+    mov     rdi, [r12 + 32]
+    lea     rsi, [flag_format]
+    call    cstr_eq
+    cmp     rax, 1
+    jne     .show_help
+
+    mov     rdi, [r12 + 24]
+    call    cli_parse_u64
+    cmp     rdx, 1
+    jne     .show_help
+    test    rax, rax
+    jz      .show_help
+    cmp     rax, GADGET_MAX_DEPTH_LIMIT
+    ja      .show_help
+    mov     r14, rax            ; parsed max depth
+
+    mov     rdi, [r12 + 40]
+    lea     rsi, [format_json]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_depth_then_format_json
+
+    mov     rdi, [r12 + 40]
+    lea     rsi, [format_text]
+    call    cstr_eq
+    cmp     rax, 1
+    je      .analyze_depth_then_format_text
+
+    jmp     .show_help
+
+.analyze_depth_then_format_json:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_analyze_json
+    mov     rdi, rax
+    jmp     .exit
+
+.analyze_depth_then_format_text:
+    mov     rdi, [r12 + 48]
+    mov     rsi, r14
+    call    x64lens_command_analyze
     mov     rdi, rax
     jmp     .exit
 

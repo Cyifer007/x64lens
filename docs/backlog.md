@@ -95,7 +95,7 @@
 - [x] Add primitive coverage summary.
 - [x] Validate Patch 015 semantic classifier locally and in Docker.
 - [x] Write Sprint 4 retrospective after local validation.
-- [x] Decide whether `analyze <file>` orchestration belongs in late Sprint 4 or Sprint 5. Decision: defer to Sprint 5 or Sprint 6 after JSON/scoring structure lands.
+- [x] Decide whether `analyze <file>` orchestration belongs in late Sprint 4 or Sprint 5. Decision: implement in Sprint 6 Patch 022 after JSON/scoring structure landed.
 
 ## Sprint 4 follow-up hardening
 
@@ -141,7 +141,7 @@ Private context files, course-specific notes, and session-state tracking belong 
 - [ ] Sprint 8: expanded primitive templates, multi-pop patterns, conservative register-transfer and memory templates, and larger fixture corpus.
 - [ ] Sprint 9: compiler and hardening matrix corpus with reproducible build commands.
 - [ ] Sprint 10: repeated research-grade baseline benchmarks against ROPgadget, Ropper, and ropr.
-- [ ] Sprint 11: integrated `analyze` report with mitigation context, primitive coverage, scoring, JSON parity, and limitations.
+- [x] Sprint 6 Patch 022: first integrated `analyze` checkpoint report with mitigation context, primitive coverage, scoring, JSON parity, and limitations.
 - [ ] Sprint 12: IEEE paper draft, reproduction package, release-candidate artifacts, checksums, and extended-semester retrospective.
 
 ## Reviewer-readiness and future-proofing backlog
@@ -169,7 +169,14 @@ Private context files, course-specific notes, and session-state tracking belong 
 
 ## Sprint 5 closeout follow-up
 
-- [ ] In Sprint 6, decide whether `analyze` should be introduced as an integrated report or deferred until mitigation hardening is stronger.
+- [x] In Sprint 6, decide whether `analyze` should be introduced as an integrated report or deferred until mitigation hardening is stronger. Decision: introduce now as a checkpoint report with explicit limitations, then harden mitigation accuracy in Sprint 7.
 - [ ] Preserve optional baseline installation status in benchmark metadata for every future comparison run.
 - [ ] Keep ropr optional until the project decides whether rustup-managed Rust should be part of the documented benchmark host.
 - [ ] Add full RELRO, canary, and dynamic-table hardening to the Sprint 7 mitigation backlog.
+
+
+## Sprint 6 follow-up backlog
+
+- [ ] Polish `analyze` text output so the checkpoint report has a single top-level header instead of reused section headers.
+- [ ] Consider adding a top-level JSON `report_type` or `command` field in a future schema revision, not in the current `0.1.0` schema unless backward compatibility is handled.
+- [ ] Add `analyze` rows to benchmark harnesses only when comparing integrated reports, not when performing gadget-discovery apples-to-apples comparisons.
