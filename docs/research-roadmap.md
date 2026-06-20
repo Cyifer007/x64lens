@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 6 are complete. Patch 024 is the planning and architecture review candidate that governs the transition into Sprint 7. The repository now provides:
+Sprints 1 through 6 and Patch 024 are validated. Sprint 7 is active, and Patch 025 is the first hostile-input hardening candidate. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,13 +20,25 @@ Sprints 1 through 6 are complete. Patch 024 is the planning and architecture rev
 
 The local `v0.1.0-dev` tag marks an integrated prototype. It is not a research release or evidence of universal performance superiority.
 
+## Sprint 7 evidence checkpoint
+
+Patch 025 introduces development evidence for parser robustness without upgrading that evidence into a formal safety claim:
+
+- a fixed 29-case mutation catalog derived from a controlled ELF64 seed,
+- per-case expected and observed exit status, signal, timeout, elapsed-time, and output-size records,
+- an explicit 4096-candidate arena boundary tested at both 4096 and 4097 terminators,
+- exact 64-byte ELF64 section-header entry-size rejection,
+- native, CI, and Docker validation paths.
+
+Passing this gate demonstrates stable behavior for the reviewed cases. It does not establish memory safety or code-coverage completeness.
+
 ## Research stages
 
 ### Stage 1: deterministic binary facts
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented, with deeper hostile-input and metadata hardening planned for Sprints 7 and 8.
+Status: implemented. Patch 025 adds deterministic malformed-input and candidate-capacity gates; shared checked table arithmetic and deeper metadata hardening remain for the rest of Sprint 7 and Sprint 8.
 
 ### Stage 2: candidate discovery and semantics
 

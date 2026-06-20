@@ -63,8 +63,9 @@
 %define E_SHNUM              0x3c
 %define E_SHSTRNDX           0x3e
 
-; Program header offsets
+; Program header and section header record sizes
 %define ELF64_PHDR_SIZE      56
+%define ELF64_SHDR_SIZE      64
 %define P_TYPE               0x00
 %define P_FLAGS              0x04
 %define P_OFFSET             0x08

@@ -67,6 +67,7 @@ Examples:
 
 | Sprint | Publication milestone |
 |---|---|
+| 7 | Deterministic hostile-input results, minimized parser regressions, explicit capacity behavior, and checked table-arithmetic foundation. |
 | 8 | Mitigation accuracy fixtures and comparison evidence. |
 | 9 | Provenance model and schema `0.2.0`. |
 | 11 | Reproducible corpus and manifest freeze candidate. |
@@ -75,6 +76,10 @@ Examples:
 | 16 | Infrastructure case study and analyst-utility evidence. |
 | 17 | Paper, figures, claim matrix, and replication freeze. |
 | 18 | `v0.1.0` release and submission package. |
+
+## Current robustness evidence
+
+Patch 025 adds the first bounded robustness evidence surface: a deterministic 29-case malformed-input campaign, per-case signal and timeout capture, a minimized ELF64 section-entry-size regression, and an explicit candidate-capacity failure fixture. These are development and regression artifacts. They do not justify a formal memory-safety claim or a complete robustness result until the catalog, shared arithmetic layer, and later metadata parsers are evaluated.
 
 ## Reviewer-risk sections
 

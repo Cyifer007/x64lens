@@ -55,13 +55,17 @@ for entry in "${entries[@]}"; do
       echo "patch-bundle-hygiene: forbidden generated test binary: $entry" >&2
       bad=1
       ;;
+    x64lens/tests/results/*|x64lens/tests/results)
+      echo "patch-bundle-hygiene: forbidden generated test result: $entry" >&2
+      bad=1
+      ;;
     x64lens/benchmarks/results/*)
       if [[ "$entry" != "x64lens/benchmarks/results/.gitkeep" ]]; then
         echo "patch-bundle-hygiene: forbidden generated benchmark result: $entry" >&2
         bad=1
       fi
       ;;
-    x64lens/tests/toy-src/minimal_nopie|x64lens/tests/toy-src/minimal_pie_canary|x64lens/tests/toy-src/minimal_execstack|x64lens/tests/toy-src/gadgets)
+    x64lens/tests/toy-src/minimal_nopie|x64lens/tests/toy-src/minimal_pie_canary|x64lens/tests/toy-src/minimal_execstack|x64lens/tests/toy-src/gadgets|x64lens/tests/toy-src/gadgets_capacity_exact|x64lens/tests/toy-src/gadgets_capacity)
       echo "patch-bundle-hygiene: forbidden generated toy binary: $entry" >&2
       bad=1
       ;;

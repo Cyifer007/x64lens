@@ -9,7 +9,8 @@
 #   and malformed program-header rejection. Sprint 3 adds raw gadget scanner
 #   coverage for ret and ret-imm candidates. Sprint 4 adds semantic checks.
 #   Sprint 5 adds scoring and JSON output checks. Sprint 6 adds the integrated
-#   analyze checkpoint command.
+#   analyze checkpoint command. Sprint 7 adds exact section-entry-size rejection
+#   and explicit candidate-capacity regression coverage.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -128,6 +129,13 @@ expect_exit 5 "$BIN" mitigations "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" gadgets "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" analyze "$MALFORMED_PHDR"
 
+echo "[test] malformed section header entry size rejection"
+MALFORMED_SHENTSIZE="$ROOT/tests/malformed/regressions/elf64-shentsize-63.bin"
+expect_exit 5 "$BIN" info "$MALFORMED_SHENTSIZE"
+expect_exit 5 "$BIN" mitigations "$MALFORMED_SHENTSIZE"
+expect_exit 5 "$BIN" gadgets "$MALFORMED_SHENTSIZE"
+expect_exit 5 "$BIN" analyze "$MALFORMED_SHENTSIZE"
+
 echo "[test] mitigations non-PIE noexecstack"
 MIT_NOPIE="$TMPDIR/x64lens-mitigations-nopie.txt"
 "$BIN" mitigations "$ROOT/tests/bin/minimal_nopie" >"$MIT_NOPIE"
@@ -237,5 +245,12 @@ python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$ANALYZE_JSON" >/d
 
 "$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
+
+echo "[test] candidate capacity rejection"
+expect_exit 6 "$BIN" gadgets --max-depth 4 "$ROOT/tests/bin/gadgets_capacity"
+expect_exit 6 "$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets_capacity"
+expect_exit 6 "$BIN" analyze --max-depth 4 "$ROOT/tests/bin/gadgets_capacity"
+expect_exit 6 "$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets_capacity"
+grep -qx "error: unsupported binary feature" "$TMPDIR/x64lens-test-err.txt"
 
 echo "tests: ok"

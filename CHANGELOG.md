@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 7 Patch 025 deterministic malformed-ELF mutation runner with 29 fixed cases, per-case timeout and signal capture, seed SHA-256 recording, and TSV/metadata artifacts.
+- `make malformed-smoke`, `make fuzz-mutated-elf-smoke`, `make capacity-smoke`, and `make docker-validation-smoke`.
+- Controlled 4096/4097 candidate-boundary fixtures and validator for explicit `EXIT_UNSUPPORTED` behavior without partial output.
+- ADR 0013, malformed-input test documentation, regression-promotion policy, first minimized parser regression fixture, and Patch 025 validation plan.
 - Canonical eighteen-sprint roadmap covering Sprints 7 through 18.
 - Research preview and first-release evidence gates for `v0.1.0-rc1` and `v0.1.0`.
 - Evidence provenance and schema evolution design plans.
@@ -18,6 +22,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Require the fixed 64-byte ELF64 section-header entry size whenever the section-header count is nonzero.
+- Include malformed-input and capacity checks in the aggregate validation gate and CI workflow.
+- Expand public-documentation hygiene checks for local temporary paths and host-specific prompts.
+- Expand patch-bundle hygiene checks for generated malformed-test results and the capacity fixture binary.
 - Reordered near-term work so hostile-input safety and mitigation accuracy precede primitive expansion.
 - Replaced the twelve-sprint roadmap as the canonical plan while retaining a compatibility document.
 - Defined schema `0.2.0` as the planned provenance and completeness transition.
@@ -25,6 +33,11 @@ The project follows semantic versioning once the first public release is cut.
 - Updated release, publication, architecture, mitigation, scoring, semantic, and validation documentation for the post-checkpoint plan.
 - Updated the README to describe the validated Sprint 6 checkpoint and current release path.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
+
+### Fixed
+
+- Reject malformed ELF64 files that previously used a nonzero but invalid section-header entry stride.
+- Verify candidate-record exhaustion returns a stable unsupported-feature error instead of silently truncating analysis.
 
 
 ## [0.1.0-dev] - Sprint 06 Patch 023

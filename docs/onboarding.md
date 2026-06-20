@@ -90,6 +90,8 @@ make semantic-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
+make capacity-smoke
+make malformed-smoke
 make validation-smoke
 ```
 
@@ -99,6 +101,7 @@ If Docker is available:
 make docker-available-check
 make docker-build
 make docker-test
+make docker-validation-smoke
 ```
 
 `make docker-test` rebuilds the development image before running tests, so Dockerfile dependency changes are not accidentally validated against a stale local image. Docker layer caching keeps repeat runs fast once the image is current.
@@ -139,7 +142,10 @@ The table below lists the public Make targets. A new development environment sho
 | `make json-smoke` | Validate JSON output for the controlled fixture. |
 | `make analyze-smoke` | Validate integrated text and JSON analysis output. |
 | `make system-smoke` | Validate installed system ELF64 binaries. |
-| `make validation-smoke` | Run the local pre-commit validation bundle. |
+| `make capacity-smoke` | Verify candidate-arena exhaustion returns exit `6` without partial output. |
+| `make malformed-smoke` | Run the deterministic 29-case hostile-input regression campaign. |
+| `make fuzz-mutated-elf-smoke` | Compatibility alias for `malformed-smoke`. |
+| `make validation-smoke` | Run the local pre-commit validation bundle, including malformed and capacity gates. |
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
 | `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
@@ -156,7 +162,8 @@ The table below lists the public Make targets. A new development environment sho
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
 | `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |
-| `make docker-test` | Rebuild the development Docker image, then run clean build and tests in Docker. |
+| `make docker-test` | Rebuild the development Docker image, then run clean build and core tests in Docker. |
+| `make docker-validation-smoke` | Rebuild the image, then run the full native-equivalent validation bundle in Docker. |
 | `make ownership-check` | Detect root-owned generated artifacts. |
 | `make fix-perms` | Repair generated artifact ownership. |
 | `make normalize-perms` | Normalize local source/script file permissions after ZIP extraction. |
@@ -170,6 +177,7 @@ A local implementation patch should generally pass:
 ```bash
 make validation-smoke
 make docker-test
+make docker-validation-smoke
 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
@@ -187,6 +195,24 @@ make planning-docs-check
 
 Benchmark smoke results are development evidence only. Publication claims require the full benchmark methodology, controlled corpus documentation, repeated runs, baseline tool versions, exact commands, host metadata, raw result preservation, and explicit limitations.
 
+
+## Hostile-input validation tour
+
+Sprint 7 adds two explicit safety gates:
+
+```bash
+make capacity-smoke
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make fuzz-mutated-elf-smoke
+```
+
+A successful malformed campaign reports 29 total cases and 26 malformed cases, with no signal or timeout. It writes ignored result and metadata artifacts under `tests/results/malformed/`. A successful capacity check confirms that exactly 4096 candidates produce a complete report and that the 4097th candidate triggers exit code `6` with no partial report.
+
+Use the full Docker-equivalent gate after native validation:
+
+```bash
+make docker-validation-smoke
+```
 
 ## Integrated analyze checkpoint
 

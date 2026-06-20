@@ -328,26 +328,29 @@ Validation remains shape-and-contract based for system binaries. Distro-specific
 
 ## Parser safety and mutation smoke plan
 
-Sprint 7 should add a deterministic malformed-input mutation smoke harness before deeper parsing expands the trusted code surface.
+Patch 025 implements the first deterministic malformed-input mutation harness before deeper parsing expands the trusted code surface.
 
-Proposed command shape:
+Implemented command shape:
 
 ```bash
 make malformed-smoke
 make fuzz-mutated-elf-smoke
+make capacity-smoke
 ```
 
 Minimum acceptance criteria:
 
 ```text
-no SIGSEGV
-no SIGBUS
-no unbounded runtime
+no SIGSEGV, SIGBUS, or another signal
+no timeout or unbounded runtime
 stable nonzero exit code for malformed inputs
-regression fixture added for every parser crash
+no partial stdout for malformed parse failures
+successful valid controls and boundary probes
+regression fixture added for every stable parser defect
+explicit exit code 6 for candidate-capacity exhaustion
 ```
 
-The first version does not need coverage-guided fuzzing. A deterministic mutation smoke runner over known valid and malformed ELF seeds is enough to catch obvious parser regressions and support reviewer-facing safety discipline.
+The first version is intentionally deterministic rather than coverage-guided. It establishes reproducible regression handling, result capture, and a durable fixture-promotion policy before instrumentation-dependent fuzzing is considered.
 
 ## Script permission validation
 
@@ -604,20 +607,35 @@ The planning check confirms that the canonical roadmap, evidence gates, schema t
 
 The Patch 024 runtime acceptance rule is no regression from the validated Sprint 6 checkpoint. Fixture counts, JSON schema `0.1.0`, single-banner `analyze` text output, and system-binary smoke behavior remain unchanged.
 
-## Sprint 7 hostile-input validation direction
+## Sprint 7 Patch 025 hostile-input validation
 
-Sprint 7 should introduce a deterministic malformed-input runner with these minimum assertions:
+Patch 025 introduces two required regression gates:
 
-- no SIGSEGV,
-- no SIGBUS,
-- no unbounded execution,
-- stable failure classification,
-- bounded output,
-- preserved input and seed for every discovered defect,
-- a regression test for every parser crash or incorrect acceptance,
-- explicit distinction between malformed, unsupported, and internal bounds failures.
+```bash
+make malformed-smoke
+make capacity-smoke
+make validation-smoke
+make docker-validation-smoke
+```
 
-Mutation coverage should begin with ELF identification, header sizes and counts, program-header ranges, executable-region file ranges, and overlapping or overflow-prone table calculations. Later sprints extend the same model to dynamic, section, symbol, and string metadata.
+The deterministic malformed-input runner derives 29 cases from the controlled `minimal_nopie` seed: 26 malformed structures, two valid controls, and one valid executable-region boundary probe. Each row captures the seed hash, mutation, command shape, expected and observed exit code, signal, timeout state, elapsed nanoseconds, stdout size, stderr size, result, and diagnostic preview.
+
+Acceptance requires:
+
+- no SIGSEGV, SIGBUS, or another signal,
+- no timeout,
+- no unexpected success for malformed input,
+- no partial stdout for malformed parse failures,
+- stable exit code `4` or `5` according to the documented failure class,
+- successful valid control and boundary cases,
+- a TSV result artifact and JSON metadata artifact,
+- native and Docker agreement.
+
+The candidate-capacity fixtures exercise both the exact 4096-record boundary and a 4097th candidate while the current arena holds 4096 records. The exact-boundary JSON report must contain all 4096 records. For the overflow fixture, `gadgets` and `analyze`, in text and JSON modes, must return exit code `6`, emit no stdout, and print exactly `error: unsupported binary feature` on stderr. This is a fail-closed completeness contract, not truncation.
+
+Patch 025 also adds a direct regression for `e_shentsize=63`. An ELF64 file with a nonzero section count must use the fixed 64-byte section-header entry size. This closes an unsafe future-stride assumption before section-table parsing expands.
+
+Generated mutations remain temporary by default. A stable crash, timeout, unsafe bounds acceptance, or other parser defect must be minimized, documented, and promoted into `tests/malformed/regressions/` in a follow-on patch.
 
 ## Higher-resolution benchmark validation direction
 

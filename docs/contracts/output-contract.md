@@ -71,3 +71,9 @@ tests: ok
 ```
 
 Use repository facts, reproducible commands, and observed technical outcomes instead of private workflow narration.
+
+## Complete-report failure rule
+
+When bounded storage or a parser precondition prevents a complete report, the command must fail before emitting text or JSON stdout. Silent truncation and syntactically incomplete JSON are prohibited. Candidate-arena exhaustion currently uses exit code `6` and the stable unsupported-feature diagnostic.
+
+A future intentional partial-report mode must expose explicit machine-readable completeness and truncation state and follow the schema transition contract before release.

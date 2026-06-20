@@ -13,6 +13,8 @@ on:
       - 'src/**'
       - 'include/**'
       - 'benchmarks/**'
+      - 'tests/**'
+      - 'tools/**'
       - 'Makefile'
 
 jobs:

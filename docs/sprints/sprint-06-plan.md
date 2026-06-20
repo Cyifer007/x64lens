@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete through Patch 023. Patch 024 is the final planning and architecture alignment candidate before Sprint 7.
+Closed. Patch 024 validated successfully and completed the Sprint 6 planning and architecture alignment before Sprint 7.
 
 ## Sprint goal
 
@@ -37,7 +37,7 @@ Produce the first coherent integrated checkpoint: one `analyze` command, stable 
 - [x] Benchmark notes distinguish development evidence from research results.
 - [x] Paper scaffold avoids claims not supported by measured evidence.
 - [x] Remaining limitations are explicit.
-- [ ] Patch 024 planning, documentation, and regression validation passes.
+- [x] Patch 024 planning, documentation, and regression validation passes.
 
 ## Checkpoint commands
 
@@ -65,4 +65,4 @@ A normal branch push does not publish the tag. Tag publication remains a separat
 
 ## Transition
 
-Patch 024 freezes the post-checkpoint roadmap and release gates. Once validated, Sprint 7 begins with hostile-input hardening, bounded parser infrastructure, and regression-corpus preservation. Additional presentation work is not the next priority.
+Patch 024 froze the post-checkpoint roadmap and release gates. Sprint 7 now begins with hostile-input hardening, bounded parser infrastructure, and regression-corpus preservation. Additional presentation work is not the next priority.

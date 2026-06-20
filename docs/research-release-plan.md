@@ -12,6 +12,10 @@ This plan defines the evidence and artifact gates for moving from the current `v
 | Research preview candidate | `v0.1.0-rc1` | Hardened parser and mitigation paths, provenance-aware output, reproducible corpus, high-resolution benchmark runner, and pilot results. |
 | First research release | `v0.1.0` | Fixed comparative campaign, case study, replication package, claim audit, checksummed artifacts, and publication-ready documentation. |
 
+## Current gate progress
+
+Patch 025 establishes the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. This is partial progress only. Shared checked table arithmetic, exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+
 ## `v0.1.0-rc1` gate
 
 The preview candidate must include:

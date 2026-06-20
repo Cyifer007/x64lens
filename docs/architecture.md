@@ -561,3 +561,24 @@ v0.1.0      fixed research campaign, case study, replication package, and paper-
 ```
 
 See `docs/roadmap-18-sprints.md`, `docs/design/evidence-provenance-model.md`, `docs/design/schema-evolution.md`, and `docs/research-release-plan.md`.
+
+## Sprint 7 hostile-input validation layer
+
+Patch 025 adds a validation layer around the existing parser without placing mutation logic inside the analyzer process:
+
+```text
+controlled ELF64 seed
+  -> deterministic field mutations
+  -> bounded command execution
+  -> exit, signal, timeout, timing, and output capture
+  -> ignored TSV and metadata evidence
+  -> durable regression promotion when a defect is found
+```
+
+The analyzer remains responsible for fail-closed validation. The external harness is responsible for deriving reviewed inputs and recording behavior. This separation avoids coupling production parsing code to a development-only mutator.
+
+ELF64 section-header table validation now requires `e_shentsize == 64` whenever `e_shnum != 0`. A merely nonzero stride is insufficient because future section iteration must be able to rely on the fixed ELF64 entry layout.
+
+Candidate-record exhaustion is also an architectural boundary. The scanner arena holds 4096 records. Attempting to append the 4097th candidate returns `EXIT_UNSUPPORTED`; focused and integrated reporters receive no record set and therefore emit no partial text or JSON document. This preserves research-count integrity until a future capacity or streaming design is adopted.
+
+Patch 025 does not complete the bounded parser-view design. Shared checked multiplication, addition, table-end, and per-entry validation remain the next Sprint 7 implementation seam before dynamic-section parsing begins.

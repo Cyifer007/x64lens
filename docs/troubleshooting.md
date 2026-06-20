@@ -45,6 +45,7 @@ Use the repository Docker targets:
 make docker-build
 make docker-shell
 make docker-test
+make docker-validation-smoke
 ```
 
 These targets run the container with the caller's numeric UID/GID:
@@ -74,6 +75,7 @@ make clean
 make
 make test
 make docker-test
+make docker-validation-smoke
 ```
 
 Expected result:
@@ -154,3 +156,19 @@ Expected tracked shell helpers should be executable. If Git still shows mode-onl
 ```bash
 git diff --summary
 ```
+
+## `make malformed-smoke` reports a failed case
+
+Inspect the reported TSV and metadata paths under `tests/results/malformed/`. The failure row records expected and observed exit status, signal, timeout state, output sizes, and a diagnostic preview. Re-run only after preserving the evidence needed to understand the defect.
+
+A signal, timeout, unexpected success, or unsafe bounds acceptance is a parser regression. Minimize the input and promote it into `tests/malformed/regressions/` with a documented expected result before treating the issue as closed.
+
+## `make capacity-smoke` emits partial output
+
+Candidate-capacity exhaustion must return exit code `6`, leave stdout empty, and emit exactly:
+
+```text
+error: unsupported binary feature
+```
+
+Any partial text or JSON output is a contract failure because the report would appear complete while omitting candidates.

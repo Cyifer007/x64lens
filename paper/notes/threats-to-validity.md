@@ -27,3 +27,11 @@
 - Tool order, timer resolution, per-child resource capture, and host state can materially affect performance results.
 - Mitigation indicators derived from incomplete metadata must expose uncertainty rather than a guessed negative.
 - Operational triage conclusions require a documented analyst workflow and cannot be inferred from toy fixtures alone.
+
+## Sprint 7 hostile-input evidence limits
+
+- The deterministic mutation catalog covers reviewed field and range cases, not all possible ELF64 structures or execution paths.
+- A passing 29-case campaign is regression evidence, not a proof of memory safety or complete parser coverage.
+- Compiler-generated seed bytes can vary across environments; the recorded seed SHA-256 must accompany interpretation.
+- Timeout success on small controlled inputs does not establish worst-case complexity for every future metadata table.
+- The 4096/4097 capacity fixtures prove exact-boundary completeness and fail-closed overflow behavior, not scalability beyond that boundary.

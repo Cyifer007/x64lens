@@ -22,7 +22,14 @@ required=(
     docs/design/metric-boundaries.md
     docs/design/parser-safety-and-fuzzing.md
     docs/adr/0012-roadmap-expansion-and-research-release-gates.md
+    docs/adr/0013-deterministic-hostile-input-regression-harness.md
     docs/sprints/sprint-06-patch-024-validation.md
+    docs/sprints/sprint-07-patch-025-validation.md
+    tests/malformed/README.md
+    tests/malformed/regressions/README.md
+    tests/malformed/regressions/elf64-shentsize-63.bin
+    tools/malformed-elf-smoke.py
+    tools/validate-capacity-fixture.sh
 )
 
 for path in "${required[@]}"; do
@@ -53,5 +60,18 @@ grep -q 'v0.1.0' docs/research-release-plan.md \
     || fail 'first research release gate is missing'
 grep -q 'schema `0.2.0`' docs/design/schema-evolution.md \
     || fail 'schema transition gate is missing'
+grep -q '^Active' docs/sprints/sprint-07-plan.md \
+    || fail 'Sprint 7 is not marked active'
+grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
+    || fail 'Sprint 7 plan does not name the malformed-input gate'
+
+grep -q '^malformed-smoke:' Makefile \
+    || fail 'Makefile does not define malformed-smoke'
+grep -q '^capacity-smoke:' Makefile \
+    || fail 'Makefile does not define capacity-smoke'
+grep -q '^docker-validation-smoke:' Makefile \
+    || fail 'Makefile does not define docker-validation-smoke'
+grep -Eq '^validation-smoke:.*capacity-smoke.*malformed-smoke' Makefile \
+    || fail 'validation-smoke does not include capacity and malformed gates'
 
 printf 'planning-docs-check: ok sprints=%d\n' "$sprint_count"

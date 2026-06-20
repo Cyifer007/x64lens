@@ -25,18 +25,23 @@
 - [x] Repeatable checkpoint demo and local `v0.1.0-dev` tag guidance.
 - [x] Public-documentation hygiene checks.
 - [x] Patch 024 roadmap, release-gate, provenance, schema, and Sprint 7 through 18 planning.
+- [x] Patch 025 deterministic hostile-input and candidate-capacity regression gates.
 
 ## Active next tranche
 
 ### Sprint 7: hostile-input hardening
 
-- [ ] Deterministic mutation smoke harness.
-- [ ] Stable signal, timeout, and exit-code capture.
-- [ ] Regression fixture for every parser defect.
+- [x] Deterministic mutation smoke harness.
+- [x] Stable signal, timeout, exit-code, elapsed-time, and output-size capture.
+- [x] Regression-fixture policy and reserved minimized-corpus path.
+- [x] First minimized parser regression fixture for invalid ELF64 section-header stride.
+- [ ] Committed regression fixture for every newly discovered stable parser defect.
 - [ ] Shared bounded-table iteration rules or helpers.
-- [ ] Integer overflow and table-range tests.
-- [ ] Explicit candidate-capacity and truncation behavior.
-- [ ] `make malformed-smoke` integration.
+- [ ] Central checked arithmetic for multiplication, addition, counts, and end offsets.
+- [x] Initial program-header, section-header, executable-segment, and boundary range mutations.
+- [x] Exact ELF64 section-header entry-size validation.
+- [x] Explicit candidate-capacity failure behavior with no partial output.
+- [x] `make malformed-smoke`, `make capacity-smoke`, and Docker validation integration.
 
 ### Sprint 8: mitigation and metadata depth
 
@@ -127,9 +132,12 @@
 
 ### Parser and safety
 
-- [ ] Preserve read-only target mappings and non-executable internal arenas.
-- [ ] Add explicit resource limits for all file-derived counts.
-- [ ] Add crash minimization and corpus promotion rules after mutation smoke stabilizes.
+- [x] Preserve read-only target mappings and non-executable internal arenas in the current architecture.
+- [x] Enforce explicit bounded candidate-record capacity without silent truncation.
+- [ ] Add explicit resource limits for every future file-derived table and count.
+- [ ] Add shared checked table arithmetic before dynamic-section parsing.
+- [x] Define crash minimization and corpus promotion rules for deterministic mutation results.
+- [ ] Exercise and document regression minimization on the first stable parser defect.
 - [ ] Evaluate coverage-guided fuzzing only after deterministic smoke coverage is mature.
 
 ### Decoder and validity

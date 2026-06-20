@@ -89,60 +89,73 @@ The committed invalid corpus covers or plans coverage for:
 
 ## Sprint 7 deterministic mutation smoke
 
-Sprint 7 should add:
+Patch 025 implements the initial deterministic campaign through:
 
 ```text
-tests/malformed/seeds/
-tests/malformed/regressions/
+tests/malformed/README.md
+tests/malformed/regressions/README.md
+tools/malformed-elf-smoke.py
 tools/fuzz-mutated-elf-smoke.sh
 make malformed-smoke
+make capacity-smoke
+make docker-validation-smoke
 ```
 
-The first campaign should be deterministic and reproducible. For each seed, apply a fixed mutation catalog to fields such as:
+The default seed is the controlled generated `tests/bin/minimal_nopie` fixture. The runner derives a fixed 29-case catalog at runtime and removes generated binaries by default. The current cases cover:
 
-- ELF class, data encoding, machine, and type,
-- program-header offset, count, and entry size,
-- segment offset, file size, memory size, and flags,
-- section-header offset, count, and entry size,
-- dynamic tag/value pairs,
-- symbol and string table links and sizes,
-- note lengths and alignments,
-- candidate-bearing executable bytes near region boundaries.
+- truncated ELF identity and fixed headers,
+- class, endianness, version, and machine mismatches,
+- program-header offsets, entry sizes, counts, and table ranges,
+- section-header offsets, fixed 64-byte entry size, counts, and table ranges,
+- executable `PT_LOAD` offset, file-size, memory-size, and end-of-file relationships,
+- a valid final-byte `0xc2` executable-region boundary probe,
+- valid metadata and integrated JSON controls.
+
+Dynamic entries, symbol tables, strings, relocations, and note structures are not reachable yet and therefore remain future catalog extensions.
+
+Candidate storage has separate controlled 4096- and 4097-`ret` fixtures. The current arena stores 4096 records, so the exact boundary must produce a complete JSON report. The overflow fixture must make focused and integrated text and JSON paths return exit code `6`, emit no partial stdout, and preserve the stable unsupported-feature diagnostic.
 
 ## Required per-case evidence
 
-Each mutation case should record:
+Each mutation case records:
 
 ```text
 case_id
+input_class
 seed_hash
 mutation_description
 command
+expected_exit
 exit_code
 signal
 timeout
-wall_time
+wall_time_ns
+stdout_size
 stderr_size
+result
+stderr_preview
 ```
 
-Generated mutations remain ignored by default. Only minimized, reviewed regressions are committed.
+The runner writes ignored TSV and JSON metadata artifacts under `tests/results/malformed/`. Generated mutations remain temporary by default. Only minimized, reviewed regressions are committed.
 
 ## Acceptance criteria
 
-- no SIGSEGV,
-- no SIGBUS,
-- no unbounded runtime,
+- no SIGSEGV, SIGBUS, or other signal,
+- no timeout or unbounded runtime,
 - no unexpected zero exit code for malformed input,
+- no partial stdout for malformed parse failures,
 - stable documented failure class,
+- successful valid control and boundary cases,
 - no write or execute mapping of target bytes,
-- regression fixture added for every crash or incorrect bounds acceptance,
-- native and Docker results agree on pass/fail behavior.
+- explicit exit code `6` for candidate-capacity exhaustion,
+- regression fixture added for every stable crash or incorrect bounds acceptance,
+- native, CI, and Docker results agree on pass/fail behavior.
 
 ## Resource limits
 
 Hostile files can encode extreme counts even when arithmetic is technically in range. Parser modules should define explicit implementation limits where iteration or allocation could become unbounded. Exceeding a documented limit should return `EXIT_UNSUPPORTED` or another stable error instead of consuming uncontrolled resources.
 
-Candidate storage also requires explicit completeness state. Research reports must never silently stop at capacity.
+Candidate storage now fails explicitly with `EXIT_UNSUPPORTED` before report emission when the arena would overflow. Research reports must never silently stop at capacity. Future bounded analysis paths that intentionally return partial results will require explicit completeness fields before they are enabled.
 
 ## Future coverage-guided fuzzing gate
 

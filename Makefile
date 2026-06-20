@@ -21,6 +21,9 @@ SRC_DIR      := src
 INC_DIR      := include
 TARGET       := $(BUILD_DIR)/$(PROJECT)
 DEMO_TARGET  ?= ./tests/bin/gadgets
+MALFORMED_SEED ?= ./tests/bin/minimal_nopie
+MALFORMED_TIMEOUT ?= 2
+MALFORMED_RESULTS_DIR ?= ./tests/results/malformed
 
 NASM         ?= nasm
 LD           ?= ld
@@ -32,7 +35,7 @@ LDFLAGS      :=
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
 OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
-.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke validation-smoke check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 all: check-tools $(TARGET)
 
@@ -104,6 +107,8 @@ samples: sample-tools-check
 	cp tests/toy-src/minimal_pie_canary tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/minimal_execstack tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/gadgets_capacity_exact tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/gadgets_capacity tests/bin/ 2>/dev/null || true
 
 test: dev-tools-check all samples
 	bash tests/run-tests.sh
@@ -160,9 +165,30 @@ analyze-smoke: dev-tools-check all samples
 system-smoke: dev-tools-check all
 	bash tools/system-binary-smoke.sh ./$(TARGET)
 
+# Explicit candidate-capacity regression. Controlled fixtures exercise exactly
+# 4096 records and a 4097th candidate. The exact boundary must remain complete;
+# overflow must fail with EXIT_UNSUPPORTED and emit no partial report.
+capacity-smoke: dev-tools-check all samples
+	bash tools/validate-capacity-fixture.sh ./$(TARGET) ./tests/bin/gadgets_capacity ./tests/bin/gadgets_capacity_exact
+
+# Deterministic hostile-input regression campaign. Generated mutations are
+# temporary by default; compact TSV and metadata artifacts are written under
+# tests/results/malformed/ for local inspection and remain ignored by Git.
+malformed-smoke: dev-tools-check all samples
+	python3 tools/malformed-elf-smoke.py \
+		--binary ./$(TARGET) \
+		--seed "$(MALFORMED_SEED)" \
+		--timeout "$(MALFORMED_TIMEOUT)" \
+		--results-dir "$(MALFORMED_RESULTS_DIR)"
+
+# Compatibility alias retained for the parser-safety plan terminology. The
+# first Sprint 7 campaign is deterministic mutation smoke, not coverage-guided
+# fuzzing.
+fuzz-mutated-elf-smoke: malformed-smoke
+
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -255,6 +281,9 @@ script-perms-check:
 	@test -x tools/demo-checkpoint.sh
 	@test -x tools/check-public-docs.sh
 	@test -x tools/check-planning-docs.sh
+	@test -x tools/malformed-elf-smoke.py
+	@test -x tools/fuzz-mutated-elf-smoke.sh
+	@test -x tools/validate-capacity-fixture.sh
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -276,6 +305,10 @@ scaffold-check: script-perms-check
 	@test -f docs/benchmark-smoke-interpretation.md
 	@test -f docs/adr/0011-composable-text-report-sections.md
 	@test -f docs/adr/0012-roadmap-expansion-and-research-release-gates.md
+	@test -f docs/adr/0013-deterministic-hostile-input-regression-harness.md
+	@test -f tests/malformed/README.md
+	@test -f tests/malformed/regressions/README.md
+	@test -f tests/malformed/regressions/elf64-shentsize-63.bin
 	@test -f docs/roadmap-18-sprints.md
 	@test -f docs/research-release-plan.md
 	@test -f docs/design/evidence-provenance-model.md
@@ -321,12 +354,20 @@ docker-shell: docker-available-check
 docker-test: docker-build
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
 
+# Full native-equivalent validation inside the reproducible container,
+# including deterministic malformed-input and candidate-capacity smoke tests.
+docker-validation-smoke: docker-build
+	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make validation-smoke'
+
 print-vars:
 	@echo PROJECT=$(PROJECT)
 	@echo VERSION=$(VERSION)
 	@echo SCHEMA=$(SCHEMA)
 	@echo ASM_SRCS=$(ASM_SRCS)
 	@echo OBJS=$(OBJS)
+	@echo MALFORMED_SEED=$(MALFORMED_SEED)
+	@echo MALFORMED_TIMEOUT=$(MALFORMED_TIMEOUT)
+	@echo MALFORMED_RESULTS_DIR=$(MALFORMED_RESULTS_DIR)
 
 ownership-check:
 	@echo "Checking generated artifact ownership..."

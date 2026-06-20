@@ -108,8 +108,11 @@ x64lens_elf64_validate:
     movzx   r13, word [rbx + E_SHNUM]
     test    r13, r13
     je      .ok
-    cmp     word [rbx + E_SHENTSIZE], 0
-    je      .malformed
+    ; ELF64 section-table entries have a fixed 64-byte layout. Accepting an
+    ; arbitrary nonzero entry size would make future section iteration depend
+    ; on an invalid stride, so reject it before any SHDR parser is enabled.
+    cmp     word [rbx + E_SHENTSIZE], ELF64_SHDR_SIZE
+    jne     .malformed
     mov     rsi, [rbx + E_SHOFF]
     test    rsi, rsi
     je      .malformed

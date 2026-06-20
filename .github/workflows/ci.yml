@@ -14,6 +14,7 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,5 +34,5 @@ jobs:
       - name: Build
         run: make
 
-      - name: Test
-        run: make test
+      - name: Full validation smoke
+        run: make validation-smoke

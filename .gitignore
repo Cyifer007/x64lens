@@ -23,6 +23,7 @@
 
 # Generated test binaries
 /tests/bin/
+/tests/results/
 /tests/toy-src/*.o
 /tests/toy-src/*.bin
 /tests/toy-src/*.elf
@@ -30,6 +31,8 @@
 /tests/toy-src/*_pie*
 /tests/toy-src/minimal_execstack
 /tests/toy-src/gadgets
+/tests/toy-src/gadgets_capacity_exact
+/tests/toy-src/gadgets_capacity
 
 # Benchmark generated data
 /benchmarks/results/*.json
@@ -134,3 +137,4 @@ PROJECT_STATE.md
 
 # Keep deliberately malformed fixtures that are part of the public test suite.
 !/tests/invalid/*.bin
+!/tests/malformed/regressions/*.bin

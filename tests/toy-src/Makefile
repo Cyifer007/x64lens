@@ -9,7 +9,7 @@ CC ?= gcc
 
 .PHONY: all clean
 
-all: minimal_nopie minimal_pie_canary minimal_execstack gadgets
+all: minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_capacity_exact gadgets_capacity
 
 minimal_nopie: minimal.c
 	$(CC) -no-pie -fno-stack-protector -z noexecstack -o $@ $<
@@ -23,5 +23,11 @@ minimal_execstack: minimal.c
 gadgets: gadgets.S
 	$(CC) -nostdlib -static -no-pie -o $@ $<
 
+gadgets_capacity_exact: gadgets_capacity_exact.S
+	$(CC) -nostdlib -static -no-pie -o $@ $<
+
+gadgets_capacity: gadgets_capacity.S
+	$(CC) -nostdlib -static -no-pie -o $@ $<
+
 clean:
-	rm -f minimal_nopie minimal_pie_canary minimal_execstack gadgets
+	rm -f minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_capacity_exact gadgets_capacity

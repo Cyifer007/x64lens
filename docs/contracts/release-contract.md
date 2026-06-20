@@ -19,6 +19,7 @@ Before any publishable tag:
 - [ ] `make test` passes,
 - [ ] `make validation-smoke` passes,
 - [ ] `make docker-test` passes on the release environment,
+- [ ] `make docker-validation-smoke` passes when malformed-input and capacity gates are release-relevant,
 - [ ] `make public-docs-check` passes,
 - [ ] `make planning-docs-check` passes,
 - [ ] README and CLI documentation are current,
@@ -32,9 +33,9 @@ Before any publishable tag:
 
 Before `v0.1.0-rc1`:
 
-- [ ] hostile-input mutation smoke has no crashes or timeouts,
+- [ ] hostile-input mutation smoke has no crashes, signals, timeouts, unexpected success, or partial malformed-output reports,
 - [ ] parser regressions are committed,
-- [ ] candidate completeness and truncation are explicit,
+- [ ] candidate-capacity exhaustion is explicit and any intentional partial analysis exposes machine-readable completeness and truncation,
 - [ ] mitigation fixtures cover no, partial, and full RELRO plus canary indicators,
 - [ ] evidence provenance is machine-readable,
 - [ ] schema `0.2.0` validators pass,

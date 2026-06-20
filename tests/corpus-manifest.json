@@ -19,6 +19,16 @@
       "purpose": "known raw ret and ret-imm gadget fixture for Sprint 3 scanner and future semantic classification"
     },
     {
+      "path": "tests/toy-src/gadgets_capacity_exact.S",
+      "type": "source",
+      "purpose": "controlled 4096-ret fixture that verifies the final valid candidate slot remains usable"
+    },
+    {
+      "path": "tests/toy-src/gadgets_capacity.S",
+      "type": "source",
+      "purpose": "controlled 4097-ret fixture that verifies explicit candidate-capacity failure"
+    },
+    {
       "path": "tests/bin/minimal_nopie",
       "type": "generated",
       "purpose": "non-PIE noexecstack mitigation fixture"
@@ -39,6 +49,16 @@
       "purpose": "generated known-gadget binary used by raw scanner regression tests"
     },
     {
+      "path": "tests/bin/gadgets_capacity_exact",
+      "type": "generated",
+      "purpose": "generated exact-capacity fixture expected to produce a complete 4096-candidate report"
+    },
+    {
+      "path": "tests/bin/gadgets_capacity",
+      "type": "generated",
+      "purpose": "generated candidate-capacity fixture expected to return EXIT_UNSUPPORTED without partial output"
+    },
+    {
       "path": "tests/invalid/text.txt",
       "type": "invalid",
       "purpose": "not ELF"
@@ -57,6 +77,11 @@
       "path": "tests/invalid/wrong_arch_elf.bin",
       "type": "invalid",
       "purpose": "ELF-like input with unsupported architecture"
+    },
+    {
+      "path": "tests/malformed/regressions/elf64-shentsize-63.bin",
+      "type": "invalid-regression",
+      "purpose": "minimized ELF64 fixture proving e_shentsize must equal 64 when e_shnum is nonzero"
     }
   ]
 }

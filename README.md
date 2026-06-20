@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 6 Patch 024 planning and architecture review candidate. Sprints 1 through 6 are complete. The integrated `analyze` command, schema-versioned JSON, controlled fixture validation, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
+> Status: Sprint 7 Patch 025 hostile-input hardening candidate. Sprint 6 and the Patch 024 roadmap review are complete. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, explicit candidate-capacity regression, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -184,11 +184,24 @@ make semantic-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
+make capacity-smoke
+make malformed-smoke
 make validation-smoke
 make docker-test
+make docker-validation-smoke
 ```
 
-`make validation-smoke` is the local aggregate. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+`make validation-smoke` is the local aggregate. It includes deterministic malformed-input and candidate-capacity checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+
+Hostile-input checks can also be run directly:
+
+```bash
+MALFORMED_TIMEOUT=2 make malformed-smoke
+make capacity-smoke
+make docker-validation-smoke
+```
+
+The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git.
 
 Patch bundle hygiene:
 
@@ -225,7 +238,7 @@ file mapping and bounds
 
 Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
 
-See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), and [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md).
+See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), and [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md).
 
 ## Roadmap and release gates
 

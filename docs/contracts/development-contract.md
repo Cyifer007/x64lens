@@ -127,3 +127,15 @@ Schema `0.1.0` may receive compatible optional fields. Evidence provenance, anal
 ## Planning-document validation rule
 
 `make planning-docs-check` verifies the canonical roadmap, release plan, design seams, ADR, and Sprint 7 through Sprint 18 plans. It is a structural guardrail, not a substitute for technical review.
+
+## Hostile-input regression rule
+
+Any patch that changes ELF field validation, table arithmetic, executable-region derivation, candidate boundaries, or file-derived iteration must update the deterministic malformed-input catalog or add a durable regression fixture. The patch must pass `make malformed-smoke` and `make capacity-smoke` before merge.
+
+Malformed parse failures must not emit partial stdout. A signal, timeout, unexpected success, or changed failure class is a blocking regression until explained and documented.
+
+Generated mutations are development evidence and remain ignored. A stable defect discovered by mutation testing must be minimized and promoted into `tests/malformed/regressions/` with its original failure mode, fixed expected result, and affected commands.
+
+## Resource-capacity rule
+
+Bounded storage must fail closed when a complete report cannot be produced. Silent truncation is prohibited. Until schema-level completeness fields are introduced, candidate-arena exhaustion returns `EXIT_UNSUPPORTED` and reporters emit no partial text or JSON document.

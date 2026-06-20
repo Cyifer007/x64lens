@@ -145,9 +145,10 @@ Run Docker validation with:
 
 ```bash
 make docker-test
+make docker-validation-smoke
 ```
 
-`make docker-test` rebuilds the development image first. This prevents a dependency update in the Dockerfile from being tested against a stale local image.
+`make docker-test` rebuilds the development image and runs the core suite. `make docker-validation-smoke` runs the full native-equivalent aggregate, including deterministic malformed-input and candidate-capacity gates. Both rebuild first so Dockerfile dependency changes are not tested against a stale image.
 
 If root-owned generated files already exist, repair them once from WSL/Linux:
 
@@ -178,5 +179,7 @@ The `.dockerignore` file excludes `.git/`, `.local/`, generated build outputs, g
 ```bash
 make analyze-smoke
 make system-smoke
+make capacity-smoke
+make malformed-smoke
 make validation-smoke
 ```

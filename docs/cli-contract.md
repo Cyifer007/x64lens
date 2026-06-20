@@ -63,8 +63,14 @@ x64lens analyze --max-depth 4 --format json ./tests/bin/gadgets
 | 3 | File open/read/map error |
 | 4 | Not an ELF64 x86_64 binary |
 | 5 | Malformed or truncated ELF |
-| 6 | Unsupported binary feature |
+| 6 | Unsupported binary feature or bounded analysis capacity exceeded before a complete report can be produced |
 | 7 | Internal bounds or safety failure |
+
+## Capacity failure contract
+
+The current candidate arena stores 4096 records. When a target would require a 4097th record, `gadgets` and `analyze` return exit code `6` before report emission. This applies to text and JSON modes. Stdout remains empty and stderr contains the stable unsupported-feature diagnostic.
+
+Silent truncation is not permitted. A future partial-analysis mode requires explicit completeness and truncation fields and a schema transition before it can change this behavior.
 
 ## Command examples
 
@@ -133,8 +139,11 @@ The following make targets are part of the development and validation workflow, 
 ```bash
 make json-smoke
 make system-smoke
+make capacity-smoke
+make malformed-smoke
 make validation-smoke
 make docker-available-check
+make docker-validation-smoke
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 

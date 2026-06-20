@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 6 are complete. Patch 024 is the planning and architecture review candidate that governs the transition into Sprint 7.
+Sprints 1 through 6 and Patch 024 are validated. Sprint 7 is active, and Patch 025 is the first hostile-input hardening candidate.
 
 The implemented pipeline is:
 
@@ -30,6 +30,10 @@ ELF64 validation
 ```
 
 The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release.
+
+## Sprint 7 Patch 025 checkpoint
+
+The first Sprint 7 candidate adds deterministic hostile-input evidence and explicit resource-limit behavior. It does not complete Sprint 7. Shared checked arithmetic, bounded table views, and exercised regression promotion remain before the Sprint 8 handoff.
 
 ## Release gates
 
@@ -51,7 +55,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 4 | Semantic classification | Primitive classes, controlled-register coverage, stack deltas, and unknown preservation. |
 | 5 | Scoring, JSON, and validation | Heuristic scores, schema `0.1.0`, system smoke tests, baseline harness, and environment hardening. |
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
-| 7 | Hostile-input hardening | Deterministic mutation smoke testing, parser regression corpus, shared bounded-table rules, and explicit capacity behavior. |
+| 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Full versus partial RELRO, canary indicators, section labels, stripped indicators, and external comparison checks. |
 | 9 | Candidate provenance and decoder-gap measurement | Evidence side-car model, truncation reporting, validity tiers, and measured decoder decision gate. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |

@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned after the Sprint 6 Patch 024 architecture review.
+Active. Patch 025 is the first implementation candidate after the validated Sprint 6 Patch 024 architecture review.
 
 ## Sprint goal
 
@@ -10,37 +10,54 @@ Harden hostile-input handling before dynamic-section, symbol-table, and note par
 
 ## Rationale
 
-The current parser has explicit bounds checks and committed malformed fixtures, but the evidence is still example-driven. Sprint 7 converts parser safety from an implementation claim into a repeatable regression surface.
+The parser already performs explicit range checks and rejects several committed malformed fixtures, but the evidence before Sprint 7 was example-driven. Sprint 7 converts parser safety from an implementation claim into a repeatable regression surface with bounded execution, per-case evidence, explicit resource-limit behavior, and a path for promoting discovered defects into durable fixtures.
 
-## Planned deliverables
+## Patch 025 delivered scope
 
-- [ ] Add a deterministic mutation smoke harness with fixed seeds and bounded runtime.
-- [ ] Add `make malformed-smoke` and include it in `make validation-smoke` after local stability is proven.
-- [ ] Record signal, exit code, timeout, target mutation, and command for every case.
-- [ ] Add a committed regression fixture for every crash or out-of-bounds defect discovered.
-- [ ] Add shared helpers or documented rules for bounded table iteration before dynamic-section parsing begins.
-- [ ] Validate multiplication, addition, entry-size, count, and end-offset overflow paths.
-- [ ] Define explicit behavior when executable-region or gadget-record capacity is exceeded.
-- [ ] Add machine-readable and text limitations for incomplete or truncated analysis when applicable.
-- [ ] Preserve target mappings as read-only and internal arenas as non-executable.
+- [x] Add a deterministic mutation smoke harness with a fixed reviewed catalog and bounded runtime.
+- [x] Add `make malformed-smoke` and include it in `make validation-smoke`.
+- [x] Record seed hash, mutation description, command, expected and observed exit code, signal, timeout, elapsed nanoseconds, and output sizes for every case.
+- [x] Add a regression policy and reserved directory for minimized parser fixtures.
+- [x] Commit the first minimized regression fixture for the invalid 63-byte ELF64 section-header stride defect.
+- [x] Require the fixed 64-byte ELF64 section-header entry size when a section table is present.
+- [x] Exercise program-header, section-header, executable-segment, and boundary range cases.
+- [x] Define candidate-arena exhaustion as exit code `6` with no partial text or JSON report.
+- [x] Add controlled 4096/4097 boundary fixtures and `make capacity-smoke`.
+- [x] Add native, CI, and Docker integration through `make validation-smoke` and `make docker-validation-smoke`.
+- [x] Preserve target mappings as read-only and internal arenas as non-executable.
+
+## Remaining Sprint 7 work
+
+- [ ] Add shared checked table arithmetic or bounded-view helpers before dynamic-section parsing begins.
+- [ ] Centralize multiplication, addition, entry-size, count, and end-offset overflow policy.
+- [ ] Promote every newly discovered stable parser defect into a minimized committed regression fixture.
+- [ ] Add regression minimization guidance and fixture provenance fields.
+- [ ] Decide whether any bounded analysis path requires explicit machine-readable completeness or truncation fields before schema `0.2.0`.
+- [ ] Expand deterministic mutations when new file-derived tables become reachable.
 
 ## Acceptance criteria
 
-- [ ] No mutation case causes SIGSEGV or SIGBUS.
-- [ ] No mutation case exceeds the configured timeout.
-- [ ] Malformed inputs return stable documented nonzero exit codes.
-- [ ] Every new parser regression is represented by a durable fixture.
-- [ ] Candidate-capacity behavior is explicit and never silently truncates a research report.
+Patch 025 is accepted when:
+
+- [ ] No deterministic mutation case causes SIGSEGV, SIGBUS, or another signal.
+- [ ] No deterministic mutation case exceeds the configured timeout.
+- [ ] Malformed inputs return stable documented nonzero exit codes and emit no partial stdout.
+- [ ] The valid controls and executable-region boundary probe complete successfully.
+- [ ] Candidate-capacity exhaustion returns exit code `6` for focused and integrated text and JSON commands, with no partial output.
 - [ ] Existing `info`, `mitigations`, `gadgets`, and `analyze` behavior remains compatible for valid fixtures.
-- [ ] Native, Docker, fixture, JSON, system-binary, and malformed smoke checks pass.
+- [ ] Native, Docker, fixture, JSON, system-binary, malformed, and capacity smoke checks pass.
+- [ ] Public documentation, planning consistency, and patch-bundle hygiene checks pass.
+
+Sprint 7 is complete only after the shared checked-arithmetic layer and regression-promotion workflow are implemented and validated.
 
 ## Out of scope
 
 - Full RELRO and canary detection, except parser helpers needed to support them.
 - Primitive expansion.
 - Embedded decoder integration.
+- Coverage-guided fuzzing.
 - Publication benchmark claims.
 
 ## Handoff
 
-Sprint 8 consumes the hardened table-iteration and regression infrastructure to implement deeper mitigation and metadata evidence.
+Patch 026 should implement shared bounded table arithmetic and regression-promotion mechanics. Sprint 8 begins only after those parser-safety foundations are validated.
