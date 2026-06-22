@@ -655,3 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
 Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. Acceptance requires 11 valid cases, five malformed cases, exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through `info`, `mitigations`, and `analyze`. The generated JSON artifact under `tests/results/mitigation-matrix/` must contain 16 successful records and remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+
+## Sprint 7 Patch 027 mitigation-oracle correction validation
+
+Patch 027 preserves runtime text and updates the oracle's no-executable-region expectation to `  none discovered from PT_LOAD + PF_X`. Acceptance requires `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`, `MALFORMED_TIMEOUT=2 make validation-smoke`, and `MALFORMED_TIMEOUT=2 make docker-validation-smoke` to pass. The evidence artifact must contain 11 valid records, five malformed records, and the exact zero-region line for `non-executable-load`. A Make target failure remains a valid fail-fast signal and must not be masked.

@@ -28,6 +28,7 @@ required=(
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
     docs/sprints/sprint-07-patch-026-validation.md
+    docs/sprints/sprint-07-patch-027-validation.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
     tests/malformed/regressions/elf64-shentsize-63.bin

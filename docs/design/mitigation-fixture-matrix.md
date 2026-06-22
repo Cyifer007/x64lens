@@ -15,7 +15,7 @@ This document defines the controlled ELF64 layouts used by `tools/mitigation-mat
 | `relro` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO` | RELRO present |
 | `dynamic` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` | dynamic linking yes |
 | `rwx-load` | `ET_EXEC` | RWX `PT_LOAD` | RWX load yes, one executable region |
-| `non-executable-load` | `ET_EXEC` | RW `PT_LOAD` | no executable regions |
+| `non-executable-load` | `ET_EXEC` | RW `PT_LOAD` | zero executable regions and exact text `none discovered from PT_LOAD + PF_X` |
 | `split-rx-rw-loads` | `ET_EXEC` | separate RX and RW `PT_LOAD` entries | two loads, one executable region, no RWX load |
 | `overlapping-loads-characterized` | `ET_EXEC` | two overlapping RX `PT_LOAD` entries | two executable-region records under the current model |
 | `combined-hardening-evidence` | `ET_DYN` | RX and RW loads, RW stack, RELRO, dynamic | PIE and NX enabled, RELRO present, dynamic yes, no RWX load |
@@ -27,7 +27,7 @@ Every valid case must pass both of these command paths:
 ./build/x64lens analyze --format json --max-depth 4 <fixture>
 ```
 
-The text path is checked against exact mitigation-summary and executable-region lines. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr.
+The text path is checked against exact mitigation-summary and executable-region lines. When no `PT_LOAD + PF_X` region exists, the required region line is `  none discovered from PT_LOAD + PF_X`. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr.
 
 ## Malformed cases
 

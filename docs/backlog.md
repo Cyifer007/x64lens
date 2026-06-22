@@ -171,6 +171,6 @@
 
 Private course context and state tracking belong under `.local/project-context/` and remain excluded from public source bundles. Public backlog entries describe repository work and evidence only.
 
-## Patch 026 checkpoint
+## Patch 026 and Patch 027 checkpoint
 
-The deterministic mitigation oracle is implemented. Shared checked arithmetic, bounded table views, regression minimization guidance, and provenance fields for promoted malformed fixtures remain Sprint 7 work. Mitigation-depth expansion remains scheduled after parser hardening.
+The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Shared checked arithmetic, bounded table views, regression minimization guidance, and provenance fields for promoted malformed fixtures move to Patch 028 and remain Sprint 7 work. Mitigation-depth expansion remains scheduled after parser hardening.

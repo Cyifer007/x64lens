@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 7 Patch 025 hostile-input hardening candidate. Sprint 6 and the Patch 024 roadmap review are complete. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, explicit candidate-capacity regression, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
+> Status: Sprint 7 Patch 027 mitigation-oracle correction candidate. Patch 026 implemented the controlled mitigation matrix, and Patch 027 corrects its zero-executable-region text expectation so native and Docker aggregate validation can complete. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, explicit candidate-capacity regression, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
 >
 > Tool version: `0.1.0-dev`
 >

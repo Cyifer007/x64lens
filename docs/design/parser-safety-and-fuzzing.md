@@ -178,4 +178,4 @@ The prototype uses read-only target mappings, explicit bounds checks, bounded in
 
 ## Patch 026 mitigation-specific oracle
 
-The broad deterministic mutation campaign is supplemented by a smaller program-header truth table. The matrix verifies expected successful facts and exact malformed behavior before checked arithmetic is centralized. Invalid file-backed `PT_LOAD` ranges are rejected in shared ELF64 validation, then revalidated by the program-header analyzer. This duplication is intentional until Patch 027 replaces repeated arithmetic with shared helpers.
+The broad deterministic mutation campaign is supplemented by a smaller program-header truth table. The matrix verifies expected successful facts and exact malformed behavior before checked arithmetic is centralized. Invalid file-backed `PT_LOAD` ranges are rejected in shared ELF64 validation, then revalidated by the program-header analyzer. This duplication is intentional until Patch 028 replaces repeated arithmetic with shared helpers. Patch 027 is limited to correcting the oracle expectation exposed during Patch 026 validation.

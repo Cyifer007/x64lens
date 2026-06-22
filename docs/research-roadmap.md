@@ -130,4 +130,4 @@ See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan
 
 ## Patch 026 behavior oracle
 
-The project now fixes expected loader-level mitigation behavior before parser arithmetic is refactored. This ordering reduces confounding: Patch 027 can be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and Patch 026 mitigation matrix.
+The project now fixes expected loader-level mitigation behavior before parser arithmetic is refactored. This ordering reduces confounding: Patch 028 can be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and the Patch 027-corrected mitigation matrix.

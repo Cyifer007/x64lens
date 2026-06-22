@@ -181,4 +181,4 @@ These remain post-release research directions unless measured evidence changes t
 
 ## Sprint 7 Patch 026 checkpoint
 
-Patch 026 adds the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 is the next dependency: shared checked arithmetic and bounded table helpers must preserve both the Patch 025 hostile-input evidence and the Patch 026 oracle before Sprint 8 begins.
+Patch 026 adds the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 corrects the zero-region oracle expectation. Patch 028 is the next dependency: shared checked arithmetic and bounded table helpers must preserve both the Patch 025 hostile-input evidence and the Patch 026 oracle before Sprint 8 begins.

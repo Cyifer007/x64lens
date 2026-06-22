@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.1.0"
+SCRIPT_VERSION = "0.1.1"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -39,6 +39,7 @@ PF_R = 4
 EXIT_OK = 0
 EXIT_MALFORMED_ELF = 5
 MALFORMED_MESSAGE = b"error: malformed or truncated ELF\n"
+NO_EXEC_REGION_LINE = "  none discovered from PT_LOAD + PF_X"
 
 
 class HarnessError(RuntimeError):
@@ -441,7 +442,7 @@ def expected_region_lines(case: ValidCase) -> tuple[str, ...]:
         if header.p_type == PT_LOAD and header.flags & PF_X
     )
     if not executable:
-        return ("  none",)
+        return (NO_EXEC_REGION_LINE,)
     return tuple(
         "  - VA "
         f"0x{header.vaddr:016x}, "

@@ -78,6 +78,17 @@ Patch 025 gates remain authoritative:
 - version `0.1.0-dev`,
 - unchanged `v0.1.0-dev` tag target.
 
+## Observed validation outcome
+
+The implementation, core regression suite, malformed-input campaign, capacity boundary, benchmarks, and Docker core suite completed successfully. The matrix and both aggregate validation paths stopped on one deterministic harness mismatch for `non-executable-load`:
+
+```text
+expected: "  none"
+observed: "  none discovered from PT_LOAD + PF_X"
+```
+
+The runtime reporter output is the more explicit established text and is consistent with the loader-evidence boundary. The defect is the stale oracle expectation, not the Make dependency graph or the mitigation implementation. Patch 026 therefore remains implemented but is not fully accepted until Patch 027 corrects the harness and the native and Docker aggregate gates pass.
+
 ## Bundle hygiene
 
 ```bash

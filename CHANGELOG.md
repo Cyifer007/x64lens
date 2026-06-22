@@ -10,6 +10,7 @@ The project follows semantic versioning once the first public release is cut.
 
 - Sprint 7 Patch 026 deterministic mitigation oracle with 11 controlled valid ELF64 layouts and five malformed program-header layouts.
 - `make mitigation-matrix-smoke`, generated SHA-256-addressed JSON evidence, ADR 0014, mitigation fixture-matrix documentation, and Patch 026 validation plan.
+- Sprint 7 Patch 027 validation plan for the mitigation-oracle expectation correction.
 - `make help` as a stable discovery surface for the principal development and validation targets.
 
 - Sprint 7 Patch 025 deterministic malformed-ELF mutation runner with 29 fixed cases, per-case timeout and signal capture, seed SHA-256 recording, and TSV/metadata artifacts.
@@ -30,6 +31,7 @@ The project follows semantic versioning once the first public release is cut.
 - Include the mitigation matrix in native and Docker aggregate validation.
 - Make planning validation distinguish all 18 sprint plans from the 12 forward plans.
 - Sequence the shared checked-arithmetic refactor after the mitigation oracle so behavior remains fixed during parser changes.
+- Move the shared checked-arithmetic refactor to Patch 028 after reserving Patch 027 for the oracle correction.
 
 - Require the fixed 64-byte ELF64 section-header entry size whenever the section-header count is nonzero.
 - Include malformed-input and capacity checks in the aggregate validation gate and CI workflow.
@@ -45,6 +47,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Correct the mitigation oracle zero-executable-region expectation to match the stable text reporter line, `none discovered from PT_LOAD + PF_X`.
 - Reject malformed ELF64 files that previously used a nonzero but invalid section-header entry stride.
 - Verify candidate-record exhaustion returns a stable unsupported-feature error instead of silently truncating analysis.
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Active. Patch 025 established the broad hostile-input gate. Patch 026 establishes the mitigation oracle before the shared checked-arithmetic refactor in Patch 027.
+Active. Patch 025 established the broad hostile-input gate. Patch 026 implemented the mitigation oracle but exposed one stale zero-region text expectation. Patch 027 corrects that oracle contract before the shared checked-arithmetic refactor in Patch 028.
 
 ## Sprint goal
 
@@ -37,9 +37,16 @@ The parser already performs explicit range checks and rejects several committed 
 - [x] Include `make mitigation-matrix-smoke` in native, CI, and Docker validation.
 - [x] Clarify planning-check output as 18 total sprint plans and 12 forward plans.
 
+## Patch 027 correction scope
+
+- [x] Preserve the reporter's explicit zero-region evidence line.
+- [x] Correct the mitigation oracle to expect `none discovered from PT_LOAD + PF_X`.
+- [x] Add a focused correction validation plan and document the Patch 026 acceptance gap.
+- [x] Keep the Make aggregate fail-fast behavior unchanged.
+
 ## Remaining Sprint 7 work
 
-- [ ] Patch 027: add shared checked table arithmetic or bounded-view helpers before dynamic-section parsing begins.
+- [ ] Patch 028: add shared checked table arithmetic or bounded-view helpers before dynamic-section parsing begins.
 - [ ] Centralize multiplication, addition, entry-size, count, and end-offset overflow policy.
 - [ ] Promote every newly discovered stable parser defect into a minimized committed regression fixture.
 - [ ] Add regression minimization guidance and fixture provenance fields.
@@ -71,4 +78,4 @@ Sprint 7 is complete only after the shared checked-arithmetic layer and regressi
 
 ## Handoff
 
-Patch 027 should implement shared bounded table arithmetic and regression-promotion mechanics while preserving the Patch 025 hostile-input gates and Patch 026 mitigation oracle. Sprint 8 begins only after those parser-safety foundations are validated.
+Patch 028 should implement shared bounded table arithmetic and regression-promotion mechanics while preserving the Patch 025 hostile-input gates and the corrected Patch 026 mitigation oracle. Sprint 8 begins only after those parser-safety foundations are validated.
