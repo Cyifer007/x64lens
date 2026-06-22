@@ -139,3 +139,7 @@ Generated mutations are development evidence and remain ignored. A stable defect
 ## Resource-capacity rule
 
 Bounded storage must fail closed when a complete report cannot be produced. Silent truncation is prohibited. Until schema-level completeness fields are introduced, candidate-arena exhaustion returns `EXIT_UNSUPPORTED` and reporters emit no partial text or JSON document.
+
+## Mitigation-oracle rule
+
+Changes to ELF type interpretation, GNU stack handling, RELRO presence, dynamic-linking evidence, load permissions, executable-region counting, or program-header rejection behavior must update and pass the deterministic mitigation matrix. Parser refactors must preserve the oracle unless an intentional output-contract change is separately documented.

@@ -96,3 +96,7 @@ Project context bundles remain separate from public source patches.
 ## Tag and checksum rule
 
 Tags point to the exact validated commit. Checksums are generated after artifacts are final. Any artifact change requires checksum regeneration. Signed releases remain future work.
+
+## Mitigation-oracle release gate
+
+A research preview or release candidate must pass the deterministic mitigation matrix in the documented native and Docker environments. The retained evidence must identify the seed and generated fixtures by SHA-256, report all case outcomes, and contain no failed record.

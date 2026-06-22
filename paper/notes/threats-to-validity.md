@@ -35,3 +35,7 @@
 - Compiler-generated seed bytes can vary across environments; the recorded seed SHA-256 must accompany interpretation.
 - Timeout success on small controlled inputs does not establish worst-case complexity for every future metadata table.
 - The 4096/4097 capacity fixtures prove exact-boundary completeness and fail-closed overflow behavior, not scalability beyond that boundary.
+
+## Sprint 7 mitigation-oracle limits
+
+The controlled matrix reduces dependence on compiler-generated mitigation defaults, but it covers only selected program-header combinations. `ET_DYN` remains a static PIE indicator, RELRO is presence-only, and passing the matrix does not prove memory safety or complete mitigation detection. Overlapping executable segments are characterized under the current region model rather than deduplicated.

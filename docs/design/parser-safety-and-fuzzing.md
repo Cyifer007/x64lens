@@ -175,3 +175,7 @@ Approved posture:
 ```text
 The prototype uses read-only target mappings, explicit bounds checks, bounded internal storage, deterministic malformed-input testing, and regression fixtures to reduce parser crash risk. It does not provide language-level or formally verified memory-safety guarantees.
 ```
+
+## Patch 026 mitigation-specific oracle
+
+The broad deterministic mutation campaign is supplemented by a smaller program-header truth table. The matrix verifies expected successful facts and exact malformed behavior before checked arithmetic is centralized. Invalid file-backed `PT_LOAD` ranges are rejected in shared ELF64 validation, then revalidated by the program-header analyzer. This duplication is intentional until Patch 027 replaces repeated arithmetic with shared helpers.

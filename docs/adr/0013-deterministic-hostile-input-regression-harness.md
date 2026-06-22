@@ -50,4 +50,4 @@ Candidate-storage behavior is validated separately with controlled 4096- and 409
 
 ## Follow-on work
 
-A later Sprint 7 patch should introduce shared checked table arithmetic and grow the regression corpus around any defect exposed by the harness. Coverage-guided fuzzing remains gated on stable regression handling and suitable instrumentation.
+Patch 026 adds a deterministic mitigation oracle before parser arithmetic changes. Patch 027 should introduce shared checked table arithmetic and grow the regression corpus around any defect exposed by either harness. Coverage-guided fuzzing remains gated on stable regression handling and suitable instrumentation.

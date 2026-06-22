@@ -44,6 +44,9 @@ The \texttt{analyze} command runs the validated pipeline once and emits target m
 \subsection{Pattern and Decoder Boundary}
 The current scanner is not a full x86\_64 decoder. Exact suffix labels may include unaligned byte streams and do not prove that the complete displayed window is a valid intended instruction sequence. Raw candidate, exact pattern, semantic candidate, and score metrics are therefore reported separately.
 
+\subsection{Deterministic Mitigation Oracle}
+Sprint 7 adds a compiler-independent program-header matrix with eleven valid layouts and five malformed layouts. The matrix fixes expected PIE, NX-stack, RELRO-presence, dynamic-linking, RWX-load, load-count, and executable-region behavior before checked parser arithmetic is consolidated. These tests provide regression evidence for represented cases, not a proof of complete mitigation coverage or memory safety.
+
 \section{Evaluation Methodology}
 The controlled methodology uses a hand-authored fixture, selected Linux system binaries, and later compiler/hardening and larger-binary corpus tiers. Measurements include repeated wall time, maximum RSS, output size, exit status, raw candidate count, exact pattern count, semantic coverage, and mitigation agreement. ROPgadget, Ropper, and ropr are external baselines. Tool versions, commands, host facts, corpus manifests, and raw artifacts are retained.
 
@@ -61,5 +64,6 @@ The implemented checkpoint establishes a modular assembly-first analyzer and a r
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
+
 
 \end{document}

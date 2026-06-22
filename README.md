@@ -186,6 +186,7 @@ make analyze-smoke
 make system-smoke
 make capacity-smoke
 make malformed-smoke
+make mitigation-matrix-smoke
 make validation-smoke
 make docker-test
 make docker-validation-smoke
@@ -197,11 +198,14 @@ Hostile-input checks can also be run directly:
 
 ```bash
 MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
 make capacity-smoke
 make docker-validation-smoke
 ```
 
 The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git.
+
+The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, and identical malformed failure behavior across `info`, `mitigations`, and `analyze`. Its ignored evidence is written under `tests/results/mitigation-matrix/`.
 
 Patch bundle hygiene:
 

@@ -172,3 +172,7 @@ error: unsupported binary feature
 ```
 
 Any partial text or JSON output is a contract failure because the report would appear complete while omitting candidates.
+
+## `make mitigation-matrix-smoke` reports a failed case
+
+First identify the named valid or malformed case in stderr. For a valid case, compare focused `mitigations` text and `analyze --format json` output. For a malformed case, confirm all three command paths return exit code `5`, emit no stdout, and emit exactly `error: malformed or truncated ELF`. Do not weaken the expected matrix to accommodate an unexplained parser or reporter change.

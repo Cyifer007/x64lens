@@ -95,3 +95,7 @@ Publication artifacts remain under `paper/` and benchmark evidence remains under
 - `v0.1.0` is the first research release after the Sprint 18 gate.
 
 A normal branch push does not publish tags. Release tags should be pushed explicitly only after the release checklist passes.
+
+## Sprint 7 mitigation evidence gate
+
+Before parser arithmetic is refactored or mitigation depth expands, the 11-row valid mitigation oracle and five malformed program-header cases must pass natively and in Docker. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.

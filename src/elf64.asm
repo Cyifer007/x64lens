@@ -8,10 +8,11 @@
 ;   ranges before deeper parsing. This module treats all target bytes as
 ;   untrusted and uses bounds helpers before reading offset-derived ranges.
 ;
-; Sprint 1 boundary:
-;   This module validates the ELF64 header and header-table ranges only. It
-;   does not yet parse program-header semantics, section labels, mitigations,
-;   or gadgets.
+; Current boundary:
+;   This module validates fixed ELF64 header fields, header-table ranges, and
+;   file-backed PT_LOAD ranges. Command-specific program-header semantics,
+;   mitigation interpretation, region discovery, and gadget analysis remain in
+;   their dedicated modules.
 
 bits 64
 default rel
@@ -37,6 +38,8 @@ x64lens_elf64_validate:
     push    rbx
     push    r12
     push    r13
+    push    r14
+    sub     rsp, 8              ; preserve 16-byte call-site alignment
 
     mov     rbx, rdi            ; mapped base
     mov     r12, rsi            ; file size
@@ -101,6 +104,38 @@ x64lens_elf64_validate:
     cmp     rax, 1
     jne     .malformed
 
+    ; Validate every file-backed PT_LOAD range before any command reports ELF
+    ; metadata. This keeps info, mitigations, and analyze aligned on malformed
+    ; loader input. A later shared-arithmetic refactor can consolidate the
+    ; repeated offset and table calculations without changing this policy.
+    xor     r14, r14
+.validate_program_headers:
+    cmp     r14, r13
+    jae     .check_sections
+
+    mov     rax, r14
+    imul    rax, rax, ELF64_PHDR_SIZE
+    add     rax, [rbx + E_PHOFF]
+    lea     r10, [rbx + rax]
+
+    cmp     dword [r10 + P_TYPE], PT_LOAD
+    jne     .next_program_header
+
+    mov     rax, [r10 + P_FILESZ]
+    cmp     rax, [r10 + P_MEMSZ]
+    ja      .malformed
+
+    mov     rdi, r12
+    mov     rsi, [r10 + P_OFFSET]
+    mov     rdx, [r10 + P_FILESZ]
+    call    x64lens_bounds_range_valid
+    cmp     rax, 1
+    jne     .malformed
+
+.next_program_header:
+    inc     r14
+    jmp     .validate_program_headers
+
 .check_sections:
     ; Validate section header table range when present. Section headers are
     ; not authoritative for runtime mapping, but unsafe section offsets still
@@ -132,6 +167,8 @@ x64lens_elf64_validate:
 .malformed:
     mov     rax, EXIT_MALFORMED_ELF
 .done:
+    add     rsp, 8
+    pop     r14
     pop     r13
     pop     r12
     pop     rbx

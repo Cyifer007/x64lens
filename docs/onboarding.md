@@ -242,3 +242,13 @@ The demo validates both human-readable and JSON integrated output. `checkpoint-t
 ## Roadmap orientation
 
 The canonical development plan is `docs/roadmap-18-sprints.md`. The earlier twelve-sprint file is retained only as a superseded compatibility reference. New implementation work should be checked against the active sprint plan, the research release plan, and the relevant design contracts before code changes begin.
+
+## Mitigation oracle tour
+
+After the broad malformed and capacity gates, run:
+
+```bash
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+```
+
+Expect 11 valid cases and five malformed cases. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.

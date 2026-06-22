@@ -127,3 +127,7 @@ Potential future research includes:
 These are post-release research decisions, not hidden requirements for the current roadmap.
 
 See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan.md`](research-release-plan.md).
+
+## Patch 026 behavior oracle
+
+The project now fixes expected loader-level mitigation behavior before parser arithmetic is refactored. This ordering reduces confounding: Patch 027 can be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and Patch 026 mitigation matrix.

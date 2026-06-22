@@ -170,3 +170,7 @@
 ## Local-only process boundary
 
 Private course context and state tracking belong under `.local/project-context/` and remain excluded from public source bundles. Public backlog entries describe repository work and evidence only.
+
+## Patch 026 checkpoint
+
+The deterministic mitigation oracle is implemented. Shared checked arithmetic, bounded table views, regression minimization guidance, and provenance fields for promoted malformed fixtures remain Sprint 7 work. Mitigation-depth expansion remains scheduled after parser hardening.

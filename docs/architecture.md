@@ -582,3 +582,7 @@ ELF64 section-header table validation now requires `e_shentsize == 64` whenever 
 Candidate-record exhaustion is also an architectural boundary. The scanner arena holds 4096 records. Attempting to append the 4097th candidate returns `EXIT_UNSUPPORTED`; focused and integrated reporters receive no record set and therefore emit no partial text or JSON document. This preserves research-count integrity until a future capacity or streaming design is adopted.
 
 Patch 025 does not complete the bounded parser-view design. Shared checked multiplication, addition, table-end, and per-entry validation remain the next Sprint 7 implementation seam before dynamic-section parsing begins.
+
+## Sprint 7 mitigation-oracle validation layer
+
+Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix is a fixed behavior gate for the Patch 027 checked-arithmetic refactor.

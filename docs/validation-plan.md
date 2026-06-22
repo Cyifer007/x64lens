@@ -651,3 +651,7 @@ The publication runner planned for Sprint 12 must validate its own measurement c
 - raw rows preserved before summaries are generated.
 
 Smoke benchmark rows remain development evidence and must not be merged with frozen research-campaign rows.
+
+## Sprint 7 Patch 026 mitigation-oracle validation
+
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. Acceptance requires 11 valid cases, five malformed cases, exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through `info`, `mitigations`, and `analyze`. The generated JSON artifact under `tests/results/mitigation-matrix/` must contain 16 successful records and remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.

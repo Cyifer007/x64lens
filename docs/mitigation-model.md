@@ -97,3 +97,7 @@ Mitigation output should be compared against controlled linker commands and sele
 - optional `rabin2 -I`.
 
 Disagreements should be investigated by evidence source rather than resolved by copying another tool's label.
+
+## Deterministic mitigation oracle
+
+`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. Eleven valid layouts isolate ELF type, GNU stack state, RELRO presence, dynamic linking, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Five malformed layouts verify consistent exit code `5` behavior across `info`, `mitigations`, and `analyze`. The oracle validates current facts only; it does not add full RELRO, canary, GNU property, or exploitability conclusions.
