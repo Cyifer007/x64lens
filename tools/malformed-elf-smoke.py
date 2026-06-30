@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Callable, Sequence
 
-SCRIPT_VERSION = "0.1.0"
+SCRIPT_VERSION = "0.1.1"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
 ELF64_SHDR_SIZE = 64
@@ -209,11 +209,13 @@ def cases() -> list[MutationCase]:
         MutationCase("bad_ehsize", "ELF header size cleared", ("info",), (5,), word_at(0x34, 0)),
         MutationCase("phoff_zero", "program-header offset cleared while count remains nonzero", ("info",), (5,), qword_at(0x20, 0)),
         MutationCase("phoff_past_eof", "program-header table starts beyond EOF", ("info",), (5,), lambda d, _s: qword_at(0x20, len(d) + 0x1000)(d, _s)),
+        MutationCase("phoff_end_wrap", "program-header table end overflows uint64", ("info",), (5,), qword_at(0x20, 0xFFFFFFFFFFFFFFF0)),
         MutationCase("phentsize_zero", "program-header entry size cleared", ("info",), (5,), word_at(0x36, 0)),
         MutationCase("phentsize_short", "program-header entry size is one byte short", ("info",), (5,), word_at(0x36, ELF64_PHDR_SIZE - 1)),
         MutationCase("phnum_oversized", "program-header count expands table beyond EOF", ("info",), (5,), word_at(0x38, 0xFFFF)),
         MutationCase("shoff_zero", "section-header offset cleared while count remains nonzero", ("info",), (5,), qword_at(0x28, 0)),
         MutationCase("shoff_past_eof", "section-header table starts beyond EOF", ("info",), (5,), lambda d, _s: qword_at(0x28, len(d) + 0x1000)(d, _s)),
+        MutationCase("shoff_end_wrap", "section-header table end overflows uint64", ("info",), (5,), qword_at(0x28, 0xFFFFFFFFFFFFFFF0)),
         MutationCase("shentsize_zero", "section-header entry size cleared", ("info",), (5,), word_at(0x3A, 0)),
         MutationCase("shentsize_short", "section-header entry size is one byte short", ("info",), (5,), word_at(0x3A, ELF64_SHDR_SIZE - 1)),
         MutationCase("shentsize_long", "section-header entry size is one byte long", ("info",), (5,), word_at(0x3A, ELF64_SHDR_SIZE + 1)),

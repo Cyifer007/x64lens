@@ -178,4 +178,16 @@ The prototype uses read-only target mappings, explicit bounds checks, bounded in
 
 ## Patch 026 mitigation-specific oracle
 
-The broad deterministic mutation campaign is supplemented by a smaller program-header truth table. The matrix verifies expected successful facts and exact malformed behavior before checked arithmetic is centralized. Invalid file-backed `PT_LOAD` ranges are rejected in shared ELF64 validation, then revalidated by the program-header analyzer. This duplication is intentional until Patch 028 replaces repeated arithmetic with shared helpers. Patch 027 is limited to correcting the oracle expectation exposed during Patch 026 validation.
+The broad deterministic mutation campaign is supplemented by a smaller program-header truth table. The matrix verifies expected successful facts and exact malformed behavior around checked arithmetic. Invalid file-backed `PT_LOAD` ranges are rejected in shared ELF64 validation, then revalidated by the program-header analyzer. Patch 028 replaces repeated table arithmetic with shared helpers and adds explicit program-header and section-header table-end overflow probes.
+
+## Patch 028 checked arithmetic layer
+
+The shared helper layer now covers:
+
+- unsigned multiplication overflow,
+- unsigned addition overflow,
+- offset-plus-length exclusive end validation,
+- full table extent validation,
+- bounded per-entry table offsets.
+
+Future dynamic, symbol, relocation, note, and string-table parsers should use this layer or a direct successor rather than introducing new open-coded pointer arithmetic.

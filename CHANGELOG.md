@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 7 Patch 028 shared checked parser arithmetic helpers for unsigned multiplication, unsigned addition, offset-plus-length end validation, table extents, and bounded per-entry table offsets.
+- Sprint 7 Patch 028 table-end overflow regression coverage in the malformed-input runner, core regression suite, and mitigation matrix.
+- ADR 0015 and Patch 028 validation documentation for the checked parser-arithmetic layer.
 - Sprint 7 Patch 026 deterministic mitigation oracle with 11 controlled valid ELF64 layouts and five malformed program-header layouts.
 - `make mitigation-matrix-smoke`, generated SHA-256-addressed JSON evidence, ADR 0014, mitigation fixture-matrix documentation, and Patch 026 validation plan.
 - Sprint 7 Patch 027 validation plan for the mitigation-oracle expectation correction.
@@ -27,6 +30,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Route ELF64 program-header and section-header table validation through shared checked table-extent helpers.
+- Route program-header entry derivation through a bounded per-entry helper before forming pointers.
+- Expand the mitigation-matrix malformed case count from five to seven after adding table-end overflow probes.
+- Make public-documentation hygiene scan tracked and untracked public files while ignoring generated `tests/results/` evidence.
+- Exclude private local agent workspaces from permission normalization, Docker build context filtering, Git ignore gaps, and patch-bundle hygiene.
 - Reject invalid file-backed `PT_LOAD` ranges during shared ELF64 validation so `info`, `mitigations`, and `analyze` fail consistently.
 - Include the mitigation matrix in native and Docker aggregate validation.
 - Make planning validation distinguish all 18 sprint plans from the 12 forward plans.

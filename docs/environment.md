@@ -6,7 +6,7 @@ Use a layered environment strategy:
 
 1. **Primary daily development:** WSL2 Ubuntu 24.04 on Windows with VS Code Remote WSL.
 2. **Reproducible build environment:** Docker/devcontainer using Ubuntu 24.04.
-3. **Cloud/anywhere fallback:** GitHub Codespaces or Codex connected to the repository.
+3. **Cloud/anywhere fallback:** GitHub Codespaces or another isolated Linux development container connected to the repository.
 4. **Publication benchmarks:** native Ubuntu 24.04 or a clean dedicated VM with fixed CPU/RAM documentation.
 
 ## Why WSL2 first

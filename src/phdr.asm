@@ -29,7 +29,9 @@ default rel
 %include "errors.inc"
 %include "structs.inc"
 
-extern x64lens_bounds_range_valid
+extern x64lens_bounds_range_end_valid
+extern x64lens_bounds_table_extent_valid
+extern x64lens_bounds_table_entry_offset
 extern x64lens_regions_store_from_phdr
 
 section .text
@@ -58,6 +60,7 @@ x64lens_phdr_analyze:
     push    r13
     push    r14
     push    r15
+    sub     rsp, 24             ; align calls and reserve two qword scratch slots
 
     mov     r15, rdi            ; mapped base
     mov     r14, rsi            ; file size
@@ -98,11 +101,11 @@ x64lens_phdr_analyze:
     mov     rsi, [r15 + E_PHOFF]
     test    rsi, rsi
     je      .malformed
-    movzx   rdx, word [r15 + E_PHENTSIZE]
-    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
-    imul    rdx, rcx
     mov     rdi, r14
-    call    x64lens_bounds_range_valid
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
+    lea     r8, [rsp]
+    call    x64lens_bounds_table_extent_valid
     cmp     rax, 1
     jne     .malformed
 
@@ -111,10 +114,19 @@ x64lens_phdr_analyze:
     cmp     rbx, [r13 + PHDR_SUMMARY_PHNUM]
     jae     .ok
 
-    ; R10 = current program header pointer.
-    mov     rax, rbx
-    imul    rax, rax, ELF64_PHDR_SIZE
-    add     rax, [r15 + E_PHOFF]
+    ; R10 = current program header pointer. The helper validates the
+    ; index, checked index-times-stride arithmetic, checked table offset
+    ; addition, and the final per-entry byte range before we form a pointer.
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+    mov     rax, [rsp]
     lea     r10, [r15 + rax]
 
     mov     eax, [r10 + P_TYPE]
@@ -140,15 +152,23 @@ x64lens_phdr_analyze:
     mov     rdi, r14
     mov     rsi, [r10 + P_OFFSET]
     mov     rdx, [r10 + P_FILESZ]
-    call    x64lens_bounds_range_valid
+    lea     rcx, [rsp + 8]
+    call    x64lens_bounds_range_end_valid
     cmp     rax, 1
     jne     .malformed
 
     ; Recompute R10 after the helper call to avoid relying on caller-saved
     ; registers across module boundaries.
-    mov     rax, rbx
-    imul    rax, rax, ELF64_PHDR_SIZE
-    add     rax, [r15 + E_PHOFF]
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+    mov     rax, [rsp]
     lea     r10, [r15 + rax]
 
     mov     eax, [r10 + P_FLAGS]
@@ -204,6 +224,7 @@ x64lens_phdr_analyze:
 .unsupported:
     mov     rax, EXIT_UNSUPPORTED
 .done:
+    add     rsp, 24
     pop     r15
     pop     r14
     pop     r13

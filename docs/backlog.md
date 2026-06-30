@@ -36,8 +36,8 @@
 - [x] Regression-fixture policy and reserved minimized-corpus path.
 - [x] First minimized parser regression fixture for invalid ELF64 section-header stride.
 - [ ] Committed regression fixture for every newly discovered stable parser defect.
-- [ ] Shared bounded-table iteration rules or helpers.
-- [ ] Central checked arithmetic for multiplication, addition, counts, and end offsets.
+- [x] Shared bounded-table iteration rules or helpers.
+- [x] Central checked arithmetic for multiplication, addition, counts, and end offsets.
 - [x] Initial program-header, section-header, executable-segment, and boundary range mutations.
 - [x] Exact ELF64 section-header entry-size validation.
 - [x] Explicit candidate-capacity failure behavior with no partial output.
@@ -135,7 +135,7 @@
 - [x] Preserve read-only target mappings and non-executable internal arenas in the current architecture.
 - [x] Enforce explicit bounded candidate-record capacity without silent truncation.
 - [ ] Add explicit resource limits for every future file-derived table and count.
-- [ ] Add shared checked table arithmetic before dynamic-section parsing.
+- [x] Add shared checked table arithmetic before dynamic-section parsing. Patch 028 centralized checked multiplication, addition, table extents, and per-entry offsets in `src/bounds.asm` and routed ELF/PHDR parsing through those helpers.
 - [x] Define crash minimization and corpus promotion rules for deterministic mutation results.
 - [ ] Exercise and document regression minimization on the first stable parser defect.
 - [ ] Evaluate coverage-guided fuzzing only after deterministic smoke coverage is mature.
@@ -173,4 +173,4 @@ Private course context and state tracking belong under `.local/project-context/`
 
 ## Patch 026 and Patch 027 checkpoint
 
-The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Shared checked arithmetic, bounded table views, regression minimization guidance, and provenance fields for promoted malformed fixtures move to Patch 028 and remain Sprint 7 work. Mitigation-depth expansion remains scheduled after parser hardening.
+The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Patch 028 implements the shared checked arithmetic and bounded table-view helper layer, then expands hostile-input coverage for table-end overflow. Regression minimization guidance and provenance fields for promoted malformed fixtures remain open Sprint 7 polish before mitigation-depth expansion.

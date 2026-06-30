@@ -129,6 +129,43 @@ expect_exit 5 "$BIN" mitigations "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" gadgets "$MALFORMED_PHDR"
 expect_exit 5 "$BIN" analyze "$MALFORMED_PHDR"
 
+echo "[test] malformed table extent overflow rejection"
+MALFORMED_TABLE_WRAP="$TMPDIR/x64lens-malformed-table-wrap.bin"
+cp "$ROOT/tests/bin/minimal_nopie" "$MALFORMED_TABLE_WRAP"
+python3 - "$MALFORMED_TABLE_WRAP" <<'PY'
+import struct
+import sys
+path = sys.argv[1]
+with open(path, "r+b") as f:
+    # ELF64 e_phoff is at offset 0x20. Put the table near UINT64_MAX so
+    # e_phoff + e_phentsize * e_phnum must be caught as checked arithmetic,
+    # not as a wrapped pointer into the mmap.
+    f.seek(0x20)
+    f.write(struct.pack("<Q", 0xFFFFFFFFFFFFFFF0))
+PY
+expect_exit 5 "$BIN" info "$MALFORMED_TABLE_WRAP"
+expect_exit 5 "$BIN" mitigations "$MALFORMED_TABLE_WRAP"
+expect_exit 5 "$BIN" gadgets "$MALFORMED_TABLE_WRAP"
+expect_exit 5 "$BIN" analyze "$MALFORMED_TABLE_WRAP"
+
+MALFORMED_SECTION_WRAP="$TMPDIR/x64lens-malformed-section-wrap.bin"
+cp "$ROOT/tests/bin/minimal_nopie" "$MALFORMED_SECTION_WRAP"
+python3 - "$MALFORMED_SECTION_WRAP" <<'PY'
+import struct
+import sys
+path = sys.argv[1]
+with open(path, "r+b") as f:
+    # ELF64 e_shoff is at offset 0x28. The seed already has a nonzero section
+    # count, so moving the table near UINT64_MAX exercises checked section
+    # table-end arithmetic before future SHDR iteration exists.
+    f.seek(0x28)
+    f.write(struct.pack("<Q", 0xFFFFFFFFFFFFFFF0))
+PY
+expect_exit 5 "$BIN" info "$MALFORMED_SECTION_WRAP"
+expect_exit 5 "$BIN" mitigations "$MALFORMED_SECTION_WRAP"
+expect_exit 5 "$BIN" gadgets "$MALFORMED_SECTION_WRAP"
+expect_exit 5 "$BIN" analyze "$MALFORMED_SECTION_WRAP"
+
 echo "[test] malformed section header entry size rejection"
 MALFORMED_SHENTSIZE="$ROOT/tests/malformed/regressions/elf64-shentsize-63.bin"
 expect_exit 5 "$BIN" info "$MALFORMED_SHENTSIZE"

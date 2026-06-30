@@ -2,7 +2,7 @@
 
 ## Status
 
-Active. Patch 025 established the broad hostile-input gate. Patch 026 implemented the mitigation oracle but exposed one stale zero-region text expectation. Patch 027 corrects that oracle contract before the shared checked-arithmetic refactor in Patch 028.
+Active. Patch 025 established the broad hostile-input gate. Patch 026 implemented the mitigation oracle, Patch 027 corrected its zero-region expectation, and Patch 028 consolidates shared checked table arithmetic before deeper dynamic and symbol parsing begins.
 
 ## Sprint goal
 
@@ -31,7 +31,7 @@ The parser already performs explicit range checks and rejects several committed 
 - [x] Add a deterministic mitigation truth table independent of compiler-generated fixtures.
 - [x] Cover `ET_EXEC`, `ET_DYN`, GNU stack states, RELRO, dynamic linking, RX/RW/RWX loads, split mappings, overlapping executable regions, and combined evidence.
 - [x] Verify exact mitigation text and syntactically valid integrated JSON for every valid case.
-- [x] Verify five malformed program-header cases through `info`, `mitigations`, and `analyze`.
+- [x] Verify the five original malformed program-header cases plus two table-end overflow cases through `info`, `mitigations`, and `analyze`.
 - [x] Reject invalid file-backed `PT_LOAD` ranges during shared ELF64 validation.
 - [x] Add ignored JSON evidence with seed and fixture SHA-256 values.
 - [x] Include `make mitigation-matrix-smoke` in native, CI, and Docker validation.
@@ -44,11 +44,20 @@ The parser already performs explicit range checks and rejects several committed 
 - [x] Add a focused correction validation plan and document the Patch 026 acceptance gap.
 - [x] Keep the Make aggregate fail-fast behavior unchanged.
 
+## Patch 028 delivered scope
+
+- [x] Add shared checked multiplication and addition helpers.
+- [x] Add checked offset-plus-length validation that can return a trusted exclusive end.
+- [x] Add checked table-extent validation for count-times-entry-size and table end.
+- [x] Add a bounded per-entry offset helper for table iteration.
+- [x] Route ELF64 and program-header analysis through the shared helpers.
+- [x] Expand deterministic malformed coverage for program-header and section-header table-end overflow.
+- [x] Fix the public-docs/generated-results interaction found during Patch 027 local validation.
+- [x] Exclude private local agent workspaces from permission normalization and public patch bundles.
+
 ## Remaining Sprint 7 work
 
-- [ ] Patch 028: add shared checked table arithmetic or bounded-view helpers before dynamic-section parsing begins.
-- [ ] Centralize multiplication, addition, entry-size, count, and end-offset overflow policy.
-- [ ] Promote every newly discovered stable parser defect into a minimized committed regression fixture.
+- [ ] Promote every newly discovered stable parser defect into a minimized committed regression fixture when a non-synthetic defect is found.
 - [ ] Add regression minimization guidance and fixture provenance fields.
 - [ ] Decide whether any bounded analysis path requires explicit machine-readable completeness or truncation fields before schema `0.2.0`.
 - [ ] Expand deterministic mutations when new file-derived tables become reachable.
@@ -63,10 +72,10 @@ The current Sprint 7 evidence gates are accepted when:
 - [ ] The valid controls and executable-region boundary probe complete successfully.
 - [ ] Candidate-capacity exhaustion returns exit code `6` for focused and integrated text and JSON commands, with no partial output.
 - [ ] Existing `info`, `mitigations`, `gadgets`, and `analyze` behavior remains compatible for valid fixtures.
-- [ ] Native, Docker, fixture, JSON, system-binary, malformed, capacity, and mitigation-oracle smoke checks pass.
-- [ ] Public documentation, planning consistency, and patch-bundle hygiene checks pass.
+- [ ] Native, Docker, fixture, JSON, system-binary, malformed, capacity, and mitigation-oracle smoke checks pass after Patch 028.
+- [ ] Public documentation, planning consistency, and patch-bundle hygiene checks pass after generated result artifacts exist.
 
-Sprint 7 is complete only after the shared checked-arithmetic layer and regression-promotion workflow are implemented and validated.
+Sprint 7 is complete only after Patch 028 validates locally and no follow-up defect is found in the checked-arithmetic or generated-results cleanup path.
 
 ## Out of scope
 
@@ -78,4 +87,4 @@ Sprint 7 is complete only after the shared checked-arithmetic layer and regressi
 
 ## Handoff
 
-Patch 028 should implement shared bounded table arithmetic and regression-promotion mechanics while preserving the Patch 025 hostile-input gates and the corrected Patch 026 mitigation oracle. Sprint 8 begins only after those parser-safety foundations are validated.
+Patch 028 implements shared bounded table arithmetic while preserving the Patch 025 hostile-input gates and the corrected Patch 026 mitigation oracle. The next decision is whether Sprint 7 needs one final regression-promotion polish patch or can close and hand Sprint 8 the mitigation-depth work.

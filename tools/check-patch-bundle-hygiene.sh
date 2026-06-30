@@ -47,6 +47,14 @@ for entry in "${entries[@]}"; do
       echo "patch-bundle-hygiene: forbidden local-only context: $entry" >&2
       bad=1
       ;;
+    x64lens/.codex/*|x64lens/.codex|*/.codex/*|*/.codex|x64lens/.agents/*|x64lens/.agents|*/.agents/*|*/.agents|x64lens/.codex-log/*|x64lens/.codex-log|*/.codex-log/*|*/.codex-log|x64lens/AGENTS.override.md|*/AGENTS.override.md)
+      echo "patch-bundle-hygiene: forbidden private orchestration state: $entry" >&2
+      bad=1
+      ;;
+    x64lens/.env.local|*/.env.local)
+      echo "patch-bundle-hygiene: forbidden local environment file: $entry" >&2
+      bad=1
+      ;;
     x64lens/build/*|x64lens/build|*/build/*|*/build)
       echo "patch-bundle-hygiene: forbidden build output: $entry" >&2
       bad=1
@@ -58,6 +66,8 @@ for entry in "${entries[@]}"; do
     x64lens/tests/results/*|x64lens/tests/results)
       echo "patch-bundle-hygiene: forbidden generated test result: $entry" >&2
       bad=1
+      ;;
+    x64lens/benchmarks/results|x64lens/benchmarks/results/)
       ;;
     x64lens/benchmarks/results/*)
       if [[ "$entry" != "x64lens/benchmarks/results/.gitkeep" ]]; then

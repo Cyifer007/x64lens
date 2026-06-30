@@ -46,6 +46,7 @@ Current expected codes:
 | wrong-architecture ELF-like file | 4 |
 | truncated ELF magic/header | 5 |
 | malformed program-header range | 5 |
+| malformed table-end overflow | 5 |
 | empty file | 5 |
 
 ### 3. ELF metadata validation
@@ -618,7 +619,7 @@ make validation-smoke
 make docker-validation-smoke
 ```
 
-The deterministic malformed-input runner derives 29 cases from the controlled `minimal_nopie` seed: 26 malformed structures, two valid controls, and one valid executable-region boundary probe. Each row captures the seed hash, mutation, command shape, expected and observed exit code, signal, timeout state, elapsed nanoseconds, stdout size, stderr size, result, and diagnostic preview.
+The deterministic malformed-input runner initially derived 29 cases from the controlled `minimal_nopie` seed. After Patch 028, it derives 31 cases: 28 malformed structures, two valid controls, and one valid executable-region boundary probe. Each row captures the seed hash, mutation, command shape, expected and observed exit code, signal, timeout state, elapsed nanoseconds, stdout size, stderr size, result, and diagnostic preview.
 
 Acceptance requires:
 
@@ -659,3 +660,32 @@ Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. Acceptance requires 11 v
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
 Patch 027 preserves runtime text and updates the oracle's no-executable-region expectation to `  none discovered from PT_LOAD + PF_X`. Acceptance requires `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`, `MALFORMED_TIMEOUT=2 make validation-smoke`, and `MALFORMED_TIMEOUT=2 make docker-validation-smoke` to pass. The evidence artifact must contain 11 valid records, five malformed records, and the exact zero-region line for `non-executable-load`. A Make target failure remains a valid fail-fast signal and must not be masked.
+
+## Sprint 7 Patch 028 checked parser-arithmetic validation
+
+Patch 028 centralizes checked multiplication, checked addition, offset-plus-length
+end validation, table-extent validation, and bounded per-entry table offsets in
+`src/bounds.asm`. `src/elf64.asm` and `src/phdr.asm` must consume those helpers
+before forming program-header pointers or trusting file-backed `PT_LOAD` ranges.
+
+Acceptance requires the normal aggregate gates plus focused checked-arithmetic
+coverage:
+
+```bash
+make test
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Expected matrix summary after Patch 028:
+
+```text
+mitigation-matrix-smoke: ok
+  valid cases: 11
+  malformed cases: 7
+```
+
+The public-docs gate must continue to pass after generated ignored result
+artifacts exist under `tests/results/`.

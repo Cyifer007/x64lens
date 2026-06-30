@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.1.1"
+SCRIPT_VERSION = "0.1.2"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -391,6 +391,15 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
     phoff_out = bytearray(control)
     struct.pack_into("<Q", phoff_out, 0x20, len(phoff_out) + 0x1000)
 
+    phdr_table_overflow = bytearray(control)
+    struct.pack_into("<Q", phdr_table_overflow, 0x20, 0xFFFFFFFFFFFFFFF0)
+    struct.pack_into("<H", phdr_table_overflow, 0x38, 1)
+
+    shdr_table_overflow = bytearray(control)
+    struct.pack_into("<Q", shdr_table_overflow, 0x28, 0xFFFFFFFFFFFFFFF0)
+    struct.pack_into("<H", shdr_table_overflow, 0x3A, 64)
+    struct.pack_into("<H", shdr_table_overflow, 0x3C, 1)
+
     load_out = bytearray(control)
     first_phdr = ELF64_EHDR_SIZE
     struct.pack_into("<Q", load_out, first_phdr + 0x08, len(load_out) - 1)
@@ -406,6 +415,8 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         MalformedCase("wrong-phentsize", bytes(wrong_phentsize)),
         MalformedCase("truncated-program-header-table", bytes(truncated_table)),
         MalformedCase("program-header-offset-out-of-file", bytes(phoff_out)),
+        MalformedCase("program-header-table-addition-overflow", bytes(phdr_table_overflow)),
+        MalformedCase("section-header-table-addition-overflow", bytes(shdr_table_overflow)),
         MalformedCase("load-file-range-out-of-file", bytes(load_out)),
         MalformedCase("load-file-range-addition-overflow", bytes(load_overflow)),
     )

@@ -45,7 +45,7 @@ The \texttt{analyze} command runs the validated pipeline once and emits target m
 The current scanner is not a full x86\_64 decoder. Exact suffix labels may include unaligned byte streams and do not prove that the complete displayed window is a valid intended instruction sequence. Raw candidate, exact pattern, semantic candidate, and score metrics are therefore reported separately.
 
 \subsection{Deterministic Mitigation Oracle}
-Sprint 7 adds a compiler-independent program-header matrix with eleven valid layouts and five malformed layouts. The matrix fixes expected PIE, NX-stack, RELRO-presence, dynamic-linking, RWX-load, load-count, and executable-region behavior before checked parser arithmetic is consolidated. These tests provide regression evidence for represented cases, not a proof of complete mitigation coverage or memory safety.
+Sprint 7 adds a compiler-independent program-header matrix with eleven valid layouts and seven malformed layouts after the checked table-arithmetic refactor. The matrix fixes expected PIE, NX-stack, RELRO-presence, dynamic-linking, RWX-load, load-count, executable-region behavior, and selected table-end overflow rejection. These tests provide regression evidence for represented cases, not a proof of complete mitigation coverage or memory safety.
 
 \section{Evaluation Methodology}
 The controlled methodology uses a hand-authored fixture, selected Linux system binaries, and later compiler/hardening and larger-binary corpus tiers. Measurements include repeated wall time, maximum RSS, output size, exit status, raw candidate count, exact pattern count, semantic coverage, and mitigation agreement. ROPgadget, Ropper, and ropr are external baselines. Tool versions, commands, host facts, corpus manifests, and raw artifacts are retained.
@@ -57,7 +57,7 @@ The Sprint 6 smoke harness demonstrates that all four tools can be invoked repro
 The tools perform different work and may use different gadget definitions. Python startup cost, native decoder dependencies, output formatting, cache state, WSL2 behavior, small-target timer granularity, and corpus bias can affect comparisons. Assembly parsing of untrusted input also requires empirical hostile-input testing. The initial deterministic campaign covers a fixed reviewed mutation catalog and does not prove memory safety or complete parser coverage. The current prototype explicitly preserves unknown states instead of inferring unsupported facts.
 
 \section{Future Work}
-Planned work includes shared checked table arithmetic, mitigation hardening, broader hostile-input coverage, regression minimization, evidence provenance, broader semantic primitives, compiler and hardening corpus matrices, higher-resolution benchmarks, integrated defensive prioritization, decoder side-car experiments, and release-quality reproducibility artifacts.
+Planned work includes deeper mitigation hardening, broader hostile-input coverage, regression minimization, evidence provenance, additional semantic primitives, compiler and hardening corpus matrices, higher-resolution benchmarks, integrated defensive prioritization, decoder side-car experiments, and release-quality reproducibility artifacts.
 
 \section{Conclusion}
 The implemented checkpoint establishes a modular assembly-first analyzer and a reproducible path from raw executable bytes to mitigation-aware semantic reports. The remaining work evaluates whether those design choices produce measurable performance and triage benefits without overstating the limits of exact pattern matching.

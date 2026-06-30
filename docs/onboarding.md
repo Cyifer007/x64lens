@@ -206,7 +206,7 @@ MALFORMED_TIMEOUT=2 make malformed-smoke
 MALFORMED_TIMEOUT=2 make fuzz-mutated-elf-smoke
 ```
 
-A successful malformed campaign reports 29 total cases and 26 malformed cases, with no signal or timeout. It writes ignored result and metadata artifacts under `tests/results/malformed/`. A successful capacity check confirms that exactly 4096 candidates produce a complete report and that the 4097th candidate triggers exit code `6` with no partial report.
+A successful malformed campaign reports 31 total cases and 28 malformed cases after Patch 028, with no signal or timeout. It writes ignored result and metadata artifacts under `tests/results/malformed/`. A successful capacity check confirms that exactly 4096 candidates produce a complete report and that the 4097th candidate triggers exit code `6` with no partial report.
 
 Use the full Docker-equivalent gate after native validation:
 
@@ -251,4 +251,4 @@ After the broad malformed and capacity gates, run:
 MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
 ```
 
-Expect 11 valid cases and five malformed cases. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.
+Expect 11 valid cases and seven malformed cases after Patch 028. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.

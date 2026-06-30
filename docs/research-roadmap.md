@@ -38,7 +38,7 @@ Passing this gate demonstrates stable behavior for the reviewed cases. It does n
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented. Patch 025 adds deterministic malformed-input and candidate-capacity gates; shared checked table arithmetic and deeper metadata hardening remain for the rest of Sprint 7 and Sprint 8.
+Status: implemented in stages. Patch 025 adds deterministic malformed-input and candidate-capacity gates. Patch 028 adds shared checked table arithmetic and table-end overflow probes. Deeper metadata hardening remains for Sprint 8.
 
 ### Stage 2: candidate discovery and semantics
 
@@ -130,4 +130,4 @@ See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan
 
 ## Patch 026 behavior oracle
 
-The project now fixes expected loader-level mitigation behavior before parser arithmetic is refactored. This ordering reduces confounding: Patch 028 can be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and the Patch 027-corrected mitigation matrix.
+The project fixed expected loader-level mitigation behavior before parser arithmetic was refactored. Patch 028 can therefore be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and the Patch 027-corrected mitigation matrix.

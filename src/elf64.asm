@@ -22,6 +22,9 @@ default rel
 
 extern x64lens_bounds_has_size
 extern x64lens_bounds_range_valid
+extern x64lens_bounds_range_end_valid
+extern x64lens_bounds_table_extent_valid
+extern x64lens_bounds_table_entry_offset
 
 section .text
 global x64lens_elf64_validate
@@ -97,25 +100,32 @@ x64lens_elf64_validate:
     mov     rsi, [rbx + E_PHOFF]
     test    rsi, rsi
     je      .malformed
-    movzx   rdx, word [rbx + E_PHENTSIZE]
-    imul    rdx, r13
     mov     rdi, r12
-    call    x64lens_bounds_range_valid
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    lea     r8, [rsp]
+    call    x64lens_bounds_table_extent_valid
     cmp     rax, 1
     jne     .malformed
 
     ; Validate every file-backed PT_LOAD range before any command reports ELF
-    ; metadata. This keeps info, mitigations, and analyze aligned on malformed
-    ; loader input. A later shared-arithmetic refactor can consolidate the
-    ; repeated offset and table calculations without changing this policy.
+    ; metadata. Shared bounded-table helpers compute each entry offset so the
+    ; loop does not depend on unchecked count-times-stride arithmetic.
     xor     r14, r14
 .validate_program_headers:
     cmp     r14, r13
     jae     .check_sections
 
-    mov     rax, r14
-    imul    rax, rax, ELF64_PHDR_SIZE
-    add     rax, [rbx + E_PHOFF]
+    mov     rdi, r12
+    mov     rsi, [rbx + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    mov     r8, r14
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+    mov     rax, [rsp]
     lea     r10, [rbx + rax]
 
     cmp     dword [r10 + P_TYPE], PT_LOAD
@@ -128,7 +138,8 @@ x64lens_elf64_validate:
     mov     rdi, r12
     mov     rsi, [r10 + P_OFFSET]
     mov     rdx, [r10 + P_FILESZ]
-    call    x64lens_bounds_range_valid
+    lea     rcx, [rsp]
+    call    x64lens_bounds_range_end_valid
     cmp     rax, 1
     jne     .malformed
 
@@ -151,10 +162,11 @@ x64lens_elf64_validate:
     mov     rsi, [rbx + E_SHOFF]
     test    rsi, rsi
     je      .malformed
-    movzx   rdx, word [rbx + E_SHENTSIZE]
-    imul    rdx, r13
     mov     rdi, r12
-    call    x64lens_bounds_range_valid
+    mov     rdx, ELF64_SHDR_SIZE
+    mov     rcx, r13
+    lea     r8, [rsp]
+    call    x64lens_bounds_table_extent_valid
     cmp     rax, 1
     jne     .malformed
 

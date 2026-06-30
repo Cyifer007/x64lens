@@ -52,4 +52,4 @@ ELF64 validation will reject invalid file-backed `PT_LOAD` ranges before any com
 
 ## Follow-on work
 
-Patch 027 corrects the oracle zero-region text expectation without changing runtime output. Patch 028 should consolidate checked addition, multiplication, table-extent, and offset-plus-length validation while preserving this oracle unchanged. Later mitigation work should add GNU property notes, stack-canary evidence, and richer RELRO distinctions only with corresponding fixture rows and output-contract updates.
+Patch 027 corrects the oracle zero-region text expectation without changing runtime output. Patch 028 consolidates checked addition, multiplication, table-extent, and offset-plus-length validation while preserving this oracle and expanding malformed table-end overflow coverage. Later mitigation work should add GNU property notes, stack-canary evidence, and richer RELRO distinctions only with corresponding fixture rows and output-contract updates.

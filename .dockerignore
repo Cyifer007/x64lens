@@ -10,9 +10,13 @@
 .git/
 .gitignore
 
-# Local-only private context and course/session notes must never be copied
-# into the container image.
+# Local-only private context, agent state, and course/session notes must never
+# be copied into the container image.
 .local/
+.codex/
+.codex-log/
+.agents/
+AGENTS.override.md
 private-notes/
 local-context/
 *.private.md
@@ -28,10 +32,13 @@ build/
 dist/
 out/
 tests/bin/
+tests/results/
 tests/toy-src/minimal_nopie
 tests/toy-src/minimal_pie_canary
 tests/toy-src/minimal_execstack
 tests/toy-src/gadgets
+tests/toy-src/gadgets_capacity_exact
+tests/toy-src/gadgets_capacity
 tests/toy-src/*.o
 tests/toy-src/*.bin
 tests/toy-src/*.elf

@@ -24,11 +24,13 @@ required=(
     docs/adr/0012-roadmap-expansion-and-research-release-gates.md
     docs/adr/0013-deterministic-hostile-input-regression-harness.md
     docs/adr/0014-deterministic-mitigation-oracle.md
+    docs/adr/0015-shared-checked-parser-arithmetic.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
     docs/sprints/sprint-07-patch-026-validation.md
     docs/sprints/sprint-07-patch-027-validation.md
+    docs/sprints/sprint-07-patch-028-validation.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
     tests/malformed/regressions/elf64-shentsize-63.bin
@@ -77,6 +79,8 @@ grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the mitigation oracle gate'
+grep -q 'checked table arithmetic' docs/sprints/sprint-07-plan.md \
+    || fail 'Sprint 7 plan does not name the checked table arithmetic gate'
 
 grep -q '^malformed-smoke:' Makefile \
     || fail 'Makefile does not define malformed-smoke'

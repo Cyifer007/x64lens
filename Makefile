@@ -341,8 +341,11 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0012-roadmap-expansion-and-research-release-gates.md
 	@test -f docs/adr/0013-deterministic-hostile-input-regression-harness.md
 	@test -f docs/adr/0014-deterministic-mitigation-oracle.md
+	@test -f docs/adr/0015-shared-checked-parser-arithmetic.md
 	@test -f docs/design/mitigation-fixture-matrix.md
 	@test -f docs/sprints/sprint-07-patch-026-validation.md
+	@test -f docs/sprints/sprint-07-patch-027-validation.md
+	@test -f docs/sprints/sprint-07-patch-028-validation.md
 	@test -f tests/malformed/README.md
 	@test -f tests/malformed/regressions/README.md
 	@test -f tests/malformed/regressions/elf64-shentsize-63.bin
@@ -441,12 +444,16 @@ normalize-perms:
 	@find . \
 		-path ./.git -prune -o \
 		-path ./.local -prune -o \
+		-path ./.codex -prune -o \
+		-path ./.agents -prune -o \
 		-path ./build -prune -o \
 		-path ./tests/bin -prune -o \
 		-type d -exec chmod 755 {} +
 	@find . \
 		-path ./.git -prune -o \
 		-path ./.local -prune -o \
+		-path ./.codex -prune -o \
+		-path ./.agents -prune -o \
 		-path ./build -prune -o \
 		-path ./tests/bin -prune -o \
 		-type f -exec chmod 644 {} +

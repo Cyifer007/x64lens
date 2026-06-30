@@ -109,6 +109,14 @@ Thumbs.db
 .vagrant/
 packer_cache/
 
+
+# Local-only agent/orchestration workspaces. These are private validation
+# coordination artifacts and must never be committed or shipped.
+AGENTS.override.md
+.codex/
+.codex-log/
+.agents/
+
 # Local project context exports and private notes.
 private-notes/
 local-context/

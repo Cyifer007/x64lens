@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 establishes the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. This is partial progress only. Shared checked table arithmetic, exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 establishes the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 adds shared checked table arithmetic and table-end overflow coverage. Exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -98,4 +98,4 @@ A normal branch push does not publish tags. Release tags should be pushed explic
 
 ## Sprint 7 mitigation evidence gate
 
-Before parser arithmetic is refactored or mitigation depth expands, the 11-row valid mitigation oracle and five malformed program-header cases must pass natively and in Docker. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
+After Patch 028, the 11-row valid mitigation oracle and seven malformed mitigation-matrix cases must pass natively and in Docker before mitigation depth expands. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
