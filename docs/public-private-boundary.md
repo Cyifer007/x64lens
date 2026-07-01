@@ -35,6 +35,11 @@ The following content belongs outside public commits:
 
 Use `.local/project-context/` for local-only context files. The repository `.gitignore` excludes `.local/`.
 
+
+## Local validation orchestration
+
+Local validation missions, operational reports, raw command logs, temporary probes, and advisory notes are private coordination artifacts. They may inform public fixes, tests, and documentation, but their transcripts and session details should stay in ignored local-only directories. Public documents should summarize the technical behavior that was validated, not the private workflow used to validate it.
+
 ## Existing tracked files warning
 
 Adding a path to `.gitignore` does not remove files that Git already tracks. If a private context file was already committed, remove it from tracking with `git rm --cached <path>` and commit that removal.

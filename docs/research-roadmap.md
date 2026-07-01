@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 6 and Patch 024 are validated. Sprint 7 is active, and Patch 025 is the first hostile-input hardening candidate. The repository now provides:
+Sprints 1 through 7 are validated through the Sprint 7 closeout checkpoint. Sprint 8 is the next implementation tranche for mitigation and metadata depth. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -38,7 +38,7 @@ Passing this gate demonstrates stable behavior for the reviewed cases. It does n
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented in stages. Patch 025 adds deterministic malformed-input and candidate-capacity gates. Patch 028 adds shared checked table arithmetic and table-end overflow probes. Deeper metadata hardening remains for Sprint 8.
+Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes the sprint and moves deeper metadata hardening to Sprint 8.
 
 ### Stage 2: candidate discovery and semantics
 
@@ -130,4 +130,9 @@ See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan
 
 ## Patch 026 behavior oracle
 
-The project fixed expected loader-level mitigation behavior before parser arithmetic was refactored. Patch 028 can therefore be evaluated for safety and equivalence against the Patch 025 hostile-input campaign and the Patch 027-corrected mitigation matrix.
+The project fixed expected loader-level mitigation behavior before parser arithmetic was refactored. Patch 028 was accepted against the Patch 025 hostile-input campaign and the Patch 027-corrected mitigation matrix, so Sprint 8 can expand mitigation evidence on top of a stronger parser baseline.
+
+
+## Post-Sprint 7 research posture
+
+Sprint 7 improves the trustworthiness of later measurements by hardening parser boundaries and deterministic oracles first. RQ1 performance work should continue to treat smoke timings as development evidence only. RQ2 semantic-value work should preserve raw/exact/semantic/scored boundaries. RQ3 operational-use work should emphasize evidence-qualified mitigation metadata in Sprint 8.

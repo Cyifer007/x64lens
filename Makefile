@@ -346,6 +346,8 @@ scaffold-check: script-perms-check
 	@test -f docs/sprints/sprint-07-patch-026-validation.md
 	@test -f docs/sprints/sprint-07-patch-027-validation.md
 	@test -f docs/sprints/sprint-07-patch-028-validation.md
+	@test -f docs/sprints/sprint-07-patch-029-validation.md
+	@test -f docs/sprints/sprint-07-retro.md
 	@test -f tests/malformed/README.md
 	@test -f tests/malformed/regressions/README.md
 	@test -f tests/malformed/regressions/elf64-shentsize-63.bin

@@ -655,7 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
-Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. Acceptance requires 11 valid cases, five malformed cases, exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through `info`, `mitigations`, and `analyze`. The generated JSON artifact under `tests/results/mitigation-matrix/` must contain 16 successful records and remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through `info`, `mitigations`, and `analyze`. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
 
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
@@ -689,3 +689,36 @@ mitigation-matrix-smoke: ok
 
 The public-docs gate must continue to pass after generated ignored result
 artifacts exist under `tests/results/`.
+
+
+## Sprint 7 Patch 029 closeout validation
+
+Patch 029 is a public planning and closeout patch. It must not change runtime behavior. Acceptance requires the same full command matrix as Patch 028, with `planning-docs-check` accepting Sprint 7 as closed and Sprint 8 as the next implementation tranche.
+
+Expected closeout state:
+
+```text
+make planning-docs-check
+planning-docs-check: ok plans=18 forward_plans=11
+
+MALFORMED_TIMEOUT=2 make validation-smoke
+validation-smoke: ok
+```
+
+The `v0.1.0-dev` tag must remain pinned to the Sprint 6 integrated checkpoint.
+
+
+## Sprint 7 closeout validation baseline
+
+After Patch 029, Sprint 8 starts from the following required local aggregate baseline:
+
+```bash
+make test
+make capacity-smoke
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Expected evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Sprint 8 parser changes must preserve these gates unless an intentional contract change is documented separately.

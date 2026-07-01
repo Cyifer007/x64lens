@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 establishes the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 adds shared checked table arithmetic and table-end overflow coverage. Exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage, and Patch 029 closes Sprint 7. Exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -98,4 +98,9 @@ A normal branch push does not publish tags. Release tags should be pushed explic
 
 ## Sprint 7 mitigation evidence gate
 
-After Patch 028, the 11-row valid mitigation oracle and seven malformed mitigation-matrix cases must pass natively and in Docker before mitigation depth expands. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
+After Sprint 7 closeout, the 11-row valid mitigation oracle and seven malformed mitigation-matrix cases must continue to pass natively and in Docker before mitigation depth expands. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
+
+
+## Sprint 7 gate result
+
+Sprint 7 satisfies the parser-safety foundation needed before the research preview candidate. The accepted baseline includes deterministic malformed-input coverage, candidate-capacity failure behavior, a deterministic mitigation oracle, and shared checked parser arithmetic. Sprint 8 must build mitigation-depth evidence on top of that baseline rather than replacing it.

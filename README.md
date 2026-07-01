@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 7 Patch 028 checked parser-arithmetic candidate. Patch 027 corrected the mitigation oracle expectation, and Patch 028 adds shared checked multiplication, addition, table-extent, and bounded per-entry helpers before deeper dynamic and symbol parsing begins. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
+> Status: Sprint 7 closeout checkpoint. Patch 028 has been accepted after native and Docker validation, and Patch 029 closes Sprint 7 by recording the hostile-input, mitigation-oracle, generated-artifact, and checked parser-arithmetic gates before Sprint 8 mitigation-depth work begins. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, and local `v0.1.0-dev` checkpoint are established.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -203,9 +203,9 @@ make capacity-smoke
 make docker-validation-smoke
 ```
 
-The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git. Patch 028 adds explicit program-header and section-header table-end wrap cases to keep checked arithmetic from regressing.
+The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git. Patch 028 adds explicit program-header and section-header table-end wrap cases to keep checked arithmetic from regressing. Patch 029 closes Sprint 7 and carries the validated gates forward as the Sprint 8 entry baseline.
 
-The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, and identical malformed failure behavior across `info`, `mitigations`, and `analyze`. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 028 expands its malformed matrix to seven cases by adding checked program-header and section-header table-extent overflow probes.
+The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, and identical malformed failure behavior across `info`, `mitigations`, and `analyze`. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 028 expands its malformed matrix to seven cases by adding checked program-header and section-header table-extent overflow probes. Patch 029 treats 11 valid mitigation cases and seven malformed mitigation cases as the Sprint 8 starting oracle.
 
 Patch bundle hygiene:
 

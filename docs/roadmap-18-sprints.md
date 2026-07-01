@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 6 and Patch 024 are validated. Sprint 7 is active, and Patch 025 is the first hostile-input hardening candidate.
+Sprints 1 through 7 are validated through the Sprint 7 closeout checkpoint. Sprint 8 is the next implementation tranche and focuses on mitigation and metadata depth.
 
 The implemented pipeline is:
 
@@ -31,9 +31,9 @@ ELF64 validation
 
 The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release.
 
-## Sprint 7 Patch 025 checkpoint
+## Sprint 7 closeout checkpoint
 
-The first Sprint 7 candidate adds deterministic hostile-input evidence and explicit resource-limit behavior. It does not complete Sprint 7. Shared checked arithmetic, bounded table views, and exercised regression promotion remain before the Sprint 8 handoff.
+Sprint 7 established deterministic hostile-input evidence, explicit resource-limit behavior, a mitigation oracle, corrected generated-artifact hygiene, and shared checked arithmetic for table extents and bounded per-entry views. Regression promotion remains a continuing policy, but it no longer blocks the Sprint 8 handoff.
 
 ## Release gates
 
@@ -179,6 +179,11 @@ Before `v0.1.0`, the project does not require:
 
 These remain post-release research directions unless measured evidence changes the priority.
 
-## Sprint 7 Patch 026 checkpoint
+## Sprint 7 to Sprint 8 handoff
 
-Patch 026 adds the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 corrects the zero-region oracle expectation. Patch 028 adds shared checked arithmetic and bounded table helpers while preserving both the Patch 025 hostile-input evidence and the Patch 026 oracle. Sprint 8 should begin only after Patch 028 validates natively and in Docker.
+Patch 026 added the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 corrected the zero-region oracle expectation. Patch 028 added shared checked arithmetic and bounded table helpers while preserving both the Patch 025 hostile-input evidence and the corrected mitigation oracle. Patch 029 closes Sprint 7 and hands Sprint 8 a hardened parser baseline for dynamic-section, symbol, string, and section-label work.
+
+
+## Sprint 8 priority adjustment
+
+Sprint 8 remains focused on mitigation-depth and metadata accuracy. The correct order is bounded `PT_DYNAMIC` parsing, RELRO refinement, evidence-qualified canary indicators, and section or stripped-status annotations. Primitive expansion should wait until these metadata paths preserve malformed-input, capacity, mitigation-oracle, and checked-arithmetic gates.

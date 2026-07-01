@@ -113,6 +113,8 @@ PATTERNS=(
   'in our (chat|conversation)'
   'the file you (uploaded|attached)'
   'as discussed in (chat|the conversation)'
+  'Codex'
+  'CODEX_LOCAL_MISSION'
 )
 
 failed=0

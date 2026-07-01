@@ -143,3 +143,8 @@ Bounded storage must fail closed when a complete report cannot be produced. Sile
 ## Mitigation-oracle rule
 
 Changes to ELF type interpretation, GNU stack handling, RELRO presence, dynamic-linking evidence, load permissions, executable-region counting, or program-header rejection behavior must update and pass the deterministic mitigation matrix. Parser refactors must preserve the oracle unless an intentional output-contract change is separately documented.
+
+
+## Private validation orchestration boundary rule
+
+Local validation missions, operational reports, command logs, temporary probes, and advisory review notes are private workflow artifacts. They must remain ignored, must not be shipped in public patch bundles, and must not be described as public product features. Convert only the technical result into public code, tests, documentation, or release evidence.

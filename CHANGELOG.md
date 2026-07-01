@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 7 Patch 029 closeout validation record and Sprint 7 retrospective.
+
+- Sprint 7 Patch 029 closeout validation record and Sprint 7 retrospective.
+- Sprint 7-to-Sprint 8 handoff documentation that preserves parser-safety gates before mitigation-depth work begins.
 - Sprint 7 Patch 028 shared checked parser arithmetic helpers for unsigned multiplication, unsigned addition, offset-plus-length end validation, table extents, and bounded per-entry table offsets.
 - Sprint 7 Patch 028 table-end overflow regression coverage in the malformed-input runner, core regression suite, and mitigation matrix.
 - ADR 0015 and Patch 028 validation documentation for the checked parser-arithmetic layer.
@@ -30,6 +34,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Mark Sprint 7 complete and define Sprint 8 as the next mitigation-depth sprint while preserving the checked parser-arithmetic and mitigation-oracle gates as entry criteria.
+
+- Mark Sprint 7 as closed after Patch 028 acceptance and move Sprint 8 to the next active implementation tranche.
+- Update planning validation to accept the Sprint 7 closed state while keeping the hostile-input, mitigation-oracle, and checked-arithmetic gates discoverable.
 - Route ELF64 program-header and section-header table validation through shared checked table-extent helpers.
 - Route program-header entry derivation through a bounded per-entry helper before forming pointers.
 - Expand the mitigation-matrix malformed case count from five to seven after adding table-end overflow probes.
@@ -55,6 +63,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+
+- Classify the Patch 028 Docker Buildx metadata failure as an environment defect after Docker validation passed outside the restricted filesystem sandbox.
 - Correct the mitigation oracle zero-executable-region expectation to match the stable text reporter line, `none discovered from PT_LOAD + PF_X`.
 - Reject malformed ELF64 files that previously used a nonzero but invalid section-header entry stride.
 - Verify candidate-record exhaustion returns a stable unsupported-feature error instead of silently truncating analysis.

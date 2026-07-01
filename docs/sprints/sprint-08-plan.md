@@ -2,13 +2,15 @@
 
 ## Status
 
-Planned.
+Next. Sprint 8 is the next public implementation tranche after Sprint 7 closeout.
 
 ## Sprint goal
 
 Increase mitigation and metadata accuracy without weakening loader-authority or parser-safety contracts.
 
 ## Planned deliverables
+
+Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO refinement, canary indicators, then optional section labels. Do not add primitive expansion until the new metadata paths pass deterministic malformed-input coverage.
 
 - [ ] Parse bounded `PT_DYNAMIC` entries required for `DT_BIND_NOW`, `DT_FLAGS`, and `DT_FLAGS_1` evidence.
 - [ ] Distinguish no RELRO, partial RELRO, and full RELRO.
@@ -21,6 +23,15 @@ Increase mitigation and metadata accuracy without weakening loader-authority or 
 - [ ] Add automated `readelf` comparison checks.
 - [ ] Add optional `checksec` and `rabin2 -I` comparison helpers when available.
 - [ ] Extend JSON with compatible optional mitigation fields while schema remains `0.1.0`.
+
+
+## Recommended patch sequence
+
+1. Bounded dynamic-section view for `PT_DYNAMIC` and `DT_*` entries.
+2. RELRO evidence split into no, partial, and full states using controlled fixtures.
+3. Canary and stripped-state indicators with explicit confidence wording.
+4. Section labels as analyst annotations only, never as runtime mapping authority.
+5. Automated comparison helpers against `readelf` and optional external tools.
 
 ## Acceptance criteria
 

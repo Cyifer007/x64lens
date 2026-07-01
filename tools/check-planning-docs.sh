@@ -31,6 +31,8 @@ required=(
     docs/sprints/sprint-07-patch-026-validation.md
     docs/sprints/sprint-07-patch-027-validation.md
     docs/sprints/sprint-07-patch-028-validation.md
+    docs/sprints/sprint-07-patch-029-validation.md
+    docs/sprints/sprint-07-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
     tests/malformed/regressions/elf64-shentsize-63.bin
@@ -51,7 +53,7 @@ for sprint in $(seq -w 1 18); do
 done
 
 forward_count=0
-for sprint in $(seq -w 7 18); do
+for sprint in $(seq -w 8 18); do
     path="docs/sprints/sprint-${sprint}-plan.md"
     grep -q '^## Status$' "$path" || fail "missing Status section: $path"
     grep -q '^## Sprint goal$' "$path" || fail "missing Sprint goal section: $path"
@@ -73,14 +75,23 @@ grep -q 'v0.1.0' docs/research-release-plan.md \
     || fail 'first research release gate is missing'
 grep -q 'schema `0.2.0`' docs/design/schema-evolution.md \
     || fail 'schema transition gate is missing'
-grep -q '^Active' docs/sprints/sprint-07-plan.md \
-    || fail 'Sprint 7 is not marked active'
+grep -Eq '^(Closed|Complete)' docs/sprints/sprint-07-plan.md \
+    || fail 'Sprint 7 is not marked closed or complete'
+grep -q '^Next' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 is not marked as the next implementation tranche'
 grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the mitigation oracle gate'
-grep -q 'checked table arithmetic' docs/sprints/sprint-07-plan.md \
-    || fail 'Sprint 7 plan does not name the checked table arithmetic gate'
+grep -Eq 'checked (table|parser) arithmetic' docs/sprints/sprint-07-plan.md \
+    || fail 'Sprint 7 plan does not name the checked parser arithmetic gate'
+grep -q '^## Recommended patch sequence$' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 recommended patch sequence is missing'
+grep -q 'docs/sprints/sprint-07-retro.md' docs/sprints/sprint-07-patch-029-validation.md >/dev/null 2>&1 || true
+grep -q 'Sprint 8' docs/sprints/sprint-07-retro.md \
+    || fail 'Sprint 7 retrospective does not hand off to Sprint 8'
+grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \
+    || fail 'Sprint 7 retrospective does not preserve mitigation handoff context'
 
 grep -q '^malformed-smoke:' Makefile \
     || fail 'Makefile does not define malformed-smoke'

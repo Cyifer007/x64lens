@@ -588,3 +588,8 @@ This is still not a full parser framework. It is the reusable arithmetic layer r
 ## Sprint 7 mitigation-oracle validation layer
 
 Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix, with its Patch 027 zero-region expectation correction and Patch 028 table-end overflow additions, is a fixed behavior gate for future mitigation parsing.
+
+
+## Sprint 7 parser-safety baseline
+
+Sprint 7 establishes the current parser-safety baseline: file-derived table extents and per-entry offsets must flow through checked helpers before pointer formation, malformed parse failures must be fail-closed with no partial report, and loader-level mitigation facts must remain covered by the deterministic mitigation oracle. Sprint 8 metadata parsing must reuse this model for every newly reachable dynamic, symbol, string, section, or note table.

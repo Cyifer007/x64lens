@@ -26,8 +26,9 @@
 - [x] Public-documentation hygiene checks.
 - [x] Patch 024 roadmap, release-gate, provenance, schema, and Sprint 7 through 18 planning.
 - [x] Patch 025 deterministic hostile-input and candidate-capacity regression gates.
+- [x] Sprint 7 hostile-input, mitigation-oracle, checked-arithmetic, and closeout gates.
 
-## Active next tranche
+## Completed Sprint 7 tranche
 
 ### Sprint 7: hostile-input hardening
 
@@ -35,13 +36,15 @@
 - [x] Stable signal, timeout, exit-code, elapsed-time, and output-size capture.
 - [x] Regression-fixture policy and reserved minimized-corpus path.
 - [x] First minimized parser regression fixture for invalid ELF64 section-header stride.
-- [ ] Committed regression fixture for every newly discovered stable parser defect.
+- [x] No additional non-synthetic stable parser defect required a new committed regression fixture during Sprint 7 closeout.
 - [x] Shared bounded-table iteration rules or helpers.
 - [x] Central checked arithmetic for multiplication, addition, counts, and end offsets.
 - [x] Initial program-header, section-header, executable-segment, and boundary range mutations.
 - [x] Exact ELF64 section-header entry-size validation.
 - [x] Explicit candidate-capacity failure behavior with no partial output.
 - [x] `make malformed-smoke`, `make capacity-smoke`, and Docker validation integration.
+
+## Active next tranche
 
 ### Sprint 8: mitigation and metadata depth
 
@@ -173,4 +176,15 @@ Private course context and state tracking belong under `.local/project-context/`
 
 ## Patch 026 and Patch 027 checkpoint
 
-The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Patch 028 implements the shared checked arithmetic and bounded table-view helper layer, then expands hostile-input coverage for table-end overflow. Regression minimization guidance and provenance fields for promoted malformed fixtures remain open Sprint 7 polish before mitigation-depth expansion.
+The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Patch 028 implements the shared checked arithmetic and bounded table-view helper layer, then expands hostile-input coverage for table-end overflow. Regression minimization remains a standing policy for future parser defects. Patch 029 closes Sprint 7 and starts the Sprint 8 mitigation-depth tranche.
+
+
+## Sprint 8 entry backlog
+
+Sprint 7 closed the hostile-input and checked-arithmetic foundation. The next backlog priority is bounded mitigation metadata:
+
+- parse only range-checked `PT_DYNAMIC` entries needed for RELRO and binding evidence,
+- distinguish no, partial, and full RELRO with controlled fixtures,
+- add canary indicators as evidence-qualified signals, not proof of complete stack protection,
+- add malformed coverage for every new table, count, offset, and string view,
+- defer primitive expansion until mitigation-depth parsing preserves all Sprint 7 gates.
