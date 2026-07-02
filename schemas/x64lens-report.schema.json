@@ -43,7 +43,7 @@
       "properties": {
         "nx_stack": { "type": ["boolean", "null"] },
         "pie": { "type": "boolean" },
-        "relro": { "type": "string" },
+        "relro": { "type": "string", "enum": ["none", "partial", "full"] },
         "rwx_load_segment": { "type": "boolean" },
         "dynamic_linking": { "type": "boolean" },
         "bind_now": { "type": ["boolean", "null"] },

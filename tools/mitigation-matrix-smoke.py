@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.2.0"
+SCRIPT_VERSION = "0.3.0"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -308,7 +308,7 @@ def valid_cases() -> tuple[ValidCase, ...]:
             expected(
                 pie="disabled",
                 nx="unknown",
-                relro_state="present",
+                relro_state="partial",
                 rwx="no",
                 dynamic_state="no",
                 phnum=2,
@@ -379,6 +379,57 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 bind_now="yes",
                 dynamic_entries=2,
                 phnum=2,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "full-relro-bind-now-tag",
+            ET_EXEC,
+            (load(0x1000, rx), relro(), dynamic(entries=((DT_BIND_NOW, 0), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="full",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
+                phnum=3,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "full-relro-flags-bind-now",
+            ET_EXEC,
+            (load(0x1000, rx), relro(), dynamic(entries=((DT_FLAGS, DF_BIND_NOW), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="full",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
+                phnum=3,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "full-relro-flags-1-now",
+            ET_EXEC,
+            (load(0x1000, rx), relro(), dynamic(entries=((DT_FLAGS_1, DF_1_NOW), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="full",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
+                phnum=3,
                 loads=1,
                 executable=1,
             ),
@@ -459,7 +510,7 @@ def valid_cases() -> tuple[ValidCase, ...]:
             expected(
                 pie="enabled",
                 nx="enabled",
-                relro_state="present",
+                relro_state="partial",
                 rwx="no",
                 dynamic_state="yes",
                 dynamic_entries=1,
@@ -502,7 +553,12 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
     struct.pack_into("<Q", load_overflow, first_phdr + 0x20, 0x10)
     struct.pack_into("<Q", load_overflow, first_phdr + 0x28, 0x10)
 
-    dynamic_commands = (("mitigations",), ("analyze", "--format", "json", "--max-depth", "4"))
+    dynamic_commands = (
+        ("mitigations",),
+        ("analyze", "--format", "json", "--max-depth", "4"),
+        ("gadgets", "--max-depth", "4"),
+        ("gadgets", "--format", "json", "--max-depth", "4"),
+    )
     dynamic_control = bytearray(build_elf(ET_EXEC, (load(0x1000, PF_R | PF_X), dynamic())))
     dynamic_phdr = ELF64_EHDR_SIZE + ELF64_PHDR_SIZE
 
@@ -520,6 +576,15 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
     struct.pack_into("<Q", dynamic_unaligned_size, dynamic_phdr + 0x20, 0x11)
     struct.pack_into("<Q", dynamic_unaligned_size, dynamic_phdr + 0x28, 0x11)
 
+    multiple_dynamic = build_elf(
+        ET_EXEC,
+        (
+            load(0x1000, PF_R | PF_X),
+            dynamic(offset=0x2000, entries=((DT_NULL, 0),)),
+            dynamic(offset=0x2040, entries=((DT_FLAGS, DF_BIND_NOW),)),
+        ),
+    )
+
     return (
         MalformedCase("wrong-phentsize", bytes(wrong_phentsize)),
         MalformedCase("truncated-program-header-table", bytes(truncated_table)),
@@ -531,6 +596,7 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         MalformedCase("dynamic-filesz-greater-than-memsz", bytes(dynamic_filesz_gt_memsz), dynamic_commands),
         MalformedCase("dynamic-file-range-out-of-file", bytes(dynamic_range_past_eof), dynamic_commands),
         MalformedCase("dynamic-entry-size-unaligned", bytes(dynamic_unaligned_size), dynamic_commands),
+        MalformedCase("multiple-pt-dynamic", multiple_dynamic, dynamic_commands),
     )
 
 
@@ -628,9 +694,9 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
         ),
         "pie": values["PIE"] == "enabled",
         "relro": (
-            "partial"
-            if values["RELRO"] == "present"
-            else "none"
+            "none"
+            if values["RELRO"] == "not found"
+            else values["RELRO"]
         ),
         "rwx_load_segment": values["RWX load segment"] == "yes",
         "dynamic_linking": dynamic_linking,

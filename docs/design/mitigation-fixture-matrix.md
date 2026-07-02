@@ -4,6 +4,11 @@
 
 This document defines the controlled ELF64 layouts used by `tools/mitigation-matrix-smoke.py`. The matrix is a behavioral oracle for loader-level mitigation facts. It is not a catalog of exploitability outcomes.
 
+After Patch 031, the matrix contains 17 valid layouts and 11 malformed layouts.
+The valid side includes no, partial, and full RELRO states; the malformed side
+includes duplicate-`PT_DYNAMIC` rejection and dynamic malformed coverage for
+scanner callers as well as mitigation and integrated analysis callers.
+
 ## Valid cases
 
 | Case | ELF type | Program-header evidence | Required interpretation |
@@ -12,16 +17,19 @@ This document defines the controlled ELF64 layouts used by `tools/mitigation-mat
 | `dyn-no-stack` | `ET_DYN` | one RX `PT_LOAD` | PIE enabled, NX unknown |
 | `nx-stack` | `ET_EXEC` | RX `PT_LOAD`, RW `PT_GNU_STACK` | NX enabled |
 | `executable-stack` | `ET_EXEC` | RX `PT_LOAD`, RWX `PT_GNU_STACK` | NX disabled |
-| `relro` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO` | RELRO present |
+| `relro` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO` | partial RELRO |
 | `dynamic` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_NULL` | dynamic linking yes, bind-now no, dynamic terminator yes |
 | `dynamic-bind-now-tag` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_BIND_NOW` and `DT_NULL` | bind-now yes through tag evidence |
 | `dynamic-flags-bind-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_FLAGS & DF_BIND_NOW` and `DT_NULL` | bind-now yes through `DT_FLAGS` evidence |
 | `dynamic-flags-1-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_FLAGS_1 & DF_1_NOW` and `DT_NULL` | bind-now yes through `DT_FLAGS_1` evidence |
+| `full-relro-bind-now-tag` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO`, `PT_DYNAMIC` with `DT_BIND_NOW` and `DT_NULL` | full RELRO through tag evidence |
+| `full-relro-flags-bind-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO`, `PT_DYNAMIC` with `DT_FLAGS & DF_BIND_NOW` and `DT_NULL` | full RELRO through `DT_FLAGS` evidence |
+| `full-relro-flags-1-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO`, `PT_DYNAMIC` with `DT_FLAGS_1 & DF_1_NOW` and `DT_NULL` | full RELRO through `DT_FLAGS_1` evidence |
 | `rwx-load` | `ET_EXEC` | RWX `PT_LOAD` | RWX load yes, one executable region |
 | `non-executable-load` | `ET_EXEC` | RW `PT_LOAD` | zero executable regions and exact text `none discovered from PT_LOAD + PF_X` |
 | `split-rx-rw-loads` | `ET_EXEC` | separate RX and RW `PT_LOAD` entries | two loads, one executable region, no RWX load |
 | `overlapping-loads-characterized` | `ET_EXEC` | two overlapping RX `PT_LOAD` entries | two executable-region records under the current model |
-| `combined-hardening-evidence` | `ET_DYN` | RX and RW loads, RW stack, RELRO, dynamic with `DT_NULL` | PIE and NX enabled, RELRO present, dynamic yes, bind-now no, no RWX load |
+| `combined-hardening-evidence` | `ET_DYN` | RX and RW loads, RW stack, RELRO, dynamic with `DT_NULL` | PIE and NX enabled, partial RELRO, dynamic yes, bind-now no, no RWX load |
 
 Every valid case must pass both of these command paths:
 
@@ -46,6 +54,7 @@ The text path is checked against exact mitigation-summary and executable-region 
 | `dynamic-filesz-greater-than-memsz` | dynamic segment file size exceeds memory size | exit 5 |
 | `dynamic-file-range-out-of-file` | dynamic file-backed range exceeds EOF | exit 5 |
 | `dynamic-entry-size-unaligned` | dynamic file size is not a multiple of 16-byte `Elf64_Dyn` records | exit 5 |
+| `multiple-pt-dynamic` | more than one `PT_DYNAMIC` program header is present | exit 5 |
 
 Most malformed cases are exercised through:
 
@@ -55,7 +64,7 @@ mitigations
 analyze --format json --max-depth 4
 ```
 
-Dynamic-table malformed cases are exercised through `mitigations` and `analyze --format json --max-depth 4`, because `info` intentionally reports ELF header facts and does not parse `PT_DYNAMIC`.
+Dynamic-table malformed cases are exercised through `mitigations`, `analyze --format json --max-depth 4`, `gadgets --max-depth 4`, and `gadgets --format json --max-depth 4`, because each of those paths consumes `x64lens_phdr_analyze`. `info` intentionally reports ELF header facts and does not parse `PT_DYNAMIC`.
 
 The required failure contract is:
 

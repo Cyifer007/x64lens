@@ -56,6 +56,7 @@ Current report sections:
 - `limitations` is non-empty when the analysis is heuristic or incomplete.
 - Semantic and score fields come from classifier and scoring records.
 - Patch 030 mitigation fields `bind_now`, `dynamic_entry_count`, and `dynamic_terminated` are optional compatible fields in schema `0.1.0`; non-dynamic binaries use `null`, `0`, and `null` respectively.
+- Patch 031 refines `mitigations.relro` to the current enum values `none`, `partial`, and `full`. Full RELRO requires `PT_GNU_RELRO` plus bounded bind-now evidence.
 
 ## Count separation
 
@@ -77,9 +78,8 @@ The report must not collapse these into one generic gadget count.
 
 - The scanner is byte-oriented and not a full x86_64 decoder.
 - Pattern labels describe exact suffix evidence, not complete decoded windows.
-- Baseline RELRO does not yet distinguish partial from full RELRO.
-- Bind-now evidence is reported separately and is not yet collapsed into full RELRO.
 - Canary, stripped, CET, and IBT indicators are not yet complete.
+- Section labels are not yet emitted as candidate or region annotations.
 - Candidate completeness and truncation are not represented in schema `0.1.0`.
 - Scores are heuristic and are not exploitability verdicts.
 

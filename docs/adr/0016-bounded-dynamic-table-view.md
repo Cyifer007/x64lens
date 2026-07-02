@@ -47,7 +47,7 @@ evidence provenance and confidence fields without changing this parser boundary.
 Benefits:
 
 - Sprint 8 gains its first bounded metadata table reader.
-- Bind-now evidence is available before RELRO is split into partial and full.
+- Bind-now evidence is available for the Patch 031 RELRO split into partial and full.
 - Future dynamic symbol, string, relocation, and canary work can reuse the same
   table-access pattern.
 - The mitigation oracle now covers positive bind-now evidence and malformed
@@ -58,8 +58,8 @@ Tradeoffs:
 - `PT_DYNAMIC` parsing adds a small bounded loop to mitigation analysis.
 - Missing `DT_NULL` is reported as `Dynamic terminator: no` rather than being
   used as proof of exploitability or safety.
-- Bind-now is only a loader-level static indicator at this stage. It is not yet a
-  complete full-RELRO verdict.
+- Bind-now remains a loader-level static indicator. Patch 031 uses it only with
+  `PT_GNU_RELRO` to derive the current full-RELRO label.
 
 ## Validation contract
 

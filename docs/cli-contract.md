@@ -93,10 +93,10 @@ Human-readable text output may change before `1.0.0`. JSON output must include `
 ## Current `mitigations` behavior
 
 The `mitigations` command reports loader-level static indicators derived from
-ELF type and program headers. After Patch 030 it also reports bounded
-`PT_DYNAMIC` facts used by later RELRO work:
+ELF type and program headers. After Patch 031 it also reports bounded `PT_DYNAMIC` facts and derives the current RELRO state from those facts:
 
 - dynamic linking presence,
+- no, partial, or full RELRO state,
 - bind-now evidence,
 - dynamic-entry count,
 - dynamic terminator state.

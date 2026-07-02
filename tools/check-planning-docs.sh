@@ -26,6 +26,7 @@ required=(
     docs/adr/0014-deterministic-mitigation-oracle.md
     docs/adr/0015-shared-checked-parser-arithmetic.md
     docs/adr/0016-bounded-dynamic-table-view.md
+    docs/adr/0017-relro-refinement-and-duplicate-dynamic-policy.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -34,6 +35,7 @@ required=(
     docs/sprints/sprint-07-patch-028-validation.md
     docs/sprints/sprint-07-patch-029-validation.md
     docs/sprints/sprint-08-patch-030-validation.md
+    docs/sprints/sprint-08-patch-031-validation.md
     docs/sprints/sprint-07-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
@@ -79,8 +81,8 @@ grep -q 'schema `0.2.0`' docs/design/schema-evolution.md \
     || fail 'schema transition gate is missing'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 is not marked closed or complete'
-grep -q '^Next' docs/sprints/sprint-08-plan.md \
-    || fail 'Sprint 8 is not marked as the next implementation tranche'
+grep -Eq '^(Next|Active)' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 is not marked as the next or active implementation tranche'
 grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \

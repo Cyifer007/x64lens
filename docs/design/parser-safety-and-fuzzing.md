@@ -209,3 +209,12 @@ for:
 
 Future dynamic-symbol, string, relocation, section-label, or note parsing must
 add equivalent malformed fixtures before their evidence is used in reporting.
+
+## Patch 031 RELRO evidence and duplicate dynamic policy
+
+Patch 031 composes bounded `PT_DYNAMIC` bind-now evidence with `PT_GNU_RELRO`
+without changing runtime mapping authority. The parser rejects a second
+`PT_DYNAMIC` program header instead of merging multiple dynamic tables, because
+merged dynamic-entry counts and terminator state would be ambiguous under the
+current schema. The mitigation matrix therefore includes duplicate-dynamic
+coverage in addition to the Patch 030 dynamic-range and entry-size cases.

@@ -74,6 +74,8 @@ state_disabled:        db "disabled", 10, 0
 state_unknown:         db "unknown", 10, 0
 state_present:         db "present", 10, 0
 state_not_found:       db "not found", 10, 0
+state_partial:         db "partial", 10, 0
+state_full:            db "full", 10, 0
 state_yes:             db "yes", 10, 0
 state_no:              db "no", 10, 0
 state_not_applicable:  db "not applicable", 10, 0
@@ -341,8 +343,21 @@ x64lens_report_text_mitigations:
 
     lea     rdi, [label_relro]
     call    print_cstr
-    mov     rdi, [r14 + PHDR_SUMMARY_RELRO_SEEN]
-    call    report_text_print_present_not_found
+    cmp     qword [r14 + PHDR_SUMMARY_RELRO_SEEN], 0
+    je      .relro_not_found
+    cmp     qword [r14 + PHDR_SUMMARY_BIND_NOW], 0
+    jne     .relro_full
+    lea     rdi, [state_partial]
+    call    print_cstr
+    jmp     .after_relro
+.relro_full:
+    lea     rdi, [state_full]
+    call    print_cstr
+    jmp     .after_relro
+.relro_not_found:
+    lea     rdi, [state_not_found]
+    call    print_cstr
+.after_relro:
 
     lea     rdi, [label_rwx]
     call    print_cstr

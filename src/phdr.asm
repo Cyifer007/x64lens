@@ -211,6 +211,11 @@ x64lens_phdr_analyze:
     jmp     .next
 
 .handle_dynamic:
+    ; A conforming executable should expose at most one PT_DYNAMIC table.
+    ; Accepting several tables would make dynamic-entry and DT_NULL semantics
+    ; ambiguous, so fail closed instead of merging partial evidence.
+    cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    jne     .malformed
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 1
 
     ; PT_DYNAMIC is a file-backed table of Elf64_Dyn entries. Treat it as an

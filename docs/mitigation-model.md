@@ -12,7 +12,9 @@ Mitigation reporting is an evidence layer. x64lens reports static indicators and
 | Executable stack | `PT_GNU_STACK` exists with `PF_X` | High | Implemented as NX disabled |
 | NX stack unknown | `PT_GNU_STACK` absent | Explicit unknown | Implemented |
 | PIE indicator | ELF type `ET_DYN` | High for common PIE executables, but shared objects also use `ET_DYN` | Implemented |
-| Baseline RELRO present | `PT_GNU_RELRO` present | High for RELRO region presence | Implemented |
+| No RELRO | no `PT_GNU_RELRO` | High after the program-header table is parsed completely | Implemented |
+| Partial RELRO | `PT_GNU_RELRO` present without bounded bind-now evidence | High for represented loader metadata | Implemented |
+| Full RELRO | `PT_GNU_RELRO` plus bounded bind-now evidence from `DT_BIND_NOW`, `DT_FLAGS`, or `DT_FLAGS_1` | High for represented loader metadata | Implemented |
 | RWX load segment | `PT_LOAD` has `PF_W` and `PF_X` | High | Implemented |
 | Dynamic linking | `PT_DYNAMIC` present | High | Implemented |
 | Bind now indicator | bounded `PT_DYNAMIC` scan finds `DT_BIND_NOW`, `DT_FLAGS & DF_BIND_NOW`, or `DT_FLAGS_1 & DF_1_NOW` | High for represented dynamic-table evidence | Implemented |
@@ -22,13 +24,13 @@ Mitigation reporting is an evidence layer. x64lens reports static indicators and
 
 ## Sprint 8 mitigation depth
 
-Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Full RELRO still remains future work because the current report exposes bind-now evidence separately rather than collapsing `PT_GNU_RELRO` and dynamic-table state into a full/partial/no RELRO label.
+Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 uses that view to split RELRO into no, partial, and full states while preserving the underlying bind-now and dynamic-table facts as separate evidence fields.
 
 | Signal | Planned evidence | Reporting rule |
 |---|---|---|
-| No RELRO | no `PT_GNU_RELRO` | Report `none` only when the program-header table was parsed completely. |
-| Partial RELRO | `PT_GNU_RELRO` without immediate binding evidence | Report `partial`; preserve evidence source. |
-| Full RELRO | `PT_GNU_RELRO` plus `DT_BIND_NOW`, `DF_BIND_NOW`, or equivalent validated evidence | Report `full`; record which dynamic fact justified it. |
+| No RELRO | no `PT_GNU_RELRO` | Report `none` in JSON and `RELRO: not found` in text after the program-header table is parsed completely. |
+| Partial RELRO | `PT_GNU_RELRO` without immediate binding evidence | Report `partial`; preserve bind-now as `no` or `not applicable` according to dynamic-table evidence. |
+| Full RELRO | `PT_GNU_RELRO` plus `DT_BIND_NOW`, `DF_BIND_NOW`, or equivalent validated evidence | Report `full`; preserve the bind-now evidence path separately. |
 | Canary indicator | validated import, symbol, or relocation evidence for stack-check routines | Report indicator presence, not complete stack protection. |
 | Stripped indicator | absent or limited symbol-table evidence | Report as a metadata indicator with confidence. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
@@ -110,4 +112,4 @@ Disagreements should be investigated by evidence source rather than resolved by 
 
 ## Deterministic mitigation oracle
 
-`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 030, 14 valid layouts isolate ELF type, GNU stack state, RELRO presence, dynamic linking, bind-now evidence, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Ten malformed layouts verify consistent fail-closed behavior across the relevant command paths, including dynamic-table range and entry-size rejection. The oracle validates current facts only; it does not add full RELRO, canary, GNU property, or exploitability conclusions.
+`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 031, 17 valid layouts isolate ELF type, GNU stack state, no/partial/full RELRO states, dynamic linking, bind-now evidence, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Eleven malformed layouts verify consistent fail-closed behavior across relevant command paths, including dynamic-table range, entry-size, and duplicate-`PT_DYNAMIC` rejection. The oracle validates current facts only; it does not add canary, GNU property, or exploitability conclusions.

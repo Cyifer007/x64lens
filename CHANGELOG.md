@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 031 RELRO refinement that reports no, partial, and full RELRO by combining `PT_GNU_RELRO` with bounded bind-now evidence.
+- Sprint 8 Patch 031 mitigation-oracle expansion to full-RELRO valid fixtures, duplicate-`PT_DYNAMIC` malformed coverage, and gadget command-path dynamic malformed coverage.
+- ADR 0017 and Patch 031 validation documentation for RELRO evidence semantics and duplicate dynamic-table policy.
 - Sprint 8 Patch 030 bounded `PT_DYNAMIC` table view for bind-now evidence, dynamic-entry count, and dynamic terminator state.
 - Sprint 8 Patch 030 mitigation-oracle expansion covering `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, and malformed dynamic-table range and entry-size cases.
 - ADR 0016 and Patch 030 validation documentation for the bounded dynamic-table parser seam.
@@ -35,6 +38,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Refine RELRO text and JSON output from presence-only reporting to `not found`, `partial`, or `full` while preserving schema version `0.1.0`.
+- Reject duplicate `PT_DYNAMIC` program headers as malformed to avoid ambiguous dynamic-entry and terminator semantics.
 - Extend mitigation text and JSON output with compatible dynamic-table fields while preserving schema version `0.1.0`.
 - Tighten planning-document validation by replacing the Patch 029 advisory placeholder with enforced Sprint 8 Patch 030 checks.
 - Mark Sprint 7 complete and define Sprint 8 as the next mitigation-depth sprint while preserving the checked parser-arithmetic and mitigation-oracle gates as entry criteria.
@@ -65,7 +70,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-
+- Close the Patch 030 dynamic malformed oracle gap by covering `gadgets` text and JSON callers as well as `mitigations` and integrated `analyze`.
 - Classify the Patch 028 Docker Buildx metadata failure as an environment defect after Docker validation passed outside the restricted filesystem sandbox.
 - Correct the mitigation oracle zero-executable-region expectation to match the stable text reporter line, `none discovered from PT_LOAD + PF_X`.
 - Reject malformed ELF64 files that previously used a nonzero but invalid section-header entry stride.

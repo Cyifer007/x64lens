@@ -38,4 +38,4 @@
 
 ## Sprint 7 mitigation-oracle limits
 
-The controlled matrix reduces dependence on compiler-generated mitigation defaults, but it covers only selected program-header and dynamic-table combinations. `ET_DYN` remains a static PIE indicator, RELRO is still presence-only until the full/partial split lands, and passing the matrix does not prove memory safety or complete mitigation detection. Overlapping executable segments are characterized under the current region model rather than deduplicated.
+The controlled matrix reduces dependence on compiler-generated mitigation defaults, but it covers only selected program-header and dynamic-table combinations. `ET_DYN` remains a static PIE indicator, RELRO is split into no, partial, and full states only for represented `PT_GNU_RELRO` and bind-now evidence, and passing the matrix does not prove memory safety or complete mitigation detection. Overlapping executable segments are characterized under the current region model rather than deduplicated.

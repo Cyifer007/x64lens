@@ -46,10 +46,10 @@ ELF64 validation will reject invalid file-backed `PT_LOAD` ranges before any com
 
 - The matrix proves behavior only for the represented combinations.
 - `ET_DYN` remains a static PIE indicator and does not distinguish every shared-object case.
-- RELRO presence does not yet distinguish partial from full RELRO.
+- RELRO distinctions are limited to represented `PT_GNU_RELRO` and bounded bind-now evidence after Patch 031.
 - Passing the matrix is not a proof of parser memory safety.
 - The fixture builder must evolve when the mitigation model gains new evidence classes.
 
 ## Follow-on work
 
-Patch 027 corrects the oracle zero-region text expectation without changing runtime output. Patch 028 consolidates checked addition, multiplication, table-extent, and offset-plus-length validation while preserving this oracle and expanding malformed table-end overflow coverage. Patch 030 expands the oracle with bounded dynamic-table bind-now evidence and malformed dynamic-table coverage. Later mitigation work should add GNU property notes, stack-canary evidence, and richer RELRO distinctions only with corresponding fixture rows and output-contract updates.
+Patch 027 corrects the oracle zero-region text expectation without changing runtime output. Patch 028 consolidates checked addition, multiplication, table-extent, and offset-plus-length validation while preserving this oracle and expanding malformed table-end overflow coverage. Patch 030 expands the oracle with bounded dynamic-table bind-now evidence and malformed dynamic-table coverage. Patch 031 adds no, partial, and full RELRO rows plus duplicate-`PT_DYNAMIC` rejection. Later mitigation work should add GNU property notes and stack-canary evidence only with corresponding fixture rows and output-contract updates.

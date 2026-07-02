@@ -64,6 +64,7 @@ field_bind_now:         db '    "bind_now":', 0
 field_dyn_entry_count:  db '    "dynamic_entry_count":', 0
 field_dyn_terminated:   db '    "dynamic_terminated":', 0
 relro_partial:          db "partial", 0
+relro_full:             db "full", 0
 relro_none:             db "none", 0
 field_counts_open:      db '  "counts":{', 10, 0
 field_raw_count:        db '    "raw_candidate_count":', 0
@@ -312,7 +313,13 @@ json_print_mitigations:
     call    print_cstr
     cmp     qword [rbx + PHDR_SUMMARY_RELRO_SEEN], 0
     je      .relro_none
+    cmp     qword [rbx + PHDR_SUMMARY_BIND_NOW], 0
+    jne     .relro_full
     lea     rdi, [relro_partial]
+    call    print_cstr
+    jmp     .relro_done
+.relro_full:
+    lea     rdi, [relro_full]
     call    print_cstr
     jmp     .relro_done
 .relro_none:
