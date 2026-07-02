@@ -218,3 +218,7 @@ without changing runtime mapping authority. The parser rejects a second
 merged dynamic-entry counts and terminator state would be ambiguous under the
 current schema. The mitigation matrix therefore includes duplicate-dynamic
 coverage in addition to the Patch 030 dynamic-range and entry-size cases.
+
+## Sprint 8 Patch 032 dynamic string-table safety
+
+`DT_STRTAB` and `DT_STRSZ` are accepted only as bounded mitigation evidence. When both tags are present, the string table virtual address must translate through a file-backed `PT_LOAD` range and the translated file range must pass the normal range-end validator. Unmapped dynamic string-table claims are malformed. Oversized dynamic string tables are unsupported. Missing metadata yields canary `unknown`, not a guessed negative.

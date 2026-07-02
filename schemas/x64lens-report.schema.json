@@ -8,17 +8,22 @@
     "tool",
     "tool_version",
     "target",
+    "mitigations",
+    "counts",
+    "primitive_coverage",
+    "gadgets",
     "limitations"
   ],
   "properties": {
     "schema_version": {
-      "type": "string"
+      "const": "0.1.0"
     },
     "tool": {
       "const": "x64lens"
     },
     "tool_version": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "target": {
       "type": "object",
@@ -30,55 +35,168 @@
         "entry"
       ],
       "properties": {
-        "path": { "type": "string" },
-        "format": { "const": "ELF64" },
-        "arch": { "const": "x86_64" },
-        "file_size": { "type": "integer", "minimum": 0 },
-        "entry": { "type": "string" }
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "format": {
+          "const": "ELF64"
+        },
+        "arch": {
+          "const": "x86_64"
+        },
+        "file_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "entry": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{16}$"
+        }
       },
       "additionalProperties": true
     },
     "mitigations": {
       "type": "object",
       "properties": {
-        "nx_stack": { "type": ["boolean", "null"] },
-        "pie": { "type": "boolean" },
-        "relro": { "type": "string", "enum": ["none", "partial", "full"] },
-        "rwx_load_segment": { "type": "boolean" },
-        "dynamic_linking": { "type": "boolean" },
-        "bind_now": { "type": ["boolean", "null"] },
-        "dynamic_entry_count": { "type": "integer", "minimum": 0 },
-        "dynamic_terminated": { "type": ["boolean", "null"] }
+        "nx_stack": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "pie": {
+          "type": "boolean"
+        },
+        "relro": {
+          "type": "string",
+          "enum": [
+            "none",
+            "partial",
+            "full"
+          ]
+        },
+        "rwx_load_segment": {
+          "type": "boolean"
+        },
+        "dynamic_linking": {
+          "type": "boolean"
+        },
+        "bind_now": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "dynamic_entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dynamic_terminated": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "canary": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "absent",
+            "present"
+          ]
+        }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "required": [
+        "nx_stack",
+        "pie",
+        "relro",
+        "canary",
+        "rwx_load_segment",
+        "dynamic_linking",
+        "bind_now",
+        "dynamic_entry_count",
+        "dynamic_terminated"
+      ]
     },
     "counts": {
       "type": "object",
       "properties": {
-        "raw_candidate_count": { "type": "integer", "minimum": 0 },
-        "ret_count": { "type": "integer", "minimum": 0 },
-        "ret_imm16_count": { "type": "integer", "minimum": 0 },
-        "exact_pattern_count": { "type": "integer", "minimum": 0 },
-        "semantic_candidate_count": { "type": "integer", "minimum": 0 },
-        "unknown_candidate_count": { "type": "integer", "minimum": 0 },
-        "scored_candidate_count": { "type": "integer", "minimum": 0 }
+        "raw_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ret_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ret_imm16_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exact_pattern_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semantic_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scored_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "required": [
+        "raw_candidate_count",
+        "ret_count",
+        "ret_imm16_count",
+        "exact_pattern_count",
+        "semantic_candidate_count",
+        "unknown_candidate_count",
+        "scored_candidate_count"
+      ]
     },
     "primitive_coverage": {
       "type": "object",
       "properties": {
-        "arg_control": { "type": "boolean" },
-        "syscall_num_control": { "type": "boolean" },
-        "syscall_trigger": { "type": "boolean" },
-        "stack_pivot": { "type": "boolean" },
-        "alignment": { "type": "boolean" },
+        "arg_control": {
+          "type": "boolean"
+        },
+        "syscall_num_control": {
+          "type": "boolean"
+        },
+        "syscall_trigger": {
+          "type": "boolean"
+        },
+        "stack_pivot": {
+          "type": "boolean"
+        },
+        "alignment": {
+          "type": "boolean"
+        },
         "registers": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "required": [
+        "arg_control",
+        "syscall_num_control",
+        "syscall_trigger",
+        "stack_pivot",
+        "alignment",
+        "registers"
+      ]
     },
     "gadgets": {
       "type": "array",
@@ -97,28 +215,146 @@
           "score"
         ],
         "properties": {
-          "va": { "type": "string" },
-          "file_offset": { "type": "string" },
-          "bytes": { "type": "string" },
-          "terminator": { "type": "string" },
-          "pattern": { "type": "string" },
-          "semantic_class": { "type": "string" },
+          "va": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{16}$"
+          },
+          "file_offset": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{16}$"
+          },
+          "bytes": {
+            "type": "string"
+          },
+          "terminator": {
+            "type": "string",
+            "enum": [
+              "ret",
+              "ret imm16",
+              "unknown"
+            ]
+          },
+          "pattern": {
+            "type": "string"
+          },
+          "semantic_class": {
+            "type": "string",
+            "enum": [
+              "unknown_candidate",
+              "arg_control",
+              "syscall_num_control",
+              "syscall_trigger",
+              "stack_pivot",
+              "memory_write",
+              "memory_read",
+              "reg_transfer",
+              "alignment",
+              "clobber_heavy"
+            ]
+          },
           "controls": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           },
-          "stack_delta": { "type": ["integer", "null"], "minimum": 0 },
-          "stack_delta_known": { "type": "boolean" },
-          "score": { "type": ["integer", "null"], "minimum": 0 }
+          "stack_delta": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "stack_delta_known": {
+            "type": "boolean"
+          },
+          "score": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
         },
         "additionalProperties": true
       }
     },
     "limitations": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     }
   },
   "additionalProperties": true,
-  "$comment": "x64lens report schema. Keep schema_version stable and update docs/json-schema.md when fields change."
+  "$comment": "x64lens report schema. Keep schema_version stable and update docs/json-schema.md when fields change.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mitigations": {
+            "properties": {
+              "dynamic_linking": {
+                "const": false
+              }
+            },
+            "required": [
+              "dynamic_linking"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "mitigations": {
+            "properties": {
+              "bind_now": {
+                "type": "null"
+              },
+              "dynamic_terminated": {
+                "type": "null"
+              },
+              "dynamic_entry_count": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mitigations": {
+            "properties": {
+              "relro": {
+                "const": "full"
+              }
+            },
+            "required": [
+              "relro"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "mitigations": {
+            "properties": {
+              "dynamic_linking": {
+                "const": true
+              },
+              "bind_now": {
+                "const": true
+              }
+            },
+            "required": [
+              "dynamic_linking",
+              "bind_now"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

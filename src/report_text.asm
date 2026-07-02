@@ -62,6 +62,7 @@ section_mitigations:    db 10, "Mitigations:", 10, 0
 label_pie:             db "  PIE: ", 0
 label_nx_stack:        db "  NX stack: ", 0
 label_relro:           db "  RELRO: ", 0
+label_canary:          db "  Canary indicator: ", 0
 label_rwx:             db "  RWX load segment: ", 0
 label_dynamic:         db "  Dynamic linking: ", 0
 label_bind_now:        db "  Bind now: ", 0
@@ -74,6 +75,7 @@ state_disabled:        db "disabled", 10, 0
 state_unknown:         db "unknown", 10, 0
 state_present:         db "present", 10, 0
 state_not_found:       db "not found", 10, 0
+state_absent:          db "absent", 10, 0
 state_partial:         db "partial", 10, 0
 state_full:            db "full", 10, 0
 state_yes:             db "yes", 10, 0
@@ -358,6 +360,25 @@ x64lens_report_text_mitigations:
     lea     rdi, [state_not_found]
     call    print_cstr
 .after_relro:
+
+    lea     rdi, [label_canary]
+    call    print_cstr
+    mov     rax, [r14 + PHDR_SUMMARY_CANARY_STATE]
+    cmp     rax, CANARY_STATE_PRESENT
+    je      .canary_present
+    cmp     rax, CANARY_STATE_ABSENT
+    je      .canary_absent
+    lea     rdi, [state_unknown]
+    call    print_cstr
+    jmp     .after_canary
+.canary_present:
+    lea     rdi, [state_present]
+    call    print_cstr
+    jmp     .after_canary
+.canary_absent:
+    lea     rdi, [state_absent]
+    call    print_cstr
+.after_canary:
 
     lea     rdi, [label_rwx]
     call    print_cstr

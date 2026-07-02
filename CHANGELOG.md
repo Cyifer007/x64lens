@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 032 canary indicator reporting using a bounded dynamic string-table scan for exact `__stack_chk_fail` evidence.
+- Sprint 8 Patch 032 mitigation-oracle expansion for canary-present/canary-absent fixtures, valid non-`DT_NULL` dynamic-table coverage, invalid dynamic string-table references, and direct `gadgets --format json` matrix coverage.
+- `make clean-results` for removing ignored local validation and benchmark result artifacts before release packaging or broad text review.
+- ADR 0018 and Patch 032 validation documentation for canary indicator semantics and bounded dynamic-string scanning.
 - Sprint 8 Patch 031 RELRO refinement that reports no, partial, and full RELRO by combining `PT_GNU_RELRO` with bounded bind-now evidence.
 - Sprint 8 Patch 031 mitigation-oracle expansion to full-RELRO valid fixtures, duplicate-`PT_DYNAMIC` malformed coverage, and gadget command-path dynamic malformed coverage.
 - ADR 0017 and Patch 031 validation documentation for RELRO evidence semantics and duplicate dynamic-table policy.
@@ -38,6 +42,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Tighten JSON Schema required fields and mitigation conditionals so external consumers receive the same core invariants enforced by the bundled validator.
 - Refine RELRO text and JSON output from presence-only reporting to `not found`, `partial`, or `full` while preserving schema version `0.1.0`.
 - Reject duplicate `PT_DYNAMIC` program headers as malformed to avoid ambiguous dynamic-entry and terminator semantics.
 - Extend mitigation text and JSON output with compatible dynamic-table fields while preserving schema version `0.1.0`.

@@ -50,7 +50,7 @@
 
 - [x] Bounded dynamic-section parsing for `PT_DYNAMIC`, bind-now evidence, dynamic-entry count, and `DT_NULL` terminator state. Implemented in Patch 030.
 - [x] Full versus partial RELRO. Implemented in Patch 031 with no, partial, and full states.
-- [ ] Canary indicators.
+- [x] Canary indicators. Implemented in Patch 032 as bounded dynamic-string evidence.
 - [ ] Stripped-status indicators.
 - [ ] Section labels as annotations.
 - [ ] Automated `readelf` comparison.
@@ -188,3 +188,7 @@ Sprint 7 closed the hostile-input and checked-arithmetic foundation. The next ba
 - add canary indicators as evidence-qualified signals, not proof of complete stack protection,
 - add malformed coverage for every new table, count, offset, and string view,
 - defer primitive expansion until mitigation-depth parsing preserves all Sprint 7 gates.
+
+## Sprint 8 Patch 032 backlog update
+
+Completed: first canary indicator, JSON Schema tightening, permanent mitigation-matrix promotion of valid non-`DT_NULL` dynamic coverage, direct gadgets JSON coverage, invalid dynamic string-table malformed coverage, and `make clean-results` hygiene. Remaining Sprint 8 work: stripped-state indicator, section labels as annotations, and optional external comparison helpers.

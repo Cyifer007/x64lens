@@ -20,18 +20,21 @@ Mitigation reporting is an evidence layer. x64lens reports static indicators and
 | Bind now indicator | bounded `PT_DYNAMIC` scan finds `DT_BIND_NOW`, `DT_FLAGS & DF_BIND_NOW`, or `DT_FLAGS_1 & DF_1_NOW` | High for represented dynamic-table evidence | Implemented |
 | Dynamic entry count | bounded number of `Elf64_Dyn` entries inspected, including `DT_NULL` when seen | High within the checked file-backed table | Implemented |
 | Dynamic terminator | bounded `PT_DYNAMIC` scan sees `DT_NULL` before the checked table ends | High for represented table termination | Implemented |
+| Canary indicator present | bounded `DT_STRTAB`/`DT_STRSZ` scan finds exact null-terminated `__stack_chk_fail` | Medium, indicator only | Implemented in Patch 032 |
+| Canary indicator absent | bounded dynamic string table was scanned and exact `__stack_chk_fail` was not found | Medium, only for represented dynamic-string metadata | Implemented in Patch 032 |
+| Canary indicator unknown | no bounded dynamic string-table evidence was available | Explicit unknown | Implemented in Patch 032 |
 | Executable region | `PT_LOAD` has `PF_X` | High | Implemented |
 
 ## Sprint 8 mitigation depth
 
-Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 uses that view to split RELRO into no, partial, and full states while preserving the underlying bind-now and dynamic-table facts as separate evidence fields.
+Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 uses that view to split RELRO into no, partial, and full states while preserving the underlying bind-now and dynamic-table facts as separate evidence fields. Patch 032 uses bounded `DT_STRTAB` and `DT_STRSZ` evidence to add a canary indicator without claiming complete stack protection.
 
 | Signal | Planned evidence | Reporting rule |
 |---|---|---|
 | No RELRO | no `PT_GNU_RELRO` | Report `none` in JSON and `RELRO: not found` in text after the program-header table is parsed completely. |
 | Partial RELRO | `PT_GNU_RELRO` without immediate binding evidence | Report `partial`; preserve bind-now as `no` or `not applicable` according to dynamic-table evidence. |
 | Full RELRO | `PT_GNU_RELRO` plus `DT_BIND_NOW`, `DF_BIND_NOW`, or equivalent validated evidence | Report `full`; preserve the bind-now evidence path separately. |
-| Canary indicator | validated import, symbol, or relocation evidence for stack-check routines | Report indicator presence, not complete stack protection. |
+| Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | absent or limited symbol-table evidence | Report as a metadata indicator with confidence. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
 | CET/IBT indicator | validated GNU property notes and supported instruction evidence | Planned after core Sprint 8 work if bounded parsing and fixtures are ready. |
@@ -112,4 +115,4 @@ Disagreements should be investigated by evidence source rather than resolved by 
 
 ## Deterministic mitigation oracle
 
-`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 031, 17 valid layouts isolate ELF type, GNU stack state, no/partial/full RELRO states, dynamic linking, bind-now evidence, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Eleven malformed layouts verify consistent fail-closed behavior across relevant command paths, including dynamic-table range, entry-size, and duplicate-`PT_DYNAMIC` rejection. The oracle validates current facts only; it does not add canary, GNU property, or exploitability conclusions.
+`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 032, 20 valid layouts isolate ELF type, GNU stack state, no/partial/full RELRO states, dynamic linking, bind-now evidence, canary-present and canary-absent indicators, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Twelve malformed layouts verify consistent fail-closed behavior across relevant command paths, including dynamic-table range, entry-size, duplicate-`PT_DYNAMIC` rejection, and invalid dynamic string-table references. The oracle validates current facts only; canary is represented as an indicator and does not prove complete stack protection, GNU property state, or exploitability conclusions.

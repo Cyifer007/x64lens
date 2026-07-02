@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 8 Patch 031 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view and a no/partial/full RELRO evidence split. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, and refined RELRO reporting are established.
+> Status: Sprint 8 Patch 032 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, and an evidence-qualified canary indicator. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, and canary indicator reporting are established.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -73,7 +73,7 @@ The current line does not implement exploit generation, payload generation, remo
 - A **semantic primitive** is assigned only when the current classifier has a supported rule.
 - An **unknown candidate** is preserved rather than overclassified.
 - A **score** is relative utility under the current heuristic model, not exploitability.
-- A mitigation result is a static indicator, not a final security verdict.
+- A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
 See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
@@ -203,9 +203,9 @@ make capacity-smoke
 make docker-validation-smoke
 ```
 
-The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git. Patch 028 adds explicit program-header and section-header table-end wrap cases to keep checked arithmetic from regressing. Patch 030 preserves that baseline while adding dynamic-table malformed cases to the mitigation matrix. Patch 031 keeps the malformed-smoke baseline unchanged and adds a duplicate-`PT_DYNAMIC` mitigation-matrix rejection.
+The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git. Patch 028 adds explicit program-header and section-header table-end wrap cases to keep checked arithmetic from regressing. Patch 030 preserves that baseline while adding dynamic-table malformed cases to the mitigation matrix. Patch 031 adds duplicate-`PT_DYNAMIC` rejection. Patch 032 keeps the malformed-smoke baseline unchanged while adding invalid dynamic string-table evidence to the mitigation matrix.
 
-The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 031 expands the oracle to 17 valid cases and 11 malformed cases, including `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, dynamic-table range validation, non-integral dynamic-entry size rejection, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
+The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, direct gadgets JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 032 expands the oracle to 20 valid cases and 12 malformed cases, including canary-present/canary-absent indicators, a valid non-`DT_NULL` dynamic table, invalid dynamic string-table rejection, `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
 
 Patch bundle hygiene:
 

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.3.0"
+SCRIPT_VERSION = "0.4.0"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -35,6 +35,8 @@ PT_DYNAMIC = 2
 PT_GNU_STACK = 0x6474E551
 PT_GNU_RELRO = 0x6474E552
 DT_NULL = 0
+DT_STRTAB = 5
+DT_STRSZ = 10
 DT_BIND_NOW = 24
 DT_FLAGS = 30
 DT_FLAGS_1 = 0x6FFFFFFB
@@ -207,11 +209,30 @@ def dynamic(
     )
 
 
+
+def string_load(
+    payload: bytes,
+    offset: int = 0x3000,
+    base: int = 0x400000,
+) -> ProgramHeader:
+    return ProgramHeader(
+        PT_LOAD,
+        PF_R,
+        offset,
+        base + offset,
+        len(payload),
+        len(payload),
+        0x1000,
+        payload,
+    )
+
+
 def expected(
     *,
     pie: str,
     nx: str,
     relro_state: str,
+    canary: str = "unknown",
     rwx: str,
     dynamic_state: str,
     phnum: int,
@@ -225,6 +246,7 @@ def expected(
         f"  PIE: {pie}",
         f"  NX stack: {nx}",
         f"  RELRO: {relro_state}",
+        f"  Canary indicator: {canary}",
         f"  RWX load segment: {rwx}",
         f"  Dynamic linking: {dynamic_state}",
         f"  Bind now: {bind_now if bind_now is not None else ('no' if dynamic_state == 'yes' else 'not applicable')}",
@@ -329,6 +351,67 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 dynamic_entries=1,
                 phnum=2,
                 loads=1,
+                executable=1,
+            ),
+        ),
+
+        ValidCase(
+            "dynamic-no-null-bounded",
+            ET_EXEC,
+            (load(0x1000, rx), dynamic(entries=((DT_FLAGS, 0),))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="no",
+                dynamic_entries=1,
+                dynamic_terminator="no",
+                phnum=2,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-string-canary-absent",
+            ET_EXEC,
+            (
+                load(0x1000, rx),
+                string_load(b"\0puts\0printf\0"),
+                dynamic(entries=((DT_STRTAB, 0x403000), (DT_STRSZ, 13), (DT_NULL, 0))),
+            ),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                canary="absent",
+                rwx="no",
+                dynamic_state="yes",
+                dynamic_entries=3,
+                phnum=3,
+                loads=2,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-string-canary-present",
+            ET_EXEC,
+            (
+                load(0x1000, rx),
+                string_load(b"\0__stack_chk_fail\0puts\0"),
+                dynamic(entries=((DT_STRTAB, 0x403000), (DT_STRSZ, 23), (DT_NULL, 0))),
+            ),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                canary="present",
+                rwx="no",
+                dynamic_state="yes",
+                dynamic_entries=3,
+                phnum=3,
+                loads=2,
                 executable=1,
             ),
         ),
@@ -585,6 +668,14 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         ),
     )
 
+    dynamic_strtab_unmapped = build_elf(
+        ET_EXEC,
+        (
+            load(0x1000, PF_R | PF_X),
+            dynamic(entries=((DT_STRTAB, 0x77770000), (DT_STRSZ, 0x10), (DT_NULL, 0))),
+        ),
+    )
+
     return (
         MalformedCase("wrong-phentsize", bytes(wrong_phentsize)),
         MalformedCase("truncated-program-header-table", bytes(truncated_table)),
@@ -597,6 +688,7 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         MalformedCase("dynamic-file-range-out-of-file", bytes(dynamic_range_past_eof), dynamic_commands),
         MalformedCase("dynamic-entry-size-unaligned", bytes(dynamic_unaligned_size), dynamic_commands),
         MalformedCase("multiple-pt-dynamic", multiple_dynamic, dynamic_commands),
+        MalformedCase("dynamic-strtab-unmapped", dynamic_strtab_unmapped, dynamic_commands),
     )
 
 
@@ -698,6 +790,7 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
             if values["RELRO"] == "not found"
             else values["RELRO"]
         ),
+        "canary": values["Canary indicator"],
         "rwx_load_segment": values["RWX load segment"] == "yes",
         "dynamic_linking": dynamic_linking,
         "bind_now": None if not dynamic_linking else values["Bind now"] == "yes",
@@ -795,6 +888,25 @@ def main() -> int:
                 raise HarnessError(f"{case.name}: analyze emitted stderr")
             validate_json(case, analyze_result.stdout)
 
+            gadgets_json_cmd = [
+                str(binary),
+                "gadgets",
+                "--format",
+                "json",
+                "--max-depth",
+                "4",
+                str(fixture),
+            ]
+            gadgets_json_result = run(gadgets_json_cmd, args.timeout)
+            if gadgets_json_result.returncode != EXIT_OK:
+                raise HarnessError(
+                    f"{case.name}: gadgets JSON exited {gadgets_json_result.returncode}: "
+                    f"{gadgets_json_result.stderr.decode(errors='replace').strip()}"
+                )
+            if gadgets_json_result.stderr:
+                raise HarnessError(f"{case.name}: gadgets JSON emitted stderr")
+            validate_json(case, gadgets_json_result.stdout)
+
             records.append(
                 {
                     "case": case.name,
@@ -805,6 +917,7 @@ def main() -> int:
                     "expected_json_mitigations": expected_json_mitigations(case),
                     "mitigations_exit_code": mitigation_result.returncode,
                     "analyze_exit_code": analyze_result.returncode,
+                    "gadgets_json_exit_code": gadgets_json_result.returncode,
                     "result": "ok",
                 }
             )

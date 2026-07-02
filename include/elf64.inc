@@ -99,6 +99,10 @@
 %define D_UN                0x08
 
 %define DT_NULL             0
+%define DT_STRTAB           5
+%define DT_SYMTAB           6
+%define DT_STRSZ            10
+%define DT_SYMENT           11
 %define DT_BIND_NOW         24
 %define DT_FLAGS            30
 %define DT_FLAGS_1          0x6ffffffb

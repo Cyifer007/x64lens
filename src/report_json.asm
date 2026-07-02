@@ -58,6 +58,7 @@ field_mitigations_open: db '  "mitigations":{', 10, 0
 field_nx_stack:         db '    "nx_stack":', 0
 field_pie:              db '    "pie":', 0
 field_relro:            db '    "relro":"', 0
+field_canary:           db '    "canary":"', 0
 field_rwx:              db '    "rwx_load_segment":', 0
 field_dynamic:          db '    "dynamic_linking":', 0
 field_bind_now:         db '    "bind_now":', 0
@@ -66,6 +67,9 @@ field_dyn_terminated:   db '    "dynamic_terminated":', 0
 relro_partial:          db "partial", 0
 relro_full:             db "full", 0
 relro_none:             db "none", 0
+canary_present:         db "present", 0
+canary_absent:          db "absent", 0
+canary_unknown:         db "unknown", 0
 field_counts_open:      db '  "counts":{', 10, 0
 field_raw_count:        db '    "raw_candidate_count":', 0
 field_ret_count:        db '    "ret_count":', 0
@@ -326,6 +330,28 @@ json_print_mitigations:
     lea     rdi, [relro_none]
     call    print_cstr
 .relro_done:
+    lea     rdi, [j_q]
+    call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_canary]
+    call    print_cstr
+    mov     rax, [rbx + PHDR_SUMMARY_CANARY_STATE]
+    cmp     rax, CANARY_STATE_PRESENT
+    je      .canary_present
+    cmp     rax, CANARY_STATE_ABSENT
+    je      .canary_absent
+    lea     rdi, [canary_unknown]
+    call    print_cstr
+    jmp     .canary_done
+.canary_present:
+    lea     rdi, [canary_present]
+    call    print_cstr
+    jmp     .canary_done
+.canary_absent:
+    lea     rdi, [canary_absent]
+    call    print_cstr
+.canary_done:
     lea     rdi, [j_q]
     call    print_cstr
     JSON_FIELD_COMMA_NL

@@ -54,12 +54,26 @@
 %define PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT 72
 %define PHDR_SUMMARY_DYNAMIC_NULL_SEEN   80
 %define PHDR_SUMMARY_BIND_NOW       88
-%define PHDR_SUMMARY_RECORD_SIZE    96
+%define PHDR_SUMMARY_CANARY_STATE   96
+%define PHDR_SUMMARY_DYNAMIC_STRTAB_SEEN 104
+%define PHDR_SUMMARY_DYNAMIC_STRTAB_VADDR 112
+%define PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN 120
+%define PHDR_SUMMARY_DYNAMIC_STRSZ  128
+%define PHDR_SUMMARY_RECORD_SIZE    136
 
-; Bounded dynamic-table view. PT_DYNAMIC entries are scanned only up to this
-; cap so a large but technically file-backed table cannot become an unbounded
-; analysis-time sink. Exceeding this limit returns EXIT_UNSUPPORTED.
+; Canary indicator states. This is an evidence-qualified static indicator,
+; not proof that every function in the target is stack-protected.
+%define CANARY_STATE_UNKNOWN         0
+%define CANARY_STATE_ABSENT          1
+%define CANARY_STATE_PRESENT         2
+
+; Bounded dynamic-table and dynamic-string views. PT_DYNAMIC entries and
+; dynamic string data are scanned only up to these caps so large but
+; technically file-backed metadata cannot become unbounded analysis-time sinks.
+; Exceeding these limits returns EXIT_UNSUPPORTED.
 %define DYNAMIC_ENTRY_MAX            4096
+%define DYNAMIC_STRING_SCAN_MAX      1048576
+%define CANARY_SYMBOL_LEN_WITH_NUL   17
 
 ; executable_region record offsets
 ;

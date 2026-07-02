@@ -4,10 +4,12 @@
 
 This document defines the controlled ELF64 layouts used by `tools/mitigation-matrix-smoke.py`. The matrix is a behavioral oracle for loader-level mitigation facts. It is not a catalog of exploitability outcomes.
 
-After Patch 031, the matrix contains 17 valid layouts and 11 malformed layouts.
-The valid side includes no, partial, and full RELRO states; the malformed side
-includes duplicate-`PT_DYNAMIC` rejection and dynamic malformed coverage for
-scanner callers as well as mitigation and integrated analysis callers.
+After Patch 032, the matrix contains 20 valid layouts and 12 malformed layouts.
+The valid side includes no, partial, and full RELRO states, bounded dynamic-table
+cases, and canary-present/canary-absent indicator fixtures. The malformed side
+includes duplicate-`PT_DYNAMIC` rejection, invalid dynamic string-table evidence,
+and dynamic malformed coverage for scanner callers as well as mitigation and
+integrated analysis callers.
 
 ## Valid cases
 
@@ -19,6 +21,7 @@ scanner callers as well as mitigation and integrated analysis callers.
 | `executable-stack` | `ET_EXEC` | RX `PT_LOAD`, RWX `PT_GNU_STACK` | NX disabled |
 | `relro` | `ET_EXEC` | RX `PT_LOAD`, `PT_GNU_RELRO` | partial RELRO |
 | `dynamic` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_NULL` | dynamic linking yes, bind-now no, dynamic terminator yes |
+| `dynamic-no-null-bounded` | `ET_EXEC` | RX `PT_LOAD`, bounded `PT_DYNAMIC` without `DT_NULL` | dynamic linking yes, bind-now no, dynamic terminator no |
 | `dynamic-bind-now-tag` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_BIND_NOW` and `DT_NULL` | bind-now yes through tag evidence |
 | `dynamic-flags-bind-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_FLAGS & DF_BIND_NOW` and `DT_NULL` | bind-now yes through `DT_FLAGS` evidence |
 | `dynamic-flags-1-now` | `ET_EXEC` | RX `PT_LOAD`, `PT_DYNAMIC` with `DT_FLAGS_1 & DF_1_NOW` and `DT_NULL` | bind-now yes through `DT_FLAGS_1` evidence |
@@ -30,15 +33,18 @@ scanner callers as well as mitigation and integrated analysis callers.
 | `split-rx-rw-loads` | `ET_EXEC` | separate RX and RW `PT_LOAD` entries | two loads, one executable region, no RWX load |
 | `overlapping-loads-characterized` | `ET_EXEC` | two overlapping RX `PT_LOAD` entries | two executable-region records under the current model |
 | `combined-hardening-evidence` | `ET_DYN` | RX and RW loads, RW stack, RELRO, dynamic with `DT_NULL` | PIE and NX enabled, partial RELRO, dynamic yes, bind-now no, no RWX load |
+| `dynamic-string-canary-absent` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` and `DT_STRSZ` pointing to a bounded string table without `__stack_chk_fail` | canary indicator absent |
+| `dynamic-string-canary-present` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` and `DT_STRSZ` pointing to a bounded string table containing exact `__stack_chk_fail\0` | canary indicator present |
 
-Every valid case must pass both of these command paths:
+Every valid case must pass these command paths:
 
 ```bash
 ./build/x64lens mitigations <fixture>
 ./build/x64lens analyze --format json --max-depth 4 <fixture>
+./build/x64lens gadgets --format json --max-depth 4 <fixture>
 ```
 
-The text path is checked against exact mitigation-summary and executable-region lines, including bind-now, dynamic-entry count, and dynamic terminator state. When no `PT_LOAD + PF_X` region exists, the required region line is `  none discovered from PT_LOAD + PF_X`. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr.
+The text path is checked against exact mitigation-summary and executable-region lines, including bind-now, dynamic-entry count, dynamic terminator state, and canary indicator state. When no `PT_LOAD + PF_X` region exists, the required region line is `  none discovered from PT_LOAD + PF_X`. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr. The direct `gadgets --format json` path is also checked for valid cases to keep the JSON emitter covered outside the integrated `analyze` command path.
 
 ## Malformed cases
 
@@ -55,6 +61,7 @@ The text path is checked against exact mitigation-summary and executable-region 
 | `dynamic-file-range-out-of-file` | dynamic file-backed range exceeds EOF | exit 5 |
 | `dynamic-entry-size-unaligned` | dynamic file size is not a multiple of 16-byte `Elf64_Dyn` records | exit 5 |
 | `multiple-pt-dynamic` | more than one `PT_DYNAMIC` program header is present | exit 5 |
+| `dynamic-strtab-unmapped` | `DT_STRTAB` and `DT_STRSZ` claim a dynamic string table that does not resolve to a file-backed `PT_LOAD` range | exit 5 |
 
 Most malformed cases are exercised through:
 
@@ -82,8 +89,8 @@ A successful run writes one ignored JSON artifact under:
 tests/results/mitigation-matrix/
 ```
 
-The artifact records the harness version, artifact schema version, analyzed binary path, seed path and SHA-256, fixture hashes, expected mitigation and region lines, expected JSON mitigation values, command exit codes, case counts, and per-case results. Generated ELF fixtures are removed when the run finishes.
+The artifact records the harness version, artifact schema version, analyzed binary path, seed path and SHA-256, fixture hashes, expected mitigation and region lines, expected JSON mitigation values, direct gadgets JSON exit codes, command exit codes, case counts, and per-case results. Generated ELF fixtures are removed when the run finishes.
 
 ## Interpretation boundary
 
-The matrix validates deterministic static facts. It does not establish that a binary is exploitable, safe, network reachable, or protected at runtime. The overlapping-load case records current region semantics and must not be described as deduplication support.
+The matrix validates deterministic static facts. It does not establish that a binary is exploitable, safe, network reachable, or protected at runtime. The overlapping-load case records current region semantics and must not be described as deduplication support. Canary rows record symbol evidence only; they do not prove every function is stack-protected.

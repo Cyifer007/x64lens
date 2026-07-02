@@ -85,7 +85,7 @@ Sprint 2 validation expectations:
 | Target | Expected signal |
 | ------ | --------------- |
 | `minimal_nopie` | PIE disabled, NX stack enabled |
-| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO present |
+| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO reported under the current no/partial/full model |
 | `minimal_execstack` | NX stack disabled |
 | malformed PHDR copy | exit code `5` |
 
@@ -96,10 +96,10 @@ Sprint 2 validation succeeded locally and in Docker. The following high-level ob
 
 | Target | x64lens observation | readelf comparison |
 | ------ | ------------------- | ------------------ |
-| `minimal_nopie` | PIE disabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
-| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
-| `minimal_execstack` | PIE disabled, NX stack disabled, RELRO present, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RWE`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
-| `/bin/ls` | PIE enabled, NX stack enabled, RELRO present, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `minimal_nopie` | PIE disabled, NX stack enabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `minimal_pie_canary` | PIE enabled, NX stack enabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `minimal_execstack` | PIE disabled, NX stack disabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RWE`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
+| `/bin/ls` | PIE enabled, NX stack enabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
 
 The current `tools/compare-readelf.sh` provides side-by-side output. Future hardening should parse and compare fields automatically.
 
@@ -655,7 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
-Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
 
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
@@ -721,7 +721,7 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases while preserving the malformed-smoke and capacity baselines.
+Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases while preserving the malformed-smoke and capacity baselines.
 
 ## Sprint 8 Patch 030 bounded dynamic-table validation
 
@@ -766,3 +766,25 @@ mitigation-matrix-smoke: ok
 ```
 
 Expected RELRO behavior is `RELRO: not found` with JSON `none` when `PT_GNU_RELRO` is absent, `RELRO: partial` with JSON `partial` when `PT_GNU_RELRO` is present without bind-now evidence, and `RELRO: full` with JSON `full` when `PT_GNU_RELRO` and bounded bind-now evidence are both present. Duplicate `PT_DYNAMIC` headers are malformed and must fail closed before stdout.
+
+## Sprint 8 Patch 032 canary indicator validation
+
+Patch 032 adds evidence-qualified canary reporting and expands the mitigation matrix. Acceptance requires the full aggregate gates plus focused matrix counts:
+
+```bash
+make test
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Expected matrix summary after Patch 032:
+
+```text
+mitigation-matrix-smoke: ok
+  valid cases: 20
+  malformed cases: 12
+```
+
+Expected canary behavior is `Canary indicator: unknown` when bounded dynamic string metadata is unavailable, `Canary indicator: absent` when the checked dynamic string table does not contain exact `__stack_chk_fail`, and `Canary indicator: present` when the exact null-terminated symbol is found. JSON mirrors this as `mitigations.canary` values `unknown`, `absent`, and `present`.

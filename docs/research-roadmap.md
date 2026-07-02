@@ -38,7 +38,7 @@ Passing this gate demonstrates stable behavior for the reviewed cases. It does n
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split.
+Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split. Patch 032 adds the first evidence-qualified canary indicator.
 
 ### Stage 2: candidate discovery and semantics
 
@@ -56,7 +56,7 @@ Status: planned for Sprint 9. This stage is the intended trigger for schema `0.2
 
 Connect static mitigation evidence and primitive coverage to defensive constraints without claiming vulnerability or exploitability.
 
-Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, and Patch 031 adds no, partial, and full RELRO reporting. Canary, stripped-state, section-label, evidence, and triage work spans Sprints 8 and 14.
+Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Patch 031 adds no, partial, and full RELRO reporting, and Patch 032 adds an evidence-qualified canary indicator. Stripped-state, section-label, evidence, and triage work spans Sprints 8 and 14.
 
 ### Stage 5: reproducible measurement
 
@@ -136,3 +136,7 @@ The project fixed expected loader-level mitigation behavior before parser arithm
 ## Post-Sprint 7 research posture
 
 Sprint 7 improves the trustworthiness of later measurements by hardening parser boundaries and deterministic oracles first. Patch 030 adds the first bounded Sprint 8 metadata reader, and Patch 031 composes that evidence into refined RELRO reporting. RQ1 performance work should continue to treat smoke timings as development evidence only. RQ2 semantic-value work should preserve raw/exact/semantic/scored boundaries. RQ3 operational-use work should emphasize evidence-qualified mitigation metadata in Sprint 8.
+
+## Sprint 8 Patch 032 roadmap update
+
+Mitigation-depth work now includes bounded dynamic-table evidence, refined RELRO states, and a bounded dynamic-string canary indicator. Remaining near-term metadata work should prioritize stripped-state and section labels as analyst annotations before moving into schema `0.2.0` evidence provenance.

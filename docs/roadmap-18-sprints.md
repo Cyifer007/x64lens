@@ -29,7 +29,7 @@ ELF64 validation
   -> smoke validation and baseline benchmark plumbing
 ```
 
-The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release. Sprint 8 Patch 031 continues post-checkpoint mitigation-depth work with bounded dynamic-table evidence and RELRO refinement.
+The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release. Sprint 8 Patch 032 continues post-checkpoint mitigation-depth work with bounded dynamic-table evidence, RELRO refinement, and the first canary indicator.
 
 ## Sprint 7 closeout checkpoint
 
@@ -181,9 +181,13 @@ These remain post-release research directions unless measured evidence changes t
 
 ## Sprint 7 to Sprint 8 handoff
 
-Patch 026 added the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 corrected the zero-region oracle expectation. Patch 028 added shared checked arithmetic and bounded table helpers while preserving both the Patch 025 hostile-input evidence and the corrected mitigation oracle. Patch 029 closes Sprint 7 and hands Sprint 8 a hardened parser baseline for dynamic-section, symbol, string, and section-label work. Patch 030 implements the first bounded dynamic-section view. Patch 031 preserves that parser seam and adds the no/partial/full RELRO split.
+Patch 026 added the compiler-independent mitigation truth table and command-path malformed consistency gate. Patch 027 corrected the zero-region oracle expectation. Patch 028 added shared checked arithmetic and bounded table helpers while preserving both the Patch 025 hostile-input evidence and the corrected mitigation oracle. Patch 029 closes Sprint 7 and hands Sprint 8 a hardened parser baseline for dynamic-section, symbol, string, and section-label work. Patch 030 implements the first bounded dynamic-section view. Patch 031 preserves that parser seam and adds the no/partial/full RELRO split. Patch 032 uses bounded dynamic-string evidence for the first canary indicator.
 
 
 ## Sprint 8 priority adjustment
 
-Sprint 8 remains focused on mitigation-depth and metadata accuracy. Patch 030 completes the bounded `PT_DYNAMIC` parser seam, and Patch 031 completes the initial RELRO refinement. The next order is evidence-qualified canary indicators, stripped-state evidence, and section annotations. Primitive expansion should wait until these metadata paths preserve malformed-input, capacity, mitigation-oracle, and checked-arithmetic gates.
+Sprint 8 remains focused on mitigation-depth and metadata accuracy. Patch 030 completes the bounded `PT_DYNAMIC` parser seam, Patch 031 completes the initial RELRO refinement, and Patch 032 completes the first evidence-qualified canary indicator. The next order is stripped-state evidence and section annotations. Primitive expansion should wait until these metadata paths preserve malformed-input, capacity, mitigation-oracle, and checked-arithmetic gates.
+
+## Sprint 8 Patch 032 roadmap update
+
+Patch 032 completes the first canary indicator and resolves Patch 031 local review follow-ups for schema strictness, permanent mitigation-matrix coverage, and result-artifact cleanup. Sprint 8 should continue with stripped-state indicators and section labels unless validation reveals a parser defect.
