@@ -599,3 +599,7 @@ Sprint 7 establishes the current parser-safety baseline: file-derived table exte
 ## Sprint 8 Patch 032 canary indicator seam
 
 Patch 032 extends the bounded dynamic-table evidence path to collect `DT_STRTAB` and `DT_STRSZ`. The resulting dynamic string-table range is translated only through a file-backed `PT_LOAD` range and is capped before scanning. The only implemented canary evidence is an exact null-terminated `__stack_chk_fail` string. The field is reported as `unknown`, `absent`, or `present`; it is an indicator only and never changes executable-region authority.
+
+Sprint 8 Patch 033 stripped-status update
+
+Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.

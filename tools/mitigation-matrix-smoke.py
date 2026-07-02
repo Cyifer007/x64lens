@@ -23,10 +23,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.4.0"
+SCRIPT_VERSION = "0.5.0"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
+ELF64_SHDR_SIZE = 64
 ET_EXEC = 2
 ET_DYN = 3
 EM_X86_64 = 62
@@ -42,12 +43,18 @@ DT_FLAGS = 30
 DT_FLAGS_1 = 0x6FFFFFFB
 DF_BIND_NOW = 0x8
 DF_1_NOW = 0x1
+DYNAMIC_STRING_SCAN_MAX = 1048576
 PF_X = 1
 PF_W = 2
 PF_R = 4
+SHT_NULL = 0
+SHT_SYMTAB = 2
+SHT_STRTAB = 3
 EXIT_OK = 0
 EXIT_MALFORMED_ELF = 5
+EXIT_UNSUPPORTED = 6
 MALFORMED_MESSAGE = b"error: malformed or truncated ELF\n"
+UNSUPPORTED_MESSAGE = b"error: unsupported binary feature\n"
 NO_EXEC_REGION_LINE = "  none discovered from PT_LOAD + PF_X"
 
 
@@ -73,6 +80,7 @@ class ValidCase:
     elf_type: int
     headers: tuple[ProgramHeader, ...]
     expected_summary_lines: tuple[str, ...]
+    section_types: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,6 +88,8 @@ class MalformedCase:
     name: str
     data: bytes
     commands: tuple[tuple[str, ...], ...] | None = None
+    expected_exit: int = EXIT_MALFORMED_ELF
+    expected_stderr: bytes = MALFORMED_MESSAGE
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -167,6 +177,29 @@ def build_elf(elf_type: int, headers: Sequence[ProgramHeader]) -> bytes:
     return bytes(image)
 
 
+def add_section_headers(data: bytes, section_types: Sequence[int]) -> bytes:
+    """Append a minimal validated section table with controlled SHT_* types."""
+    if not section_types:
+        return data
+    image = bytearray(data)
+    shoff = (len(image) + 7) & ~7
+    if shoff > len(image):
+        image.extend(b"\0" * (shoff - len(image)))
+    for section_type in section_types:
+        header = bytearray(ELF64_SHDR_SIZE)
+        struct.pack_into("<I", header, 0x04, section_type)
+        image.extend(header)
+    struct.pack_into("<Q", image, 0x28, shoff)
+    struct.pack_into("<H", image, 0x3A, ELF64_SHDR_SIZE)
+    struct.pack_into("<H", image, 0x3C, len(section_types))
+    struct.pack_into("<H", image, 0x3E, 0)
+    return bytes(image)
+
+
+def build_case_elf(case: ValidCase) -> bytes:
+    return add_section_headers(build_elf(case.elf_type, case.headers), case.section_types)
+
+
 def load(offset: int, flags: int, size: int = 0x20, base: int = 0x400000) -> ProgramHeader:
     return ProgramHeader(
         PT_LOAD,
@@ -233,6 +266,7 @@ def expected(
     nx: str,
     relro_state: str,
     canary: str = "unknown",
+    stripped: str = "unknown",
     rwx: str,
     dynamic_state: str,
     phnum: int,
@@ -247,6 +281,7 @@ def expected(
         f"  NX stack: {nx}",
         f"  RELRO: {relro_state}",
         f"  Canary indicator: {canary}",
+        f"  Stripped indicator: {stripped}",
         f"  RWX load segment: {rwx}",
         f"  Dynamic linking: {dynamic_state}",
         f"  Bind now: {bind_now if bind_now is not None else ('no' if dynamic_state == 'yes' else 'not applicable')}",
@@ -602,6 +637,61 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 executable=1,
             ),
         ),
+        ValidCase(
+            "dynamic-string-zero-size-absent",
+            ET_EXEC,
+            (
+                load(0x1000, rx),
+                string_load(b"\0"),
+                dynamic(entries=((DT_STRTAB, 0x403000), (DT_STRSZ, 0), (DT_NULL, 0))),
+            ),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                canary="absent",
+                rwx="no",
+                dynamic_state="yes",
+                dynamic_entries=3,
+                phnum=3,
+                loads=2,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "section-table-without-symtab-stripped",
+            ET_EXEC,
+            (load(0x1000, rx),),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                stripped="stripped",
+                rwx="no",
+                dynamic_state="no",
+                phnum=1,
+                loads=1,
+                executable=1,
+            ),
+            section_types=(SHT_NULL, SHT_STRTAB),
+        ),
+        ValidCase(
+            "section-table-with-symtab-not-stripped",
+            ET_EXEC,
+            (load(0x1000, rx),),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                stripped="not stripped",
+                rwx="no",
+                dynamic_state="no",
+                phnum=1,
+                loads=1,
+                executable=1,
+            ),
+            section_types=(SHT_NULL, SHT_SYMTAB, SHT_STRTAB),
+        ),
     )
 
 
@@ -676,6 +766,52 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         ),
     )
 
+    dynamic_duplicate_strtab = build_elf(
+        ET_EXEC,
+        (
+            load(0x1000, PF_R | PF_X),
+            string_load(b"\0__stack_chk_fail\0puts\0"),
+            dynamic(
+                entries=(
+                    (DT_STRTAB, 0x403000),
+                    (DT_STRTAB, 0x403001),
+                    (DT_STRSZ, 23),
+                    (DT_NULL, 0),
+                )
+            ),
+        ),
+    )
+
+    dynamic_duplicate_strsz = build_elf(
+        ET_EXEC,
+        (
+            load(0x1000, PF_R | PF_X),
+            string_load(b"\0__stack_chk_fail\0puts\0"),
+            dynamic(
+                entries=(
+                    (DT_STRTAB, 0x403000),
+                    (DT_STRSZ, 23),
+                    (DT_STRSZ, 3),
+                    (DT_NULL, 0),
+                )
+            ),
+        ),
+    )
+
+    dynamic_strsz_over_scan_cap = build_elf(
+        ET_EXEC,
+        (
+            load(0x1000, PF_R | PF_X),
+            dynamic(
+                entries=(
+                    (DT_STRTAB, 0x403000),
+                    (DT_STRSZ, DYNAMIC_STRING_SCAN_MAX + 1),
+                    (DT_NULL, 0),
+                )
+            ),
+        ),
+    )
+
     return (
         MalformedCase("wrong-phentsize", bytes(wrong_phentsize)),
         MalformedCase("truncated-program-header-table", bytes(truncated_table)),
@@ -689,6 +825,15 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         MalformedCase("dynamic-entry-size-unaligned", bytes(dynamic_unaligned_size), dynamic_commands),
         MalformedCase("multiple-pt-dynamic", multiple_dynamic, dynamic_commands),
         MalformedCase("dynamic-strtab-unmapped", dynamic_strtab_unmapped, dynamic_commands),
+        MalformedCase("duplicate-dt-strtab", dynamic_duplicate_strtab, dynamic_commands),
+        MalformedCase("duplicate-dt-strsz", dynamic_duplicate_strsz, dynamic_commands),
+        MalformedCase(
+            "dynamic-strsz-over-scan-cap",
+            dynamic_strsz_over_scan_cap,
+            dynamic_commands,
+            EXIT_UNSUPPORTED,
+            UNSUPPORTED_MESSAGE,
+        ),
     )
 
 
@@ -791,6 +936,11 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
             else values["RELRO"]
         ),
         "canary": values["Canary indicator"],
+        "stripped": (
+            "not_stripped"
+            if values["Stripped indicator"] == "not stripped"
+            else values["Stripped indicator"]
+        ),
         "rwx_load_segment": values["RWX load segment"] == "yes",
         "dynamic_linking": dynamic_linking,
         "bind_now": None if not dynamic_linking else values["Bind now"] == "yes",
@@ -849,12 +999,14 @@ def main() -> int:
     control = build_elf(valid[0].elf_type, valid[0].headers)
     malformed = malformed_cases(control)
     records: list[dict[str, object]] = []
+    malformed_count = sum(1 for case in malformed if case.expected_exit == EXIT_MALFORMED_ELF)
+    unsupported_count = sum(1 for case in malformed if case.expected_exit == EXIT_UNSUPPORTED)
 
     with tempfile.TemporaryDirectory(prefix="x64lens-mitigation-matrix-") as temp:
         temp_dir = Path(temp)
 
         for case in valid:
-            data = build_elf(case.elf_type, case.headers)
+            data = build_case_elf(case)
             fixture = temp_dir / f"{case.name}.elf"
             fixture.write_bytes(data)
 
@@ -935,26 +1087,31 @@ def main() -> int:
             for command_args in active_commands:
                 command = [str(binary), *command_args, str(fixture)]
                 result = run(command, args.timeout)
-                if result.returncode != EXIT_MALFORMED_ELF:
+                if result.returncode != case.expected_exit:
                     raise HarnessError(
-                        f"{case.name}/{command_args[0]}: expected exit 5, "
+                        f"{case.name}/{command_args[0]}: expected exit {case.expected_exit}, "
                         f"received {result.returncode}"
                     )
                 if result.stdout:
                     raise HarnessError(f"{case.name}/{command_args[0]}: emitted stdout")
-                if result.stderr != MALFORMED_MESSAGE:
+                if result.stderr != case.expected_stderr:
                     raise HarnessError(
                         f"{case.name}/{command_args[0]}: unexpected stderr: "
-                        f"{result.stderr!r}"
+                        f"expected {case.expected_stderr!r}, observed {result.stderr!r}"
                     )
                 command_records.append(
-                    {"command": " ".join(command_args), "exit_code": result.returncode}
+                    {
+                        "command": " ".join(command_args),
+                        "exit_code": result.returncode,
+                        "expected_exit_code": case.expected_exit,
+                    }
                 )
 
+            input_class = "unsupported" if case.expected_exit == EXIT_UNSUPPORTED else "malformed"
             records.append(
                 {
                     "case": case.name,
-                    "input_class": "malformed",
+                    "input_class": input_class,
                     "fixture_sha256": sha256_bytes(case.data),
                     "commands": command_records,
                     "result": "ok",
@@ -973,7 +1130,9 @@ def main() -> int:
         "seed_sha256": sha256_bytes(seed_data),
         "timeout_seconds": args.timeout,
         "valid_cases": len(valid),
-        "malformed_cases": len(malformed),
+        "failure_cases": len(malformed),
+        "malformed_cases": malformed_count,
+        "unsupported_cases": unsupported_count,
         "records": records,
     }
     result_path.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -982,7 +1141,8 @@ def main() -> int:
     print(f"  seed: {seed}")
     print(f"  seed_sha256: {artifact['seed_sha256']}")
     print(f"  valid cases: {len(valid)}")
-    print(f"  malformed cases: {len(malformed)}")
+    print(f"  malformed cases: {malformed_count}")
+    print(f"  unsupported cases: {unsupported_count}")
     print(f"  results: {result_path.resolve()}")
     return 0
 

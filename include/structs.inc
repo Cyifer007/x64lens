@@ -59,13 +59,21 @@
 %define PHDR_SUMMARY_DYNAMIC_STRTAB_VADDR 112
 %define PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN 120
 %define PHDR_SUMMARY_DYNAMIC_STRSZ  128
-%define PHDR_SUMMARY_RECORD_SIZE    136
+%define PHDR_SUMMARY_STRIPPED_STATE 136
+%define PHDR_SUMMARY_RECORD_SIZE    144
 
 ; Canary indicator states. This is an evidence-qualified static indicator,
 ; not proof that every function in the target is stack-protected.
 %define CANARY_STATE_UNKNOWN         0
 %define CANARY_STATE_ABSENT          1
 %define CANARY_STATE_PRESENT         2
+
+; Stripped indicator states. This is section-header evidence only. A missing
+; section table leaves the state unknown. A validated section table without
+; SHT_SYMTAB is treated as stripped. A validated SHT_SYMTAB is not stripped.
+%define STRIPPED_STATE_UNKNOWN       0
+%define STRIPPED_STATE_STRIPPED      1
+%define STRIPPED_STATE_NOT_STRIPPED  2
 
 ; Bounded dynamic-table and dynamic-string views. PT_DYNAMIC entries and
 ; dynamic string data are scanned only up to these caps so large but

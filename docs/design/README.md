@@ -17,3 +17,7 @@ These documents are architecture constraints, not implementation claims. Code, t
 ## Sprint 8 Patch 032 design note
 
 The canary indicator is the first dynamic-string consumer. It must remain downstream of bounded `PT_DYNAMIC` parsing, file-backed `PT_LOAD` translation, and range validation. The indicator is intentionally narrower than full symbol recovery and should be refined later through symbol-table or relocation evidence rather than by broadening unchecked string scanning.
+
+Sprint 8 Patch 033 stripped-status update
+
+Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.

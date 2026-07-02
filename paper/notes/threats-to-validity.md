@@ -43,3 +43,7 @@ The controlled matrix reduces dependence on compiler-generated mitigation defaul
 ## Patch 032 canary indicator threat
 
 The canary field is based on exact dynamic string-table evidence for `__stack_chk_fail`. This may miss statically linked or stripped cases where equivalent protection evidence exists elsewhere, and it may indicate linkage without proving every relevant function was protected. Treat it as a triage indicator only.
+
+Patch 033 stripped indicator threat
+
+The stripped field is based on bounded section-header evidence for `SHT_SYMTAB`. It can describe represented section-table metadata, but it does not prove complete symbol recovery, source availability, or runtime loader behavior. Section headers remain outside executable-region authority.

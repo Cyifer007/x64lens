@@ -85,3 +85,7 @@ The same valid ELF64 program-header evidence must produce compatible mitigation 
 ## Canary indicator wording
 
 Text output must use `Canary indicator:` rather than wording that implies complete stack protection. JSON `mitigations.canary` may be `unknown`, `absent`, or `present`. `unknown` is required when bounded metadata is unavailable. `present` means exact `__stack_chk_fail` evidence was found in a validated dynamic string table; it does not prove every function is protected.
+
+Sprint 8 Patch 033 stripped-status update
+
+Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.

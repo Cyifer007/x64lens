@@ -26,6 +26,7 @@ extern x64lens_file_map
 extern x64lens_file_unmap
 extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
+extern x64lens_shdr_classify_stripped
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
@@ -105,6 +106,15 @@ x64lens_command_gadgets_with_format:
     lea     rcx, [gad_regions]
     mov     r8, EXEC_REGION_MAX
     call    x64lens_phdr_analyze
+    test    rax, rax
+    jne     .error
+
+    ; Section-derived metadata is an analyst indicator only. It must never
+    ; change executable-region boundaries selected from PT_LOAD + PF_X.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
+    lea     rdx, [gad_phdr_summary]
+    call    x64lens_shdr_classify_stripped
     test    rax, rax
     jne     .error
 

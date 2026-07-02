@@ -169,3 +169,7 @@ BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ## Benchmark command deferral
 
 The research benchmark harness remains under `benchmarks/scripts/` rather than inside the analyzer process. This keeps measurement orchestration, tool ordering, target manifests, raw-row preservation, and baseline execution independent from the implementation being measured. A future `bench` CLI command is not required for the first research release.
+
+Sprint 8 Patch 033 stripped-status update
+
+Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.

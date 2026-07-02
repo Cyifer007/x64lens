@@ -63,6 +63,7 @@ label_pie:             db "  PIE: ", 0
 label_nx_stack:        db "  NX stack: ", 0
 label_relro:           db "  RELRO: ", 0
 label_canary:          db "  Canary indicator: ", 0
+label_stripped:        db "  Stripped indicator: ", 0
 label_rwx:             db "  RWX load segment: ", 0
 label_dynamic:         db "  Dynamic linking: ", 0
 label_bind_now:        db "  Bind now: ", 0
@@ -76,6 +77,8 @@ state_unknown:         db "unknown", 10, 0
 state_present:         db "present", 10, 0
 state_not_found:       db "not found", 10, 0
 state_absent:          db "absent", 10, 0
+state_stripped:        db "stripped", 10, 0
+state_not_stripped:    db "not stripped", 10, 0
 state_partial:         db "partial", 10, 0
 state_full:            db "full", 10, 0
 state_yes:             db "yes", 10, 0
@@ -379,6 +382,25 @@ x64lens_report_text_mitigations:
     lea     rdi, [state_absent]
     call    print_cstr
 .after_canary:
+
+    lea     rdi, [label_stripped]
+    call    print_cstr
+    mov     rax, [r14 + PHDR_SUMMARY_STRIPPED_STATE]
+    cmp     rax, STRIPPED_STATE_STRIPPED
+    je      .stripped_yes
+    cmp     rax, STRIPPED_STATE_NOT_STRIPPED
+    je      .stripped_no
+    lea     rdi, [state_unknown]
+    call    print_cstr
+    jmp     .after_stripped
+.stripped_yes:
+    lea     rdi, [state_stripped]
+    call    print_cstr
+    jmp     .after_stripped
+.stripped_no:
+    lea     rdi, [state_not_stripped]
+    call    print_cstr
+.after_stripped:
 
     lea     rdi, [label_rwx]
     call    print_cstr

@@ -132,6 +132,9 @@ def validate_common(doc: dict[str, Any]) -> None:
     require("canary" in mitigations, "mitigations.canary is missing")
     require(isinstance(mitigations["canary"], str), "mitigations.canary must be a string")
     require(mitigations["canary"] in {"unknown", "absent", "present"}, "mitigations.canary must be unknown, absent, or present")
+    require("stripped" in mitigations, "mitigations.stripped is missing")
+    require(isinstance(mitigations["stripped"], str), "mitigations.stripped must be a string")
+    require(mitigations["stripped"] in {"unknown", "stripped", "not_stripped"}, "mitigations.stripped must be unknown, stripped, or not_stripped")
 
     if "bind_now" in mitigations:
         require(isinstance(mitigations["bind_now"], bool) or mitigations["bind_now"] is None, "mitigations.bind_now must be bool or null")

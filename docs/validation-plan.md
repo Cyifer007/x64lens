@@ -655,7 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
-Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Patch 033 expands the matrix to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding stripped/not-stripped indicators, zero-length dynamic string-table negative evidence, duplicate dynamic string-table singleton rejection, and string-table scan-cap rejection. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
 
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
@@ -721,7 +721,7 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases while preserving the malformed-smoke and capacity baselines.
+Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases. Patch 033 expands it to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving the malformed-smoke and capacity baselines.
 
 ## Sprint 8 Patch 030 bounded dynamic-table validation
 
@@ -788,3 +788,26 @@ mitigation-matrix-smoke: ok
 ```
 
 Expected canary behavior is `Canary indicator: unknown` when bounded dynamic string metadata is unavailable, `Canary indicator: absent` when the checked dynamic string table does not contain exact `__stack_chk_fail`, and `Canary indicator: present` when the exact null-terminated symbol is found. JSON mirrors this as `mitigations.canary` values `unknown`, `absent`, and `present`.
+
+## Sprint 8 Patch 033 stripped indicator validation
+
+Patch 033 adds evidence-qualified stripped reporting, rejects duplicate dynamic string-table singleton entries, and promotes zero-length and over-cap string-table cases into the mitigation matrix. Acceptance requires the full aggregate gates plus focused matrix counts:
+
+```bash
+make test
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Expected matrix summary after Patch 033:
+
+```text
+mitigation-matrix-smoke: ok
+  valid cases: 23
+  malformed cases: 14
+  unsupported cases: 1
+```
+
+Expected stripped behavior is `Stripped indicator: unknown` when bounded section-table evidence is unavailable, `Stripped indicator: stripped` when a validated section table contains no `SHT_SYMTAB`, and `Stripped indicator: not stripped` when a validated section table contains `SHT_SYMTAB`. JSON mirrors this as `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Section-derived metadata must not change executable-region boundaries or gadget scanning.

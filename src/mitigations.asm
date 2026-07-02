@@ -27,6 +27,7 @@ extern x64lens_file_map
 extern x64lens_file_unmap
 extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
+extern x64lens_shdr_classify_stripped
 extern x64lens_report_text_mitigations
 extern x64lens_error_print_status
 
@@ -71,6 +72,15 @@ x64lens_command_mitigations:
     lea     rcx, [mit_regions]
     mov     r8, EXEC_REGION_MAX
     call    x64lens_phdr_analyze
+    test    rax, rax
+    jne     .error
+
+    ; Section-derived metadata is an analyst indicator only. It must never
+    ; change executable-region boundaries selected from PT_LOAD + PF_X.
+    mov     rdi, [mit_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [mit_mapped_file + FILEMAP_SIZE]
+    lea     rdx, [mit_summary]
+    call    x64lens_shdr_classify_stripped
     test    rax, rax
     jne     .error
 

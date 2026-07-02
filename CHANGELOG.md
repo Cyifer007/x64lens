@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 033 stripped-status indicator reporting using a bounded section-header scan for `SHT_SYMTAB` evidence.
+- Sprint 8 Patch 033 mitigation-oracle expansion for stripped, not-stripped, zero-length dynamic string-table, duplicate `DT_STRTAB`, duplicate `DT_STRSZ`, and dynamic string-table scan-cap cases.
+- ADR 0019 and Patch 033 validation documentation for section-derived metadata and strict dynamic singleton policy.
 - Sprint 8 Patch 032 canary indicator reporting using a bounded dynamic string-table scan for exact `__stack_chk_fail` evidence.
 - Sprint 8 Patch 032 mitigation-oracle expansion for canary-present/canary-absent fixtures, valid non-`DT_NULL` dynamic-table coverage, invalid dynamic string-table references, and direct `gadgets --format json` matrix coverage.
 - `make clean-results` for removing ignored local validation and benchmark result artifacts before release packaging or broad text review.
@@ -42,6 +45,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Treat duplicate `DT_STRTAB` and duplicate `DT_STRSZ` entries as malformed dynamic metadata so canary evidence is not order-dependent.
+- Extend mitigation text and JSON output with a compatible `stripped` indicator while preserving program headers as executable-region authority.
 - Tighten JSON Schema required fields and mitigation conditionals so external consumers receive the same core invariants enforced by the bundled validator.
 - Refine RELRO text and JSON output from presence-only reporting to `not found`, `partial`, or `full` while preserving schema version `0.1.0`.
 - Reject duplicate `PT_DYNAMIC` program headers as malformed to avoid ambiguous dynamic-entry and terminator semantics.
@@ -75,6 +80,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Promote the zero-sized dynamic string-table and over-cap string-table review cases into the permanent mitigation oracle.
 - Close the Patch 030 dynamic malformed oracle gap by covering `gadgets` text and JSON callers as well as `mitigations` and integrated `analyze`.
 - Classify the Patch 028 Docker Buildx metadata failure as an environment defect after Docker validation passed outside the restricted filesystem sandbox.
 - Correct the mitigation oracle zero-executable-region expectation to match the stable text reporter line, `none discovered from PT_LOAD + PF_X`.

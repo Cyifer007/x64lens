@@ -105,6 +105,14 @@
             "absent",
             "present"
           ]
+        },
+        "stripped": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "stripped",
+            "not_stripped"
+          ]
         }
       },
       "additionalProperties": true,
@@ -113,6 +121,7 @@
         "pie",
         "relro",
         "canary",
+        "stripped",
         "rwx_load_segment",
         "dynamic_linking",
         "bind_now",

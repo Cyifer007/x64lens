@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closes Sprint 7. Patch 030 adds bounded dynamic-table evidence for the first Sprint 8 mitigation-depth step. Patch 031 uses that evidence for no, partial, and full RELRO reporting. Patch 032 adds the first evidence-qualified canary indicator and schema hardening. Exercised regression promotion, stripped-state indicators, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closes Sprint 7. Patch 030 adds bounded dynamic-table evidence for the first Sprint 8 mitigation-depth step. Patch 031 uses that evidence for no, partial, and full RELRO reporting. Patch 032 adds the first evidence-qualified canary indicator and schema hardening. Patch 033 adds the stripped-status indicator and strict dynamic string-table singleton policy. Provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -98,7 +98,7 @@ A normal branch push does not publish tags. Release tags should be pushed explic
 
 ## Sprint 8 mitigation evidence gate
 
-After Sprint 8 Patch 032, the mitigation oracle contains 20 valid cases and 12 malformed mitigation-matrix cases, including bounded dynamic-table evidence, full RELRO evidence combinations, canary-present and canary-absent indicators, direct gadgets JSON validation, duplicate dynamic-table rejection, and invalid dynamic string-table rejection. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
+After Sprint 8 Patch 033, the mitigation oracle contains 23 valid cases, 14 malformed mitigation-matrix cases, and one unsupported fail-closed case, including bounded dynamic-table evidence, full RELRO evidence combinations, canary-present and canary-absent indicators, stripped and not-stripped indicators, direct gadgets JSON validation, duplicate dynamic-table rejection, duplicate dynamic-string singleton rejection, invalid dynamic string-table rejection, and string-table scan-cap rejection. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
 
 
 ## Sprint 7 gate result
@@ -108,3 +108,7 @@ Sprint 7 satisfies the parser-safety foundation needed before the research previ
 ## Sprint 8 Patch 032 release-gate update
 
 The research preview gate now includes evidence-qualified canary indicators and the stricter current JSON schema. Generated validation artifacts remain ignored; use `make clean-results` before broad release-package review or when stale local results could confuse text searches.
+
+Sprint 8 Patch 033 release-gate update
+
+Patch 033 closes the first stripped-status indicator gate while preserving schema `0.1.0`. Release evidence may claim deterministic section-table metadata detection for represented cases, but must not claim complete symbol recovery or runtime hardening proof.

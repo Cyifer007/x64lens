@@ -117,8 +117,12 @@ See [`research-release-plan.md`](research-release-plan.md) and [`roadmap-18-spri
 
 ## Mitigation-oracle evidence
 
-The implementation now has a compiler-independent mitigation truth table. Patch 030 expands it with bounded dynamic-table evidence for bind-now indicators and malformed dynamic-table rejection. Patch 031 adds no, partial, and full RELRO labels backed by that bounded evidence. Patch 032 adds canary-present and canary-absent indicator rows backed by bounded dynamic-string evidence. The paper may describe represented program-header and dynamic-table combinations plus consistent malformed rejection as deterministic validation evidence. It must not generalize the matrix into full mitigation coverage, full stack-protector proof, or memory-safety proof.
+The implementation now has a compiler-independent mitigation truth table. Patch 030 expands it with bounded dynamic-table evidence for bind-now indicators and malformed dynamic-table rejection. Patch 031 adds no, partial, and full RELRO labels backed by that bounded evidence. Patch 032 adds canary-present and canary-absent indicator rows backed by bounded dynamic-string evidence. Patch 033 adds stripped and not-stripped rows backed by bounded section-header evidence and strict duplicate dynamic string-table singleton rejection. The paper may describe represented program-header, dynamic-table, and section-table combinations plus consistent malformed rejection as deterministic validation evidence. It must not generalize the matrix into full mitigation coverage, full stack-protector proof, complete symbol recovery, or memory-safety proof.
 
 ## Sprint 8 Patch 032 publication note
 
 Canary reporting is a static indicator only. Any paper text must describe it as exact `__stack_chk_fail` evidence from a validated dynamic string table, not as proof that the binary or every function is protected by stack canaries.
+
+Sprint 8 Patch 033 publication note
+
+Stripped reporting is a static section-table metadata indicator only. Any paper text must describe it as bounded `SHT_SYMTAB` evidence, not as proof of source availability, complete symbol recovery, or loader behavior.

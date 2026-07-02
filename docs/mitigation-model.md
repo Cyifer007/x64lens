@@ -23,11 +23,14 @@ Mitigation reporting is an evidence layer. x64lens reports static indicators and
 | Canary indicator present | bounded `DT_STRTAB`/`DT_STRSZ` scan finds exact null-terminated `__stack_chk_fail` | Medium, indicator only | Implemented in Patch 032 |
 | Canary indicator absent | bounded dynamic string table was scanned and exact `__stack_chk_fail` was not found | Medium, only for represented dynamic-string metadata | Implemented in Patch 032 |
 | Canary indicator unknown | no bounded dynamic string-table evidence was available | Explicit unknown | Implemented in Patch 032 |
+| Stripped indicator not stripped | validated section-header table contains `SHT_SYMTAB` | Medium, metadata indicator only | Implemented in Patch 033 |
+| Stripped indicator stripped | validated section-header table is present and contains no `SHT_SYMTAB` | Medium, metadata indicator only | Implemented in Patch 033 |
+| Stripped indicator unknown | no bounded section-table evidence was available | Explicit unknown | Implemented in Patch 033 |
 | Executable region | `PT_LOAD` has `PF_X` | High | Implemented |
 
 ## Sprint 8 mitigation depth
 
-Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 uses that view to split RELRO into no, partial, and full states while preserving the underlying bind-now and dynamic-table facts as separate evidence fields. Patch 032 uses bounded `DT_STRTAB` and `DT_STRSZ` evidence to add a canary indicator without claiming complete stack protection.
+Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 uses that view to split RELRO into no, partial, and full states while preserving the underlying bind-now and dynamic-table facts as separate evidence fields. Patch 032 uses bounded `DT_STRTAB` and `DT_STRSZ` evidence to add a canary indicator without claiming complete stack protection. Patch 033 adds a bounded section-header metadata indicator for stripped status while keeping program headers as executable-region authority.
 
 | Signal | Planned evidence | Reporting rule |
 |---|---|---|
@@ -35,7 +38,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Partial RELRO | `PT_GNU_RELRO` without immediate binding evidence | Report `partial`; preserve bind-now as `no` or `not applicable` according to dynamic-table evidence. |
 | Full RELRO | `PT_GNU_RELRO` plus `DT_BIND_NOW`, `DF_BIND_NOW`, or equivalent validated evidence | Report `full`; preserve the bind-now evidence path separately. |
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
-| Stripped indicator | absent or limited symbol-table evidence | Report as a metadata indicator with confidence. |
+| Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
 | CET/IBT indicator | validated GNU property notes and supported instruction evidence | Planned after core Sprint 8 work if bounded parsing and fixtures are ready. |
 
@@ -47,9 +50,11 @@ Future schema output should separate state from evidence:
 {
   "relro": "full",
   "canary": "present",
+  "stripped": "not_stripped",
   "evidence": {
     "relro": ["PT_GNU_RELRO", "DF_BIND_NOW"],
-    "canary": ["__stack_chk_fail"]
+    "canary": ["__stack_chk_fail"],
+    "stripped": ["SHT_SYMTAB"]
   }
 }
 ```
@@ -62,6 +67,7 @@ Missing evidence should produce `unknown` when the parser cannot justify a negat
 - PIE changes address predictability but does not guarantee secrecy.
 - RELRO constrains selected relocation targets but does not remove memory corruption.
 - Canary indicators suggest stack-protector linkage but do not prove every vulnerable function is protected.
+- Stripped indicators summarize section-table symbol evidence and do not change loader mapping, executable-region, or gadget-scanning authority.
 - CET/IBT indicators do not prove complete control-flow integrity.
 - Useful primitives do not imply an exploitable vulnerability.
 
@@ -84,6 +90,7 @@ Mitigation validation should use dedicated builds rather than the scanner-only g
 - bind-now through `DT_BIND_NOW`, `DT_FLAGS`, and `DT_FLAGS_1`,
 - malformed dynamic-table range and entry-size cases,
 - canary-present and canary-absent variants,
+- stripped and not-stripped section-table variants,
 - static and dynamic linkage where practical.
 
 The hand-authored static gadget fixture may correctly report:
@@ -115,4 +122,4 @@ Disagreements should be investigated by evidence source rather than resolved by 
 
 ## Deterministic mitigation oracle
 
-`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 032, 20 valid layouts isolate ELF type, GNU stack state, no/partial/full RELRO states, dynamic linking, bind-now evidence, canary-present and canary-absent indicators, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Twelve malformed layouts verify consistent fail-closed behavior across relevant command paths, including dynamic-table range, entry-size, duplicate-`PT_DYNAMIC` rejection, and invalid dynamic string-table references. The oracle validates current facts only; canary is represented as an indicator and does not prove complete stack protection, GNU property state, or exploitability conclusions.
+`make mitigation-matrix-smoke` is the authoritative controlled truth table for the implemented baseline. After Patch 033, 23 valid layouts isolate ELF type, GNU stack state, no/partial/full RELRO states, dynamic linking, bind-now evidence, canary-present and canary-absent indicators, zero-length dynamic string-table negative evidence, stripped and not-stripped section-table indicators, load permissions, split mappings, executable-region counts, overlapping executable regions, and combined evidence. Fourteen malformed layouts verify consistent fail-closed behavior across relevant command paths, including dynamic-table range, entry-size, duplicate-`PT_DYNAMIC`, duplicate `DT_STRTAB`, duplicate `DT_STRSZ`, and invalid dynamic string-table references. One unsupported layout verifies the dynamic string-table scan cap. The oracle validates current facts only; canary and stripped states are represented as indicators and do not prove complete hardening, GNU property state, or exploitability conclusions.

@@ -87,6 +87,7 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRTAB_VADDR], 0
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], 0
+    mov     qword [r13 + PHDR_SUMMARY_STRIPPED_STATE], STRIPPED_STATE_UNKNOWN
 
     ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
     ; Shared objects are also ET_DYN, so user-facing wording must remain
@@ -301,12 +302,21 @@ x64lens_phdr_analyze:
     jmp     .dynamic_advance
 
 .dynamic_strtab:
+    ; DT_STRTAB is singleton evidence for the bounded dynamic string table.
+    ; Accepting several values would make canary evidence order-dependent, so
+    ; reject duplicates as malformed instead of applying last-wins semantics.
+    cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRTAB_SEEN], 0
+    jne     .malformed
     mov     rax, [rdx + D_UN]
     mov     [r13 + PHDR_SUMMARY_DYNAMIC_STRTAB_VADDR], rax
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRTAB_SEEN], 1
     jmp     .dynamic_advance
 
 .dynamic_strsz:
+    ; DT_STRSZ is also singleton evidence. Duplicate sizes can change a
+    ; canary-present result into canary-absent or vice versa, so fail closed.
+    cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
+    jne     .malformed
     mov     rax, [rdx + D_UN]
     mov     [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], rax
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 1
@@ -357,6 +367,9 @@ x64lens_phdr_analyze:
     cmp     rax, DYNAMIC_STRING_SCAN_MAX
     ja      .unsupported
 
+    ; Reaching this point means both DT_STRTAB and DT_STRSZ were present and
+    ; bounded. Even a zero-length string table is now validated negative
+    ; evidence, so it is classified as absent rather than unknown.
     mov     qword [r13 + PHDR_SUMMARY_CANARY_STATE], CANARY_STATE_ABSENT
 
     xor     rbx, rbx

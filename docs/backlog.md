@@ -51,7 +51,7 @@
 - [x] Bounded dynamic-section parsing for `PT_DYNAMIC`, bind-now evidence, dynamic-entry count, and `DT_NULL` terminator state. Implemented in Patch 030.
 - [x] Full versus partial RELRO. Implemented in Patch 031 with no, partial, and full states.
 - [x] Canary indicators. Implemented in Patch 032 as bounded dynamic-string evidence.
-- [ ] Stripped-status indicators.
+- [x] Stripped-status indicators. Implemented in Patch 033 as bounded section-table metadata.
 - [ ] Section labels as annotations.
 - [ ] Automated `readelf` comparison.
 - [ ] Optional `checksec` and `rabin2 -I` comparison.
@@ -191,4 +191,8 @@ Sprint 7 closed the hostile-input and checked-arithmetic foundation. The next ba
 
 ## Sprint 8 Patch 032 backlog update
 
-Completed: first canary indicator, JSON Schema tightening, permanent mitigation-matrix promotion of valid non-`DT_NULL` dynamic coverage, direct gadgets JSON coverage, invalid dynamic string-table malformed coverage, and `make clean-results` hygiene. Remaining Sprint 8 work: stripped-state indicator, section labels as annotations, and optional external comparison helpers.
+Completed: first canary indicator, stripped-state indicator, JSON Schema tightening, permanent mitigation-matrix promotion of valid non-`DT_NULL` dynamic coverage, direct gadgets JSON coverage, invalid dynamic string-table malformed coverage, duplicate dynamic-string singleton rejection, string-table scan-cap coverage, and `make clean-results` hygiene. Remaining Sprint 8 work: section labels as annotations and optional external comparison helpers.
+
+## Sprint 8 Patch 033 backlog update
+
+Patch 033 completes the stripped-status indicator and promotes duplicate dynamic-string singleton and dynamic string-table scan-cap review cases into the permanent mitigation oracle. Remaining Sprint 8 backlog should prioritize section labels as annotations and optional external comparison helpers before primitive expansion.

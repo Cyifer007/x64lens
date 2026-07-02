@@ -66,6 +66,24 @@
 ; Program header and section header record sizes
 %define ELF64_PHDR_SIZE      56
 %define ELF64_SHDR_SIZE      64
+
+; Section header fields used by the bounded SHDR metadata helpers.
+%define S_NAME               0x00
+%define S_TYPE               0x04
+%define S_FLAGS              0x08
+%define S_ADDR               0x10
+%define S_OFFSET             0x18
+%define S_SIZE               0x20
+%define S_LINK               0x28
+%define S_INFO               0x2c
+%define S_ADDRALIGN          0x30
+%define S_ENTSIZE            0x38
+
+; Section header types used for metadata indicators.
+%define SHT_NULL             0
+%define SHT_SYMTAB           2
+%define SHT_STRTAB           3
+
 %define P_TYPE               0x00
 %define P_FLAGS              0x04
 %define P_OFFSET             0x08

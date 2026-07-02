@@ -59,6 +59,7 @@ field_nx_stack:         db '    "nx_stack":', 0
 field_pie:              db '    "pie":', 0
 field_relro:            db '    "relro":"', 0
 field_canary:           db '    "canary":"', 0
+field_stripped:         db '    "stripped":"', 0
 field_rwx:              db '    "rwx_load_segment":', 0
 field_dynamic:          db '    "dynamic_linking":', 0
 field_bind_now:         db '    "bind_now":', 0
@@ -70,6 +71,9 @@ relro_none:             db "none", 0
 canary_present:         db "present", 0
 canary_absent:          db "absent", 0
 canary_unknown:         db "unknown", 0
+stripped_yes:           db "stripped", 0
+stripped_no:            db "not_stripped", 0
+stripped_unknown:       db "unknown", 0
 field_counts_open:      db '  "counts":{', 10, 0
 field_raw_count:        db '    "raw_candidate_count":', 0
 field_ret_count:        db '    "ret_count":', 0
@@ -352,6 +356,28 @@ json_print_mitigations:
     lea     rdi, [canary_absent]
     call    print_cstr
 .canary_done:
+    lea     rdi, [j_q]
+    call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_stripped]
+    call    print_cstr
+    mov     rax, [rbx + PHDR_SUMMARY_STRIPPED_STATE]
+    cmp     rax, STRIPPED_STATE_STRIPPED
+    je      .stripped_yes
+    cmp     rax, STRIPPED_STATE_NOT_STRIPPED
+    je      .stripped_no
+    lea     rdi, [stripped_unknown]
+    call    print_cstr
+    jmp     .stripped_done
+.stripped_yes:
+    lea     rdi, [stripped_yes]
+    call    print_cstr
+    jmp     .stripped_done
+.stripped_no:
+    lea     rdi, [stripped_no]
+    call    print_cstr
+.stripped_done:
     lea     rdi, [j_q]
     call    print_cstr
     JSON_FIELD_COMMA_NL

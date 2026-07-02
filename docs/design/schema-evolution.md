@@ -81,10 +81,11 @@ Candidate mitigation additions:
 {
   "relro": "full",
   "canary": "present",
-  "stripped": true,
+  "stripped": "not_stripped",
   "evidence": {
     "relro": ["PT_GNU_RELRO", "DF_BIND_NOW"],
-    "canary": ["__stack_chk_fail"]
+    "canary": ["__stack_chk_fail"],
+    "stripped": ["SHT_SYMTAB"]
   }
 }
 ```

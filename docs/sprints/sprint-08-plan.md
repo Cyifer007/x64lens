@@ -2,7 +2,7 @@
 
 ## Status
 
-Active. Sprint 8 is the current public implementation tranche after Sprint 7 closeout. Patch 030 opened the sprint with bounded dynamic-table parsing, Patch 031 refined RELRO evidence, and Patch 032 adds the first canary indicator.
+Active. Sprint 8 is the current public implementation tranche after Sprint 7 closeout. Patch 030 opened the sprint with bounded dynamic-table parsing, Patch 031 refined RELRO evidence, Patch 032 added the first canary indicator, and Patch 033 adds the stripped-status indicator plus stricter dynamic string-table singleton policy.
 
 ## Sprint goal
 
@@ -15,7 +15,7 @@ Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO re
 - [x] Parse bounded `PT_DYNAMIC` entries required for `DT_BIND_NOW`, `DT_FLAGS`, and `DT_FLAGS_1` evidence. Implemented in Patch 030.
 - [x] Distinguish no RELRO, partial RELRO, and full RELRO. Implemented in Patch 031.
 - [x] Add canary indicators through bounded dynamic-string evidence. Implemented in Patch 032. Next refinement can use dynamic symbols or relocation evidence.
-- [ ] Add stripped-status indicators with explicit confidence wording.
+- [x] Add stripped-status indicators with explicit confidence wording. Implemented in Patch 033.
 - [ ] Add section labels for executable regions and candidate addresses as analyst annotations.
 - [ ] Preserve program headers as runtime mapping authority.
 - [x] Add controlled fixtures for no, partial, and full RELRO. Implemented in Patch 031.
@@ -29,8 +29,9 @@ Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO re
 
 1. Bounded dynamic-section view for `PT_DYNAMIC` and `DT_*` entries. Completed in Patch 030.
 2. RELRO evidence split into no, partial, and full states using controlled fixtures. Completed in Patch 031.
-3. Canary indicator with explicit confidence wording. Completed in Patch 032. Next: stripped-state indicator.
-4. Section labels as analyst annotations only, never as runtime mapping authority.
+3. Canary indicator with explicit confidence wording. Completed in Patch 032.
+4. Stripped-state indicator as section-derived metadata only. Completed in Patch 033.
+5. Section labels as analyst annotations only, never as runtime mapping authority.
 5. Automated comparison helpers against `readelf` and optional external tools.
 
 ## Acceptance criteria
@@ -38,10 +39,11 @@ Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO re
 - [x] Full and partial RELRO match controlled synthetic loader configurations.
 - [x] Canary output is labeled as an indicator, not proof of complete stack protection.
 - [x] Missing dynamic-string metadata produces canary `unknown` instead of a guessed negative.
+- [x] Stripped status remains section-derived metadata only and never changes executable-region boundaries.
 - [ ] Section labels never change executable-region boundaries.
 - [x] The first dynamic table references are range-checked and bounded. Future symbol, string, relocation, section, and note references remain gated.
 - [x] Existing report count semantics remain unchanged through the RELRO refinement.
-- [x] Malformed mitigation-matrix coverage includes dynamic-table range, entry-size, duplicate-table, and dynamic string-table reference mutations. Future symbol, relocation, section, and note mutations remain planned.
+- [x] Malformed mitigation-matrix coverage includes dynamic-table range, entry-size, duplicate-table, duplicate dynamic-string singleton, dynamic string-table reference, and string-table scan-cap mutations. Future symbol, relocation, section, and note mutations remain planned.
 
 ## Out of scope
 
