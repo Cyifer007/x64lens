@@ -80,4 +80,4 @@ A future intentional partial-report mode must expose explicit machine-readable c
 
 ## Mitigation consistency rule
 
-The same valid ELF64 program-header evidence must produce compatible mitigation facts in focused text output and integrated JSON. Malformed file-backed `PT_LOAD` ranges must fail before any partial stdout is emitted. `info`, `mitigations`, and `analyze` must return the stable malformed-ELF status and diagnostic for the controlled matrix defects.
+The same valid ELF64 program-header evidence must produce compatible mitigation facts in focused text output and integrated JSON. Patch 030 extends this rule to bounded `PT_DYNAMIC` facts: bind-now, dynamic-entry count, and dynamic terminator state must agree between focused mitigation text and integrated JSON. Malformed file-backed `PT_LOAD` and `PT_DYNAMIC` ranges must fail before any partial stdout is emitted. `info`, `mitigations`, and `analyze` must return the stable malformed-ELF status and diagnostic for the controlled matrix defects when the command path parses the relevant table.

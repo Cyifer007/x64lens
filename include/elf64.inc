@@ -93,4 +93,17 @@
 %define PF_W                 0x2
 %define PF_R                 0x4
 
+; Dynamic table entry layout and selected tags/flags
+%define ELF64_DYN_SIZE      16
+%define D_TAG               0x00
+%define D_UN                0x08
+
+%define DT_NULL             0
+%define DT_BIND_NOW         24
+%define DT_FLAGS            30
+%define DT_FLAGS_1          0x6ffffffb
+
+%define DF_BIND_NOW         0x8
+%define DF_1_NOW            0x1
+
 %endif

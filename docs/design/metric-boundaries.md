@@ -107,3 +107,11 @@ It must still avoid claiming exploitability without an independent vulnerability
 System-binary smoke checks validate shape and invariants. Benchmark smoke checks validate measurement plumbing. Neither is publication evidence.
 
 Publication tables require a fixed corpus, tool versions, commands, schema, repeated trials, environment metadata, raw results, and generated summaries.
+
+## Dynamic metadata counts
+
+`dynamic_entry_count` is not a gadget count and must not be mixed with raw,
+exact, semantic, unknown, validated, or scored candidate counts. It is a bounded
+mitigation-metadata count: the number of `Elf64_Dyn` records inspected before
+the checked table ended or `DT_NULL` was encountered. It exists to explain the
+scope of the dynamic-table evidence used for bind-now and future RELRO work.

@@ -48,7 +48,7 @@
 
 ### Sprint 8: mitigation and metadata depth
 
-- [ ] Bounded dynamic-section parsing.
+- [x] Bounded dynamic-section parsing for `PT_DYNAMIC`, bind-now evidence, dynamic-entry count, and `DT_NULL` terminator state. Implemented in Patch 030.
 - [ ] Full versus partial RELRO.
 - [ ] Canary indicators.
 - [ ] Stripped-status indicators.
@@ -176,14 +176,14 @@ Private course context and state tracking belong under `.local/project-context/`
 
 ## Patch 026 and Patch 027 checkpoint
 
-The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Patch 028 implements the shared checked arithmetic and bounded table-view helper layer, then expands hostile-input coverage for table-end overflow. Regression minimization remains a standing policy for future parser defects. Patch 029 closes Sprint 7 and starts the Sprint 8 mitigation-depth tranche.
+The deterministic mitigation oracle is implemented. Patch 027 corrects its stale zero-executable-region text expectation while preserving the explicit reporter wording and Make fail-fast behavior. Patch 028 implements the shared checked arithmetic and bounded table-view helper layer, then expands hostile-input coverage for table-end overflow. Regression minimization remains a standing policy for future parser defects. Patch 029 closes Sprint 7 and starts the Sprint 8 mitigation-depth tranche. Patch 030 implements the first bounded Sprint 8 metadata view for `PT_DYNAMIC` and expands the mitigation oracle to cover bind-now evidence plus dynamic-table malformed cases.
 
 
 ## Sprint 8 entry backlog
 
 Sprint 7 closed the hostile-input and checked-arithmetic foundation. The next backlog priority is bounded mitigation metadata:
 
-- parse only range-checked `PT_DYNAMIC` entries needed for RELRO and binding evidence,
+- preserve the Patch 030 range-checked `PT_DYNAMIC` entries needed for RELRO and binding evidence,
 - distinguish no, partial, and full RELRO with controlled fixtures,
 - add canary indicators as evidence-qualified signals, not proof of complete stack protection,
 - add malformed coverage for every new table, count, offset, and string view,

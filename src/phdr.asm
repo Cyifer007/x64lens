@@ -60,7 +60,7 @@ x64lens_phdr_analyze:
     push    r13
     push    r14
     push    r15
-    sub     rsp, 24             ; align calls and reserve two qword scratch slots
+    sub     rsp, 56             ; align calls and reserve parser scratch slots
 
     mov     r15, rdi            ; mapped base
     mov     r14, rsi            ; file size
@@ -79,6 +79,9 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_RELRO_SEEN], 0
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 0
     mov     qword [r13 + PHDR_SUMMARY_PIE], 0
+    mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_NULL_SEEN], 0
+    mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 0
 
     ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
     ; Shared objects are also ET_DYN, so user-facing wording must remain
@@ -209,7 +212,105 @@ x64lens_phdr_analyze:
 
 .handle_dynamic:
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_SEEN], 1
+
+    ; PT_DYNAMIC is a file-backed table of Elf64_Dyn entries. Treat it as an
+    ; untrusted bounded table: validate p_filesz <= p_memsz, validate the file
+    ; range, require an integral entry count, then walk only entries inside the
+    ; checked extent. This establishes the Sprint 8 dynamic-table view without
+    ; letting dynamic metadata override loader-authoritative PT_LOAD facts.
+    mov     rax, [r10 + P_FILESZ]
+    cmp     rax, [r10 + P_MEMSZ]
+    ja      .malformed
+
+    mov     rdi, r14
+    mov     rsi, [r10 + P_OFFSET]
+    mov     rdx, [r10 + P_FILESZ]
+    lea     rcx, [rsp]
+    call    x64lens_bounds_range_end_valid
+    cmp     rax, 1
+    jne     .malformed
+
+    ; Recompute R10 after the helper call; callers must not assume helper
+    ; preservation of volatile registers.
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+    mov     rax, [rsp]
+    lea     r10, [r15 + rax]
+
+    mov     rax, [r10 + P_FILESZ]
+    test    rax, 0xf            ; p_filesz must be a multiple of 16-byte Elf64_Dyn records
+    jne     .malformed
+    mov     rcx, rax
+    shr     rcx, 4              ; rcx = p_filesz / sizeof(Elf64_Dyn)
+    cmp     rcx, DYNAMIC_ENTRY_MAX
+    ja      .unsupported
+    mov     [rsp + 24], rcx     ; bounded dynamic-entry count
+    mov     rax, [r10 + P_OFFSET]
+    mov     [rsp + 16], rax     ; dynamic table file offset
+    mov     qword [rsp + 32], 0 ; dynamic-entry index
+
+.dynamic_loop:
+    mov     rax, [rsp + 32]
+    cmp     rax, [rsp + 24]
+    jae     .next
+
+    mov     rdi, r14
+    mov     rsi, [rsp + 16]
+    mov     rdx, ELF64_DYN_SIZE
+    mov     rcx, [rsp + 24]
+    mov     r8, [rsp + 32]
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+
+    mov     rax, [rsp]
+    lea     rdx, [r15 + rax]    ; RDX = checked Elf64_Dyn pointer
+    inc     qword [r13 + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
+
+    mov     rax, [rdx + D_TAG]
+    cmp     rax, DT_NULL
+    je      .dynamic_null
+    cmp     rax, DT_BIND_NOW
+    je      .dynamic_bind_now
+    cmp     rax, DT_FLAGS
+    je      .dynamic_flags
+    cmp     rax, DT_FLAGS_1
+    je      .dynamic_flags_1
+    jmp     .dynamic_advance
+
+.dynamic_bind_now:
+    mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
+    jmp     .dynamic_advance
+
+.dynamic_flags:
+    mov     rax, [rdx + D_UN]
+    test    rax, DF_BIND_NOW
+    jz      .dynamic_advance
+    mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
+    jmp     .dynamic_advance
+
+.dynamic_flags_1:
+    mov     rax, [rdx + D_UN]
+    test    rax, DF_1_NOW
+    jz      .dynamic_advance
+    mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
+    jmp     .dynamic_advance
+
+.dynamic_null:
+    mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_NULL_SEEN], 1
     jmp     .next
+
+.dynamic_advance:
+    inc     qword [rsp + 32]
+    jmp     .dynamic_loop
 
 .next:
     inc     rbx
@@ -224,7 +325,7 @@ x64lens_phdr_analyze:
 .unsupported:
     mov     rax, EXIT_UNSUPPORTED
 .done:
-    add     rsp, 24
+    add     rsp, 56
     pop     r15
     pop     r14
     pop     r13

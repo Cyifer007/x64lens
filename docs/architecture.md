@@ -583,13 +583,15 @@ Candidate-record exhaustion is also an architectural boundary. The scanner arena
 
 Patch 028 implements the first bounded parser-view seam in assembly. `src/bounds.asm` now owns checked multiplication, checked addition, checked offset-plus-length validation, checked table extents, and bounded per-entry table offsets. `src/elf64.asm` and `src/phdr.asm` consume those helpers before forming program-header pointers or trusting file-backed `PT_LOAD` ranges.
 
-This is still not a full parser framework. It is the reusable arithmetic layer required before dynamic-section, symbol-table, relocation, note, and string parsing expand the attack surface.
+Patch 030 applies that seam to the first Sprint 8 metadata reader. `src/phdr.asm` now treats `PT_DYNAMIC` as a bounded file-backed `Elf64_Dyn` table, validates the dynamic range, caps the inspected entries, derives every entry address through the shared per-entry helper, and records only narrow loader-level facts: bind-now evidence, bounded dynamic-entry count, and `DT_NULL` terminator state. Dynamic metadata does not override `PT_LOAD + PF_X` executable-region authority.
+
+This is still not a full parser framework. It is the reusable arithmetic layer and first bounded table view required before dynamic-symbol, relocation, note, and string parsing expand the attack surface.
 
 ## Sprint 7 mitigation-oracle validation layer
 
-Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix, with its Patch 027 zero-region expectation correction and Patch 028 table-end overflow additions, is a fixed behavior gate for future mitigation parsing.
+Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix, with its Patch 027 zero-region expectation correction, Patch 028 table-end overflow additions, and Patch 030 dynamic-table cases, is a fixed behavior gate for future mitigation parsing.
 
 
 ## Sprint 7 parser-safety baseline
 
-Sprint 7 establishes the current parser-safety baseline: file-derived table extents and per-entry offsets must flow through checked helpers before pointer formation, malformed parse failures must be fail-closed with no partial report, and loader-level mitigation facts must remain covered by the deterministic mitigation oracle. Sprint 8 metadata parsing must reuse this model for every newly reachable dynamic, symbol, string, section, or note table.
+Sprint 7 establishes the current parser-safety baseline: file-derived table extents and per-entry offsets must flow through checked helpers before pointer formation, malformed parse failures must be fail-closed with no partial report, and loader-level mitigation facts must remain covered by the deterministic mitigation oracle. Sprint 8 Patch 030 proves the first reuse of this model for `PT_DYNAMIC`; later dynamic-symbol, string, section, relocation, or note tables must follow the same bounded-view pattern.

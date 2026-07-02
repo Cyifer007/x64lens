@@ -8,8 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 7 Patch 029 closeout validation record and Sprint 7 retrospective.
-
+- Sprint 8 Patch 030 bounded `PT_DYNAMIC` table view for bind-now evidence, dynamic-entry count, and dynamic terminator state.
+- Sprint 8 Patch 030 mitigation-oracle expansion covering `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, and malformed dynamic-table range and entry-size cases.
+- ADR 0016 and Patch 030 validation documentation for the bounded dynamic-table parser seam.
 - Sprint 7 Patch 029 closeout validation record and Sprint 7 retrospective.
 - Sprint 7-to-Sprint 8 handoff documentation that preserves parser-safety gates before mitigation-depth work begins.
 - Sprint 7 Patch 028 shared checked parser arithmetic helpers for unsigned multiplication, unsigned addition, offset-plus-length end validation, table extents, and bounded per-entry table offsets.
@@ -34,8 +35,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Extend mitigation text and JSON output with compatible dynamic-table fields while preserving schema version `0.1.0`.
+- Tighten planning-document validation by replacing the Patch 029 advisory placeholder with enforced Sprint 8 Patch 030 checks.
 - Mark Sprint 7 complete and define Sprint 8 as the next mitigation-depth sprint while preserving the checked parser-arithmetic and mitigation-oracle gates as entry criteria.
-
 - Mark Sprint 7 as closed after Patch 028 acceptance and move Sprint 8 to the next active implementation tranche.
 - Update planning validation to accept the Sprint 7 closed state while keeping the hostile-input, mitigation-oracle, and checked-arithmetic gates discoverable.
 - Route ELF64 program-header and section-header table validation through shared checked table-extent helpers.

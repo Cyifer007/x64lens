@@ -90,6 +90,19 @@ x64lens version
 
 Human-readable text output may change before `1.0.0`. JSON output must include `schema_version`, `tool_version`, `target`, and `limitations`, and should remain backward-compatible within the same schema major version.
 
+## Current `mitigations` behavior
+
+The `mitigations` command reports loader-level static indicators derived from
+ELF type and program headers. After Patch 030 it also reports bounded
+`PT_DYNAMIC` facts used by later RELRO work:
+
+- dynamic linking presence,
+- bind-now evidence,
+- dynamic-entry count,
+- dynamic terminator state.
+
+These are static indicators, not exploitability or safety verdicts.
+
 ## Current `gadgets` behavior
 
 The `gadgets` command emits the current staged analysis pipeline:

@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage, and Patch 029 closes Sprint 7. Exercised regression promotion, deeper mitigation fixtures, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closes Sprint 7. Patch 030 adds bounded dynamic-table evidence for the first Sprint 8 mitigation-depth step. Exercised regression promotion, full RELRO refinement, canary indicators, provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -96,9 +96,9 @@ Publication artifacts remain under `paper/` and benchmark evidence remains under
 
 A normal branch push does not publish tags. Release tags should be pushed explicitly only after the release checklist passes.
 
-## Sprint 7 mitigation evidence gate
+## Sprint 8 mitigation evidence gate
 
-After Sprint 7 closeout, the 11-row valid mitigation oracle and seven malformed mitigation-matrix cases must continue to pass natively and in Docker before mitigation depth expands. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
+After Sprint 8 Patch 030, the mitigation oracle contains 14 valid cases and ten malformed mitigation-matrix cases, including bounded dynamic-table evidence. This evidence is development validation, not a publication comparison dataset, but it is required for the research preview gate.
 
 
 ## Sprint 7 gate result

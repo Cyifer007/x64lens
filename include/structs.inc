@@ -40,6 +40,8 @@
 ; the tool for JSON output later.
 ;
 ; All boolean-style fields are qwords containing 0 or 1. Counts are qwords.
+; Dynamic-entry count is the number of bounded Elf64_Dyn records inspected,
+; including DT_NULL when present.
 %define PHDR_SUMMARY_PHNUM          0
 %define PHDR_SUMMARY_LOAD_COUNT     8
 %define PHDR_SUMMARY_EXEC_COUNT     16
@@ -49,7 +51,15 @@
 %define PHDR_SUMMARY_RELRO_SEEN     48
 %define PHDR_SUMMARY_DYNAMIC_SEEN   56
 %define PHDR_SUMMARY_PIE            64
-%define PHDR_SUMMARY_RECORD_SIZE    72
+%define PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT 72
+%define PHDR_SUMMARY_DYNAMIC_NULL_SEEN   80
+%define PHDR_SUMMARY_BIND_NOW       88
+%define PHDR_SUMMARY_RECORD_SIZE    96
+
+; Bounded dynamic-table view. PT_DYNAMIC entries are scanned only up to this
+; cap so a large but technically file-backed table cannot become an unbounded
+; analysis-time sink. Exceeding this limit returns EXIT_UNSUPPORTED.
+%define DYNAMIC_ENTRY_MAX            4096
 
 ; executable_region record offsets
 ;

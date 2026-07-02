@@ -64,6 +64,9 @@ label_nx_stack:        db "  NX stack: ", 0
 label_relro:           db "  RELRO: ", 0
 label_rwx:             db "  RWX load segment: ", 0
 label_dynamic:         db "  Dynamic linking: ", 0
+label_bind_now:        db "  Bind now: ", 0
+label_dynamic_entries: db "  Dynamic entries: ", 0
+label_dynamic_null:    db "  Dynamic terminator: ", 0
 label_load_count:      db "  LOAD segments: ", 0
 label_exec_count:      db "  Executable LOAD regions: ", 0
 state_enabled:         db "enabled", 10, 0
@@ -73,6 +76,7 @@ state_present:         db "present", 10, 0
 state_not_found:       db "not found", 10, 0
 state_yes:             db "yes", 10, 0
 state_no:              db "no", 10, 0
+state_not_applicable:  db "not applicable", 10, 0
 
 section_exec_regions:  db 10, "Executable regions:", 10, 0
 no_exec_regions:       db "  none discovered from PT_LOAD + PF_X", 10, 0
@@ -349,6 +353,36 @@ x64lens_report_text_mitigations:
     call    print_cstr
     mov     rdi, [r14 + PHDR_SUMMARY_DYNAMIC_SEEN]
     call    report_text_print_yes_no_nonzero
+
+    lea     rdi, [label_bind_now]
+    call    print_cstr
+    cmp     qword [r14 + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    je      .bind_now_na
+    mov     rdi, [r14 + PHDR_SUMMARY_BIND_NOW]
+    call    report_text_print_yes_no_nonzero
+    jmp     .after_bind_now
+.bind_now_na:
+    lea     rdi, [state_not_applicable]
+    call    print_cstr
+.after_bind_now:
+
+    lea     rdi, [label_dynamic_entries]
+    call    print_cstr
+    mov     rdi, [r14 + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_dynamic_null]
+    call    print_cstr
+    cmp     qword [r14 + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    je      .dynamic_null_na
+    mov     rdi, [r14 + PHDR_SUMMARY_DYNAMIC_NULL_SEEN]
+    call    report_text_print_yes_no_nonzero
+    jmp     .after_dynamic_null
+.dynamic_null_na:
+    lea     rdi, [state_not_applicable]
+    call    print_cstr
+.after_dynamic_null:
 
     lea     rdi, [label_phnum]
     call    print_cstr

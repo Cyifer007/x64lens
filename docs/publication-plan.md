@@ -117,4 +117,4 @@ See [`research-release-plan.md`](research-release-plan.md) and [`roadmap-18-spri
 
 ## Mitigation-oracle evidence
 
-The implementation now has a compiler-independent mitigation truth table. The paper may describe the represented program-header combinations and consistent malformed rejection as deterministic validation evidence. It must not generalize the matrix into full mitigation coverage or memory-safety proof.
+The implementation now has a compiler-independent mitigation truth table. Patch 030 expands it with bounded dynamic-table evidence for bind-now indicators and malformed dynamic-table rejection. The paper may describe represented program-header and dynamic-table combinations plus consistent malformed rejection as deterministic validation evidence. It must not generalize the matrix into full mitigation coverage or memory-safety proof.

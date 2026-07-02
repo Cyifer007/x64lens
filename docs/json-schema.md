@@ -55,6 +55,7 @@ Current report sections:
 - Unknown mitigation facts use `null` or an explicit enumerated state.
 - `limitations` is non-empty when the analysis is heuristic or incomplete.
 - Semantic and score fields come from classifier and scoring records.
+- Patch 030 mitigation fields `bind_now`, `dynamic_entry_count`, and `dynamic_terminated` are optional compatible fields in schema `0.1.0`; non-dynamic binaries use `null`, `0`, and `null` respectively.
 
 ## Count separation
 
@@ -77,6 +78,7 @@ The report must not collapse these into one generic gadget count.
 - The scanner is byte-oriented and not a full x86_64 decoder.
 - Pattern labels describe exact suffix evidence, not complete decoded windows.
 - Baseline RELRO does not yet distinguish partial from full RELRO.
+- Bind-now evidence is reported separately and is not yet collapsed into full RELRO.
 - Canary, stripped, CET, and IBT indicators are not yet complete.
 - Candidate completeness and truncation are not represented in schema `0.1.0`.
 - Scores are heuristic and are not exploitability verdicts.
@@ -102,7 +104,7 @@ python3 tools/validate-json-report.py \
   --mode system /tmp/x64lens-ls.json
 ```
 
-The validator checks required fields, count relationships, primitive coverage shape, candidate fields, score ranges, unknown stack-delta representation, and limitations.
+The validator checks required fields, count relationships, primitive coverage shape, candidate fields, score ranges, unknown stack-delta representation, mitigation optional-field types, non-dynamic dynamic-table nullability rules, and limitations.
 
 ## Planned schema `0.2.0`
 

@@ -34,7 +34,7 @@ A normal branch push does not publish a tag. Publish a release tag explicitly on
 
 ## Schema timeline
 
-- `0.1.0`: current target, mitigation, count, primitive, gadget, score, and limitations report.
+- `0.1.0`: current target, mitigation, compatible optional dynamic-table mitigation, count, primitive, gadget, score, and limitations report.
 - `0.2.0`: planned Sprint 9 provenance, report identity, completeness, and truncation contract.
 - `0.2.x`: backward-compatible clarifications and optional fields through the first research release.
 

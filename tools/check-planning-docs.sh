@@ -25,6 +25,7 @@ required=(
     docs/adr/0013-deterministic-hostile-input-regression-harness.md
     docs/adr/0014-deterministic-mitigation-oracle.md
     docs/adr/0015-shared-checked-parser-arithmetic.md
+    docs/adr/0016-bounded-dynamic-table-view.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -32,6 +33,7 @@ required=(
     docs/sprints/sprint-07-patch-027-validation.md
     docs/sprints/sprint-07-patch-028-validation.md
     docs/sprints/sprint-07-patch-029-validation.md
+    docs/sprints/sprint-08-patch-030-validation.md
     docs/sprints/sprint-07-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
@@ -87,7 +89,8 @@ grep -Eq 'checked (table|parser) arithmetic' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the checked parser arithmetic gate'
 grep -q '^## Recommended patch sequence$' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 recommended patch sequence is missing'
-grep -q 'docs/sprints/sprint-07-retro.md' docs/sprints/sprint-07-patch-029-validation.md >/dev/null 2>&1 || true
+grep -qi 'bounded dynamic' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 plan does not name bounded dynamic-table work'
 grep -q 'Sprint 8' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not hand off to Sprint 8'
 grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \

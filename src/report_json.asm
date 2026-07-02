@@ -60,6 +60,9 @@ field_pie:              db '    "pie":', 0
 field_relro:            db '    "relro":"', 0
 field_rwx:              db '    "rwx_load_segment":', 0
 field_dynamic:          db '    "dynamic_linking":', 0
+field_bind_now:         db '    "bind_now":', 0
+field_dyn_entry_count:  db '    "dynamic_entry_count":', 0
+field_dyn_terminated:   db '    "dynamic_terminated":', 0
 relro_partial:          db "partial", 0
 relro_none:             db "none", 0
 field_counts_open:      db '  "counts":{', 10, 0
@@ -330,6 +333,38 @@ json_print_mitigations:
     call    print_cstr
     mov     rdi, [rbx + PHDR_SUMMARY_DYNAMIC_SEEN]
     call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_bind_now]
+    call    print_cstr
+    cmp     qword [rbx + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    je      .bind_now_null
+    mov     rdi, [rbx + PHDR_SUMMARY_BIND_NOW]
+    call    json_print_bool_nonzero
+    jmp     .bind_now_done
+.bind_now_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.bind_now_done:
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_dyn_entry_count]
+    call    print_cstr
+    mov     rdi, [rbx + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
+    call    print_u64_dec
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_dyn_terminated]
+    call    print_cstr
+    cmp     qword [rbx + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    je      .dynamic_terminated_null
+    mov     rdi, [rbx + PHDR_SUMMARY_DYNAMIC_NULL_SEEN]
+    call    json_print_bool_nonzero
+    jmp     .dynamic_terminated_done
+.dynamic_terminated_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.dynamic_terminated_done:
     call    print_nl
 
     lea     rdi, [field_object_close]

@@ -209,9 +209,9 @@ malformed-smoke: dev-tools-check all samples
 fuzz-mutated-elf-smoke: malformed-smoke
 
 # Deterministic mitigation truth table. Controlled valid ELF64 layouts lock
-# expected loader-level facts before parser arithmetic is refactored. Five
-# malformed program-header cases must fail identically across info,
-# mitigations, and analyze.
+# expected loader-level facts and bounded dynamic-table evidence. Malformed
+# program-header and dynamic-table cases must fail closed across the command
+# paths that parse the relevant table.
 mitigation-matrix-smoke: dev-tools-check all samples
 	python3 tools/mitigation-matrix-smoke.py \
 		--binary ./$(TARGET) \

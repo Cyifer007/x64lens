@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Deterministic ELF64 mitigation-oracle regression harness for x64lens.
 
-The harness builds a bounded matrix of controlled ELF64 program-header layouts,
-checks the stable text facts emitted by ``mitigations``, verifies integrated
-JSON syntax, and exercises malformed program-header cases through all command
-paths that parse ELF metadata. Generated binaries are temporary. A compact JSON
-evidence artifact is retained under an ignored results directory.
+The harness builds a bounded matrix of controlled ELF64 program-header and
+dynamic-table layouts, checks the stable text facts emitted by ``mitigations``,
+verifies integrated JSON syntax, and exercises malformed cases through the
+command paths that parse each represented table. Generated binaries are
+temporary. A compact JSON evidence artifact is retained under an ignored
+results directory.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.1.2"
+SCRIPT_VERSION = "0.2.0"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -33,6 +34,12 @@ PT_LOAD = 1
 PT_DYNAMIC = 2
 PT_GNU_STACK = 0x6474E551
 PT_GNU_RELRO = 0x6474E552
+DT_NULL = 0
+DT_BIND_NOW = 24
+DT_FLAGS = 30
+DT_FLAGS_1 = 0x6FFFFFFB
+DF_BIND_NOW = 0x8
+DF_1_NOW = 0x1
 PF_X = 1
 PF_W = 2
 PF_R = 4
@@ -55,6 +62,7 @@ class ProgramHeader:
     filesz: int = 0
     memsz: int = 0
     align: int = 0x1000
+    payload: bytes = b""
 
 
 @dataclass(frozen=True)
@@ -69,6 +77,7 @@ class ValidCase:
 class MalformedCase:
     name: str
     data: bytes
+    commands: tuple[tuple[str, ...], ...] | None = None
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -141,12 +150,17 @@ def build_elf(elf_type: int, headers: Sequence[ProgramHeader]) -> bytes:
     for index, header in enumerate(headers):
         start = phoff + index * ELF64_PHDR_SIZE
         image[start : start + ELF64_PHDR_SIZE] = pack_phdr(header)
-        if header.p_type == PT_LOAD and header.filesz:
+        if header.filesz:
             payload_start = header.offset
             payload_end = header.offset + header.filesz
-            image[payload_start:payload_end] = b"\x90" * header.filesz
-            if header.flags & PF_X:
-                image[payload_end - 1] = 0xC3
+            if header.payload:
+                if len(header.payload) > header.filesz:
+                    raise HarnessError(f"payload exceeds p_filesz for header {index}")
+                image[payload_start:payload_start + len(header.payload)] = header.payload
+            elif header.p_type == PT_LOAD:
+                image[payload_start:payload_end] = b"\x90" * header.filesz
+                if header.flags & PF_X:
+                    image[payload_end - 1] = 0xC3
 
     return bytes(image)
 
@@ -171,8 +185,26 @@ def relro(offset: int = 0x2000, base: int = 0x400000) -> ProgramHeader:
     return ProgramHeader(PT_GNU_RELRO, PF_R, offset, base + offset, 0x10, 0x10, 1)
 
 
-def dynamic(offset: int = 0x2000, base: int = 0x400000) -> ProgramHeader:
-    return ProgramHeader(PT_DYNAMIC, PF_R | PF_W, offset, base + offset, 0x10, 0x10, 8)
+def dyn_entry(tag: int, value: int = 0) -> bytes:
+    return struct.pack("<QQ", tag, value)
+
+
+def dynamic(
+    offset: int = 0x2000,
+    base: int = 0x400000,
+    entries: tuple[tuple[int, int], ...] = ((DT_NULL, 0),),
+) -> ProgramHeader:
+    payload = b"".join(dyn_entry(tag, value) for tag, value in entries)
+    return ProgramHeader(
+        PT_DYNAMIC,
+        PF_R | PF_W,
+        offset,
+        base + offset,
+        len(payload),
+        len(payload),
+        8,
+        payload,
+    )
 
 
 def expected(
@@ -183,6 +215,9 @@ def expected(
     rwx: str,
     dynamic_state: str,
     phnum: int,
+    bind_now: str | None = None,
+    dynamic_entries: int = 0,
+    dynamic_terminator: str | None = None,
     loads: int,
     executable: int,
 ) -> tuple[str, ...]:
@@ -192,6 +227,9 @@ def expected(
         f"  RELRO: {relro_state}",
         f"  RWX load segment: {rwx}",
         f"  Dynamic linking: {dynamic_state}",
+        f"  Bind now: {bind_now if bind_now is not None else ('no' if dynamic_state == 'yes' else 'not applicable')}",
+        f"  Dynamic entries: 0x{dynamic_entries:016x}",
+        f"  Dynamic terminator: {dynamic_terminator if dynamic_terminator is not None else ('yes' if dynamic_state == 'yes' else 'not applicable')}",
         f"  Program header count: 0x{phnum:016x}",
         f"  LOAD segments: 0x{loads:016x}",
         f"  Executable LOAD regions: 0x{executable:016x}",
@@ -288,6 +326,58 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 relro_state="not found",
                 rwx="no",
                 dynamic_state="yes",
+                dynamic_entries=1,
+                phnum=2,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-bind-now-tag",
+            ET_EXEC,
+            (load(0x1000, rx), dynamic(entries=((DT_BIND_NOW, 0), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
+                phnum=2,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-flags-bind-now",
+            ET_EXEC,
+            (load(0x1000, rx), dynamic(entries=((DT_FLAGS, DF_BIND_NOW), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
+                phnum=2,
+                loads=1,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-flags-1-now",
+            ET_EXEC,
+            (load(0x1000, rx), dynamic(entries=((DT_FLAGS_1, DF_1_NOW), (DT_NULL, 0)))),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                rwx="no",
+                dynamic_state="yes",
+                bind_now="yes",
+                dynamic_entries=2,
                 phnum=2,
                 loads=1,
                 executable=1,
@@ -372,6 +462,7 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 relro_state="present",
                 rwx="no",
                 dynamic_state="yes",
+                dynamic_entries=1,
                 phnum=5,
                 loads=2,
                 executable=1,
@@ -411,6 +502,24 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
     struct.pack_into("<Q", load_overflow, first_phdr + 0x20, 0x10)
     struct.pack_into("<Q", load_overflow, first_phdr + 0x28, 0x10)
 
+    dynamic_commands = (("mitigations",), ("analyze", "--format", "json", "--max-depth", "4"))
+    dynamic_control = bytearray(build_elf(ET_EXEC, (load(0x1000, PF_R | PF_X), dynamic())))
+    dynamic_phdr = ELF64_EHDR_SIZE + ELF64_PHDR_SIZE
+
+    dynamic_filesz_gt_memsz = bytearray(dynamic_control)
+    struct.pack_into("<Q", dynamic_filesz_gt_memsz, dynamic_phdr + 0x20, 0x20)
+    struct.pack_into("<Q", dynamic_filesz_gt_memsz, dynamic_phdr + 0x28, 0x10)
+
+    dynamic_range_past_eof = bytearray(dynamic_control)
+    struct.pack_into("<Q", dynamic_range_past_eof, dynamic_phdr + 0x08, len(dynamic_range_past_eof))
+    struct.pack_into("<Q", dynamic_range_past_eof, dynamic_phdr + 0x20, 0x10)
+    struct.pack_into("<Q", dynamic_range_past_eof, dynamic_phdr + 0x28, 0x10)
+
+    dynamic_unaligned_size = bytearray(dynamic_control)
+    dynamic_unaligned_size.extend(b"\0")
+    struct.pack_into("<Q", dynamic_unaligned_size, dynamic_phdr + 0x20, 0x11)
+    struct.pack_into("<Q", dynamic_unaligned_size, dynamic_phdr + 0x28, 0x11)
+
     return (
         MalformedCase("wrong-phentsize", bytes(wrong_phentsize)),
         MalformedCase("truncated-program-header-table", bytes(truncated_table)),
@@ -419,6 +528,9 @@ def malformed_cases(control: bytes) -> tuple[MalformedCase, ...]:
         MalformedCase("section-header-table-addition-overflow", bytes(shdr_table_overflow)),
         MalformedCase("load-file-range-out-of-file", bytes(load_out)),
         MalformedCase("load-file-range-addition-overflow", bytes(load_overflow)),
+        MalformedCase("dynamic-filesz-greater-than-memsz", bytes(dynamic_filesz_gt_memsz), dynamic_commands),
+        MalformedCase("dynamic-file-range-out-of-file", bytes(dynamic_range_past_eof), dynamic_commands),
+        MalformedCase("dynamic-entry-size-unaligned", bytes(dynamic_unaligned_size), dynamic_commands),
     )
 
 
@@ -507,6 +619,7 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
         for line in case.expected_summary_lines
     }
     nx_value = values["NX stack"]
+    dynamic_linking = values["Dynamic linking"] == "yes"
     return {
         "nx_stack": (
             None
@@ -520,7 +633,10 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
             else "none"
         ),
         "rwx_load_segment": values["RWX load segment"] == "yes",
-        "dynamic_linking": values["Dynamic linking"] == "yes",
+        "dynamic_linking": dynamic_linking,
+        "bind_now": None if not dynamic_linking else values["Bind now"] == "yes",
+        "dynamic_entry_count": int(values["Dynamic entries"], 16),
+        "dynamic_terminated": None if not dynamic_linking else values["Dynamic terminator"] == "yes",
     }
 
 
@@ -620,6 +736,7 @@ def main() -> int:
                     "fixture_sha256": sha256_bytes(data),
                     "expected_mitigation_lines": list(case.expected_summary_lines),
                     "expected_region_lines": list(expected_region_lines(case)),
+                    "expected_json_mitigations": expected_json_mitigations(case),
                     "mitigations_exit_code": mitigation_result.returncode,
                     "analyze_exit_code": analyze_result.returncode,
                     "result": "ok",
@@ -635,7 +752,8 @@ def main() -> int:
             fixture = temp_dir / f"{case.name}.elf"
             fixture.write_bytes(case.data)
             command_records: list[dict[str, object]] = []
-            for command_args in malformed_commands:
+            active_commands = case.commands if case.commands is not None else malformed_commands
+            for command_args in active_commands:
                 command = [str(binary), *command_args, str(fixture)]
                 result = run(command, args.timeout)
                 if result.returncode != EXIT_MALFORMED_ELF:

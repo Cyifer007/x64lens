@@ -251,4 +251,4 @@ After the broad malformed and capacity gates, run:
 MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
 ```
 
-Expect 11 valid cases and seven malformed cases after Patch 028. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.
+Expect 14 valid cases and ten malformed cases after Patch 030. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.

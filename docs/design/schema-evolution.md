@@ -6,7 +6,7 @@ The JSON schema is a public automation contract. This plan defines when schema `
 
 ## Current schema
 
-Schema `0.1.0` represents the first record-backed gadget and integrated analysis report. It includes target metadata, baseline mitigations, separated counts, primitive coverage, candidate records, scores, and limitations.
+Schema `0.1.0` represents the first record-backed gadget and integrated analysis report. It includes target metadata, baseline mitigations, compatible optional dynamic-table mitigation fields, separated counts, primitive coverage, candidate records, scores, and limitations.
 
 ## Compatibility classes
 

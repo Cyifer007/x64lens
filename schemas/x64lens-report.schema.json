@@ -45,7 +45,10 @@
         "pie": { "type": "boolean" },
         "relro": { "type": "string" },
         "rwx_load_segment": { "type": "boolean" },
-        "dynamic_linking": { "type": "boolean" }
+        "dynamic_linking": { "type": "boolean" },
+        "bind_now": { "type": ["boolean", "null"] },
+        "dynamic_entry_count": { "type": "integer", "minimum": 0 },
+        "dynamic_terminated": { "type": ["boolean", "null"] }
       },
       "additionalProperties": true
     },

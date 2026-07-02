@@ -129,6 +129,20 @@ def validate_common(doc: dict[str, Any]) -> None:
     require("relro" in mitigations, "mitigations.relro is missing")
     require(isinstance(mitigations["relro"], str), "mitigations.relro must be a string")
 
+    if "bind_now" in mitigations:
+        require(isinstance(mitigations["bind_now"], bool) or mitigations["bind_now"] is None, "mitigations.bind_now must be bool or null")
+    if "dynamic_terminated" in mitigations:
+        require(isinstance(mitigations["dynamic_terminated"], bool) or mitigations["dynamic_terminated"] is None, "mitigations.dynamic_terminated must be bool or null")
+    if "dynamic_entry_count" in mitigations:
+        require_int(mitigations["dynamic_entry_count"], "mitigations.dynamic_entry_count")
+    if mitigations.get("dynamic_linking") is False:
+        if "bind_now" in mitigations:
+            require(mitigations["bind_now"] is None, "mitigations.bind_now must be null when dynamic_linking is false")
+        if "dynamic_terminated" in mitigations:
+            require(mitigations["dynamic_terminated"] is None, "mitigations.dynamic_terminated must be null when dynamic_linking is false")
+        if "dynamic_entry_count" in mitigations:
+            require(mitigations["dynamic_entry_count"] == 0, "mitigations.dynamic_entry_count must be 0 when dynamic_linking is false")
+
     counts = doc["counts"]
     require(isinstance(counts, dict), "counts must be an object")
     missing_counts = REQUIRED_COUNTS - set(counts)

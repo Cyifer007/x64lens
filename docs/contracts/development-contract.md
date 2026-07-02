@@ -142,7 +142,7 @@ Bounded storage must fail closed when a complete report cannot be produced. Sile
 
 ## Mitigation-oracle rule
 
-Changes to ELF type interpretation, GNU stack handling, RELRO presence, dynamic-linking evidence, load permissions, executable-region counting, or program-header rejection behavior must update and pass the deterministic mitigation matrix. Parser refactors must preserve the oracle unless an intentional output-contract change is separately documented.
+Changes to ELF type interpretation, GNU stack handling, RELRO presence, dynamic-linking evidence, bind-now evidence, dynamic-entry counting, load permissions, executable-region counting, or program-header rejection behavior must update and pass the deterministic mitigation matrix. Parser refactors must preserve the oracle unless an intentional output-contract change is separately documented.
 
 
 ## Private validation orchestration boundary rule

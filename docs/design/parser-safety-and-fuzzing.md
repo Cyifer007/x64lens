@@ -191,3 +191,21 @@ The shared helper layer now covers:
 - bounded per-entry table offsets.
 
 Future dynamic, symbol, relocation, note, and string-table parsers should use this layer or a direct successor rather than introducing new open-coded pointer arithmetic.
+
+## Patch 030 bounded dynamic-table layer
+
+Patch 030 is the first Sprint 8 consumer of the checked parser-arithmetic layer.
+`PT_DYNAMIC` is parsed only after the file-backed range is validated, the table
+size is proven to be a multiple of 16-byte `Elf64_Dyn` records, and the record
+count is capped. Each entry pointer is formed through the shared bounded
+per-entry helper.
+
+The deterministic mitigation matrix now includes malformed dynamic-table cases
+for:
+
+- `p_filesz > p_memsz`,
+- dynamic file ranges beyond EOF,
+- non-integral dynamic-entry sizes.
+
+Future dynamic-symbol, string, relocation, section-label, or note parsing must
+add equivalent malformed fixtures before their evidence is used in reporting.
