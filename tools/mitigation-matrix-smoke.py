@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 
-SCRIPT_VERSION = "0.5.0"
+SCRIPT_VERSION = "0.6.0"
 HARNESS_SCHEMA = "0.1.0"
 ELF64_EHDR_SIZE = 64
 ELF64_PHDR_SIZE = 56
@@ -644,6 +644,27 @@ def valid_cases() -> tuple[ValidCase, ...]:
                 load(0x1000, rx),
                 string_load(b"\0"),
                 dynamic(entries=((DT_STRTAB, 0x403000), (DT_STRSZ, 0), (DT_NULL, 0))),
+            ),
+            expected(
+                pie="disabled",
+                nx="unknown",
+                relro_state="not found",
+                canary="absent",
+                rwx="no",
+                dynamic_state="yes",
+                dynamic_entries=3,
+                phnum=3,
+                loads=2,
+                executable=1,
+            ),
+        ),
+        ValidCase(
+            "dynamic-string-zero-size-endpoint-absent",
+            ET_EXEC,
+            (
+                load(0x1000, rx),
+                string_load(b"\0"),
+                dynamic(entries=((DT_STRTAB, 0x403001), (DT_STRSZ, 0), (DT_NULL, 0))),
             ),
             expected(
                 pie="disabled",

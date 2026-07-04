@@ -4,7 +4,7 @@
 
 This document defines the controlled ELF64 layouts used by `tools/mitigation-matrix-smoke.py`. The matrix is a behavioral oracle for loader-level mitigation facts. It is not a catalog of exploitability outcomes.
 
-After Patch 033, the matrix contains 23 valid layouts, 14 malformed layouts, and one unsupported fail-closed layout. The valid side includes no, partial, and full RELRO states, bounded dynamic-table cases, canary-present/canary-absent indicator fixtures, zero-length dynamic string-table negative evidence, and stripped/not-stripped section-table fixtures. The malformed side includes duplicate-`PT_DYNAMIC`, duplicate `DT_STRTAB`, duplicate `DT_STRSZ`, invalid dynamic string-table evidence, and dynamic malformed coverage for scanner callers as well as mitigation and integrated analysis callers. The unsupported side covers dynamic string tables above the current bounded scan cap.
+After Patch 035, the mitigation matrix still contains 24 valid layouts, 14 malformed layouts, and one unsupported fail-closed layout. The valid side includes no, partial, and full RELRO states, bounded dynamic-table cases, canary-present/canary-absent indicator fixtures, zero-length dynamic string-table negative evidence including the exact load-endpoint case, stripped/not-stripped section-table fixtures, and section-label fixture checks. The malformed side includes duplicate-`PT_DYNAMIC`, duplicate `DT_STRTAB`, duplicate `DT_STRSZ`, invalid dynamic string-table evidence, and dynamic malformed coverage for scanner callers as well as mitigation and integrated analysis callers. The unsupported side covers dynamic string tables above the current bounded scan cap.
 
 ## Valid cases
 
@@ -31,6 +31,7 @@ After Patch 033, the matrix contains 23 valid layouts, 14 malformed layouts, and
 | `dynamic-string-canary-absent` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` and `DT_STRSZ` pointing to a bounded string table without `__stack_chk_fail` | canary indicator absent |
 | `dynamic-string-canary-present` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` and `DT_STRSZ` pointing to a bounded string table containing exact `__stack_chk_fail\0` | canary indicator present |
 | `dynamic-string-zero-size-absent` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` and zero `DT_STRSZ` pointing to a validated string table | canary indicator absent from completed zero-length search |
+| `dynamic-string-zero-size-endpoint-absent` | `ET_EXEC` | RX `PT_LOAD`, dynamic `DT_STRTAB` exactly at the end of a one-byte file-backed string load and zero `DT_STRSZ` | canary indicator absent under half-open zero-length range semantics |
 | `section-table-without-symtab-stripped` | `ET_EXEC` | RX `PT_LOAD`, validated section table without `SHT_SYMTAB` | stripped indicator `stripped` |
 | `section-table-with-symtab-not-stripped` | `ET_EXEC` | RX `PT_LOAD`, validated section table with `SHT_SYMTAB` | stripped indicator `not_stripped` |
 
@@ -42,7 +43,7 @@ Every valid case must pass these command paths:
 ./build/x64lens gadgets --format json --max-depth 4 <fixture>
 ```
 
-The text path is checked against exact mitigation-summary and executable-region lines, including bind-now, dynamic-entry count, dynamic terminator state, canary indicator state, and stripped indicator state. When no `PT_LOAD + PF_X` region exists, the required region line is `  none discovered from PT_LOAD + PF_X`. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr. The direct `gadgets --format json` path is also checked for valid cases to keep the JSON emitter covered outside the integrated `analyze` command path.
+The text path is checked against exact mitigation-summary and executable-region lines, including bind-now, dynamic-entry count, dynamic terminator state, canary indicator state, stripped indicator state, and section labels when the fixture includes safe section-name evidence. When no `PT_LOAD + PF_X` region exists, the required region line is `  none discovered from PT_LOAD + PF_X`. The integrated path must produce a JSON object, expose the matching mitigation values, and emit no stderr. The direct `gadgets --format json` path is also checked for valid cases to keep the JSON emitter covered outside the integrated `analyze` command path.
 
 ## Malformed cases
 
@@ -95,4 +96,9 @@ The artifact records the harness version, artifact schema version, analyzed bina
 
 ## Interpretation boundary
 
-The matrix validates deterministic static facts. It does not establish that a binary is exploitable, safe, network reachable, or protected at runtime. The overlapping-load case records current region semantics and must not be described as deduplication support. Canary rows record symbol evidence only; they do not prove every function is stack-protected. Stripped rows record section-table symbol evidence only; they do not affect runtime mapping authority or candidate discovery.
+The matrix validates deterministic static facts. It does not establish that a binary is exploitable, safe, network reachable, or protected at runtime. The overlapping-load case records current region semantics and must not be described as deduplication support. Canary rows record symbol evidence only; they do not prove every function is stack-protected. Stripped rows record section-table symbol evidence only; section labels record bounded section-name evidence only. Neither affects runtime mapping authority, candidate discovery, semantic classification, or scoring.
+
+
+## Section-label smoke harness
+
+`make section-label-smoke` is separate from the mitigation matrix because it focuses on annotation rendering rather than mitigation truth. It builds temporary fixtures for baseline `.text`, escaped newline-bearing section names, ignored non-executable overlap, and unlabeled ambiguous executable overlap.

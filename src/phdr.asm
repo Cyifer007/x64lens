@@ -402,7 +402,7 @@ x64lens_phdr_analyze:
     jb      .strtab_next_load
     sub     rax, rcx            ; RAX = strtab offset inside this LOAD mapping
     cmp     rax, [r10 + P_FILESZ]
-    jae     .strtab_next_load
+    ja      .strtab_next_load
 
     mov     rcx, [r10 + P_FILESZ]
     sub     rcx, rax            ; bytes remaining in file-backed LOAD range

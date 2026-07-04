@@ -223,6 +223,17 @@ coverage in addition to the Patch 030 dynamic-range and entry-size cases.
 
 `DT_STRTAB` and `DT_STRSZ` are accepted only as bounded mitigation evidence. When both tags are present, the string table virtual address must translate through a file-backed `PT_LOAD` range and the translated file range must pass the normal range-end validator. Unmapped dynamic string-table claims are malformed. Oversized dynamic string tables are unsupported. Missing metadata yields canary `unknown`, not a guessed negative.
 
-Sprint 8 Patch 033 stripped-status update
+## Sprint 8 Patch 033 stripped-status update
 
 Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.
+
+## Sprint 8 Patch 034 section-label safety
+
+Section labels require a validated section-header table and a bounded section-name string table. The implementation skips `SHT_NULL`, `SHT_NOBITS`, zero-sized sections, invalid file-backed section ranges, empty names, and names that are not null-terminated inside the bounded string table. Unsafe name evidence produces unlabeled records. Malformed section-table structure remains fail-closed.
+
+Patch 034 also preserves half-open range behavior for zero-length dynamic string-table evidence at the exact end of a file-backed load. The mitigation matrix includes this endpoint case so future parser changes do not regress it.
+
+
+## Sprint 8 Patch 035 section-label hostile-input hardening
+
+Section labels are now covered by `make section-label-smoke`. The harness builds controlled ELF64 files with newline-bearing names, non-executable section overlap, and ambiguous executable section overlap. Acceptance requires text output to escape unsafe bytes, JSON output to remain parseable, non-executable overlap to be ignored, and ambiguous executable overlap to remain unlabeled.

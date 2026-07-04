@@ -91,6 +91,7 @@ region_prefix:         db "  - VA ", 0
 region_file_offset:    db ", file offset ", 0
 region_file_size:      db ", file size ", 0
 region_mem_size:       db ", mem size ", 0
+region_section:        db ", section: ", 0
 region_perms:          db ", perms ", 0
 perms_rwx:             db "RWX", 10, 0
 perms_rw_:             db "RW-", 10, 0
@@ -120,6 +121,9 @@ label_reg_coverage:    db "  Register coverage: ", 0
 no_candidates:         db "  none discovered in executable regions", 10, 0
 candidate_prefix:      db "  - VA ", 0
 candidate_file_off:    db ", file offset ", 0
+candidate_section:     db ", section: ", 0
+section_escape_hex:    db 0x5c, "x", 0
+section_escape_bslash: db 0x5c, 0x5c, 0
 candidate_window:      db ", window start ", 0
 candidate_len:         db ", len ", 0
 candidate_term:        db ", terminator: ", 0
@@ -182,6 +186,9 @@ reg_r13:               db "r13", 0
 reg_r14:               db "r14", 0
 reg_r15:               db "r15", 0
 space_str:             db " ", 0
+
+section .bss
+section_safe_byte: resb 1
 
 section .text
 global x64lens_report_text_elf64_info
@@ -498,6 +505,15 @@ x64lens_report_text_mitigations:
     mov     rdi, [r12 + EXEC_REGION_MEMSZ]
     call    print_hex64
 
+    cmp     qword [r12 + EXEC_REGION_SECTION_NAME_PTR], 0
+    je      .region_section_done
+    lea     rdi, [region_section]
+    call    print_cstr
+    mov     rdi, [r12 + EXEC_REGION_SECTION_NAME_PTR]
+    mov     rsi, [r12 + EXEC_REGION_SECTION_NAME_LEN]
+    call    report_text_print_section_name
+.region_section_done:
+
     lea     rdi, [region_perms]
     call    print_cstr
     mov     edi, [r12 + EXEC_REGION_FLAGS]
@@ -771,6 +787,15 @@ x64lens_report_text_gadgets:
     call    print_cstr
     mov     rdi, [r15 + GADGET_FILE_OFFSET]
     call    print_hex64
+
+    cmp     qword [r15 + GADGET_SECTION_NAME_PTR], 0
+    je      .candidate_section_done
+    lea     rdi, [candidate_section]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_SECTION_NAME_PTR]
+    mov     rsi, [r15 + GADGET_SECTION_NAME_LEN]
+    call    report_text_print_section_name
+.candidate_section_done:
 
     lea     rdi, [candidate_window]
     call    print_cstr
@@ -1094,6 +1119,60 @@ report_text_print_candidate_bytes:
     inc     r13
     jmp     .byte_loop
 .bytes_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
+; Local helper: print a bounded section name in a single-line-safe text form.
+; RDI = pointer, RSI = trusted bounded length proven by shdr.asm.
+; Printable ASCII bytes are emitted directly except backslash, which is escaped.
+; Control bytes, DEL, and high-bit bytes are emitted as \xNN so adversarial
+; section names cannot split report lines or inject terminal controls.
+report_text_print_section_name:
+    push    rbx
+    push    r12
+    push    r13
+
+    mov     r12, rdi
+    mov     r13, rsi
+.print_loop:
+    test    r13, r13
+    jz      .done
+
+    movzx   ebx, byte [r12]
+    cmp     bl, 0x5c
+    je      .print_backslash
+    cmp     bl, 0x20
+    jb      .print_hex_escape
+    cmp     bl, 0x7e
+    ja      .print_hex_escape
+
+    mov     [rel section_safe_byte], bl
+    mov     rax, SYS_WRITE
+    mov     rdi, STDOUT
+    lea     rsi, [rel section_safe_byte]
+    mov     rdx, 1
+    syscall
+    jmp     .next
+
+.print_backslash:
+    lea     rdi, [section_escape_bslash]
+    call    print_cstr
+    jmp     .next
+
+.print_hex_escape:
+    lea     rdi, [section_escape_hex]
+    call    print_cstr
+    mov     rdi, rbx
+    call    print_hex8
+
+.next:
+    inc     r12
+    dec     r13
+    jmp     .print_loop
+
+.done:
     pop     r13
     pop     r12
     pop     rbx

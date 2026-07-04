@@ -25,6 +25,7 @@ MALFORMED_SEED ?= ./tests/bin/minimal_nopie
 MALFORMED_TIMEOUT ?= 2
 MALFORMED_RESULTS_DIR ?= ./tests/results/malformed
 MITIGATION_MATRIX_RESULTS_DIR ?= ./tests/results/mitigation-matrix
+SECTION_LABEL_RESULTS_DIR ?= ./tests/results/section-label
 
 NASM         ?= nasm
 LD           ?= ld
@@ -38,7 +39,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -47,6 +48,7 @@ help:
 	@echo "  make test                Run the core regression suite"
 	@echo "  make validation-smoke    Run the complete native validation aggregate"
 	@echo "  make mitigation-matrix-smoke  Run the deterministic mitigation oracle"
+	@echo "  make section-label-smoke  Run section-label annotation hardening probes"
 	@echo "  make malformed-smoke     Run deterministic malformed-input smoke"
 	@echo "  make fuzz-mutated-elf-smoke  Compatibility alias for malformed smoke"
 	@echo "  make capacity-smoke      Validate exact and overflow candidate capacity"
@@ -220,9 +222,18 @@ mitigation-matrix-smoke: dev-tools-check all samples
 		--timeout "$(MALFORMED_TIMEOUT)" \
 		--results-dir "$(MITIGATION_MATRIX_RESULTS_DIR)"
 
+# Focused section-label hardening probes. These fixtures keep section headers
+# subordinate to program-header authority while exercising hostile annotation
+# cases that are too specialized for the hand-authored gadget fixture.
+section-label-smoke: dev-tools-check all
+	python3 tools/section-label-smoke.py \
+		--binary ./$(TARGET) \
+		--timeout "$(MALFORMED_TIMEOUT)" \
+		--results-dir "$(SECTION_LABEL_RESULTS_DIR)"
+
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -319,6 +330,7 @@ script-perms-check:
 	@test -x tools/fuzz-mutated-elf-smoke.sh
 	@test -x tools/validate-capacity-fixture.sh
 	@test -x tools/mitigation-matrix-smoke.py
+	@test -x tools/section-label-smoke.py
 	@echo "script-perms-check: ok"
 
 scaffold-check: script-perms-check
@@ -412,6 +424,7 @@ print-vars:
 	@echo MALFORMED_TIMEOUT=$(MALFORMED_TIMEOUT)
 	@echo MALFORMED_RESULTS_DIR=$(MALFORMED_RESULTS_DIR)
 	@echo MITIGATION_MATRIX_RESULTS_DIR=$(MITIGATION_MATRIX_RESULTS_DIR)
+	@echo SECTION_LABEL_RESULTS_DIR=$(SECTION_LABEL_RESULTS_DIR)
 
 ownership-check:
 	@echo "Checking generated artifact ownership..."

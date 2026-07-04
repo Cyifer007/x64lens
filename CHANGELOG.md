@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 035 section-label hardening smoke target for hostile section names, non-executable overlap, and ambiguous executable overlap.
+- ADR 0021 and Patch 035 validation documentation for section-label rendering and ambiguity hardening.
+- Sprint 8 Patch 034 section-label annotations for executable regions and gadget candidates using bounded section-name metadata.
+- ADR 0020 and Patch 034 validation documentation for section labels as analyst annotations, not loader authority.
 - Sprint 8 Patch 033 stripped-status indicator reporting using a bounded section-header scan for `SHT_SYMTAB` evidence.
 - Sprint 8 Patch 033 mitigation-oracle expansion for stripped, not-stripped, zero-length dynamic string-table, duplicate `DT_STRTAB`, duplicate `DT_STRSZ`, and dynamic string-table scan-cap cases.
 - ADR 0019 and Patch 033 validation documentation for section-derived metadata and strict dynamic singleton policy.
@@ -45,6 +49,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Render section labels in text through a bounded single-line-safe printer while preserving JSON section strings.
+- Assign section labels only from unique file-backed allocated executable sections so non-executable or ambiguous section metadata cannot capture candidate annotations.
+- Replace process-global section-label helper state with stack-local annotation context.
+- Treat zero-length dynamic string tables whose pointer is exactly at the end of a file-backed load as valid completed negative canary evidence.
+- Keep current reports emitting `mitigations.stripped` while allowing same-version schema validation for older `0.1.0-dev` JSON reports that omit it.
 - Treat duplicate `DT_STRTAB` and duplicate `DT_STRSZ` entries as malformed dynamic metadata so canary evidence is not order-dependent.
 - Extend mitigation text and JSON output with a compatible `stripped` indicator while preserving program headers as executable-region authority.
 - Tighten JSON Schema required fields and mitigation conditionals so external consumers receive the same core invariants enforced by the bundled validator.
@@ -80,6 +89,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Prevent newline-bearing section names from splitting executable-region and gadget candidate text lines.
+- Prevent overlapping non-executable section headers from labeling executable gadget offsets.
+- Preserve the half-open range interpretation for zero-length dynamic string-table evidence at a load endpoint.
 - Promote the zero-sized dynamic string-table and over-cap string-table review cases into the permanent mitigation oracle.
 - Close the Patch 030 dynamic malformed oracle gap by covering `gadgets` text and JSON callers as well as `mitigations` and integrated `analyze`.
 - Classify the Patch 028 Docker Buildx metadata failure as an environment defect after Docker validation passed outside the restricted filesystem sandbox.

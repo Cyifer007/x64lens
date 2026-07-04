@@ -94,6 +94,7 @@ field_limitations:      db '  "limitations":["Pattern-based scanner, not full x8
 
 f_va:                   db '      "va":"', 0
 f_file_offset:          db '      "file_offset":"', 0
+f_section:             db '      "section":', 0
 f_bytes:                db '      "bytes":"', 0
 f_terminator:           db '      "terminator":"', 0
 f_pattern:              db '      "pattern":"', 0
@@ -584,6 +585,26 @@ json_print_one_gadget:
     call    print_hex64
     lea     rdi, [j_q]
     call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_section]
+    call    print_cstr
+    mov     rbx, [json_current_record]
+    mov     rdi, [rbx + GADGET_SECTION_NAME_PTR]
+    test    rdi, rdi
+    jz      .section_null
+    lea     rdi, [j_q]
+    call    print_cstr
+    mov     rbx, [json_current_record]
+    mov     rdi, [rbx + GADGET_SECTION_NAME_PTR]
+    call    json_print_escaped_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    jmp     .section_done
+.section_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.section_done:
     JSON_FIELD_COMMA_NL
 
     lea     rdi, [f_bytes]

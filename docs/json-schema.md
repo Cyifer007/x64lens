@@ -56,7 +56,7 @@ Current report sections:
 - `limitations` is non-empty when the analysis is heuristic or incomplete.
 - Semantic and score fields come from classifier and scoring records.
 - Patch 030 mitigation fields `bind_now`, `dynamic_entry_count`, and `dynamic_terminated` are optional compatible fields in schema `0.1.0`; non-dynamic binaries use `null`, `0`, and `null` respectively.
-- Patch 031 refines `mitigations.relro` to the current enum values `none`, `partial`, and `full`. Full RELRO requires `PT_GNU_RELRO` plus bounded bind-now evidence. Patch 032 adds required `mitigations.canary` values `unknown`, `absent`, and `present`, and tightens required-field and conditional constraints for current reports. Patch 033 adds required `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`.
+- Patch 031 refines `mitigations.relro` to the current enum values `none`, `partial`, and `full`. Full RELRO requires `PT_GNU_RELRO` plus bounded bind-now evidence. Patch 032 adds required `mitigations.canary` values `unknown`, `absent`, and `present`, and tightens required-field and conditional constraints for current reports. Patch 033 adds current-report `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Patch 034 keeps current reports emitting that field while allowing older same-version reports to omit it. Patch 034 also adds optional gadget `section` annotations.
 
 ## Count separation
 
@@ -175,4 +175,9 @@ Patch 032 keeps `schema_version` at `0.1.0` but tightens current-report validati
 
 ## Sprint 8 Patch 033 schema update
 
-Patch 033 keeps `schema_version` at `0.1.0` and adds required `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. This is a compatible current-report extension because the field is an additive mitigation indicator, not a changed meaning for existing report counts or gadget records.
+Patch 033 keeps `schema_version` at `0.1.0` and adds `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Patch 034 keeps current reports emitting that field but makes it optional in the schema and bundled validator so older same-version `0.1.0-dev` reports remain consumable during the development line. Patch 034 also adds an optional gadget-level `section` field whose value is either a section name string or `null`. Section labels are annotations only and do not change gadget identity, counts, semantics, or scores.
+
+
+## Sprint 8 Patch 035 section field compatibility
+
+The `section` field remains optional per gadget record semantics and may be a string or `null`. Text escaping of section labels does not change JSON values. Consumers should treat section labels as display metadata and must not derive executable-region authority from them.

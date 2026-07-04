@@ -121,7 +121,6 @@
         "pie",
         "relro",
         "canary",
-        "stripped",
         "rwx_load_segment",
         "dynamic_linking",
         "bind_now",
@@ -283,6 +282,12 @@
               "null"
             ],
             "minimum": 0
+          },
+          "section": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "additionalProperties": true

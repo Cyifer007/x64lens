@@ -200,6 +200,11 @@ grep -q "Dynamic terminator: yes" "$MIT_PIE"
 grep -q "Canary indicator: present" "$MIT_PIE"
 grep -q "Stripped indicator: not stripped" "$MIT_PIE"
 
+echo "[test] mitigations fixture section label"
+MIT_GADGETS="$TMPDIR/x64lens-mitigations-gadgets.txt"
+"$BIN" mitigations "$ROOT/tests/bin/gadgets" >"$MIT_GADGETS"
+grep -q "section: .text" "$MIT_GADGETS"
+
 echo "[test] mitigations executable stack"
 MIT_EXECSTACK="$TMPDIR/x64lens-mitigations-execstack.txt"
 "$BIN" mitigations "$ROOT/tests/bin/minimal_execstack" >"$MIT_EXECSTACK"
@@ -224,6 +229,7 @@ grep -q "syscall_trigger count: 0x0000000000000001" "$GADGETS_OUT"
 grep -q "stack_pivot count: 0x0000000000000002" "$GADGETS_OUT"
 grep -q "alignment count: 0x0000000000000001" "$GADGETS_OUT"
 grep -q "Register coverage: rax|rcx|rdx|rsi|rdi|rsp|r8|r9" "$GADGETS_OUT"
+grep -q "section: .text" "$GADGETS_OUT"
 grep -q "terminator: ret" "$GADGETS_OUT"
 grep -q "terminator: ret imm16" "$GADGETS_OUT"
 grep -q "pattern: pop rdi; ret" "$GADGETS_OUT"
@@ -266,6 +272,13 @@ GADGETS_JSON="$TMPDIR/x64lens-gadgets.json"
 "$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_JSON"
 python3 -m json.tool "$GADGETS_JSON" >/dev/null
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$GADGETS_JSON" >/dev/null
+python3 - "$GADGETS_JSON" <<'PY'
+import json, sys
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    report = json.load(f)
+sections = {g.get("section") for g in report["gadgets"]}
+assert sections == {".text"}, sections
+PY
 
 "$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
@@ -282,6 +295,7 @@ grep -q "Dynamic entries: 0x0000000000000000" "$ANALYZE_OUT"
 grep -q "Dynamic terminator: not applicable" "$ANALYZE_OUT"
 grep -q "Canary indicator: unknown" "$ANALYZE_OUT"
 grep -q "Stripped indicator: not stripped" "$ANALYZE_OUT"
+grep -q "section: .text" "$ANALYZE_OUT"
 grep -q "Candidate count: 0x000000000000000b" "$ANALYZE_OUT"
 grep -q "Semantic primitive count: 0x000000000000000b" "$ANALYZE_OUT"
 grep -q "Scored candidate count: 0x000000000000000b" "$ANALYZE_OUT"
@@ -295,6 +309,13 @@ ANALYZE_JSON="$TMPDIR/x64lens-analyze.json"
 "$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_JSON"
 python3 -m json.tool "$ANALYZE_JSON" >/dev/null
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$ANALYZE_JSON" >/dev/null
+python3 - "$ANALYZE_JSON" <<'PY'
+import json, sys
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    report = json.load(f)
+sections = {g.get("section") for g in report["gadgets"]}
+assert sections == {".text"}, sections
+PY
 
 "$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
 python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null

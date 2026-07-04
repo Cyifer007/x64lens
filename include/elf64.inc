@@ -81,8 +81,17 @@
 
 ; Section header types used for metadata indicators.
 %define SHT_NULL             0
+%define SHT_PROGBITS         1
 %define SHT_SYMTAB           2
 %define SHT_STRTAB           3
+%define SHT_NOBITS           8
+
+; Section header flags used by section-label annotations. Section labels are
+; emitted only for file-backed allocated executable sections so non-runtime
+; metadata cannot masquerade as scanner authority.
+%define SHF_WRITE            0x1
+%define SHF_ALLOC            0x2
+%define SHF_EXECINSTR        0x4
 
 %define P_TYPE               0x00
 %define P_FLAGS              0x04

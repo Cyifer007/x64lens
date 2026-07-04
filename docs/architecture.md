@@ -35,7 +35,7 @@ x64lens CLI
 | `bounds.asm` | Offset, size, and overflow checks | Print user reports |
 | `elf64.asm` | ELF64 header validation and metadata | Scan gadgets |
 | `phdr.asm` | Program header parsing | Section label formatting |
-| `shdr.asm` | Section header parsing and labels | Runtime mapping authority |
+| `shdr.asm` | Section header metadata, stripped indicator, and section-label annotations | Runtime mapping authority |
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
 | `scanner.asm` | Candidate byte window discovery | Semantic scoring |
@@ -68,7 +68,7 @@ This preserves module boundaries while still giving Sprint 1 a working, demonstr
 
 For runtime exploitability reasoning, program headers are the primary execution model because the loader maps segments, not sections. x64lens therefore treats `PT_LOAD` segments with `PF_X` as the authoritative executable regions.
 
-Section headers are still valuable for human readability and will be used later to label regions such as `.text`, `.plt`, `.init`, and `.fini`.
+Section headers are still valuable for human readability and are used only to annotate records with labels such as `.text`, `.plt`, `.init`, and `.fini`. They do not select executable regions.
 
 ## Design decision 2: direct Linux syscalls
 
@@ -330,7 +330,7 @@ The current design should scale if future work follows these rules:
 1. Add semantic fields through `classifier.asm`, not `patterns.asm`.
 2. Add score fields through `scoring.asm`, not `classifier.asm`.
 3. Add full decoder output as side-car records keyed by candidate index, not by replacing raw candidate records.
-4. Add section labels as optional annotations, not as runtime mapping authority.
+4. Keep section labels as optional annotations, not as runtime mapping authority.
 5. Add JSON output from internal records, not from text output.
 6. Add benchmark summaries from raw TSV results, not from hand-edited tables.
 
@@ -583,13 +583,13 @@ Candidate-record exhaustion is also an architectural boundary. The scanner arena
 
 Patch 028 implements the first bounded parser-view seam in assembly. `src/bounds.asm` now owns checked multiplication, checked addition, checked offset-plus-length validation, checked table extents, and bounded per-entry table offsets. `src/elf64.asm` and `src/phdr.asm` consume those helpers before forming program-header pointers or trusting file-backed `PT_LOAD` ranges.
 
-Patch 030 applies that seam to the first Sprint 8 metadata reader. `src/phdr.asm` now treats `PT_DYNAMIC` as a bounded file-backed `Elf64_Dyn` table, validates the dynamic range, caps the inspected entries, derives every entry address through the shared per-entry helper, and records only narrow loader-level facts: bind-now evidence, bounded dynamic-entry count, and `DT_NULL` terminator state. Dynamic metadata does not override `PT_LOAD + PF_X` executable-region authority. Patch 031 consumes the bind-now bit only as mitigation evidence for the RELRO split: `PT_GNU_RELRO` plus bind-now is full RELRO, `PT_GNU_RELRO` without bind-now is partial RELRO, and no `PT_GNU_RELRO` is no RELRO. Patch 032 extends the same bounded evidence path to `DT_STRTAB` and `DT_STRSZ`, then scans only a validated file-backed dynamic string-table range for exact `__stack_chk_fail` canary evidence.
+Patch 030 applies that seam to the first Sprint 8 metadata reader. `src/phdr.asm` now treats `PT_DYNAMIC` as a bounded file-backed `Elf64_Dyn` table, validates the dynamic range, caps the inspected entries, derives every entry address through the shared per-entry helper, and records only narrow loader-level facts: bind-now evidence, bounded dynamic-entry count, and `DT_NULL` terminator state. Dynamic metadata does not override `PT_LOAD + PF_X` executable-region authority. Patch 031 consumes the bind-now bit only as mitigation evidence for the RELRO split: `PT_GNU_RELRO` plus bind-now is full RELRO, `PT_GNU_RELRO` without bind-now is partial RELRO, and no `PT_GNU_RELRO` is no RELRO. Patch 032 extends the same bounded evidence path to `DT_STRTAB` and `DT_STRSZ`, then scans only a validated file-backed dynamic string-table range for exact `__stack_chk_fail` canary evidence. Patch 034 preserves half-open range semantics for zero-length dynamic string-table evidence at the exact end of a file-backed load. Patch 035 hardens section-label annotations by escaping text labels, requiring file-backed allocated executable sections, omitting ambiguous executable overlaps, and using stack-local label context.
 
-This is still not a full parser framework. It is the reusable arithmetic layer and first bounded metadata view required before dynamic symbols, relocations, notes, and section annotations expand the attack surface.
+This is still not a full parser framework. It is the reusable arithmetic layer and first bounded metadata view required before dynamic symbols, relocations, notes, and richer section annotations expand the attack surface.
 
 ## Sprint 7 mitigation-oracle validation layer
 
-Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix, with its Patch 027 zero-region expectation correction, Patch 028 table-end overflow additions, Patch 030 dynamic-table cases, Patch 031 RELRO plus duplicate-dynamic cases, and Patch 032 dynamic string-table canary cases, is a fixed behavior gate for future mitigation parsing.
+Patch 026 adds a deterministic program-header fixture builder outside the NASM engine. Temporary controlled ELF64 files exercise the existing `elf64 -> phdr -> mitigation summary -> text/JSON reporter` path. The harness does not bypass internal records or introduce a second mitigation implementation. Shared ELF64 validation now rejects invalid file-backed `PT_LOAD` ranges before any command reports metadata, while `phdr.asm` retains defense-in-depth validation. The matrix, with its Patch 027 zero-region expectation correction, Patch 028 table-end overflow additions, Patch 030 dynamic-table cases, Patch 031 RELRO plus duplicate-dynamic cases, Patch 032 dynamic string-table canary cases, Patch 033 stripped and singleton cases, and Patch 034 zero-length endpoint and section-label checks, is a fixed behavior gate for future mitigation parsing.
 
 
 ## Sprint 7 parser-safety baseline
@@ -600,6 +600,17 @@ Sprint 7 establishes the current parser-safety baseline: file-derived table exte
 
 Patch 032 extends the bounded dynamic-table evidence path to collect `DT_STRTAB` and `DT_STRSZ`. The resulting dynamic string-table range is translated only through a file-backed `PT_LOAD` range and is capped before scanning. The only implemented canary evidence is an exact null-terminated `__stack_chk_fail` string. The field is reported as `unknown`, `absent`, or `present`; it is an indicator only and never changes executable-region authority.
 
-Sprint 8 Patch 033 stripped-status update
+## Sprint 8 Patch 033 stripped-status update
 
 Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.
+
+## Sprint 8 Patch 034 section-label annotation seam
+
+Patch 034 reuses the bounded section-header seam for optional section labels. `src/shdr.asm` validates the section table and section-name string table before annotating executable regions or gadget candidates. The annotation pass runs only after region discovery, candidate scanning, exact pattern matching, semantic classification, and scoring. Missing or unsafe section-name evidence leaves records unlabeled. Malformed section-table structure remains fail-closed.
+
+The section label is therefore an analyst convenience, not a source of truth. `PT_LOAD + PF_X` remains executable-region authority, and the scanner continues to operate over loader-derived executable file ranges. Text labels are rendered with control-byte escaping, while JSON carries the bounded section string as machine-readable data.
+
+
+## Sprint 8 Patch 035 section-label hardening
+
+Patch 035 keeps the Patch 034 section-label seam but removes hostile-input ambiguity. The label finder now accepts only unique file-backed sections that carry both `SHF_ALLOC` and `SHF_EXECINSTR`. Non-executable overlap is ignored, and multiple executable sections covering the same file offset produce no label. The helper context is stack-local to the annotation pass. Text reports escape unsafe section-name bytes as `\xNN`, preserving one logical line per region or candidate.

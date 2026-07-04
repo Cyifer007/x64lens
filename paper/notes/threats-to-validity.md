@@ -47,3 +47,7 @@ The canary field is based on exact dynamic string-table evidence for `__stack_ch
 Patch 033 stripped indicator threat
 
 The stripped field is based on bounded section-header evidence for `SHT_SYMTAB`. It can describe represented section-table metadata, but it does not prove complete symbol recovery, source availability, or runtime loader behavior. Section headers remain outside executable-region authority.
+
+## Patch 034 section-label threat
+
+Section labels are derived from optional section-header metadata. They can improve readability, but they are not loader authority and may be absent, stale, stripped, or intentionally misleading in adversarial binaries. Claims based on Patch 034 should describe labels as annotations over loader-derived regions and scanner-derived candidates.

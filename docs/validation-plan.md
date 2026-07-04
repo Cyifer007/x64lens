@@ -655,7 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
-Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Patch 033 expands the matrix to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding stripped/not-stripped indicators, zero-length dynamic string-table negative evidence, duplicate dynamic string-table singleton rejection, and string-table scan-cap rejection. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Patch 033 expands the matrix to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding stripped/not-stripped indicators, zero-length dynamic string-table negative evidence, duplicate dynamic string-table singleton rejection, and string-table scan-cap rejection. Patch 034 expands the matrix to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding the zero-length dynamic string-table endpoint case and section-label assertions. Patch 035 preserves those matrix counts and adds `make section-label-smoke` with four focused hostile section-label cases. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
 
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
@@ -721,7 +721,7 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases. Patch 033 expands it to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving the malformed-smoke and capacity baselines.
+Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases. Patch 033 expands it to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving the malformed-smoke and capacity baselines. Patch 034 expands it to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving those same baselines. Patch 035 preserves those counts and adds four section-label smoke cases.
 
 ## Sprint 8 Patch 030 bounded dynamic-table validation
 
@@ -811,3 +811,27 @@ mitigation-matrix-smoke: ok
 ```
 
 Expected stripped behavior is `Stripped indicator: unknown` when bounded section-table evidence is unavailable, `Stripped indicator: stripped` when a validated section table contains no `SHT_SYMTAB`, and `Stripped indicator: not stripped` when a validated section table contains `SHT_SYMTAB`. JSON mirrors this as `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Section-derived metadata must not change executable-region boundaries or gadget scanning.
+
+## Sprint 8 Patch 034 validation additions
+
+Patch 034 adds section-label assertions to the core suite for `mitigations`, `gadgets`, and `analyze` output against the controlled gadget fixture. It also adds a mitigation-matrix case for zero-length dynamic string-table evidence whose pointer is exactly at the end of its file-backed load. The expected mitigation-matrix summary is 24 valid cases, 14 malformed cases, and one unsupported fail-closed case.
+
+
+## Sprint 8 Patch 035 section-label hardening validation
+
+Patch 035 adds `make section-label-smoke` and includes it in `make validation-smoke` and Docker aggregate validation. Acceptance requires:
+
+```bash
+MALFORMED_TIMEOUT=2 make section-label-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Expected section-label summary:
+
+```text
+section-label-smoke: ok
+  cases: 4
+```
+
+The four cases cover baseline `.text` labels, escaped newline-bearing labels, non-executable overlap rejection, and ambiguous executable overlap omission.

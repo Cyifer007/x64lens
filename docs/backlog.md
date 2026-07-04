@@ -191,8 +191,17 @@ Sprint 7 closed the hostile-input and checked-arithmetic foundation. The next ba
 
 ## Sprint 8 Patch 032 backlog update
 
-Completed: first canary indicator, stripped-state indicator, JSON Schema tightening, permanent mitigation-matrix promotion of valid non-`DT_NULL` dynamic coverage, direct gadgets JSON coverage, invalid dynamic string-table malformed coverage, duplicate dynamic-string singleton rejection, string-table scan-cap coverage, and `make clean-results` hygiene. Remaining Sprint 8 work: section labels as annotations and optional external comparison helpers.
+Completed: first canary indicator, stripped-state indicator, JSON Schema tightening, permanent mitigation-matrix promotion of valid non-`DT_NULL` dynamic coverage, direct gadgets JSON coverage, invalid dynamic string-table malformed coverage, duplicate dynamic-string singleton rejection, string-table scan-cap coverage, and `make clean-results` hygiene. Remaining Sprint 8 work: optional external comparison helpers and validation-discovered defects.
 
 ## Sprint 8 Patch 033 backlog update
 
-Patch 033 completes the stripped-status indicator and promotes duplicate dynamic-string singleton and dynamic string-table scan-cap review cases into the permanent mitigation oracle. Remaining Sprint 8 backlog should prioritize section labels as annotations and optional external comparison helpers before primitive expansion.
+Patch 033 completes the stripped-status indicator and promotes duplicate dynamic-string singleton and dynamic string-table scan-cap review cases into the permanent mitigation oracle. Remaining Sprint 8 backlog should prioritize optional external comparison helpers before primitive expansion.
+
+## Sprint 8 Patch 034 backlog update
+
+Patch 034 completes the first section-label annotation pass. Patch 035 resolves the validation-discovered section-label defects. Remaining Sprint 8 work is paused for historical review before Sprint 9 evidence provenance; optional `readelf`, `checksec`, or `rabin2` comparison helpers remain useful later.
+
+
+## Sprint 8 Patch 035 backlog update
+
+Patch 035 hardens section-label rendering and overlap handling, adds a focused section-label smoke target, and removes process-global label-helper state. The next scheduled activity is the historical patch review pause before Sprint 9 begins.

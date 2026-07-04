@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 8 Patch 033 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, an evidence-qualified canary indicator, and a bounded section-header stripped-status indicator. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, canary indicator reporting, and stripped indicator reporting are established.
+> Status: Sprint 8 Patch 035 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, an evidence-qualified canary indicator, a bounded section-header stripped-status indicator, and section-label annotations for executable regions and gadget candidates. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, canary indicator reporting, stripped indicator reporting, and section-label reporting, and section-label hardening probes are established.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -29,6 +29,7 @@ read-only file mapping
   -> ELF64 x86_64 validation
   -> program-header analysis
   -> executable PT_LOAD + PF_X regions
+  -> optional section-header metadata annotations
   -> raw ret and ret imm16 candidate windows
   -> exact suffix pattern IDs
   -> conservative semantic classes
@@ -73,7 +74,7 @@ The current line does not implement exploit generation, payload generation, remo
 - A **semantic primitive** is assigned only when the current classifier has a supported rule.
 - An **unknown candidate** is preserved rather than overclassified.
 - A **score** is relative utility under the current heuristic model, not exploitability.
-- A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field is a section-table metadata indicator, not runtime loader authority.
+- A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, and ambiguous executable section overlap is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
 See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
@@ -187,6 +188,7 @@ make system-smoke
 make capacity-smoke
 make malformed-smoke
 make mitigation-matrix-smoke
+make section-label-smoke
 make validation-smoke
 make docker-test
 make docker-validation-smoke
@@ -199,13 +201,19 @@ Hostile-input checks can also be run directly:
 ```bash
 MALFORMED_TIMEOUT=2 make malformed-smoke
 MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+make section-label-smoke
 make capacity-smoke
 make docker-validation-smoke
 ```
 
 The malformed-input runner records seed hashes, expected and observed exit codes, signals, timeout state, elapsed nanoseconds, and output sizes. Generated mutations are temporary by default. Compact result artifacts are written under `tests/results/malformed/` and remain ignored by Git. Patch 028 adds explicit program-header and section-header table-end wrap cases to keep checked arithmetic from regressing. Patch 030 preserves that baseline while adding dynamic-table malformed cases to the mitigation matrix. Patch 031 adds duplicate-`PT_DYNAMIC` rejection. Patch 032 keeps the malformed-smoke baseline unchanged while adding invalid dynamic string-table evidence to the mitigation matrix.
 
-The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, direct gadgets JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 033 expands the oracle to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case. Coverage includes canary-present/canary-absent indicators, zero-length dynamic string-table negative evidence, stripped and not-stripped section-table indicators, valid non-`DT_NULL` dynamic tables, invalid dynamic string-table rejection, duplicate `DT_STRTAB` and `DT_STRSZ` rejection, over-cap string-table rejection, `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
+
+### Section-label hardening smoke
+
+`make section-label-smoke` builds temporary ELF64 fixtures with controlled section-name metadata. It verifies that `.text` labels are preserved, newline-bearing section names are escaped in text output, non-executable overlapping sections do not capture executable offsets, and ambiguous overlapping executable sections remain unlabeled. The target writes ignored JSON evidence under `tests/results/section-label/`.
+
+The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, direct gadgets JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 034 expands the oracle to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case; Patch 035 keeps those counts and adds a focused `section-label-smoke` harness. Coverage includes canary-present/canary-absent indicators, zero-length dynamic string-table negative evidence including the exact load-endpoint case, stripped and not-stripped section-table indicators, section-label fixture checks, valid non-`DT_NULL` dynamic tables, invalid dynamic string-table rejection, duplicate `DT_STRTAB` and `DT_STRSZ` rejection, over-cap string-table rejection, `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
 
 Patch bundle hygiene:
 

@@ -27,6 +27,7 @@ extern x64lens_file_unmap
 extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
 extern x64lens_shdr_classify_stripped
+extern x64lens_shdr_annotate_gadgets
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
@@ -176,6 +177,16 @@ x64lens_command_gadgets_with_format:
     lea     rdi, [gad_summary]
     mov     rsi, r15
     call    x64lens_scoring_apply
+    test    rax, rax
+    jne     .error
+
+    ; Add optional section labels to candidate records after discovery and
+    ; scoring so annotations cannot alter scanner or scoring metrics.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    mov     rsi, [gad_mapped_file + FILEMAP_SIZE]
+    mov     rdx, r15
+    mov     rcx, [gad_summary + GADGET_SUMMARY_COUNT]
+    call    x64lens_shdr_annotate_gadgets
     test    rax, rax
     jne     .error
 

@@ -251,8 +251,8 @@ After the broad malformed and capacity gates, run:
 MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
 ```
 
-Expect 23 valid cases, 14 malformed cases, and one unsupported fail-closed case after Patch 033. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.
+Expect 24 valid cases, 14 malformed cases, and one unsupported fail-closed case after Patch 034. Inspect the newest ignored JSON artifact under `tests/results/mitigation-matrix/`, then run `make validation-smoke` and `make docker-validation-smoke` to confirm aggregate integration. `make help` lists the principal development targets.
 
 ## Patch 032 validation addition
 
-After Patch 033, `make mitigation-matrix-smoke` should report 23 valid cases, 14 malformed cases, and one unsupported fail-closed case. Use `make clean-results` before broad local text searches or release-package review when old ignored validation artifacts could confuse interpretation.
+After Patch 034, `make mitigation-matrix-smoke` should report 24 valid cases, 14 malformed cases, and one unsupported fail-closed case. Use `make clean-results` before broad local text searches or release-package review when old ignored validation artifacts could confuse interpretation.

@@ -114,3 +114,7 @@ Once publication benchmark data is collected, schema changes that affect extract
 - preserving a versioned extractor for the earlier schema and treating datasets separately.
 
 Mixed-schema rows must not be aggregated without explicit normalization.
+
+## Sprint 8 Patch 034 compatibility note
+
+Patch 034 keeps schema `0.1.0` while adding optional gadget `section` annotations and relaxing `mitigations.stripped` to optional in the schema and bundled validator. Current x64lens reports still emit `mitigations.stripped`; the relaxation exists so older same-version development reports remain readable. Schema `0.2.0` remains reserved for durable provenance and completeness-state fields rather than this compatible annotation.

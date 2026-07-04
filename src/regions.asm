@@ -61,6 +61,9 @@ x64lens_regions_store_from_phdr:
 
     mov     eax, [rdx + P_FLAGS]
     mov     [rdi + EXEC_REGION_FLAGS], eax
+    mov     qword [rdi + EXEC_REGION_SECTION_NAME_PTR], 0
+    mov     qword [rdi + EXEC_REGION_SECTION_NAME_LEN], 0
+    mov     qword [rdi + EXEC_REGION_SECTION_INDEX], 0
 
     xor     rax, rax
     ret

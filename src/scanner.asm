@@ -200,6 +200,9 @@ x64lens_scanner_find_ret_candidates:
     mov     qword [rax + GADGET_SIDE_EFFECT_FLAGS], 0
     mov     dword [rax + GADGET_SCORE], 0
     mov     dword [rax + GADGET_PATTERN_ID], PATTERN_UNKNOWN
+    mov     qword [rax + GADGET_SECTION_NAME_PTR], 0
+    mov     qword [rax + GADGET_SECTION_NAME_LEN], 0
+    mov     qword [rax + GADGET_SECTION_INDEX], 0
 
     inc     qword [rbx + GADGET_SUMMARY_COUNT]
     cmp     dword [rax + GADGET_TERMINATOR_TYPE], GADGET_TERM_RET

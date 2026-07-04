@@ -86,6 +86,15 @@ The same valid ELF64 program-header evidence must produce compatible mitigation 
 
 Text output must use `Canary indicator:` rather than wording that implies complete stack protection. JSON `mitigations.canary` may be `unknown`, `absent`, or `present`. `unknown` is required when bounded metadata is unavailable. `present` means exact `__stack_chk_fail` evidence was found in a validated dynamic string table; it does not prove every function is protected.
 
-Sprint 8 Patch 033 stripped-status update
+## Sprint 8 Patch 033 stripped-status update
 
 Patch 033 reports stripped status as an evidence-qualified mitigation metadata field. Text uses `Stripped indicator: unknown`, `stripped`, or `not stripped`; JSON uses `mitigations.stripped` values `unknown`, `stripped`, or `not_stripped`. The section-header scan is bounded and never selects executable regions or candidate scan ranges. Duplicate `DT_STRTAB` and `DT_STRSZ` dynamic entries fail closed as malformed input so canary evidence is not order-dependent.
+
+## Sprint 8 Patch 034 section-label update
+
+Patch 034 may emit section labels for executable regions and gadget candidates when a bounded section-name table is available. Text output uses `section: <name>` annotations. JSON gadget records may include `section` as a string or `null`. These labels are optional metadata and must not be interpreted as runtime mapping authority.
+
+
+## Sprint 8 Patch 035 section-label rendering update
+
+Text section labels are single-line-safe. Printable ASCII bytes are emitted directly except backslash; backslash is escaped as `\\`, and control bytes, DEL, and high-bit bytes are escaped as `\xNN`. JSON section fields remain strings or `null` and use normal JSON string escaping. Ambiguous overlapping executable section metadata must not force a label.

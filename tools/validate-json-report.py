@@ -132,9 +132,9 @@ def validate_common(doc: dict[str, Any]) -> None:
     require("canary" in mitigations, "mitigations.canary is missing")
     require(isinstance(mitigations["canary"], str), "mitigations.canary must be a string")
     require(mitigations["canary"] in {"unknown", "absent", "present"}, "mitigations.canary must be unknown, absent, or present")
-    require("stripped" in mitigations, "mitigations.stripped is missing")
-    require(isinstance(mitigations["stripped"], str), "mitigations.stripped must be a string")
-    require(mitigations["stripped"] in {"unknown", "stripped", "not_stripped"}, "mitigations.stripped must be unknown, stripped, or not_stripped")
+    if "stripped" in mitigations:
+        require(isinstance(mitigations["stripped"], str), "mitigations.stripped must be a string")
+        require(mitigations["stripped"] in {"unknown", "stripped", "not_stripped"}, "mitigations.stripped must be unknown, stripped, or not_stripped")
 
     if "bind_now" in mitigations:
         require(isinstance(mitigations["bind_now"], bool) or mitigations["bind_now"] is None, "mitigations.bind_now must be bool or null")
@@ -187,6 +187,9 @@ def validate_common(doc: dict[str, Any]) -> None:
         require(isinstance(gadget, dict), f"{prefix} must be an object")
         missing_gadget = REQUIRED_GADGET_FIELDS - set(gadget)
         require(not missing_gadget, f"{prefix} missing fields: {sorted(missing_gadget)}")
+
+        if "section" in gadget:
+            require(gadget["section"] is None or isinstance(gadget["section"], str), f"{prefix}.section must be a string or null")
 
         require_hex64(gadget["va"], f"{prefix}.va")
         require_hex64(gadget["file_offset"], f"{prefix}.file_offset")
@@ -248,6 +251,10 @@ def validate_fixture(doc: dict[str, Any]) -> None:
         require(coverage[key] is True, f"fixture primitive coverage {key} must be true")
     for reg in ["rax", "rcx", "rdx", "rsi", "rdi", "rsp", "r8", "r9"]:
         require(reg in coverage["registers"], f"fixture coverage missing register {reg}")
+
+    if all("section" in g for g in doc["gadgets"]):
+        for gadget in doc["gadgets"]:
+            require(gadget["section"] == ".text", "fixture gadget section labels must be .text when emitted")
 
     by_pattern = {g["pattern"]: g for g in doc["gadgets"]}
     required_patterns = [

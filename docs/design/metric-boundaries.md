@@ -115,3 +115,12 @@ exact, semantic, unknown, validated, or scored candidate counts. It is a bounded
 mitigation-metadata count: the number of `Elf64_Dyn` records inspected before
 the checked table ended or `DT_NULL` was encountered. It exists to explain the
 scope of the dynamic-table evidence used for bind-now and future RELRO work.
+
+## Sprint 8 Patch 034 section-label boundary
+
+Section labels are annotation metadata. They must not be counted as discovered candidates, exact pattern matches, semantic primitives, validated gadgets, scored gadgets, or exploitability evidence. A labeled gadget and an unlabeled gadget with the same address, bytes, terminator, pattern, semantic class, stack delta, and score are the same candidate for metric purposes.
+
+
+## Sprint 8 Patch 035 label ambiguity boundary
+
+Section labels are intentionally absent when section metadata is ambiguous. Missing labels must not be counted as unknown gadgets, failed semantic classification, or scanner incompleteness. Raw candidate count, exact pattern count, semantic primitive count, unknown candidate count, scored candidate count, register coverage, and score values remain independent of section-label availability.

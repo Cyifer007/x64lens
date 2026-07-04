@@ -93,7 +93,10 @@
 %define EXEC_REGION_FILESZ          16
 %define EXEC_REGION_MEMSZ           24
 %define EXEC_REGION_FLAGS           32
-%define EXEC_REGION_RECORD_SIZE     40
+%define EXEC_REGION_SECTION_NAME_PTR 40
+%define EXEC_REGION_SECTION_NAME_LEN 48
+%define EXEC_REGION_SECTION_INDEX    56
+%define EXEC_REGION_RECORD_SIZE      64
 
 ; Sprint 2 fixed-capacity region buffer. A normal ELF binary should have far
 ; fewer executable PT_LOAD segments than this. If this limit is exceeded, the
@@ -187,7 +190,10 @@
 %define GADGET_SIDE_EFFECT_FLAGS    64
 %define GADGET_SCORE                72
 %define GADGET_PATTERN_ID           76
-%define GADGET_RECORD_SIZE          80
+%define GADGET_SECTION_NAME_PTR     80
+%define GADGET_SECTION_NAME_LEN     88
+%define GADGET_SECTION_INDEX        96
+%define GADGET_RECORD_SIZE          112
 
 ; register bitmap bits
 %define REG_RAX_BIT                 0
