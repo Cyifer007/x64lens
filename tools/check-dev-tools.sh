@@ -110,27 +110,26 @@ check_cargo_for_ropr() {
 }
 
 print_install_hint() {
-  cat >&2 <<'EOF_HINT'
-
-Ubuntu 24.04 development dependency install:
-  sudo apt update
-  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
-
-Optional Python baseline gadget tools:
-  pipx ensurepath
-  export PATH="$HOME/.local/bin:$PATH"
-  pipx install ROPGadget
-  pipx install ropper
-
-Optional ropr baseline:
-  Ubuntu 24.04 apt cargo may be too old for ropr. Prefer rustup stable:
-  make install-rustup-user
-  . "$HOME/.cargo/env"
-  make install-ropr-user
-
-After installing user-local tools, make sure these paths are visible:
-  export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-EOF_HINT
+  printf '%s\n' \
+    '' \
+    'Ubuntu 24.04 development dependency install:' \
+    '  sudo apt update' \
+    '  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
+    '' \
+    'Optional Python baseline gadget tools:' \
+    '  pipx ensurepath' \
+    '  export PATH="$HOME/.local/bin:$PATH"' \
+    '  pipx install ROPGadget' \
+    '  pipx install ropper' \
+    '' \
+    'Optional ropr baseline:' \
+    '  Ubuntu 24.04 apt cargo may be too old for ropr. Prefer rustup stable:' \
+    '  make install-rustup-user' \
+    '  . "$HOME/.cargo/env"' \
+    '  make install-ropr-user' \
+    '' \
+    'After installing user-local tools, make sure these paths are visible:' \
+    '  export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"' >&2
 }
 
 check_build() {

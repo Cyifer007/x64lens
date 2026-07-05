@@ -381,3 +381,16 @@ Runtime and memory are only part of the comparison. For each baseline, document:
 - whether semantic or mitigation work is performed.
 
 Coverage tables should compare explicitly named metrics, not a generic `gadget_count`.
+
+## Sprint 8 Patch 036 benchmark evidence hardening
+
+Patch 036 keeps scanner and baseline benchmark targets in the development-smoke category, but it tightens artifact integrity:
+
+- `RUNS` must be a positive integer.
+- `MAX_DEPTH` must be a positive integer within the documented smoke range.
+- `wall_s`, `maxrss_kb`, and exit-code fields must remain numeric and nonnegative.
+- Benchmark target size records the dereferenced analyzed file size so symlink targets such as `/bin/sh` do not record only the symlink inode size.
+- `make bench-summary-latest` selects the newest nonempty TSV artifact.
+- `make bench-summary` refuses to aggregate multiple TSV files unless `ALLOW_MIXED_BENCH_SUMMARY=1` is set. Mixed summaries remain exploratory and must not be used for publication evidence without matching metadata.
+
+These checks do not make smoke timing publication-grade. Sprint 12 still owns the high-resolution runner, environment metadata, corpus IDs, raw artifact retention, warmup/cache policy, and statistical method.

@@ -15,7 +15,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BIN="$ROOT/build/x64lens"
-TMPDIR="${TMPDIR:-/tmp}"
+TMPROOT="${TMPDIR:-/tmp}"
+TMPDIR="$(mktemp -d "$TMPROOT/x64lens-tests.XXXXXX")"
+trap 'rm -rf "$TMPDIR"' EXIT
 
 if [[ ! -x "$BIN" ]]; then
   echo "error: $BIN not found or not executable"

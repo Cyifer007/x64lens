@@ -148,3 +148,7 @@ Changes to ELF type interpretation, GNU stack handling, RELRO presence, dynamic-
 ## Private validation orchestration boundary rule
 
 Local validation missions, operational reports, command logs, temporary probes, and advisory review notes are private workflow artifacts. They must remain ignored, must not be shipped in public patch bundles, and must not be described as public product features. Convert only the technical result into public code, tests, documentation, or release evidence.
+
+## Sprint 8 Patch 036 evidence-hygiene rule
+
+Development evidence must fail closed when its own inputs or metrics are invalid. Benchmark smoke scripts must reject non-positive run counts, invalid max-depth values, nonnumeric timing/RSS fields, negative metric values, and silent mixed-artifact summaries. Docker build contexts must exclude local environment files. Report adapters must preserve JSON validity for hostile byte values instead of replacing evidence with lossy placeholders.

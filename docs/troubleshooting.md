@@ -176,3 +176,7 @@ Any partial text or JSON output is a contract failure because the report would a
 ## `make mitigation-matrix-smoke` reports a failed case
 
 First identify the named valid or malformed case in stderr. For a valid case, compare focused `mitigations` text and `analyze --format json` output. The `non-executable-load` case must emit the exact region line `  none discovered from PT_LOAD + PF_X`; an expectation of only `  none` indicates stale harness text, not a Make dependency failure. For a malformed case, confirm the relevant command paths return exit code `5`, emit no stdout, and emit exactly `error: malformed or truncated ELF`. Most malformed cases exercise `info`, `mitigations`, and `analyze`; dynamic-table malformed cases exercise `mitigations` and `analyze` because `info` does not parse `PT_DYNAMIC`. Do not weaken the expected matrix to accommodate an unexplained parser or reporter change.
+
+## Broken PATH tool diagnostics
+
+`tools/check-dev-tools.sh` uses shell builtins for its install hint so a badly damaged `PATH` can still produce the actionable missing-tool message. If `PATH` is empty or points only at a temporary directory, invoke the script through an absolute shell path, for example `/usr/bin/bash tools/check-dev-tools.sh --dev`.

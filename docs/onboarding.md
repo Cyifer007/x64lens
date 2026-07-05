@@ -111,7 +111,7 @@ Run smoke benchmarks after the correctness path passes:
 ```bash
 RUNS=5 MAX_DEPTH=4 make bench-scanner-smoke
 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
-make bench-summary
+make bench-summary-latest
 ```
 
 ## Make target tour
@@ -149,8 +149,8 @@ The table below lists the public Make targets. A new development environment sho
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
 | `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
-| `make bench-summary` | Summarize all generated benchmark TSV files. |
-| `make bench-summary-latest` | Summarize only the newest baseline-smoke TSV artifact. |
+| `make bench-summary` | Summarize one benchmark TSV by default; set `ALLOW_MIXED_BENCH_SUMMARY=1` only for exploratory mixed summaries. |
+| `make bench-summary-latest` | Summarize the newest nonempty benchmark TSV artifact, preferring baseline-smoke artifacts when present. |
 | `make checkpoint-demo` | Run the integrated controlled or system-binary checkpoint demonstration. |
 | `make checkpoint-tag-help` | Print non-mutating local annotated-tag guidance. |
 | `make script-perms-check` | Verify executable bits on shell/Python helper scripts. |
@@ -256,3 +256,17 @@ Expect 24 valid cases, 14 malformed cases, and one unsupported fail-closed case 
 ## Patch 032 validation addition
 
 After Patch 034, `make mitigation-matrix-smoke` should report 24 valid cases, 14 malformed cases, and one unsupported fail-closed case. Use `make clean-results` before broad local text searches or release-package review when old ignored validation artifacts could confuse interpretation.
+
+## Optional analysis and review tools
+
+The core build and validation path does not require `checksec`, `radare2`/`rabin2`, `strace`, or `shellcheck`. They are useful local review tools for mitigation comparison, ELF metadata comparison, syscall/cleanup inspection, and shell-helper linting. Treat their output as comparator evidence with version-specific semantics, not as authoritative replacement for x64lens contracts.
+
+Example inventory commands:
+
+```bash
+command -v checksec && checksec --version || true
+command -v rabin2 && rabin2 -v || true
+command -v r2 && r2 -v || true
+command -v strace && strace -V || true
+command -v shellcheck && shellcheck --version || true
+```

@@ -51,3 +51,7 @@ The stripped field is based on bounded section-header evidence for `SHT_SYMTAB`.
 ## Patch 034 section-label threat
 
 Section labels are derived from optional section-header metadata. They can improve readability, but they are not loader authority and may be absent, stale, stripped, or intentionally misleading in adversarial binaries. Claims based on Patch 034 should describe labels as annotations over loader-derived regions and scanner-derived candidates.
+
+## Sprint 8 Patch 036 evidence-hardening note
+
+Historical-review probes found that development smoke evidence can be misleading if invalid benchmark inputs, impossible metric values, mixed TSV aggregation, symlink target sizes, or lossy JSON escaping are accepted without validation. Patch 036 hardens those development gates, but publication claims still require the planned fixed corpus, higher-resolution runner, normalized baseline definitions, and schema/provenance transition before results are interpreted as research evidence.

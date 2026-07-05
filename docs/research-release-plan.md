@@ -116,3 +116,7 @@ Patch 033 closes the first stripped-status indicator gate while preserving schem
 ## Sprint 8 Patch 034 release-gate update
 
 Patch 034 adds section-label annotations while preserving schema `0.1.0`. Release evidence may claim deterministic section-label annotation for represented safe section-name cases, but must not claim complete section recovery or runtime mapping authority from section headers.
+
+## Patch 036 historical-review hardening note
+
+Patch 036 closes several review-found blockers for trustworthy evidence: byte-safe JSON rendering, `.env` Docker context exclusion, benchmark smoke sanity validation, JSON coverage-register consistency, and temporary-file isolation. These fixes improve release hygiene, but they do not replace the Sprint 9 schema/provenance transition or the Sprint 12/13 publication benchmark campaign.

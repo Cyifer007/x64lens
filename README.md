@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 8 Patch 035 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, an evidence-qualified canary indicator, a bounded section-header stripped-status indicator, and section-label annotations for executable regions and gadget candidates. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, canary indicator reporting, stripped indicator reporting, and section-label reporting, and section-label hardening probes are established.
+> Status: Sprint 8 Patch 036 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, an evidence-qualified canary indicator, a bounded section-header stripped-status indicator, section-label annotations for executable regions and gadget candidates, and historical-findings hardening for byte-safe JSON, section-label ambiguity, Docker context hygiene, benchmark evidence integrity, JSON validator consistency, and temporary-file isolation. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, canary indicator reporting, stripped indicator reporting, section-label reporting, section-label hardening probes, and evidence-hygiene gates are established.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -74,7 +74,7 @@ The current line does not implement exploit generation, payload generation, remo
 - A **semantic primitive** is assigned only when the current classifier has a supported rule.
 - An **unknown candidate** is preserved rather than overclassified.
 - A **score** is relative utility under the current heuristic model, not exploitability.
-- A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, and ambiguous executable section overlap is left unlabeled.
+- A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
 See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
@@ -211,9 +211,9 @@ The malformed-input runner records seed hashes, expected and observed exit codes
 
 ### Section-label hardening smoke
 
-`make section-label-smoke` builds temporary ELF64 fixtures with controlled section-name metadata. It verifies that `.text` labels are preserved, newline-bearing section names are escaped in text output, non-executable overlapping sections do not capture executable offsets, and ambiguous overlapping executable sections remain unlabeled. The target writes ignored JSON evidence under `tests/results/section-label/`.
+`make section-label-smoke` builds temporary ELF64 fixtures with controlled section-name metadata. It verifies that `.text` labels are preserved, newline-bearing section names are escaped in text output, high-bit section-name bytes remain JSON-safe, non-executable overlapping sections do not capture executable offsets, ambiguous overlapping executable sections remain unlabeled, and file-offset/virtual-address disagreement leaves records unlabeled. The target writes ignored JSON evidence under `tests/results/section-label/`.
 
-The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, direct gadgets JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 034 expands the oracle to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case; Patch 035 keeps those counts and adds a focused `section-label-smoke` harness. Coverage includes canary-present/canary-absent indicators, zero-length dynamic string-table negative evidence including the exact load-endpoint case, stripped and not-stripped section-table indicators, section-label fixture checks, valid non-`DT_NULL` dynamic tables, invalid dynamic string-table rejection, duplicate `DT_STRTAB` and `DT_STRSZ` rejection, over-cap string-table rejection, `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
+The mitigation oracle creates controlled ELF64 program-header layouts independently of compiler defaults. It verifies exact loader-level mitigation and region facts, matching integrated JSON values, direct gadgets JSON values, and stable malformed failure behavior. Its ignored evidence is written under `tests/results/mitigation-matrix/`. Patch 034 expands the oracle to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case; Patch 035 keeps those counts and adds a focused `section-label-smoke` harness; Patch 036 keeps the matrix counts while expanding the focused section-label harness to six cases. Coverage includes canary-present/canary-absent indicators, zero-length dynamic string-table negative evidence including the exact load-endpoint case, stripped and not-stripped section-table indicators, section-label fixture checks, valid non-`DT_NULL` dynamic tables, invalid dynamic string-table rejection, duplicate `DT_STRTAB` and `DT_STRSZ` rejection, over-cap string-table rejection, `DT_BIND_NOW`, `DT_FLAGS`, `DT_FLAGS_1`, full RELRO combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed inputs.
 
 Patch bundle hygiene:
 
@@ -230,7 +230,7 @@ RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 make bench-summary-latest
 ```
 
-These results verify measurement plumbing. They are not publication results. Small x64lens runs can fall below GNU `time` display resolution. Sprint 12 replaces this with a higher-resolution runner before the research preview candidate.
+These results verify measurement plumbing. They are not publication results. Patch 036 rejects non-positive run counts, invalid max-depth values, nonnumeric or negative timing/RSS fields, and mixed benchmark summaries by default. Small x64lens runs can still fall below GNU `time` display resolution. Sprint 12 replaces this with a higher-resolution runner before the research preview candidate.
 
 See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
 
@@ -250,7 +250,7 @@ file mapping and bounds
 
 Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
 
-See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), and [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md).
+See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
 ## Roadmap and release gates
 
@@ -307,3 +307,17 @@ See [`docs/ethics-and-safety.md`](docs/ethics-and-safety.md).
 ## License
 
 Apache License 2.0. See [`LICENSE`](LICENSE).
+
+## Optional analysis and review tools
+
+The core build and validation path does not require `checksec`, `radare2`/`rabin2`, `strace`, or `shellcheck`. They are useful local review tools for mitigation comparison, ELF metadata comparison, syscall/cleanup inspection, and shell-helper linting. Treat their output as comparator evidence with version-specific semantics, not as authoritative replacement for x64lens contracts.
+
+Example inventory commands:
+
+```bash
+command -v checksec && checksec --version || true
+command -v rabin2 && rabin2 -v || true
+command -v r2 && r2 -v || true
+command -v strace && strace -V || true
+command -v shellcheck && shellcheck --version || true
+```

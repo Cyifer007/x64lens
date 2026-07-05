@@ -11,7 +11,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TOOL="${1:-$ROOT/build/x64lens}"
 MAX_DEPTH="${MAX_DEPTH:-4}"
-TMPDIR="${TMPDIR:-/tmp}"
+TMPROOT="${TMPDIR:-/tmp}"
+TMPDIR="$(mktemp -d "$TMPROOT/x64lens-system-smoke.XXXXXX")"
+trap 'rm -rf "$TMPDIR"' EXIT
 
 if [[ $# -gt 0 ]]; then
   shift

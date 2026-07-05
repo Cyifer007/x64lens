@@ -205,3 +205,7 @@ Patch 034 completes the first section-label annotation pass. Patch 035 resolves 
 ## Sprint 8 Patch 035 backlog update
 
 Patch 035 hardens section-label rendering and overlap handling, adds a focused section-label smoke target, and removes process-global label-helper state. The next scheduled activity is the historical patch review pause before Sprint 9 begins.
+
+## Sprint 8 Patch 036 backlog update
+
+Patch 036 resolves the immediate historical-review hardening items: byte-safe JSON for target paths and bounded section labels, file-offset plus virtual-address agreement for labels, Docker `.env` context exclusion, benchmark artifact sanity checks, JSON coverage-register validation, per-run temporary directories, and robust missing-tool install hints. Remaining industry-comparison work stays in Sprint 9 and Sprint 12/13: provenance schema `0.2.0`, decoder-gap measurement, high-resolution benchmarks, pinned baseline environments, and normalized coverage definitions.

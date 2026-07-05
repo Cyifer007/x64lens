@@ -25,3 +25,7 @@ Patch 033 reports stripped status as an evidence-qualified mitigation metadata f
 ## Sprint 8 Patch 034 section-label update
 
 Patch 034 adds section labels as optional annotations. Section names flow from bounded section-header and section-name string-table evidence. They do not change loader-derived executable regions, scanner ranges, semantic classes, or scores.
+
+## Sprint 8 Patch 036 historical-findings hardening update
+
+Patch 036 hardens implemented seams discovered during historical review. Byte-safe JSON escaping, section-label file-offset/virtual-address agreement, benchmark artifact sanity checks, Docker context filtering, validator cross-field checks, and temporary-output isolation are now implementation constraints. Larger provenance, decoder-gap, and publication-benchmark work remains governed by the future design notes rather than being folded into this cleanup patch.

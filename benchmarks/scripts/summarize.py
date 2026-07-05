@@ -29,6 +29,31 @@ def as_float(value: str) -> float | None:
         return None
 
 
+def require_nonnegative_number(row: dict[str, str], field: str, source: Path, row_number: int) -> None:
+    value = row.get(field, "")
+    parsed = as_float(value)
+    if parsed is None:
+        raise ValueError(f"{source}:{row_number}: {field} must be numeric, got {value!r}")
+    if parsed < 0:
+        raise ValueError(f"{source}:{row_number}: {field} must be non-negative, got {value!r}")
+
+
+def require_nonnegative_int(row: dict[str, str], field: str, source: Path, row_number: int) -> None:
+    value = row.get(field, "")
+    if not value.isdigit():
+        raise ValueError(f"{source}:{row_number}: {field} must be a non-negative integer, got {value!r}")
+
+
+def validate_row(row: dict[str, str], source: Path, row_number: int) -> None:
+    require_nonnegative_number(row, "wall_s", source, row_number)
+    require_nonnegative_int(row, "maxrss_kb", source, row_number)
+    require_nonnegative_int(row, "exit_code", source, row_number)
+    if "run" in row:
+        require_nonnegative_int(row, "run", source, row_number)
+        if int(row["run"]) < 1:
+            raise ValueError(f"{source}:{row_number}: run must be >= 1, got {row['run']!r}")
+
+
 def percentile(values: list[float], pct: float) -> float | None:
     if not values:
         return None
@@ -59,7 +84,8 @@ def load_rows(paths: Iterable[Path]) -> list[dict[str, str]]:
             if not reader.fieldnames:
                 print(f"warning: benchmark file has no header: {path}", file=sys.stderr)
                 continue
-            for row in reader:
+            for row_number, row in enumerate(reader, start=2):
+                validate_row(row, path, row_number)
                 row["source_file"] = str(path)
                 rows.append(row)
     return rows
@@ -139,7 +165,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--format", choices=("markdown", "csv"), default="markdown")
     args = parser.parse_args(argv)
 
-    rows = load_rows(args.paths)
+    try:
+        rows = load_rows(args.paths)
+    except ValueError as exc:
+        print(f"error: invalid benchmark row: {exc}", file=sys.stderr)
+        return 1
     if not rows:
         print("error: no benchmark rows found", file=sys.stderr)
         return 1

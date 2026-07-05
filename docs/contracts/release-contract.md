@@ -100,3 +100,7 @@ Tags point to the exact validated commit. Checksums are generated after artifact
 ## Mitigation-oracle release gate
 
 A research preview or release candidate must pass the deterministic mitigation matrix in the documented native and Docker environments. The retained evidence must identify the seed and generated fixtures by SHA-256, report all case outcomes, and contain no failed record.
+
+## Sprint 8 Patch 036 release-hygiene note
+
+Release candidates must not be cut from evidence that contains invalid JSON, local environment files in Docker contexts, empty benchmark artifacts, negative timing/RSS values, or silently mixed benchmark summaries. Patch 036 hardens these development checks, but the research preview still requires the planned schema/provenance and publication-benchmark gates before public performance or coverage claims.

@@ -44,6 +44,51 @@ if ! command -v /usr/bin/time >/dev/null 2>&1; then
   exit 127
 fi
 
+require_positive_int() {
+  local name="$1"
+  local value="$2"
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 1 ]]; then
+    echo "error: $name must be a positive integer, got: $value" >&2
+    exit 2
+  fi
+}
+
+require_nonnegative_number() {
+  local name="$1"
+  local value="$2"
+  if [[ ! "$value" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "error: $name must be a non-negative number, got: $value" >&2
+    exit 1
+  fi
+}
+
+validate_timing_fields() {
+  local wall="$1"
+  local maxrss="$2"
+  local time_exit="$3"
+  local status="$4"
+  require_nonnegative_number wall_s "$wall"
+  if [[ ! "$maxrss" =~ ^[0-9]+$ ]]; then
+    echo "error: maxrss_kb must be a non-negative integer, got: $maxrss" >&2
+    exit 1
+  fi
+  if [[ ! "$time_exit" =~ ^[0-9]+$ ]]; then
+    echo "error: time exit code must be a non-negative integer, got: $time_exit" >&2
+    exit 1
+  fi
+  if [[ "$time_exit" -ne "$status" ]]; then
+    echo "error: time exit code $time_exit disagrees with command status $status" >&2
+    exit 1
+  fi
+}
+
+require_positive_int RUNS "$RUNS"
+require_positive_int MAX_DEPTH "$MAX_DEPTH"
+if [[ "$MAX_DEPTH" -gt 32 ]]; then
+  echo "error: MAX_DEPTH must be <= 32, got: $MAX_DEPTH" >&2
+  exit 2
+fi
+
 mkdir -p "$OUT_DIR"
 
 TARGETS=()
@@ -94,7 +139,7 @@ for target in "${TARGETS[@]}"; do
     continue
   fi
 
-  target_size="$(stat -c '%s' "$target")"
+  target_size="$(stat -Lc '%s' "$target")"
 
   for run in $(seq 1 "$RUNS"); do
     out="$WORK/out-$run.txt"
@@ -106,7 +151,9 @@ for target in "${TARGETS[@]}"; do
     status=$?
     set -e
 
-    read -r wall maxrss time_exit <"$timefile"
+    metrics="$(tail -n 1 "$timefile" 2>/dev/null || true)"
+    read -r wall maxrss time_exit <<<"$metrics"
+    validate_timing_fields "$wall" "$maxrss" "$time_exit" "$status"
     candidate_count="$(hex_value_from_line 'Candidate count:' "$out")"
     ret_count="$(hex_value_from_line 'ret count:' "$out")"
     ret_imm_count="$(hex_value_from_line 'ret imm16 count:' "$out")"

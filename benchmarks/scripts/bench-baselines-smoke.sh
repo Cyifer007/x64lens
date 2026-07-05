@@ -48,6 +48,51 @@ if ! command -v /usr/bin/time >/dev/null 2>&1; then
   exit 127
 fi
 
+require_positive_int() {
+  local name="$1"
+  local value="$2"
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 1 ]]; then
+    echo "error: $name must be a positive integer, got: $value" >&2
+    exit 2
+  fi
+}
+
+require_nonnegative_number() {
+  local name="$1"
+  local value="$2"
+  if [[ ! "$value" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "error: $name must be a non-negative number, got: $value" >&2
+    exit 1
+  fi
+}
+
+validate_timing_fields() {
+  local wall="$1"
+  local maxrss="$2"
+  local time_exit="$3"
+  local status="$4"
+  require_nonnegative_number wall_s "$wall"
+  if [[ ! "$maxrss" =~ ^[0-9]+$ ]]; then
+    echo "error: maxrss_kb must be a non-negative integer, got: $maxrss" >&2
+    exit 1
+  fi
+  if [[ ! "$time_exit" =~ ^[0-9]+$ ]]; then
+    echo "error: time exit code must be a non-negative integer, got: $time_exit" >&2
+    exit 1
+  fi
+  if [[ "$time_exit" -ne "$status" ]]; then
+    echo "error: time exit code $time_exit disagrees with command status $status" >&2
+    exit 1
+  fi
+}
+
+require_positive_int RUNS "$RUNS"
+require_positive_int MAX_DEPTH "$MAX_DEPTH"
+if [[ "$MAX_DEPTH" -gt 32 ]]; then
+  echo "error: MAX_DEPTH must be <= 32, got: $MAX_DEPTH" >&2
+  exit 2
+fi
+
 mkdir -p "$OUT_DIR"
 
 TARGETS=()
@@ -135,8 +180,10 @@ run_timed() {
   local status=$?
   set -e
 
-  local wall maxrss time_exit
-  read -r wall maxrss time_exit <"$timefile"
+  local metrics wall maxrss time_exit
+  metrics="$(tail -n 1 "$timefile" 2>/dev/null || true)"
+  read -r wall maxrss time_exit <<<"$metrics"
+  validate_timing_fields "$wall" "$maxrss" "$time_exit" "$status"
   local output_bytes output_lines
   output_bytes="$(wc -c <"$out" | tr -d ' ')"
   output_lines="$(wc -l <"$out" | tr -d ' ')"
@@ -163,7 +210,7 @@ run_timed() {
 
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$tool_name" "$tool_path" "$(tool_version "$tool_name" "$tool_path")" "$command_text" "$MAX_DEPTH" \
-    "$target" "$(stat -c '%s' "$target")" "$(sha256_of "$target")" "$run" "$wall" "$maxrss" \
+    "$target" "$(stat -Lc '%s' "$target")" "$(sha256_of "$target")" "$run" "$wall" "$maxrss" \
     "$status" "$output_bytes" "$output_lines" "$raw" "$exact" "$semantic" "$unknown" "$scored" "$note" \
     >>"$RESULTS"
 

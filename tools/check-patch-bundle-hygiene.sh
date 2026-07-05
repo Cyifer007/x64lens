@@ -51,9 +51,11 @@ for entry in "${entries[@]}"; do
       echo "patch-bundle-hygiene: forbidden private orchestration state: $entry" >&2
       bad=1
       ;;
-    x64lens/.env.local|*/.env.local)
-      echo "patch-bundle-hygiene: forbidden local environment file: $entry" >&2
-      bad=1
+    x64lens/.env|*/.env|x64lens/.env.*|*/.env.*)
+      if [[ "$entry" != "x64lens/.env.example" && "$entry" != */.env.example ]]; then
+        echo "patch-bundle-hygiene: forbidden local environment file: $entry" >&2
+        bad=1
+      fi
       ;;
     x64lens/build/*|x64lens/build|*/build/*|*/build)
       echo "patch-bundle-hygiene: forbidden build output: $entry" >&2

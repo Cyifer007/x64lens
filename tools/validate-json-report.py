@@ -182,6 +182,7 @@ def validate_common(doc: dict[str, Any]) -> None:
     semantic_seen = 0
     unknown_seen = 0
     scored_seen = 0
+    controlled_registers_seen: set[str] = set()
     for idx, gadget in enumerate(gadgets):
         prefix = f"gadgets[{idx}]"
         require(isinstance(gadget, dict), f"{prefix} must be an object")
@@ -201,6 +202,7 @@ def validate_common(doc: dict[str, Any]) -> None:
         require(len(gadget["controls"]) == len(set(gadget["controls"])), f"{prefix}.controls must not contain duplicates")
         for reg in gadget["controls"]:
             require(reg in ALLOWED_REGS, f"{prefix}.controls contains unknown register {reg}")
+            controlled_registers_seen.add(reg)
 
         known = gadget["stack_delta_known"]
         require(isinstance(known, bool), f"{prefix}.stack_delta_known must be a boolean")
@@ -225,6 +227,11 @@ def validate_common(doc: dict[str, Any]) -> None:
     require(semantic_seen == counts["semantic_candidate_count"], "semantic_candidate_count does not match gadget records")
     require(unknown_seen == counts["unknown_candidate_count"], "unknown_candidate_count does not match gadget records")
     require(scored_seen == counts["scored_candidate_count"], "scored_candidate_count does not match gadget records")
+    missing_coverage_registers = controlled_registers_seen - set(registers)
+    require(
+        not missing_coverage_registers,
+        f"primitive_coverage.registers missing controlled registers: {sorted(missing_coverage_registers)}",
+    )
 
     limitations = doc["limitations"]
     require(isinstance(limitations, list) and limitations, "limitations must be a non-empty array")

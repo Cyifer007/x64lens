@@ -31,6 +31,7 @@ required=(
     docs/adr/0019-stripped-indicator-and-dynamic-singleton-policy.md
     docs/adr/0020-section-label-annotations.md
     docs/adr/0021-section-label-rendering-and-ambiguity.md
+    docs/adr/0022-historical-findings-hardening.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -44,6 +45,7 @@ required=(
     docs/sprints/sprint-08-patch-033-validation.md
     docs/sprints/sprint-08-patch-034-validation.md
     docs/sprints/sprint-08-patch-035-validation.md
+    docs/sprints/sprint-08-patch-036-validation.md
     docs/sprints/sprint-07-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
@@ -106,6 +108,8 @@ grep -qi 'stripped' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 plan does not name stripped-state work'
 grep -qi 'section labels' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 plan does not name section-label work'
+grep -qi 'historical review findings' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 plan does not name the Patch 036 historical findings hardening pass'
 grep -q 'Sprint 8' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not hand off to Sprint 8'
 grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \

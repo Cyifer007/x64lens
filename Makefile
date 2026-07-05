@@ -55,6 +55,8 @@ help:
 	@echo "  make checkpoint-demo     Run the integrated checkpoint demonstration"
 	@echo "  make bench-scanner-smoke Run scanner benchmark smoke measurements"
 	@echo "  make bench-baselines-smoke  Compare optional baseline tools"
+	@echo "  make bench-summary-latest  Summarize newest non-empty benchmark artifact"
+	@echo "  make bench-summary     Summarize one benchmark artifact by default"
 	@echo "  make docker-build        Build the development image"
 	@echo "  make docker-test         Run the core suite in Docker"
 	@echo "  make docker-validation-smoke  Run complete validation in Docker"
@@ -268,12 +270,12 @@ checkpoint-demo: dev-tools-check all samples
 # Summarize only the newest baseline smoke artifact. This avoids accidentally
 # combining separate development environments or historical runs.
 bench-summary-latest:
-	@file="$$(ls -1t benchmarks/results/baseline-smoke-*.tsv 2>/dev/null | head -n 1)"; \
+	@file=""; \
+	for candidate in $$(ls -1t benchmarks/results/baseline-smoke-*.tsv benchmarks/results/*.tsv 2>/dev/null | awk '!seen[$$0]++'); do \
+		if [ "$$(wc -l < "$$candidate")" -gt 1 ]; then file="$$candidate"; break; fi; \
+	done; \
 	if [ -z "$$file" ]; then \
-		file="$$(ls -1t benchmarks/results/*.tsv 2>/dev/null | head -n 1)"; \
-	fi; \
-	if [ -z "$$file" ]; then \
-		echo "error: no benchmark TSV files found under benchmarks/results"; \
+		echo "error: no non-empty benchmark TSV files found under benchmarks/results"; \
 		exit 1; \
 	fi; \
 	echo "benchmark artifact: $$file"; \
@@ -298,6 +300,12 @@ bench-summary:
 	@files="$$(ls benchmarks/results/*.tsv 2>/dev/null || true)"; \
 	if [ -z "$$files" ]; then \
 		echo "error: no benchmark TSV files found under benchmarks/results"; \
+		exit 1; \
+	fi; \
+	count="$$(printf '%s\n' $$files | wc -l | tr -d ' ')"; \
+	if [ "$$count" -gt 1 ] && [ "$${ALLOW_MIXED_BENCH_SUMMARY:-0}" != "1" ]; then \
+		echo "error: refusing to summarize $$count benchmark TSV files without ALLOW_MIXED_BENCH_SUMMARY=1"; \
+		echo "hint: use 'make bench-summary-latest' for the newest non-empty artifact"; \
 		exit 1; \
 	fi; \
 	python3 benchmarks/scripts/summarize.py $$files

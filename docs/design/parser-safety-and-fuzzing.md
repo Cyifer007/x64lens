@@ -237,3 +237,7 @@ Patch 034 also preserves half-open range behavior for zero-length dynamic string
 ## Sprint 8 Patch 035 section-label hostile-input hardening
 
 Section labels are now covered by `make section-label-smoke`. The harness builds controlled ELF64 files with newline-bearing names, non-executable section overlap, and ambiguous executable section overlap. Acceptance requires text output to escape unsafe bytes, JSON output to remain parseable, non-executable overlap to be ignored, and ambiguous executable overlap to remain unlabeled.
+
+## Sprint 8 Patch 036 review-found safety hardening
+
+Patch 036 promotes historical-review probes into current safety requirements. Section labels now require both file-offset and virtual-address containment; high-bit section-name bytes must remain valid JSON through escaping; and validation helpers must use per-run temporary directories rather than fixed `$TMPDIR` filenames. Benchmark smoke scripts also fail early on invalid run counts or impossible metric fields so malformed evidence cannot be summarized as normal results.

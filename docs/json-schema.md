@@ -181,3 +181,7 @@ Patch 033 keeps `schema_version` at `0.1.0` and adds `mitigations.stripped` valu
 ## Sprint 8 Patch 035 section field compatibility
 
 The `section` field remains optional per gadget record semantics and may be a string or `null`. Text escaping of section labels does not change JSON values. Consumers should treat section labels as display metadata and must not derive executable-region authority from them.
+
+## Sprint 8 Patch 036 byte-safe JSON and coverage invariant
+
+Patch 036 keeps `schema_version` at `0.1.0` and does not add report fields. It hardens the producer and bundled validator. Target strings and bounded section labels are emitted through byte-safe JSON escaping so control and high-bit bytes remain valid JSON instead of raw invalid UTF-8 or lossy placeholders. The bundled validator also checks that every register named by a gadget `controls` list appears in `primitive_coverage.registers`.

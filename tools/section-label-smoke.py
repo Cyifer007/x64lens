@@ -87,6 +87,7 @@ def build_fixture(
     *,
     fake_nonexec_overlap: bool = False,
     ambiguous_exec_overlap: bool = False,
+    label_addr_delta: int = 0,
 ) -> bytes:
     """Build a tiny executable ELF64 fixture with controlled section labels."""
     code = b"\x5f\xc3"  # pop rdi; ret
@@ -192,7 +193,7 @@ def build_fixture(
                 name=offsets[label_name],
                 sh_type=SHT_PROGBITS,
                 flags=SHF_ALLOC | SHF_EXECINSTR,
-                addr=code_vaddr,
+                addr=code_vaddr + label_addr_delta,
                 offset=code_offset,
                 size=len(code),
             )
@@ -288,6 +289,35 @@ def main() -> int:
         if sections != {".t\nxt"}:
             raise HarnessError(f"newline JSON section mismatch: {sections!r}")
         records.append({"case": "newline-section-name-text-escaped", "result": "ok", "fixture_sha256": sha256_bytes(newline_data)})
+        highbit_fixture = temp_dir / "highbit-label.elf"
+        highbit_label = b".hi\xff"
+        highbit_data = build_fixture(highbit_label)
+        highbit_fixture.write_bytes(highbit_data)
+        for args_tuple in (("mitigations",), ("gadgets", "--max-depth", "4"), ("analyze", "--max-depth", "4")):
+            stdout = run_ok(binary, highbit_fixture, args.timeout, *args_tuple)
+            if b"section: .hi\xff" in stdout:
+                raise HarnessError(f"{' '.join(args_tuple)} emitted raw high-bit section label")
+            if b"section: .hi\\xff" not in stdout:
+                raise HarnessError(f"{' '.join(args_tuple)} did not emit escaped high-bit section label")
+        expected_highbit = highbit_label.decode("latin-1")
+        for command in ("gadgets", "analyze"):
+            sections = json_sections(binary, highbit_fixture, args.timeout, command)
+            if sections != {expected_highbit}:
+                raise HarnessError(f"{command}: high-bit JSON section mismatch: {sections!r}")
+        records.append({"case": "highbit-section-name-json-escaped", "result": "ok", "fixture_sha256": sha256_bytes(highbit_data)})
+
+        mismatch_fixture = temp_dir / "mismatched-section-address.elf"
+        mismatch_data = build_fixture(b".mismatch", label_addr_delta=0x1000)
+        mismatch_fixture.write_bytes(mismatch_data)
+        for args_tuple in (("mitigations",), ("gadgets", "--max-depth", "4"), ("analyze", "--max-depth", "4")):
+            stdout = run_ok(binary, mismatch_fixture, args.timeout, *args_tuple)
+            if b"section: .mismatch" in stdout:
+                raise HarnessError(f"{' '.join(args_tuple)} emitted section label with mismatched sh_addr")
+        for command in ("gadgets", "analyze"):
+            sections = json_sections(binary, mismatch_fixture, args.timeout, command)
+            if sections != {None}:
+                raise HarnessError(f"{command}: mismatched sh_addr should be unlabeled, observed {sections!r}")
+        records.append({"case": "mismatched-section-address-unlabeled", "result": "ok", "fixture_sha256": sha256_bytes(mismatch_data)})
 
         fake_fixture = temp_dir / "fake-overlap.elf"
         fake_data = build_fixture(b".text", fake_nonexec_overlap=True)

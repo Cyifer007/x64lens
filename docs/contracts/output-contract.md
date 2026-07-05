@@ -97,4 +97,10 @@ Patch 034 may emit section labels for executable regions and gadget candidates w
 
 ## Sprint 8 Patch 035 section-label rendering update
 
-Text section labels are single-line-safe. Printable ASCII bytes are emitted directly except backslash; backslash is escaped as `\\`, and control bytes, DEL, and high-bit bytes are escaped as `\xNN`. JSON section fields remain strings or `null` and use normal JSON string escaping. Ambiguous overlapping executable section metadata must not force a label.
+Text section labels are single-line-safe. Printable ASCII bytes are emitted directly except backslash; backslash is escaped as `\\`, and control bytes, DEL, and high-bit bytes are escaped as `\xNN`. JSON section fields remain strings or `null` and use byte-safe JSON escaping. Ambiguous overlapping executable section metadata must not force a label.
+
+## Sprint 8 Patch 036 byte-safe JSON and label-agreement update
+
+Patch 036 requires JSON report strings emitted by the NASM adapters to remain valid JSON for control bytes and high-bit bytes. Bounded section labels are emitted through byte-safe JSON escaping instead of raw byte emission. Section labels are omitted unless the section contains both the record file offset and the record virtual address. This preserves labels as optional metadata and keeps program headers as runtime mapping authority.
+
+Benchmark smoke summaries are evidence artifacts, not report-schema artifacts. They must reject nonnumeric or negative metric fields before normal summarization, and mixed-artifact aggregation requires explicit opt-in.

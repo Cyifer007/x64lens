@@ -118,3 +118,7 @@ Mixed-schema rows must not be aggregated without explicit normalization.
 ## Sprint 8 Patch 034 compatibility note
 
 Patch 034 keeps schema `0.1.0` while adding optional gadget `section` annotations and relaxing `mitigations.stripped` to optional in the schema and bundled validator. Current x64lens reports still emit `mitigations.stripped`; the relaxation exists so older same-version development reports remain readable. Schema `0.2.0` remains reserved for durable provenance and completeness-state fields rather than this compatible annotation.
+
+## Sprint 8 Patch 036 compatibility note
+
+Patch 036 keeps schema `0.1.0` because it does not add public fields. It hardens producer escaping and validator cross-field checks. Existing well-formed reports remain valid, but malformed reports that omit registers from `primitive_coverage.registers` while listing those registers in gadget `controls` are now rejected by the bundled validator.

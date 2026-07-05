@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 036 historical-findings hardening validation record and ADR 0022.
+- Byte-safe JSON escaping for target paths and bounded section-label strings.
+- Benchmark smoke input and metric-domain validation for run count, maximum depth, timing, RSS, and summary artifact selection.
 - Sprint 8 Patch 035 section-label hardening smoke target for hostile section names, non-executable overlap, and ambiguous executable overlap.
 - ADR 0021 and Patch 035 validation documentation for section-label rendering and ambiguity hardening.
 - Sprint 8 Patch 034 section-label annotations for executable regions and gadget candidates using bounded section-name metadata.
@@ -49,6 +52,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Require section-label file-offset and virtual-address evidence to agree before annotating executable regions or candidates.
+- Exclude `.env` and `.env.*` files from the Docker build context while preserving a future `.env.example` allowlist.
+- Make `bench-summary` refuse mixed benchmark TSV aggregation by default and make `bench-summary-latest` select the newest nonempty TSV artifact.
+- Use per-run temporary directories for core and system-binary smoke outputs.
 - Render section labels in text through a bounded single-line-safe printer while preserving JSON section strings.
 - Assign section labels only from unique file-backed allocated executable sections so non-executable or ambiguous section metadata cannot capture candidate annotations.
 - Replace process-global section-label helper state with stack-local annotation context.
@@ -89,6 +96,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Preserve JSON validity and byte fidelity for high-bit and control bytes in target paths and section labels.
+- Reject benchmark smoke runs with non-positive `RUNS`, invalid `MAX_DEPTH`, nonnumeric timing/RSS fields, or negative timing/RSS values.
+- Record dereferenced target sizes for benchmarked symlink paths.
+- Reject JSON reports whose `primitive_coverage.registers` omits registers present in gadget control lists.
+- Preserve missing-tool install hints when `PATH` is badly damaged.
+- Reject `.env` and `.env.*` files in patch-bundle hygiene checks, except for a future `.env.example` sample.
 - Prevent newline-bearing section names from splitting executable-region and gadget candidate text lines.
 - Prevent overlapping non-executable section headers from labeling executable gadget offsets.
 - Preserve the half-open range interpretation for zero-length dynamic string-table evidence at a load endpoint.

@@ -655,7 +655,7 @@ Smoke benchmark rows remain development evidence and must not be merged with fro
 
 ## Sprint 7 Patch 026 mitigation-oracle validation
 
-Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Patch 033 expands the matrix to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding stripped/not-stripped indicators, zero-length dynamic string-table negative evidence, duplicate dynamic string-table singleton rejection, and string-table scan-cap rejection. Patch 034 expands the matrix to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding the zero-length dynamic string-table endpoint case and section-label assertions. Patch 035 preserves those matrix counts and adds `make section-label-smoke` with four focused hostile section-label cases. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
+Run `MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke`. The original Patch 026 oracle established 11 valid cases and five malformed cases; Patch 028 expands the malformed matrix to seven cases; Patch 031 expands the matrix to 17 valid cases and 11 malformed cases by adding full RELRO evidence combinations, duplicate-`PT_DYNAMIC` rejection, and gadget command-path coverage for dynamic malformed probes; Patch 032 expands the matrix to 20 valid cases and 12 malformed cases by adding canary-present/canary-absent indicators, valid non-`DT_NULL` dynamic coverage, direct gadgets JSON validation for valid cases, and invalid dynamic string-table rejection. Patch 033 expands the matrix to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding stripped/not-stripped indicators, zero-length dynamic string-table negative evidence, duplicate dynamic string-table singleton rejection, and string-table scan-cap rejection. Patch 034 expands the matrix to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case by adding the zero-length dynamic string-table endpoint case and section-label assertions. Patch 035 preserves those matrix counts and adds `make section-label-smoke` with four focused hostile section-label cases. Patch 036 preserves the mitigation-matrix counts and expands `make section-label-smoke` to six cases by adding high-bit JSON escaping and file-offset/virtual-address mismatch omission. Current acceptance requires exact focused text, matching integrated JSON mitigation values, no stderr for successful commands, and exact exit code `5` plus the stable malformed diagnostic for every malformed case through the relevant command paths. The generated JSON artifact under `tests/results/mitigation-matrix/` must remain ignored by Git. This target is included in `make validation-smoke` and `make docker-validation-smoke`.
 
 ## Sprint 7 Patch 027 mitigation-oracle correction validation
 
@@ -721,7 +721,7 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases. Patch 033 expands it to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving the malformed-smoke and capacity baselines. Patch 034 expands it to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving those same baselines. Patch 035 preserves those counts and adds four section-label smoke cases.
+Expected Sprint 7 closeout evidence includes 31 malformed-smoke cases, 28 malformed cases, 11 valid mitigation-matrix cases, seven malformed mitigation-matrix cases, and stable 4096/4097 candidate-capacity behavior. Patch 031 intentionally expands the mitigation-matrix expectation to 17 valid cases and 11 malformed cases. Patch 032 expands it again to 20 valid cases and 12 malformed cases. Patch 033 expands it to 23 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving the malformed-smoke and capacity baselines. Patch 034 expands it to 24 valid cases, 14 malformed cases, and one unsupported fail-closed case while preserving those same baselines. Patch 035 preserves those counts and adds four section-label smoke cases. Patch 036 keeps the mitigation-matrix counts and expands the focused section-label smoke harness to six cases.
 
 ## Sprint 8 Patch 030 bounded dynamic-table validation
 
@@ -834,4 +834,19 @@ section-label-smoke: ok
   cases: 4
 ```
 
-The four cases cover baseline `.text` labels, escaped newline-bearing labels, non-executable overlap rejection, and ambiguous executable overlap omission.
+The four Patch 035 cases cover baseline `.text` labels, escaped newline-bearing labels, non-executable overlap rejection, and ambiguous executable overlap omission. Patch 036 expands the target to six cases by adding high-bit JSON escaping and file-offset/virtual-address mismatch omission.
+
+## Sprint 8 Patch 036 historical findings hardening validation
+
+Patch 036 acceptance requires the full native aggregate, focused section-label smoke, malformed smoke, mitigation matrix, capacity smoke, benchmark input-failure probes, and Docker validation when Docker is available. The focused evidence requirements are:
+
+- high-bit section-name bytes must not produce invalid JSON,
+- target paths and section labels must preserve byte evidence through JSON escapes rather than lossy placeholders,
+- section labels must be omitted when section file offset and section virtual-address evidence disagree,
+- `.env` and `.env.*` must not enter Docker images from the build context,
+- benchmark scripts must reject `RUNS=0`, invalid max-depth values, nonnumeric timing/RSS values, and negative timing/RSS values,
+- `bench-summary` must not silently aggregate unrelated TSV files,
+- JSON validation must reject `primitive_coverage.registers` values that omit registers present in candidate control lists,
+- validation helpers must avoid fixed temporary-output names.
+
+Required commands are documented in `docs/sprints/sprint-08-patch-036-validation.md`.

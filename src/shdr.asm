@@ -26,6 +26,7 @@ default rel
 %include "structs.inc"
 
 extern x64lens_bounds_range_end_valid
+extern x64lens_bounds_add_u64_checked
 extern x64lens_bounds_table_extent_valid
 extern x64lens_bounds_table_entry_offset
 
@@ -179,7 +180,8 @@ x64lens_shdr_annotate_exec_regions:
     lea     r14, [r12 + rax]
 
     mov     rdi, [r14 + EXEC_REGION_FILE_OFFSET]
-    lea     rsi, [rsp]
+    mov     rsi, [r14 + EXEC_REGION_VADDR]
+    lea     rdx, [rsp]
     call    shdr_find_section_for_file_offset
     test    rax, rax
     jz      .next_region
@@ -238,7 +240,8 @@ x64lens_shdr_annotate_gadgets:
     lea     r14, [r12 + rax]
 
     mov     rdi, [r14 + GADGET_FILE_OFFSET]
-    lea     rsi, [rsp]
+    mov     rsi, [r14 + GADGET_VIRTUAL_ADDRESS]
+    lea     rdx, [rsp]
     call    shdr_find_section_for_file_offset
     test    rax, rax
     jz      .next_gadget
@@ -357,14 +360,15 @@ shdr_label_setup:
     pop     rbp
     ret
 
-; shdr_find_section_for_file_offset(file_offset=rdi, context=rsi)
+; shdr_find_section_for_file_offset(file_offset=rdi, virtual_address=rsi, context=rdx)
 ;   -> rax=section_name_ptr or 0, rdx=name_len, rcx=section_index
 ;
 ; Names are returned only after proving that the candidate section is a unique
-; file-backed allocated executable section and that its name is non-empty and
-; null-terminated inside the bounded section-name string table. Ambiguous
-; overlapping executable sections intentionally return no label instead of
-; implying false precision on hostile section tables.
+; file-backed allocated executable section, its file-offset range contains the
+; candidate, its SHF_ALLOC virtual-address range contains the candidate VA, and
+; its name is non-empty and null-terminated inside the bounded section-name
+; string table. Ambiguous overlapping executable sections intentionally return
+; no label instead of implying false precision on hostile section tables.
 shdr_find_section_for_file_offset:
     push    rbp
     push    rbx
@@ -374,8 +378,9 @@ shdr_find_section_for_file_offset:
     push    r15
     sub     rsp, 56
 
-    mov     rbp, rsi            ; stack-local SHDR label context
+    mov     rbp, rdx            ; stack-local SHDR label context
     mov     [rsp + 8], rdi      ; target file offset
+    mov     [rsp + 48], rsi     ; target virtual address
     mov     qword [rsp + 16], 0 ; selected section-name pointer
     mov     qword [rsp + 24], 0 ; selected section-name length
     mov     qword [rsp + 32], 0 ; selected section index
@@ -435,6 +440,22 @@ shdr_find_section_for_file_offset:
     cmp     rax, [r12 + S_OFFSET]
     jb      .next
     cmp     rax, [rsp]          ; checked exclusive section-file end
+    jae     .next
+
+    ; A section label also has to agree with the runtime VA being annotated.
+    ; Section headers remain annotations, but hostile metadata should not label
+    ; loader-backed code only because its file offset happens to overlap.
+    mov     rax, [rsp + 48]     ; target virtual address
+    cmp     rax, [r12 + S_ADDR]
+    jb      .next
+    mov     rdi, [r12 + S_ADDR]
+    mov     rsi, r13
+    lea     rdx, [rsp]
+    call    x64lens_bounds_add_u64_checked
+    cmp     rax, 1
+    jne     .next
+    mov     rax, [rsp + 48]
+    cmp     rax, [rsp]          ; checked exclusive section-VA end
     jae     .next
 
     mov     eax, [r12 + S_NAME]

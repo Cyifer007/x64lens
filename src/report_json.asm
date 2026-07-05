@@ -40,6 +40,7 @@ j_empty_array:          db "[]", 0
 j_array_open:           db "[", 0
 j_array_close:          db "]", 0
 j_comma:                db ",", 0
+j_u00_prefix:           db 0x5c, "u00", 0
 j_indent2:              db "  ", 0
 j_indent4:              db "    ", 0
 j_indent6:              db "      ", 0
@@ -597,7 +598,8 @@ json_print_one_gadget:
     call    print_cstr
     mov     rbx, [json_current_record]
     mov     rdi, [rbx + GADGET_SECTION_NAME_PTR]
-    call    json_print_escaped_cstr
+    mov     rsi, [rbx + GADGET_SECTION_NAME_LEN]
+    call    json_print_escaped_bytes
     lea     rdi, [j_q]
     call    print_cstr
     jmp     .section_done
@@ -716,6 +718,51 @@ json_print_escaped_cstr:
     mov     al, [rbx]
     test    al, al
     je      .done
+    movzx   rdi, al
+    call    json_print_escaped_byte
+    inc     rbx
+    jmp     .loop
+.done:
+    pop     rbx
+    ret
+
+; json_print_escaped_bytes(ptr=rdi, len=rsi)
+;
+; Render a bounded byte string as a JSON string payload. This is used for
+; section-header names because section metadata is byte-oriented and already
+; arrives with a parser-proven length. Bytes outside the conservative printable
+; ASCII range are emitted as \u00NN escapes so hostile section names cannot
+; produce invalid UTF-8 JSON.
+json_print_escaped_bytes:
+    push    rbx
+    push    r12
+    push    r13
+
+    mov     rbx, rdi
+    mov     r12, rsi
+    xor     r13, r13
+.loop:
+    cmp     r13, r12
+    jae     .done
+    movzx   rdi, byte [rbx + r13]
+    call    json_print_escaped_byte
+    inc     r13
+    jmp     .loop
+.done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
+; json_print_escaped_byte(byte=rdi)
+;
+; JSON string payload byte printer. It preserves common short escapes for
+; readability and uses \u00NN for every other byte that is not safe printable
+; ASCII. This prevents control bytes from degrading to '?' and prevents high-bit
+; bytes from becoming invalid UTF-8 in JSON output.
+json_print_escaped_byte:
+    mov     eax, edi
+    and     eax, 0xff
     cmp     al, 0x22
     je      .escape_quote
     cmp     al, 0x5c
@@ -727,56 +774,50 @@ json_print_escaped_cstr:
     cmp     al, 9
     je      .escape_tab
     cmp     al, 0x20
-    jb      .control_char
+    jb      .escape_u00
+    cmp     al, 0x7e
+    ja      .escape_u00
     mov     [json_char_buf], al
     mov     byte [json_char_buf + 1], 0
     lea     rdi, [json_char_buf]
-    call    print_cstr
-    jmp     .advance
+    jmp     print_cstr
 .escape_quote:
     mov     byte [json_char_buf], 0x5c
     mov     byte [json_char_buf + 1], 0x22
     mov     byte [json_char_buf + 2], 0
     lea     rdi, [json_char_buf]
-    call    print_cstr
-    jmp     .advance
+    jmp     print_cstr
 .escape_backslash:
     mov     byte [json_char_buf], 0x5c
     mov     byte [json_char_buf + 1], 0x5c
     mov     byte [json_char_buf + 2], 0
     lea     rdi, [json_char_buf]
-    call    print_cstr
-    jmp     .advance
+    jmp     print_cstr
 .escape_newline:
     mov     byte [json_char_buf], 0x5c
     mov     byte [json_char_buf + 1], 'n'
     mov     byte [json_char_buf + 2], 0
     lea     rdi, [json_char_buf]
-    call    print_cstr
-    jmp     .advance
+    jmp     print_cstr
 .escape_cr:
     mov     byte [json_char_buf], 0x5c
     mov     byte [json_char_buf + 1], 'r'
     mov     byte [json_char_buf + 2], 0
     lea     rdi, [json_char_buf]
-    call    print_cstr
-    jmp     .advance
+    jmp     print_cstr
 .escape_tab:
     mov     byte [json_char_buf], 0x5c
     mov     byte [json_char_buf + 1], 't'
     mov     byte [json_char_buf + 2], 0
     lea     rdi, [json_char_buf]
+    jmp     print_cstr
+.escape_u00:
+    push    rbx
+    mov     ebx, eax
+    lea     rdi, [j_u00_prefix]
     call    print_cstr
-    jmp     .advance
-.control_char:
-    mov     byte [json_char_buf], '?'
-    mov     byte [json_char_buf + 1], 0
-    lea     rdi, [json_char_buf]
-    call    print_cstr
-.advance:
-    inc     rbx
-    jmp     .loop
-.done:
+    movzx   rdi, bl
+    call    print_hex8
     pop     rbx
     ret
 

@@ -41,7 +41,7 @@ Recommended commands:
 
 ```bash
 docker build -t x64lens-dev .
-docker run --rm -it -v "$PWD":/work x64lens-dev bash
+make docker-shell
 make
 make test
 ```
@@ -182,4 +182,22 @@ make system-smoke
 make capacity-smoke
 make malformed-smoke
 make validation-smoke
+```
+
+## Local environment files and Docker context
+
+Patch 036 excludes `.env` and `.env.*` from the Docker build context so local environment files do not enter development images. Future sample files should use `.env.example`, which is explicitly allowlisted. Do not place secrets in repository files or Docker contexts.
+
+## Optional analysis and review tools
+
+The core build and validation path does not require `checksec`, `radare2`/`rabin2`, `strace`, or `shellcheck`. They are useful local review tools for mitigation comparison, ELF metadata comparison, syscall/cleanup inspection, and shell-helper linting. Treat their output as comparator evidence with version-specific semantics, not as authoritative replacement for x64lens contracts.
+
+Example inventory commands:
+
+```bash
+command -v checksec && checksec --version || true
+command -v rabin2 && rabin2 -v || true
+command -v r2 && r2 -v || true
+command -v strace && strace -V || true
+command -v shellcheck && shellcheck --version || true
 ```

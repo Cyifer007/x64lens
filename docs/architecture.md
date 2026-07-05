@@ -613,4 +613,16 @@ The section label is therefore an analyst convenience, not a source of truth. `P
 
 ## Sprint 8 Patch 035 section-label hardening
 
-Patch 035 keeps the Patch 034 section-label seam but removes hostile-input ambiguity. The label finder now accepts only unique file-backed sections that carry both `SHF_ALLOC` and `SHF_EXECINSTR`. Non-executable overlap is ignored, and multiple executable sections covering the same file offset produce no label. The helper context is stack-local to the annotation pass. Text reports escape unsafe section-name bytes as `\xNN`, preserving one logical line per region or candidate.
+Patch 035 keeps the Patch 034 section-label seam but removes hostile-input ambiguity. The label finder now accepts only unique file-backed sections that carry both `SHF_ALLOC` and `SHF_EXECINSTR`. Non-executable overlap is ignored, and multiple executable sections covering the same file offset produce no label. The helper context is stack-local to the annotation pass. Text reports escape unsafe section-name bytes as `\xNN`, preserving one logical line per region or candidate. Patch 036 adds the second half of the label trust rule: a label must contain both the candidate file offset and the candidate virtual address. If file-offset and virtual-address evidence disagree, the record remains unlabeled.
+
+## Sprint 8 Patch 036 historical-findings hardening
+
+Patch 036 does not change scanner authority or semantic scoring. It hardens report and validation seams discovered during historical review:
+
+- JSON string emission is byte-safe for C strings and bounded section names. Unsafe bytes are escaped rather than emitted as raw high-bit output or replaced with lossy placeholders.
+- Section-label assignment requires agreement between file-backed section range and section virtual-address range. This keeps labels as analyst annotations and avoids trusting contradictory section-table metadata.
+- Benchmark smoke scripts validate run counts, max-depth values, timing fields, and RSS fields before writing normal evidence.
+- Benchmark summaries refuse mixed-artifact aggregation by default because unrelated TSV files can have different tool versions, corpora, schemas, or environments.
+- Temporary validation outputs use per-run directories to avoid collisions in parallel local or CI runs.
+
+These changes preserve the core module boundaries: file mapping and bounds, ELF and loader facts, raw scanning, exact suffixes, semantic classification, scoring, and report adapters remain separate.

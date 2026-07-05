@@ -20,6 +20,9 @@ AGENTS.override.md
 private-notes/
 local-context/
 *.private.md
+.env
+.env.*
+!.env.example
 PROJECT_CONTEXT.md
 PROJECT_STATE.md
 *.docx
