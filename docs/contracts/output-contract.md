@@ -104,3 +104,11 @@ Text section labels are single-line-safe. Printable ASCII bytes are emitted dire
 Patch 036 requires JSON report strings emitted by the NASM adapters to remain valid JSON for control bytes and high-bit bytes. Bounded section labels are emitted through byte-safe JSON escaping instead of raw byte emission. Section labels are omitted unless the section contains both the record file offset and the record virtual address. This preserves labels as optional metadata and keeps program headers as runtime mapping authority.
 
 Benchmark smoke summaries are evidence artifacts, not report-schema artifacts. They must reject nonnumeric or negative metric fields before normal summarization, and mixed-artifact aggregation requires explicit opt-in.
+
+
+## Comparator output boundary
+
+`readelf`, `checksec`, and `rabin2` outputs are validation and review artifacts.
+They do not change the x64lens JSON schema or text output contract. x64lens
+continues to distinguish loader facts, section-derived annotations, raw
+candidates, exact suffixes, semantic classes, unknowns, and scored facts.

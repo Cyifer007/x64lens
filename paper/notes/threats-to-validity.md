@@ -55,3 +55,11 @@ Section labels are derived from optional section-header metadata. They can impro
 ## Sprint 8 Patch 036 evidence-hardening note
 
 Historical-review probes found that development smoke evidence can be misleading if invalid benchmark inputs, impossible metric values, mixed TSV aggregation, symlink target sizes, or lossy JSON escaping are accepted without validation. Patch 036 hardens those development gates, but publication claims still require the planned fixed corpus, higher-resolution runner, normalized baseline definitions, and schema/provenance transition before results are interpreted as research evidence.
+
+
+## Comparator tooling threat
+
+Patch 037 adds automated `readelf` checks and optional `checksec`/`rabin2`
+comparison capture. These reduce manual-review drift but do not eliminate tool
+version variance, different hardening-label semantics, or coverage-definition
+differences across binary-analysis tools.

@@ -152,3 +152,11 @@ Local validation missions, operational reports, command logs, temporary probes, 
 ## Sprint 8 Patch 036 evidence-hygiene rule
 
 Development evidence must fail closed when its own inputs or metrics are invalid. Benchmark smoke scripts must reject non-positive run counts, invalid max-depth values, nonnumeric timing/RSS fields, negative metric values, and silent mixed-artifact summaries. Docker build contexts must exclude local environment files. Report adapters must preserve JSON validity for hostile byte values instead of replacing evidence with lossy placeholders.
+
+
+## Patch 037 comparator checks
+
+Normal native validation includes automated `readelf` comparison and benchmark
+TSV integrity checks. Optional `checksec`, `rabin2`, `strace`, and `shellcheck`
+tools may be inventoried through `make analysis-tools-check`, but their absence
+must not block the core build/test path.

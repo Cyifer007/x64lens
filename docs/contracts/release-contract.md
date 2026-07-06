@@ -104,3 +104,11 @@ A research preview or release candidate must pass the deterministic mitigation m
 ## Sprint 8 Patch 036 release-hygiene note
 
 Release candidates must not be cut from evidence that contains invalid JSON, local environment files in Docker contexts, empty benchmark artifacts, negative timing/RSS values, or silently mixed benchmark summaries. Patch 036 hardens these development checks, but the research preview still requires the planned schema/provenance and publication-benchmark gates before public performance or coverage claims.
+
+
+## Patch 037 release note
+
+Release candidates must pass `make readelf-comparison-smoke` and
+`make benchmark-integrity-smoke`. Optional `checksec` and `rabin2 -I` evidence
+can support reviewer confidence, but release claims must identify them as
+external comparator output with version-specific semantics.

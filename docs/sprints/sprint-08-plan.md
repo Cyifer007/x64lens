@@ -2,7 +2,7 @@
 
 ## Status
 
-Active. Sprint 8 is the current public implementation tranche after Sprint 7 closeout. Patch 030 opened the sprint with bounded dynamic-table parsing, Patch 031 refined RELRO evidence, Patch 032 added the first canary indicator, Patch 033 added the stripped-status indicator plus stricter dynamic string-table singleton policy, Patch 034 added section labels as analyst annotations, Patch 035 hardened section-label rendering and hostile overlap behavior, and Patch 036 hardens historical review findings before Sprint 9.
+Active. Sprint 8 is the current public implementation tranche after Sprint 7 closeout. Patch 030 opened the sprint with bounded dynamic-table parsing, Patch 031 refined RELRO evidence, Patch 032 added the first canary indicator, Patch 033 added the stripped-status indicator plus stricter dynamic string-table singleton policy, Patch 034 added section labels as analyst annotations, Patch 035 hardened section-label rendering and hostile overlap behavior, Patch 036 hardens historical review findings, and Patch 037 closes comparator and benchmark-integrity gates before Sprint 8 closeout.
 
 ## Sprint goal
 
@@ -20,8 +20,8 @@ Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO re
 - [x] Preserve program headers as runtime mapping authority. Patch 035/Patch 036 keep labels subordinate, omit ambiguous overlap labels, and require file-offset plus virtual-address agreement.
 - [x] Add controlled fixtures for no, partial, and full RELRO. Implemented in Patch 031.
 - [x] Add controlled canary-present and canary-absent fixtures. Implemented in Patch 032.
-- [ ] Add automated `readelf` comparison checks.
-- [ ] Add optional `checksec` and `rabin2 -I` comparison helpers when available.
+- [x] Add automated `readelf` comparison checks. Implemented in Patch 037.
+- [x] Add optional `checksec` and `rabin2 -I` comparison helpers when available. Implemented in Patch 037.
 - [x] Extend JSON with compatible optional mitigation fields while schema remains `0.1.0`. Initial dynamic-table fields implemented in Patch 030.
 
 
@@ -32,7 +32,8 @@ Sprint 8 should proceed in this order: bounded dynamic-table discovery, RELRO re
 3. Canary indicator with explicit confidence wording. Completed in Patch 032.
 4. Stripped-state indicator as section-derived metadata only. Completed in Patch 033.
 5. Section labels as analyst annotations only, never as runtime mapping authority. Completed in Patch 034 and hardened in Patch 035/Patch 036.
-6. Automated comparison helpers against `readelf` and optional external tools. Deferred until after the historical review pause.
+6. Automated comparison helpers against `readelf` and optional external tools. Completed in Patch 037.
+7. Sprint 8 closeout and context realignment. Reserved for Patch 038.
 
 ## Acceptance criteria
 
@@ -58,4 +59,4 @@ After the planned historical review pause, Sprint 9 adds candidate evidence prov
 
 ## Patch 036 historical findings hardening update
 
-Patch 036 is the final Sprint 8 hardening pass after historical review. It does not expand primitives. It fixes byte-safe JSON rendering, label trust rules, Docker context hygiene, benchmark evidence hygiene, JSON validator consistency, temporary-output isolation, and robust diagnostics. After Patch 036 validation, Sprint 8 can hand off to Sprint 9 evidence provenance unless validation finds a new blocking product defect.
+Patch 036 is the historical-findings hardening pass after historical review. It does not expand primitives. It fixes byte-safe JSON rendering, label trust rules, Docker context hygiene, benchmark evidence hygiene, JSON validator consistency, temporary-output isolation, and robust diagnostics. Patch 037 closes the planned readelf/checksec/rabin2 comparison deliverables and fixes the Patch 036 benchmark summarizer finite-number gap. Patch 038 is reserved for Sprint 8 closeout, roadmap reconciliation, project-context refresh, private local-validation context assessment, and new-chat handoff before Sprint 9 begins.

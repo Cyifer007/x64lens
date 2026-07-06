@@ -394,3 +394,23 @@ Patch 036 keeps scanner and baseline benchmark targets in the development-smoke 
 - `make bench-summary` refuses to aggregate multiple TSV files unless `ALLOW_MIXED_BENCH_SUMMARY=1` is set. Mixed summaries remain exploratory and must not be used for publication evidence without matching metadata.
 
 These checks do not make smoke timing publication-grade. Sprint 12 still owns the high-resolution runner, environment metadata, corpus IDs, raw artifact retention, warmup/cache policy, and statistical method.
+
+
+## Patch 037 benchmark-integrity gate
+
+Development benchmark summaries now reject malformed TSV rows before computing
+summary tables. `benchmarks/scripts/summarize.py` requires finite, nonnegative
+`wall_s` values and nonnegative integer RSS, exit-code, and run fields. Values
+such as `nan`, `inf`, `-inf`, negative wall time, shifted GNU `time` diagnostic
+text, and header-only artifacts are invalid evidence.
+
+Run:
+
+```bash
+make benchmark-integrity-smoke
+```
+
+This gate is still development evidence hygiene, not publication-grade timing.
+Publication benchmarking still requires the Sprint 12/13 high-resolution runner,
+frozen corpus, comparator version pinning or inventory, and normalized coverage
+definitions.

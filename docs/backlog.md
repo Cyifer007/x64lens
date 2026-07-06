@@ -52,10 +52,24 @@
 - [x] Full versus partial RELRO. Implemented in Patch 031 with no, partial, and full states.
 - [x] Canary indicators. Implemented in Patch 032 as bounded dynamic-string evidence.
 - [x] Stripped-status indicators. Implemented in Patch 033 as bounded section-table metadata.
-- [ ] Section labels as annotations.
-- [ ] Automated `readelf` comparison.
-- [ ] Optional `checksec` and `rabin2 -I` comparison.
-- [ ] Controlled mitigation fixtures.
+- [x] Section labels as annotations. Implemented and hardened in Patches 034-036.
+- [x] Automated `readelf` comparison. Implemented as `make readelf-comparison-smoke` in Patch 037.
+- [x] Optional `checksec` and `rabin2 -I` comparison. Implemented as `make optional-tool-comparison-smoke` in Patch 037.
+- [x] Controlled mitigation fixtures. Mitigation matrix coverage expanded through Sprint 8.
+
+
+## Deferred historical-review findings
+
+The historical review also produced items that remain intentionally deferred to
+later sprints rather than Patch 037:
+
+- Decoder-backed candidate validity and coverage reconciliation remain Sprint 9
+  and Sprint 13 work.
+- Schema `0.2.0`, report identity, target digests, command identity, and
+  completeness/truncation fields remain Sprint 9 work.
+- Publication-grade benchmarking, high-resolution timing, frozen corpus, and
+  normalized baseline definitions remain Sprint 12 and Sprint 13 work.
+- SARIF, CI policy gates, and enterprise export formats remain Sprint 15 work.
 
 ### Sprint 9: evidence provenance and schema transition
 

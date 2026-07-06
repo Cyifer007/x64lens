@@ -12,7 +12,8 @@
 #   --samples     Required to build the controlled toy corpus.
 #   --dev         Required for the normal local validation suite.
 #   --baselines   Optional baseline gadget tools; warnings by default.
-#   --all         Dev tools plus optional baseline tools.
+#   --analysis    Optional review/comparison tools; warnings by default.
+#   --all         Dev tools plus optional baseline and analysis tools.
 #   --doctor      Human-readable full environment report.
 set -euo pipefail
 
@@ -115,6 +116,8 @@ print_install_hint() {
     'Ubuntu 24.04 development dependency install:' \
     '  sudo apt update' \
     '  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
+    '  # Optional review/comparison tools:' \
+    '  sudo apt install -y checksec radare2 strace shellcheck' \
     '' \
     'Optional Python baseline gadget tools:' \
     '  pipx ensurepath' \
@@ -164,6 +167,13 @@ check_baselines() {
   check_cargo_for_ropr
 }
 
+check_analysis_tools() {
+  check_optional_cmd checksec "optional mitigation comparator"
+  check_optional_cmd rabin2 "optional radare2 metadata comparator"
+  check_optional_cmd strace "optional syscall and cleanup inspection helper"
+  check_optional_cmd shellcheck "optional shell helper lint"
+}
+
 case "$MODE" in
   --build)
     check_build
@@ -177,9 +187,13 @@ case "$MODE" in
   --baselines)
     check_baselines
     ;;
+  --analysis)
+    check_analysis_tools
+    ;;
   --all)
     check_dev
     check_baselines
+    check_analysis_tools
     ;;
   --doctor)
     echo "x64lens development environment report"
@@ -189,6 +203,9 @@ case "$MODE" in
     echo
     echo "[optional baseline tools]"
     check_baselines || true
+    echo
+    echo "[optional analysis/comparison tools]"
+    check_analysis_tools || true
     echo
     echo "[docker]"
     if have_command docker && docker info >/dev/null 2>&1; then
@@ -202,7 +219,7 @@ case "$MODE" in
     fi
     ;;
   *)
-    echo "usage: $0 [--build|--samples|--dev|--baselines|--all|--doctor]" >&2
+    echo "usage: $0 [--build|--samples|--dev|--baselines|--analysis|--all|--doctor]" >&2
     exit 2
     ;;
 esac

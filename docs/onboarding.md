@@ -270,3 +270,16 @@ command -v r2 && r2 -v || true
 command -v strace && strace -V || true
 command -v shellcheck && shellcheck --version || true
 ```
+
+Repository targets:
+
+```bash
+make analysis-tools-check
+make readelf-comparison-smoke
+make optional-tool-comparison-smoke
+make shellcheck-smoke
+```
+
+`readelf` comparison is part of the normal native validation aggregate.
+`checksec`, `rabin2`, `strace`, and `shellcheck` remain optional local review
+tools; absence should not block core build/test validation.

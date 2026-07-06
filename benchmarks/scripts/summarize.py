@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import statistics
 import sys
 from collections import defaultdict
@@ -34,6 +35,8 @@ def require_nonnegative_number(row: dict[str, str], field: str, source: Path, ro
     parsed = as_float(value)
     if parsed is None:
         raise ValueError(f"{source}:{row_number}: {field} must be numeric, got {value!r}")
+    if not math.isfinite(parsed):
+        raise ValueError(f"{source}:{row_number}: {field} must be finite, got {value!r}")
     if parsed < 0:
         raise ValueError(f"{source}:{row_number}: {field} must be non-negative, got {value!r}")
 

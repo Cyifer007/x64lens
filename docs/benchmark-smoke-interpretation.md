@@ -43,3 +43,11 @@ The current smoke rows verify harness execution and demonstrate that timing reso
 ## Patch 036 artifact hygiene note
 
 Patch 036 rejects invalid benchmark inputs and metric domains before normal summarization. Use `make bench-summary-latest` for the newest nonempty smoke artifact. Use `ALLOW_MIXED_BENCH_SUMMARY=1 make bench-summary` only for exploratory aggregation after confirming that the TSV files share compatible tool versions, corpus, schema, and environment metadata.
+
+
+## Patch 037 evidence-integrity update
+
+Benchmark smoke summaries reject non-finite timing values (`nan`, `inf`, and
+`-inf`) and malformed rows. If a smoke artifact fails the summarizer, treat the
+artifact as invalid measurement evidence and rerun after preserving the raw log
+needed for diagnosis. Do not manually edit rows into a passing state.

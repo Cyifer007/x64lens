@@ -8,6 +8,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 037 automated `readelf` comparison smoke, optional `checksec`/`rabin2 -I` comparison smoke, benchmark-integrity smoke, Docker context hygiene smoke, and ADR 0023.
+- Optional analysis-tool inventory checks for `checksec`, `rabin2`, `strace`, and `shellcheck`.
 - Sprint 8 Patch 036 historical-findings hardening validation record and ADR 0022.
 - Byte-safe JSON escaping for target paths and bounded section-label strings.
 - Benchmark smoke input and metric-domain validation for run count, maximum depth, timing, RSS, and summary artifact selection.
@@ -52,6 +54,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Include benchmark-integrity, automated readelf comparison, and optional tool comparison in the native validation aggregate.
+- Move remaining Makefile smoke outputs to per-run temporary directories.
 - Require section-label file-offset and virtual-address evidence to agree before annotating executable regions or candidates.
 - Exclude `.env` and `.env.*` files from the Docker build context while preserving a future `.env.example` allowlist.
 - Make `bench-summary` refuse mixed benchmark TSV aggregation by default and make `bench-summary-latest` select the newest nonempty TSV artifact.
@@ -96,6 +100,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Reject non-finite benchmark summary values such as `nan`, `inf`, and `-inf`.
 - Preserve JSON validity and byte fidelity for high-bit and control bytes in target paths and section labels.
 - Reject benchmark smoke runs with non-positive `RUNS`, invalid `MAX_DEPTH`, nonnumeric timing/RSS fields, or negative timing/RSS values.
 - Record dereferenced target sizes for benchmarked symlink paths.

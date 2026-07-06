@@ -26,6 +26,9 @@ MALFORMED_TIMEOUT ?= 2
 MALFORMED_RESULTS_DIR ?= ./tests/results/malformed
 MITIGATION_MATRIX_RESULTS_DIR ?= ./tests/results/mitigation-matrix
 SECTION_LABEL_RESULTS_DIR ?= ./tests/results/section-label
+READELF_COMPARISON_RESULTS_DIR ?= ./tests/results/readelf-comparison
+OPTIONAL_TOOL_COMPARISON_RESULTS_DIR ?= ./tests/results/optional-tool-comparison
+BENCHMARK_INTEGRITY_RESULTS_DIR ?= ./tests/results/benchmark-integrity
 
 NASM         ?= nasm
 LD           ?= ld
@@ -39,7 +42,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -49,6 +52,12 @@ help:
 	@echo "  make validation-smoke    Run the complete native validation aggregate"
 	@echo "  make mitigation-matrix-smoke  Run the deterministic mitigation oracle"
 	@echo "  make section-label-smoke  Run section-label annotation hardening probes"
+	@echo "  make readelf-comparison-smoke  Compare metadata and loader facts against readelf"
+	@echo "  make optional-tool-comparison-smoke  Run optional checksec/rabin2 comparison helpers"
+	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
+	@echo "  make shellcheck-smoke  Run shellcheck when installed"
+	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
+	@echo "  make analysis-tools-check  Inventory optional analysis/comparison tools"
 	@echo "  make malformed-smoke     Run deterministic malformed-input smoke"
 	@echo "  make fuzz-mutated-elf-smoke  Compatibility alias for malformed smoke"
 	@echo "  make capacity-smoke      Validate exact and overflow candidate capacity"
@@ -83,6 +92,9 @@ dev-tools-check:
 baseline-tools-check:
 	bash tools/check-dev-tools.sh --baselines
 
+analysis-tools-check:
+	bash tools/check-dev-tools.sh --analysis
+
 full-tools-check:
 	REQUIRE_BASELINES=1 bash tools/check-dev-tools.sh --all
 
@@ -92,6 +104,7 @@ doctor:
 install-dev-deps-ubuntu:
 	sudo apt update
 	sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+	@echo "Optional analysis/comparison tools: sudo apt install -y checksec radare2 strace shellcheck"
 	python3 -m pipx ensurepath 2>/dev/null || pipx ensurepath 2>/dev/null || true
 
 install-baseline-tools-user:
@@ -162,29 +175,33 @@ semantic-smoke: validate-gadget-fixture
 # parses as JSON and satisfies the report invariants checked by the repository
 # validator. The fixture mode asserts exact expected semantic and score facts.
 json-smoke: dev-tools-check all samples
-	@./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-json-smoke.json
-	@python3 -m json.tool /tmp/x64lens-json-smoke.json >/dev/null
-	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke.json >/dev/null
-	@./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > /tmp/x64lens-json-smoke-order2.json
-	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-json-smoke-order2.json >/dev/null
-	@echo "json-smoke: ok"
+	@tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-json-smoke.XXXXXX")"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke.json"; \
+	python3 -m json.tool "$$tmp/x64lens-json-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-json-smoke.json" >/dev/null; \
+	./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke-order2.json"; \
+	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
+	echo "json-smoke: ok"
 
 
 # Sprint 6 integrated analyze smoke target. This verifies that analyze combines
 # target metadata, mitigation facts, raw candidates, semantic facts, scoring,
 # and JSON report shape without changing the underlying scanner contract.
 analyze-smoke: dev-tools-check all samples
-	@./$(TARGET) analyze --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke.txt
-	@grep -q "Format:" /tmp/x64lens-analyze-smoke.txt
-	@grep -q "Mitigations:" /tmp/x64lens-analyze-smoke.txt
-	@grep -q "Raw gadget candidates:" /tmp/x64lens-analyze-smoke.txt
-	@grep -q "Candidate count: 0x000000000000000b" /tmp/x64lens-analyze-smoke.txt
-	@grep -q "Scored candidate count: 0x000000000000000b" /tmp/x64lens-analyze-smoke.txt
-	@./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke.json
-	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze-smoke.json >/dev/null
-	@./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > /tmp/x64lens-analyze-smoke-order2.json
-	@python3 tools/validate-json-report.py --mode fixture /tmp/x64lens-analyze-smoke-order2.json >/dev/null
-	@echo "analyze-smoke: ok"
+	@tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-analyze-smoke.XXXXXX")"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	./$(TARGET) analyze --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Format:" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Mitigations:" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Raw gadget candidates:" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Scored candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
+	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.json"; \
+	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
+	./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke-order2.json"; \
+	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
+	echo "analyze-smoke: ok"
 
 # Real-binary smoke target. This runs the current pipeline against installed
 # system ELF64 binaries and validates shape/invariants rather than brittle,
@@ -233,22 +250,54 @@ section-label-smoke: dev-tools-check all
 		--timeout "$(MALFORMED_TIMEOUT)" \
 		--results-dir "$(SECTION_LABEL_RESULTS_DIR)"
 
+readelf-comparison-smoke: dev-tools-check all samples
+	python3 tools/readelf-comparison-smoke.py \
+		--binary ./$(TARGET) \
+		--timeout "$(MALFORMED_TIMEOUT)" \
+		--results-dir "$(READELF_COMPARISON_RESULTS_DIR)"
+
+optional-tool-comparison-smoke: dev-tools-check all samples
+	python3 tools/optional-mitigation-comparison-smoke.py \
+		--binary ./$(TARGET) \
+		--timeout "$(MALFORMED_TIMEOUT)" \
+		--results-dir "$(OPTIONAL_TOOL_COMPARISON_RESULTS_DIR)"
+
+benchmark-integrity-smoke:
+	python3 tools/benchmark-integrity-smoke.py \
+		--summarizer benchmarks/scripts/summarize.py \
+		--results-dir "$(BENCHMARK_INTEGRITY_RESULTS_DIR)"
+
+shellcheck-smoke:
+	@if command -v shellcheck >/dev/null 2>&1; then \
+		if shellcheck tests/run-tests.sh tools/*.sh benchmarks/scripts/*.sh; then \
+			echo "shellcheck-smoke: ok"; \
+		elif [ "$${SHELLCHECK_STRICT:-0}" = "1" ]; then \
+			exit 1; \
+		else \
+			echo "shellcheck-smoke: advisory findings present (set SHELLCHECK_STRICT=1 to fail)"; \
+		fi; \
+	else \
+		echo "shellcheck-smoke: skipped (shellcheck not installed)"; \
+	fi
+
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check benchmark-integrity-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
 # storage moved from static .bss memory to an mmap-backed arena. The expected
 # counts follow the current controlled gadget fixture.
 arena-smoke: all samples
-	@./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets > /tmp/x64lens-arena-smoke.txt
-	@grep -q "Candidate capacity: 0x0000000000001000" /tmp/x64lens-arena-smoke.txt
-	@grep -q "Candidate count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
-	@grep -q "ret imm16 count: 0x0000000000000001" /tmp/x64lens-arena-smoke.txt
-	@grep -q "Exact pattern count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
-	@grep -q "Scored candidate count: 0x000000000000000b" /tmp/x64lens-arena-smoke.txt
-	@echo "arena-smoke: ok"
+	@tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-arena-smoke.XXXXXX")"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-arena-smoke.txt"; \
+	grep -q "Candidate capacity: 0x0000000000001000" "$$tmp/x64lens-arena-smoke.txt"; \
+	grep -q "Candidate count: 0x000000000000000b" "$$tmp/x64lens-arena-smoke.txt"; \
+	grep -q "ret imm16 count: 0x0000000000000001" "$$tmp/x64lens-arena-smoke.txt"; \
+	grep -q "Exact pattern count: 0x000000000000000b" "$$tmp/x64lens-arena-smoke.txt"; \
+	grep -q "Scored candidate count: 0x000000000000000b" "$$tmp/x64lens-arena-smoke.txt"; \
+	echo "arena-smoke: ok"
 
 # First Sprint 3 scanner benchmark smoke target. This records repeated runs,
 # elapsed time, max RSS, exit code, candidate counts, and output size in
@@ -320,11 +369,16 @@ script-perms-check:
 	@test -x benchmarks/scripts/bench-baselines-smoke.sh
 	@test -x benchmarks/scripts/summarize.py
 	@test -x benchmarks/scripts/bench-x64lens.sh
+	@test -x tools/benchmark-integrity-smoke.py
 	@test -x tools/compare-checksec.sh
 	@test -x tools/compare-objdump.sh
+	@test -x tools/compare-rabin2.sh
 	@test -x tools/compare-readelf.sh
 	@test -x tools/compare-ropgadget.sh
+	@test -x tools/docker-context-hygiene-smoke.sh
 	@test -x tools/make-release-artifacts.sh
+	@test -x tools/optional-mitigation-comparison-smoke.py
+	@test -x tools/readelf-comparison-smoke.py
 	@test -x tools/validate-gadget-fixture.sh
 	@test -x tools/validate-json-report.py
 	@test -x tools/system-binary-smoke.sh
@@ -363,6 +417,14 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0013-deterministic-hostile-input-regression-harness.md
 	@test -f docs/adr/0014-deterministic-mitigation-oracle.md
 	@test -f docs/adr/0015-shared-checked-parser-arithmetic.md
+	@test -f docs/adr/0016-bounded-dynamic-table-view.md
+	@test -f docs/adr/0017-relro-refinement-and-duplicate-dynamic-policy.md
+	@test -f docs/adr/0018-canary-indicator-and-dynamic-string-scan.md
+	@test -f docs/adr/0019-stripped-indicator-and-dynamic-singleton-policy.md
+	@test -f docs/adr/0020-section-label-annotations.md
+	@test -f docs/adr/0021-section-label-rendering-and-ambiguity.md
+	@test -f docs/adr/0022-historical-findings-hardening.md
+	@test -f docs/adr/0023-comparator-and-benchmark-integrity-gates.md
 	@test -f docs/design/mitigation-fixture-matrix.md
 	@test -f docs/sprints/sprint-07-patch-026-validation.md
 	@test -f docs/sprints/sprint-07-patch-027-validation.md
@@ -417,9 +479,12 @@ docker-shell: docker-available-check
 docker-test: docker-build
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
 
+docker-context-hygiene-smoke: docker-available-check
+	bash tools/docker-context-hygiene-smoke.sh "$(DOCKER_IMAGE)-context-hygiene"
+
 # Full native-equivalent validation inside the reproducible container,
 # including deterministic malformed-input and candidate-capacity smoke tests.
-docker-validation-smoke: docker-build
+docker-validation-smoke: docker-build docker-context-hygiene-smoke
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make validation-smoke'
 
 print-vars:
@@ -433,6 +498,9 @@ print-vars:
 	@echo MALFORMED_RESULTS_DIR=$(MALFORMED_RESULTS_DIR)
 	@echo MITIGATION_MATRIX_RESULTS_DIR=$(MITIGATION_MATRIX_RESULTS_DIR)
 	@echo SECTION_LABEL_RESULTS_DIR=$(SECTION_LABEL_RESULTS_DIR)
+	@echo READELF_COMPARISON_RESULTS_DIR=$(READELF_COMPARISON_RESULTS_DIR)
+	@echo OPTIONAL_TOOL_COMPARISON_RESULTS_DIR=$(OPTIONAL_TOOL_COMPARISON_RESULTS_DIR)
+	@echo BENCHMARK_INTEGRITY_RESULTS_DIR=$(BENCHMARK_INTEGRITY_RESULTS_DIR)
 
 ownership-check:
 	@echo "Checking generated artifact ownership..."

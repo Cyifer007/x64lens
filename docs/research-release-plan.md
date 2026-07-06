@@ -120,3 +120,12 @@ Patch 034 adds section-label annotations while preserving schema `0.1.0`. Releas
 ## Patch 036 historical-review hardening note
 
 Patch 036 closes several review-found blockers for trustworthy evidence: byte-safe JSON rendering, `.env` Docker context exclusion, benchmark smoke sanity validation, JSON coverage-register consistency, and temporary-file isolation. These fixes improve release hygiene, but they do not replace the Sprint 9 schema/provenance transition or the Sprint 12/13 publication benchmark campaign.
+
+
+## Patch 037 comparator milestone
+
+Sprint 8 closes the initial metadata/mitigation comparator gap with automated
+`readelf` comparison and optional `checksec`/`rabin2 -I` capture. These are
+necessary reviewer-confidence gates, not sufficient publication evidence. The
+research preview still requires schema `0.2.0` provenance and the later frozen
+benchmark corpus.

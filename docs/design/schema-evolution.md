@@ -122,3 +122,11 @@ Patch 034 keeps schema `0.1.0` while adding optional gadget `section` annotation
 ## Sprint 8 Patch 036 compatibility note
 
 Patch 036 keeps schema `0.1.0` because it does not add public fields. It hardens producer escaping and validator cross-field checks. Existing well-formed reports remain valid, but malformed reports that omit registers from `primitive_coverage.registers` while listing those registers in gadget `controls` are now rejected by the bundled validator.
+
+
+## Comparator artifacts
+
+Patch 037 comparator outputs are validation artifacts, not report-schema fields.
+Schema `0.2.0` will address provenance and completeness inside x64lens reports;
+external tool outputs remain side evidence unless a future schema explicitly
+models comparator provenance.

@@ -626,3 +626,11 @@ Patch 036 does not change scanner authority or semantic scoring. It hardens repo
 - Temporary validation outputs use per-run directories to avoid collisions in parallel local or CI runs.
 
 These changes preserve the core module boundaries: file mapping and bounds, ELF and loader facts, raw scanning, exact suffixes, semantic classification, scoring, and report adapters remain separate.
+
+
+## Comparator layer
+
+Patch 037 adds comparator smoke tooling around the analyzer without changing
+runtime module boundaries. `readelf` comparison validates stable ELF/header and
+loader-visible facts. Optional `checksec` and `rabin2` output is captured for
+review only and never becomes an internal source of analyzer truth.

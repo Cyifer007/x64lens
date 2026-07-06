@@ -32,6 +32,7 @@ required=(
     docs/adr/0020-section-label-annotations.md
     docs/adr/0021-section-label-rendering-and-ambiguity.md
     docs/adr/0022-historical-findings-hardening.md
+    docs/adr/0023-comparator-and-benchmark-integrity-gates.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -46,6 +47,7 @@ required=(
     docs/sprints/sprint-08-patch-034-validation.md
     docs/sprints/sprint-08-patch-035-validation.md
     docs/sprints/sprint-08-patch-036-validation.md
+    docs/sprints/sprint-08-patch-037-validation.md
     docs/sprints/sprint-07-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
@@ -54,6 +56,9 @@ required=(
     tools/validate-capacity-fixture.sh
     tools/mitigation-matrix-smoke.py
     tools/section-label-smoke.py
+    tools/benchmark-integrity-smoke.py
+    tools/readelf-comparison-smoke.py
+    tools/optional-mitigation-comparison-smoke.py
 )
 
 for path in "${required[@]}"; do
@@ -110,6 +115,12 @@ grep -qi 'section labels' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 plan does not name section-label work'
 grep -qi 'historical review findings' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 plan does not name the Patch 036 historical findings hardening pass'
+grep -qi 'readelf' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 plan does not name the readelf comparison gate'
+grep -qi 'checksec' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 plan does not name the optional checksec comparison gate'
+grep -qi 'rabin2' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 plan does not name the optional rabin2 comparison gate'
 grep -q 'Sprint 8' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not hand off to Sprint 8'
 grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \
@@ -125,8 +136,14 @@ grep -q '^section-label-smoke:' Makefile \
     || fail 'Makefile does not define section-label-smoke'
 grep -q '^docker-validation-smoke:' Makefile \
     || fail 'Makefile does not define docker-validation-smoke'
-grep -Eq '^validation-smoke:.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke' Makefile \
-    || fail 'validation-smoke does not include capacity, malformed, mitigation, and section-label gates'
+grep -q '^benchmark-integrity-smoke:' Makefile \
+    || fail 'Makefile does not define benchmark-integrity-smoke'
+grep -q '^readelf-comparison-smoke:' Makefile \
+    || fail 'Makefile does not define readelf-comparison-smoke'
+grep -q '^optional-tool-comparison-smoke:' Makefile \
+    || fail 'Makefile does not define optional-tool-comparison-smoke'
+grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
+    || fail 'validation-smoke does not include benchmark-integrity, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

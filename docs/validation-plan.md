@@ -73,12 +73,15 @@ readelf -l ./tests/bin/minimal_pie_canary
 readelf -l ./tests/bin/minimal_execstack
 ```
 
-When available, compare hardening indicators against:
+When available, compare hardening indicators against optional external tools:
 
 ```bash
-checksec --file=<file>
-rabin2 -I <file>
+make optional-tool-comparison-smoke
+tools/compare-checksec.sh ./tests/bin/minimal_pie_canary ./build/x64lens
+tools/compare-rabin2.sh ./tests/bin/minimal_pie_canary ./build/x64lens
 ```
+
+These tools are comparators only; version-specific external labels do not override x64lens loader-fact contracts.
 
 Sprint 2 validation expectations:
 
@@ -101,7 +104,7 @@ Sprint 2 validation succeeded locally and in Docker. The following high-level ob
 | `minimal_execstack` | PIE disabled, NX stack disabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `EXEC`, `GNU_STACK RWE`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
 | `/bin/ls` | PIE enabled, NX stack enabled, RELRO reported under the current no/partial/full model, dynamic linking yes, one executable region | `DYN`, `GNU_STACK RW`, `GNU_RELRO`, `DYNAMIC`, one `LOAD R E` segment |
 
-The current `tools/compare-readelf.sh` provides side-by-side output. Future hardening should parse and compare fields automatically.
+`make readelf-comparison-smoke` now parses and compares stable ELF header fields, file size, LOAD counts, executable LOAD counts, GNU_STACK NX state, PT_DYNAMIC presence, PT_GNU_RELRO presence, and RWX LOAD state against `readelf`. `tools/compare-readelf.sh` remains useful for side-by-side manual review.
 
 ### 5. Gadget validation
 
@@ -850,3 +853,18 @@ Patch 036 acceptance requires the full native aggregate, focused section-label s
 - validation helpers must avoid fixed temporary-output names.
 
 Required commands are documented in `docs/sprints/sprint-08-patch-036-validation.md`.
+
+
+### Patch 037 comparator gates
+
+Patch 037 closes the remaining Sprint 8 comparator deliverables:
+
+```bash
+make benchmark-integrity-smoke
+make readelf-comparison-smoke
+make optional-tool-comparison-smoke
+```
+
+The first target rejects empty, malformed, negative, and non-finite benchmark
+rows. The second target is part of `validation-smoke`. The third target skips
+missing optional tools but executes `checksec` and `rabin2 -I` when present.

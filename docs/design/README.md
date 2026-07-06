@@ -29,3 +29,10 @@ Patch 034 adds section labels as optional annotations. Section names flow from b
 ## Sprint 8 Patch 036 historical-findings hardening update
 
 Patch 036 hardens implemented seams discovered during historical review. Byte-safe JSON escaping, section-label file-offset/virtual-address agreement, benchmark artifact sanity checks, Docker context filtering, validator cross-field checks, and temporary-output isolation are now implementation constraints. Larger provenance, decoder-gap, and publication-benchmark work remains governed by the future design notes rather than being folded into this cleanup patch.
+
+
+## Comparator and evidence-integrity notes
+
+See ADR 0023 for the Patch 037 decision to add automated `readelf` comparison,
+optional external mitigation/metadata helpers, and finite benchmark-row
+validation.
