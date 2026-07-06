@@ -33,6 +33,7 @@ required=(
     docs/adr/0021-section-label-rendering-and-ambiguity.md
     docs/adr/0022-historical-findings-hardening.md
     docs/adr/0023-comparator-and-benchmark-integrity-gates.md
+    docs/adr/0024-sprint8-closeout-and-helper-hardening.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -48,7 +49,9 @@ required=(
     docs/sprints/sprint-08-patch-035-validation.md
     docs/sprints/sprint-08-patch-036-validation.md
     docs/sprints/sprint-08-patch-037-validation.md
+    docs/sprints/sprint-08-patch-038-validation.md
     docs/sprints/sprint-07-retro.md
+    docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
     tests/malformed/regressions/elf64-shentsize-63.bin
@@ -73,7 +76,7 @@ for sprint in $(seq -w 1 18); do
 done
 
 forward_count=0
-for sprint in $(seq -w 8 18); do
+for sprint in $(seq -w 9 18); do
     path="docs/sprints/sprint-${sprint}-plan.md"
     grep -q '^## Status$' "$path" || fail "missing Status section: $path"
     grep -q '^## Sprint goal$' "$path" || fail "missing Sprint goal section: $path"
@@ -97,8 +100,10 @@ grep -q 'schema `0.2.0`' docs/design/schema-evolution.md \
     || fail 'schema transition gate is missing'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 is not marked closed or complete'
-grep -Eq '^(Next|Active)' docs/sprints/sprint-08-plan.md \
-    || fail 'Sprint 8 is not marked as the next or active implementation tranche'
+grep -Eq '^(Closed|Complete)' docs/sprints/sprint-08-plan.md \
+    || fail 'Sprint 8 is not marked closed or complete'
+grep -Eq '^(Next|Active)' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 is not marked as the next or active implementation tranche'
 grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \
@@ -125,6 +130,10 @@ grep -q 'Sprint 8' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not hand off to Sprint 8'
 grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not preserve mitigation handoff context'
+grep -q 'Sprint 9' docs/sprints/sprint-08-retro.md \
+    || fail 'Sprint 8 retrospective does not hand off to Sprint 9'
+grep -qi 'schema `0.2.0`' docs/sprints/sprint-08-retro.md \
+    || fail 'Sprint 8 retrospective does not preserve schema 0.2.0 handoff context'
 
 grep -q '^malformed-smoke:' Makefile \
     || fail 'Makefile does not define malformed-smoke'

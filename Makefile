@@ -425,6 +425,7 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0021-section-label-rendering-and-ambiguity.md
 	@test -f docs/adr/0022-historical-findings-hardening.md
 	@test -f docs/adr/0023-comparator-and-benchmark-integrity-gates.md
+	@test -f docs/adr/0024-sprint8-closeout-and-helper-hardening.md
 	@test -f docs/design/mitigation-fixture-matrix.md
 	@test -f docs/sprints/sprint-07-patch-026-validation.md
 	@test -f docs/sprints/sprint-07-patch-027-validation.md

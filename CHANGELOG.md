@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 038 closeout validation record, Sprint 8 retrospective, ADR 0024, and roadmap handoff to Sprint 9.
+- Optional comparator helper identity validation covering both `<target> <tool>` and `<tool> <target>` invocation order.
+- Benchmark-integrity smoke coverage for non-finite RSS metrics.
+
 - Sprint 8 Patch 037 automated `readelf` comparison smoke, optional `checksec`/`rabin2 -I` comparison smoke, benchmark-integrity smoke, Docker context hygiene smoke, and ADR 0023.
 - Optional analysis-tool inventory checks for `checksec`, `rabin2`, `strace`, and `shellcheck`.
 - Sprint 8 Patch 036 historical-findings hardening validation record and ADR 0022.
@@ -54,6 +58,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Harden optional `checksec` and `rabin2` direct helper argument parsing so reversed arguments cannot compare the wrong file and still pass.
+- Close Sprint 8 and mark Sprint 9 as the next implementation tranche.
 - Include benchmark-integrity, automated readelf comparison, and optional tool comparison in the native validation aggregate.
 - Move remaining Makefile smoke outputs to per-run temporary directories.
 - Require section-label file-offset and virtual-address evidence to agree before annotating executable regions or candidates.

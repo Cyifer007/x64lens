@@ -283,3 +283,11 @@ make shellcheck-smoke
 `readelf` comparison is part of the normal native validation aggregate.
 `checksec`, `rabin2`, `strace`, and `shellcheck` remain optional local review
 tools; absence should not block core build/test validation.
+
+## Sprint 8 closeout validation note
+
+After Sprint 8, contributors should treat `make validation-smoke` as the normal
+native aggregate. Optional review helpers are available for local comparison,
+but only `readelf` comparison is part of the required native aggregate. Direct
+`checksec` and `rabin2` helper scripts now validate argument identity and print
+the resolved analyzer and target before running comparisons.

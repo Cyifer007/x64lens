@@ -129,3 +129,11 @@ Sprint 8 closes the initial metadata/mitigation comparator gap with automated
 necessary reviewer-confidence gates, not sufficient publication evidence. The
 research preview still requires schema `0.2.0` provenance and the later frozen
 benchmark corpus.
+
+## Sprint 8 closeout gate
+
+Sprint 8 is complete after Patch 038. The research preview path now has stronger
+mitigation evidence and stronger development-evidence hygiene, but it is still
+not ready for preview release. Sprint 9 must add provenance, report identity,
+target/command identity, completeness/truncation state, and schema `0.2.0`
+before output freezes for preview artifacts.

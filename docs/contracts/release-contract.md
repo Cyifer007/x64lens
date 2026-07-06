@@ -112,3 +112,16 @@ Release candidates must pass `make readelf-comparison-smoke` and
 `make benchmark-integrity-smoke`. Optional `checksec` and `rabin2 -I` evidence
 can support reviewer confidence, but release claims must identify them as
 external comparator output with version-specific semantics.
+
+## Sprint 8 closeout release note
+
+Sprint 8 closes after Patch 038. Release candidates after this point must keep
+Patch 036 through Patch 038 evidence-hygiene gates in the normal validation
+path: byte-safe JSON, Docker context hygiene, benchmark TSV integrity,
+section-label trust rules, `readelf` comparison, optional comparator identity
+checks, and planning-document consistency.
+
+The next release-blocking design work is Sprint 9 schema and provenance. Do not
+promote performance, coverage, or decoded-gadget parity claims until schema
+`0.2.0`, completeness metadata, decoder-gap measurement, and publication-grade
+benchmark methodology are complete.

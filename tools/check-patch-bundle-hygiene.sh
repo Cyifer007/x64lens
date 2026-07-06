@@ -38,6 +38,10 @@ for entry in "${entries[@]}"; do
       ;;
   esac
 
+  # Some specific allow/deny path classes intentionally overlap broader
+  # generated-file patterns; the ordering below keeps the more explicit
+  # repository boundary decision visible.
+  # shellcheck disable=SC2221,SC2222
   case "$entry" in
     x64lens/.git/*|x64lens/.git|*/.git/*|*/.git)
       echo "patch-bundle-hygiene: forbidden Git internals: $entry" >&2

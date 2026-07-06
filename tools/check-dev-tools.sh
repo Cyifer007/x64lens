@@ -110,6 +110,10 @@ check_cargo_for_ropr() {
   fi
 }
 
+# The install hint intentionally prints literal shell snippets such as
+# `$HOME` and `$PATH`; they are commands for the reader, not expressions to
+# expand while this diagnostic is running.
+# shellcheck disable=SC2016
 print_install_hint() {
   printf '%s\n' \
     '' \
@@ -235,11 +239,21 @@ if [[ "$missing_required" -ne 0 ]]; then
   exit 127
 fi
 
+# Optional-tool misses are advisory for --baselines, --analysis, --all, and
+# --doctor unless REQUIRE_BASELINES=1 is set. Keep the accumulator explicit so
+# strict shell lint sees the intentional policy.
+if [[ "$missing_optional" -ne 0 ]]; then
+  case "$MODE" in
+    --baselines|--analysis|--all|--doctor) : ;;
+  esac
+fi
+
 case "$MODE" in
   --build) echo "build-tools-check: ok" ;;
   --samples) echo "sample-tools-check: ok" ;;
   --dev) echo "dev-tools-check: ok" ;;
   --baselines) echo "baseline-tools-check: ok" ;;
+  --analysis) echo "analysis-tools-check: ok" ;;
   --all) echo "full-tools-check: ok" ;;
   --doctor) echo "doctor: complete" ;;
 esac

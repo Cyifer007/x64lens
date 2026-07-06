@@ -160,3 +160,15 @@ Normal native validation includes automated `readelf` comparison and benchmark
 TSV integrity checks. Optional `checksec`, `rabin2`, `strace`, and `shellcheck`
 tools may be inventoried through `make analysis-tools-check`, but their absence
 must not block the core build/test path.
+
+## Sprint 8 closeout helper rule
+
+Optional comparison helpers must not silently compare a different file from the
+one named by the caller. When a helper accepts more than one argument order, it
+must validate which argument is the analyzer binary, which argument is the target
+ELF, and print that resolved identity before producing comparator output. It
+must not execute the target binary merely to infer argument order.
+
+Strict shell-helper lint is an optional local gate. When enabled, intentional
+literal examples or ordered boundary patterns must be explained in source rather
+than ignored silently.

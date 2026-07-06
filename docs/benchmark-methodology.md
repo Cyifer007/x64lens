@@ -414,3 +414,15 @@ This gate is still development evidence hygiene, not publication-grade timing.
 Publication benchmarking still requires the Sprint 12/13 high-resolution runner,
 frozen corpus, comparator version pinning or inventory, and normalized coverage
 definitions.
+
+## Sprint 8 closeout benchmark-integrity rule
+
+Patch 038 completes the benchmark-integrity smoke regression for non-finite
+values. Benchmark TSV consumers must reject `nan`, `inf`, and `-inf` in both
+wall-time and RSS fields. Negative, nonnumeric, empty, and header-only evidence
+must also fail closed before summary generation.
+
+This remains a development-smoke safeguard. Publication benchmarking still
+requires the planned higher-resolution runner, frozen corpus, target/tool hashes,
+run-order policy, metadata validator, and raw-row preservation planned for later
+sprints.

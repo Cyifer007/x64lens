@@ -87,6 +87,28 @@ def run_x64lens(binary: Path, target: Path, timeout: float) -> dict[str, Any]:
     }
 
 
+def run_compare_helper(script: Path, binary: Path, target: Path, timeout: float, order: str) -> dict[str, Any]:
+    if order == "target-tool":
+        command = ["bash", str(script), str(target), str(binary)]
+    elif order == "tool-target":
+        command = ["bash", str(script), str(binary), str(target)]
+    else:
+        raise ValueError(f"unknown helper order: {order}")
+
+    proc = run(command, timeout)
+    lines = proc.stdout.splitlines()
+    identity = lines[0] if lines else ""
+    identity_ok = f"tool={binary}" in identity and f"target={target}" in identity
+    return {
+        "command": command,
+        "exit_code": proc.returncode,
+        "identity_line": identity,
+        "stdout_head": lines[:30],
+        "stderr_head": proc.stderr.splitlines()[:20],
+        "ok": proc.returncode == 0 and identity_ok,
+    }
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="run optional checksec/rabin2 comparison helpers")
     parser.add_argument("--binary", type=Path, default=Path("./build/x64lens"))
@@ -125,6 +147,7 @@ def main(argv: list[str]) -> int:
             "x64lens": run_x64lens(args.binary, target, args.timeout),
             "checksec": "skipped-missing",
             "rabin2": "skipped-missing",
+            "compare_helpers": {},
         }
         if not case["x64lens"]["ok"]:
             failures.append(f"x64lens mitigations failed for {target}")
@@ -132,10 +155,30 @@ def main(argv: list[str]) -> int:
             case["checksec"] = run_checksec(target, args.timeout)
             if not case["checksec"]["ok"]:
                 failures.append(f"checksec failed for {target}")
+            helper_script = Path("tools/compare-checksec.sh")
+            case["compare_helpers"]["checksec_target_tool"] = run_compare_helper(
+                helper_script, args.binary, target, args.timeout, "target-tool"
+            )
+            case["compare_helpers"]["checksec_tool_target"] = run_compare_helper(
+                helper_script, args.binary, target, args.timeout, "tool-target"
+            )
+            for helper_name in ("checksec_target_tool", "checksec_tool_target"):
+                if not case["compare_helpers"][helper_name]["ok"]:
+                    failures.append(f"{helper_name} helper failed target identity for {target}")
         if inventory["rabin2"]["available"]:
             case["rabin2"] = run_rabin2(target, args.timeout)
             if not case["rabin2"]["ok"]:
                 failures.append(f"rabin2 -I failed for {target}")
+            helper_script = Path("tools/compare-rabin2.sh")
+            case["compare_helpers"]["rabin2_target_tool"] = run_compare_helper(
+                helper_script, args.binary, target, args.timeout, "target-tool"
+            )
+            case["compare_helpers"]["rabin2_tool_target"] = run_compare_helper(
+                helper_script, args.binary, target, args.timeout, "tool-target"
+            )
+            for helper_name in ("rabin2_target_tool", "rabin2_tool_target"):
+                if not case["compare_helpers"][helper_name]["ok"]:
+                    failures.append(f"{helper_name} helper failed target identity for {target}")
         cases.append(case)
 
     args.results_dir.mkdir(parents=True, exist_ok=True)

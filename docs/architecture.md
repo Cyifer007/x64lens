@@ -634,3 +634,17 @@ Patch 037 adds comparator smoke tooling around the analyzer without changing
 runtime module boundaries. `readelf` comparison validates stable ELF/header and
 loader-visible facts. Optional `checksec` and `rabin2` output is captured for
 review only and never becomes an internal source of analyzer truth.
+
+## Sprint 8 closeout boundary
+
+Sprint 8 closes with a clear separation between analyzer facts and comparison
+helpers. `readelf`, `checksec`, and `rabin2` may be used to compare visible
+metadata and mitigation indicators, but they do not replace x64lens parser
+contracts or become runtime authority. Program headers remain authoritative for
+runtime executable mappings; dynamic and section tables remain bounded evidence
+sources; optional external tools remain version-specific review aids.
+
+Patch 038 hardens the direct optional comparison helpers so both accepted
+argument orders resolve to exactly one analyzer binary and one analyzed target.
+The helpers print an identity line before comparison output, which makes review
+logs auditable and prevents the wrong file from being compared silently.

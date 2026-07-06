@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 7 are validated through the Sprint 7 closeout checkpoint. Sprint 8 is active for mitigation and metadata depth. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is next for provenance, completeness, report identity, schema `0.2.0`, and decoder-gap measurement. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -16,6 +16,8 @@ Sprints 1 through 7 are validated through the Sprint 7 closeout checkpoint. Spri
 - an integrated `analyze` command,
 - controlled, system-binary, Docker, and public-documentation validation,
 - baseline comparison smoke plumbing,
+- automated `readelf` comparison and optional `checksec` / `rabin2 -I` review helpers,
+- benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
 The local `v0.1.0-dev` tag marks an integrated prototype. It is not a research release or evidence of universal performance superiority.
@@ -38,7 +40,7 @@ Passing this gate demonstrates stable behavior for the reviewed cases. It does n
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split. Patch 032 adds the first evidence-qualified canary indicator. Patch 033 adds the first stripped-status indicator and strict dynamic-string singleton policy. Patch 034 adds section-label annotations as metadata only, and Patch 035 hardens their rendering and ambiguity policy.
+Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split. Patch 032 adds the first evidence-qualified canary indicator. Patch 033 adds the first stripped-status indicator and strict dynamic-string singleton policy. Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 038 closes Sprint 8.
 
 ### Stage 2: candidate discovery and semantics
 
@@ -56,7 +58,7 @@ Status: planned for Sprint 9. This stage is the intended trigger for schema `0.2
 
 Connect static mitigation evidence and primitive coverage to defensive constraints without claiming vulnerability or exploitability.
 
-Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Patch 031 adds no, partial, and full RELRO reporting, Patch 032 adds an evidence-qualified canary indicator, Patch 033 adds a section-table stripped-status indicator, and Patch 034 adds section-label annotations. Evidence and triage work continues in later sprints.
+Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Patch 031 adds no, partial, and full RELRO reporting, Patch 032 adds an evidence-qualified canary indicator, Patch 033 adds a section-table stripped-status indicator, Patch 034 adds section-label annotations, and Patches 035-038 harden reporting, evidence hygiene, and comparator gates. Evidence and triage work continues in later sprints.
 
 ### Stage 5: reproducible measurement
 
@@ -147,9 +149,19 @@ Patch 033 completes the first stripped-status indicator and extends the mitigati
 
 ## Sprint 8 Patch 034 update
 
-Patch 034 adds section-label annotations as metadata only, and Patch 035 hardens their rendering and ambiguity policy. This improves defender readability without changing the scanner, classifier, scoring, or mitigation authority boundaries. The result supports the later evidence-provenance schema transition because section-derived labels can be identified separately from loader-derived regions.
+Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 038 closes Sprint 8. This improves defender readability without changing the scanner, classifier, scoring, or mitigation authority boundaries. The result supports the later evidence-provenance schema transition because section-derived labels can be identified separately from loader-derived regions.
 
 
 ## Sprint 8 Patch 035 update
 
 Patch 035 improves the reliability of section-derived annotations under hostile metadata. This keeps the research claim narrow: labels improve analyst readability, but all runtime authority and candidate counting still come from loader-derived regions and scanner/classifier records.
+
+
+## Sprint 8 closeout update
+
+Sprint 8 is closed. The project now has sufficient mitigation-depth and metadata
+hardening to begin Sprint 9 provenance work, but not enough evidence to make
+publication-grade speed, coverage, or decoded-gadget parity claims. The next
+research risk to retire is machine-readable evidence identity: what report was
+run, against which target hash and command, whether candidate enumeration was
+complete, and which evidence tier justified each semantic claim.

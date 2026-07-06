@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 8 Patch 036 development line. Sprint 7 is closed and Sprint 8 mitigation-depth work now includes a bounded `PT_DYNAMIC` table view, a no/partial/full RELRO evidence split, an evidence-qualified canary indicator, a bounded section-header stripped-status indicator, section-label annotations for executable regions and gadget candidates, and historical-findings hardening for byte-safe JSON, section-label ambiguity, Docker context hygiene, benchmark evidence integrity, JSON validator consistency, and temporary-file isolation. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, dynamic-table mitigation evidence, refined RELRO reporting, canary indicator reporting, stripped indicator reporting, section-label reporting, section-label hardening probes, and evidence-hygiene gates are established.
+> Status: Sprint 8 closeout line. Sprint 7 is closed and Sprint 8 mitigation-depth work is complete after bounded `PT_DYNAMIC` parsing, no/partial/full RELRO evidence, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, Docker context hygiene, benchmark evidence integrity, automated `readelf` comparison, optional `checksec` / `rabin2 -I` comparison helpers, and closeout helper hardening. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, and Sprint 8 evidence-hygiene gates are established. Sprint 9 is the next tranche and focuses on evidence provenance, completeness, and schema `0.2.0`.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -333,4 +333,6 @@ make shellcheck-smoke
 
 `readelf` comparison is part of the normal native validation aggregate.
 `checksec`, `rabin2`, `strace`, and `shellcheck` remain optional local review
-tools; absence should not block core build/test validation.
+tools; absence should not block core build/test validation. The direct
+comparison helpers accept either `<target> <tool>` or `<tool> <target>` and
+print an explicit target identity line so optional review logs can be audited.

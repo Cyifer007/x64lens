@@ -214,3 +214,21 @@ make shellcheck-smoke
 `readelf` comparison is part of the normal native validation aggregate.
 `checksec`, `rabin2`, `strace`, and `shellcheck` remain optional local review
 tools; absence should not block core build/test validation.
+
+## Strict shell-helper lint
+
+`make shellcheck-smoke` is optional and advisory by default. When `shellcheck` is
+installed, `SHELLCHECK_STRICT=1 make shellcheck-smoke` can be used as a local
+pre-commit gate. Intentional literal shell snippets in install hints and ordered
+path-boundary rules in bundle hygiene checks should be documented in source when
+they need lint suppression.
+
+The optional comparison helpers accept both argument orders below and print the
+resolved target identity before output:
+
+```bash
+bash tools/compare-checksec.sh ./tests/bin/minimal_pie_canary ./build/x64lens
+bash tools/compare-checksec.sh ./build/x64lens ./tests/bin/minimal_pie_canary
+bash tools/compare-rabin2.sh ./tests/bin/minimal_pie_canary ./build/x64lens
+bash tools/compare-rabin2.sh ./build/x64lens ./tests/bin/minimal_pie_canary
+```

@@ -223,3 +223,22 @@ Patch 035 hardens section-label rendering and overlap handling, adds a focused s
 ## Sprint 8 Patch 036 backlog update
 
 Patch 036 resolves the immediate historical-review hardening items: byte-safe JSON for target paths and bounded section labels, file-offset plus virtual-address agreement for labels, Docker `.env` context exclusion, benchmark artifact sanity checks, JSON coverage-register validation, per-run temporary directories, and robust missing-tool install hints. Remaining industry-comparison work stays in Sprint 9 and Sprint 12/13: provenance schema `0.2.0`, decoder-gap measurement, high-resolution benchmarks, pinned baseline environments, and normalized coverage definitions.
+
+## Sprint 8 closeout update
+
+Sprint 8 is closed after Patch 038. Completed work includes bounded dynamic
+metadata, RELRO refinement, canary and stripped indicators, section-label
+annotations, hostile metadata hardening, byte-safe JSON rendering, automated
+`readelf` comparison, optional `checksec` / `rabin2 -I` comparison helpers,
+Docker context hygiene, benchmark-integrity gates, and final optional-helper
+argument validation.
+
+The next active tranche is Sprint 9. Do not add new semantic primitive families
+until Sprint 9 has established report identity, provenance, candidate
+completeness, truncation state, and schema `0.2.0` transition rules.
+
+Patch 038 also resolves the remaining Patch 037 validation follow-ups:
+
+- direct optional comparator helpers no longer false-pass on reversed arguments,
+- benchmark-integrity smoke directly covers non-finite RSS values,
+- strict shell lint policy is documented as an optional clean gate.

@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 7 are validated through the Sprint 7 closeout checkpoint. Sprint 8 is the next implementation tranche and focuses on mitigation and metadata depth.
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is the next implementation tranche and focuses on evidence provenance, report identity, completeness, schema `0.2.0`, and decoder-gap measurement.
 
 The implemented pipeline is:
 
@@ -29,11 +29,15 @@ ELF64 validation
   -> smoke validation and baseline benchmark plumbing
 ```
 
-The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release. Sprint 8 Patch 036 continues post-checkpoint mitigation-depth work with bounded dynamic-table evidence, RELRO refinement, the first canary indicator, the first stripped-status indicator, section-label annotations, and historical-findings hardening.
+The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release. Sprint 8 closes the mitigation-depth tranche with bounded dynamic-table evidence, RELRO refinement, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, evidence-hygiene gates, automated `readelf` comparison, and optional `checksec` / `rabin2 -I` comparison helpers.
 
 ## Sprint 7 closeout checkpoint
 
-Sprint 7 established deterministic hostile-input evidence, explicit resource-limit behavior, a mitigation oracle, corrected generated-artifact hygiene, and shared checked arithmetic for table extents and bounded per-entry views. Regression promotion remains a continuing policy, but it no longer blocks the Sprint 8 handoff.
+Sprint 7 established deterministic hostile-input evidence, explicit resource-limit behavior, a mitigation oracle, corrected generated-artifact hygiene, and shared checked arithmetic for table extents and bounded per-entry views. Regression promotion remains a continuing policy.
+
+## Sprint 8 closeout checkpoint
+
+Sprint 8 established mitigation-depth evidence and metadata annotations while preserving program-header runtime authority. Dynamic-table evidence now supports RELRO refinement and canary indicators; section tables support stripped status and optional section labels only as bounded metadata. Patch 038 closes the sprint after comparator helper hardening, benchmark-integrity coverage, Sprint 8 retrospective publication, and Sprint 9 handoff.
 
 ## Release gates
 
@@ -56,7 +60,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 5 | Scoring, JSON, and validation | Heuristic scores, schema `0.1.0`, system smoke tests, baseline harness, and environment hardening. |
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
-| 8 | Mitigation and metadata depth | Full versus partial RELRO, canary indicators, section labels, stripped indicators, and external comparison checks. |
+| 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
 | 9 | Candidate provenance and decoder-gap measurement | Evidence side-car model, truncation reporting, validity tiers, and measured decoder decision gate. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |

@@ -2,11 +2,11 @@
 
 ## Status
 
-Planned.
+Next.
 
 ## Sprint goal
 
-Make candidate validity, evidence source, and analysis completeness explicit before adding more primitive families.
+Make candidate validity, evidence source, analysis completeness, and report identity explicit before adding more primitive families.
 
 ## Planned deliverables
 

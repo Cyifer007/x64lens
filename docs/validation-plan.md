@@ -868,3 +868,75 @@ make optional-tool-comparison-smoke
 The first target rejects empty, malformed, negative, and non-finite benchmark
 rows. The second target is part of `validation-smoke`. The third target skips
 missing optional tools but executes `checksec` and `rabin2 -I` when present.
+
+## Sprint 8 Patch 038 closeout validation
+
+Patch 038 closes Sprint 8 and validates the remaining Patch 037 follow-ups:
+optional comparator helper argument identity, benchmark-integrity RSS coverage,
+strict shell-helper lint documentation, Sprint 8 retrospective documentation,
+and Sprint 9 handoff.
+
+Required targeted probes:
+
+```bash
+make benchmark-integrity-smoke
+make optional-tool-comparison-smoke
+make readelf-comparison-smoke
+make shellcheck-smoke
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+```
+
+When optional comparators are installed, both direct helper argument orders must
+resolve to the same analyzer and target identity:
+
+```bash
+bash tools/compare-checksec.sh ./tests/bin/minimal_pie_canary ./build/x64lens
+bash tools/compare-checksec.sh ./build/x64lens ./tests/bin/minimal_pie_canary
+bash tools/compare-rabin2.sh ./tests/bin/minimal_pie_canary ./build/x64lens
+bash tools/compare-rabin2.sh ./build/x64lens ./tests/bin/minimal_pie_canary
+```
+
+The complete local gate remains:
+
+```bash
+make normalize-perms
+make script-perms-check
+make scaffold-check
+make diagrams-check
+make public-docs-check
+make planning-docs-check
+make dev-tools-check
+make baseline-tools-check
+make analysis-tools-check
+make full-tools-check
+make doctor
+make clean
+make
+make samples
+make test
+make validate-gadget-fixture
+make scanner-smoke
+make arena-smoke
+make pattern-smoke
+make semantic-smoke
+make json-smoke
+make analyze-smoke
+make system-smoke
+make capacity-smoke
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make fuzz-mutated-elf-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+make section-label-smoke
+make benchmark-integrity-smoke
+make readelf-comparison-smoke
+make optional-tool-comparison-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+make docker-available-check
+make docker-build
+make docker-test
+make docker-context-hygiene-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+```
+
+Acceptance requires Sprint 8 public planning to be closed and Sprint 9 to be
+identified as the next implementation tranche.
