@@ -34,6 +34,7 @@ required=(
     docs/adr/0022-historical-findings-hardening.md
     docs/adr/0023-comparator-and-benchmark-integrity-gates.md
     docs/adr/0024-sprint8-closeout-and-helper-hardening.md
+    docs/adr/0025-sprint8-closeout-correction.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -50,6 +51,7 @@ required=(
     docs/sprints/sprint-08-patch-036-validation.md
     docs/sprints/sprint-08-patch-037-validation.md
     docs/sprints/sprint-08-patch-038-validation.md
+    docs/sprints/sprint-08-patch-039-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
@@ -96,6 +98,8 @@ grep -q 'v0.1.0-rc1' docs/research-release-plan.md \
     || fail 'research preview gate is missing'
 grep -q 'v0.1.0' docs/research-release-plan.md \
     || fail 'first research release gate is missing'
+# The grep pattern intentionally contains literal Markdown backticks.
+# shellcheck disable=SC2016
 grep -q 'schema `0.2.0`' docs/design/schema-evolution.md \
     || fail 'schema transition gate is missing'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-07-plan.md \
@@ -132,6 +136,8 @@ grep -qi 'mitigation' docs/sprints/sprint-07-retro.md \
     || fail 'Sprint 7 retrospective does not preserve mitigation handoff context'
 grep -q 'Sprint 9' docs/sprints/sprint-08-retro.md \
     || fail 'Sprint 8 retrospective does not hand off to Sprint 9'
+# The grep pattern intentionally contains literal Markdown backticks.
+# shellcheck disable=SC2016
 grep -qi 'schema `0.2.0`' docs/sprints/sprint-08-retro.md \
     || fail 'Sprint 8 retrospective does not preserve schema 0.2.0 handoff context'
 

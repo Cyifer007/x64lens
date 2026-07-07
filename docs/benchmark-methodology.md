@@ -417,8 +417,8 @@ definitions.
 
 ## Sprint 8 closeout benchmark-integrity rule
 
-Patch 038 completes the benchmark-integrity smoke regression for non-finite
-values. Benchmark TSV consumers must reject `nan`, `inf`, and `-inf` in both
+Patch 039 completes the benchmark-integrity smoke regression for non-finite
+values after Patch 038 validation found the RSS fixture files missing. Benchmark TSV consumers must reject `nan`, `inf`, and `-inf` in both
 wall-time and RSS fields. Negative, nonnumeric, empty, and header-only evidence
 must also fail closed before summary generation.
 

@@ -40,7 +40,7 @@ Passing this gate demonstrates stable behavior for the reviewed cases. It does n
 
 Build safe ELF64 identity, loader mappings, executable regions, and baseline mitigations.
 
-Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split. Patch 032 adds the first evidence-qualified canary indicator. Patch 033 adds the first stripped-status indicator and strict dynamic-string singleton policy. Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 038 closes Sprint 8.
+Status: implemented in stages. Patch 025 added deterministic malformed-input and candidate-capacity gates. Patch 028 added shared checked table arithmetic and table-end overflow probes. Patch 029 closes Sprint 7. Patch 030 opens Sprint 8 with bounded `PT_DYNAMIC` parsing for bind-now evidence, dynamic-entry count, and terminator state. Patch 031 adds the no, partial, and full RELRO evidence split. Patch 032 adds the first evidence-qualified canary indicator. Patch 033 adds the first stripped-status indicator and strict dynamic-string singleton policy. Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 039 closes Sprint 8.
 
 ### Stage 2: candidate discovery and semantics
 
@@ -149,7 +149,7 @@ Patch 033 completes the first stripped-status indicator and extends the mitigati
 
 ## Sprint 8 Patch 034 update
 
-Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 038 closes Sprint 8. This improves defender readability without changing the scanner, classifier, scoring, or mitigation authority boundaries. The result supports the later evidence-provenance schema transition because section-derived labels can be identified separately from loader-derived regions.
+Patch 034 adds section-label annotations as metadata only, Patch 035 hardens their rendering and ambiguity policy, Patch 036 hardens historical evidence-quality findings, Patch 037 adds comparison gates, and Patch 039 closes Sprint 8. This improves defender readability without changing the scanner, classifier, scoring, or mitigation authority boundaries. The result supports the later evidence-provenance schema transition because section-derived labels can be identified separately from loader-derived regions.
 
 
 ## Sprint 8 Patch 035 update

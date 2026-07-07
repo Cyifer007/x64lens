@@ -8,6 +8,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 8 Patch 039 closeout-correction validation record and ADR 0025.
 - Sprint 8 Patch 038 closeout validation record, Sprint 8 retrospective, ADR 0024, and roadmap handoff to Sprint 9.
 - Optional comparator helper identity validation covering both `<target> <tool>` and `<tool> <target>` invocation order.
 - Benchmark-integrity smoke coverage for non-finite RSS metrics.
@@ -58,6 +59,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Treat Patch 039 as the final Sprint 8 closeout correction after Patch 038 validation found missing non-finite-RSS fixture files and strict-shellcheck cleanup work.
 - Harden optional `checksec` and `rabin2` direct helper argument parsing so reversed arguments cannot compare the wrong file and still pass.
 - Close Sprint 8 and mark Sprint 9 as the next implementation tranche.
 - Include benchmark-integrity, automated readelf comparison, and optional tool comparison in the native validation aggregate.
@@ -168,6 +170,12 @@ The project follows semantic versioning once the first public release is cut.
 - Fixed false `REQUIRE_BASELINES=1` failures when the variable propagated into `dev-tools-check`.
 - Replaced the brittle `cargo install ropr` onboarding path with a rustup-aware helper and explicit remediation guidance.
 
+
+### Fixed
+
+- Added the missing benchmark-integrity non-finite RSS fixtures: `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`.
+- Cleaned strict shell-helper lint for patch-bundle unsafe-path checks and intentional literal Markdown-backtick planning checks.
+- Regenerated private closeout context externally so Patch 039 / Sprint 8 closeout supersedes stale Patch 029 / Sprint 7 local handoff state.
 
 ## [0.1.0-dev] - Development history through Sprint 05 Patch 020
 

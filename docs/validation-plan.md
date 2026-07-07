@@ -869,9 +869,9 @@ The first target rejects empty, malformed, negative, and non-finite benchmark
 rows. The second target is part of `validation-smoke`. The third target skips
 missing optional tools but executes `checksec` and `rabin2 -I` when present.
 
-## Sprint 8 Patch 038 closeout validation
+## Sprint 8 Patch 039 closeout validation
 
-Patch 038 closes Sprint 8 and validates the remaining Patch 037 follow-ups:
+Patch 039 closes Sprint 8 and validates the remaining Patch 037 follow-ups:
 optional comparator helper argument identity, benchmark-integrity RSS coverage,
 strict shell-helper lint documentation, Sprint 8 retrospective documentation,
 and Sprint 9 handoff.
@@ -940,3 +940,8 @@ MALFORMED_TIMEOUT=2 make docker-validation-smoke
 
 Acceptance requires Sprint 8 public planning to be closed and Sprint 9 to be
 identified as the next implementation tranche.
+
+
+## Sprint 8 Patch 039 correction
+
+Patch 039 is the final Sprint 8 closeout correction. It requires `make benchmark-integrity-smoke` to generate and reject `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`, requires strict shell lint to pass when `shellcheck` is installed, and keeps the context refresh outside public tracked source.

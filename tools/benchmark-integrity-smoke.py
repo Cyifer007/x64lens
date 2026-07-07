@@ -96,6 +96,9 @@ def run_cases(summarizer: Path, out_dir: Path) -> None:
         "neg-inf-wall.tsv": "x64lens\tgadgets\ttarget\t1\t-inf\t100\t0\tbad\n",
         "nonnumeric-wall.tsv": "x64lens\tgadgets\ttarget\t1\tCommand\t100\t0\tbad\n",
         "negative-rss.tsv": "x64lens\tgadgets\ttarget\t1\t0.1\t-1\t0\tbad\n",
+        "nan-rss.tsv": "x64lens\tgadgets\ttarget\t1\t0.1\tnan\t0\tbad\n",
+        "inf-rss.tsv": "x64lens\tgadgets\ttarget\t1\t0.1\tinf\t0\tbad\n",
+        "neg-inf-rss.tsv": "x64lens\tgadgets\ttarget\t1\t0.1\t-inf\t0\tbad\n",
         "bad-run.tsv": "x64lens\tgadgets\ttarget\t0\t0.1\t100\t0\tbad\n",
     }
     for filename, row in cases.items():

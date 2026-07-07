@@ -31,12 +31,10 @@ fi
 
 bad=0
 for entry in "${entries[@]}"; do
-  case "$entry" in
-    /*|*../*|../*)
-      echo "patch-bundle-hygiene: forbidden unsafe path: $entry" >&2
-      bad=1
-      ;;
-  esac
+  if [[ "$entry" == /* || "$entry" == ../* || "$entry" == *"/../"* || "$entry" == *"/.." ]]; then
+    echo "patch-bundle-hygiene: forbidden unsafe path: $entry" >&2
+    bad=1
+  fi
 
   # Some specific allow/deny path classes intentionally overlap broader
   # generated-file patterns; the ordering below keeps the more explicit

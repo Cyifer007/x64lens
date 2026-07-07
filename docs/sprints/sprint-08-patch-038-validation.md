@@ -91,3 +91,8 @@ clean when `shellcheck` is installed or produces only documented intentional
 findings that are tracked for future cleanup.
 - Sprint 8 plan, Sprint 8 retrospective, roadmap, release plan, and validation
 plan agree that Sprint 8 is closed and Sprint 9 is next.
+
+
+## Patch 039 correction note
+
+Local validation of Patch 038 found that the public closeout intent was correct but the patch did not actually generate the expected non-finite-RSS benchmark-integrity fixture files and strict shell lint still had actionable findings. Patch 039 is the required correction and final Sprint 8 acceptance gate.

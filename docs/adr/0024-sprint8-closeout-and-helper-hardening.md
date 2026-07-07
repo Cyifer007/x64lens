@@ -47,3 +47,8 @@ Sprint 9 can now begin from a cleaner boundary: parser safety, mitigation
 indicators, section-label annotations, and comparison smoke gates are complete;
 provenance, completeness, schema `0.2.0`, decoder-gap measurement, and
 publication-grade benchmark methodology remain future work.
+
+
+## Patch 039 correction
+
+Patch 038 validation found that this ADR's benchmark-integrity RSS coverage intent was not fully implemented and strict shell lint still had actionable findings. ADR 0025 records the correction that makes Patch 039 the final Sprint 8 closeout gate.

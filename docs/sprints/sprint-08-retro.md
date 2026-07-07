@@ -2,7 +2,7 @@
 
 ## Status
 
-Closed after Patch 038 validation.
+Closed after Patch 039 validation.
 
 ## Sprint goal recap
 
@@ -30,9 +30,11 @@ loader-authority and parser-safety boundaries established in Sprint 7.
 - Patch 037 added automated `readelf` comparison, optional `checksec` and
   `rabin2 -I` comparison helpers, benchmark-integrity smoke, optional analysis
   tool inventory, Docker context hygiene smoke, and comparator documentation.
-- Patch 038 hardened direct comparator helper argument validation, completed
-  benchmark-integrity RSS coverage, documented strict shell lint policy, and
-  aligned Sprint 8 closeout planning.
+- Patch 038 hardened direct comparator helper argument validation and aligned
+  public Sprint 8 closeout planning.
+- Patch 039 corrected the missing benchmark-integrity RSS fixtures, strict
+  shell lint findings, and stale local context handoff before final Sprint 8
+  acceptance.
 
 ## What became stronger
 

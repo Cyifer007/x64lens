@@ -37,7 +37,7 @@ Sprint 7 established deterministic hostile-input evidence, explicit resource-lim
 
 ## Sprint 8 closeout checkpoint
 
-Sprint 8 established mitigation-depth evidence and metadata annotations while preserving program-header runtime authority. Dynamic-table evidence now supports RELRO refinement and canary indicators; section tables support stripped status and optional section labels only as bounded metadata. Patch 038 closes the sprint after comparator helper hardening, benchmark-integrity coverage, Sprint 8 retrospective publication, and Sprint 9 handoff.
+Sprint 8 established mitigation-depth evidence and metadata annotations while preserving program-header runtime authority. Dynamic-table evidence now supports RELRO refinement and canary indicators; section tables support stripped status and optional section labels only as bounded metadata. Patch 039 closes the sprint after comparator helper hardening, benchmark-integrity coverage, Sprint 8 retrospective publication, and Sprint 9 handoff.
 
 ## Release gates
 

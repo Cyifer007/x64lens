@@ -226,7 +226,7 @@ Patch 036 resolves the immediate historical-review hardening items: byte-safe JS
 
 ## Sprint 8 closeout update
 
-Sprint 8 is closed after Patch 038. Completed work includes bounded dynamic
+Sprint 8 is closed after Patch 039. Completed work includes bounded dynamic
 metadata, RELRO refinement, canary and stripped indicators, section-label
 annotations, hostile metadata hardening, byte-safe JSON rendering, automated
 `readelf` comparison, optional `checksec` / `rabin2 -I` comparison helpers,
@@ -237,8 +237,13 @@ The next active tranche is Sprint 9. Do not add new semantic primitive families
 until Sprint 9 has established report identity, provenance, candidate
 completeness, truncation state, and schema `0.2.0` transition rules.
 
-Patch 038 also resolves the remaining Patch 037 validation follow-ups:
+Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 - direct optional comparator helpers no longer false-pass on reversed arguments,
 - benchmark-integrity smoke directly covers non-finite RSS values,
 - strict shell lint policy is documented as an optional clean gate.
+
+
+## Sprint 8 closeout correction disposition
+
+Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and stale private context handoff. Remaining Sprint 9 work is provenance, completeness, schema `0.2.0`, and decoder-gap measurement.

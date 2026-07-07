@@ -132,7 +132,7 @@ benchmark corpus.
 
 ## Sprint 8 closeout gate
 
-Sprint 8 is complete after Patch 038. The research preview path now has stronger
+Sprint 8 is complete after Patch 039. The research preview path now has stronger
 mitigation evidence and stronger development-evidence hygiene, but it is still
 not ready for preview release. Sprint 9 must add provenance, report identity,
 target/command identity, completeness/truncation state, and schema `0.2.0`
