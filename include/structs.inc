@@ -173,6 +173,13 @@
 %define GADGET_RECORD_ARENA_BYTES     (GADGET_RECORD_SIZE * GADGET_RECORD_MAX)
 %define GADGET_RECORD_ALIGN           16
 
+; Sprint 9 candidate evidence side-car capacity. The evidence array is dense and
+; keyed by the same candidate index as gadget_record[]. It lives in the same
+; command-lifetime arena without changing the scanner-owned gadget record stride.
+%define CANDIDATE_EVIDENCE_ARENA_BYTES     (CANDIDATE_EVIDENCE_RECORD_SIZE * GADGET_RECORD_MAX)
+%define CANDIDATE_EVIDENCE_RECORD_ALIGN 16
+%define ANALYSIS_RECORD_ARENA_BYTES     (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES)
+
 ; raw scanner terminator types
 %define GADGET_TERM_RET               1
 %define GADGET_TERM_RET_IMM16         2
@@ -223,6 +230,46 @@
 %define GADGET_SECTION_NAME_LEN     88
 %define GADGET_SECTION_INDEX        96
 %define GADGET_RECORD_SIZE          112
+
+; candidate_evidence_record offsets
+;
+; Sprint 9 keeps provenance in a fixed-size dense side-car keyed by candidate
+; index. The record describes evidence already present in the raw/exact/semantic
+; pipeline; it does not decode instructions, assign scores, or change counts.
+; matched_suffix_offset is a zero-based byte offset within the retained raw
+; candidate window. The offset/length pair is meaningful only when the exact
+; suffix flag is set.
+%define CANDIDATE_EVIDENCE_FLAGS                0
+%define CANDIDATE_EVIDENCE_SEMANTIC_SOURCE      8
+%define CANDIDATE_EVIDENCE_VALIDATOR_ID         16
+%define CANDIDATE_EVIDENCE_FULL_SEQUENCE_STATE  24
+%define CANDIDATE_EVIDENCE_SUFFIX_OFFSET        32
+%define CANDIDATE_EVIDENCE_SUFFIX_LENGTH        40
+%define CANDIDATE_EVIDENCE_RECORD_SIZE          48
+
+; Additive evidence flags. Future decoder validation must add facts without
+; erasing raw or exact observations.
+%define EVIDENCE_FLAG_RAW_CANDIDATE              (1 << 0)
+%define EVIDENCE_FLAG_EXACT_SUFFIX               (1 << 1)
+%define EVIDENCE_FLAG_SEMANTIC_EXACT             (1 << 2)
+%define EVIDENCE_FLAG_DECODER_VALIDATED          (1 << 3)
+
+; Semantic evidence source. NONE is required for raw-only and exact-only
+; candidates; current semantic promotions use the exact-suffix source.
+%define EVIDENCE_SEMANTIC_SOURCE_NONE            0
+%define EVIDENCE_SEMANTIC_SOURCE_EXACT           1
+%define EVIDENCE_SEMANTIC_SOURCE_DECODED         2
+
+; Stable validator identities rendered by report_json.asm.
+%define EVIDENCE_VALIDATOR_RAW_SCANNER           1
+%define EVIDENCE_VALIDATOR_EXACT_SUFFIX          2
+%define EVIDENCE_VALIDATOR_DECODER               3
+
+; Full-sequence validity is deliberately unknown until a decoder validates the
+; selected candidate start through its terminator.
+%define EVIDENCE_FULL_SEQUENCE_UNKNOWN           0
+%define EVIDENCE_FULL_SEQUENCE_INVALID           1
+%define EVIDENCE_FULL_SEQUENCE_VALID             2
 
 ; register bitmap bits
 %define REG_RAX_BIT                 0

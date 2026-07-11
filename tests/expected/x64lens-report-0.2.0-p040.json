@@ -16,7 +16,7 @@
     "regions_total": 1
   },
   "target": {
-    "path": "current-provenance-fixture",
+    "path": "historical-p040-fixture",
     "format": "ELF64",
     "arch": "x86_64",
     "file_size": 1,
@@ -63,20 +63,10 @@
       "controls": [],
       "stack_delta": 8,
       "stack_delta_known": true,
-      "evidence": {
-        "kind": "semantic_exact",
-        "raw_candidate": true,
-        "exact_suffix": true,
-        "semantic_source": "exact",
-        "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 0,
-        "matched_suffix_length": 1,
-        "full_sequence_valid": null
-      },
       "score": 45
     }
   ],
   "limitations": [
-    "Current schema 0.2.0 candidate-provenance fixture"
+    "Patch 040 schema 0.2.0 report retained without per-candidate provenance"
   ]
 }

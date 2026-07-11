@@ -37,6 +37,7 @@ extern x64lens_shdr_annotate_gadgets
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
+extern x64lens_candidate_evidence_from_exact
 extern x64lens_scoring_apply
 extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_elf64_info
@@ -89,6 +90,7 @@ x64lens_command_analyze_with_format:
     mov     r14, rsi            ; max depth from CLI or default
     mov     ebx, edx            ; output format: 0=text, 1=json
     xor     r15, r15            ; arena-backed gadget_record[] pointer
+    xor     r13, r13            ; parallel candidate_evidence_record[] pointer
 
     ; Map target file read-only. The analyzer treats target bytes as data and
     ; never executes them.
@@ -139,7 +141,7 @@ x64lens_command_analyze_with_format:
     ; Allocate bounded candidate storage from the same arena-backed record
     ; model used by the gadgets command.
     lea     rdi, [ana_candidate_arena]
-    mov     rsi, GADGET_RECORD_ARENA_BYTES
+    mov     rsi, ANALYSIS_RECORD_ARENA_BYTES
     call    x64lens_arena_init
     test    rax, rax
     jne     .error
@@ -151,6 +153,14 @@ x64lens_command_analyze_with_format:
     test    rax, rax
     jz      .arena_alloc_failed
     mov     r15, rax
+
+    lea     rdi, [ana_candidate_arena]
+    mov     rsi, CANDIDATE_EVIDENCE_ARENA_BYTES
+    mov     rdx, CANDIDATE_EVIDENCE_RECORD_ALIGN
+    call    x64lens_arena_alloc
+    test    rax, rax
+    jz      .arena_alloc_failed
+    mov     r13, rax
 
     mov     [ana_gadget_summary + GADGET_SUMMARY_MAX_DEPTH], r14
     mov     qword [ana_gadget_summary + GADGET_SUMMARY_CAPACITY], GADGET_RECORD_MAX
@@ -176,6 +186,15 @@ x64lens_command_analyze_with_format:
     mov     rsi, r15
     mov     rdx, [ana_mapped_file + FILEMAP_ADDR]
     call    x64lens_classifier_apply_exact
+    test    rax, rax
+    jne     .error
+
+    ; Materialize the same candidate-index provenance side-car used by gadgets.
+    ; The integrated command must not create a second evidence interpretation.
+    lea     rdi, [ana_gadget_summary]
+    mov     rsi, r15
+    mov     rdx, r13
+    call    x64lens_candidate_evidence_from_exact
     test    rax, rax
     jne     .error
 
@@ -240,11 +259,13 @@ x64lens_command_analyze_with_format:
     lea     rcx, [ana_phdr_summary]
     lea     r8, [ana_gadget_summary]
     mov     r9, r15
-    ; System V passes the seventh argument on the stack. Reserve sixteen
-    ; bytes so the call-site alignment remains unchanged.
+    ; System V passes arguments seven and eight on the stack. The 16-byte
+    ; reservation keeps the call-site aligned while carrying command-owned
+    ; completeness and the dense candidate evidence side-car.
     sub     rsp, 16
     lea     rax, [ana_analysis_summary]
     mov     [rsp], rax
+    mov     [rsp + 8], r13
     call    x64lens_report_json_gadgets
     add     rsp, 16
 

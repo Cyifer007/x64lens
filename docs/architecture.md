@@ -16,6 +16,7 @@ x64lens CLI
   -> fast gadget candidate scanner
   -> pattern matcher
   -> semantic primitive classifier
+  -> candidate evidence side-car materializer
   -> scoring engine
   -> mitigation-aware interpretation
   -> text and JSON reporters
@@ -41,6 +42,7 @@ x64lens CLI
 | `scanner.asm` | Candidate byte window discovery | Semantic scoring |
 | `patterns.asm` | Exact opcode-template matching and pattern IDs | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification | Raw file I/O |
+| `candidate_evidence.asm` | Dense per-candidate raw/exact/semantic provenance side-car | Scan bytes, decode instructions, score, or report |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
@@ -549,7 +551,7 @@ Research reports must state whether the scan completed within configured capacit
 
 ### Schema boundary
 
-Schema `0.2.0` is the current producer contract after Sprint 9 Patch 040. It adds report and command identity plus complete-analysis state while retaining a versioned `0.1.0` compatibility path. Per-candidate provenance remains an additive `0.2.x` extension.
+Schema `0.2.0` is the current producer contract after Sprint 9 Patch 040. It adds report and command identity plus complete-analysis state while retaining a versioned `0.1.0` compatibility path. Patch 041 implements per-candidate provenance as an additive, Patch-040-compatible `0.2.x` extension.
 
 ### Release architecture
 
@@ -700,3 +702,52 @@ This preserves raw scanner facts, exact patterns, semantic classes, scores, and
 future decoder evidence as separate layers. Program headers remain executable-
 region authority; section and dynamic metadata remain bounded evidence or
 annotations.
+
+
+## Sprint 9 Patch 041 candidate evidence side-car
+
+Patch 041 adds a dense fixed-size `candidate_evidence_record[]` without changing
+`gadget_record` layout or scanner ownership:
+
+```text
+gadget_record[i]
+  raw scanner, exact pattern, semantic, score, and annotation facts
+
+candidate_evidence_record[i]
+  raw/exact/semantic evidence flags
+  semantic evidence source
+  validator identity
+  matched suffix offset and length
+  full-sequence validity state
+```
+
+The array index is the key. The record does not duplicate `candidate_index`,
+which prevents a redundant index from disagreeing with array position. Both
+arrays are allocated from one command-lifetime arena, remain bounded to 4096
+entries, and are destroyed through the existing cleanup path.
+
+The implemented orchestration order is:
+
+```text
+scanner
+  -> exact pattern matcher
+  -> conservative classifier
+  -> candidate evidence materializer
+  -> scoring
+  -> optional section annotation
+  -> analysis summary
+  -> text or JSON adapter
+```
+
+`candidate_evidence.asm` records existing facts only. It does not decode a
+candidate, change semantic class, assign score, select an executable region, or
+format output. Current full-sequence validity is unknown. A future decoder may
+add decoder flags or a separate `decode_record[]`, but it must preserve raw and
+exact facts.
+
+Patch 041 also corrects System V stack alignment across the identified nested-
+call paths. JSON callers pass the analysis summary and evidence array as stack
+arguments seven and eight; the reporter loads both and aligns its frame. Numeric
+renderers, text-report helpers, arena mapping, and output/error wrappers now
+either align before nested calls or use a true tail jump when no return work
+remains.

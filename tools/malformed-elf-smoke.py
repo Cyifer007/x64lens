@@ -32,6 +32,8 @@ ELF64_PHDR_SIZE = 56
 ELF64_SHDR_SIZE = 64
 PT_LOAD = 1
 PF_X = 1
+ROOT = Path(__file__).resolve().parents[1]
+REPORT_VALIDATOR = ROOT / "tools" / "validate-json-report.py"
 
 
 class HarnessError(RuntimeError):
@@ -238,6 +240,35 @@ def signal_name(returncode: int) -> str:
         return f"SIG{number}"
 
 
+def validate_successful_json(stdout: bytes, command: str, case_id: str) -> None:
+    """Require successful JSON controls to satisfy the current report contract."""
+    with tempfile.TemporaryDirectory(prefix=f"x64lens-malformed-{case_id}-") as temp:
+        report_path = Path(temp) / f"{command}.json"
+        report_path.write_bytes(stdout)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPORT_VALIDATOR),
+                "--mode",
+                "system",
+                "--require-schema",
+                "0.2.0",
+                "--expected-command",
+                command,
+                "--require-provenance",
+                str(report_path),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    if result.returncode != 0:
+        diagnostic = result.stderr.decode("utf-8", errors="replace").strip()
+        raise HarnessError(
+            f"{case_id}: successful {command} JSON failed canonical validation: {diagnostic}"
+        )
+
+
 def run_case(
     binary: Path,
     case: MutationCase,
@@ -270,6 +301,14 @@ def run_case(
 
     elapsed_ns = time.perf_counter_ns() - started
     signaled = returncode < 0
+    if (
+        not timed_out
+        and not signaled
+        and returncode == 0
+        and "--format" in case.command
+        and "json" in case.command
+    ):
+        validate_successful_json(stdout, case.command[0], case.case_id)
     stdout_policy_ok = case.input_class != "malformed" or len(stdout) == 0
     expected = (
         (not timed_out)

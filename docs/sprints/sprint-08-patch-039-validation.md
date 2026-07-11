@@ -3,13 +3,13 @@
 ## Purpose
 
 Patch 039 corrects the Patch 038 closeout validation findings and completes the
-Sprint 8 context handoff.
+Sprint 8 closeout record.
 
 Patch 038 correctly hardened optional comparator helper argument handling and
 closed public Sprint 8 planning, but local validation found that the
 benchmark-integrity smoke script did not actually generate the intended
 non-finite-RSS fixture files, strict shell lint still had actionable findings,
-and the private local project-context handoff remained stale.
+and Sprint closeout documentation remained stale.
 
 ## Implemented corrections
 
@@ -22,8 +22,8 @@ and the private local project-context handoff remained stale.
   hygiene by using explicit `[[ ... ]]` path checks.
 - Document intentional literal Markdown-backtick grep strings for strict
   shellcheck in the planning-docs checker.
-- Regenerate the public project-context and private local orchestration bundles
-  externally as local-only handoff artifacts.
+- Align Sprint 8 closeout and Sprint 9 entry documentation with the accepted
+  repository state.
 
 ## Required native validation
 
@@ -109,5 +109,5 @@ not a product defect.
 - Comparator helpers still pass both documented and mission-order argument
   forms and still reject same-file analyzer/target mistakes.
 - Public planning docs report `planning-docs-check: ok plans=18 forward_plans=10`.
-- External context bundles describe Patch 039 / Sprint 8 closeout and do not
-  leave `.local/project-context` at Patch 029 / Sprint 7.
+- Public closeout documentation describes Patch 039 / Sprint 8 completion and
+  Sprint 9 as the next implementation tranche.

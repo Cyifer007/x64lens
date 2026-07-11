@@ -232,3 +232,8 @@ bash tools/compare-checksec.sh ./build/x64lens ./tests/bin/minimal_pie_canary
 bash tools/compare-rabin2.sh ./tests/bin/minimal_pie_canary ./build/x64lens
 bash tools/compare-rabin2.sh ./build/x64lens ./tests/bin/minimal_pie_canary
 ```
+
+
+## Formal report-schema validation
+
+The development environment includes `python3-jsonschema` so schema compatibility tests can apply Draft 2020-12 rules to retained fixtures. This package is not linked into or invoked by the x64lens runtime.

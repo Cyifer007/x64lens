@@ -23,5 +23,4 @@ global version_print
 ;   Writes the version line to STDOUT.
 version_print:
     lea     rdi, [version_text]
-    call    print_cstr
-    ret
+    jmp     print_cstr

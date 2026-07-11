@@ -138,7 +138,7 @@ Generated mutations are development evidence and remain ignored. A stable defect
 
 ## Resource-capacity rule
 
-Bounded storage must fail closed when a complete report cannot be produced. Silent truncation is prohibited. Until schema-level completeness fields are introduced, candidate-arena exhaustion returns `EXIT_UNSUPPORTED` and reporters emit no partial text or JSON document.
+Bounded storage must fail closed when a complete report cannot be produced. Silent truncation is prohibited. Candidate-arena exhaustion returns `EXIT_UNSUPPORTED` and reporters emit no partial text or JSON document. Schema completeness fields describe successful reports; they do not authorize partial output.
 
 ## Mitigation-oracle rule
 
@@ -185,3 +185,15 @@ Schema `0.2.0` current-report validation must name the expected command.
 Representative schema `0.1.0` output remains a compatibility fixture. Candidate-
 capacity overflow remains fail-closed with no report; completeness fields do not
 authorize silent or partial truncation.
+
+
+## Candidate evidence side-car rule
+
+Candidate provenance and future decoder facts must remain outside the
+scanner-owned raw gadget record. Dense side-car arrays may use candidate index
+as the implicit key. A provenance materializer may reconcile existing facts but
+must not scan bytes, decide semantics, score candidates, or format output.
+
+Formal Draft 2020-12 schema validation and the semantic cross-field validator
+are complementary required gates. Current JSON-producing harnesses should apply
+the canonical validator before specialty assertions.

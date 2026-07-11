@@ -70,5 +70,4 @@ x64lens_error_print_status:
 .bounds:
     lea     rdi, [msg_bounds]
 .print:
-    call    print_cstr_err
-    ret
+    jmp     print_cstr_err

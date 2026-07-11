@@ -134,7 +134,7 @@ tool_version() {
   local path="$2"
   case "$name" in
     x64lens)
-      "$path" version 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]*$//'
+      "$path" version 2>/dev/null | awk '{print $2}'
       ;;
     ROPgadget)
       ROPgadget --version 2>/dev/null | head -n 1 || true
@@ -149,6 +149,16 @@ tool_version() {
       echo "unknown"
       ;;
   esac
+}
+
+schema_version() {
+  local name="$1"
+  local path="$2"
+  if [[ "$name" == "x64lens" ]]; then
+    "$path" version 2>/dev/null | awk '{for (i = 1; i <= NF; i++) if ($i == "schema") { print $(i + 1); exit }}'
+  else
+    echo "NA"
+  fi
 }
 
 json_count() {
@@ -194,7 +204,7 @@ run_timed() {
     if ! python3 -m json.tool "$out" >/dev/null; then
       note="invalid_json"
       status=1
-    elif ! python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets "$out" >/dev/null; then
+    elif ! python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance "$out" >/dev/null; then
       note="json_validator_failed"
       status=1
     else
@@ -208,8 +218,8 @@ run_timed() {
     note="nonzero_exit"
   fi
 
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-    "$tool_name" "$tool_path" "$(tool_version "$tool_name" "$tool_path")" "$command_text" "$MAX_DEPTH" \
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$tool_name" "$tool_path" "$(tool_version "$tool_name" "$tool_path")" "$(schema_version "$tool_name" "$tool_path")" "$command_text" "$MAX_DEPTH" \
     "$target" "$(stat -Lc '%s' "$target")" "$(sha256_of "$target")" "$run" "$wall" "$maxrss" \
     "$status" "$output_bytes" "$output_lines" "$raw" "$exact" "$semantic" "$unknown" "$scored" "$note" \
     >>"$RESULTS"
@@ -257,7 +267,7 @@ fi
   command -v ropr >/dev/null 2>&1 && echo "ropr_version=$(tool_version ropr ropr)" || echo "ropr_version=missing"
 } >"$META"
 
-printf 'tool\ttool_path\ttool_version\tcommand\tmax_depth\ttarget\ttarget_size_bytes\ttarget_sha256\trun\twall_s\tmaxrss_kb\texit_code\toutput_bytes\toutput_lines\traw_candidate_count\texact_pattern_count\tsemantic_candidate_count\tunknown_candidate_count\tscored_candidate_count\tnote\n' >"$RESULTS"
+printf 'tool\ttool_path\ttool_version\tschema_version\tcommand\tmax_depth\ttarget\ttarget_size_bytes\ttarget_sha256\trun\twall_s\tmaxrss_kb\texit_code\toutput_bytes\toutput_lines\traw_candidate_count\texact_pattern_count\tsemantic_candidate_count\tunknown_candidate_count\tscored_candidate_count\tnote\n' >"$RESULTS"
 
 for target in "${TARGETS[@]}"; do
   if [[ ! -f "$target" ]]; then

@@ -36,6 +36,7 @@ RUN apt-get update \
        make \
        nasm \
        python3 \
+       python3-jsonschema \
        time \
        unzip \
        zip \

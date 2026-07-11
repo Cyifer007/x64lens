@@ -25,13 +25,15 @@ flowchart TD
     SC --> GR[Raw gadget candidate records]
     GR --> PT[Exact suffix pattern matcher]
     PT --> CL[Semantic primitive classifier]
-    CL --> SCORE[Scoring engine]
+    CL --> EV[Candidate evidence side-car]
+    EV --> SCORE[Scoring engine]
     SCORE --> GS
 
     GS --> GTR[Text gadget report]
     GR --> GTR
     GS --> JSON[JSON report]
     GR --> JSON
+    EV --> JSON
     MR --> JSON
     ELF --> JSON
 

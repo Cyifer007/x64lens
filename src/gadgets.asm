@@ -31,6 +31,7 @@ extern x64lens_shdr_annotate_gadgets
 extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
+extern x64lens_candidate_evidence_from_exact
 extern x64lens_scoring_apply
 extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_gadgets
@@ -85,6 +86,7 @@ x64lens_command_gadgets_with_format:
     mov     r14, rsi            ; max depth from CLI or default
     mov     ebx, edx            ; output format: 0=text, 1=json
     xor     r15, r15            ; arena-backed gadget_record[] pointer
+    xor     r13, r13            ; parallel candidate_evidence_record[] pointer
 
     ; Map target file read-only. The scanner treats the mapped bytes as data,
     ; never as executable code.
@@ -125,7 +127,7 @@ x64lens_command_gadgets_with_format:
     ; receives a plain gadget_record[] pointer, so later callers do not care
     ; whether storage came from .bss, mmap, or a growable allocator.
     lea     rdi, [gad_candidate_arena]
-    mov     rsi, GADGET_RECORD_ARENA_BYTES
+    mov     rsi, ANALYSIS_RECORD_ARENA_BYTES
     call    x64lens_arena_init
     test    rax, rax
     jne     .error
@@ -137,6 +139,14 @@ x64lens_command_gadgets_with_format:
     test    rax, rax
     jz      .arena_alloc_failed
     mov     r15, rax            ; arena-backed gadget_record[] pointer
+
+    lea     rdi, [gad_candidate_arena]
+    mov     rsi, CANDIDATE_EVIDENCE_ARENA_BYTES
+    mov     rdx, CANDIDATE_EVIDENCE_RECORD_ALIGN
+    call    x64lens_arena_alloc
+    test    rax, rax
+    jz      .arena_alloc_failed
+    mov     r13, rax            ; dense candidate_evidence_record[] side-car
 
     ; Scan executable regions and populate raw candidate records. The scanner
     ; owns candidate discovery but does not print or classify. Store the
@@ -171,6 +181,16 @@ x64lens_command_gadgets_with_format:
     mov     rsi, r15
     mov     rdx, [gad_mapped_file + FILEMAP_ADDR]
     call    x64lens_classifier_apply_exact
+    test    rax, rax
+    jne     .error
+
+    ; Materialize additive raw/exact/semantic provenance into a dense side-car.
+    ; This stage records existing evidence only and does not change counts,
+    ; semantic classes, scores, or section annotations.
+    lea     rdi, [gad_summary]
+    mov     rsi, r15
+    mov     rdx, r13
+    call    x64lens_candidate_evidence_from_exact
     test    rax, rax
     jne     .error
 
@@ -224,11 +244,13 @@ x64lens_command_gadgets_with_format:
     lea     rcx, [gad_phdr_summary]
     lea     r8, [gad_summary]
     mov     r9, r15
-    ; System V passes the seventh argument on the stack. Reserve sixteen
-    ; bytes so the call-site alignment remains unchanged.
+    ; System V passes arguments seven and eight on the stack. The 16-byte
+    ; reservation keeps the call-site aligned while carrying command-owned
+    ; completeness and the dense candidate evidence side-car.
     sub     rsp, 16
     lea     rax, [gad_analysis_summary]
     mov     [rsp], rax
+    mov     [rsp + 8], r13
     call    x64lens_report_json_gadgets
     add     rsp, 16
 

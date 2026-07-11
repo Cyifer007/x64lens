@@ -323,6 +323,7 @@ x64lens_report_text_mitigations:
     push    r13
     push    r14
     push    r15
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     rbx, rdi            ; target path
     mov     r14, rcx            ; summary record
@@ -536,6 +537,7 @@ x64lens_report_text_mitigations:
     jmp     .regions_loop
 
 .mit_done:
+    add     rsp, 8
     pop     r15
     pop     r14
     pop     r13
@@ -1158,6 +1160,7 @@ report_text_print_semantic:
 report_text_print_regs_bitmap:
     push    rbx
     push    r12
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     rbx, rdi
     xor     r12, r12
@@ -1184,6 +1187,7 @@ report_text_print_regs_bitmap:
     lea     rdi, [regs_none]
     call    print_cstr
 .regs_done:
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret

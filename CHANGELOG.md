@@ -8,6 +8,15 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 041 candidate-index evidence side-car for raw, exact-suffix,
+  and semantic-exact provenance.
+- Per-candidate JSON evidence kind, validator identity, matched suffix range,
+  semantic source, and explicit unknown full-sequence validity.
+- Formal Draft 2020-12 schema compatibility validation using the development-only
+  `python3-jsonschema` dependency.
+- Root-independent patch-bundle hygiene regression fixtures and focused current
+  JSON validation in malformed, mitigation, and section-label harnesses.
+
 - Sprint 9 Patch 040 fixed-size analysis-summary record for report type, command identity, selected maximum depth, candidate capacity/count, truncation, dropped-count knowledge, executable-region progress, and complete-analysis state.
 - JSON schema `0.2.0`, historical schema `0.1.0` snapshot, representative compatibility fixtures, `make schema-compat-smoke`, ADR 0026, and Patch 040 validation documentation.
 - Text and JSON report identity/completeness output shared by `gadgets` and `analyze`.
@@ -63,6 +72,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Keep schema `0.2.0` backward-compatible with Patch 040 reports while requiring
+  candidate provenance for current producer validation.
+- Group benchmark summaries by tool name, tool version, schema version, command,
+  and target so incompatible evidence is not merged.
+- Make capacity stderr checks byte-exact, assert exact-capacity `gadgets`/`analyze` parity with complete provenance, and make bundle generated-path checks independent of archive-root prefix.
+
 - Advance current machine-readable output from schema `0.1.0` to `0.2.0` while keeping tool version `0.1.0-dev` and the checkpoint tag unchanged.
 - Require current `gadgets` and `analyze` JSON validation to name the expected command and preserve shared report facts.
 - Keep candidate-capacity overflow fail-closed with exit code `6` and empty stdout; schema completeness fields describe successful reports and do not enable partial output.
@@ -115,6 +130,14 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Correct pre-existing System V stack alignment across identified nested-call
+  frames in JSON/text reporting, numeric formatting, arena mapping, and output
+  wrappers.
+- Reconcile formal schema rules with the semantic validator for current
+  completeness, mitigation, limitation, and provenance state.
+- Reject primitive-coverage summaries that disagree with emitted semantic
+  classes or controlled-register facts.
 
 - Remove ambiguity between `gadgets` and `analyze` JSON producers by adding explicit command identity without duplicating the report implementation.
 - Make successful report completeness explicit instead of requiring consumers to infer it from candidate counts and capacity.
@@ -186,7 +209,7 @@ The project follows semantic versioning once the first public release is cut.
 
 - Added the missing benchmark-integrity non-finite RSS fixtures: `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`.
 - Cleaned strict shell-helper lint for patch-bundle unsafe-path checks and intentional literal Markdown-backtick planning checks.
-- Regenerated private closeout context externally so Patch 039 / Sprint 8 closeout supersedes stale Patch 029 / Sprint 7 local handoff state.
+- Aligned Sprint 8 closeout planning and validation records with the accepted Patch 039 baseline.
 
 ## [0.1.0-dev] - Development history through Sprint 05 Patch 020
 

@@ -134,5 +134,4 @@ cli_parse_u64:
 ; Print stable command help. Keep this synchronized with docs/cli-contract.md.
 cli_print_help:
     lea     rdi, [help_text]
-    call    print_cstr
-    ret
+    jmp     print_cstr

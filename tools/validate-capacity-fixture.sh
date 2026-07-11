@@ -21,37 +21,50 @@ trap 'rm -rf "$WORK_DIR"' EXIT
 [[ -f "$OVERFLOW_FIXTURE" ]] || { echo "capacity-smoke: error: overflow fixture not found: $OVERFLOW_FIXTURE" >&2; exit 2; }
 command -v python3 >/dev/null 2>&1 || { echo "capacity-smoke: error: python3 is required" >&2; exit 127; }
 
-exact_json="$WORK_DIR/exact-capacity.json"
-"$X64LENS" gadgets --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_json"
+exact_gadgets_json="$WORK_DIR/exact-capacity-gadgets.json"
+exact_analyze_json="$WORK_DIR/exact-capacity-analyze.json"
+"$X64LENS" gadgets --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_gadgets_json"
+"$X64LENS" analyze --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_analyze_json"
 python3 "$(dirname "$0")/validate-json-report.py" \
-    --mode system --require-schema 0.2.0 --expected-command gadgets \
-    "$exact_json" >/dev/null
-python3 - "$exact_json" <<'PY'
+    --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance \
+    "$exact_gadgets_json" >/dev/null
+python3 "$(dirname "$0")/validate-json-report.py" \
+    --mode system --require-schema 0.2.0 --expected-command analyze --require-provenance \
+    "$exact_analyze_json" >/dev/null
+python3 "$(dirname "$0")/validate-report-parity.py" \
+    "$exact_gadgets_json" "$exact_analyze_json" >/dev/null
+python3 - "$exact_gadgets_json" "$exact_analyze_json" <<'PY'
 import json
 import sys
-path = sys.argv[1]
-with open(path, encoding="utf-8") as handle:
-    report = json.load(handle)
-counts = report.get("counts", {})
-gadgets = report.get("gadgets", [])
-if counts.get("raw_candidate_count") != 4096:
-    raise SystemExit("capacity-smoke: exact fixture raw count is not 4096")
-if len(gadgets) != 4096:
-    raise SystemExit("capacity-smoke: exact fixture gadget array is not complete")
-analysis = report.get("analysis", {})
-if analysis.get("complete") is not True:
-    raise SystemExit("capacity-smoke: exact fixture analysis is not complete")
-if analysis.get("candidate_capacity") != 4096:
-    raise SystemExit("capacity-smoke: exact fixture capacity is not 4096")
-if analysis.get("candidate_count") != 4096:
-    raise SystemExit("capacity-smoke: exact fixture analysis count is not 4096")
-if analysis.get("candidate_truncated") is not False:
-    raise SystemExit("capacity-smoke: exact fixture was marked truncated")
-if analysis.get("candidate_dropped_count") != 0:
-    raise SystemExit("capacity-smoke: exact fixture dropped count is not zero")
-if analysis.get("candidate_dropped_count_known") is not True:
-    raise SystemExit("capacity-smoke: exact fixture dropped count is not known")
+for path in sys.argv[1:]:
+    with open(path, encoding="utf-8") as handle:
+        report = json.load(handle)
+    command = report.get("command", "unknown")
+    counts = report.get("counts", {})
+    gadgets = report.get("gadgets", [])
+    if counts.get("raw_candidate_count") != 4096:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture raw count is not 4096")
+    if len(gadgets) != 4096:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture gadget array is not complete")
+    if any("evidence" not in gadget for gadget in gadgets):
+        raise SystemExit(f"capacity-smoke: {command} exact fixture evidence array is incomplete")
+    analysis = report.get("analysis", {})
+    if analysis.get("complete") is not True:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture analysis is not complete")
+    if analysis.get("candidate_capacity") != 4096:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture capacity is not 4096")
+    if analysis.get("candidate_count") != 4096:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture analysis count is not 4096")
+    if analysis.get("candidate_truncated") is not False:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture was marked truncated")
+    if analysis.get("candidate_dropped_count") != 0:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture dropped count is not zero")
+    if analysis.get("candidate_dropped_count_known") is not True:
+        raise SystemExit(f"capacity-smoke: {command} exact fixture dropped count is not known")
 PY
+
+EXPECTED_UNSUPPORTED="$WORK_DIR/expected-unsupported.stderr"
+printf '%s\n' 'error: unsupported binary feature' >"$EXPECTED_UNSUPPORTED"
 
 run_expect_unsupported() {
     local name=$1
@@ -77,8 +90,11 @@ run_expect_unsupported() {
         echo "capacity-smoke: error: partial stdout was emitted for $name" >&2
         exit 1
     }
-    grep -qx 'error: unsupported binary feature' "$stderr_file" || {
-        echo "capacity-smoke: error: unexpected stderr for $name" >&2
+    cmp -s "$EXPECTED_UNSUPPORTED" "$stderr_file" || {
+        echo "capacity-smoke: error: stderr was not byte-exact for $name" >&2
+        echo "--- expected ---" >&2
+        cat "$EXPECTED_UNSUPPORTED" >&2
+        echo "--- actual ---" >&2
         cat "$stderr_file" >&2
         exit 1
     }

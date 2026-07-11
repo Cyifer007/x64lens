@@ -36,7 +36,14 @@ Candidate-capacity exhaustion still produces no report, so it is not represented
 as an emitted truncated result. The scanner stops on the 4097th candidate and
 does not continue to measure a dropped total.
 
-## Planned provenance metrics
+## Per-candidate provenance state
+
+Patch 041 adds provenance fields without adding or redefining aggregate counts.
+Every current candidate identifies raw presence, exact-suffix presence, semantic
+source, validator identity, matched suffix range, and full-sequence-validity
+state. `full_sequence_valid` remains unknown until decoder evidence exists.
+
+## Planned decoder metrics
 
 Later Sprint 9 work may add, where implemented:
 
@@ -167,3 +174,20 @@ The exact-capacity report can therefore be complete at 4096 candidates. The
 4097-candidate input is a command failure, not a truncated report, and remains
 outside report-count datasets unless the failed row is recorded separately by a
 benchmark or validation harness.
+
+
+## Sprint 9 Patch 041 provenance boundary
+
+Candidate evidence and candidate counts answer different questions:
+
+```text
+counts.raw_candidate_count
+  how many raw candidate windows were retained
+
+gadgets[i].evidence
+  which evidence justifies facts for candidate i
+```
+
+`semantic_exact` does not mean decoder-valid. `analysis.complete` does not
+upgrade candidate evidence. Scores continue to consume semantic facts and do
+not consume or manufacture decoder validity.

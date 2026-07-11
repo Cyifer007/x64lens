@@ -53,7 +53,7 @@
       ],
       "properties": {
         "complete": {
-          "type": "boolean"
+          "const": true
         },
         "max_depth": {
           "type": "integer",
@@ -69,17 +69,13 @@
           "minimum": 0
         },
         "candidate_truncated": {
-          "type": "boolean"
+          "const": false
         },
         "candidate_dropped_count": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
+          "const": 0
         },
         "candidate_dropped_count_known": {
-          "type": "boolean"
+          "const": true
         },
         "regions_scanned": {
           "type": "integer",
@@ -259,8 +255,27 @@
         "registers": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "rax",
+              "rbx",
+              "rcx",
+              "rdx",
+              "rsi",
+              "rdi",
+              "rbp",
+              "rsp",
+              "r8",
+              "r9",
+              "r10",
+              "r11",
+              "r12",
+              "r13",
+              "r14",
+              "r15"
+            ]
+          },
+          "uniqueItems": true
         }
       },
       "additionalProperties": true,
@@ -299,7 +314,8 @@
             "pattern": "^0x[0-9a-fA-F]{16}$"
           },
           "bytes": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?:[0-9a-fA-F]{2})+$"
           },
           "terminator": {
             "type": "string",
@@ -310,7 +326,8 @@
             ]
           },
           "pattern": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "semantic_class": {
             "type": "string",
@@ -330,8 +347,27 @@
           "controls": {
             "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "string",
+              "enum": [
+                "rax",
+                "rbx",
+                "rcx",
+                "rdx",
+                "rsi",
+                "rdi",
+                "rbp",
+                "rsp",
+                "r8",
+                "r9",
+                "r10",
+                "r11",
+                "r12",
+                "r13",
+                "r14",
+                "r15"
+              ]
+            },
+            "uniqueItems": true
           },
           "stack_delta": {
             "type": [
@@ -348,27 +384,316 @@
               "integer",
               "null"
             ],
-            "minimum": 0
+            "minimum": 0,
+            "maximum": 100
           },
           "section": {
             "type": [
               "string",
               "null"
             ]
+          },
+          "evidence": {
+            "type": "object",
+            "required": [
+              "kind",
+              "raw_candidate",
+              "exact_suffix",
+              "semantic_source",
+              "validator",
+              "matched_suffix_offset",
+              "matched_suffix_length",
+              "full_sequence_valid"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "raw_only",
+                  "exact_suffix",
+                  "semantic_exact",
+                  "decoder_validated",
+                  "semantic_decoded"
+                ]
+              },
+              "raw_candidate": {
+                "const": true
+              },
+              "exact_suffix": {
+                "type": "boolean"
+              },
+              "semantic_source": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  null,
+                  "exact",
+                  "decoded"
+                ]
+              },
+              "validator": {
+                "type": "string",
+                "enum": [
+                  "x64lens-raw-scanner",
+                  "x64lens-exact-suffix",
+                  "x64lens-decoder"
+                ]
+              },
+              "matched_suffix_offset": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "matched_suffix_length": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "full_sequence_valid": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "exact_suffix": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "exact_suffix"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "matched_suffix_offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "matched_suffix_length": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "matched_suffix_offset": {
+                      "type": "null"
+                    },
+                    "matched_suffix_length": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "raw_only"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "exact_suffix": {
+                      "const": false
+                    },
+                    "semantic_source": {
+                      "type": "null"
+                    },
+                    "validator": {
+                      "const": "x64lens-raw-scanner"
+                    },
+                    "full_sequence_valid": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "exact_suffix"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "exact_suffix": {
+                      "const": true
+                    },
+                    "semantic_source": {
+                      "type": "null"
+                    },
+                    "validator": {
+                      "const": "x64lens-exact-suffix"
+                    },
+                    "full_sequence_valid": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "semantic_exact"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "exact_suffix": {
+                      "const": true
+                    },
+                    "semantic_source": {
+                      "const": "exact"
+                    },
+                    "validator": {
+                      "const": "x64lens-exact-suffix"
+                    },
+                    "full_sequence_valid": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "decoder_validated"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "validator": {
+                      "const": "x64lens-decoder"
+                    },
+                    "full_sequence_valid": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "semantic_decoded"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "semantic_source": {
+                      "const": "decoded"
+                    },
+                    "validator": {
+                      "const": "x64lens-decoder"
+                    },
+                    "full_sequence_valid": {
+                      "const": true
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
-        "additionalProperties": true
+        "additionalProperties": true,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "stack_delta_known": {
+                  "const": true
+                }
+              },
+              "required": [
+                "stack_delta_known"
+              ]
+            },
+            "then": {
+              "properties": {
+                "stack_delta": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "stack_delta": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "semantic_class": {
+                  "const": "unknown_candidate"
+                }
+              },
+              "required": [
+                "semantic_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "score": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "limitations": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
     }
   },
   "additionalProperties": true,
-  "$comment": "Current x64lens schema 0.2.0. Report identity and bounded analysis completeness are durable machine-readable facts; candidate evidence side-cars remain additive future 0.2.x work.",
+  "$comment": "Current x64lens schema 0.2.0. Patch 040 reports without per-candidate evidence remain valid; the current producer adds optional evidence objects and the bundled validator enforces current-producer provenance plus arithmetic cross-field invariants.",
   "allOf": [
     {
       "if": {
@@ -442,55 +767,26 @@
         "properties": {
           "analysis": {
             "properties": {
-              "complete": {
-                "const": true
-              }
-            },
-            "required": [
-              "complete"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_truncated": {
-                "const": false
-              },
               "candidate_dropped_count_known": {
                 "const": true
-              },
-              "candidate_dropped_count": {
-                "const": 0
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_truncated": {
-                "const": true
               }
             },
             "required": [
-              "candidate_truncated"
+              "candidate_dropped_count_known"
             ]
           }
-        }
+        },
+        "required": [
+          "analysis"
+        ]
       },
       "then": {
         "properties": {
           "analysis": {
             "properties": {
-              "complete": {
-                "const": false
+              "candidate_dropped_count": {
+                "type": "integer",
+                "minimum": 0
               }
             }
           }
@@ -510,7 +806,10 @@
               "candidate_dropped_count_known"
             ]
           }
-        }
+        },
+        "required": [
+          "analysis"
+        ]
       },
       "then": {
         "properties": {

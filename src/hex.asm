@@ -43,6 +43,7 @@ global print_u64_dec
 print_hex64:
     push    rbx
     push    r12
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     rbx, rdi            ; RBX holds the shifting value
     lea     r12, [hexbuf]
@@ -65,6 +66,7 @@ print_hex64:
     mov     rdi, r12
     call    print_cstr
 
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret
@@ -83,6 +85,7 @@ print_hex64:
 print_hex8:
     push    rbx
     push    r12
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     ebx, edi
     and     ebx, 0xff
@@ -104,6 +107,7 @@ print_hex8:
     mov     rdi, r12
     call    print_cstr
 
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret
@@ -122,6 +126,7 @@ print_hex8:
 print_u64_dec:
     push    rbx
     push    r12
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     rax, rdi
     lea     r12, [decbuf + 20]
@@ -147,6 +152,7 @@ print_u64_dec:
     mov     rdi, r12
     call    print_cstr
 
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret

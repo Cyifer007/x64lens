@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/x64lens-report-0.1.0.schema.json",
-  "title": "x64lens report schema",
+  "title": "x64lens report schema 0.1.0 (historical compatibility)",
   "type": "object",
   "required": [
     "schema_version",
@@ -66,7 +66,10 @@
           ]
         },
         "pie": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "relro": {
           "type": "string",
@@ -77,10 +80,16 @@
           ]
         },
         "rwx_load_segment": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "dynamic_linking": {
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "bind_now": {
           "type": [
@@ -122,10 +131,7 @@
         "relro",
         "canary",
         "rwx_load_segment",
-        "dynamic_linking",
-        "bind_now",
-        "dynamic_entry_count",
-        "dynamic_terminated"
+        "dynamic_linking"
       ]
     },
     "counts": {
@@ -192,8 +198,27 @@
         "registers": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "rax",
+              "rbx",
+              "rcx",
+              "rdx",
+              "rsi",
+              "rdi",
+              "rbp",
+              "rsp",
+              "r8",
+              "r9",
+              "r10",
+              "r11",
+              "r12",
+              "r13",
+              "r14",
+              "r15"
+            ]
+          },
+          "uniqueItems": true
         }
       },
       "additionalProperties": true,
@@ -232,7 +257,8 @@
             "pattern": "^0x[0-9a-fA-F]{16}$"
           },
           "bytes": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?:[0-9a-fA-F]{2})+$"
           },
           "terminator": {
             "type": "string",
@@ -243,7 +269,8 @@
             ]
           },
           "pattern": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "semantic_class": {
             "type": "string",
@@ -263,8 +290,27 @@
           "controls": {
             "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "string",
+              "enum": [
+                "rax",
+                "rbx",
+                "rcx",
+                "rdx",
+                "rsi",
+                "rdi",
+                "rbp",
+                "rsp",
+                "r8",
+                "r9",
+                "r10",
+                "r11",
+                "r12",
+                "r13",
+                "r14",
+                "r15"
+              ]
+            },
+            "uniqueItems": true
           },
           "stack_delta": {
             "type": [
@@ -281,7 +327,8 @@
               "integer",
               "null"
             ],
-            "minimum": 0
+            "minimum": 0,
+            "maximum": 100
           },
           "section": {
             "type": [
@@ -290,18 +337,68 @@
             ]
           }
         },
-        "additionalProperties": true
+        "additionalProperties": true,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "stack_delta_known": {
+                  "const": true
+                }
+              },
+              "required": [
+                "stack_delta_known"
+              ]
+            },
+            "then": {
+              "properties": {
+                "stack_delta": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "stack_delta": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "semantic_class": {
+                  "const": "unknown_candidate"
+                }
+              },
+              "required": [
+                "semantic_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "score": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "limitations": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
     }
   },
   "additionalProperties": true,
-  "$comment": "Historical x64lens schema 0.1.0 retained for compatibility validation. Current reports use schemas/x64lens-report.schema.json.",
+  "$comment": "Historical x64lens schema 0.1.0 retained for compatibility validation. Dynamic-table fields were compatible optional additions, selected mitigation booleans may be unknown, and limitations must remain non-empty.",
   "allOf": [
     {
       "if": {

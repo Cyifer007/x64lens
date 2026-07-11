@@ -95,17 +95,19 @@ def load_rows(paths: Iterable[Path]) -> list[dict[str, str]]:
 
 
 def summarize(rows: list[dict[str, str]]) -> list[dict[str, str]]:
-    groups: dict[tuple[str, str, str], list[dict[str, str]]] = defaultdict(list)
+    groups: dict[tuple[str, str, str, str, str], list[dict[str, str]]] = defaultdict(list)
     for row in rows:
         key = (
-            row.get("tool", "unknown"),
-            row.get("command", "unknown"),
-            row.get("target", "unknown"),
+            row.get("tool", "unknown") or "unknown",
+            row.get("tool_version", "unknown") or "unknown",
+            row.get("schema_version", "unknown") or "unknown",
+            row.get("command", "unknown") or "unknown",
+            row.get("target", "unknown") or "unknown",
         )
         groups[key].append(row)
 
     summary: list[dict[str, str]] = []
-    for (tool, command, target), group in sorted(groups.items()):
+    for (tool, tool_version, schema_version, command, target), group in sorted(groups.items()):
         wall_values = [v for v in (as_float(row.get("wall_s", "")) for row in group) if v is not None]
         rss_values = [v for v in (as_float(row.get("maxrss_kb", "")) for row in group) if v is not None]
         exit_codes = sorted({row.get("exit_code", "NA") for row in group})
@@ -114,6 +116,8 @@ def summarize(rows: list[dict[str, str]]) -> list[dict[str, str]]:
         summary.append(
             {
                 "tool": tool,
+                "tool_version": tool_version,
+                "schema_version": schema_version,
                 "command": command,
                 "target": target,
                 "runs": str(len(group)),
@@ -130,6 +134,8 @@ def summarize(rows: list[dict[str, str]]) -> list[dict[str, str]]:
 def emit_markdown(rows: list[dict[str, str]]) -> None:
     headers = [
         "tool",
+        "tool_version",
+        "schema_version",
         "command",
         "target",
         "runs",
@@ -148,6 +154,8 @@ def emit_markdown(rows: list[dict[str, str]]) -> None:
 def emit_csv(rows: list[dict[str, str]]) -> None:
     headers = [
         "tool",
+        "tool_version",
+        "schema_version",
         "command",
         "target",
         "runs",

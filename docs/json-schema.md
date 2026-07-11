@@ -14,8 +14,9 @@ tool version:   0.1.0-dev
 schema version: 0.2.0
 ```
 
-Tool and schema versions are independent. Patch 040 intentionally advances the
-schema while retaining the tool development version.
+Tool and schema versions are independent. Patch 040 intentionally advanced the
+schema while retaining the tool development version. Patch 041 adds candidate
+provenance compatibly within the `0.2.x` line.
 
 ## Report producers
 
@@ -84,6 +85,39 @@ The scanner still stops at the 4097th candidate and returns exit code `6` before
 report emission. That path produces no text or JSON report, so no dropped count
 is guessed.
 
+## Candidate evidence object
+
+Current Patch 041 producers emit an `evidence` object for every gadget record:
+
+```json
+{
+  "kind": "semantic_exact",
+  "raw_candidate": true,
+  "exact_suffix": true,
+  "semantic_source": "exact",
+  "validator": "x64lens-exact-suffix",
+  "matched_suffix_offset": 2,
+  "matched_suffix_length": 2,
+  "full_sequence_valid": null
+}
+```
+
+Rules:
+
+- `raw_candidate` is always true for an emitted candidate record.
+- `exact_suffix` agrees with whether `pattern` is other than `unknown`.
+- A known semantic class requires `semantic_source` to identify `exact` or a
+  future implemented `decoded` source.
+- Exact suffix offset and length are measured inside the retained `bytes`
+  window and must end at its terminator.
+- `full_sequence_valid` remains `null` for current exact-suffix evidence.
+- `kind` identifies the strongest represented evidence layer without erasing
+  weaker raw or exact facts.
+
+The formal schema keeps this object optional so Patch 040 `0.2.0` reports remain
+consumable. Current producer validation requires it through
+`--require-provenance`.
+
 ## Existing field rules
 
 - Virtual addresses and file offsets are fixed-width hexadecimal strings.
@@ -121,7 +155,8 @@ Future decoder-validity metrics will be additive.
 
 - The scanner is byte-oriented and is not a full x86_64 decoder.
 - Pattern labels describe exact suffix evidence, not complete decoded windows.
-- Per-candidate evidence side-car fields are not yet emitted.
+- Per-candidate raw, exact-suffix, and semantic-exact provenance is emitted;
+  decoder validity is not yet implemented.
 - CET and IBT indicators are not complete.
 - Canary and stripped values are evidence-qualified indicators.
 - Scores are heuristic and are not exploitability verdicts.
@@ -135,7 +170,7 @@ Controlled `gadgets` report:
   ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command gadgets \
-  /tmp/x64lens-gadgets.json
+  --require-provenance /tmp/x64lens-gadgets.json
 ```
 
 Integrated `analyze` report:
@@ -145,7 +180,7 @@ Integrated `analyze` report:
   ./tests/bin/gadgets > /tmp/x64lens-analysis.json
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command analyze \
-  /tmp/x64lens-analysis.json
+  --require-provenance /tmp/x64lens-analysis.json
 ```
 
 Historical and current compatibility:
@@ -154,9 +189,12 @@ Historical and current compatibility:
 make schema-compat-smoke
 ```
 
-The validator checks identity, completeness, count relationships, primitive
-coverage, candidate fields, score ranges, unknown stack-delta representation,
-mitigation conditionals, and limitations.
+The formal Draft 2020-12 schemas validate representative historical and current
+documents. The semantic validator checks identity, completeness, count
+relationships, primitive coverage, candidate evidence, suffix ranges, score
+ranges, unknown stack-delta representation, mitigation conditionals, and
+limitations. `python3-jsonschema` is required only for development and CI
+validation, not by the runtime binary.
 
 ## Historical schema `0.1.0`
 
@@ -190,10 +228,10 @@ schemas/x64lens-report.schema.json
 
 ## Remaining Sprint 9 provenance work
 
-Schema `0.2.0` establishes the report envelope but does not yet emit
-per-candidate evidence. A later Sprint 9 patch will add evidence kind, validator
-identity, and decoder-validity state from a side-car record keyed by candidate
-index.
+Patch 041 emits the initial per-candidate provenance surface. Remaining Sprint
+9 work is target identity refinement, decoder-gap measurement, comparison
+artifact provenance, and the evidence-backed embedded-decoder decision. Decoder
+validity fields remain reserved but unknown until that evidence exists.
 
 ## Change checklist
 

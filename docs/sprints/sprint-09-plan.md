@@ -20,10 +20,10 @@ identity explicit before adding more primitive families.
 - [x] Add representative schema `0.1.0` compatibility validation.
 - [x] Preserve `gadgets` and `analyze` JSON parity while distinguishing command
   identity.
-- [ ] Add an evidence side-car record keyed by candidate index.
-- [ ] Distinguish raw candidates, exact suffix observations, semantic-exact
+- [x] Add an evidence side-car record keyed by candidate index.
+- [x] Distinguish raw candidates, exact suffix observations, semantic-exact
   classifications, and future decoder-validated facts per candidate.
-- [ ] Add per-candidate evidence kind and validator identity to JSON.
+- [x] Add per-candidate evidence kind and validator identity to JSON.
 - [ ] Measure exact-suffix false-positive and undercount risk on controlled and
   selected system binaries.
 - [ ] Define the embedded-decoder decision gate from measured gaps.
@@ -33,8 +33,9 @@ identity explicit before adding more primitive families.
 
 1. **Patch 040:** report identity, command identity, complete-analysis summary,
    schema `0.2.0`, historical `0.1.0` compatibility, and focused parity gates.
-2. **Next provenance patch:** fixed-size candidate evidence side-car keyed by
-   candidate index, with exact-suffix and semantic-exact provenance.
+2. **Patch 041:** fixed-size candidate evidence side-car keyed by candidate
+   index, exact-suffix and semantic-exact provenance, ABI correction, formal
+   schema enforcement, and validation/evidence hardening.
 3. **Decoder-gap patch:** controlled and selected-system-binary reconciliation,
    preserved comparison artifacts, and the embedded-decoder decision record.
 
@@ -52,6 +53,7 @@ scanner facts or existing metrics.
   state.
 - [x] `gadgets` and `analyze` maintain one JSON implementation and shared facts.
 - [x] Candidate-arena overflow remains fail-closed with no partial stdout.
+- [x] Candidate provenance is additive and does not redefine historical counts.
 - [ ] New decoder-validity metrics are additive, not replacements.
 - [ ] The decoder decision is documented from evidence, not preference.
 
@@ -65,6 +67,7 @@ scanner facts or existing metrics.
 
 ## Handoff
 
-The next Sprint 9 patch adds candidate provenance through a side-car record that
-consumes the Patch 040 report envelope. Sprint 10 expands primitive coverage
-only after those evidence-aware records and fixtures are established.
+Patch 041 completes the candidate provenance foundation. The next Sprint 9
+patch measures decoder gaps on controlled and selected system binaries, records
+comparison provenance, and decides whether an embedded decoder is justified.
+Sprint 10 expands primitive coverage only after that measured decision gate.

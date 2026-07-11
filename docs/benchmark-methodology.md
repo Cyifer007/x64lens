@@ -426,3 +426,26 @@ This remains a development-smoke safeguard. Publication benchmarking still
 requires the planned higher-resolution runner, frozen corpus, target/tool hashes,
 run-order policy, metadata validator, and raw-row preservation planned for later
 sprints.
+
+
+## Sprint 9 Patch 041 benchmark identity rule
+
+Development benchmark rows now carry explicit `tool_version` and
+`schema_version` identities. The summarizer groups by:
+
+```text
+tool
+tool_version
+schema_version
+command
+target
+```
+
+Rows that differ in producer or schema identity must not collapse into one
+summary group, even when command and target match. Historical rows that lack an
+identity remain labeled `unknown` and must not be mixed into release evidence
+without explicit normalization.
+
+This correction protects research provenance but does not upgrade smoke timing
+to publication-grade evidence. Sprint 12 still owns high-resolution timing and
+Sprint 13 still owns the fixed comparative campaign.

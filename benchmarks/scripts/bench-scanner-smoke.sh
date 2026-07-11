@@ -118,10 +118,16 @@ hex_value_from_line() {
   fi
 }
 
+TOOL_VERSION="$($TOOL version 2>/dev/null | awk '{print $2}')"
+SCHEMA_VERSION="$($TOOL version 2>/dev/null | awk '{for (i = 1; i <= NF; i++) if ($i == "schema") { print $(i + 1); exit }}')"
+[[ -n "$TOOL_VERSION" ]] || { echo "error: could not determine x64lens tool version" >&2; exit 1; }
+[[ -n "$SCHEMA_VERSION" ]] || { echo "error: could not determine x64lens schema version" >&2; exit 1; }
+
 {
   echo "tool=x64lens"
   echo "tool_path=$TOOL"
-  echo "tool_version=$($TOOL version 2>/dev/null || true)"
+  echo "tool_version=$TOOL_VERSION"
+  echo "schema_version=$SCHEMA_VERSION"
   echo "command=gadgets --max-depth $MAX_DEPTH <target>"
   echo "runs=$RUNS"
   echo "timestamp_utc=$STAMP"
@@ -131,7 +137,7 @@ hex_value_from_line() {
   echo "gcc_version=$(gcc --version 2>/dev/null | head -n 1 || true)"
 } >"$META"
 
-printf 'tool\tcommand\tmax_depth\ttarget\ttarget_size_bytes\trun\twall_s\tmaxrss_kb\texit_code\tcandidate_count\tret_count\tret_imm16_count\texact_pattern_count\tsemantic_primitive_count\tscored_candidate_count\tunknown_candidate_count\toutput_bytes\n' >"$RESULTS"
+printf 'tool\ttool_version\tschema_version\tcommand\tmax_depth\ttarget\ttarget_size_bytes\trun\twall_s\tmaxrss_kb\texit_code\tcandidate_count\tret_count\tret_imm16_count\texact_pattern_count\tsemantic_primitive_count\tscored_candidate_count\tunknown_candidate_count\toutput_bytes\n' >"$RESULTS"
 
 for target in "${TARGETS[@]}"; do
   if [[ ! -f "$target" ]]; then
@@ -163,8 +169,8 @@ for target in "${TARGETS[@]}"; do
     unknown_count="$(hex_value_from_line 'unknown_candidate count:' "$out")"
     output_bytes="$(wc -c <"$out" | tr -d ' ')"
 
-    printf 'x64lens\tgadgets\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-      "$MAX_DEPTH" "$target" "$target_size" "$run" "$wall" "$maxrss" "$status" \
+    printf 'x64lens\t%s\t%s\tgadgets\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$TOOL_VERSION" "$SCHEMA_VERSION" "$MAX_DEPTH" "$target" "$target_size" "$run" "$wall" "$maxrss" "$status" \
       "${candidate_count:-NA}" "${ret_count:-NA}" "${ret_imm_count:-NA}" \
       "${pattern_count:-NA}" "${semantic_count:-NA}" "${scored_count:-NA}" "${unknown_count:-NA}" \
       "$output_bytes" >>"$RESULTS"

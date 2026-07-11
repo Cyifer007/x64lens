@@ -72,3 +72,11 @@ Before `v0.1.0-rc1` or `v0.1.0`:
 8. tag points to the validated commit.
 
 See [`research-release-plan.md`](research-release-plan.md) and [`design/schema-evolution.md`](design/schema-evolution.md).
+
+
+## Patch 041 schema compatibility note
+
+Patch 041 remains schema `0.2.0`. Candidate evidence is optional in the formal
+schema so initial Patch 040 reports stay valid, while current-producer tests
+require it explicitly. This is a compatible addition within the `0.2.x` line,
+not a redefinition of existing fields or counts.

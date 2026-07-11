@@ -72,5 +72,4 @@ print_cstr_err:
 ;   Convenience wrapper for a single newline on STDOUT.
 print_nl:
     lea     rdi, [newline]
-    call    print_cstr
-    ret
+    jmp     print_cstr

@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 9 is active. Patch 040 establishes schema `0.2.0`, top-level report and command identity, explicit complete-analysis state, candidate-capacity and truncation fields, region progress, historical schema `0.1.0` compatibility, and `gadgets`/`analyze` parity gates. Sprints 1 through 8 remain complete, including the bounded mitigation and metadata foundation, hostile-input regression surface, comparator gates, and evidence-integrity checks. Per-candidate provenance side-car records and decoder-gap measurement are the next Sprint 9 work; primitive expansion remains deferred.
+> Status: Sprint 9 is active. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, historical schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 adds a dense candidate-index evidence side-car, per-candidate raw/exact/semantic provenance, formal-schema enforcement, ABI and validation-oracle corrections, root-independent bundle hygiene, and benchmark identity stratification. Decoder-gap measurement is next; primitive expansion remains deferred.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -76,6 +76,7 @@ The current line does not implement exploit generation, payload generation, remo
 - An **unknown candidate** is preserved rather than overclassified.
 - A **score** is relative utility under the current heuristic model, not exploitability.
 - A successful schema `0.2.0` report states command identity and bounded enumeration completeness. Candidate-capacity exhaustion still fails before output; it is not silently converted into a partial report.
+- Per-candidate `evidence` identifies raw, exact-suffix, and semantic-exact provenance; `full_sequence_valid` remains `null` until decoder evidence exists.
 - Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoded-valid instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
@@ -109,6 +110,7 @@ make
 make samples
 make test
 make validation-smoke
+make patch-bundle-hygiene-smoke
 ```
 
 Run the checkpoint demo:
@@ -160,7 +162,7 @@ Generate and validate JSON:
 python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command analyze \
-  /tmp/x64lens-analysis.json
+  --require-provenance /tmp/x64lens-analysis.json
 ```
 
 The same flags are accepted in either documented order:
@@ -284,7 +286,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 adds report identity and complete-analysis state while preserving a versioned schema `0.1.0` compatibility path. Per-candidate provenance remains additive Sprint 9 work within the `0.2.x` line.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 adds candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Decoder-backed facts remain additive future Sprint 9 work.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

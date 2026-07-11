@@ -56,6 +56,8 @@ EXIT_UNSUPPORTED = 6
 MALFORMED_MESSAGE = b"error: malformed or truncated ELF\n"
 UNSUPPORTED_MESSAGE = b"error: unsupported binary feature\n"
 NO_EXEC_REGION_LINE = "  none discovered from PT_LOAD + PF_X"
+ROOT = Path(__file__).resolve().parents[1]
+REPORT_VALIDATOR = ROOT / "tools" / "validate-json-report.py"
 
 
 class HarnessError(RuntimeError):
@@ -970,7 +972,37 @@ def expected_json_mitigations(case: ValidCase) -> dict[str, object]:
     }
 
 
-def validate_json(case: ValidCase, stdout: bytes) -> None:
+def validate_current_report(case: ValidCase, stdout: bytes, command: str) -> None:
+    """Apply the canonical current JSON contract before oracle-specific checks."""
+    with tempfile.TemporaryDirectory(prefix=f"x64lens-{case.name}-{command}-") as temp:
+        report_path = Path(temp) / f"{command}.json"
+        report_path.write_bytes(stdout)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPORT_VALIDATOR),
+                "--mode",
+                "system",
+                "--require-schema",
+                "0.2.0",
+                "--expected-command",
+                command,
+                "--require-provenance",
+                str(report_path),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    if result.returncode != 0:
+        diagnostic = result.stderr.decode("utf-8", errors="replace").strip()
+        raise HarnessError(
+            f"{case.name}/{command}: canonical JSON validation failed: {diagnostic}"
+        )
+
+
+def validate_json(case: ValidCase, stdout: bytes, command: str) -> None:
+    validate_current_report(case, stdout, command)
     try:
         report = json.loads(stdout)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -1059,7 +1091,7 @@ def main() -> int:
                 )
             if analyze_result.stderr:
                 raise HarnessError(f"{case.name}: analyze emitted stderr")
-            validate_json(case, analyze_result.stdout)
+            validate_json(case, analyze_result.stdout, "analyze")
 
             gadgets_json_cmd = [
                 str(binary),
@@ -1078,7 +1110,7 @@ def main() -> int:
                 )
             if gadgets_json_result.stderr:
                 raise HarnessError(f"{case.name}: gadgets JSON emitted stderr")
-            validate_json(case, gadgets_json_result.stdout)
+            validate_json(case, gadgets_json_result.stdout, "gadgets")
 
             records.append(
                 {

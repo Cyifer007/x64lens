@@ -6,11 +6,13 @@ Purpose:
     This validator checks schema-aware report identity, bounded analysis
     completeness, metric boundaries, primitive coverage shape, gadget record
     shape, unknown stack-delta encoding, and controlled fixture facts. It keeps
-    representative schema 0.1.0 reports consumable while validating all current
-    producer output against schema 0.2.0 invariants.
+    representative schema 0.1.0 reports consumable while validating current
+    producer output against schema 0.2.0 invariants and candidate provenance.
 
-The script intentionally does not require jsonschema. It is designed to run in
-minimal WSL, Docker, CI, and classroom environments.
+The script intentionally does not require jsonschema. Formal Draft 2020-12
+schema validation is a separate development gate; this validator is normative
+for arithmetic and property-to-property relationships JSON Schema cannot
+express directly.
 """
 from __future__ import annotations
 
@@ -43,6 +45,47 @@ ALLOWED_REGS = {
 }
 SUPPORTED_SCHEMAS = {"0.1.0", "0.2.0"}
 ALLOWED_COMMANDS = {"gadgets", "analyze"}
+ALLOWED_EVIDENCE_KINDS = {
+    "raw_only",
+    "exact_suffix",
+    "semantic_exact",
+    "decoder_validated",
+    "semantic_decoded",
+}
+ALLOWED_EVIDENCE_VALIDATORS = {
+    "x64lens-raw-scanner",
+    "x64lens-exact-suffix",
+    "x64lens-decoder",
+}
+PATTERN_SUFFIX_LENGTHS = {
+    "ret": 1,
+    "ret imm16": 3,
+    "pop rax; ret": 2,
+    "pop rcx; ret": 2,
+    "pop rdx; ret": 2,
+    "pop rbx; ret": 2,
+    "pop rsp; ret": 2,
+    "pop rbp; ret": 2,
+    "pop rsi; ret": 2,
+    "pop rdi; ret": 2,
+    "pop r8; ret": 3,
+    "pop r9; ret": 3,
+    "pop r10; ret": 3,
+    "pop r11; ret": 3,
+    "pop r12; ret": 3,
+    "pop r13; ret": 3,
+    "pop r14; ret": 3,
+    "pop r15; ret": 3,
+    "leave; ret": 2,
+    "syscall; ret": 3,
+}
+COVERAGE_CLASS_MAP = {
+    "arg_control": "arg_control",
+    "syscall_num_control": "syscall_num_control",
+    "syscall_trigger": "syscall_trigger",
+    "stack_pivot": "stack_pivot",
+    "alignment": "alignment",
+}
 REQUIRED_TOP = {
     "schema_version",
     "tool",
@@ -74,6 +117,16 @@ REQUIRED_COUNTS = {
     "semantic_candidate_count",
     "unknown_candidate_count",
     "scored_candidate_count",
+}
+REQUIRED_EVIDENCE_FIELDS = {
+    "kind",
+    "raw_candidate",
+    "exact_suffix",
+    "semantic_source",
+    "validator",
+    "matched_suffix_offset",
+    "matched_suffix_length",
+    "full_sequence_valid",
 }
 REQUIRED_GADGET_FIELDS = {
     "va",
@@ -130,12 +183,16 @@ def validate_common(
     *,
     required_schema: str | None = None,
     expected_command: str | None = None,
+    require_provenance: bool = False,
 ) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
 
     schema_version = doc.get("schema_version")
-    require(schema_version in SUPPORTED_SCHEMAS, f"unsupported schema_version: {schema_version!r}")
+    require(
+        isinstance(schema_version, str) and schema_version in SUPPORTED_SCHEMAS,
+        f"unsupported schema_version: {schema_version!r}",
+    )
     if required_schema is not None:
         require(schema_version == required_schema, f"expected schema_version {required_schema}, got {schema_version}")
 
@@ -143,11 +200,15 @@ def validate_common(
         missing_v2 = REQUIRED_TOP_V2 - set(doc)
         require(not missing_v2, f"missing schema 0.2.0 fields: {sorted(missing_v2)}")
         require(doc["report_type"] == "analysis", "report_type must be analysis")
-        require(doc["command"] in ALLOWED_COMMANDS, "command must be gadgets or analyze")
+        require(
+            isinstance(doc["command"], str) and doc["command"] in ALLOWED_COMMANDS,
+            "command must be gadgets or analyze",
+        )
         if expected_command is not None:
             require(doc["command"] == expected_command, f"expected command {expected_command}, got {doc['command']}")
     else:
         require(expected_command is None, "command identity requires schema 0.2.0")
+        require(not require_provenance, "candidate provenance requires schema 0.2.0")
 
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
@@ -164,7 +225,13 @@ def validate_common(
     require(isinstance(mitigations, dict), "mitigations must be an object")
     for key in ["nx_stack", "pie", "rwx_load_segment", "dynamic_linking"]:
         require(key in mitigations, f"mitigations.{key} is missing")
-        require(isinstance(mitigations[key], bool) or mitigations[key] is None, f"mitigations.{key} must be bool or null")
+        if schema_version == "0.2.0" and key != "nx_stack":
+            require_bool(mitigations[key], f"mitigations.{key}")
+        else:
+            require(
+                isinstance(mitigations[key], bool) or mitigations[key] is None,
+                f"mitigations.{key} must be bool or null",
+            )
     require("relro" in mitigations, "mitigations.relro is missing")
     require(isinstance(mitigations["relro"], str), "mitigations.relro must be a string")
     require(mitigations["relro"] in {"none", "partial", "full"}, "mitigations.relro must be none, partial, or full")
@@ -174,6 +241,10 @@ def validate_common(
     if "stripped" in mitigations:
         require(isinstance(mitigations["stripped"], str), "mitigations.stripped must be a string")
         require(mitigations["stripped"] in {"unknown", "stripped", "not_stripped"}, "mitigations.stripped must be unknown, stripped, or not_stripped")
+
+    if schema_version == "0.2.0":
+        for key in ["bind_now", "dynamic_entry_count", "dynamic_terminated"]:
+            require(key in mitigations, f"mitigations.{key} is missing for schema 0.2.0")
 
     if "bind_now" in mitigations:
         require(isinstance(mitigations["bind_now"], bool) or mitigations["bind_now"] is None, "mitigations.bind_now must be bool or null")
@@ -258,15 +329,26 @@ def validate_common(
                 "complete analysis requires all regions scanned",
             )
 
+        # Schema 0.2.0 currently represents only successfully emitted complete
+        # reports. An intentional partial-report mode requires a documented
+        # schema transition rather than silently widening this contract.
+        require(analysis["complete"] is True, "schema 0.2.0 reports must be complete")
+        require(analysis["candidate_truncated"] is False, "schema 0.2.0 reports must not be truncated")
+        require(analysis["candidate_dropped_count_known"] is True, "schema 0.2.0 dropped count must be known")
+        require(analysis["candidate_dropped_count"] == 0, "schema 0.2.0 dropped count must be 0")
+
     coverage = doc["primitive_coverage"]
     require(isinstance(coverage, dict), "primitive_coverage must be an object")
     for key in ["arg_control", "syscall_num_control", "syscall_trigger", "stack_pivot", "alignment"]:
         require(isinstance(coverage.get(key), bool), f"primitive_coverage.{key} must be a boolean")
     registers = coverage.get("registers")
     require(isinstance(registers, list), "primitive_coverage.registers must be an array")
-    require(len(registers) == len(set(registers)), "primitive_coverage.registers must not contain duplicates")
     for reg in registers:
-        require(reg in ALLOWED_REGS, f"unknown register in primitive coverage: {reg}")
+        require(
+            isinstance(reg, str) and reg in ALLOWED_REGS,
+            f"unknown register in primitive coverage: {reg}",
+        )
+    require(len(registers) == len(set(registers)), "primitive_coverage.registers must not contain duplicates")
 
     gadgets = doc["gadgets"]
     require(isinstance(gadgets, list), "gadgets must be an array")
@@ -275,7 +357,10 @@ def validate_common(
     semantic_seen = 0
     unknown_seen = 0
     scored_seen = 0
+    exact_seen = 0
+    provenance_seen = 0
     controlled_registers_seen: set[str] = set()
+    semantic_classes_seen: set[str] = set()
     for idx, gadget in enumerate(gadgets):
         prefix = f"gadgets[{idx}]"
         require(isinstance(gadget, dict), f"{prefix} must be an object")
@@ -288,14 +373,136 @@ def validate_common(
         require_hex64(gadget["va"], f"{prefix}.va")
         require_hex64(gadget["file_offset"], f"{prefix}.file_offset")
         require(isinstance(gadget["bytes"], str) and HEX_BYTES_RE.match(gadget["bytes"]) is not None and gadget["bytes"], f"{prefix}.bytes must be a non-empty compact hex string")
-        require(gadget["terminator"] in ALLOWED_TERMINATORS, f"{prefix}.terminator is invalid")
+        require(
+            isinstance(gadget["terminator"], str)
+            and gadget["terminator"] in ALLOWED_TERMINATORS,
+            f"{prefix}.terminator is invalid",
+        )
         require(isinstance(gadget["pattern"], str) and gadget["pattern"], f"{prefix}.pattern must be a non-empty string")
-        require(gadget["semantic_class"] in ALLOWED_SEMANTICS, f"{prefix}.semantic_class is invalid")
+        require(
+            isinstance(gadget["semantic_class"], str)
+            and gadget["semantic_class"] in ALLOWED_SEMANTICS,
+            f"{prefix}.semantic_class is invalid",
+        )
+        semantic_classes_seen.add(gadget["semantic_class"])
+
+        pattern_is_exact = gadget["pattern"] != "unknown"
+        if pattern_is_exact:
+            exact_seen += 1
+
+        if require_provenance:
+            require("evidence" in gadget, f"{prefix}.evidence is required for current-producer validation")
+        if "evidence" in gadget:
+            provenance_seen += 1
+            evidence = gadget["evidence"]
+            require(isinstance(evidence, dict), f"{prefix}.evidence must be an object")
+            missing_evidence = REQUIRED_EVIDENCE_FIELDS - set(evidence)
+            require(not missing_evidence, f"{prefix}.evidence missing fields: {sorted(missing_evidence)}")
+            require(
+                isinstance(evidence["kind"], str)
+                and evidence["kind"] in ALLOWED_EVIDENCE_KINDS,
+                f"{prefix}.evidence.kind is invalid",
+            )
+            require(evidence["raw_candidate"] is True, f"{prefix}.evidence.raw_candidate must be true")
+            require_bool(evidence["exact_suffix"], f"{prefix}.evidence.exact_suffix")
+            require(
+                evidence["semantic_source"] is None
+                or (
+                    isinstance(evidence["semantic_source"], str)
+                    and evidence["semantic_source"] in {"exact", "decoded"}
+                ),
+                f"{prefix}.evidence.semantic_source is invalid",
+            )
+            require(
+                isinstance(evidence["validator"], str)
+                and evidence["validator"] in ALLOWED_EVIDENCE_VALIDATORS,
+                f"{prefix}.evidence.validator is invalid",
+            )
+            require(
+                evidence["full_sequence_valid"] is None
+                or isinstance(evidence["full_sequence_valid"], bool),
+                f"{prefix}.evidence.full_sequence_valid must be bool or null",
+            )
+            require(
+                evidence["exact_suffix"] is pattern_is_exact,
+                f"{prefix}.evidence.exact_suffix must agree with pattern identity",
+            )
+
+            raw_byte_len = len(gadget["bytes"]) // 2
+            if evidence["exact_suffix"]:
+                require_int(evidence["matched_suffix_offset"], f"{prefix}.evidence.matched_suffix_offset")
+                require_int(
+                    evidence["matched_suffix_length"],
+                    f"{prefix}.evidence.matched_suffix_length",
+                    min_value=1,
+                )
+                expected_suffix_len = PATTERN_SUFFIX_LENGTHS.get(gadget["pattern"])
+                require(expected_suffix_len is not None, f"{prefix}.pattern has no suffix-length contract")
+                require(
+                    evidence["matched_suffix_length"] == expected_suffix_len,
+                    f"{prefix}.evidence.matched_suffix_length disagrees with pattern",
+                )
+                require(
+                    evidence["matched_suffix_offset"] + evidence["matched_suffix_length"] == raw_byte_len,
+                    f"{prefix}.evidence suffix must end at the retained candidate terminator",
+                )
+            else:
+                require(
+                    evidence["matched_suffix_offset"] is None,
+                    f"{prefix}.evidence.matched_suffix_offset must be null without exact suffix",
+                )
+                require(
+                    evidence["matched_suffix_length"] is None,
+                    f"{prefix}.evidence.matched_suffix_length must be null without exact suffix",
+                )
+
+            semantic_is_known = gadget["semantic_class"] != "unknown_candidate"
+            if semantic_is_known:
+                require(
+                    evidence["semantic_source"] in {"exact", "decoded"},
+                    f"{prefix}.evidence.semantic_source must justify a known semantic class",
+                )
+            else:
+                require(
+                    evidence["semantic_source"] is None,
+                    f"{prefix}.evidence.semantic_source must be null for unknown candidates",
+                )
+
+            kind = evidence["kind"]
+            if kind == "raw_only":
+                require(not evidence["exact_suffix"], f"{prefix}.raw_only cannot carry exact suffix evidence")
+                require(evidence["semantic_source"] is None, f"{prefix}.raw_only semantic source must be null")
+                require(evidence["validator"] == "x64lens-raw-scanner", f"{prefix}.raw_only validator mismatch")
+                require(evidence["full_sequence_valid"] is None, f"{prefix}.raw_only validity must be unknown")
+            elif kind == "exact_suffix":
+                require(evidence["exact_suffix"], f"{prefix}.exact_suffix kind requires exact evidence")
+                require(evidence["semantic_source"] is None, f"{prefix}.exact_suffix semantic source must be null")
+                require(evidence["validator"] == "x64lens-exact-suffix", f"{prefix}.exact_suffix validator mismatch")
+                require(evidence["full_sequence_valid"] is None, f"{prefix}.exact_suffix validity must be unknown")
+            elif kind == "semantic_exact":
+                require(evidence["exact_suffix"], f"{prefix}.semantic_exact requires exact evidence")
+                require(evidence["semantic_source"] == "exact", f"{prefix}.semantic_exact source mismatch")
+                require(evidence["validator"] == "x64lens-exact-suffix", f"{prefix}.semantic_exact validator mismatch")
+                require(evidence["full_sequence_valid"] is None, f"{prefix}.semantic_exact validity must be unknown")
+            elif kind == "decoder_validated":
+                require(evidence["validator"] == "x64lens-decoder", f"{prefix}.decoder_validated validator mismatch")
+                require(isinstance(evidence["full_sequence_valid"], bool), f"{prefix}.decoder_validated requires a boolean validity")
+            elif kind == "semantic_decoded":
+                require(evidence["semantic_source"] == "decoded", f"{prefix}.semantic_decoded source mismatch")
+                require(evidence["validator"] == "x64lens-decoder", f"{prefix}.semantic_decoded validator mismatch")
+                require(evidence["full_sequence_valid"] is True, f"{prefix}.semantic_decoded requires valid full sequence")
+
         require(isinstance(gadget["controls"], list), f"{prefix}.controls must be an array")
-        require(len(gadget["controls"]) == len(set(gadget["controls"])), f"{prefix}.controls must not contain duplicates")
         for reg in gadget["controls"]:
-            require(reg in ALLOWED_REGS, f"{prefix}.controls contains unknown register {reg}")
+            require(
+                isinstance(reg, str) and reg in ALLOWED_REGS,
+                f"{prefix}.controls contains unknown register {reg}",
+            )
             controlled_registers_seen.add(reg)
+        require(
+            len(gadget["controls"]) == len(set(gadget["controls"])),
+            f"{prefix}.controls must not contain duplicates",
+        )
 
         known = gadget["stack_delta_known"]
         require(isinstance(known, bool), f"{prefix}.stack_delta_known must be a boolean")
@@ -305,9 +512,11 @@ def validate_common(
             require(gadget["stack_delta"] is None, f"{prefix}.stack_delta must be null when stack_delta_known is false")
 
         score = gadget["score"]
-        if score is None:
-            require(gadget["semantic_class"] == "unknown_candidate", f"{prefix}.score may be null only for unknown_candidate in current schema")
-        else:
+        if score is not None:
+            require(
+                gadget["semantic_class"] != "unknown_candidate",
+                f"{prefix}.unknown_candidate must remain unscored",
+            )
             require_int(score, f"{prefix}.score")
             require(0 <= score <= 100, f"{prefix}.score must be between 0 and 100")
             scored_seen += 1
@@ -317,14 +526,22 @@ def validate_common(
         else:
             semantic_seen += 1
 
+    require(exact_seen == counts["exact_pattern_count"], "exact_pattern_count does not match gadget records")
     require(semantic_seen == counts["semantic_candidate_count"], "semantic_candidate_count does not match gadget records")
     require(unknown_seen == counts["unknown_candidate_count"], "unknown_candidate_count does not match gadget records")
     require(scored_seen == counts["scored_candidate_count"], "scored_candidate_count does not match gadget records")
-    missing_coverage_registers = controlled_registers_seen - set(registers)
     require(
-        not missing_coverage_registers,
-        f"primitive_coverage.registers missing controlled registers: {sorted(missing_coverage_registers)}",
+        set(registers) == controlled_registers_seen,
+        "primitive_coverage.registers must equal the union of gadget controls",
     )
+    for coverage_key, semantic_class in COVERAGE_CLASS_MAP.items():
+        expected = semantic_class in semantic_classes_seen
+        require(
+            coverage[coverage_key] is expected,
+            f"primitive_coverage.{coverage_key} disagrees with gadget semantic classes",
+        )
+    if provenance_seen:
+        require(provenance_seen == len(gadgets), "candidate evidence must be present for all gadgets or none")
 
     limitations = doc["limitations"]
     require(isinstance(limitations, list) and limitations, "limitations must be a non-empty array")
@@ -366,6 +583,13 @@ def validate_fixture(doc: dict[str, Any]) -> None:
         require(analysis["candidate_dropped_count"] == 0, "fixture dropped count must be 0")
         require(analysis["candidate_dropped_count_known"] is True, "fixture dropped count must be known")
         require(analysis["regions_scanned"] == analysis["regions_total"], "fixture must scan all regions")
+        if all("evidence" in g for g in doc["gadgets"]):
+            for idx, gadget in enumerate(doc["gadgets"]):
+                evidence = gadget["evidence"]
+                require(evidence["kind"] == "semantic_exact", f"fixture gadgets[{idx}] evidence kind must be semantic_exact")
+                require(evidence["semantic_source"] == "exact", f"fixture gadgets[{idx}] semantic source must be exact")
+                require(evidence["validator"] == "x64lens-exact-suffix", f"fixture gadgets[{idx}] validator mismatch")
+                require(evidence["full_sequence_valid"] is None, f"fixture gadgets[{idx}] full-sequence validity must be unknown")
 
     by_pattern = {g["pattern"]: g for g in doc["gadgets"]}
     required_patterns = [
@@ -434,6 +658,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--mode", choices=["generic", "fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
+    parser.add_argument(
+        "--require-provenance",
+        action="store_true",
+        help="require every schema 0.2.0 gadget to carry current-producer evidence",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -442,6 +671,7 @@ def main(argv: list[str]) -> int:
             doc,
             required_schema=args.require_schema,
             expected_command=args.expected_command,
+            require_provenance=args.require_provenance,
         )
         if args.mode == "fixture":
             validate_fixture(doc)

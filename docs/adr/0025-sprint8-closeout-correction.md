@@ -15,11 +15,11 @@ could be accepted as final:
    `neg-inf-rss.tsv`.
 2. `SHELLCHECK_STRICT=1 make shellcheck-smoke` still reported actionable
    shell-helper findings.
-3. The private local project-context handoff was stale and still described
-   Patch 029 / Sprint 7 as the current state.
+3. Sprint closeout documentation still described Patch 029 / Sprint 7 as the
+   active implementation state.
 
 The analyzer runtime and Docker validation passed. The defect was in closeout
-validation/tooling and private context freshness, not in ELF parsing, mitigation
+validation tooling and closeout-documentation freshness, not in ELF parsing, mitigation
 facts, section-label handling, or gadget reporting.
 
 ## Decision
@@ -31,9 +31,8 @@ Patch 039 is the Sprint 8 closeout correction:
 - The patch-bundle hygiene script avoids overlapping shell `case` patterns for
   unsafe paths, and planning-doc checks document the intentional literal
   Markdown backticks that strict shell lint flagged.
-- The closeout context refresh is regenerated from the post-Patch-039 state.
-  Public project context and private local orchestration are packaged as
-  separate local-only bundles and patches, not as public product artifacts.
+- Sprint status and validation documentation are aligned with the accepted
+  post-Patch-039 repository state.
 - Patch 038 remains part of the historical public record, but Sprint 8 is not
   considered closed until Patch 039 validation passes.
 
@@ -41,9 +40,8 @@ Patch 039 is the Sprint 8 closeout correction:
 
 Sprint 8 closeout now has an explicit correction record. The public repository
 keeps optional comparison and benchmark-integrity tooling as development and
-review evidence, not publication evidence. Private orchestration/context files
-remain outside the public repository and must be refreshed at major sprint
-milestones rather than after every patch.
+review evidence, not publication evidence. Local-only operational state remains outside the public repository. Public
+closeout records describe only reproducible repository behavior and status.
 
 Sprint 9 should begin only after this correction validates natively and in
 Docker, with the next implementation focus on report identity, evidence

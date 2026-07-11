@@ -139,3 +139,13 @@ A release artifact must not describe capacity failure as an emitted truncated
 report. The existing 4097-candidate case returns exit code `6` before stdout.
 Any future partial-report mode requires a separate reviewed contract and release
 gate.
+
+
+## Sprint 9 Patch 041 release-hygiene update
+
+Research-preview candidates must preserve candidate provenance on every current
+report, validate both formal schema and semantic cross-field rules, reject
+prefixed generated paths in source bundles, compare stable diagnostics
+byte-for-byte, and stratify benchmark summaries by tool and schema identity.
+Patch 040 reports remain compatibility fixtures; they are not current-producer
+fixtures after Patch 041.

@@ -36,6 +36,7 @@ required=(
     docs/adr/0024-sprint8-closeout-and-helper-hardening.md
     docs/adr/0025-sprint8-closeout-correction.md
     docs/adr/0026-report-identity-and-analysis-completeness.md
+    docs/adr/0027-candidate-evidence-sidecar-and-contract-hardening.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -54,6 +55,7 @@ required=(
     docs/sprints/sprint-08-patch-038-validation.md
     docs/sprints/sprint-08-patch-039-validation.md
     docs/sprints/sprint-09-patch-040-validation.md
+    docs/sprints/sprint-09-patch-041-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
@@ -64,6 +66,7 @@ required=(
     tools/mitigation-matrix-smoke.py
     tools/section-label-smoke.py
     tools/benchmark-integrity-smoke.py
+    tools/patch-bundle-hygiene-smoke.py
     tools/readelf-comparison-smoke.py
     tools/optional-mitigation-comparison-smoke.py
     tools/schema-compat-smoke.py
@@ -72,6 +75,7 @@ required=(
     schemas/x64lens-report.schema.json
     tests/expected/x64lens-report-0.1.0.json
     tests/expected/x64lens-report-0.2.0.json
+    tests/expected/x64lens-report-0.2.0-p040.json
 )
 
 for path in "${required[@]}"; do
@@ -118,6 +122,10 @@ grep -Eq '^(Next|Active)' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 is not marked as the next or active implementation tranche'
 grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 040 foundation'
+grep -q 'Patch 041' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not record the Patch 041 provenance foundation'
+grep -q 'require-provenance' docs/sprints/sprint-09-patch-041-validation.md \
+    || fail 'Patch 041 validation does not require current candidate provenance'
 grep -q 'schema-compat-smoke' docs/sprints/sprint-09-patch-040-validation.md \
     || fail 'Patch 040 validation does not name schema compatibility'
 # The grep pattern intentionally contains literal Markdown backticks.
@@ -173,14 +181,16 @@ grep -q '^docker-validation-smoke:' Makefile \
     || fail 'Makefile does not define docker-validation-smoke'
 grep -q '^benchmark-integrity-smoke:' Makefile \
     || fail 'Makefile does not define benchmark-integrity-smoke'
+grep -q '^patch-bundle-hygiene-smoke:' Makefile \
+    || fail 'Makefile does not define patch-bundle-hygiene-smoke'
 grep -q '^readelf-comparison-smoke:' Makefile \
     || fail 'Makefile does not define readelf-comparison-smoke'
 grep -q '^optional-tool-comparison-smoke:' Makefile \
     || fail 'Makefile does not define optional-tool-comparison-smoke'
 grep -q '^schema-compat-smoke:' Makefile \
     || fail 'Makefile does not define schema-compat-smoke'
-grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*schema-compat-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
-    || fail 'validation-smoke does not include benchmark-integrity, schema compatibility, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
+grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
+    || fail 'validation-smoke does not include benchmark-integrity, bundle hygiene, schema compatibility, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

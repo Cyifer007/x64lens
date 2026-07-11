@@ -48,6 +48,7 @@ global x64lens_arena_destroy
 x64lens_arena_init:
     push    rbx
     push    r12
+    sub     rsp, 8              ; keep nested System V calls 16-byte aligned
 
     mov     rbx, rdi            ; arena record pointer
     mov     r12, rsi            ; requested size
@@ -81,6 +82,7 @@ x64lens_arena_init:
     mov     rax, EXIT_GENERAL
 
 .done:
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret

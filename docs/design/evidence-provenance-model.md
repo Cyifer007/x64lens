@@ -16,27 +16,27 @@ x64lens needs to explain not only what a candidate was classified as, but also w
 
 These layers are additive. A decoded record does not erase the raw candidate or exact suffix observation.
 
-## Side-car record direction
+## Implemented side-car record
 
-A future evidence record should be keyed by candidate index instead of expanding variable-length facts inside `gadget_record`.
+Patch 041 implements a dense fixed-size evidence array keyed implicitly by the
+matching `gadget_record[]` index. The index is not duplicated inside the record,
+so array position cannot disagree with a stored key.
 
-Conceptual fields:
+Implemented fields:
 
 ```text
 candidate_evidence_record:
-  candidate_index
-  evidence_kind
-  matched_suffix_start
-  matched_suffix_length
-  decoded_start
-  decoded_length
-  instruction_count
-  full_sequence_valid
-  confidence
+  evidence_flags
+  semantic_source
   validator_id
+  full_sequence_state
+  matched_suffix_offset
+  matched_suffix_length
 ```
 
-Variable-length instruction text or operand lists should live in separate arena-backed storage and be referenced by offset/length pairs.
+The implemented record contains no decoded instruction sequence. Future
+variable-length instruction text or operand lists should live in separate
+arena-backed storage and be referenced by offset/length pairs.
 
 ## Confidence rule
 
@@ -107,7 +107,7 @@ Coverage comparisons must state which evidence layer is compared. Raw terminator
 
 ## Release gate
 
-Patch 040 introduces the schema `0.2.0` report envelope and analysis-completeness foundation. Per-candidate provenance remains required before `v0.1.0-rc1` and will be added through the side-car model without redefining the Patch 040 fields.
+Patch 040 introduced the schema `0.2.0` report envelope and analysis-completeness foundation. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance through the side-car model without redefining the Patch 040 fields. Decoder-backed provenance remains required before the final decoder decision gate, not before the side-car itself is useful.
 
 
 ## Sprint 9 Patch 040 foundation
@@ -121,8 +121,8 @@ analysis_summary
   report type, command, options, capacity, progress, completeness
 
 candidate_evidence_record[]
-  future record per candidate index
-  exact, semantic-exact, decoder, and validator facts
+  implemented dense record per candidate index
+  raw, exact, semantic-exact, validator, and future decoder facts
 ```
 
 This avoids overloading `gadget_record` and prevents `analysis.complete` from
@@ -131,6 +131,25 @@ candidate windows while every candidate still carries only exact-suffix or
 unknown semantic evidence.
 
 `gadgets` and `analyze` share one report type (`analysis`) and one report body,
-but preserve command identity. The next provenance patch should consume this
-envelope and add candidate evidence records; it should not reopen the schema
-transition merely to represent facts already planned for the `0.2.x` line.
+but preserve command identity. Patch 041 consumes this envelope and emits candidate evidence records without
+reopening the schema transition. The next patch should measure decoder gaps and
+add comparison evidence rather than broadening primitive families.
+
+
+## Sprint 9 Patch 041 current JSON evidence
+
+Current producers emit one `evidence` object for every candidate. `kind` names
+the strongest represented evidence layer while separate fields preserve the
+underlying facts:
+
+```text
+raw_only
+exact_suffix
+semantic_exact
+decoder_validated      reserved for future implemented evidence
+semantic_decoded       reserved for future implemented evidence
+```
+
+For Patch 041, `full_sequence_valid` is always `null`. This is intentional: a
+complete command report can enumerate every raw candidate while still lacking
+instruction-boundary validation for each candidate.

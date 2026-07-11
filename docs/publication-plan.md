@@ -138,3 +138,14 @@ complete gadget coverage, exploitability, or memory-safety evidence.
 
 Per-candidate evidence provenance and decoder-gap measurement remain required
 before coverage claims are frozen.
+
+
+## Sprint 9 Patch 041 publication note
+
+The repository can now support a bounded claim that every current JSON candidate
+identifies whether its semantic classification is based on raw, exact-suffix,
+or semantic-exact evidence. It cannot yet claim full instruction-sequence
+validity. `full_sequence_valid: null` is the required current representation.
+
+Benchmark summaries must identify tool and schema versions as grouping keys.
+This is evidence-integrity plumbing, not a comparative performance result.

@@ -987,10 +987,35 @@ analysis.candidate_count = counts.raw_candidate_count
 analysis.regions_scanned = analysis.regions_total
 ```
 
-The exact-capacity fixture remains a complete 4096-record report. The overflow
+The exact-capacity fixture remains a complete 4096-record report for both `gadgets` and `analyze`; the two JSON documents must match after removing only command identity. The overflow
 fixture remains exit code `6` with empty stdout for `gadgets` and `analyze` in
 text and JSON modes. No partial report is accepted.
 
 The schema compatibility target must reject at least candidate-count mismatch,
 complete-plus-truncated state, invalid dropped-count knowledge, impossible
 region progress, and expected-command mismatch.
+
+
+## Sprint 9 Patch 041 candidate provenance and contract validation
+
+Patch 041 acceptance adds these focused gates:
+
+```bash
+make schema-compat-smoke
+make patch-bundle-hygiene-smoke
+make benchmark-integrity-smoke
+make capacity-smoke
+```
+
+Current `gadgets` and `analyze` JSON must be validated with
+`--require-provenance`. Every candidate must have evidence whose suffix range
+ends at the retained terminator and whose semantic source agrees with the
+candidate class. Controlled fixture reports remain command-only parity matches.
+
+The schema compatibility gate applies both retained formal schemas and the
+semantic cross-field validator. The bundle smoke rejects generated files under
+arbitrary archive roots. The benchmark smoke produces two groups for rows that
+differ only by schema identity. Capacity stderr is compared byte-for-byte.
+
+Local ABI validation must confirm `RSP mod 16 == 0` immediately before nested
+calls in `x64lens_report_json_gadgets` for both JSON-producing commands.

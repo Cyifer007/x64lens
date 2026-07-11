@@ -67,7 +67,7 @@ later sprints rather than Patch 037:
   and Sprint 13 work.
 - Schema `0.2.0`, report identity, command identity, and
   completeness/truncation fields are implemented in Patch 040. Target digests
-  and per-candidate provenance remain Sprint 9 work.
+  remain Sprint 9 work; Patch 041 completes raw, exact-suffix, and semantic-exact per-candidate provenance.
 - Publication-grade benchmarking, high-resolution timing, frozen corpus, and
   normalized baseline definitions remain Sprint 12 and Sprint 13 work.
 - SARIF, CI policy gates, and enterprise export formats remain Sprint 15 work.
@@ -80,8 +80,8 @@ later sprints rather than Patch 037:
 - [x] Schema `0.2.0`, migration notes, and historical `0.1.0` compatibility gate.
 - [x] `gadgets` and `analyze` shared-report parity with distinct command identity.
 - [ ] Target digest and additional run identity where the final provenance contract requires them.
-- [ ] Candidate evidence side-car record.
-- [ ] Raw, exact, semantic-exact, decoder-valid, and semantic-decoded evidence tiers.
+- [x] Candidate evidence side-car record.
+- [x] Raw, exact, and semantic-exact candidate evidence tiers; decoder-valid and semantic-decoded remain pending measured decoder work.
 - [ ] Decoder-gap measurement and embedded-decoder decision gate.
 
 ### Sprint 10: primitive expansion
@@ -250,7 +250,7 @@ Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 ## Sprint 8 closeout correction disposition
 
-Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and stale private context handoff. Patch 040 now supplies the schema `0.2.0` report-identity and completeness foundation; remaining Sprint 9 work is per-candidate provenance, target identity refinement, and decoder-gap measurement.
+Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and closeout-documentation drift. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, and Patch 041 adds the initial candidate provenance side-car. Remaining Sprint 9 work is target identity refinement and decoder-gap measurement.
 
 
 ## Sprint 9 Patch 040 backlog update
@@ -265,3 +265,17 @@ by candidate index, preserve existing raw/exact/semantic/unknown/scored counts,
 and expose exact-suffix versus semantic-exact provenance without embedding
 variable-length decoder state in `gadget_record`. Decoder-gap measurement and
 target digest policy follow that evidence foundation.
+
+
+## Sprint 9 Patch 041 backlog update
+
+Patch 041 completes the initial candidate provenance side-car and per-candidate
+JSON evidence for raw, exact-suffix, and semantic-exact facts. It also closes
+Patch 040 validation findings in nested-call ABI conformance, the formal-schema/semantic
+validator split, bundle-path hygiene, exact capacity diagnostic oracle, focused
+JSON harness coverage, benchmark identity grouping, and repository-facing
+wording.
+
+Remaining Sprint 9 work is decoder-gap measurement, target identity refinement,
+comparison artifact provenance, and the embedded-decoder decision gate. Broad
+primitive expansion remains deferred to Sprint 10.

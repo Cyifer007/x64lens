@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+import sys
 import tempfile
 from datetime import datetime, timezone
 from typing import Sequence
@@ -35,6 +36,8 @@ SHT_STRTAB = 3
 SHF_ALLOC = 0x2
 SHF_EXECINSTR = 0x4
 EXIT_OK = 0
+ROOT = Path(__file__).resolve().parents[1]
+REPORT_VALIDATOR = ROOT / "tools" / "validate-json-report.py"
 
 
 class HarnessError(RuntimeError):
@@ -234,8 +237,36 @@ def run_ok(binary: Path, fixture: Path, timeout: float, *args: str) -> bytes:
     return result.stdout
 
 
+def validate_current_report(stdout: bytes, command: str) -> None:
+    """Apply the canonical current-producer contract before specialty checks."""
+    with tempfile.TemporaryDirectory(prefix="x64lens-section-report-") as temp:
+        report_path = Path(temp) / f"{command}.json"
+        report_path.write_bytes(stdout)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPORT_VALIDATOR),
+                "--mode",
+                "system",
+                "--require-schema",
+                "0.2.0",
+                "--expected-command",
+                command,
+                "--require-provenance",
+                str(report_path),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    if result.returncode != 0:
+        diagnostic = result.stderr.decode("utf-8", errors="replace").strip()
+        raise HarnessError(f"{command}: canonical JSON validation failed: {diagnostic}")
+
+
 def json_sections(binary: Path, fixture: Path, timeout: float, command: str) -> set[object]:
     stdout = run_ok(binary, fixture, timeout, command, "--format", "json", "--max-depth", "4")
+    validate_current_report(stdout, command)
     report = json.loads(stdout)
     gadgets = report.get("gadgets")
     if not isinstance(gadgets, list):

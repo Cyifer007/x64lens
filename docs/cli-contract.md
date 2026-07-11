@@ -116,8 +116,9 @@ The `gadgets` command emits the current staged analysis pipeline:
 4. controlled-register coverage,
 5. stack-delta facts,
 6. heuristic score values,
-7. report and command identity plus complete-analysis facts,
-8. limitations in JSON output.
+7. per-candidate raw/exact/semantic evidence provenance,
+8. report and command identity plus complete-analysis facts,
+9. limitations in JSON output.
 
 Important interpretation details:
 
@@ -205,3 +206,15 @@ invent an incomplete report for that path.
 
 Representative schema `0.1.0` output remains consumable through the versioned
 schema and validator compatibility path.
+
+
+## Sprint 9 Patch 041 candidate provenance
+
+Current JSON candidates include an `evidence` object derived from a dense
+candidate-index side-car. It records raw-candidate presence, exact-suffix
+presence and range, semantic evidence source, validator identity, and
+full-sequence-validity state. Current exact-pattern reports use
+`full_sequence_valid: null`; the CLI does not imply decoder validation.
+
+Text output remains unchanged in Patch 041. The provenance extension is
+machine-readable and backward-compatible within schema `0.2.0`.

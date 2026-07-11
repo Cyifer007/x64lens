@@ -147,3 +147,15 @@ invent a partial report or a dropped count it did not measure.
 Completeness applies to bounded candidate enumeration over program-header-
 derived executable regions. It does not mean decoder-valid sequence coverage,
 semantic completeness, exploitability, or complete mitigation knowledge.
+
+
+## Candidate provenance rule
+
+Current schema `0.2.0` producers emit candidate evidence from a side-car keyed
+by gadget-array index. Evidence must preserve raw observations when stronger
+exact or semantic facts exist. Exact-suffix or semantic-exact evidence must not
+be rendered as full decoded validity; current `full_sequence_valid` is `null`.
+
+The formal schema keeps candidate evidence optional for Patch 040 compatibility.
+Current-producer validation requires all candidate evidence with
+`--require-provenance`. Partial evidence arrays are invalid.

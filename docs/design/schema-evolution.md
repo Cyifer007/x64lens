@@ -145,3 +145,23 @@ normalization.
 `readelf`, `checksec`, and `rabin2` outputs remain validation artifacts. They do
 not become x64lens report fields or runtime truth sources through this schema
 transition.
+
+
+## Sprint 9 Patch 041 compatible provenance extension
+
+Patch 041 keeps `schema_version` at `0.2.0`. The formal schema adds an optional
+candidate `evidence` object so initial Patch 040 reports remain valid. Current
+producer validation requires evidence on every candidate with
+`--require-provenance`.
+
+This separates two compatibility questions:
+
+- **Can a schema `0.2.0` consumer read an earlier report?** Yes; the Patch 040
+  fixture remains formally valid.
+- **Does a report satisfy the current producer contract?** Only when every
+  candidate carries internally consistent provenance.
+
+Draft 2020-12 validation is authoritative for structural constraints. The
+bundled semantic validator remains authoritative for relationships that compare
+sibling properties or arrays, such as count equality, coverage agreement, and
+suffix-range reconciliation.

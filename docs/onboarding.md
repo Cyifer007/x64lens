@@ -12,7 +12,7 @@ Install the baseline development packages:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -159,6 +159,7 @@ The table below lists the public Make targets. A new development environment sho
 | `make public-docs-check` | Reject private or dialogue-style wording in public repository files. |
 | `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 18 planning structure. |
 | `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
+| `make patch-bundle-hygiene-smoke` | Regression-test generated-path rejection under varied ZIP roots. |
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
 | `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |
@@ -291,3 +292,8 @@ native aggregate. Optional review helpers are available for local comparison,
 but only `readelf` comparison is part of the required native aggregate. Direct
 `checksec` and `rabin2` helper scripts now validate argument identity and print
 the resolved analyzer and target before running comparisons.
+
+
+## JSON Schema development dependency
+
+`python3-jsonschema` is required by `make schema-compat-smoke` to apply the Draft 2020-12 schemas. It is a validation dependency only; the x64lens runtime does not import Python or JSON Schema libraries.

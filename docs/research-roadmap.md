@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared command parity. Candidate evidence side-cars and decoder-gap measurement remain next. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared command parity. Patch 041 adds the dense candidate evidence side-car and current per-candidate raw, exact-suffix, and semantic-exact provenance. Decoder-gap measurement is next. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -46,13 +46,13 @@ Status: implemented in stages. Patch 025 added deterministic malformed-input and
 
 Discover bounded candidate windows, recognize exact suffixes, classify supported primitive types, preserve unknowns, and assign bounded heuristic scores.
 
-Status: implemented for the initial exact-pattern set. Evidence provenance and broader primitives remain future work.
+Status: implemented for the initial exact-pattern set. Raw, exact-suffix, and semantic-exact provenance are now machine-readable; decoder-backed provenance and broader primitives remain future work.
 
 ### Stage 3: evidence provenance and validity
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts. Per-candidate evidence tiers and decoder validation remain open Sprint 9 work.
+Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, and Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence. Decoder-gap measurement and decoder-backed tiers remain open Sprint 9 work.
 
 ### Stage 4: mitigation-aware triage
 
@@ -179,3 +179,12 @@ The next research risk is therefore unchanged at the candidate layer: quantify
 false-positive and undercount gaps, preserve external decoder comparison
 artifacts, and decide whether an embedded decoder is justified from measured
 impact rather than implementation preference.
+
+
+## Patch 041 research posture
+
+Per-candidate provenance is now machine-readable, but no decoded-validity claim
+is added. This strengthens RQ2 by making evidence source auditable and
+strengthens later RQ1/RQ2 comparisons by preventing mixed tool/schema benchmark
+summaries. The next research result must be a measured decoder-gap artifact, not
+a broader pattern catalog.

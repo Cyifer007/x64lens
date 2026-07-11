@@ -12,7 +12,7 @@
 ;   Emit shared `gadgets` and `analyze` reports with schema/tool version,
 ;   explicit report and command identity, analysis completeness, target and
 ;   mitigation facts, separated metric counts, primitive coverage, scored
-;   gadget records, and explicit limitations.
+;   gadget records, per-candidate provenance, and explicit limitations.
 
 bits 64
 default rel
@@ -120,9 +120,31 @@ f_semantic:             db '      "semantic_class":"', 0
 f_controls:             db '      "controls":', 0
 f_stack_delta:          db '      "stack_delta":', 0
 f_stack_known:          db '      "stack_delta_known":', 0
+f_evidence_open:        db '      "evidence":{', 10, 0
+f_evidence_kind:        db '        "kind":"', 0
+f_evidence_raw:         db '        "raw_candidate":', 0
+f_evidence_exact:       db '        "exact_suffix":', 0
+f_evidence_sem_source:  db '        "semantic_source":', 0
+f_evidence_validator:   db '        "validator":"', 0
+f_evidence_suffix_off:  db '        "matched_suffix_offset":', 0
+f_evidence_suffix_len:  db '        "matched_suffix_length":', 0
+f_evidence_full_valid:  db '        "full_sequence_valid":', 0
+f_evidence_close:       db '      }', 0
 f_score:                db '      "score":', 0
 candidate_open:         db '    {', 10, 0
 candidate_close:        db '    }', 0
+
+evidence_kind_raw_s:       db "raw_only", 0
+evidence_kind_exact_s:     db "exact_suffix", 0
+evidence_kind_sem_exact_s: db "semantic_exact", 0
+evidence_kind_decoded_s:   db "decoder_validated", 0
+evidence_kind_sem_dec_s:   db "semantic_decoded", 0
+evidence_source_exact_s:   db "exact", 0
+evidence_source_decoded_s: db "decoded", 0
+evidence_validator_raw_s:  db "x64lens-raw-scanner", 0
+evidence_validator_exact_s: db "x64lens-exact-suffix", 0
+evidence_validator_decoder_s: db "x64lens-decoder", 0
+evidence_validator_unknown_s: db "unknown", 0
 
 term_ret_s:             db "ret", 0
 term_ret_imm16_s:       db "ret imm16", 0
@@ -183,7 +205,9 @@ json_phdr_summary:      resq 1
 json_gadget_summary:    resq 1
 json_gadget_records:    resq 1
 json_analysis_summary:  resq 1
+json_candidate_evidence: resq 1
 json_current_record:    resq 1
+json_current_evidence:  resq 1
 json_char_buf:          resb 3
 
 section .text
@@ -215,7 +239,8 @@ global x64lens_report_json_gadgets
 
 ; x64lens_report_json_gadgets(path=rdi, mapped_base=rsi, file_size=rdx,
 ;                             phdr_summary=rcx, gadget_summary=r8,
-;                             gadget_records=r9, analysis_summary=stack_arg_7)
+;                             gadget_records=r9, analysis_summary=stack_arg_7,
+;                             candidate_evidence=stack_arg_8)
 ;
 ; Output:
 ;   Versioned JSON report on STDOUT.
@@ -233,10 +258,15 @@ x64lens_report_json_gadgets:
     mov     [json_phdr_summary], rcx
     mov     [json_gadget_summary], r8
     mov     [json_gadget_records], r9
-    ; Six saved registers move the caller's seventh argument from [entry_rsp+8]
-    ; to [rsp+56]. The pointer names command-owned identity/completeness facts.
+    ; Six saved registers move caller stack arguments seven and eight to
+    ; [rsp+56] and [rsp+64]. Load both before correcting the inherited 8-byte
+    ; entry misalignment. The extra slot keeps RSP 16-byte aligned before every
+    ; nested System V call made by this reporter.
     mov     rax, [rsp + 56]
     mov     [json_analysis_summary], rax
+    mov     rax, [rsp + 64]
+    mov     [json_candidate_evidence], rax
+    sub     rsp, 8
 
     lea     rdi, [j_open]
     call    print_cstr
@@ -271,6 +301,7 @@ x64lens_report_json_gadgets:
     lea     rdi, [j_close]
     call    print_cstr
 
+    add     rsp, 8
     pop     r15
     pop     r14
     pop     r13
@@ -280,6 +311,7 @@ x64lens_report_json_gadgets:
     ret
 
 json_print_report_identity:
+    sub     rsp, 8              ; align nested System V calls
     mov     rbx, [json_analysis_summary]
 
     lea     rdi, [field_report_type]
@@ -316,9 +348,11 @@ json_print_report_identity:
 .command_done:
     lea     rdi, [j_q]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_analysis:
+    sub     rsp, 8              ; align nested System V calls
     mov     rbx, [json_analysis_summary]
     lea     rdi, [field_analysis_open]
     call    print_cstr
@@ -386,9 +420,11 @@ json_print_analysis:
 
     lea     rdi, [field_object_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_target:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [field_target_open]
     call    print_cstr
 
@@ -422,9 +458,11 @@ json_print_target:
 
     lea     rdi, [field_object_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_mitigations:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [field_mitigations_open]
     call    print_cstr
     mov     rbx, [json_phdr_summary]
@@ -565,9 +603,11 @@ json_print_mitigations:
 
     lea     rdi, [field_object_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_counts:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [field_counts_open]
     call    print_cstr
     mov     rbx, [json_gadget_summary]
@@ -616,9 +656,11 @@ json_print_counts:
 
     lea     rdi, [field_object_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_coverage:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [field_coverage_open]
     call    print_cstr
     mov     rbx, [json_gadget_summary]
@@ -661,9 +703,11 @@ json_print_coverage:
 
     lea     rdi, [field_object_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_gadget_array:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [field_gadgets_open]
     call    print_cstr
 
@@ -687,6 +731,12 @@ json_print_gadget_array:
     add     rdx, rax
     mov     [json_current_record], rdx
 
+    mov     rax, rbp
+    imul    rax, rax, CANDIDATE_EVIDENCE_RECORD_SIZE
+    mov     rdx, [json_candidate_evidence]
+    add     rdx, rax
+    mov     [json_current_evidence], rdx
+
     call    json_print_one_gadget
 
     inc     rbp
@@ -699,9 +749,11 @@ json_print_gadget_array:
     call    print_cstr
     lea     rdi, [j_array_close]
     call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_one_gadget:
+    sub     rsp, 8              ; align nested System V calls
     lea     rdi, [candidate_open]
     call    print_cstr
 
@@ -819,6 +871,11 @@ json_print_one_gadget:
 .known_done:
     JSON_FIELD_COMMA_NL
 
+    lea     rdi, [f_evidence_open]
+    call    print_cstr
+    call    json_print_candidate_evidence
+    JSON_FIELD_COMMA_NL
+
     lea     rdi, [f_score]
     call    print_cstr
     mov     rbx, [json_current_record]
@@ -835,6 +892,168 @@ json_print_one_gadget:
 
     lea     rdi, [candidate_close]
     call    print_cstr
+    add     rsp, 8
+    ret
+
+json_print_candidate_evidence:
+    sub     rsp, 8              ; align nested System V calls
+    mov     rbx, [json_current_evidence]
+
+    lea     rdi, [f_evidence_kind]
+    call    print_cstr
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_FLAGS]
+    test    rax, EVIDENCE_FLAG_DECODER_VALIDATED
+    jz      .kind_not_decoded
+    cmp     qword [rbx + CANDIDATE_EVIDENCE_SEMANTIC_SOURCE], EVIDENCE_SEMANTIC_SOURCE_DECODED
+    jne     .kind_decoded
+    lea     rdi, [evidence_kind_sem_dec_s]
+    jmp     .kind_print
+.kind_decoded:
+    lea     rdi, [evidence_kind_decoded_s]
+    jmp     .kind_print
+.kind_not_decoded:
+    test    rax, EVIDENCE_FLAG_SEMANTIC_EXACT
+    jz      .kind_not_sem_exact
+    lea     rdi, [evidence_kind_sem_exact_s]
+    jmp     .kind_print
+.kind_not_sem_exact:
+    test    rax, EVIDENCE_FLAG_EXACT_SUFFIX
+    jz      .kind_raw
+    lea     rdi, [evidence_kind_exact_s]
+    jmp     .kind_print
+.kind_raw:
+    lea     rdi, [evidence_kind_raw_s]
+.kind_print:
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_raw]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rdi, [rbx + CANDIDATE_EVIDENCE_FLAGS]
+    and     rdi, EVIDENCE_FLAG_RAW_CANDIDATE
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_exact]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rdi, [rbx + CANDIDATE_EVIDENCE_FLAGS]
+    and     rdi, EVIDENCE_FLAG_EXACT_SUFFIX
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_sem_source]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_SEMANTIC_SOURCE]
+    cmp     rax, EVIDENCE_SEMANTIC_SOURCE_EXACT
+    je      .sem_source_exact
+    cmp     rax, EVIDENCE_SEMANTIC_SOURCE_DECODED
+    je      .sem_source_decoded
+    lea     rdi, [j_null]
+    call    print_cstr
+    jmp     .sem_source_done
+.sem_source_exact:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [evidence_source_exact_s]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    jmp     .sem_source_done
+.sem_source_decoded:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [evidence_source_decoded_s]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+.sem_source_done:
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_validator]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_VALIDATOR_ID]
+    cmp     rax, EVIDENCE_VALIDATOR_RAW_SCANNER
+    je      .validator_raw
+    cmp     rax, EVIDENCE_VALIDATOR_EXACT_SUFFIX
+    je      .validator_exact
+    cmp     rax, EVIDENCE_VALIDATOR_DECODER
+    je      .validator_decoder
+    lea     rdi, [evidence_validator_unknown_s]
+    jmp     .validator_print
+.validator_raw:
+    lea     rdi, [evidence_validator_raw_s]
+    jmp     .validator_print
+.validator_exact:
+    lea     rdi, [evidence_validator_exact_s]
+    jmp     .validator_print
+.validator_decoder:
+    lea     rdi, [evidence_validator_decoder_s]
+.validator_print:
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_suffix_off]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_FLAGS]
+    test    rax, EVIDENCE_FLAG_EXACT_SUFFIX
+    jz      .suffix_off_null
+    mov     rdi, [rbx + CANDIDATE_EVIDENCE_SUFFIX_OFFSET]
+    call    print_u64_dec
+    jmp     .suffix_off_done
+.suffix_off_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.suffix_off_done:
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_suffix_len]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_FLAGS]
+    test    rax, EVIDENCE_FLAG_EXACT_SUFFIX
+    jz      .suffix_len_null
+    mov     rdi, [rbx + CANDIDATE_EVIDENCE_SUFFIX_LENGTH]
+    call    print_u64_dec
+    jmp     .suffix_len_done
+.suffix_len_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.suffix_len_done:
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_evidence_full_valid]
+    call    print_cstr
+    mov     rbx, [json_current_evidence]
+    mov     rax, [rbx + CANDIDATE_EVIDENCE_FULL_SEQUENCE_STATE]
+    cmp     rax, EVIDENCE_FULL_SEQUENCE_VALID
+    je      .full_valid_true
+    cmp     rax, EVIDENCE_FULL_SEQUENCE_INVALID
+    je      .full_valid_false
+    lea     rdi, [j_null]
+    call    print_cstr
+    jmp     .full_valid_done
+.full_valid_true:
+    lea     rdi, [j_true]
+    call    print_cstr
+    jmp     .full_valid_done
+.full_valid_false:
+    lea     rdi, [j_false]
+    call    print_cstr
+.full_valid_done:
+    call    print_nl
+
+    lea     rdi, [f_evidence_close]
+    call    print_cstr
+    add     rsp, 8
     ret
 
 json_print_bool_nonzero:
@@ -983,6 +1202,7 @@ json_print_candidate_bytes:
 json_print_regs_array:
     push    rbx
     push    r12
+    sub     rsp, 8              ; align nested System V calls
 
     mov     rbx, rdi
     xor     r12, r12
@@ -1008,6 +1228,7 @@ json_print_regs_array:
 
     lea     rdi, [j_array_close]
     call    print_cstr
+    add     rsp, 8
     pop     r12
     pop     rbx
     ret

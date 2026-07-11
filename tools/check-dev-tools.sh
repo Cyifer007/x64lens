@@ -64,6 +64,17 @@ check_path() {
   fi
 }
 
+check_python_module() {
+  local module="$1"
+  local desc="$2"
+  if have_command python3 && python3 -c "import ${module}" >/dev/null 2>&1; then
+    printf 'ok: %-18s %s\n' "python:${module}" "$desc"
+  else
+    printf 'missing: %-13s %s\n' "python:${module}" "$desc" >&2
+    missing_required=1
+  fi
+}
+
 check_optional_cmd() {
   local name="$1"
   local desc="$2"
@@ -119,7 +130,7 @@ print_install_hint() {
     '' \
     'Ubuntu 24.04 development dependency install:' \
     '  sudo apt update' \
-    '  sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
+    '  sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
     '  # Optional review/comparison tools:' \
     '  sudo apt install -y checksec radare2 strace shellcheck' \
     '' \
@@ -153,6 +164,7 @@ check_dev() {
   check_build
   check_samples
   check_cmd python3 "JSON validation and malformed fixture generation"
+  check_python_module jsonschema "Draft 2020-12 report-schema validation"
   check_cmd readelf "ELF comparison and manual validation helper"
   check_cmd objdump "fixture disassembly comparison helper"
   check_path /usr/bin/time "GNU time for benchmark wall/RSS measurements"

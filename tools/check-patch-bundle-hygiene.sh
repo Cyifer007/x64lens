@@ -59,27 +59,27 @@ for entry in "${entries[@]}"; do
         bad=1
       fi
       ;;
-    x64lens/build/*|x64lens/build|*/build/*|*/build)
+    build/*|build|*/build/*|*/build)
       echo "patch-bundle-hygiene: forbidden build output: $entry" >&2
       bad=1
       ;;
-    x64lens/tests/bin/*|x64lens/tests/bin)
+    tests/bin/*|tests/bin|*/tests/bin/*|*/tests/bin)
       echo "patch-bundle-hygiene: forbidden generated test binary: $entry" >&2
       bad=1
       ;;
-    x64lens/tests/results/*|x64lens/tests/results)
+    tests/results/*|tests/results|*/tests/results/*|*/tests/results)
       echo "patch-bundle-hygiene: forbidden generated test result: $entry" >&2
       bad=1
       ;;
-    x64lens/benchmarks/results|x64lens/benchmarks/results/)
+    benchmarks/results|benchmarks/results/|*/benchmarks/results|*/benchmarks/results/)
       ;;
-    x64lens/benchmarks/results/*)
-      if [[ "$entry" != "x64lens/benchmarks/results/.gitkeep" ]]; then
+    benchmarks/results/*|*/benchmarks/results/*)
+      if [[ "$entry" != "benchmarks/results/.gitkeep" && "$entry" != */benchmarks/results/.gitkeep ]]; then
         echo "patch-bundle-hygiene: forbidden generated benchmark result: $entry" >&2
         bad=1
       fi
       ;;
-    x64lens/tests/toy-src/minimal_nopie|x64lens/tests/toy-src/minimal_pie_canary|x64lens/tests/toy-src/minimal_execstack|x64lens/tests/toy-src/gadgets|x64lens/tests/toy-src/gadgets_capacity_exact|x64lens/tests/toy-src/gadgets_capacity)
+    tests/toy-src/minimal_nopie|tests/toy-src/minimal_pie_canary|tests/toy-src/minimal_execstack|tests/toy-src/gadgets|tests/toy-src/gadgets_capacity_exact|tests/toy-src/gadgets_capacity|*/tests/toy-src/minimal_nopie|*/tests/toy-src/minimal_pie_canary|*/tests/toy-src/minimal_execstack|*/tests/toy-src/gadgets|*/tests/toy-src/gadgets_capacity_exact|*/tests/toy-src/gadgets_capacity)
       echo "patch-bundle-hygiene: forbidden generated toy binary: $entry" >&2
       bad=1
       ;;
