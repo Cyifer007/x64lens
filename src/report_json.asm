@@ -8,10 +8,11 @@
 ;   and future enterprise integrations. JSON is emitted from internal records,
 ;   not by scraping human-readable text output.
 ;
-; Sprint 5 scope:
-;   Emit initial `gadgets --format json` reports with schema/tool version,
-;   target metadata, baseline mitigation facts, separated metric counts,
-;   primitive coverage, scored gadget records, and explicit limitations.
+; Current scope:
+;   Emit shared `gadgets` and `analyze` reports with schema/tool version,
+;   explicit report and command identity, analysis completeness, target and
+;   mitigation facts, separated metric counts, primitive coverage, scored
+;   gadget records, and explicit limitations.
 
 bits 64
 default rel
@@ -48,6 +49,22 @@ j_indent6:              db "      ", 0
 field_schema:           db '  "schema_version":"', X64LENS_SCHEMA, '"', 0
 field_tool:             db '  "tool":"', X64LENS_NAME, '"', 0
 field_tool_version:     db '  "tool_version":"', X64LENS_VERSION, '"', 0
+field_report_type:      db '  "report_type":"', 0
+field_command:          db '  "command":"', 0
+identity_analysis:      db "analysis", 0
+identity_gadgets:       db "gadgets", 0
+identity_analyze:       db "analyze", 0
+identity_unknown:       db "unknown", 0
+field_analysis_open:    db '  "analysis":{', 10, 0
+field_analysis_complete: db '    "complete":', 0
+field_analysis_max_depth: db '    "max_depth":', 0
+field_analysis_capacity: db '    "candidate_capacity":', 0
+field_analysis_count:   db '    "candidate_count":', 0
+field_analysis_truncated: db '    "candidate_truncated":', 0
+field_analysis_dropped: db '    "candidate_dropped_count":', 0
+field_analysis_dropped_known: db '    "candidate_dropped_count_known":', 0
+field_analysis_regions_scanned: db '    "regions_scanned":', 0
+field_analysis_regions_total: db '    "regions_total":', 0
 field_target_open:      db '  "target":{', 10, 0
 field_target_path:      db '    "path":"', 0
 field_target_format:    db '    "format":"ELF64",', 10, 0
@@ -91,7 +108,7 @@ field_cov_pivot:        db '    "stack_pivot":', 0
 field_cov_align:        db '    "alignment":', 0
 field_cov_registers:    db '    "registers":', 0
 field_gadgets_open:     db '  "gadgets":[', 10, 0
-field_limitations:      db '  "limitations":["Pattern-based scanner, not full x86_64 decoder","Pattern labels describe recognized suffixes, not necessarily complete decoded instruction windows","Exploitability requires an independent vulnerability and runtime context"]', 10, 0
+field_limitations:      db '  "limitations":["Pattern-based scanner, not full x86_64 decoder","Pattern labels describe recognized suffixes, not necessarily complete decoded instruction windows","Analysis completeness covers bounded candidate enumeration, not decoder validation","Exploitability requires an independent vulnerability and runtime context"]', 10, 0
 
 f_va:                   db '      "va":"', 0
 f_file_offset:          db '      "file_offset":"', 0
@@ -165,6 +182,7 @@ json_file_size:         resq 1
 json_phdr_summary:      resq 1
 json_gadget_summary:    resq 1
 json_gadget_records:    resq 1
+json_analysis_summary:  resq 1
 json_current_record:    resq 1
 json_char_buf:          resb 3
 
@@ -197,7 +215,7 @@ global x64lens_report_json_gadgets
 
 ; x64lens_report_json_gadgets(path=rdi, mapped_base=rsi, file_size=rdx,
 ;                             phdr_summary=rcx, gadget_summary=r8,
-;                             gadget_records=r9)
+;                             gadget_records=r9, analysis_summary=stack_arg_7)
 ;
 ; Output:
 ;   Versioned JSON report on STDOUT.
@@ -215,6 +233,10 @@ x64lens_report_json_gadgets:
     mov     [json_phdr_summary], rcx
     mov     [json_gadget_summary], r8
     mov     [json_gadget_records], r9
+    ; Six saved registers move the caller's seventh argument from [entry_rsp+8]
+    ; to [rsp+56]. The pointer names command-owned identity/completeness facts.
+    mov     rax, [rsp + 56]
+    mov     [json_analysis_summary], rax
 
     lea     rdi, [j_open]
     call    print_cstr
@@ -227,6 +249,10 @@ x64lens_report_json_gadgets:
     JSON_FIELD_COMMA_NL
     lea     rdi, [field_tool_version]
     call    print_cstr
+    JSON_FIELD_COMMA_NL
+    call    json_print_report_identity
+    JSON_FIELD_COMMA_NL
+    call    json_print_analysis
     JSON_FIELD_COMMA_NL
 
     call    json_print_target
@@ -251,6 +277,115 @@ x64lens_report_json_gadgets:
     pop     r12
     pop     rbx
     pop     rbp
+    ret
+
+json_print_report_identity:
+    mov     rbx, [json_analysis_summary]
+
+    lea     rdi, [field_report_type]
+    call    print_cstr
+    cmp     qword [rbx + ANALYSIS_SUMMARY_REPORT_TYPE], REPORT_TYPE_ANALYSIS
+    jne     .report_type_unknown
+    lea     rdi, [identity_analysis]
+    call    print_cstr
+    jmp     .report_type_done
+.report_type_unknown:
+    lea     rdi, [identity_unknown]
+    call    print_cstr
+.report_type_done:
+    lea     rdi, [j_q]
+    call    print_cstr
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_command]
+    call    print_cstr
+    cmp     qword [rbx + ANALYSIS_SUMMARY_COMMAND], REPORT_COMMAND_GADGETS
+    je      .command_gadgets
+    cmp     qword [rbx + ANALYSIS_SUMMARY_COMMAND], REPORT_COMMAND_ANALYZE
+    je      .command_analyze
+    lea     rdi, [identity_unknown]
+    call    print_cstr
+    jmp     .command_done
+.command_gadgets:
+    lea     rdi, [identity_gadgets]
+    call    print_cstr
+    jmp     .command_done
+.command_analyze:
+    lea     rdi, [identity_analyze]
+    call    print_cstr
+.command_done:
+    lea     rdi, [j_q]
+    call    print_cstr
+    ret
+
+json_print_analysis:
+    mov     rbx, [json_analysis_summary]
+    lea     rdi, [field_analysis_open]
+    call    print_cstr
+
+    lea     rdi, [field_analysis_complete]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_COMPLETE]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_max_depth]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_MAX_DEPTH]
+    call    print_u64_dec
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_capacity]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_CANDIDATE_CAPACITY]
+    call    print_u64_dec
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_count]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_CANDIDATE_COUNT]
+    call    print_u64_dec
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_truncated]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_CANDIDATE_TRUNCATED]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_dropped]
+    call    print_cstr
+    cmp     qword [rbx + ANALYSIS_SUMMARY_DROPPED_COUNT_KNOWN], 0
+    je      .dropped_unknown
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_DROPPED_COUNT]
+    call    print_u64_dec
+    jmp     .dropped_done
+.dropped_unknown:
+    lea     rdi, [j_null]
+    call    print_cstr
+.dropped_done:
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_dropped_known]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_DROPPED_COUNT_KNOWN]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_regions_scanned]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_REGIONS_SCANNED]
+    call    print_u64_dec
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_analysis_regions_total]
+    call    print_cstr
+    mov     rdi, [rbx + ANALYSIS_SUMMARY_REGIONS_TOTAL]
+    call    print_u64_dec
+    call    print_nl
+
+    lea     rdi, [field_object_close]
+    call    print_cstr
     ret
 
 json_print_target:

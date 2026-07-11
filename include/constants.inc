@@ -15,7 +15,7 @@
 %define X64LENS_CONSTANTS_INC
 
 %define X64LENS_VERSION      "0.1.0-dev"
-%define X64LENS_SCHEMA       "0.1.0"
+%define X64LENS_SCHEMA       "0.2.0"
 %define X64LENS_NAME         "x64lens"
 
 ; Linux x86_64 syscall numbers used by the no-libc implementation path.

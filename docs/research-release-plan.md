@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closes Sprint 7. Patch 030 adds bounded dynamic-table evidence for the first Sprint 8 mitigation-depth step. Patch 031 uses that evidence for no, partial, and full RELRO reporting. Patch 032 adds the first evidence-qualified canary indicator and schema hardening. Patch 033 adds the stripped-status indicator and strict dynamic string-table singleton policy. Patch 034 adds section-label annotations as metadata only. Provenance-aware schema fields, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, historical `0.1.0` compatibility, and shared command parity. Per-candidate provenance, target digests, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -132,8 +132,23 @@ benchmark corpus.
 
 ## Sprint 8 closeout gate
 
-Sprint 8 is complete after Patch 039. The research preview path now has stronger
-mitigation evidence and stronger development-evidence hygiene, but it is still
-not ready for preview release. Sprint 9 must add provenance, report identity,
-target/command identity, completeness/truncation state, and schema `0.2.0`
-before output freezes for preview artifacts.
+Sprint 8 is complete after Patch 039. Patch 040 adds report and command identity,
+complete-analysis state, and schema `0.2.0`, but the research preview is still
+not ready. Sprint 9 must still add per-candidate provenance, target digest policy,
+and decoder-gap evidence before output freezes for preview artifacts.
+
+
+## Sprint 9 Patch 040 release-gate update
+
+Patch 040 satisfies the command-level report identity and successful-analysis
+completeness portion of the preview gate. Current schema `0.2.0` reports state
+candidate capacity/count, truncation, dropped-count knowledge, region progress,
+and command identity. Historical schema `0.1.0` remains available through a
+versioned compatibility path.
+
+This is not the full provenance gate. Before `v0.1.0-rc1`, the project still
+requires per-candidate evidence source, target and tool hashes where required,
+decoder-gap measurement, a reproducible corpus, and the high-resolution pilot
+benchmark path. Candidate-capacity overflow remains a failed command with no
+partial report and must remain represented as a failure row in any measurement
+harness.

@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is the next implementation tranche and focuses on evidence provenance, report identity, completeness, schema `0.2.0`, and decoder-gap measurement.
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared `gadgets`/`analyze` report parity. Per-candidate provenance and decoder-gap measurement remain the next Sprint 9 work.
 
 The implemented pipeline is:
 
@@ -61,7 +61,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
-| 9 | Candidate provenance and decoder-gap measurement | Evidence side-car model, truncation reporting, validity tiers, and measured decoder decision gate. |
+| 9 | Candidate provenance and decoder-gap measurement | Patch 040 report identity/completeness foundation; next evidence side-car, validity tiers, and measured decoder decision gate. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
@@ -124,7 +124,7 @@ Primitive breadth must not outrun evidence quality. Benchmark scale must not out
 ## Schema timeline
 
 - Keep schema `0.1.0` through Sprint 8 for compatible, optional mitigation additions.
-- Introduce schema `0.2.0` in Sprint 9 when evidence provenance, truncation state, or report-type identity becomes part of the machine-readable contract.
+- Schema `0.2.0` is introduced in Sprint 9 Patch 040 for report identity and complete-analysis state; compatible per-candidate provenance follows within the `0.2.x` line.
 - Keep `0.2.x` backward-compatible through the preview and benchmark campaign.
 - Do not introduce another breaking schema before `v0.1.0` unless a release-blocking correctness issue requires it.
 
@@ -208,3 +208,17 @@ Patch 035 closes the first section-label hardening loop by escaping text labels,
 ## Sprint 8 Patch 036 roadmap update
 
 Patch 036 converts the historical review pause into a hardening patch instead of opening new primitive expansion. It closes immediate evidence and reporting defects while keeping the larger release-gate work in place. Sprint 9 should still begin with provenance, completeness, report identity, and decoder-gap measurement. Sprint 12/13 still own publication-grade benchmarking and cross-tool reconciliation.
+
+
+## Sprint 9 Patch 040 roadmap update
+
+Patch 040 completes the command-level half of the Sprint 9 schema transition.
+Current reports identify the producing command and state candidate capacity,
+count, truncation, dropped-count knowledge, executable-region progress, and
+overall completion. Historical schema `0.1.0` remains available through a
+versioned compatibility path.
+
+The patch deliberately preserves the fail-closed 4097-candidate behavior rather
+than introducing a partial-report mode. The next Sprint 9 work is per-candidate
+evidence provenance, followed by decoder-gap measurement and the embedded-
+decoder decision gate. Primitive expansion remains a Sprint 10 concern.

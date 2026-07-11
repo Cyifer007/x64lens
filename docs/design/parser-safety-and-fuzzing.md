@@ -241,3 +241,17 @@ Section labels are now covered by `make section-label-smoke`. The harness builds
 ## Sprint 8 Patch 036 review-found safety hardening
 
 Patch 036 promotes historical-review probes into current safety requirements. Section labels now require both file-offset and virtual-address containment; high-bit section-name bytes must remain valid JSON through escaping; and validation helpers must use per-run temporary directories rather than fixed `$TMPDIR` filenames. Benchmark smoke scripts also fail early on invalid run counts or impossible metric fields so malformed evidence cannot be summarized as normal results.
+
+
+## Sprint 9 Patch 040 completeness safety
+
+Patch 040 does not relax candidate-capacity safety. The command-owned analysis
+summary is constructed only after all scanner and downstream stages return
+success. Internal contradictions such as zero capacity, count greater than
+capacity, maximum-depth disagreement, or executable-region totals beyond the
+bounded region array return `EXIT_BOUNDS` before report emission.
+
+The 4097-candidate input remains `EXIT_UNSUPPORTED` with empty stdout. Because
+the scanner stops at that point, no total dropped count is inferred. A future
+partial mode must explicitly redesign scanner progress accounting and add
+hostile-input coverage before it can emit incomplete state.

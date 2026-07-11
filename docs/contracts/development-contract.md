@@ -122,7 +122,7 @@ A planned release date does not override an unmet evidence gate. `v0.1.0-rc1` an
 
 ## Schema transition rule
 
-Schema `0.1.0` may receive compatible optional fields. Evidence provenance, analysis completeness, candidate truncation, or changed count meaning requires the planned schema `0.2.0` transition and full validator/documentation parity.
+Schema `0.2.0` is the current producer contract. Compatible per-candidate provenance additions should remain within `0.2.x`; changed count meaning or incompatible required fields require another explicit transition with full validator and documentation parity. Historical `0.1.0` remains a versioned compatibility artifact.
 
 ## Planning-document validation rule
 
@@ -172,3 +172,16 @@ must not execute the target binary merely to infer argument order.
 Strict shell-helper lint is an optional local gate. When enabled, intentional
 literal examples or ordered boundary patterns must be explained in source rather
 than ignored silently.
+
+## Sprint 9 Patch 040 report-envelope rule
+
+Command identity and analysis completeness are internal facts, not formatter
+inferences. `gadgets` and `analyze` must construct the shared fixed-size analysis
+summary only after scanner, exact-pattern, classifier, scoring, and annotation
+stages succeed. Text and JSON adapters may render that record but must not decide
+completion independently.
+
+Schema `0.2.0` current-report validation must name the expected command.
+Representative schema `0.1.0` output remains a compatibility fixture. Candidate-
+capacity overflow remains fail-closed with no report; completeness fields do not
+authorize silent or partial truncation.

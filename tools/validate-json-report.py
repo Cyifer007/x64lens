@@ -3,9 +3,11 @@
 
 Purpose:
     Provide a stronger smoke/regression check than `python3 -m json.tool`.
-    This validator checks the report contract, metric boundaries, primitive
-    coverage shape, gadget record shape, unknown stack-delta encoding, and the
-    controlled fixture's exact expected semantic/scoring facts.
+    This validator checks schema-aware report identity, bounded analysis
+    completeness, metric boundaries, primitive coverage shape, gadget record
+    shape, unknown stack-delta encoding, and controlled fixture facts. It keeps
+    representative schema 0.1.0 reports consumable while validating all current
+    producer output against schema 0.2.0 invariants.
 
 The script intentionally does not require jsonschema. It is designed to run in
 minimal WSL, Docker, CI, and classroom environments.
@@ -39,6 +41,8 @@ ALLOWED_REGS = {
     "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rbp", "rsp",
     "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
 }
+SUPPORTED_SCHEMAS = {"0.1.0", "0.2.0"}
+ALLOWED_COMMANDS = {"gadgets", "analyze"}
 REQUIRED_TOP = {
     "schema_version",
     "tool",
@@ -49,6 +53,18 @@ REQUIRED_TOP = {
     "primitive_coverage",
     "gadgets",
     "limitations",
+}
+REQUIRED_TOP_V2 = {"report_type", "command", "analysis"}
+REQUIRED_ANALYSIS_FIELDS = {
+    "complete",
+    "max_depth",
+    "candidate_capacity",
+    "candidate_count",
+    "candidate_truncated",
+    "candidate_dropped_count",
+    "candidate_dropped_count_known",
+    "regions_scanned",
+    "regions_total",
 }
 REQUIRED_COUNTS = {
     "raw_candidate_count",
@@ -91,6 +107,10 @@ def require_int(value: Any, name: str, *, min_value: int = 0) -> None:
     require(value >= min_value, f"{name} must be >= {min_value}")
 
 
+def require_bool(value: Any, name: str) -> None:
+    require(isinstance(value, bool), f"{name} must be a boolean")
+
+
 def require_hex64(value: Any, name: str) -> None:
     require(isinstance(value, str) and HEX64_RE.match(value) is not None, f"{name} must be a 16-digit hex string")
 
@@ -105,11 +125,30 @@ def load_report(path: Path) -> dict[str, Any]:
     return doc
 
 
-def validate_common(doc: dict[str, Any]) -> None:
+def validate_common(
+    doc: dict[str, Any],
+    *,
+    required_schema: str | None = None,
+    expected_command: str | None = None,
+) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
 
-    require(doc["schema_version"] == "0.1.0", "unexpected schema_version")
+    schema_version = doc.get("schema_version")
+    require(schema_version in SUPPORTED_SCHEMAS, f"unsupported schema_version: {schema_version!r}")
+    if required_schema is not None:
+        require(schema_version == required_schema, f"expected schema_version {required_schema}, got {schema_version}")
+
+    if schema_version == "0.2.0":
+        missing_v2 = REQUIRED_TOP_V2 - set(doc)
+        require(not missing_v2, f"missing schema 0.2.0 fields: {sorted(missing_v2)}")
+        require(doc["report_type"] == "analysis", "report_type must be analysis")
+        require(doc["command"] in ALLOWED_COMMANDS, "command must be gadgets or analyze")
+        if expected_command is not None:
+            require(doc["command"] == expected_command, f"expected command {expected_command}, got {doc['command']}")
+    else:
+        require(expected_command is None, "command identity requires schema 0.2.0")
+
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
 
@@ -164,6 +203,60 @@ def validate_common(doc: dict[str, Any]) -> None:
     require(counts["exact_pattern_count"] <= counts["raw_candidate_count"], "exact_pattern_count exceeds raw_candidate_count")
     require(counts["semantic_candidate_count"] + counts["unknown_candidate_count"] == counts["raw_candidate_count"], "semantic + unknown counts must equal raw count")
     require(counts["scored_candidate_count"] <= counts["semantic_candidate_count"], "scored_candidate_count exceeds semantic_candidate_count")
+
+    if schema_version == "0.2.0":
+        analysis = doc["analysis"]
+        require(isinstance(analysis, dict), "analysis must be an object")
+        missing_analysis = REQUIRED_ANALYSIS_FIELDS - set(analysis)
+        require(not missing_analysis, f"missing analysis fields: {sorted(missing_analysis)}")
+
+        require_bool(analysis["complete"], "analysis.complete")
+        require_int(analysis["max_depth"], "analysis.max_depth", min_value=1)
+        require(analysis["max_depth"] <= 32, "analysis.max_depth must be <= 32")
+        require_int(analysis["candidate_capacity"], "analysis.candidate_capacity", min_value=1)
+        require_int(analysis["candidate_count"], "analysis.candidate_count")
+        require_bool(analysis["candidate_truncated"], "analysis.candidate_truncated")
+        require_bool(analysis["candidate_dropped_count_known"], "analysis.candidate_dropped_count_known")
+        require_int(analysis["regions_scanned"], "analysis.regions_scanned")
+        require_int(analysis["regions_total"], "analysis.regions_total")
+
+        require(
+            analysis["candidate_count"] <= analysis["candidate_capacity"],
+            "analysis.candidate_count exceeds candidate_capacity",
+        )
+        require(
+            analysis["candidate_count"] == counts["raw_candidate_count"],
+            "analysis.candidate_count must equal counts.raw_candidate_count",
+        )
+        require(
+            analysis["regions_scanned"] <= analysis["regions_total"],
+            "analysis.regions_scanned exceeds regions_total",
+        )
+
+        if analysis["candidate_dropped_count_known"]:
+            require_int(analysis["candidate_dropped_count"], "analysis.candidate_dropped_count")
+        else:
+            require(
+                analysis["candidate_dropped_count"] is None,
+                "analysis.candidate_dropped_count must be null when unknown",
+            )
+
+        if analysis["candidate_truncated"]:
+            require(analysis["complete"] is False, "truncated analysis cannot be complete")
+        if analysis["complete"]:
+            require(analysis["candidate_truncated"] is False, "complete analysis cannot be truncated")
+            require(
+                analysis["candidate_dropped_count_known"] is True,
+                "complete analysis requires a known dropped count",
+            )
+            require(
+                analysis["candidate_dropped_count"] == 0,
+                "complete analysis requires candidate_dropped_count 0",
+            )
+            require(
+                analysis["regions_scanned"] == analysis["regions_total"],
+                "complete analysis requires all regions scanned",
+            )
 
     coverage = doc["primitive_coverage"]
     require(isinstance(coverage, dict), "primitive_coverage must be an object")
@@ -263,6 +356,17 @@ def validate_fixture(doc: dict[str, Any]) -> None:
         for gadget in doc["gadgets"]:
             require(gadget["section"] == ".text", "fixture gadget section labels must be .text when emitted")
 
+    if doc["schema_version"] == "0.2.0":
+        analysis = doc["analysis"]
+        require(analysis["complete"] is True, "fixture analysis must be complete")
+        require(analysis["max_depth"] == 4, "fixture analysis.max_depth must be 4")
+        require(analysis["candidate_capacity"] == 4096, "fixture candidate capacity must be 4096")
+        require(analysis["candidate_count"] == 11, "fixture analysis candidate count must be 11")
+        require(analysis["candidate_truncated"] is False, "fixture analysis must not be truncated")
+        require(analysis["candidate_dropped_count"] == 0, "fixture dropped count must be 0")
+        require(analysis["candidate_dropped_count_known"] is True, "fixture dropped count must be known")
+        require(analysis["regions_scanned"] == analysis["regions_total"], "fixture must scan all regions")
+
     by_pattern = {g["pattern"]: g for g in doc["gadgets"]}
     required_patterns = [
         "pop rdi; ret",
@@ -328,18 +432,27 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
     parser.add_argument("--mode", choices=["generic", "fixture", "system"], default="generic")
+    parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
+    parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     args = parser.parse_args(argv)
 
     try:
         doc = load_report(args.json_report)
-        validate_common(doc)
+        validate_common(
+            doc,
+            required_schema=args.require_schema,
+            expected_command=args.expected_command,
+        )
         if args.mode == "fixture":
             validate_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1
 
-    print(f"validate-json-report: ok ({args.mode}) {args.json_report}")
+    print(
+        f"validate-json-report: ok ({args.mode}, schema={doc['schema_version']}) "
+        f"{args.json_report}"
+    )
     return 0
 
 

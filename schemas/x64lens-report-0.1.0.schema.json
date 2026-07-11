@@ -1,15 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/x64lens-report-0.2.0.schema.json",
-  "title": "x64lens report schema 0.2.0",
+  "$id": "https://example.invalid/x64lens-report-0.1.0.schema.json",
+  "title": "x64lens report schema",
   "type": "object",
   "required": [
     "schema_version",
     "tool",
     "tool_version",
-    "report_type",
-    "command",
-    "analysis",
     "target",
     "mitigations",
     "counts",
@@ -19,7 +16,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "0.2.0"
+      "const": "0.1.0"
     },
     "tool": {
       "const": "x64lens"
@@ -27,70 +24,6 @@
     "tool_version": {
       "type": "string",
       "minLength": 1
-    },
-    "report_type": {
-      "const": "analysis"
-    },
-    "command": {
-      "type": "string",
-      "enum": [
-        "gadgets",
-        "analyze"
-      ]
-    },
-    "analysis": {
-      "type": "object",
-      "required": [
-        "complete",
-        "max_depth",
-        "candidate_capacity",
-        "candidate_count",
-        "candidate_truncated",
-        "candidate_dropped_count",
-        "candidate_dropped_count_known",
-        "regions_scanned",
-        "regions_total"
-      ],
-      "properties": {
-        "complete": {
-          "type": "boolean"
-        },
-        "max_depth": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 32
-        },
-        "candidate_capacity": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "candidate_count": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "candidate_truncated": {
-          "type": "boolean"
-        },
-        "candidate_dropped_count": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
-        },
-        "candidate_dropped_count_known": {
-          "type": "boolean"
-        },
-        "regions_scanned": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "regions_total": {
-          "type": "integer",
-          "minimum": 0
-        }
-      },
-      "additionalProperties": true
     },
     "target": {
       "type": "object",
@@ -368,7 +301,7 @@
     }
   },
   "additionalProperties": true,
-  "$comment": "Current x64lens schema 0.2.0. Report identity and bounded analysis completeness are durable machine-readable facts; candidate evidence side-cars remain additive future 0.2.x work.",
+  "$comment": "Historical x64lens schema 0.1.0 retained for compatibility validation. Current reports use schemas/x64lens-report.schema.json.",
   "allOf": [
     {
       "if": {
@@ -433,93 +366,6 @@
               "dynamic_linking",
               "bind_now"
             ]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "complete": {
-                "const": true
-              }
-            },
-            "required": [
-              "complete"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_truncated": {
-                "const": false
-              },
-              "candidate_dropped_count_known": {
-                "const": true
-              },
-              "candidate_dropped_count": {
-                "const": 0
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_truncated": {
-                "const": true
-              }
-            },
-            "required": [
-              "candidate_truncated"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "complete": {
-                "const": false
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_dropped_count_known": {
-                "const": false
-              }
-            },
-            "required": [
-              "candidate_dropped_count_known"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "analysis": {
-            "properties": {
-              "candidate_dropped_count": {
-                "type": "null"
-              }
-            }
           }
         }
       }

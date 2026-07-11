@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is next for provenance, completeness, report identity, schema `0.2.0`, and decoder-gap measurement. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared command parity. Candidate evidence side-cars and decoder-gap measurement remain next. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -52,7 +52,7 @@ Status: implemented for the initial exact-pattern set. Evidence provenance and b
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: planned for Sprint 9. This stage is the intended trigger for schema `0.2.0`.
+Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts. Per-candidate evidence tiers and decoder validation remain open Sprint 9 work.
 
 ### Stage 4: mitigation-aware triage
 
@@ -165,3 +165,17 @@ publication-grade speed, coverage, or decoded-gadget parity claims. The next
 research risk to retire is machine-readable evidence identity: what report was
 run, against which target hash and command, whether candidate enumeration was
 complete, and which evidence tier justified each semantic claim.
+
+
+## Sprint 9 Patch 040 research update
+
+Patch 040 retires the ambiguity around which command produced a JSON report and
+whether bounded candidate enumeration completed. This improves evidence
+identity, but it does not yet establish candidate validity provenance or target
+hash provenance. A complete report can still contain exact-suffix evidence that
+has not been decoder validated.
+
+The next research risk is therefore unchanged at the candidate layer: quantify
+false-positive and undercount gaps, preserve external decoder comparison
+artifacts, and decide whether an embedded decoder is justified from measured
+impact rather than implementation preference.

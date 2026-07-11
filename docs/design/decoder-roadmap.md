@@ -120,7 +120,8 @@ A limited internal decoder may be justified for a tightly bounded instruction su
 
 ## Timeline
 
-- Sprint 9: provenance records, gap measurement, and decision gate.
+- Sprint 9 Patch 040: report identity and analysis-completeness envelope.
+- Remaining Sprint 9: candidate provenance records, gap measurement, and decision gate.
 - Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
 - Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
 - Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
@@ -136,3 +137,11 @@ decoder-backed semantic fact
 ```
 
 A decoder disagreement must remain visible. The tool should not hide raw or exact facts simply because a stronger validator rejected semantic promotion.
+
+
+## Patch 040 interaction
+
+`analysis.complete` is deliberately decoder-neutral. It states that raw
+candidate enumeration completed within capacity; it does not set
+`full_sequence_valid` or promote semantic evidence. The candidate evidence
+side-car remains the decoder integration point.

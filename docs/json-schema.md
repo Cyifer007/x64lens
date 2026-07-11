@@ -2,50 +2,89 @@
 
 ## Purpose
 
-JSON is the machine-consumer contract for automation, benchmark extraction, vulnerability-management enrichment, future CI policies, and reproducible research. It is generated from internal records, never by scraping human-readable output.
+JSON is the machine-consumer contract for automation, benchmark extraction,
+vulnerability-management enrichment, future CI policies, and reproducible
+research. It is generated from internal records, never by scraping
+human-readable output.
 
 ## Current versions
 
 ```text
 tool version:   0.1.0-dev
-schema version: 0.1.0
+schema version: 0.2.0
 ```
 
-Tool and schema versions are independent. A tool release can preserve the schema. A schema change must be documented and validated across every command that emits it.
+Tool and schema versions are independent. Patch 040 intentionally advances the
+schema while retaining the tool development version.
 
-## Current report producers
+## Report producers
 
 ```bash
 x64lens gadgets --format json [--max-depth N] <file>
 x64lens analyze --format json [--max-depth N] <file>
 ```
 
-Both commands currently emit the same record-backed analysis shape. `analyze` is an integrated command, but it does not create a second JSON implementation.
+Both commands use the same record-backed pipeline and JSON adapter. Schema
+`0.2.0` distinguishes the producing command without creating a second report
+implementation.
 
-## Schema `0.1.0` shape
+## Schema `0.2.0` shape
 
 Required top-level fields:
 
 ```json
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "tool": "x64lens",
   "tool_version": "0.1.0-dev",
+  "report_type": "analysis",
+  "command": "gadgets",
+  "analysis": {},
   "target": {},
+  "mitigations": {},
+  "counts": {},
+  "primitive_coverage": {},
+  "gadgets": [],
   "limitations": []
 }
 ```
 
-Current report sections:
+`command` is `gadgets` or `analyze`.
 
-- `target`,
-- `mitigations`,
-- `counts`,
-- `primitive_coverage`,
-- `gadgets`,
-- `limitations`.
+## Analysis completeness object
 
-## Current field rules
+Current reports require:
+
+```json
+{
+  "complete": true,
+  "max_depth": 4,
+  "candidate_capacity": 4096,
+  "candidate_count": 11,
+  "candidate_truncated": false,
+  "candidate_dropped_count": 0,
+  "candidate_dropped_count_known": true,
+  "regions_scanned": 1,
+  "regions_total": 1
+}
+```
+
+Field rules:
+
+- `candidate_count <= candidate_capacity`.
+- `candidate_count == counts.raw_candidate_count`.
+- `regions_scanned <= regions_total`.
+- When `candidate_dropped_count_known` is false, the dropped count is `null`.
+- Truncated analysis is not complete.
+- Complete analysis is not truncated, has known dropped count zero, and scans
+  every executable region.
+- Current producer output is complete-success output only.
+
+The scanner still stops at the 4097th candidate and returns exit code `6` before
+report emission. That path produces no text or JSON report, so no dropped count
+is guessed.
+
+## Existing field rules
 
 - Virtual addresses and file offsets are fixed-width hexadecimal strings.
 - Sizes, counts, known stack deltas, and scores are JSON numbers.
@@ -53,14 +92,17 @@ Current report sections:
 - Unknown or unscored scores use `null`.
 - Booleans are JSON booleans.
 - Unknown mitigation facts use `null` or an explicit enumerated state.
-- `limitations` is non-empty when the analysis is heuristic or incomplete.
+- `limitations` is non-empty because candidate recognition remains heuristic.
 - Semantic and score fields come from classifier and scoring records.
-- Patch 030 mitigation fields `bind_now`, `dynamic_entry_count`, and `dynamic_terminated` are optional compatible fields in schema `0.1.0`; non-dynamic binaries use `null`, `0`, and `null` respectively.
-- Patch 031 refines `mitigations.relro` to the current enum values `none`, `partial`, and `full`. Full RELRO requires `PT_GNU_RELRO` plus bounded bind-now evidence. Patch 032 adds required `mitigations.canary` values `unknown`, `absent`, and `present`, and tightens required-field and conditional constraints for current reports. Patch 033 adds current-report `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Patch 034 keeps current reports emitting that field while allowing older same-version reports to omit it. Patch 034 also adds optional gadget `section` annotations.
+- `mitigations.relro` is `none`, `partial`, or `full`.
+- `mitigations.canary` is `unknown`, `absent`, or `present`.
+- `mitigations.stripped`, when present in historical reports, is `unknown`,
+  `stripped`, or `not_stripped`; current reports emit it.
+- Optional gadget `section` values are strings or `null` and remain annotations.
 
 ## Count separation
 
-Schema `0.1.0` preserves:
+Schema `0.2.0` preserves the historical meanings of:
 
 ```text
 raw_candidate_count
@@ -72,94 +114,93 @@ unknown_candidate_count
 scored_candidate_count
 ```
 
-The report must not collapse these into one generic gadget count.
+The `analysis` object explains completion; it does not redefine these counts.
+Future decoder-validity metrics will be additive.
 
 ## Current limitations
 
-- The scanner is byte-oriented and not a full x86_64 decoder.
+- The scanner is byte-oriented and is not a full x86_64 decoder.
 - Pattern labels describe exact suffix evidence, not complete decoded windows.
-- CET and IBT indicators are not yet complete. Canary is implemented as an evidence-qualified dynamic-string indicator only. Stripped status is implemented as an evidence-qualified section-table indicator only.
-- Section labels are not yet emitted as candidate or region annotations.
-- Candidate completeness and truncation are not represented in schema `0.1.0`.
+- Per-candidate evidence side-car fields are not yet emitted.
+- CET and IBT indicators are not complete.
+- Canary and stripped values are evidence-qualified indicators.
 - Scores are heuristic and are not exploitability verdicts.
 
 ## Validation
 
-Controlled fixture:
+Controlled `gadgets` report:
+
+```bash
+./build/x64lens gadgets --format json --max-depth 4 \
+  ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
+python3 tools/validate-json-report.py \
+  --mode fixture --require-schema 0.2.0 --expected-command gadgets \
+  /tmp/x64lens-gadgets.json
+```
+
+Integrated `analyze` report:
 
 ```bash
 ./build/x64lens analyze --format json --max-depth 4 \
   ./tests/bin/gadgets > /tmp/x64lens-analysis.json
-python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
 python3 tools/validate-json-report.py \
-  --mode fixture /tmp/x64lens-analysis.json
+  --mode fixture --require-schema 0.2.0 --expected-command analyze \
+  /tmp/x64lens-analysis.json
 ```
 
-System binary:
+Historical and current compatibility:
 
 ```bash
-./build/x64lens analyze --format json --max-depth 4 \
-  /bin/ls > /tmp/x64lens-ls.json
-python3 tools/validate-json-report.py \
-  --mode system /tmp/x64lens-ls.json
+make schema-compat-smoke
 ```
 
-The validator checks required fields, count relationships, primitive coverage shape, candidate fields, score ranges, unknown stack-delta representation, mitigation optional-field types, non-dynamic dynamic-table nullability rules, and limitations.
+The validator checks identity, completeness, count relationships, primitive
+coverage, candidate fields, score ranges, unknown stack-delta representation,
+mitigation conditionals, and limitations.
 
-## Planned schema `0.2.0`
+## Historical schema `0.1.0`
 
-Schema `0.2.0` is planned for Sprint 9. The transition is triggered by new durable concepts, not by command naming alone.
+Schema `0.1.0` remains available at:
 
-Planned concepts:
-
-- top-level `report_type` or command identity,
-- analysis completeness,
-- candidate capacity and truncation,
-- evidence provenance,
-- decoder validation state,
-- mitigation evidence and confidence,
-- additional provenance-aware counts.
-
-Illustrative shape:
-
-```json
-{
-  "schema_version": "0.2.0",
-  "report_type": "analysis",
-  "analysis": {
-    "complete": true,
-    "candidate_capacity": 4096,
-    "candidate_truncated": false,
-    "regions_scanned": 1,
-    "regions_total": 1
-  },
-  "gadgets": [
-    {
-      "evidence": {
-        "kind": "semantic_exact",
-        "full_sequence_valid": null,
-        "validator": "x64lens-exact-suffix"
-      }
-    }
-  ]
-}
+```text
+schemas/x64lens-report-0.1.0.schema.json
+tests/expected/x64lens-report-0.1.0.json
 ```
 
-The exact names are finalized before implementation. See [`design/schema-evolution.md`](design/schema-evolution.md) and [`design/evidence-provenance-model.md`](design/evidence-provenance-model.md).
+The bundled validator accepts representative `0.1.0` reports when invoked with
+`--require-schema 0.1.0`. Command identity cannot be required from that version
+because the fields did not exist.
+
+The current schema remains:
+
+```text
+schemas/x64lens-report.schema.json
+```
 
 ## Compatibility rule
 
-- Compatible optional mitigation fields may be added while `0.1.0` remains active.
-- Evidence provenance or changed count meaning requires `0.2.0`.
-- Required-field removal, incompatible type changes, or semantic redefinition requires a documented breaking version.
-- Benchmark campaigns must not merge rows from incompatible schema versions without explicit normalization.
+- Historical `0.1.0` reports remain consumable through the versioned schema and
+  validator path.
+- Current producer output must validate as `0.2.0` with the expected command.
+- Compatible future additions should remain in `0.2.x`.
+- Required-field removal, incompatible type changes, or semantic redefinition
+  requires a documented breaking version.
+- Benchmark campaigns must not merge incompatible schema versions without
+  explicit normalization.
+
+## Remaining Sprint 9 provenance work
+
+Schema `0.2.0` establishes the report envelope but does not yet emit
+per-candidate evidence. A later Sprint 9 patch will add evidence kind, validator
+identity, and decoder-validity state from a side-car record keyed by candidate
+index.
 
 ## Change checklist
 
 Every schema change requires updates to:
 
 1. `include/constants.inc`,
-2. `schemas/x64lens-report.schema.json`,
+2. schema files,
 3. `src/report_json.asm`,
 4. `tools/validate-json-report.py`,
 5. controlled JSON fixtures,
@@ -168,20 +209,3 @@ Every schema change requires updates to:
 8. `CHANGELOG.md`,
 9. migration notes,
 10. both `gadgets` and `analyze` validation.
-
-## Sprint 8 Patch 032 schema update
-
-Patch 032 keeps `schema_version` at `0.1.0` but tightens current-report validation. Top-level reports now require the implemented target, mitigation, count, primitive-coverage, gadget, and limitation sections. `mitigations.canary` is required and must be `unknown`, `absent`, or `present`. The schema also encodes the current non-dynamic invariants for bind-now, dynamic terminator, and dynamic-entry count, plus the rule that full RELRO requires dynamic linking and bind-now evidence.
-
-## Sprint 8 Patch 033 schema update
-
-Patch 033 keeps `schema_version` at `0.1.0` and adds `mitigations.stripped` values `unknown`, `stripped`, and `not_stripped`. Patch 034 keeps current reports emitting that field but makes it optional in the schema and bundled validator so older same-version `0.1.0-dev` reports remain consumable during the development line. Patch 034 also adds an optional gadget-level `section` field whose value is either a section name string or `null`. Section labels are annotations only and do not change gadget identity, counts, semantics, or scores.
-
-
-## Sprint 8 Patch 035 section field compatibility
-
-The `section` field remains optional per gadget record semantics and may be a string or `null`. Text escaping of section labels does not change JSON values. Consumers should treat section labels as display metadata and must not derive executable-region authority from them.
-
-## Sprint 8 Patch 036 byte-safe JSON and coverage invariant
-
-Patch 036 keeps `schema_version` at `0.1.0` and does not add report fields. It hardens the producer and bundled validator. Target strings and bounded section labels are emitted through byte-safe JSON escaping so control and high-bit bytes remain valid JSON instead of raw invalid UTF-8 or lossy placeholders. The bundled validator also checks that every register named by a gadget `controls` list appears in `primitive_coverage.registers`.

@@ -945,3 +945,52 @@ identified as the next implementation tranche.
 ## Sprint 8 Patch 039 correction
 
 Patch 039 is the final Sprint 8 closeout correction. It requires `make benchmark-integrity-smoke` to generate and reject `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`, requires strict shell lint to pass when `shellcheck` is installed, and keeps the context refresh outside public tracked source.
+
+## Sprint 9 Patch 040 report identity and completeness validation
+
+Patch 040 advances current JSON output to schema `0.2.0` and adds one
+command-owned analysis-summary record. Validation must prove command identity,
+shared `gadgets`/`analyze` facts, complete-success state, historical `0.1.0`
+compatibility, and unchanged fail-closed capacity behavior.
+
+Required focused commands:
+
+```bash
+make schema-compat-smoke
+make json-smoke
+make analyze-smoke
+make capacity-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+```
+
+Current producer validation requires:
+
+```bash
+python3 tools/validate-json-report.py \
+  --require-schema 0.2.0 --expected-command gadgets <gadgets-report.json>
+python3 tools/validate-json-report.py \
+  --require-schema 0.2.0 --expected-command analyze <analyze-report.json>
+```
+
+For the same fixture and maximum depth, the two reports must have identical
+`analysis`, `target`, `mitigations`, `counts`, `primitive_coverage`, and
+`gadgets` values. Their top-level `command` values must differ as named.
+
+Successful current reports must satisfy:
+
+```text
+analysis.complete = true
+analysis.candidate_truncated = false
+analysis.candidate_dropped_count_known = true
+analysis.candidate_dropped_count = 0
+analysis.candidate_count = counts.raw_candidate_count
+analysis.regions_scanned = analysis.regions_total
+```
+
+The exact-capacity fixture remains a complete 4096-record report. The overflow
+fixture remains exit code `6` with empty stdout for `gadgets` and `analyze` in
+text and JSON modes. No partial report is accepted.
+
+The schema compatibility target must reject at least candidate-count mismatch,
+complete-plus-truncated state, invalid dropped-count knowledge, impossible
+region progress, and expected-command mismatch.

@@ -12,10 +12,10 @@
 ;
 ; Current scope:
 ;   `analyze` intentionally reuses the same internal records as `info`,
-;   `mitigations`, and `gadgets`. JSON output currently follows the same
-;   schema as `gadgets --format json` because that report already contains
-;   target metadata, mitigation facts, candidate counts, primitive coverage,
-;   scored gadget records, and limitations.
+;   `mitigations`, and `gadgets`. JSON output uses the same schema 0.2.0
+;   adapter as `gadgets --format json`, with distinct command identity and the
+;   same target, mitigation, candidate, primitive, score, completeness, and
+;   limitation facts.
 ;
 ; Non-goal:
 ;   This command does not claim exploitability. It reports static facts that
@@ -38,6 +38,7 @@ extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_scoring_apply
+extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_elf64_info
 extern x64lens_report_text_mitigations_body
 extern x64lens_report_text_gadgets_body
@@ -52,6 +53,7 @@ ana_mapped_file:     resb FILEMAP_RECORD_SIZE
 ana_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
 ana_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 ana_gadget_summary:  resb GADGET_SUMMARY_RECORD_SIZE
+ana_analysis_summary: resb ANALYSIS_SUMMARY_RECORD_SIZE
 ana_candidate_arena: resb ARENA_RECORD_SIZE
 
 section .text
@@ -192,6 +194,18 @@ x64lens_command_analyze_with_format:
     test    rax, rax
     jne     .error
 
+    ; Construct report identity and completeness only after every shared
+    ; analysis stage has succeeded. The integrated command receives its own
+    ; command identity while preserving the same underlying analysis facts.
+    lea     rdi, [ana_analysis_summary]
+    mov     rsi, REPORT_COMMAND_ANALYZE
+    mov     rdx, r14
+    lea     rcx, [ana_phdr_summary]
+    lea     r8, [ana_gadget_summary]
+    call    x64lens_analysis_summary_mark_complete
+    test    rax, rax
+    jne     .error
+
     cmp     ebx, 1
     je      .emit_json
 
@@ -215,6 +229,7 @@ x64lens_command_analyze_with_format:
     lea     rsi, [ana_gadget_summary]
     mov     rdx, r15
     mov     rcx, [ana_mapped_file + FILEMAP_ADDR]
+    lea     r8, [ana_analysis_summary]
     call    x64lens_report_text_gadgets_body
     jmp     .emit_done
 
@@ -225,7 +240,13 @@ x64lens_command_analyze_with_format:
     lea     rcx, [ana_phdr_summary]
     lea     r8, [ana_gadget_summary]
     mov     r9, r15
+    ; System V passes the seventh argument on the stack. Reserve sixteen
+    ; bytes so the call-site alignment remains unchanged.
+    sub     rsp, 16
+    lea     rax, [ana_analysis_summary]
+    mov     [rsp], rax
     call    x64lens_report_json_gadgets
+    add     rsp, 16
 
 .emit_done:
     lea     rdi, [ana_candidate_arena]

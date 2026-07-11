@@ -6,7 +6,7 @@ x64lens maintains two independent version lines:
 
 ```text
 tool version:   0.1.0-dev
-schema version: 0.1.0
+schema version: 0.2.0
 ```
 
 Tool behavior can change while preserving the schema. Machine-readable contract changes require an explicit schema decision.
@@ -34,11 +34,22 @@ A normal branch push does not publish a tag. Publish a release tag explicitly on
 
 ## Schema timeline
 
-- `0.1.0`: current target, mitigation, compatible optional dynamic-table mitigation, count, primitive, gadget, score, and limitations report.
-- `0.2.0`: planned Sprint 9 provenance, report identity, completeness, and truncation contract.
-- `0.2.x`: backward-compatible clarifications and optional fields through the first research release.
+- `0.1.0`: historical target, mitigation, count, primitive, gadget, score, and limitations report retained through a versioned compatibility schema.
+- `0.2.0`: current Sprint 9 report and command identity plus bounded analysis-completeness contract.
+- `0.2.x`: compatible per-candidate provenance, validator, and evidence additions through the first research release.
 
-Do not introduce another breaking schema before `v0.1.0` unless a release-blocking correctness issue requires a documented migration and affected experiment restart.
+The tool version remains `0.1.0-dev`; advancing the schema does not move the checkpoint tag. Do not introduce another breaking schema before `v0.1.0` unless a release-blocking correctness issue requires a documented migration and affected experiment restart.
+
+
+## Historical schema compatibility
+
+`schemas/x64lens-report.schema.json` names the current schema. The historical
+`0.1.0` schema and representative report are preserved under versioned file
+names. `make schema-compat-smoke` verifies that both remain consumable while
+current producer validation requires schema `0.2.0` and command identity.
+
+Schema version is part of benchmark provenance. Data from `0.1.0` and `0.2.0`
+must not be merged without an explicit normalization procedure.
 
 ## Changelog rules
 

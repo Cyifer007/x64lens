@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 040 fixed-size analysis-summary record for report type, command identity, selected maximum depth, candidate capacity/count, truncation, dropped-count knowledge, executable-region progress, and complete-analysis state.
+- JSON schema `0.2.0`, historical schema `0.1.0` snapshot, representative compatibility fixtures, `make schema-compat-smoke`, ADR 0026, and Patch 040 validation documentation.
+- Text and JSON report identity/completeness output shared by `gadgets` and `analyze`.
+
 - Sprint 8 Patch 039 closeout-correction validation record and ADR 0025.
 - Sprint 8 Patch 038 closeout validation record, Sprint 8 retrospective, ADR 0024, and roadmap handoff to Sprint 9.
 - Optional comparator helper identity validation covering both `<target> <tool>` and `<tool> <target>` invocation order.
@@ -59,6 +63,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance current machine-readable output from schema `0.1.0` to `0.2.0` while keeping tool version `0.1.0-dev` and the checkpoint tag unchanged.
+- Require current `gadgets` and `analyze` JSON validation to name the expected command and preserve shared report facts.
+- Keep candidate-capacity overflow fail-closed with exit code `6` and empty stdout; schema completeness fields describe successful reports and do not enable partial output.
+
 - Treat Patch 039 as the final Sprint 8 closeout correction after Patch 038 validation found missing non-finite-RSS fixture files and strict-shellcheck cleanup work.
 - Harden optional `checksec` and `rabin2` direct helper argument parsing so reversed arguments cannot compare the wrong file and still pass.
 - Close Sprint 8 and mark Sprint 9 as the next implementation tranche.
@@ -107,6 +115,9 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Remove ambiguity between `gadgets` and `analyze` JSON producers by adding explicit command identity without duplicating the report implementation.
+- Make successful report completeness explicit instead of requiring consumers to infer it from candidate counts and capacity.
 
 - Reject non-finite benchmark summary values such as `nan`, `inf`, and `-inf`.
 - Preserve JSON validity and byte fidelity for high-bit and control bytes in target paths and section labels.

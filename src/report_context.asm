@@ -8,7 +8,8 @@
 ;   The focused `info`, `mitigations`, and `gadgets` commands retain their
 ;   complete version and target banners. Integrated commands can call the
 ;   wrappers below to reuse the same section renderers without duplicating
-;   those banners.
+;   those banners. The gadget wrapper forwards the command-owned analysis
+;   summary in R8 unchanged.
 ;
 ; Safety and concurrency:
 ;   x64lens is currently single-threaded. The process-local flag is set only

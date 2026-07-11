@@ -126,3 +126,15 @@ Canary reporting is a static indicator only. Any paper text must describe it as 
 ## Sprint 8 Patch 034 publication note
 
 Stripped reporting is a static section-table metadata indicator only. Any paper text must describe it as bounded `SHT_SYMTAB` evidence, not as proof of source availability, complete symbol recovery, or loader behavior.
+
+
+## Sprint 9 Patch 040 publication note
+
+Schema `0.2.0` now records which command produced the report and whether bounded
+candidate enumeration completed over all loader-derived executable regions.
+Publication text may describe this as explicit report identity and enumeration
+completeness. It must not describe `analysis.complete` as decoder validation,
+complete gadget coverage, exploitability, or memory-safety evidence.
+
+Per-candidate evidence provenance and decoder-gap measurement remain required
+before coverage claims are frozen.

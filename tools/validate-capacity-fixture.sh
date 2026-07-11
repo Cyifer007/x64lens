@@ -23,6 +23,9 @@ command -v python3 >/dev/null 2>&1 || { echo "capacity-smoke: error: python3 is 
 
 exact_json="$WORK_DIR/exact-capacity.json"
 "$X64LENS" gadgets --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_json"
+python3 "$(dirname "$0")/validate-json-report.py" \
+    --mode system --require-schema 0.2.0 --expected-command gadgets \
+    "$exact_json" >/dev/null
 python3 - "$exact_json" <<'PY'
 import json
 import sys
@@ -35,6 +38,19 @@ if counts.get("raw_candidate_count") != 4096:
     raise SystemExit("capacity-smoke: exact fixture raw count is not 4096")
 if len(gadgets) != 4096:
     raise SystemExit("capacity-smoke: exact fixture gadget array is not complete")
+analysis = report.get("analysis", {})
+if analysis.get("complete") is not True:
+    raise SystemExit("capacity-smoke: exact fixture analysis is not complete")
+if analysis.get("candidate_capacity") != 4096:
+    raise SystemExit("capacity-smoke: exact fixture capacity is not 4096")
+if analysis.get("candidate_count") != 4096:
+    raise SystemExit("capacity-smoke: exact fixture analysis count is not 4096")
+if analysis.get("candidate_truncated") is not False:
+    raise SystemExit("capacity-smoke: exact fixture was marked truncated")
+if analysis.get("candidate_dropped_count") != 0:
+    raise SystemExit("capacity-smoke: exact fixture dropped count is not zero")
+if analysis.get("candidate_dropped_count_known") is not True:
+    raise SystemExit("capacity-smoke: exact fixture dropped count is not known")
 PY
 
 run_expect_unsupported() {

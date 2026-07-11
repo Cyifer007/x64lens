@@ -45,7 +45,7 @@ FIXTURE_CANON=$(readlink -f "$ROOT_DIR/tests/bin/gadgets")
 if [[ "$TARGET_CANON" == "$FIXTURE_CANON" ]]; then
     MODE=fixture
 fi
-python3 "$ROOT_DIR/tools/validate-json-report.py" --mode "$MODE" "$TMP_JSON"
+python3 "$ROOT_DIR/tools/validate-json-report.py" --mode "$MODE" --require-schema 0.2.0 --expected-command analyze "$TMP_JSON"
 python3 - "$TMP_JSON" <<'PYJSON'
 import json
 import sys
@@ -54,6 +54,8 @@ from pathlib import Path
 report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 counts = report["counts"]
 coverage = report["primitive_coverage"]
+print(f"report: {report['report_type']} command={report['command']}")
+print(f"complete: {report['analysis']['complete']} truncated={report['analysis']['candidate_truncated']}")
 print(f"target: {report['target']['path']}")
 print(f"raw candidates: {counts['raw_candidate_count']}")
 print(f"semantic candidates: {counts['semantic_candidate_count']}")

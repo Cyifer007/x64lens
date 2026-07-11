@@ -11,8 +11,8 @@
 #
 # Contract notes:
 #   - The fixture is intentionally tiny and deterministic.
-#   - This script validates scanner counts, exact pattern labels, semantic
-#     classifier facts, and Sprint 5 scores for the controlled fixture.
+#   - This script validates report identity/completeness, scanner counts, exact
+#     pattern labels, semantic classifier facts, and scores for the fixture.
 #   - This script exists to catch scanner/classifier regressions before
 #     benchmarking.
 set -euo pipefail
@@ -72,6 +72,13 @@ require_line '401017:.*ret[[:space:]]+0x10' "$OBJDUMP_OUT" 'objdump ret imm16 fi
 # Validate default-depth summary and known raw windows. These counts are tied to
 # the current hand-authored tests/toy-src/gadgets.S fixture and the Sprint 3
 # Phase A scanner policy.
+require_line 'Report type: analysis' "$DEFAULT_OUT" 'analysis report type'
+require_line 'Command: gadgets' "$DEFAULT_OUT" 'gadgets command identity'
+require_line 'Complete: yes' "$DEFAULT_OUT" 'complete bounded analysis'
+require_line 'Candidate truncated: no' "$DEFAULT_OUT" 'candidate truncation state'
+require_line 'Candidate dropped count: 0x0000000000000000' "$DEFAULT_OUT" 'candidate dropped count'
+require_line 'Regions scanned: 0x0000000000000001' "$DEFAULT_OUT" 'completed executable region count'
+require_line 'Regions total: 0x0000000000000001' "$DEFAULT_OUT" 'total executable region count'
 require_line 'Max depth: 0x0000000000000008' "$DEFAULT_OUT" 'default max depth'
 require_line 'Candidate capacity: 0x0000000000001000' "$DEFAULT_OUT" 'default candidate capacity'
 require_line 'Candidate count: 0x000000000000000b' "$DEFAULT_OUT" 'default candidate count'

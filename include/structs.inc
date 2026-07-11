@@ -126,6 +126,35 @@
 %define GADGET_SUMMARY_SCORED_COUNT       112
 %define GADGET_SUMMARY_RECORD_SIZE        120
 
+; analysis_summary record offsets
+;
+; Sprint 9 keeps report identity and run-completeness facts separate from the
+; scanner-owned gadget summary and candidate records. The record is fixed-size,
+; command-lifetime state that both text and JSON reporters consume. It is
+; populated only after the shared analysis pipeline completes successfully.
+;
+; Candidate truncation remains false for emitted reports in Patch 040 because
+; arena exhaustion still fails before report emission. A future deliberate
+; partial-report mode can populate the same fields without redefining existing
+; raw, exact, semantic, unknown, or scored counts.
+%define ANALYSIS_SUMMARY_REPORT_TYPE             0
+%define ANALYSIS_SUMMARY_COMMAND                 8
+%define ANALYSIS_SUMMARY_MAX_DEPTH               16
+%define ANALYSIS_SUMMARY_CANDIDATE_CAPACITY      24
+%define ANALYSIS_SUMMARY_CANDIDATE_COUNT         32
+%define ANALYSIS_SUMMARY_CANDIDATE_TRUNCATED     40
+%define ANALYSIS_SUMMARY_DROPPED_COUNT           48
+%define ANALYSIS_SUMMARY_DROPPED_COUNT_KNOWN     56
+%define ANALYSIS_SUMMARY_REGIONS_SCANNED         64
+%define ANALYSIS_SUMMARY_REGIONS_TOTAL           72
+%define ANALYSIS_SUMMARY_COMPLETE                80
+%define ANALYSIS_SUMMARY_RECORD_SIZE             88
+
+; Public report and command identities stored in analysis_summary.
+%define REPORT_TYPE_ANALYSIS                     1
+%define REPORT_COMMAND_GADGETS                    1
+%define REPORT_COMMAND_ANALYZE                    2
+
 ; arena record offsets
 ;
 ; Sprint 3 Phase C uses a tiny mmap-backed arena for analysis records that are

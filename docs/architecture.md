@@ -42,6 +42,7 @@ x64lens CLI
 | `patterns.asm` | Exact opcode-template matching and pattern IDs | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification | Raw file I/O |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
+| `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
 | `report_text.asm` | Human-readable output | Analysis decisions |
 | `report_json.asm` | JSON output | Analysis decisions |
@@ -548,7 +549,7 @@ Research reports must state whether the scan completed within configured capacit
 
 ### Schema boundary
 
-Schema `0.1.0` remains valid for the current checkpoint and compatible mitigation additions. Evidence provenance, report identity, and completeness state are the planned trigger for schema `0.2.0` in Sprint 9.
+Schema `0.2.0` is the current producer contract after Sprint 9 Patch 040. It adds report and command identity plus complete-analysis state while retaining a versioned `0.1.0` compatibility path. Per-candidate provenance remains an additive `0.2.x` extension.
 
 ### Release architecture
 
@@ -648,3 +649,54 @@ Patch 038 hardens the direct optional comparison helpers so both accepted
 argument orders resolve to exactly one analyzer binary and one analyzed target.
 The helpers print an identity line before comparison output, which makes review
 logs auditable and prevents the wrong file from being compared silently.
+
+
+## Sprint 9 Patch 040 report-envelope seam
+
+Patch 040 adds `src/analysis_summary.asm` after scanning, exact matching,
+classification, scoring, and optional annotation have all succeeded:
+
+```text
+scanner
+  -> patterns
+  -> classifier
+  -> scoring
+  -> optional section annotations
+  -> analysis summary
+  -> text or JSON adapter
+```
+
+The command orchestrator owns the fixed-size summary because command identity is
+not a scanner or reporter decision. The summary records:
+
+```text
+report type
+command identity
+selected maximum depth
+candidate capacity and count
+candidate truncation
+candidate dropped count and known state
+regions scanned and total
+analysis completion
+```
+
+`gadgets` and `analyze` construct the same facts from their shared records and
+pass different command IDs. The reporters render the record but do not decide
+whether analysis completed.
+
+The summary is created only on the success path. Scanner capacity exhaustion
+continues to return `EXIT_UNSUPPORTED` before report emission. This is important:
+Patch 040 does not continue scanning after capacity, cannot know a total dropped
+count on that path, and therefore does not fabricate an incomplete report.
+
+The new summary is distinct from the planned candidate evidence side-car:
+
+```text
+analysis_summary             one command-level completion record
+candidate_evidence_record[]  one future provenance record per candidate index
+```
+
+This preserves raw scanner facts, exact patterns, semantic classes, scores, and
+future decoder evidence as separate layers. Program headers remain executable-
+region authority; section and dynamic metadata remain bounded evidence or
+annotations.

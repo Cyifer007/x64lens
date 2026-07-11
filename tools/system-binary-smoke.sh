@@ -63,6 +63,9 @@ for target in "${TARGETS[@]}"; do
   grep -q "Executable LOAD regions:" "$mitigations_out"
 
   "$TOOL" gadgets --max-depth "$MAX_DEPTH" "$target" >"$gadgets_out"
+  grep -q "Analysis:" "$gadgets_out"
+  grep -q "Command: gadgets" "$gadgets_out"
+  grep -q "Complete: yes" "$gadgets_out"
   grep -q "Raw gadget candidates:" "$gadgets_out"
   grep -q "Candidate count:" "$gadgets_out"
   grep -q "Exact pattern count:" "$gadgets_out"
@@ -70,15 +73,19 @@ for target in "${TARGETS[@]}"; do
   grep -q "Scored candidate count:" "$gadgets_out"
 
   "$TOOL" gadgets --format json --max-depth "$MAX_DEPTH" "$target" >"$json_out"
-  python3 "$ROOT/tools/validate-json-report.py" --mode system "$json_out" >/dev/null
+  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets "$json_out" >/dev/null
 
   "$TOOL" analyze --max-depth "$MAX_DEPTH" "$target" >"$analyze_out"
   grep -q "Format:" "$analyze_out"
   grep -q "Mitigations:" "$analyze_out"
+  grep -q "Analysis:" "$analyze_out"
+  grep -q "Command: analyze" "$analyze_out"
+  grep -q "Complete: yes" "$analyze_out"
   grep -q "Raw gadget candidates:" "$analyze_out"
 
   "$TOOL" analyze --format json --max-depth "$MAX_DEPTH" "$target" >"$analyze_json_out"
-  python3 "$ROOT/tools/validate-json-report.py" --mode system "$analyze_json_out" >/dev/null
+  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command analyze "$analyze_json_out" >/dev/null
+  python3 "$ROOT/tools/validate-report-parity.py" "$json_out" "$analyze_json_out" >/dev/null
 
   tested=$((tested + 1))
   echo "system-binary-smoke: ok target=$target"

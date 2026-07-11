@@ -2,11 +2,11 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 8 closeout line. Sprint 7 is closed and Sprint 8 mitigation-depth work is complete after bounded `PT_DYNAMIC` parsing, no/partial/full RELRO evidence, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, Docker context hygiene, benchmark evidence integrity, automated `readelf` comparison, optional `checksec` / `rabin2 -I` comparison helpers, and closeout helper hardening. The integrated `analyze` command, schema-versioned JSON, deterministic malformed-input runner, mitigation matrix, explicit candidate-capacity regression, checked table arithmetic, system-binary smoke tests, baseline comparison harness, repeatable demo, local `v0.1.0-dev` checkpoint, and Sprint 8 evidence-hygiene gates are established. Sprint 9 is the next tranche and focuses on evidence provenance, completeness, and schema `0.2.0`.
+> Status: Sprint 9 is active. Patch 040 establishes schema `0.2.0`, top-level report and command identity, explicit complete-analysis state, candidate-capacity and truncation fields, region progress, historical schema `0.1.0` compatibility, and `gadgets`/`analyze` parity gates. Sprints 1 through 8 remain complete, including the bounded mitigation and metadata foundation, hostile-input regression surface, comparator gates, and evidence-integrity checks. Per-candidate provenance side-car records and decoder-gap measurement are the next Sprint 9 work; primitive expansion remains deferred.
 >
 > Tool version: `0.1.0-dev`
 >
-> JSON schema version: `0.1.0`
+> JSON schema version: `0.2.0`
 >
 > Canonical roadmap: [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md)
 
@@ -34,6 +34,7 @@ read-only file mapping
   -> exact suffix pattern IDs
   -> conservative semantic classes
   -> heuristic scores
+  -> command-owned report identity and complete-analysis summary
   -> text or JSON reporting
   -> integrated analyze report
 ```
@@ -74,6 +75,8 @@ The current line does not implement exploit generation, payload generation, remo
 - A **semantic primitive** is assigned only when the current classifier has a supported rule.
 - An **unknown candidate** is preserved rather than overclassified.
 - A **score** is relative utility under the current heuristic model, not exploitability.
+- A successful schema `0.2.0` report states command identity and bounded enumeration completeness. Candidate-capacity exhaustion still fails before output; it is not silently converted into a partial report.
+- Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoded-valid instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
@@ -156,7 +159,8 @@ Generate and validate JSON:
   ./tests/bin/gadgets > /tmp/x64lens-analysis.json
 python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
 python3 tools/validate-json-report.py \
-  --mode fixture /tmp/x64lens-analysis.json
+  --mode fixture --require-schema 0.2.0 --expected-command analyze \
+  /tmp/x64lens-analysis.json
 ```
 
 The same flags are accepted in either documented order:
@@ -182,6 +186,7 @@ make dev-tools-check
 make test
 make validate-gadget-fixture
 make semantic-smoke
+make schema-compat-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
@@ -245,6 +250,7 @@ file mapping and bounds
   -> exact pattern matcher
   -> semantic classifier
   -> scoring
+  -> report identity and completeness facts
   -> text/JSON adapters
 ```
 
@@ -258,7 +264,7 @@ The canonical eighteen-sprint roadmap defines:
 
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
-- Sprint 9 evidence provenance and schema `0.2.0`,
+- Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
 - Sprint 10 primitive expansion,
 - Sprint 11 reproducible corpus,
 - Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
@@ -278,7 +284,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.1.0` remains active through compatible mitigation additions. Evidence provenance, report identity, and truncation/completeness state are the planned trigger for schema `0.2.0`.
+Schema `0.2.0` is the current producer contract. Patch 040 adds report identity and complete-analysis state while preserving a versioned schema `0.1.0` compatibility path. Per-candidate provenance remains additive Sprint 9 work within the `0.2.x` line.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

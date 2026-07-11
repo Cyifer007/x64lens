@@ -35,6 +35,7 @@ required=(
     docs/adr/0023-comparator-and-benchmark-integrity-gates.md
     docs/adr/0024-sprint8-closeout-and-helper-hardening.md
     docs/adr/0025-sprint8-closeout-correction.md
+    docs/adr/0026-report-identity-and-analysis-completeness.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -52,6 +53,7 @@ required=(
     docs/sprints/sprint-08-patch-037-validation.md
     docs/sprints/sprint-08-patch-038-validation.md
     docs/sprints/sprint-08-patch-039-validation.md
+    docs/sprints/sprint-09-patch-040-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
@@ -64,6 +66,12 @@ required=(
     tools/benchmark-integrity-smoke.py
     tools/readelf-comparison-smoke.py
     tools/optional-mitigation-comparison-smoke.py
+    tools/schema-compat-smoke.py
+    tools/validate-report-parity.py
+    schemas/x64lens-report-0.1.0.schema.json
+    schemas/x64lens-report.schema.json
+    tests/expected/x64lens-report-0.1.0.json
+    tests/expected/x64lens-report-0.2.0.json
 )
 
 for path in "${required[@]}"; do
@@ -108,6 +116,18 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 is not marked closed or complete'
 grep -Eq '^(Next|Active)' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 is not marked as the next or active implementation tranche'
+grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not record the Patch 040 foundation'
+grep -q 'schema-compat-smoke' docs/sprints/sprint-09-patch-040-validation.md \
+    || fail 'Patch 040 validation does not name schema compatibility'
+# The grep pattern intentionally contains literal Markdown backticks.
+# shellcheck disable=SC2016
+grep -qi 'schema `0.2.0`' docs/json-schema.md \
+    || fail 'current JSON schema documentation is not at 0.2.0'
+grep -q '%define X64LENS_SCHEMA       "0.2.0"' include/constants.inc \
+    || fail 'compiled schema version is not 0.2.0'
+grep -q '^SCHEMA       := 0.2.0$' Makefile \
+    || fail 'Makefile schema variable is not 0.2.0'
 grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \
@@ -157,8 +177,10 @@ grep -q '^readelf-comparison-smoke:' Makefile \
     || fail 'Makefile does not define readelf-comparison-smoke'
 grep -q '^optional-tool-comparison-smoke:' Makefile \
     || fail 'Makefile does not define optional-tool-comparison-smoke'
-grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
-    || fail 'validation-smoke does not include benchmark-integrity, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
+grep -q '^schema-compat-smoke:' Makefile \
+    || fail 'Makefile does not define schema-compat-smoke'
+grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*schema-compat-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
+    || fail 'validation-smoke does not include benchmark-integrity, schema compatibility, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

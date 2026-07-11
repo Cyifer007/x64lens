@@ -16,7 +16,7 @@ x64lens <command> [options] <file>
 | ------- | ------- | ------ |
 | `info <file>` | Parse and print ELF64 metadata | Implemented in Sprint 1 |
 | `mitigations <file>` | Print hardening and mitigation metadata | Implemented in Sprint 2 |
-| `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts | Implemented; JSON schema `0.1.0` |
+| `gadgets [--format text|json] [--max-depth N] <file>` | Print raw, exact-pattern, semantic, scored gadget facts with report identity and completion state | Implemented; JSON schema `0.2.0` |
 | `analyze [--format text|json] [--max-depth N] <file>` | Integrated checkpoint report with target metadata, mitigation facts, primitive coverage, scores, and limitations | Implemented in Sprint 6; composable text reporting completed in Patch 023 |
 | `version` | Print tool and schema version | Implemented in Sprint 1 |
 | `help` | Print usage | Implemented in Sprint 1 |
@@ -70,7 +70,7 @@ x64lens analyze --max-depth 4 --format json ./tests/bin/gadgets
 
 The current candidate arena stores 4096 records. When a target would require a 4097th record, `gadgets` and `analyze` return exit code `6` before report emission. This applies to text and JSON modes. Stdout remains empty and stderr contains the stable unsupported-feature diagnostic.
 
-Silent truncation is not permitted. A future partial-analysis mode requires explicit completeness and truncation fields and a schema transition before it can change this behavior.
+Silent truncation is not permitted. Schema `0.2.0` now defines completeness and truncation fields for successful reports, but it does not enable partial output. A future partial-analysis mode must implement truthful scanner progress and dropped-count semantics before it can change the fail-closed behavior.
 
 ## Command examples
 
@@ -88,7 +88,7 @@ x64lens version
 
 ## Output stability
 
-Human-readable text output may change before `1.0.0`. JSON output must include `schema_version`, `tool_version`, `target`, and `limitations`, and should remain backward-compatible within the same schema major version.
+Human-readable text output may change before `1.0.0`. Current JSON output must include `schema_version`, `tool`, `tool_version`, `report_type`, `command`, `analysis`, `target`, and `limitations`. Compatible additions should remain within the `0.2.x` line; historical `0.1.0` reports use the versioned compatibility schema.
 
 ## Current `mitigations` behavior
 
@@ -116,7 +116,8 @@ The `gadgets` command emits the current staged analysis pipeline:
 4. controlled-register coverage,
 5. stack-delta facts,
 6. heuristic score values,
-7. limitations in JSON output.
+7. report and command identity plus complete-analysis facts,
+8. limitations in JSON output.
 
 Important interpretation details:
 
@@ -130,7 +131,7 @@ Important interpretation details:
 
 The `analyze` command is the Sprint 6 checkpoint command. It runs the same internal record pipeline as `gadgets`, while also exposing target metadata and mitigation facts in one command path.
 
-Text output uses composable body-only wrappers around the established `info`, `mitigations`, and `gadgets` section emitters, which preserves one top-level banner without duplicating report logic. JSON output uses the same schema-backed report as `gadgets --format json`, because that report already contains the integrated target, mitigation, primitive, scoring, and limitation fields. This is the `0.1.0-dev` checkpoint contract and can evolve only through reporter-level changes that preserve scanner, classifier, scoring, and schema facts.
+Text output uses composable body-only wrappers around the established `info`, `mitigations`, and `gadgets` section emitters, which preserves one top-level banner without duplicating report logic. JSON output uses the same schema-backed report adapter as `gadgets --format json`. Schema `0.2.0` identifies the producing command as `analyze` while preserving the same target, mitigation, candidate, primitive, score, completion, and limitation facts. Reporter changes must preserve scanner, classifier, scoring, and metric meanings.
 
 `analyze` must not be interpreted as an exploitability verdict. It is a static triage report.
 
@@ -177,3 +178,30 @@ Patch 033 reports stripped status as an evidence-qualified mitigation metadata f
 ## Sprint 8 Patch 034 section-label update
 
 Patch 034 may emit section labels for executable regions and gadget candidates when a bounded section-name table is available. Text output uses `section: <name>` annotations. JSON gadget records may include `section` as a string or `null`. These labels are optional metadata and must not be interpreted as runtime mapping authority.
+
+
+## Sprint 9 Patch 040 report identity and completeness
+
+Successful `gadgets` and `analyze` reports now identify:
+
+```text
+Report type: analysis
+Command: gadgets | analyze
+Complete: yes
+Candidate truncated: no
+Candidate dropped count: 0
+Regions scanned: <N>
+Regions total: <N>
+```
+
+JSON schema `0.2.0` exposes the same state through top-level `report_type`,
+`command`, and `analysis` fields. For the same target and options, `gadgets` and
+`analyze` JSON share the same analysis facts and differ only in command identity.
+
+`complete` describes bounded candidate enumeration over loader-derived
+executable regions. It is not decoder validation. Candidate-arena overflow
+continues to return exit code `6` with empty stdout, so Patch 040 does not emit or
+invent an incomplete report for that path.
+
+Representative schema `0.1.0` output remains consumable through the versioned
+schema and validator compatibility path.

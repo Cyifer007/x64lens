@@ -115,13 +115,27 @@ external comparator output with version-specific semantics.
 
 ## Sprint 8 closeout release note
 
-Sprint 8 closes after Patch 038. Release candidates after this point must keep
-Patch 036 through Patch 038 evidence-hygiene gates in the normal validation
+Sprint 8 closes after Patch 039. Release candidates after this point must keep
+Patch 036 through Patch 039 evidence-hygiene gates in the normal validation
 path: byte-safe JSON, Docker context hygiene, benchmark TSV integrity,
 section-label trust rules, `readelf` comparison, optional comparator identity
 checks, and planning-document consistency.
 
-The next release-blocking design work is Sprint 9 schema and provenance. Do not
-promote performance, coverage, or decoded-gadget parity claims until schema
-`0.2.0`, completeness metadata, decoder-gap measurement, and publication-grade
-benchmark methodology are complete.
+Patch 040 completes the initial schema `0.2.0` report-identity and successful-
+analysis completeness foundation. Do not promote performance, coverage, or
+decoded-gadget parity claims until per-candidate provenance, decoder-gap
+measurement, target/corpus provenance, and publication-grade benchmark
+methodology are complete.
+
+
+## Sprint 9 Patch 040 release note
+
+Current release-candidate validation must include `make schema-compat-smoke` and
+must require schema `0.2.0` plus expected command identity for current
+`gadgets` and `analyze` reports. The retained historical `0.1.0` schema is a
+compatibility artifact, not the current producer contract.
+
+A release artifact must not describe capacity failure as an emitted truncated
+report. The existing 4097-candidate case returns exit code `6` before stdout.
+Any future partial-report mode requires a separate reviewed contract and release
+gate.

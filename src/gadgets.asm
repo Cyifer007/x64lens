@@ -12,9 +12,9 @@
 ; Current scope:
 ;   This command discovers raw `ret` and `ret imm16` candidates, tags
 ;   recognized exact byte-template patterns, maps supported patterns into
-;   semantic classes, applies conservative first-pass scoring, and emits text
-;   or schema-versioned JSON. It does not generate chains or claim
-;   exploitability.
+;   semantic classes, applies conservative first-pass scoring, constructs
+;   command identity and bounded completeness facts, and emits text or
+;   schema-versioned JSON. It does not generate chains or claim exploitability.
 
 bits 64
 default rel
@@ -32,6 +32,7 @@ extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_scoring_apply
+extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_gadgets
 extern x64lens_report_json_gadgets
 extern x64lens_error_print_status
@@ -44,6 +45,7 @@ gad_mapped_file:     resb FILEMAP_RECORD_SIZE
 gad_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
 gad_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 gad_summary:         resb GADGET_SUMMARY_RECORD_SIZE
+gad_analysis_summary: resb ANALYSIS_SUMMARY_RECORD_SIZE
 gad_candidate_arena: resb ARENA_RECORD_SIZE
 
 section .text
@@ -190,6 +192,18 @@ x64lens_command_gadgets_with_format:
     test    rax, rax
     jne     .error
 
+    ; Construct report identity and completeness only after every shared
+    ; analysis stage has succeeded. Reporters consume this record but do not
+    ; decide whether analysis was complete.
+    lea     rdi, [gad_analysis_summary]
+    mov     rsi, REPORT_COMMAND_GADGETS
+    mov     rdx, r14
+    lea     rcx, [gad_phdr_summary]
+    lea     r8, [gad_summary]
+    call    x64lens_analysis_summary_mark_complete
+    test    rax, rax
+    jne     .error
+
     ; Emit candidate records for human inspection, tests, or automation.
     cmp     ebx, 1
     je      .emit_json
@@ -199,6 +213,7 @@ x64lens_command_gadgets_with_format:
     lea     rsi, [gad_summary]
     mov     rdx, r15
     mov     rcx, [gad_mapped_file + FILEMAP_ADDR]
+    lea     r8, [gad_analysis_summary]
     call    x64lens_report_text_gadgets
     jmp     .emit_done
 
@@ -209,7 +224,13 @@ x64lens_command_gadgets_with_format:
     lea     rcx, [gad_phdr_summary]
     lea     r8, [gad_summary]
     mov     r9, r15
+    ; System V passes the seventh argument on the stack. Reserve sixteen
+    ; bytes so the call-site alignment remains unchanged.
+    sub     rsp, 16
+    lea     rax, [gad_analysis_summary]
+    mov     [rsp], rax
     call    x64lens_report_json_gadgets
+    add     rsp, 16
 
 .emit_done:
 

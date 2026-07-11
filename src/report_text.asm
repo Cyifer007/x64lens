@@ -11,7 +11,7 @@
 ; Current exports:
 ;   x64lens_report_text_elf64_info(path, mapped_base, file_size)
 ;   x64lens_report_text_mitigations(path, mapped_base, file_size, summary, regions)
-;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base)
+;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base, analysis_summary)
 ;
 ; Integrated-report seam:
 ;   report_context.asm exposes body-only wrappers. The wrappers set a narrow
@@ -101,6 +101,19 @@ perms__wx:             db "-WX", 10, 0
 perms__w_:             db "-W-", 10, 0
 perms___x:             db "--X", 10, 0
 perms____:             db "---", 10, 0
+
+section_analysis:      db 10, "Analysis:", 10, 0
+label_report_type:     db "  Report type: ", 0
+label_command:         db "  Command: ", 0
+label_analysis_complete: db "  Complete: ", 0
+label_candidate_truncated: db "  Candidate truncated: ", 0
+label_candidate_dropped: db "  Candidate dropped count: ", 0
+label_regions_scanned: db "  Regions scanned: ", 0
+label_regions_total:   db "  Regions total: ", 0
+report_type_analysis:  db "analysis", 10, 0
+command_gadgets:       db "gadgets", 10, 0
+command_analyze:       db "analyze", 10, 0
+identity_unknown:      db "unknown", 10, 0
 
 section_gadgets:       db 10, "Raw gadget candidates:", 10, 0
 label_max_depth:       db "  Max depth: ", 0
@@ -629,13 +642,14 @@ report_text_print_perms:
     jmp     print_cstr
 
 
-; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx)
+; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx, analysis_summary=r8)
 ;
 ; Inputs:
 ;   RDI = target path C string
 ;   RSI = gadget_summary record
 ;   RDX = gadget_record[] buffer
 ;   RCX = mapped target base used only for rendering raw window bytes
+;   R8  = analysis_summary record with report identity and completeness facts
 ;
 ; Output:
 ;   Human-readable raw gadget candidate report on STDOUT.
@@ -651,6 +665,7 @@ x64lens_report_text_gadgets:
     push    r13
     push    r14
     push    r15
+    push    r8                  ; analysis_summary pointer
 
     mov     rbx, rdi            ; target path
     mov     r12, rsi            ; gadget_summary
@@ -669,6 +684,92 @@ x64lens_report_text_gadgets:
     call    print_nl
 
 .gadgets_body_start:
+    ; Identity and completeness come from a command-owned record constructed
+    ; only after the shared analysis pipeline succeeds.
+    mov     r15, [rsp]
+
+    lea     rdi, [section_analysis]
+    call    print_cstr
+
+    lea     rdi, [label_report_type]
+    call    print_cstr
+    cmp     qword [r15 + ANALYSIS_SUMMARY_REPORT_TYPE], REPORT_TYPE_ANALYSIS
+    jne     .analysis_report_type_unknown
+    lea     rdi, [report_type_analysis]
+    call    print_cstr
+    jmp     .analysis_report_type_done
+.analysis_report_type_unknown:
+    lea     rdi, [identity_unknown]
+    call    print_cstr
+.analysis_report_type_done:
+
+    lea     rdi, [label_command]
+    call    print_cstr
+    cmp     qword [r15 + ANALYSIS_SUMMARY_COMMAND], REPORT_COMMAND_GADGETS
+    je      .analysis_command_gadgets
+    cmp     qword [r15 + ANALYSIS_SUMMARY_COMMAND], REPORT_COMMAND_ANALYZE
+    je      .analysis_command_analyze
+    lea     rdi, [identity_unknown]
+    call    print_cstr
+    jmp     .analysis_command_done
+.analysis_command_gadgets:
+    lea     rdi, [command_gadgets]
+    call    print_cstr
+    jmp     .analysis_command_done
+.analysis_command_analyze:
+    lea     rdi, [command_analyze]
+    call    print_cstr
+.analysis_command_done:
+
+    lea     rdi, [label_analysis_complete]
+    call    print_cstr
+    cmp     qword [r15 + ANALYSIS_SUMMARY_COMPLETE], 0
+    je      .analysis_complete_no
+    lea     rdi, [state_yes]
+    call    print_cstr
+    jmp     .analysis_complete_done
+.analysis_complete_no:
+    lea     rdi, [state_no]
+    call    print_cstr
+.analysis_complete_done:
+
+    lea     rdi, [label_candidate_truncated]
+    call    print_cstr
+    cmp     qword [r15 + ANALYSIS_SUMMARY_CANDIDATE_TRUNCATED], 0
+    je      .analysis_truncated_no
+    lea     rdi, [state_yes]
+    call    print_cstr
+    jmp     .analysis_truncated_done
+.analysis_truncated_no:
+    lea     rdi, [state_no]
+    call    print_cstr
+.analysis_truncated_done:
+
+    lea     rdi, [label_candidate_dropped]
+    call    print_cstr
+    cmp     qword [r15 + ANALYSIS_SUMMARY_DROPPED_COUNT_KNOWN], 0
+    je      .analysis_dropped_unknown
+    mov     rdi, [r15 + ANALYSIS_SUMMARY_DROPPED_COUNT]
+    call    print_hex64
+    call    print_nl
+    jmp     .analysis_dropped_done
+.analysis_dropped_unknown:
+    lea     rdi, [state_unknown]
+    call    print_cstr
+.analysis_dropped_done:
+
+    lea     rdi, [label_regions_scanned]
+    call    print_cstr
+    mov     rdi, [r15 + ANALYSIS_SUMMARY_REGIONS_SCANNED]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_regions_total]
+    call    print_cstr
+    mov     rdi, [r15 + ANALYSIS_SUMMARY_REGIONS_TOTAL]
+    call    print_hex64
+    call    print_nl
+
     lea     rdi, [section_gadgets]
     call    print_cstr
 
@@ -846,6 +947,7 @@ x64lens_report_text_gadgets:
     jmp     .candidate_loop
 
 .gadgets_done:
+    add     rsp, 8              ; discard saved analysis_summary pointer
     pop     r15
     pop     r14
     pop     r13

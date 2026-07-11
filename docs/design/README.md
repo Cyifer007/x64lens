@@ -9,7 +9,7 @@ This directory records future-facing architecture seams that should be understoo
 - [`decoder-roadmap.md`](decoder-roadmap.md): optional decoder integration without replacing the raw scanner.
 - [`evidence-provenance-model.md`](evidence-provenance-model.md): raw, suffix, semantic, decoder, completeness, and truncation evidence layers.
 - [`metric-boundaries.md`](metric-boundaries.md): required separation between discovery, recognition, validation, semantic, score, and triage metrics.
-- [`schema-evolution.md`](schema-evolution.md): schema `0.1.0` compatibility rules and the planned `0.2.0` transition.
+- [`schema-evolution.md`](schema-evolution.md): current schema `0.2.0`, historical `0.1.0` compatibility, and future `0.2.x` evolution rules.
 - [`contributor-maintainability.md`](contributor-maintainability.md): maintainability expectations for NASM-heavy development.
 
 These documents are architecture constraints, not implementation claims. Code, tests, schemas, and release artifacts must be updated when a planned seam becomes implemented behavior.

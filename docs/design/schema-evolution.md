@@ -2,68 +2,104 @@
 
 ## Purpose
 
-The JSON schema is a public automation contract. This plan defines when schema `0.1.0` should change and how the repository should prevent feature work from causing accidental compatibility drift.
+The JSON schema is a public automation contract. This plan defines the current
+schema transition and prevents feature work from causing accidental
+compatibility drift.
 
-## Current schema
+## Current schemas
 
-Schema `0.1.0` represents the first record-backed gadget and integrated analysis report. It includes target metadata, baseline mitigations, compatible optional dynamic-table mitigation fields, separated counts, primitive coverage, candidate records, scores, and limitations.
+The current producer emits schema `0.2.0`. A versioned historical snapshot of
+schema `0.1.0` remains available for representative compatibility validation.
+
+Schema `0.1.0` contains target metadata, mitigation facts, separated counts,
+primitive coverage, candidate records, scores, and limitations. It does not
+identify the producing command or state analysis completeness.
+
+Schema `0.2.0` adds durable report and command identity plus a bounded analysis
+summary while preserving every existing count and candidate meaning.
 
 ## Compatibility classes
 
 ### Patch-compatible change
 
-A `0.1.x` change may:
+A `0.2.x` change may:
 
 - clarify descriptions,
-- tighten validators without rejecting previously valid intended reports,
-- add optional limitation strings,
-- add optional mitigation properties that do not change existing field meaning.
+- strengthen cross-field validation without changing intended field meaning,
+- add optional limitations,
+- add optional evidence properties whose absence remains unambiguous.
 
 ### Minor schema change
 
-A `0.2.0` change is required when the report adds or changes a durable concept such as:
-
-- top-level report identity,
-- evidence provenance,
-- candidate truncation or completeness state,
-- decoder validation facts,
-- mitigation evidence and confidence,
-- normalized corpus or benchmark provenance fields,
-- a changed meaning for an existing count.
+A later minor change is required when the report adds another durable concept
+that cannot be represented compatibly, such as a required provenance record,
+required decoder state, or a changed count meaning.
 
 ### Breaking schema change
 
-A new major schema version is required when required fields are removed or renamed, types change incompatibly, or existing meanings are redefined.
+A new major schema version is required when required fields are removed or
+renamed, types change incompatibly, or existing meanings are redefined.
 
-The project is pre-1.0, but version discipline still matters because benchmark scripts and external users consume the output.
+The project is pre-1.0, but version discipline still matters because benchmark
+scripts and external consumers use the output.
 
-## Planned transition
+## Patch 040 transition to `0.2.0`
 
-The planned schema `0.2.0` transition is the explicit provenance and completeness gate.
-
-- Keep `0.1.0` through Sprint 8 for compatible mitigation additions.
-- Introduce `0.2.0` in Sprint 9 with evidence provenance, report identity, and truncation/completeness facts.
-- Freeze the `0.2.x` shape before the Sprint 13 publication benchmark campaign.
-- Avoid another breaking change before `v0.1.0` unless a release-blocking correctness defect is found.
-
-## Planned `0.2.0` additions
-
-Candidate top-level additions:
+Patch 040 introduces these required top-level fields:
 
 ```json
 {
+  "schema_version": "0.2.0",
   "report_type": "analysis",
+  "command": "gadgets",
   "analysis": {
     "complete": true,
+    "max_depth": 4,
     "candidate_capacity": 4096,
+    "candidate_count": 11,
     "candidate_truncated": false,
+    "candidate_dropped_count": 0,
+    "candidate_dropped_count_known": true,
     "regions_scanned": 1,
     "regions_total": 1
   }
 }
 ```
 
-Candidate per-record additions:
+`command` is `gadgets` or `analyze`. The shared report body remains generated
+from one internal pipeline and one JSON adapter.
+
+The `analysis` object follows these invariants:
+
+- candidate count does not exceed candidate capacity,
+- candidate count equals `counts.raw_candidate_count`,
+- regions scanned does not exceed regions total,
+- unknown dropped count is represented by `null` plus a false known flag,
+- truncated analysis cannot be complete,
+- complete analysis is not truncated, has known dropped count zero, and scanned
+  every executable region.
+
+Current producer output represents successful complete runs only. Candidate
+capacity exhaustion still fails before report emission, so Patch 040 does not
+claim a dropped count for that failure.
+
+## Historical compatibility policy
+
+- `schemas/x64lens-report-0.1.0.schema.json` is the historical schema snapshot.
+- `schemas/x64lens-report.schema.json` is the current `0.2.0` schema.
+- `tools/validate-json-report.py` accepts both versions.
+- Current producer checks use `--require-schema 0.2.0` and
+  `--expected-command`.
+- `make schema-compat-smoke` accepts representative reports from both versions
+  and rejects inconsistent `0.2.0` states.
+- Historical reports are not rewritten in place.
+- Benchmark rows from incompatible schemas are not aggregated without explicit
+  normalization.
+
+## Remaining Sprint 9 additions
+
+Per-candidate provenance remains the next additive step. The intended shape is a
+side-car-derived candidate `evidence` object, for example:
 
 ```json
 {
@@ -75,58 +111,37 @@ Candidate per-record additions:
 }
 ```
 
-Candidate mitigation additions:
+Exact field names are finalized with the evidence record implementation. A
+future decoder must augment raw and exact facts rather than replace them.
 
-```json
-{
-  "relro": "full",
-  "canary": "present",
-  "stripped": "not_stripped",
-  "evidence": {
-    "relro": ["PT_GNU_RELRO", "DF_BIND_NOW"],
-    "canary": ["__stack_chk_fail"],
-    "stripped": ["SHT_SYMTAB"]
-  }
-}
-```
-
-Exact field names remain subject to implementation review. The conceptual boundary is fixed before coding begins.
+Target digests and richer mitigation evidence may also be added during Sprint 9
+or a later compatible `0.2.x` patch after their data sources and validation
+rules are fixed.
 
 ## Change procedure
 
 Every schema change requires:
 
 1. update `include/constants.inc`,
-2. update `schemas/x64lens-report.schema.json`,
-3. update `docs/json-schema.md`,
-4. update validators and fixtures,
-5. update `CHANGELOG.md`,
-6. add compatibility tests,
-7. update benchmark extractors,
-8. document migration notes,
-9. verify both `gadgets` and `analyze` output.
+2. update current and historical schema handling as applicable,
+3. update `src/report_json.asm`,
+4. update `tools/validate-json-report.py`,
+5. update controlled fixtures,
+6. update benchmark extractors,
+7. update `docs/json-schema.md`,
+8. update `CHANGELOG.md`,
+9. document migration behavior,
+10. verify both `gadgets` and `analyze` output.
 
 ## Schema freeze rule
 
-Once publication benchmark data is collected, schema changes that affect extraction require either:
-
-- regenerating the complete campaign, or
-- preserving a versioned extractor for the earlier schema and treating datasets separately.
-
-Mixed-schema rows must not be aggregated without explicit normalization.
-
-## Sprint 8 Patch 034 compatibility note
-
-Patch 034 keeps schema `0.1.0` while adding optional gadget `section` annotations and relaxing `mitigations.stripped` to optional in the schema and bundled validator. Current x64lens reports still emit `mitigations.stripped`; the relaxation exists so older same-version development reports remain readable. Schema `0.2.0` remains reserved for durable provenance and completeness-state fields rather than this compatible annotation.
-
-## Sprint 8 Patch 036 compatibility note
-
-Patch 036 keeps schema `0.1.0` because it does not add public fields. It hardens producer escaping and validator cross-field checks. Existing well-formed reports remain valid, but malformed reports that omit registers from `primitive_coverage.registers` while listing those registers in gadget `controls` are now rejected by the bundled validator.
-
+Once publication benchmark data is collected, schema changes that affect
+extraction require either a complete rerun or a versioned extractor and separate
+dataset. Mixed-schema rows must not be aggregated without explicit
+normalization.
 
 ## Comparator artifacts
 
-Patch 037 comparator outputs are validation artifacts, not report-schema fields.
-Schema `0.2.0` will address provenance and completeness inside x64lens reports;
-external tool outputs remain side evidence unless a future schema explicitly
-models comparator provenance.
+`readelf`, `checksec`, and `rabin2` outputs remain validation artifacts. They do
+not become x64lens report fields or runtime truth sources through this schema
+transition.

@@ -58,3 +58,14 @@ Candidate coverage claims must identify the evidence layer being measured: raw, 
 ## Release evidence rule
 
 Research preview and final release claims must satisfy the gates in `docs/research-release-plan.md`. Smoke results demonstrate plumbing and regression stability, not universal performance or coverage.
+
+## Sprint 9 report-completeness evidence rule
+
+Research artifacts that consume schema `0.2.0` must preserve report type,
+command identity, maximum depth, candidate capacity/count, truncation,
+dropped-count knowledge, and executable-region progress. `analysis.complete`
+means bounded enumeration completed over the loader-derived executable regions.
+It is not decoder-validity or complete gadget-coverage evidence.
+
+Failed capacity runs must remain failed rows or validation outcomes; they must
+not be reclassified as emitted truncated reports.

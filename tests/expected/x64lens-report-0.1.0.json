@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1.0",
+  "tool": "x64lens",
+  "tool_version": "0.1.0-dev",
+  "target": {
+    "path": "historical-fixture",
+    "format": "ELF64",
+    "arch": "x86_64",
+    "file_size": 1,
+    "entry": "0x0000000000000000"
+  },
+  "mitigations": {
+    "nx_stack": null,
+    "pie": false,
+    "relro": "none",
+    "canary": "unknown",
+    "stripped": "unknown",
+    "rwx_load_segment": false,
+    "dynamic_linking": false,
+    "bind_now": null,
+    "dynamic_entry_count": 0,
+    "dynamic_terminated": null
+  },
+  "counts": {
+    "raw_candidate_count": 0,
+    "ret_count": 0,
+    "ret_imm16_count": 0,
+    "exact_pattern_count": 0,
+    "semantic_candidate_count": 0,
+    "unknown_candidate_count": 0,
+    "scored_candidate_count": 0
+  },
+  "primitive_coverage": {
+    "arg_control": false,
+    "syscall_num_control": false,
+    "syscall_trigger": false,
+    "stack_pivot": false,
+    "alignment": false,
+    "registers": []
+  },
+  "gadgets": [],
+  "limitations": [
+    "Historical schema 0.1.0 compatibility fixture"
+  ]
+}

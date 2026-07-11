@@ -10,13 +10,19 @@ JSON output is optimized for tools and automation. It must be schema-versioned.
 
 ## Required JSON fields
 
-Every JSON report must include:
+Every current schema `0.2.0` JSON report must include:
 
 - `schema_version`,
 - `tool`,
 - `tool_version`,
+- `report_type`,
+- `command`,
+- `analysis`,
 - `target`,
 - `limitations`.
+
+Historical schema `0.1.0` reports predate report identity and analysis
+completeness; they remain consumable through the versioned compatibility path.
 
 ## Address formatting
 
@@ -76,7 +82,7 @@ Use repository facts, reproducible commands, and observed technical outcomes ins
 
 When bounded storage or a parser precondition prevents a complete report, the command must fail before emitting text or JSON stdout. Silent truncation and syntactically incomplete JSON are prohibited. Candidate-arena exhaustion currently uses exit code `6` and the stable unsupported-feature diagnostic.
 
-A future intentional partial-report mode must expose explicit machine-readable completeness and truncation state and follow the schema transition contract before release.
+Schema `0.2.0` exposes machine-readable completeness and truncation state for successful reports. This does not enable partial output. A future intentional partial-report mode must additionally implement truthful scanner progress and dropped-count semantics, update validators, and preserve complete JSON syntax before release.
 
 ## Mitigation consistency rule
 
@@ -112,3 +118,32 @@ Benchmark smoke summaries are evidence artifacts, not report-schema artifacts. T
 They do not change the x64lens JSON schema or text output contract. x64lens
 continues to distinguish loader facts, section-derived annotations, raw
 candidates, exact suffixes, semantic classes, unknowns, and scored facts.
+
+
+## Sprint 9 Patch 040 identity and completeness rule
+
+Current JSON reports use `report_type: "analysis"` and identify the producing
+command as `gadgets` or `analyze`. The command identity does not create separate
+analysis implementations.
+
+The `analysis` object must satisfy:
+
+```text
+candidate_count <= candidate_capacity
+candidate_count == counts.raw_candidate_count
+regions_scanned <= regions_total
+complete => !candidate_truncated
+complete => candidate_dropped_count_known
+complete => candidate_dropped_count == 0
+complete => regions_scanned == regions_total
+candidate_truncated => !complete
+!candidate_dropped_count_known => candidate_dropped_count == null
+```
+
+Current producers emit only complete successful reports. The 4097-candidate
+capacity failure still returns exit code `6` before stdout, so the tool does not
+invent a partial report or a dropped count it did not measure.
+
+Completeness applies to bounded candidate enumeration over program-header-
+derived executable regions. It does not mean decoder-valid sequence coverage,
+semantic completeness, exploitability, or complete mitigation knowledge.

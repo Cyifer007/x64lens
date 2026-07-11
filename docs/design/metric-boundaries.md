@@ -17,23 +17,37 @@ x64lens keeps discovery, recognition, validation, semantics, scoring, and binary
 | `scored_candidate_count` | Semantic candidates assigned a score by the current model. | Implemented. |
 | `primitive_coverage` | Binary-level presence of implemented primitive classes and controlled registers. | Implemented. |
 
+## Current analysis-completeness metrics
+
+Schema `0.2.0` adds command-level completion facts without redefining candidate
+populations:
+
+| Metric | Meaning | Current status |
+|---|---|---|
+| `candidate_capacity` | Maximum candidate records available for the run. | Implemented; currently 4096. |
+| `candidate_count` | Candidate records emitted in the report. | Implemented; equals `raw_candidate_count`. |
+| `candidate_truncated` | Whether report emission intentionally stopped before enumeration completed. | Implemented field; current successful reports are `false`. |
+| `candidate_dropped_count` | Candidates excluded from an emitted report, when known. | Implemented with a known flag; current successful reports use known zero. |
+| `regions_scanned` | Executable regions completed by the scanner. | Implemented. |
+| `regions_total` | Loader-derived executable regions presented to the scanner. | Implemented. |
+| `analysis_complete` | Whether bounded candidate enumeration completed over all presented regions. | Implemented as `analysis.complete`. |
+
+Candidate-capacity exhaustion still produces no report, so it is not represented
+as an emitted truncated result. The scanner stops on the 4097th candidate and
+does not continue to measure a dropped total.
+
 ## Planned provenance metrics
 
-Schema `0.2.0` should add, where implemented:
+Later Sprint 9 work may add, where implemented:
 
 | Metric | Meaning |
 |---|---|
 | `decoder_validated_count` | Candidates validated as complete instruction sequences from a selected start. |
 | `semantic_exact_count` | Semantic candidates justified by exact suffix rules. |
 | `semantic_decoded_count` | Semantic candidates justified by decoded instruction facts. |
-| `candidate_capacity` | Maximum candidate records available for the run. |
-| `candidate_truncated` | Whether discovery ended before all executable bytes were examined because capacity was reached. |
-| `candidate_dropped_count` | Additional candidates observed after capacity, when the scanner continues counting safely. |
-| `regions_scanned` | Executable regions completed. |
-| `regions_total` | Executable regions presented to the scanner. |
-| `analysis_complete` | Whether the intended analysis completed without truncation or fatal unsupported state. |
 
-New metrics are additive. They do not redefine historical counts.
+New metrics are additive. They do not redefine historical counts or the Patch
+040 completion fields.
 
 ## Why separation matters
 
@@ -124,3 +138,32 @@ Section labels are annotation metadata. They must not be counted as discovered c
 ## Sprint 8 Patch 035 label ambiguity boundary
 
 Section labels are intentionally absent when section metadata is ambiguous. Missing labels must not be counted as unknown gadgets, failed semantic classification, or scanner incompleteness. Raw candidate count, exact pattern count, semantic primitive count, unknown candidate count, scored candidate count, register coverage, and score values remain independent of section-label availability.
+
+
+## Sprint 9 Patch 040 completeness boundary
+
+`analysis.complete` answers one narrow question: did the bounded scanner finish
+all program-header-derived executable regions without emitting a truncated
+candidate set? It does not mean:
+
+- every candidate is decoder-valid,
+- every useful gadget family is recognized,
+- semantic classification is complete,
+- mitigation metadata is complete,
+- a binary is exploitable or safe.
+
+For current successful reports:
+
+```text
+analysis.candidate_count == counts.raw_candidate_count
+analysis.candidate_truncated == false
+analysis.candidate_dropped_count_known == true
+analysis.candidate_dropped_count == 0
+analysis.regions_scanned == analysis.regions_total
+analysis.complete == true
+```
+
+The exact-capacity report can therefore be complete at 4096 candidates. The
+4097-candidate input is a command failure, not a truncated report, and remains
+outside report-count datasets unless the failed row is recorded separately by a
+benchmark or validation harness.

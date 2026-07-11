@@ -56,18 +56,24 @@ A candidate can be useful while still carrying `exact_suffix` evidence only. Rep
 
 Research output must distinguish analysis completion from candidate validity.
 
-Future summary facts should include:
+Schema `0.2.0` now includes command-level summary facts:
 
 ```text
 candidate_capacity
+candidate_count
 candidate_truncated
 candidate_dropped_count
+candidate_dropped_count_known
 regions_scanned
 regions_total
 analysis_complete
 ```
 
-If dropped count cannot be computed without continuing the scan, report `candidate_truncated: true` and make the limitation explicit. Silent truncation is not allowed for research release artifacts.
+Current successful reports are complete, untruncated, and have a known dropped
+count of zero. Candidate-capacity exhaustion still fails before output, because
+the scanner does not continue far enough to compute a truthful dropped count.
+A future partial mode must make unknown dropped state explicit and preserve the
+no-silent-truncation rule.
 
 ## Metric interaction
 
@@ -101,4 +107,30 @@ Coverage comparisons must state which evidence layer is compared. Raw terminator
 
 ## Release gate
 
-The provenance model becomes part of the machine-readable contract before `v0.1.0-rc1`. Introducing it is the planned trigger for schema `0.2.0`.
+Patch 040 introduces the schema `0.2.0` report envelope and analysis-completeness foundation. Per-candidate provenance remains required before `v0.1.0-rc1` and will be added through the side-car model without redefining the Patch 040 fields.
+
+
+## Sprint 9 Patch 040 foundation
+
+Patch 040 separates command-level evidence identity from candidate-level
+evidence provenance:
+
+```text
+analysis_summary
+  one record per command invocation
+  report type, command, options, capacity, progress, completeness
+
+candidate_evidence_record[]
+  future record per candidate index
+  exact, semantic-exact, decoder, and validator facts
+```
+
+This avoids overloading `gadget_record` and prevents `analysis.complete` from
+being misread as decoder validity. A report can be complete for all raw
+candidate windows while every candidate still carries only exact-suffix or
+unknown semantic evidence.
+
+`gadgets` and `analyze` share one report type (`analysis`) and one report body,
+but preserve command identity. The next provenance patch should consume this
+envelope and add candidate evidence records; it should not reopen the schema
+transition merely to represent facts already planned for the `0.2.x` line.

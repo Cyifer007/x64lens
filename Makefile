@@ -14,7 +14,7 @@
 
 PROJECT      := x64lens
 VERSION      := 0.1.0-dev
-SCHEMA       := 0.1.0
+SCHEMA       := 0.2.0
 DOCKER_IMAGE ?= x64lens-dev
 BUILD_DIR    := build
 SRC_DIR      := src
@@ -42,7 +42,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -55,6 +55,7 @@ help:
 	@echo "  make readelf-comparison-smoke  Compare metadata and loader facts against readelf"
 	@echo "  make optional-tool-comparison-smoke  Run optional checksec/rabin2 comparison helpers"
 	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
+	@echo "  make schema-compat-smoke  Validate schema 0.1.0 compatibility and 0.2.0 invariants"
 	@echo "  make shellcheck-smoke  Run shellcheck when installed"
 	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
 	@echo "  make analysis-tools-check  Inventory optional analysis/comparison tools"
@@ -179,11 +180,17 @@ json-smoke: dev-tools-check all samples
 	trap 'rm -rf "$$tmp"' EXIT; \
 	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke.json"; \
 	python3 -m json.tool "$$tmp/x64lens-json-smoke.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-json-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets "$$tmp/x64lens-json-smoke.json" >/dev/null; \
 	./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
 	echo "json-smoke: ok"
 
+
+# Sprint 9 schema transition gate. This target keeps a representative 0.1.0
+# report consumable and proves that inconsistent 0.2.0 identity/completeness
+# states fail closed in the bundled standard-library validator.
+schema-compat-smoke:
+	python3 tools/schema-compat-smoke.py
 
 # Sprint 6 integrated analyze smoke target. This verifies that analyze combines
 # target metadata, mitigation facts, raw candidates, semantic facts, scoring,
@@ -194,13 +201,19 @@ analyze-smoke: dev-tools-check all samples
 	./$(TARGET) analyze --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Format:" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Mitigations:" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Analysis:" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Command: analyze" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Complete: yes" "$$tmp/x64lens-analyze-smoke.txt"; \
+	grep -q "Candidate truncated: no" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Raw gadget candidates:" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Scored candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.json"; \
-	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
+	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-gadgets-parity.json"; \
+	python3 tools/validate-report-parity.py "$$tmp/x64lens-gadgets-parity.json" "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	echo "analyze-smoke: ok"
 
 # Real-binary smoke target. This runs the current pipeline against installed
@@ -282,7 +295,7 @@ shellcheck-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check benchmark-integrity-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check benchmark-integrity-smoke schema-compat-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -381,6 +394,8 @@ script-perms-check:
 	@test -x tools/readelf-comparison-smoke.py
 	@test -x tools/validate-gadget-fixture.sh
 	@test -x tools/validate-json-report.py
+	@test -x tools/validate-report-parity.py
+	@test -x tools/schema-compat-smoke.py
 	@test -x tools/system-binary-smoke.sh
 	@test -x tools/check-patch-bundle-hygiene.sh
 	@test -x tools/check-dev-tools.sh
@@ -400,6 +415,7 @@ scaffold-check: script-perms-check
 	@test -f README.md
 	@test -f Makefile
 	@test -f src/main.asm
+	@test -f src/analysis_summary.asm
 	@test -f include/constants.inc
 	@test -f docs/project-charter.md
 	@test -f docs/contracts/development-contract.md
@@ -426,6 +442,8 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0022-historical-findings-hardening.md
 	@test -f docs/adr/0023-comparator-and-benchmark-integrity-gates.md
 	@test -f docs/adr/0024-sprint8-closeout-and-helper-hardening.md
+	@test -f docs/adr/0025-sprint8-closeout-correction.md
+	@test -f docs/adr/0026-report-identity-and-analysis-completeness.md
 	@test -f docs/design/mitigation-fixture-matrix.md
 	@test -f docs/sprints/sprint-07-patch-026-validation.md
 	@test -f docs/sprints/sprint-07-patch-027-validation.md
@@ -439,6 +457,12 @@ scaffold-check: script-perms-check
 	@test -f docs/research-release-plan.md
 	@test -f docs/design/evidence-provenance-model.md
 	@test -f docs/design/schema-evolution.md
+	@test -f docs/sprints/sprint-09-patch-040-validation.md
+	@test -f schemas/x64lens-report-0.1.0.schema.json
+	@test -f schemas/x64lens-report.schema.json
+	@test -f tests/expected/x64lens-report-0.1.0.json
+	@test -f tests/expected/x64lens-report-0.2.0.json
+	@test -f tools/validate-report-parity.py
 	@echo "scaffold-check: ok"
 
 diagrams-check:

@@ -10,7 +10,8 @@
 #   coverage for ret and ret-imm candidates. Sprint 4 adds semantic checks.
 #   Sprint 5 adds scoring and JSON output checks. Sprint 6 adds the integrated
 #   analyze checkpoint command. Sprint 7 adds exact section-entry-size rejection
-#   and explicit candidate-capacity regression coverage.
+#   and explicit candidate-capacity regression coverage. Sprint 9 Patch 040
+#   adds schema 0.2.0 report identity and complete-analysis validation.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -49,7 +50,7 @@ require_python3() {
 }
 
 echo "[test] version"
-"$BIN" version | grep -q "x64lens 0.1.0-dev schema 0.1.0"
+"$BIN" version | grep -q "x64lens 0.1.0-dev schema 0.2.0"
 
 echo "[test] help"
 "$BIN" help | grep -q "x64lens info <file>"
@@ -215,6 +216,12 @@ grep -q "NX stack: disabled" "$MIT_EXECSTACK"
 echo "[test] raw gadget scanner default depth"
 GADGETS_OUT="$TMPDIR/x64lens-gadgets-default.txt"
 "$BIN" gadgets "$ROOT/tests/bin/gadgets" >"$GADGETS_OUT"
+grep -q "Analysis:" "$GADGETS_OUT"
+grep -q "Report type: analysis" "$GADGETS_OUT"
+grep -q "Command: gadgets" "$GADGETS_OUT"
+grep -q "Complete: yes" "$GADGETS_OUT"
+grep -q "Candidate truncated: no" "$GADGETS_OUT"
+grep -q "Candidate dropped count: 0x0000000000000000" "$GADGETS_OUT"
 grep -q "Raw gadget candidates:" "$GADGETS_OUT"
 grep -q "Max depth: 0x0000000000000008" "$GADGETS_OUT"
 grep -q "Candidate capacity: 0x0000000000001000" "$GADGETS_OUT"
@@ -273,17 +280,22 @@ echo "[test] gadget JSON output"
 GADGETS_JSON="$TMPDIR/x64lens-gadgets.json"
 "$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_JSON"
 python3 -m json.tool "$GADGETS_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$GADGETS_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets "$GADGETS_JSON" >/dev/null
 python3 - "$GADGETS_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
     report = json.load(f)
+assert report["schema_version"] == "0.2.0"
+assert report["report_type"] == "analysis"
+assert report["command"] == "gadgets"
+assert report["analysis"]["complete"] is True
+assert report["analysis"]["candidate_truncated"] is False
 sections = {g.get("section") for g in report["gadgets"]}
 assert sections == {".text"}, sections
 PY
 
 "$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
 
 
 echo "[test] analyze integrated text output"
@@ -291,6 +303,11 @@ ANALYZE_OUT="$TMPDIR/x64lens-analyze.txt"
 "$BIN" analyze --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_OUT"
 grep -q "Format:" "$ANALYZE_OUT"
 grep -q "Mitigations:" "$ANALYZE_OUT"
+grep -q "Analysis:" "$ANALYZE_OUT"
+grep -q "Report type: analysis" "$ANALYZE_OUT"
+grep -q "Command: analyze" "$ANALYZE_OUT"
+grep -q "Complete: yes" "$ANALYZE_OUT"
+grep -q "Candidate truncated: no" "$ANALYZE_OUT"
 grep -q "Raw gadget candidates:" "$ANALYZE_OUT"
 grep -q "Bind now: not applicable" "$ANALYZE_OUT"
 grep -q "Dynamic entries: 0x0000000000000000" "$ANALYZE_OUT"
@@ -310,17 +327,23 @@ echo "[test] analyze JSON output"
 ANALYZE_JSON="$TMPDIR/x64lens-analyze.json"
 "$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_JSON"
 python3 -m json.tool "$ANALYZE_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$ANALYZE_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze "$ANALYZE_JSON" >/dev/null
 python3 - "$ANALYZE_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
     report = json.load(f)
+assert report["schema_version"] == "0.2.0"
+assert report["report_type"] == "analysis"
+assert report["command"] == "analyze"
+assert report["analysis"]["complete"] is True
+assert report["analysis"]["candidate_truncated"] is False
 sections = {g.get("section") for g in report["gadgets"]}
 assert sections == {".text"}, sections
 PY
 
 "$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-report-parity.py" "$GADGETS_JSON" "$ANALYZE_JSON" >/dev/null
 
 echo "[test] candidate capacity rejection"
 expect_exit 6 "$BIN" gadgets --max-depth 4 "$ROOT/tests/bin/gadgets_capacity"
