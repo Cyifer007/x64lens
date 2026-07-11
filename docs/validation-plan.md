@@ -1019,3 +1019,50 @@ differ only by schema identity. Capacity stderr is compared byte-for-byte.
 
 Local ABI validation must confirm `RSP mod 16 == 0` immediately before nested
 calls in `x64lens_report_json_gadgets` for both JSON-producing commands.
+
+
+## Sprint 9 Patch 042 portable bundle and decoder-gap validation
+
+Patch 042 does not change the analyzer runtime. Its acceptance surface is the
+public artifact boundary plus external decoder-gap evidence generated from
+current schema `0.2.0` reports.
+
+Required focused commands:
+
+```bash
+make patch-bundle-hygiene-smoke
+BUNDLE=/path/to/public-source-or-patch.zip make patch-bundle-hygiene
+make decoder-gap-smoke
+make schema-compat-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+```
+
+The bundle-policy smoke must exercise zero-root, one-root, and arbitrary-root
+layouts and reject the reviewed private-path cases together with unsafe paths,
+case collisions, symlinks, generated outputs, and nested archives. The actual
+public artifact must pass the same checker implementation without extraction.
+
+The controlled decoder-gap fixture must report 11 x64lens candidates and 11
+canonical return terminators, zero raw-boundary disagreement in either
+direction, 11 exact-boundary matches, zero exact-boundary disagreement, zero
+candidate-byte mismatch, and zero duplicate candidate/evidence/canonical keys.
+The generated manifest must record analyzer, campaign implementation,
+controlled expectation, canonical validator, Python, GNU time, objdump, and
+target SHA-256 hashes plus exact commands and versions.
+
+The broader command:
+
+```bash
+make decoder-gap-campaign
+```
+
+runs the same comparison over selected installed system binaries. These counts
+are host-dependent observations. Acceptance requires preserved raw JSON,
+objdump disassembly, command and metric files, categorized comparison JSON, and
+summary artifacts; it does not require equality with objdump or authorize a
+runtime decoder.
+
+Regeneration may replace only an existing result directory carrying the
+campaign's own `x64lens-decoder-gap-manifest-v1` marker. An unrelated directory
+must be refused without deletion.

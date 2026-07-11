@@ -25,7 +25,7 @@ Then inside Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 git clone <repo-url>
 cd x64lens
 make scaffold-check
@@ -71,7 +71,7 @@ Install the standard development toolchain on Ubuntu 24.04 with:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -237,3 +237,20 @@ bash tools/compare-rabin2.sh ./build/x64lens ./tests/bin/minimal_pie_canary
 ## Formal report-schema validation
 
 The development environment includes `python3-jsonschema` so schema compatibility tests can apply Draft 2020-12 rules to retained fixtures. This package is not linked into or invoked by the x64lens runtime.
+
+
+## Sprint 9 decoder-gap development tools
+
+`objdump` from GNU binutils and `/usr/bin/time` are required development tools
+for the controlled decoder-gap gate. The campaign also uses the canonical JSON
+validator and `python3-jsonschema`; none of these become runtime dependencies of
+the x64lens binary.
+
+```bash
+make decoder-gap-smoke
+make decoder-gap-campaign
+```
+
+The controlled command is part of aggregate validation. The system campaign is
+host-dependent evidence and remains separate. Generated artifacts live under
+`tests/results/decoder-gap/` and are removed by `make clean-results`.

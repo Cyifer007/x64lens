@@ -121,7 +121,9 @@ A limited internal decoder may be justified for a tightly bounded instruction su
 ## Timeline
 
 - Sprint 9 Patch 040: report identity and analysis-completeness envelope.
-- Remaining Sprint 9: candidate provenance records, gap measurement, and decision gate.
+- Sprint 9 Patch 041: candidate-index provenance and exact-suffix evidence.
+- Sprint 9 Patch 042: external objdump gap measurement and explicit decision gate.
+- Remaining Sprint 9: review authoritative campaign evidence and record the decoder decision.
 - Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
 - Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
 - Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
@@ -145,3 +147,28 @@ A decoder disagreement must remain visible. The tool should not hide raw or exac
 candidate enumeration completed within capacity; it does not set
 `full_sequence_valid` or promote semantic evidence. The candidate evidence
 side-car remains the decoder integration point.
+
+
+## Patch 042 measurement implementation
+
+`tools/decoder-gap-smoke.py` is the first implemented external verification
+surface. It preserves current x64lens JSON and raw objdump disassembly, then
+separates:
+
+- raw return-terminator overlap,
+- x64lens byte terminators absent from canonical objdump boundaries,
+- canonical objdump return terminators absent from x64lens raw output,
+- exact-suffix start/byte agreement,
+- duplicate x64lens terminators, duplicate exact-evidence keys, and duplicate
+  canonical sequence keys,
+- supported canonical alternatives not selected by the one-record-per-
+  terminator report model,
+- canonical return-ending sequences outside the current exact pattern catalog.
+
+The tool records target, analyzer, canonical validator, and objdump hashes;
+exact commands; versions; smoke-level wall time; and maximum RSS. It does not write decoder facts back
+into `candidate_evidence_record`, change semantic classes, or alter scores.
+
+The controlled fixture is a regression gate. Selected system binaries are a
+research campaign whose counts are interpreted under
+[`decoder-gap-decision-gate.md`](decoder-gap-decision-gate.md).

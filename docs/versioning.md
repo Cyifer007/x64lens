@@ -34,7 +34,9 @@ A normal branch push does not publish a tag. Publish a release tag explicitly on
 
 ## Schema timeline
 
-- `0.1.0`: historical target, mitigation, count, primitive, gadget, score, and limitations report retained through a versioned compatibility schema.
+- `0.1.0`: retained representative final-shape historical target, mitigation,
+  count, primitive, gadget, score, and limitations snapshot validated through a
+  versioned compatibility schema.
 - `0.2.0`: current Sprint 9 report and command identity plus bounded analysis-completeness contract.
 - `0.2.x`: compatible per-candidate provenance, validator, and evidence additions through the first research release.
 
@@ -44,9 +46,11 @@ The tool version remains `0.1.0-dev`; advancing the schema does not move the che
 ## Historical schema compatibility
 
 `schemas/x64lens-report.schema.json` names the current schema. The historical
-`0.1.0` schema and representative report are preserved under versioned file
-names. `make schema-compat-smoke` verifies that both remain consumable while
-current producer validation requires schema `0.2.0` and command identity.
+`0.1.0` schema and representative final-shape report are preserved under
+versioned file names. `make schema-compat-smoke` verifies those retained
+artifacts while current producer validation requires schema `0.2.0` and command
+identity. This is not a guarantee that every intermediate pre-release `0.1.0`
+emission can be reconstructed or validated.
 
 Schema version is part of benchmark provenance. Data from `0.1.0` and `0.2.0`
 must not be merged without an explicit normalization procedure.

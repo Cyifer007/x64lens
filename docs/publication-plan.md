@@ -149,3 +149,19 @@ validity. `full_sequence_valid: null` is the required current representation.
 
 Benchmark summaries must identify tool and schema versions as grouping keys.
 This is evidence-integrity plumbing, not a comparative performance result.
+
+
+## Sprint 9 Patch 042 publication note
+
+Patch 042 adds a reproducible development campaign for comparing x64lens raw
+terminators and exact suffixes with canonical GNU objdump boundaries. The paper
+may use the retained artifacts to explain candidate-definition differences and
+to justify the embedded-decoder decision. It must not present this smoke
+campaign as publication-grade performance evidence, treat objdump as ground
+truth for loader mappings, or label every boundary disagreement a false
+positive without manual reconciliation.
+
+The campaign records duplicate/canonicalization facts, supported suffixes not
+selected by the one-record-per-terminator model, and unsupported canonical
+return-ending sequences separately. These categories should remain separate in
+future coverage tables rather than being collapsed into one gadget-count delta.

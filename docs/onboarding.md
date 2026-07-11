@@ -143,9 +143,9 @@ The table below lists the public Make targets. A new development environment sho
 | `make analyze-smoke` | Validate integrated text and JSON analysis output. |
 | `make system-smoke` | Validate installed system ELF64 binaries. |
 | `make capacity-smoke` | Verify candidate-arena exhaustion returns exit `6` without partial output. |
-| `make malformed-smoke` | Run the deterministic 29-case hostile-input regression campaign. |
+| `make malformed-smoke` | Run the deterministic 31-case hostile-input regression campaign. |
 | `make fuzz-mutated-elf-smoke` | Compatibility alias for `malformed-smoke`. |
-| `make validation-smoke` | Run the local pre-commit validation bundle, including malformed and capacity gates. |
+| `make validation-smoke` | Run the local pre-commit validation bundle, including malformed, capacity, bundle-policy, schema, and controlled decoder-gap gates. |
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
 | `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
@@ -159,7 +159,9 @@ The table below lists the public Make targets. A new development environment sho
 | `make public-docs-check` | Reject private or dialogue-style wording in public repository files. |
 | `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 18 planning structure. |
 | `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
-| `make patch-bundle-hygiene-smoke` | Regression-test generated-path rejection under varied ZIP roots. |
+| `make patch-bundle-hygiene-smoke` | Regression-test portable unsafe/private/generated ZIP rejection under varied roots. |
+| `make decoder-gap-smoke` | Reconcile the controlled fixture against canonical GNU objdump boundaries. |
+| `make decoder-gap-campaign` | Generate decoder-gap evidence for the controlled fixture and selected installed system binaries. |
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
 | `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |

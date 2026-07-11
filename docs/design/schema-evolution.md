@@ -90,33 +90,27 @@ claim a dropped count for that failure.
 - `tools/validate-json-report.py` accepts both versions.
 - Current producer checks use `--require-schema 0.2.0` and
   `--expected-command`.
-- `make schema-compat-smoke` accepts representative reports from both versions
-  and rejects inconsistent `0.2.0` states.
-- Historical reports are not rewritten in place.
+- `make schema-compat-smoke` accepts retained representative final-shape reports
+  from both versions and rejects inconsistent `0.2.0` states.
+- The historical snapshot policy does not guarantee every intermediate
+  pre-release `0.1.0` emission; historical reports are not rewritten in place.
 - Benchmark rows from incompatible schemas are not aggregated without explicit
   normalization.
 
 ## Remaining Sprint 9 additions
 
-Per-candidate provenance remains the next additive step. The intended shape is a
-side-car-derived candidate `evidence` object, for example:
+Patch 041 implements the optional per-candidate `evidence` object and requires it
+for current-producer validation. Patch 042 adds external decoder-gap artifacts
+without changing the `0.2.0` runtime report.
 
-```json
-{
-  "evidence": {
-    "kind": "semantic_exact",
-    "full_sequence_valid": null,
-    "validator": "x64lens-exact-suffix"
-  }
-}
-```
+Remaining work is to review the controlled and selected-system campaign,
+classify boundary and coverage disagreements, and record the embedded-decoder
+decision. A future decoder must augment raw and exact facts through side-car
+records rather than replace them.
 
-Exact field names are finalized with the evidence record implementation. A
-future decoder must augment raw and exact facts rather than replace them.
-
-Target digests and richer mitigation evidence may also be added during Sprint 9
-or a later compatible `0.2.x` patch after their data sources and validation
-rules are fixed.
+Target digests are recorded in Patch 042 comparison manifests. Adding a digest
+to the runtime report remains a separate compatible `0.2.x` decision after the
+runtime hashing source, cost, and validation rules are fixed.
 
 ## Change procedure
 

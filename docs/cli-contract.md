@@ -88,7 +88,7 @@ x64lens version
 
 ## Output stability
 
-Human-readable text output may change before `1.0.0`. Current JSON output must include `schema_version`, `tool`, `tool_version`, `report_type`, `command`, `analysis`, `target`, and `limitations`. Compatible additions should remain within the `0.2.x` line; historical `0.1.0` reports use the versioned compatibility schema.
+Human-readable text output may change before `1.0.0`. Current JSON output must include `schema_version`, `tool`, `tool_version`, `report_type`, `command`, `analysis`, `target`, and `limitations`. Compatible additions should remain within the `0.2.x` line; the retained representative final-shape `0.1.0` snapshot uses the versioned compatibility schema.
 
 ## Current `mitigations` behavior
 
@@ -204,8 +204,9 @@ executable regions. It is not decoder validation. Candidate-arena overflow
 continues to return exit code `6` with empty stdout, so Patch 040 does not emit or
 invent an incomplete report for that path.
 
-Representative schema `0.1.0` output remains consumable through the versioned
-schema and validator compatibility path.
+Representative final-shape schema `0.1.0` output remains consumable through the
+versioned schema and validator compatibility path. Intermediate pre-release
+`0.1.0` emissions are not covered by that guarantee.
 
 
 ## Sprint 9 Patch 041 candidate provenance

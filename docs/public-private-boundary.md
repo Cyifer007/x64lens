@@ -35,6 +35,23 @@ The following content belongs outside public commits:
 
 Use `.local/project-context/` for local-only context files. The repository `.gitignore` excludes `.local/`.
 
+## Public archive enforcement
+
+Public ZIPs are inspected before distribution:
+
+```bash
+make patch-bundle-hygiene-smoke
+BUNDLE=/path/to/archive.zip make patch-bundle-hygiene
+```
+
+The archive policy is root-independent and metadata-only. It rejects unsafe or
+non-portable paths, `.git`, `.local`, agent state, project-context files,
+environment files other than `.env.example`, secrets, private/course material,
+generated build/test/benchmark outputs, symbolic links, duplicate or case-
+colliding members, and nested archives. This check is required even when the
+source worktree is clean because the archive can contain members that do not
+exist in Git.
+
 
 ## Local validation orchestration
 

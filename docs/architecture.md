@@ -751,3 +751,39 @@ arguments seven and eight; the reporter loads both and aligns its frame. Numeric
 renderers, text-report helpers, arena mapping, and output/error wrappers now
 either align before nested calls or use a true tail jump when no return work
 remains.
+
+
+## Sprint 9 Patch 042 external evidence architecture
+
+Patch 042 does not add a runtime module. It adds two development-only adapters
+around the stable analyzer boundary:
+
+```text
+public ZIP
+  -> metadata-only portable bundle policy
+  -> pass or fail before distribution
+
+x64lens schema 0.2.0 JSON + target bytes + GNU objdump disassembly
+  -> decoder-gap reconciler
+  -> ignored comparison artifacts and decision input
+```
+
+The bundle checker never extracts members and does not infer policy from one
+expected archive prefix. The shell entry point, regression smoke, and actual
+artifact check share one Python policy implementation.
+
+The decoder-gap reconciler consumes public outputs and external disassembly. It
+may measure raw terminator overlap, canonical-boundary agreement, duplicate and
+selection-model differences, unsupported canonical sequences, and validation
+cost. It must not:
+
+- select executable regions,
+- reinterpret ELF loader authority,
+- mutate `gadget_record[]` or `candidate_evidence_record[]`,
+- promote semantic classes,
+- assign scores,
+- emit x64lens runtime reports.
+
+This keeps the future decoder decision outside the current engine until measured
+evidence justifies an adapter. Any approved decoder must still enter through
+side-car records after raw scanning, not through a scanner rewrite.

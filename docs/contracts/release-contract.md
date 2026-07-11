@@ -22,6 +22,8 @@ Before any publishable tag:
 - [ ] `make docker-validation-smoke` passes when malformed-input and capacity gates are release-relevant,
 - [ ] `make public-docs-check` passes,
 - [ ] `make planning-docs-check` passes,
+- [ ] `make patch-bundle-hygiene-smoke` passes,
+- [ ] the actual source/release ZIP passes `make patch-bundle-hygiene`,
 - [ ] README and CLI documentation are current,
 - [ ] `CHANGELOG.md` has one current `Unreleased` section,
 - [ ] tool and schema versions match output and docs,
@@ -39,6 +41,8 @@ Before `v0.1.0-rc1`:
 - [ ] mitigation fixtures cover no, partial, and full RELRO plus canary indicators,
 - [ ] evidence provenance is machine-readable,
 - [ ] schema `0.2.0` validators pass,
+- [ ] controlled decoder-gap reconciliation passes and the decoder decision is
+      documented,
 - [ ] preview corpus is reproducible and hashed,
 - [ ] high-resolution benchmark runner is validated,
 - [ ] pilot baseline comparison is preserved,
@@ -85,9 +89,18 @@ Public source bundles must exclude:
 - private/course documents,
 - nested ZIP files.
 
+The exclusion policy applies under every archive-root layout. Bundle validation
+must also reject unsafe or non-portable member paths, duplicate/case-colliding
+members, symbolic links, encrypted members, local environment files except an
+explicit public example, secret-bearing directories, and nested archives. The
+checker inspects ZIP metadata without extraction. Arbitrary archive/member
+comments and special-file entries are also prohibited; an archive-level
+40/64-character hexadecimal source identity is permitted.
+
 Validate source patches with:
 
 ```bash
+make patch-bundle-hygiene-smoke
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
 
@@ -149,3 +162,17 @@ prefixed generated paths in source bundles, compare stable diagnostics
 byte-for-byte, and stratify benchmark summaries by tool and schema identity.
 Patch 040 reports remain compatibility fixtures; they are not current-producer
 fixtures after Patch 041.
+
+
+## Sprint 9 Patch 042 release-hygiene update
+
+Patch and source archives must pass the portable bundle-policy regression gate
+and the actual artifact check. A clean repository tree does not substitute for
+archive inspection because archive roots, case behavior, symlinks, and injected
+members can differ from the worktree.
+
+`make decoder-gap-smoke` is a release-preview development gate for the
+controlled fixture. `make decoder-gap-campaign` preserves host-dependent
+comparison evidence but remains separate from publication-grade benchmarks.
+The campaign informs the embedded-decoder decision and must not alter runtime
+facts or be treated as decoded-valid candidate output.

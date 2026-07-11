@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared command parity. Patch 041 adds the dense candidate evidence side-car and current per-candidate raw, exact-suffix, and semantic-exact provenance. Decoder-gap measurement is next. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and shared command parity. Patch 041 added the dense candidate evidence side-car and current per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds portable bundle validation plus controlled and selected-system decoder-gap evidence. Authoritative campaign review and the decoder decision are next. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -52,7 +52,7 @@ Status: implemented for the initial exact-pattern set. Raw, exact-suffix, and se
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, and Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence. Decoder-gap measurement and decoder-backed tiers remain open Sprint 9 work.
+Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence, and Patch 042 implements the external decoder-gap campaign and decision gate. Decoder-backed tiers remain unimplemented; the authoritative campaign evidence must first support a documented architecture decision.
 
 ### Stage 4: mitigation-aware triage
 
@@ -188,3 +188,20 @@ is added. This strengthens RQ2 by making evidence source auditable and
 strengthens later RQ1/RQ2 comparisons by preventing mixed tool/schema benchmark
 summaries. The next research result must be a measured decoder-gap artifact, not
 a broader pattern catalog.
+
+
+## Patch 042 research posture
+
+Patch 042 converts decoder uncertainty into reproducible development evidence
+without modifying the analyzer. The controlled gate reconciles exact suffixes
+against canonical GNU objdump boundaries, while the broader campaign preserves
+tool and target hashes, exact commands, raw reports, disassembly, timing/RSS
+smoke data, duplicate/canonicalization facts, and categorized disagreement
+samples. These artifacts are evidence for the decision gate, not publication-
+grade coverage or performance results.
+
+The embedded-decoder decision remains open until authoritative local campaign
+results are reviewed. A decoder is justified only if a measured gap affects a
+user-facing or research claim and the dependency can remain behind a side-car
+adapter while preserving independent raw-scanner metrics. Otherwise external
+verification remains the sounder architecture.

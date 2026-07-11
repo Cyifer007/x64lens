@@ -69,3 +69,17 @@ It is not decoder-validity or complete gadget-coverage evidence.
 
 Failed capacity runs must remain failed rows or validation outcomes; they must
 not be reclassified as emitted truncated reports.
+
+
+## Decoder-gap evidence rule
+
+External decoder/disassembler comparison is research evidence, not automatic
+truth replacement. Every campaign must preserve the x64lens report, external
+output, exact commands, versions, executable and target hashes, categorized
+differences, and observed validation cost. Boundary, selection-model,
+duplicate/canonicalization, and unsupported-family differences must remain
+separate.
+
+An embedded decoder decision must identify the affected claim and explain why an
+external validation path is insufficient. No decoder is approved solely because
+its count differs from the byte-oriented scanner.

@@ -449,3 +449,35 @@ without explicit normalization.
 This correction protects research provenance but does not upgrade smoke timing
 to publication-grade evidence. Sprint 12 still owns high-resolution timing and
 Sprint 13 still owns the fixed comparative campaign.
+
+## Sprint 9 Patch 042 decoder-gap campaign
+
+Patch 042 adds a development comparison campaign that is separate from both the
+runtime benchmark and the later publication campaign:
+
+```bash
+make decoder-gap-smoke
+make decoder-gap-campaign
+```
+
+The campaign measures x64lens and GNU objdump independently and records:
+
+- exact commands and versions,
+- analyzer, campaign implementation, controlled expectation, canonical
+  validator, Python interpreter, GNU time, objdump executable, and target
+  SHA-256 hashes,
+- monotonic wall time and GNU-time maximum RSS,
+- raw x64lens schema `0.2.0` output,
+- raw objdump disassembly,
+- raw terminator overlap,
+- exact-suffix canonical-boundary agreement,
+- supported alternatives omitted by one-record-per-terminator selection,
+- duplicate terminator, duplicate exact-evidence, and duplicate canonical-
+  sequence counts,
+- canonical sequences outside the current exact pattern catalog.
+
+These timings are smoke-level cost observations. They are not publication-grade
+results and must not be combined with the Sprint 12/13 benchmark campaign. The
+comparison also does not establish objdump as ground truth for loader-mapped
+bytes: section coverage and canonical start selection are recorded threats to
+validity.

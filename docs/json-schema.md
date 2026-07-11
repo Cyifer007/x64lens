@@ -217,8 +217,10 @@ schemas/x64lens-report.schema.json
 
 ## Compatibility rule
 
-- Historical `0.1.0` reports remain consumable through the versioned schema and
-  validator path.
+- Retained representative final-shape `0.1.0` fixtures remain consumable through
+  the versioned schema and validator path. This is a pre-release snapshot policy,
+  not a promise that every intermediate report ever emitted under `0.1.0` still
+  satisfies the final historical snapshot.
 - Current producer output must validate as `0.2.0` with the expected command.
 - Compatible future additions should remain in `0.2.x`.
 - Required-field removal, incompatible type changes, or semantic redefinition
@@ -228,10 +230,13 @@ schemas/x64lens-report.schema.json
 
 ## Remaining Sprint 9 provenance work
 
-Patch 041 emits the initial per-candidate provenance surface. Remaining Sprint
-9 work is target identity refinement, decoder-gap measurement, comparison
-artifact provenance, and the evidence-backed embedded-decoder decision. Decoder
-validity fields remain reserved but unknown until that evidence exists.
+Patch 041 emits the initial per-candidate provenance surface. Patch 042 records
+target/tool hashes and decoder-gap comparison provenance outside the runtime
+report. Remaining Sprint 9 work is authoritative campaign review, the evidence-
+backed embedded-decoder decision, and a separate determination of whether a
+runtime target digest adds machine-consumer value beyond campaign and corpus
+manifests. Decoder validity fields remain reserved but unknown until implemented
+evidence exists.
 
 ## Change checklist
 

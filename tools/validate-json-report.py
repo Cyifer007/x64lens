@@ -6,8 +6,9 @@ Purpose:
     This validator checks schema-aware report identity, bounded analysis
     completeness, metric boundaries, primitive coverage shape, gadget record
     shape, unknown stack-delta encoding, and controlled fixture facts. It keeps
-    representative schema 0.1.0 reports consumable while validating current
-    producer output against schema 0.2.0 invariants and candidate provenance.
+    the retained representative final-shape schema 0.1.0 snapshot consumable
+    while validating current producer output against schema 0.2.0 invariants
+    and candidate provenance.
 
 The script intentionally does not require jsonschema. Formal Draft 2020-12
 schema validation is a separate development gate; this validator is normative

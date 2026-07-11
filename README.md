@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 9 is active. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, historical schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 adds a dense candidate-index evidence side-car, per-candidate raw/exact/semantic provenance, formal-schema enforcement, ABI and validation-oracle corrections, root-independent bundle hygiene, and benchmark identity stratification. Decoder-gap measurement is next; primitive expansion remains deferred.
+> Status: Sprint 9 is active. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added a dense candidate-index evidence side-car, per-candidate raw/exact/semantic provenance, formal-schema enforcement, ABI and validation-oracle corrections, and benchmark identity stratification. Patch 042 hardens the public ZIP boundary and adds reproducible external decoder-gap evidence plus an explicit decoder decision gate. The authoritative campaign decision remains open; primitive expansion remains deferred.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -89,7 +89,7 @@ Install required development tools:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-venv \
+sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv \
   python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
@@ -111,6 +111,7 @@ make samples
 make test
 make validation-smoke
 make patch-bundle-hygiene-smoke
+make decoder-gap-smoke
 ```
 
 Run the checkpoint demo:
@@ -196,12 +197,14 @@ make capacity-smoke
 make malformed-smoke
 make mitigation-matrix-smoke
 make section-label-smoke
+make patch-bundle-hygiene-smoke
+make decoder-gap-smoke
 make validation-smoke
 make docker-test
 make docker-validation-smoke
 ```
 
-`make validation-smoke` is the local aggregate. It includes deterministic malformed-input and candidate-capacity checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, public-bundle-policy, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
 
 Hostile-input checks can also be run directly:
 
@@ -225,8 +228,20 @@ The mitigation oracle creates controlled ELF64 program-header layouts independen
 Patch bundle hygiene:
 
 ```bash
+make patch-bundle-hygiene-smoke
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
+
+The checker inspects ZIP metadata without extraction and applies the public/private boundary under any archive root. It rejects unsafe paths, private context, environment files, secrets, generated outputs, symlinks, case-colliding members, and nested archives while preserving explicit public placeholders such as `.env.example` and `benchmarks/results/.gitkeep`.
+
+Decoder-gap development evidence:
+
+```bash
+make decoder-gap-smoke
+make decoder-gap-campaign
+```
+
+The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries and writes hashes for the analyzer, campaign implementation, controlled expectation, canonical validator, Python interpreter, GNU objdump, GNU time, and every target; it also preserves commands, raw JSON, disassembly, timing/RSS smoke data, and categorized gap facts under `tests/results/decoder-gap/`. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores.
 
 ## Benchmark smoke workflow
 

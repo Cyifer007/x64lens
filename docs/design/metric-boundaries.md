@@ -191,3 +191,27 @@ gadgets[i].evidence
 `semantic_exact` does not mean decoder-valid. `analysis.complete` does not
 upgrade candidate evidence. Scores continue to consume semantic facts and do
 not consume or manufacture decoder validity.
+
+## Patch 042 decoder-gap comparison metrics
+
+The external comparison campaign adds development metrics without changing the
+runtime JSON count model:
+
+| Metric | Meaning |
+|---|---|
+| `raw_terminator_intersection_count` | Return terminator addresses observed by both x64lens and canonical objdump disassembly. |
+| `x64lens_raw_not_objdump_count` | Byte-oriented x64lens terminators absent from objdump's canonical instruction boundaries. |
+| `objdump_terminator_not_x64lens_count` | Canonical objdump return instructions absent from x64lens raw candidates. |
+| `x64lens_exact_boundary_match_count` | Selected exact suffixes reproduced with the same start, terminator, and bytes by objdump. |
+| `x64lens_exact_boundary_disagreement_count` | Selected exact suffixes not reproduced by the canonical boundary model. |
+| `objdump_supported_unselected_count` | Canonical suffixes matching the current exact catalog but not selected by the one-record-per-terminator model. |
+| `objdump_unsupported_sequence_count` | Canonical return-ending sequences outside the current exact catalog. |
+| `x64lens_duplicate_terminator_count` | Additional x64lens records sharing an already-observed terminator address. |
+| `x64lens_duplicate_exact_evidence_count` | Additional exact-evidence records sharing the same suffix start, terminator, and bytes. |
+| `objdump_duplicate_return_terminator_count` | Additional canonical return instructions sharing an already-observed address. |
+| `objdump_duplicate_canonical_sequence_count` | Canonical sequences sharing the same start, terminator, and bytes after normalization. |
+
+These are comparison metrics, not new gadget populations in schema `0.2.0`.
+They must not be added to raw/exact/semantic counts or interpreted as
+exploitability. The raw disassembly and report artifacts remain necessary for
+reviewing section coverage, canonicalization, and max-depth differences.

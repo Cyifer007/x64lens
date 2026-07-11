@@ -24,20 +24,28 @@ identity explicit before adding more primitive families.
 - [x] Distinguish raw candidates, exact suffix observations, semantic-exact
   classifications, and future decoder-validated facts per candidate.
 - [x] Add per-candidate evidence kind and validator identity to JSON.
-- [ ] Measure exact-suffix false-positive and undercount risk on controlled and
-  selected system binaries.
-- [ ] Define the embedded-decoder decision gate from measured gaps.
-- [ ] Keep raw scanner output independently measurable.
+- [x] Add a reproducible exact-suffix/canonical-boundary gap campaign over the
+  controlled fixture and selected system binaries.
+- [x] Define the embedded-decoder decision gate and preserve hashes, commands,
+  raw reports, disassembly, timing/RSS smoke facts, and categorized differences.
+- [x] Keep raw scanner output independently measurable.
+- [ ] Review authoritative local campaign evidence and record the embedded-
+  decoder decision.
 
 ## Patch sequence
 
 1. **Patch 040:** report identity, command identity, complete-analysis summary,
-   schema `0.2.0`, historical `0.1.0` compatibility, and focused parity gates.
+   schema `0.2.0`, retained representative final-shape `0.1.0` compatibility,
+   and focused parity gates.
 2. **Patch 041:** fixed-size candidate evidence side-car keyed by candidate
    index, exact-suffix and semantic-exact provenance, ABI correction, formal
    schema enforcement, and validation/evidence hardening.
-3. **Decoder-gap patch:** controlled and selected-system-binary reconciliation,
-   preserved comparison artifacts, and the embedded-decoder decision record.
+3. **Patch 042:** portable public-bundle policy, controlled and selected-system
+   decoder-gap measurement, comparison artifact provenance, and the explicit
+   embedded-decoder decision gate.
+4. **Decision closeout patch, only if needed:** review authoritative campaign
+   evidence and record whether decoder embedding is deferred, optional, or
+   approved behind an adapter.
 
 The sequence is intentionally additive. Patch 040 does not place variable-length
 provenance in `gadget_record`, and later provenance work must not replace raw
@@ -54,8 +62,9 @@ scanner facts or existing metrics.
 - [x] `gadgets` and `analyze` maintain one JSON implementation and shared facts.
 - [x] Candidate-arena overflow remains fail-closed with no partial stdout.
 - [x] Candidate provenance is additive and does not redefine historical counts.
-- [ ] New decoder-validity metrics are additive, not replacements.
-- [ ] The decoder decision is documented from evidence, not preference.
+- [ ] Any future decoder-validity metrics are additive, not replacements.
+- [x] The decoder decision procedure is documented from evidence, not preference.
+- [ ] The authoritative decoder decision is recorded after campaign review.
 
 ## Out of scope
 
@@ -67,7 +76,7 @@ scanner facts or existing metrics.
 
 ## Handoff
 
-Patch 041 completes the candidate provenance foundation. The next Sprint 9
-patch measures decoder gaps on controlled and selected system binaries, records
-comparison provenance, and decides whether an embedded decoder is justified.
-Sprint 10 expands primitive coverage only after that measured decision gate.
+Patch 042 implements the decoder-gap measurement and decision-gate foundation
+without changing runtime facts. Authoritative WSL2 evidence must now be reviewed
+and the decoder decision recorded. Sprint 10 expands primitive coverage only
+after that decision gate closes.

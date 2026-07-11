@@ -22,7 +22,9 @@ Every current schema `0.2.0` JSON report must include:
 - `limitations`.
 
 Historical schema `0.1.0` reports predate report identity and analysis
-completeness; they remain consumable through the versioned compatibility path.
+completeness. The retained representative final-shape snapshot remains
+consumable through the versioned compatibility path; compatibility is not
+claimed for every intermediate pre-release emission.
 
 ## Address formatting
 

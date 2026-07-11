@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, historical `0.1.0` compatibility, and shared command parity. Patch 041 adds current per-candidate provenance. Target digests, decoder-gap evidence, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, retained representative final-shape `0.1.0` compatibility, and shared command parity. Patch 041 adds current per-candidate provenance. Patch 042 adds portable source-bundle validation and external decoder-gap evidence with target/tool hashes. Authoritative decoder-decision review, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -26,10 +26,12 @@ The preview candidate must include:
 - canary and stripped indicators with confidence wording,
 - explicit candidate capacity and truncation state,
 - schema `0.2.0` or later if provenance fields are introduced,
+- a reviewed decoder-gap campaign and documented embedded-decoder decision,
 - target and tool hashes in benchmark metadata,
 - a reproducible corpus manifest,
 - one pilot comparison run across all supported baselines,
 - source archive, Linux x86_64 binary, checksums, version output, and smoke benchmark artifact.
+- source and release ZIPs that pass the portable bundle policy.
 
 The preview candidate may still carry known semantic-coverage limitations. Those limitations must be explicit and machine-readable where practical.
 
@@ -134,9 +136,10 @@ benchmark corpus.
 
 Sprint 8 is complete after Patch 039. Patch 040 adds report and command identity,
 complete-analysis state, and schema `0.2.0`; Patch 041 adds current per-candidate
-provenance. The research preview is still not ready. Sprint 9 must still add
-target digest policy and decoder-gap evidence before output freezes for preview
-artifacts.
+provenance; Patch 042 adds portable bundle enforcement and external decoder-gap
+evidence with target/tool hashes. The research preview is still not ready.
+Sprint 9 must review the authoritative campaign and record the decoder decision,
+while Sprint 11 and Sprint 12 still own corpus and benchmark freeze work.
 
 
 ## Sprint 9 Patch 040 release-gate update
@@ -144,8 +147,8 @@ artifacts.
 Patch 040 satisfies the command-level report identity and successful-analysis
 completeness portion of the preview gate. Current schema `0.2.0` reports state
 candidate capacity/count, truncation, dropped-count knowledge, region progress,
-and command identity. Historical schema `0.1.0` remains available through a
-versioned compatibility path.
+and command identity. A retained representative final-shape schema `0.1.0`
+snapshot remains available through a versioned compatibility path.
 
 This is not the full provenance gate. Before `v0.1.0-rc1`, the project still
 requires target and tool hashes where required, decoder-gap measurement, a
@@ -162,3 +165,18 @@ JSON provenance requirements. Patch 040 schema `0.2.0` reports remain readable,
 but preview candidates must satisfy current-producer provenance validation,
 formal Draft 2020-12 validation, root-independent bundle hygiene, and benchmark
 identity stratification.
+
+
+## Sprint 9 Patch 042 release-gate update
+
+Public source and patch ZIPs must pass the root-independent metadata-only bundle
+policy. The policy rejects unsafe paths, private/local state, environment and
+secret material, generated outputs, symlinks, case collisions, and nested
+archives without extracting the bundle.
+
+The decoder-gap campaign satisfies the measurement-surface portion of the
+Sprint 9 gate by preserving analyzer, validator, objdump, and target identity;
+SHA-256 hashes; exact commands; raw reports and disassembly; smoke timing/RSS;
+and categorized boundary/canonicalization facts. It does not itself authorize a
+runtime decoder. The preview gate requires a reviewed decoder decision plus the
+later reproducible corpus and high-resolution pilot campaign.

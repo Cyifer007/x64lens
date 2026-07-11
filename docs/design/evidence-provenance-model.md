@@ -153,3 +153,26 @@ semantic_decoded       reserved for future implemented evidence
 For Patch 041, `full_sequence_valid` is always `null`. This is intentional: a
 complete command report can enumerate every raw candidate while still lacking
 instruction-boundary validation for each candidate.
+
+## Patch 042 comparison-artifact provenance
+
+The runtime candidate evidence side-car remains unchanged. Patch 042 adds a
+separate development artifact layer for decoder-gap research:
+
+```text
+x64lens JSON + target bytes + objdump disassembly
+  -> decoder-gap comparison JSON
+  -> fixed-column summary TSV
+  -> run manifest and decision input
+```
+
+Every campaign records analyzer, canonical validator, objdump executable, and
+target SHA-256 hashes; tool versions; exact commands; max depth; raw reports;
+raw disassembly; smoke-level timing/RSS; and duplicate/canonicalization facts.
+These artifacts may qualify or challenge an exact-suffix interpretation, but
+they do not mutate the original raw, exact, semantic-exact, unknown, or scored
+facts.
+
+A canonical-boundary disagreement is not silently relabeled as a false positive.
+The source of disagreement remains explicit because objdump is section-derived
+external evidence while x64lens scanning remains program-header-authoritative.

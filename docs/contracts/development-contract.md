@@ -122,7 +122,7 @@ A planned release date does not override an unmet evidence gate. `v0.1.0-rc1` an
 
 ## Schema transition rule
 
-Schema `0.2.0` is the current producer contract. Compatible per-candidate provenance additions should remain within `0.2.x`; changed count meaning or incompatible required fields require another explicit transition with full validator and documentation parity. Historical `0.1.0` remains a versioned compatibility artifact.
+Schema `0.2.0` is the current producer contract. Compatible per-candidate provenance additions should remain within `0.2.x`; changed count meaning or incompatible required fields require another explicit transition with full validator and documentation parity. The retained representative final-shape `0.1.0` snapshot remains a versioned compatibility artifact; the project does not claim validation of every intermediate pre-release `0.1.0` emission.
 
 ## Planning-document validation rule
 
@@ -197,3 +197,27 @@ must not scan bytes, decide semantics, score candidates, or format output.
 Formal Draft 2020-12 schema validation and the semantic cross-field validator
 are complementary required gates. Current JSON-producing harnesses should apply
 the canonical validator before specialty assertions.
+
+
+## Portable artifact-boundary rule
+
+Public ZIP validation must be independent of a preferred archive root. The
+checker and its regression smoke must share one path-policy implementation and
+must inspect metadata without extraction. Unsafe paths, private/local state,
+environment or secret material, generated outputs, symlinks, case collisions,
+and nested archives fail closed. Explicit public placeholders require narrow
+allowlists rather than broad directory exceptions.
+
+
+## External decoder-evidence rule
+
+External disassemblers are development and research validators, not runtime
+mapping or classification authority. Decoder-gap tooling may consume current
+JSON records and canonical disassembly to produce side artifacts, but it must
+not rewrite candidate records, semantic classes, scores, or report counts.
+
+Every campaign must preserve exact commands, versions, executable and target
+hashes, raw outputs, and categorized disagreement facts. Generic count deltas
+are insufficient. A runtime decoder may be approved only through the documented
+decision gate and must preserve raw-scanner operation and side-car metric
+separation.

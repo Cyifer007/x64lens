@@ -77,12 +77,17 @@ later sprints rather than Patch 037:
 - [x] Fixed-size command-level analysis summary.
 - [x] Analysis completeness, candidate capacity, truncation, dropped-count knowledge, and region-progress fields.
 - [x] Top-level report type and command identity.
-- [x] Schema `0.2.0`, migration notes, and historical `0.1.0` compatibility gate.
+- [x] Schema `0.2.0`, migration notes, and retained representative final-shape
+  `0.1.0` compatibility gate.
 - [x] `gadgets` and `analyze` shared-report parity with distinct command identity.
 - [ ] Target digest and additional run identity where the final provenance contract requires them.
 - [x] Candidate evidence side-car record.
 - [x] Raw, exact, and semantic-exact candidate evidence tiers; decoder-valid and semantic-decoded remain pending measured decoder work.
-- [ ] Decoder-gap measurement and embedded-decoder decision gate.
+- [x] Controlled and selected-system decoder-gap measurement harness with
+  hashes, commands, raw artifacts, timing/RSS smoke facts, and categorized
+  boundary/canonicalization differences.
+- [x] Embedded-decoder decision procedure and evidence requirements.
+- [ ] Authoritative decoder decision after local campaign review.
 
 ### Sprint 10: primitive expansion
 
@@ -250,14 +255,14 @@ Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 ## Sprint 8 closeout correction disposition
 
-Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and closeout-documentation drift. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, and Patch 041 adds the initial candidate provenance side-car. Remaining Sprint 9 work is target identity refinement and decoder-gap measurement.
+Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and closeout-documentation drift. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, Patch 041 adds the initial candidate provenance side-car, and Patch 042 adds portable bundle enforcement plus decoder-gap evidence. Remaining Sprint 9 work is authoritative campaign review, the decoder decision record, and any narrowly justified target-identity refinement.
 
 
 ## Sprint 9 Patch 040 backlog update
 
 Patch 040 completes the command-level report envelope: schema `0.2.0`, report
-and command identity, explicit complete-success facts, historical `0.1.0`
-compatibility, and focused schema/parity validation. It preserves the existing
+and command identity, explicit complete-success facts, retained representative
+final-shape `0.1.0` compatibility, and focused schema/parity validation. It preserves the existing
 4096/4097 capacity contract and does not emit partial reports.
 
 The next backlog priority is the candidate evidence side-car. It must be keyed
@@ -276,6 +281,24 @@ validator split, bundle-path hygiene, exact capacity diagnostic oracle, focused
 JSON harness coverage, benchmark identity grouping, and repository-facing
 wording.
 
-Remaining Sprint 9 work is decoder-gap measurement, target identity refinement,
-comparison artifact provenance, and the embedded-decoder decision gate. Broad
-primitive expansion remains deferred to Sprint 10.
+Remaining Sprint 9 work is authoritative decoder-gap campaign review, the
+embedded-decoder decision record, and any narrowly justified target-identity
+refinement. Broad primitive expansion remains deferred to Sprint 10.
+
+
+## Sprint 9 Patch 042 backlog update
+
+Patch 042 closes the Patch 041 public-bundle validation defect with one
+root-independent ZIP policy shared by the checker and regression smoke. It also
+adds the controlled and selected-system decoder-gap campaign without changing
+runtime analysis or report facts. The campaign preserves analyzer, validator,
+objdump, and target identity; SHA-256 hashes; exact commands; raw JSON and
+disassembly; smoke timing/RSS; duplicate/canonicalization facts; boundary
+disagreements; and unsupported canonical sequences.
+
+The remaining Sprint 9 decision is interpretive rather than another measurement
+surface: review the authoritative local campaign and record whether decoder
+embedding is deferred, exposed only as optional external verification, or
+approved behind an isolated adapter. Target digest work should be added to the
+runtime report only if that review or the later corpus contract demonstrates a
+machine-consumer need that cannot be satisfied by external manifests.

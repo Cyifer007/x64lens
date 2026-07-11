@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, historical `0.1.0` compatibility, and shared `gadgets`/`analyze` report parity. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance; decoder-gap measurement is the next Sprint 9 work.
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and shared `gadgets`/`analyze` report parity. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds a portable public-bundle policy and reproducible external decoder-gap measurement; authoritative evidence review and the decoder decision are the remaining Sprint 9 gate.
 
 The implemented pipeline is:
 
@@ -61,7 +61,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
-| 9 | Candidate provenance and decoder-gap measurement | Patches 040-041 establish identity, completeness, and candidate provenance; next measured decoder-gap and decision gate. |
+| 9 | Candidate provenance and decoder-gap measurement | Patches 040-042 establish identity, completeness, candidate provenance, portable evidence packaging, and decoder-gap measurement; authoritative decision closeout remains. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
@@ -215,8 +215,8 @@ Patch 036 converts the historical review pause into a hardening patch instead of
 Patch 040 completes the command-level half of the Sprint 9 schema transition.
 Current reports identify the producing command and state candidate capacity,
 count, truncation, dropped-count knowledge, executable-region progress, and
-overall completion. Historical schema `0.1.0` remains available through a
-versioned compatibility path.
+  overall completion. A retained representative final-shape schema `0.1.0`
+  snapshot remains available through a versioned compatibility path.
 
 The patch deliberately preserves the fail-closed 4097-candidate behavior rather
 than introducing a partial-report mode. The next Sprint 9 work is per-candidate
@@ -237,3 +237,21 @@ This completes the record seam required before decoder-gap measurement. The
 next Sprint 9 work should quantify exact-suffix false positives, undercounted
 semantic forms, definition differences, and validation cost. No primitive
 family should be added merely to improve a count before that reconciliation.
+
+
+## Sprint 9 Patch 042 roadmap update
+
+Patch 042 implements the measurement boundary required by the decoder decision
+timeline. It compares current provenance-bearing x64lens reports with canonical
+GNU objdump disassembly on the controlled fixture and selected installed
+system binaries, preserves hashes and raw artifacts, and separates boundary,
+duplicate/canonicalization, supported-unselected, and unsupported-sequence
+observations. The controlled case joins aggregate validation; host-dependent
+system evidence remains a separate campaign.
+
+This patch does not introduce decoder-backed facts or change raw, exact,
+semantic, unknown, or scored metrics. Sprint 9 closes only after authoritative
+campaign evidence is reviewed and the project records one of the permitted
+outcomes: defer embedding, retain optional external verification, or approve an
+isolated decoder adapter. Sprint 10 primitive expansion remains downstream of
+that decision.

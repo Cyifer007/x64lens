@@ -8,6 +8,18 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 042 controlled and selected-system decoder-gap evidence
+  generation through GNU objdump without adding a runtime decoder dependency.
+- `make decoder-gap-smoke`, `make decoder-gap-campaign`, a controlled expected-
+  fact specification, an embedded-decoder decision gate, ADR 0028, and Patch
+  042 validation documentation.
+- Decoder-gap artifacts that preserve analyzer, validator, external-tool, and
+  target identity; SHA-256 hashes; exact commands; raw reports and disassembly;
+  smoke timing/RSS; boundary disagreements; duplicate/canonicalization facts;
+  and unsupported canonical sequences.
+- A metadata-only Python ZIP policy shared by the public bundle checker and its
+  regression smoke.
+
 - Sprint 9 Patch 041 candidate-index evidence side-car for raw, exact-suffix,
   and semantic-exact provenance.
 - Per-candidate JSON evidence kind, validator identity, matched suffix range,
@@ -72,6 +84,14 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Make the controlled decoder-gap reconciliation part of native and Docker
+  aggregate validation while keeping the host-dependent system campaign a
+  separate evidence command.
+- Define historical schema compatibility as the retained representative final-
+  shape `0.1.0` snapshot rather than every intermediate pre-release emission.
+- Align Ubuntu setup instructions with the required development-only
+  `python3-jsonschema` dependency.
+
 - Keep schema `0.2.0` backward-compatible with Patch 040 reports while requiring
   candidate provenance for current producer validation.
 - Group benchmark summaries by tool name, tool version, schema version, command,
@@ -130,6 +150,13 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Reject private and unsafe ZIP members under zero-root, one-root, and arbitrary
+  archive layouts, including `.git`, `.local`, `.codex`, `.env`, project-context
+  files, secrets, symlinks, case collisions, generated outputs, and nested
+  archives.
+- Prevent decoder-gap evidence regeneration from deleting an unrelated existing
+  directory by requiring the tool's own manifest before replacement.
 
 - Correct pre-existing System V stack alignment across identified nested-call
   frames in JSON/text reporting, numeric formatting, arena mapping, and output

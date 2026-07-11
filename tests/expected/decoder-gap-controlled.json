@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "target": "tests/bin/gadgets",
+  "max_depth": 4,
+  "expected": {
+    "raw_candidate_count": 11,
+    "x64lens_unique_terminator_count": 11,
+    "x64lens_duplicate_terminator_count": 0,
+    "exact_pattern_count": 11,
+    "x64lens_duplicate_exact_evidence_count": 0,
+    "semantic_candidate_count": 11,
+    "unknown_candidate_count": 0,
+    "scored_candidate_count": 11,
+    "objdump_return_terminator_count": 11,
+    "objdump_duplicate_return_terminator_count": 0,
+    "x64lens_raw_not_objdump_count": 0,
+    "objdump_terminator_not_x64lens_count": 0,
+    "x64lens_exact_candidate_count": 11,
+    "x64lens_exact_boundary_match_count": 11,
+    "x64lens_exact_boundary_disagreement_count": 0,
+    "x64lens_candidate_byte_mismatch_count": 0,
+    "objdump_duplicate_canonical_sequence_count": 0
+  }
+}
