@@ -807,3 +807,23 @@ The default analyzer remains decoder-free. A future decoder may attach through a
 separate adapter that writes candidate-index side-car facts. It must not own file
 mapping, ELF validation, program-header authority, raw enumeration, mitigation
 analysis, scoring, or output policy.
+
+## Sprint 9 Patch 044 campaign and bounded acceleration seam
+
+Patch 044 changes no analyzer module. It hardens the development evidence path:
+
+```text
+immutable target snapshot
+  -> measured x64lens / external comparison child session
+  -> normalized external instruction evidence
+  -> categorized reconciliation
+  -> complete staging tree
+  -> signal-safe transactional publication
+```
+
+The default runtime remains the existing single-threaded direct-syscall NASM
+pipeline. Future decoder facts belong in candidate-index side-cars after the
+fast scan. Future parallel work must preserve one deterministic record order,
+one global bounded-capacity result, and no-partial-output failure behavior. It
+may not move loader authority, scanning, classification, scoring, or reporting
+into external helpers.

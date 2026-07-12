@@ -255,7 +255,7 @@ Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 ## Sprint 8 closeout correction disposition
 
-Patch 039 closed the Patch 038 closeout blockers. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, Patch 041 adds the candidate provenance side-car, Patch 042 adds portable bundle enforcement and decoder-gap evidence, and Patch 043 binds that evidence to immutable snapshots, hardens transactional publication and external parsing, and records the decoder-free default. Remaining Sprint 9 work is the Patch 044 closeout audit and context/environment refresh.
+Patch 039 closed the Patch 038 closeout blockers. Patches 040-041 supply schema `0.2.0`, report identity, completeness, parity, and candidate provenance. Patches 042-043 add decoder-gap evidence, immutable snapshots, and the decoder-free default. Patch 044 corrects the remaining campaign, parser, archive, and public-fixture defects. Remaining Sprint 9 work is the Patch 045 closeout audit and context/environment refresh.
 
 
 ## Sprint 9 Patch 040 backlog update
@@ -311,7 +311,32 @@ Future decoder work is optional and must use side-car facts, preserve raw
 metrics, and justify its dependency, license, binary-size, latency, RSS, and
 hostile-input costs through fixed-corpus evidence.
 
-Sprint 9 has one remaining planned patch: Patch 044 closeout. It must review
-architecture and contracts, refresh private project context, inspect development
-configuration and Docker Buildx behavior, reconcile the roadmap, and publish the
-Sprint 9 retrospective without adding unreviewed primitive breadth.
+Patch 044 is the corrective campaign and release-boundary hardening patch. It
+closes the post-rename signal race, measured-child cleanup, objdump prefix and
+barrier parsing, local/central ZIP metadata, ZIP64 semantics, production-wrapper
+coverage, and public negative-fixture defects.
+
+Sprint 9 has one remaining planned patch: Patch 045 closeout. It reviews
+architecture and contracts, refreshes private project context, inspects
+development configuration and Docker Buildx behavior, reconciles the roadmap,
+and publishes the Sprint 9 retrospective without adding primitive breadth.
+
+## Sprint 9 Patch 044 backlog update
+
+Completed in Patch 044:
+
+- observable-state rollback across post-rename `SIGINT` and `SIGTERM` windows;
+- measured process-group kill/reap on timeout or interruption;
+- reviewed objdump prefix/near-return normalization and control-flow barriers;
+- metadata-only local/central ZIP reconciliation and strict recognized extras;
+- production shell-wrapper replay for every archive smoke case;
+- synthetic public-boundary fixtures and broader path/copy/case detection;
+- candidate-scoped decoder and evidence-gated parallelism design constraints.
+
+Deferred with explicit classification:
+
+- private 40-file context and orchestration/configuration refresh: Patch 045;
+- Docker Buildx host-state remediation: Patch 045 environment review;
+- optional decoder and concurrency implementation: measured Sprint 12/13 gate;
+- primitive-family expansion: Sprint 10;
+- publication-grade claims: Sprints 12 and 13.

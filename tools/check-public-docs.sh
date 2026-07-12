@@ -107,14 +107,10 @@ if [[ ${#FILES[@]} -eq 0 ]]; then
 fi
 
 PATTERNS=(
-  '/home/[A-Za-z0-9._-]+/'
-  '/mnt/c/Users/'
   '/mnt/data/'
   'cyifer007@'
   'DESKTOP-[A-Z0-9-]+'
   'x64lens_patch_[0-9]+'
-  'x64lens_HEAD_[0-9]{8}_[0-9]{6}([_(][0-9]+[)]?)?[.]zip'
-  'x64lens_codex_evidence_[0-9]{8}_[0-9]{6}([_(][0-9]+[)]?)?[.]tar[.]gz'
   'user-created whole-repository zip snapshots'
   'in our (chat|conversation)'
   'the file you (uploaded|attached)'
@@ -123,10 +119,45 @@ PATTERNS=(
   'CODEX_LOCAL_MISSION'
 )
 
+CASE_INSENSITIVE_PATTERNS=(
+  'x64lens[_ -]*(HEAD|source)[_ -]*[0-9]{8}[_ -]*[0-9]{6}([_ (.-]*(copy|[0-9]+)[) ]*)?[.]zip'
+  'x64lens[_ -]*(codex[_ -]*evidence|evidence)[_ -]*[0-9]{8}[_ -]*[0-9]{6}([_ (.-]*(copy|[0-9]+)[) ]*)?[.]tar[.]gz'
+  '[.]local/codex/reports/'
+)
+
+HOME_PATH_PATTERNS=(
+  '/home/[A-Za-z0-9._-]+(/|$)'
+  '/Users/[A-Za-z0-9._-]+(/|$)'
+  '/mnt/[A-Za-z]/Users/[A-Za-z0-9._-]+/'
+  '[A-Za-z]:[\\/]Users[\\/][A-Za-z0-9._-]+[\\/]'
+  '\\\\wsl([.]localhost)?\\[^\\]+\\home\\[A-Za-z0-9._-]+\\'
+)
+
 failed=0
 for pattern in "${PATTERNS[@]}"; do
-  if grep -EnI "$pattern" "${FILES[@]}"; then
+  if grep -E -n -I "$pattern" "${FILES[@]}"; then
     echo "public-docs-check: prohibited repository-facing wording matched: $pattern" >&2
+    failed=1
+  fi
+done
+
+for pattern in "${CASE_INSENSITIVE_PATTERNS[@]}"; do
+  if grep -E -i -n -I "$pattern" "${FILES[@]}"; then
+    echo "public-docs-check: prohibited repository-facing wording matched: $pattern" >&2
+    failed=1
+  fi
+done
+
+# Docker's public development image intentionally uses a generic container
+# home. Host-path checks therefore scan every other public text file while
+# preserving that reproducible Dockerfile setting.
+HOME_FILES=()
+for path in "${FILES[@]}"; do
+  [[ "$path" == "Dockerfile" ]] || HOME_FILES+=("$path")
+done
+for pattern in "${HOME_PATH_PATTERNS[@]}"; do
+  if (( ${#HOME_FILES[@]} > 0 )) && grep -E -i -n -I "$pattern" "${HOME_FILES[@]}"; then
+    echo "public-docs-check: prohibited repository-facing host path matched: $pattern" >&2
     failed=1
   fi
 done

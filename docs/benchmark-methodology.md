@@ -494,3 +494,22 @@ The selected-system campaign is development evidence. Its timing and RSS rows
 must not be merged into publication benchmark results. A later optional decoder
 profile requires a separate benchmark stratum so the dependency-free core and
 verification mode can be compared without hiding their different workloads.
+
+## Candidate-scoped decoder and parallelism ablations
+
+Future performance work must benchmark these as separate profiles:
+
+```text
+core single-worker scanner/report
+core plus candidate-scoped decoder validation
+candidate validation with N workers
+region/chunk scanning with N workers, if implemented
+```
+
+Rows must preserve profile identity, worker count, decoder identity/version,
+binary size, wall/user/system time, peak RSS, output size, raw/exact/semantic/
+decoder counts, and deterministic-output hash. Forced multithreading is not a
+valid optimization conclusion: small targets may regress because worker
+creation, stacks, arenas, overlap, and merge dominate useful work. Sprint 12
+provides high-resolution measurement and Sprint 13 provides the fixed-corpus
+ablation decision.

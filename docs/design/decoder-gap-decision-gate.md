@@ -166,3 +166,24 @@ one immutable target snapshot, objdump parse diagnostics are retained, and
 result publication is transactional across ordinary failures, `SIGINT`, and
 `SIGTERM`. The campaign remains development evidence and is not a publication
 performance result.
+
+## Patch 044 bounded hybrid decision
+
+Patch 044 preserves the decoder-free default but narrows the future integration
+shape. A decoder should run only against retained terminator-centered candidate
+windows and possible starts inside those windows. This can qualify unaligned
+raw observations and expose semantic sequences outside the exact catalog
+without making whole-image decoding a mandatory cost.
+
+The reviewed system campaign had zero canonical return terminators absent from
+raw x64lens discovery for the sampled targets. It also had many expected
+instruction-boundary disagreements and canonical sequences outside the current
+exact catalog. This supports a candidate-scoped verification experiment, not a
+claim of universal zero false negatives and not approval for a mandatory
+decoder.
+
+Any candidate-scoped adapter must preserve raw/exact/semantic facts, write
+side-car decoder evidence, and be benchmarked as a separate profile. Likewise,
+parallel execution remains optional until fixed-corpus ablations show a net
+benefit after startup, deterministic merge, aggregate capacity, and peak-RSS
+costs. See `candidate-scoped-decoder-and-parallelism.md`.

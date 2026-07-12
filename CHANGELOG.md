@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 044 adversarial regressions for post-rename signal rollback, measured-child process-group cleanup, 27 reviewed objdump prefix/return forms, local/central ZIP metadata reconciliation, strict ZIP64 semantics, production-wrapper archive replay, and synthetic public-boundary fixtures.
+- ADR 0030 and the candidate-scoped decoder/parallelism design gate.
+- Sprint 9 Patch 044 validation record; Sprint 9 closeout moves to Patch 045.
+
 - Sprint 9 Patch 043 immutable decoder-gap target snapshots, signal-safe
   transactional result publication, objdump parser diagnostics and barrier
   hardening, and archive metadata/path portability enforcement.
@@ -102,6 +106,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Keep the default analyzer single-worker, freestanding, and decoder-free while defining an optional candidate-scoped decoder and evidence-gated parallel profiles.
+- Make decoder-gap publication recover from observable filesystem state and reap measured child sessions on every interruption.
+- Reconcile raw local ZIP headers with central-directory records before any public bundle is accepted.
+
 - Bind every decoder-gap comparison to one immutable target snapshot analyzed
   by both x64lens and GNU objdump.
 - Keep the default analyzer freestanding and decoder-free; decoder-backed facts
@@ -186,6 +194,12 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Preserve a recognized decoder-gap result across the post-rename signal window.
+- Prevent interrupted GNU-time/analyzer measurements from leaving child process groups alive.
+- Normalize reviewed GNU objdump prefix and near-return variants and stop canonical sequences at prefixed control transfers.
+- Reject contradictory local ZIP names, flags, extras, malformed ZIP64 values, zero-width UID/GID metadata, invalid NTFS metadata, and duplicate recognized extra fields.
+- Remove real transfer-artifact basenames from tracked public-boundary smoke fixtures and detect broader copy, case, Windows, WSL, and macOS path variants.
 
 - Prevent inter-target mutation from making campaign manifests certify bytes
   different from those actually analyzed.

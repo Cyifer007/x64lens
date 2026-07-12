@@ -40,6 +40,10 @@ class Case:
     directory_metadata_member: str | None = None
     raw_nul_member: bool = False
     nested_zip_member: str | None = None
+    local_name_override: bytes | None = None
+    local_extra_override: bytes | None = None
+    local_flags_xor: int = 0
+    force_zip64_member: str | None = None
 
 
 def extra_field(header_id: int, payload: bytes) -> bytes:
@@ -62,6 +66,11 @@ def make_zip(path: Path, case: Case) -> None:
                 payload: str | bytes = "fixture\n"
                 if case.nested_zip_member == member:
                     payload = nested_zip_payload()
+                if case.force_zip64_member == member:
+                    info = zipfile.ZipInfo(member)
+                    with archive.open(info, "w", force_zip64=True) as handle:
+                        handle.write(payload.encode("utf-8") if isinstance(payload, str) else payload)
+                    continue
                 if (
                     (case.member_comment is not None and case.member_comment[0] == member)
                     or (case.member_extra is not None and case.member_extra[0] == member)
@@ -95,6 +104,27 @@ def make_zip(path: Path, case: Case) -> None:
             raise RuntimeError(f"{case.name}: expected local and central raw-name copies")
         path.write_bytes(blob.replace(marker, replacement))
 
+    if case.local_name_override is not None or case.local_extra_override is not None or case.local_flags_xor:
+        blob = bytearray(path.read_bytes())
+        local_offset = blob.find(b"PK\x03\x04")
+        if local_offset < 0:
+            raise RuntimeError(f"{case.name}: local header not found")
+        name_length, extra_length = struct.unpack_from("<HH", blob, local_offset + 26)
+        name_offset = local_offset + 30
+        extra_offset = name_offset + name_length
+        if case.local_name_override is not None:
+            if len(case.local_name_override) != name_length:
+                raise RuntimeError(f"{case.name}: local name override length mismatch")
+            blob[name_offset : name_offset + name_length] = case.local_name_override
+        if case.local_extra_override is not None:
+            if len(case.local_extra_override) != extra_length:
+                raise RuntimeError(f"{case.name}: local extra override length mismatch")
+            blob[extra_offset : extra_offset + extra_length] = case.local_extra_override
+        if case.local_flags_xor:
+            flags = struct.unpack_from("<H", blob, local_offset + 6)[0]
+            struct.pack_into("<H", blob, local_offset + 6, flags ^ case.local_flags_xor)
+        path.write_bytes(blob)
+
 
 def run_case(directory: Path, case: Case) -> None:
     archive = directory / f"{case.name}.zip"
@@ -113,18 +143,39 @@ def run_case(directory: Path, case: Case) -> None:
         raise RuntimeError(f"{case.name}: unexpected entry count {entry_count}")
 
 
-def run_wrapper_probe(directory: Path) -> None:
-    archive = directory / "wrapper-probe.zip"
-    make_zip(archive, Case("wrapper-probe", ("src/main.asm",), True))
-    result = subprocess.run(
-        ["bash", str(CHECKER), str(archive)],
+
+def run_wrapper_replay(directory: Path, all_cases: list[Case]) -> None:
+    clean_archives = [directory / f"{case.name}.zip" for case in all_cases if case.expected_success]
+    rejected_archives = [directory / f"{case.name}.zip" for case in all_cases if not case.expected_success]
+
+    clean = subprocess.run(
+        ["bash", str(CHECKER), *(str(path) for path in clean_archives)],
         capture_output=True,
         text=True,
         check=False,
-        timeout=10,
+        timeout=30,
     )
-    if result.returncode != 0 or "patch-bundle-hygiene: ok" not in result.stdout:
-        raise RuntimeError(f"wrapper probe failed: {result.stdout}{result.stderr}")
+    if clean.returncode != 0:
+        raise RuntimeError(f"production wrapper rejected a clean batch: {clean.stdout}{clean.stderr}")
+    for archive in clean_archives:
+        if f"bundle={archive}" not in clean.stdout:
+            raise RuntimeError(f"production wrapper omitted clean archive result: {archive}")
+
+    rejected = subprocess.run(
+        ["bash", str(CHECKER), *(str(path) for path in rejected_archives)],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    if rejected.returncode != 1:
+        raise RuntimeError(
+            f"production wrapper negative batch returned {rejected.returncode}: "
+            f"{rejected.stdout}{rejected.stderr}"
+        )
+    for archive in rejected_archives:
+        if f"failed bundle={archive}" not in rejected.stderr and f"cannot inspect {archive}" not in rejected.stderr:
+            raise RuntimeError(f"production wrapper failed to reject/archive-report: {archive}")
 
 
 def cases() -> list[Case]:
@@ -135,6 +186,18 @@ def cases() -> list[Case]:
         b"\x01" + struct.pack("<I", zlib.crc32(visible_name) & 0xFFFFFFFF) + b"root/.git/config",
     )
     private_extra = extra_field(0xCAFE, b"private local handoff")
+    uid_gid_zero = extra_field(0x7875, b"\x01\x00\x00")
+    unneeded_zip64 = extra_field(0x0001, struct.pack("<Q", 0x1234))
+    ntfs_nonzero_reserved = extra_field(0x000A, b"\x01\x00\x00\x00")
+    duplicate_timestamps = timestamp_extra + extra_field(0x5455, b"\x01\x01\x00\x00\x00")
+    clean_unicode = extra_field(
+        0x7075,
+        b"\x01" + struct.pack("<I", zlib.crc32(b"root/src/good.txt") & 0xFFFFFFFF) + b"root/src/good.txt",
+    )
+    private_unicode = extra_field(
+        0x7075,
+        b"\x01" + struct.pack("<I", zlib.crc32(b"root/src/good.txt") & 0xFFFFFFFF) + b"root/.git/configX",
+    )
 
     clean = [
         Case("clean-zero-root", ("src/main.asm",), True),
@@ -152,6 +215,12 @@ def cases() -> list[Case]:
             ("root/src/main.asm",),
             True,
             member_extra=("root/src/main.asm", timestamp_extra),
+        ),
+        Case(
+            "clean-local-zip64-sentinel",
+            ("root/src/good.txt",),
+            True,
+            force_zip64_member="root/src/good.txt",
         ),
     ]
 
@@ -195,12 +264,12 @@ def cases() -> list[Case]:
         Case("unsafe-windows-star", ("root/bad*name.asm",), False, "Windows-forbidden character"),
         Case("unsafe-unicode-format", ("root/secret\u202efile.txt",), False, "Unicode control"),
         Case("unsafe-unicode-normalization", ("root/cafe\u0301.txt",), False, "non-NFC Unicode"),
-        Case("unsafe-raw-nul", ("root/src/main.asmX/.git/config",), False, "raw and effective", raw_nul_member=True),
+        Case("unsafe-raw-nul", ("root/src/main.asmX/.git/config",), False, "control character", raw_nul_member=True),
         Case(
             "unsafe-unicode-path-override",
             ("root/src/main.asm",),
             False,
-            "raw and effective",
+            "Unicode-path extra field disagrees",
             member_extra=("root/src/main.asm", unicode_override),
         ),
         Case(
@@ -235,6 +304,64 @@ def cases() -> list[Case]:
             "per-member ZIP comments",
             member_comment=("root/src/main.asm", b"private note"),
         ),
+        Case(
+            "uidgid-zero-length-identifiers",
+            ("root/src/good.txt",),
+            False,
+            "malformed Unix UID/GID",
+            member_extra=("root/src/good.txt", uid_gid_zero),
+        ),
+        Case(
+            "zip64-unneeded-contradictory-size",
+            ("root/src/good.txt",),
+            False,
+            "without a matching sentinel",
+            member_extra=("root/src/good.txt", unneeded_zip64),
+        ),
+        Case(
+            "ntfs-nonzero-reserved-no-attribute",
+            ("root/src/good.txt",),
+            False,
+            "nonzero reserved bytes",
+            member_extra=("root/src/good.txt", ntfs_nonzero_reserved),
+        ),
+        Case(
+            "duplicate-conflicting-timestamps",
+            ("root/src/good.txt",),
+            False,
+            "duplicate ZIP extra field",
+            member_extra=("root/src/good.txt", duplicate_timestamps),
+        ),
+        Case(
+            "local-name-private-central-name-clean",
+            ("root/src/good.txt",),
+            False,
+            "local and central member names disagree",
+            local_name_override=b"root/.git/configX",
+        ),
+        Case(
+            "local-unknown-extra-central-timestamp",
+            ("root/src/good.txt",),
+            False,
+            "local unsupported ZIP extra field",
+            member_extra=("root/src/good.txt", timestamp_extra),
+            local_extra_override=extra_field(0xCAFE, b"local"),
+        ),
+        Case(
+            "local-unicode-private-central-unicode-clean",
+            ("root/src/good.txt",),
+            False,
+            "local Unicode-path extra field disagrees",
+            member_extra=("root/src/good.txt", clean_unicode),
+            local_extra_override=private_unicode,
+        ),
+        Case(
+            "local-encrypted-central-clear",
+            ("root/src/good.txt",),
+            False,
+            "local and central flag metadata disagree",
+            local_flags_xor=0x0001,
+        ),
     ]
     return clean + rejected
 
@@ -245,11 +372,14 @@ def main() -> int:
         directory = Path(temp)
         for case in all_cases:
             run_case(directory, case)
-        run_wrapper_probe(directory)
+        run_wrapper_replay(directory, all_cases)
 
     accepted = sum(case.expected_success for case in all_cases)
     rejected = len(all_cases) - accepted
-    print(f"patch-bundle-hygiene-smoke: ok cases={len(all_cases)} accepted={accepted} rejected={rejected}")
+    print(
+        "patch-bundle-hygiene-smoke: ok "
+        f"cases={len(all_cases)} accepted={accepted} rejected={rejected} wrapper_replays={len(all_cases)}"
+    )
     return 0
 
 

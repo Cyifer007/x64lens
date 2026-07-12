@@ -9,6 +9,7 @@ reconciliation facts under an ignored results directory.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import hashlib
 import json
@@ -34,11 +35,13 @@ TIME_BIN = Path("/usr/bin/time")
 HEX_BYTE_RE = re.compile(r"^[0-9a-fA-F]{2}$")
 HEX_ADDRESS_RE = re.compile(r"^[0-9a-fA-F]+$")
 OBJDUMP_PREFIXES = {
-    "addr16", "addr32", "bnd", "data16", "data32", "lock", "notrack",
-    "rep", "repe", "repz", "repne", "repnz", "rex", "rex.w",
+    "addr16", "addr32", "addr64", "bnd", "cs", "data16", "data32", "data64",
+    "ds", "es", "fs", "gs", "lock", "notrack", "rep", "repe", "repne",
+    "repnz", "repz", "ss",
 }
-RETURN_MNEMONICS = {"ret", "retq"}
-FAR_RETURN_MNEMONICS = {"retf", "retfq", "lret", "lretq"}
+REX_PREFIX_RE = re.compile(r"^rex(?:\.[wrxb]+)?$")
+RETURN_MNEMONICS = {"ret", "retl", "retn", "retq", "retw"}
+FAR_RETURN_MNEMONICS = {"lret", "lretl", "lretq", "lretw", "retf", "retfl", "retfq", "retfw"}
 SAFE_LABEL_RE = re.compile(r"[^A-Za-z0-9_.-]+")
 SUMMARY_FIELDS = [
     "target",
@@ -151,6 +154,54 @@ class MeasuredCommand:
     stdout_path: str
     stderr_path: str
     metrics_path: str
+
+
+def normalize_objdump_token(token: str) -> str:
+    """Normalize one GNU objdump mnemonic/prefix token for comparisons."""
+
+    return token.casefold().rstrip(":")
+
+
+def is_objdump_prefix(token: str) -> bool:
+    """Return whether one normalized token is an x86 instruction prefix."""
+
+    normalized = normalize_objdump_token(token)
+    if normalized in OBJDUMP_PREFIXES:
+        return True
+    if not REX_PREFIX_RE.fullmatch(normalized):
+        return False
+    suffix = normalized.partition(".")[2]
+    return not suffix or len(set(suffix)) == len(suffix)
+
+
+@contextlib.contextmanager
+def block_campaign_signals() -> Iterable[None]:
+    """Block handled termination signals while rollback or reaping is in progress."""
+
+    if not hasattr(signal, "pthread_sigmask"):
+        yield
+        return
+    blocked = {signal.SIGINT, signal.SIGTERM}
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, blocked)
+    try:
+        yield
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+
+
+def kill_and_reap_process_group(process: subprocess.Popen[bytes]) -> None:
+    """Terminate a measured process session and reap its direct leader."""
+
+    with block_campaign_signals():
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=5.0)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
 
 
 def sha256_file(path: Path) -> str:
@@ -273,9 +324,11 @@ def run_measured(
         try:
             exit_code = process.wait(timeout=timeout)
         except subprocess.TimeoutExpired as exc:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait()
+            kill_and_reap_process_group(process)
             raise RuntimeError(f"command timed out after {timeout}s: {shlex.join(command)}") from exc
+        except BaseException:
+            kill_and_reap_process_group(process)
+            raise
     wall_time_ns = time.monotonic_ns() - started
     user_seconds, system_seconds, max_rss_kib = parse_time_metrics(metrics_path)
     if user_seconds is None or system_seconds is None or max_rss_kib is None:
@@ -326,9 +379,12 @@ def parse_objdump_with_diagnostics(text: str) -> tuple[list[Instruction], list[O
             continue
 
         prefixes: list[str] = []
-        while len(tokens) > 1 and tokens[0].casefold().rstrip(":") in OBJDUMP_PREFIXES:
-            prefixes.append(tokens.pop(0).casefold().rstrip(":"))
-        mnemonic = tokens.pop(0).casefold().rstrip(":")
+        while tokens and is_objdump_prefix(tokens[0]):
+            prefixes.append(normalize_objdump_token(tokens.pop(0)))
+        if not tokens:
+            diagnostics.append(ObjdumpDiagnostic(line_number, "prefix-only byte row lacks a mnemonic", line))
+            continue
+        mnemonic = normalize_objdump_token(tokens.pop(0))
         operands = " ".join(tokens)
         try:
             raw = bytes.fromhex("".join(byte_tokens))
@@ -841,14 +897,12 @@ def publish_results(
 
     callback = hook or (lambda _stage: None)
     backup: Path | None = None
-    prior_moved = False
     try:
         callback("before_backup")
         if results_dir.exists():
             backup = Path(tempfile.mkdtemp(prefix=".decoder-gap-backup-", dir=results_dir.parent))
             backup.rmdir()
             results_dir.replace(backup)
-            prior_moved = True
             callback("after_backup")
 
         callback("before_publish")
@@ -857,14 +911,25 @@ def publish_results(
         if backup is not None and backup.exists():
             shutil.rmtree(backup)
     except BaseException:
-        # If the new tree is already visible, it is a complete valid result and
-        # remains the committed value. Otherwise restore the prior recognized tree.
-        new_visible = results_dir.exists() and not staging.exists()
-        if new_visible:
-            if backup is not None and backup.exists():
+        # Rename is atomic but Python signal delivery can occur between the
+        # syscall and the next bytecode. Recover from the observable filesystem
+        # state instead of relying on an assignment that may not have run.
+        with block_campaign_signals():
+            backup_visible = backup is not None and backup.exists()
+            destination_visible = results_dir.exists()
+            staging_visible = staging.exists()
+
+            if not destination_visible and backup_visible:
+                backup.replace(results_dir)
+            elif destination_visible and not staging_visible:
+                # The complete new result is already visible. The prior tree is
+                # now only a backup and may be removed.
+                if backup_visible:
+                    shutil.rmtree(backup, ignore_errors=True)
+            elif destination_visible and staging_visible and backup_visible:
+                # Publication did not consume staging. Preserve the recognized
+                # destination and discard only an empty/duplicate private backup.
                 shutil.rmtree(backup, ignore_errors=True)
-        elif prior_moved and backup is not None and backup.exists():
-            backup.replace(results_dir)
         raise
 
 

@@ -30,3 +30,11 @@ Run the fixed comparative benchmark campaign and reconcile coverage definitions 
 ## Handoff
 
 Sprint 14 uses measured facts to refine mitigation-aware defensive triage without changing the benchmark dataset.
+
+## Patch 044 decision refinement
+
+The fixed campaign must decide whether candidate-scoped decoder validation or
+parallel execution provides enough correctness/coverage/latency benefit to
+justify its RSS, binary-size, dependency, and complexity costs. Publish results
+by profile and worker count. Do not merge them into the dependency-free default
+or claim superiority unless task definitions and evidence layers are matched.

@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 9 is active through Patch 043. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added a dense candidate-index evidence side-car and current raw/exact/semantic provenance. Patch 042 added portable archive policy and external decoder-gap evidence. Patch 043 hardens target snapshots, interruption-safe result publication, objdump evidence parsing, and the public artifact boundary, and records a decoder-free default runtime with an optional future verification adapter. Patch 044 is the planned Sprint 9 closeout review; primitive expansion remains deferred.
+> Status: Sprint 9 is active through Patch 044 corrective hardening. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added the candidate-index evidence side-car. Patch 042 added external decoder-gap evidence. Patch 043 bound that evidence to immutable snapshots and recorded a decoder-free default. Patch 044 closes signal, measured-child, objdump-parser, ZIP-metadata, and public-fixture defects and defines candidate-scoped decoder and evidence-gated parallelism seams. Patch 045 is the planned Sprint 9 closeout review; primitive expansion remains deferred.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -208,7 +208,7 @@ make docker-test
 make docker-validation-smoke
 ```
 
-`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, public-bundle-policy, public-document boundary, decoder-gap transaction/parser hardening, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, local/central ZIP metadata policy, public-document boundary, decoder-gap transaction/process/parser hardening, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
 
 Hostile-input checks can also be run directly:
 
@@ -245,7 +245,7 @@ make decoder-gap-smoke
 make decoder-gap-campaign
 ```
 
-The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patch 043 snapshots each target before measurement so x64lens and objdump analyze identical immutable bytes, preserves parser diagnostics and exact tool identities, and publishes result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free; a future decoder may exist only as an optional evidence adapter unless later fixed-corpus evidence changes that decision.
+The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patches 043 and 044 snapshot each target before measurement so x64lens and objdump analyze identical immutable bytes, reap interrupted child process groups, normalize reviewed objdump prefix/return spellings, and publish result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free and single-worker. A future decoder is candidate-scoped and optional, and any parallel profile must pass deterministic-output, RSS, latency, and capacity gates before default use.
 
 ## Benchmark smoke workflow
 
@@ -277,7 +277,7 @@ file mapping and bounds
 
 Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
 
-See [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
+See [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
 ## Roadmap and release gates
 

@@ -32,3 +32,12 @@ Replace smoke-level timing with higher-resolution measurement, run a pilot compa
 ## Handoff
 
 Sprint 13 runs the publication-grade comparative campaign using the frozen methodology, schema, corpus, and baseline versions.
+
+## Patch 044 acceleration measurement refinement
+
+The pilot infrastructure should include bounded ablations for core one-worker
+analysis, candidate-scoped external or prototype decoder validation, and
+candidate-validation worker counts where an experimental profile exists.
+Record binary size, startup cost, peak RSS, wall/user/system time, deterministic
+output hash, and candidate/evidence counts. Region/chunk parallelism is measured
+only after overlap, deduplication, and global capacity rules are implemented.

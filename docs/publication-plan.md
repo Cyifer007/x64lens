@@ -179,3 +179,12 @@ canonical-boundary reconciliation, semantic coverage, runtime, RSS, dependency
 surface, and threats to validity as distinct dimensions. Sprint 9 campaign
 measurements remain development evidence until the fixed corpus and publication
 methodology are frozen.
+
+## Candidate-scoped decoder and parallelism claim discipline
+
+The paper may describe candidate-scoped decoding and deterministic parallel
+profiles as architecture or measured ablations only. It may not claim zero
+false negatives from a small system sample, invisibility from anti-analysis, or
+parallel speedup without fixed-corpus timing and RSS evidence. Defensive value
+should be framed as low deployment friction, small dependency surface, bounded
+resource use, and explicit provenance.

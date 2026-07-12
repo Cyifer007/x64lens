@@ -5,10 +5,14 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import signal
+import subprocess
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,6 +90,47 @@ Disassembly of section .text:
     _, malformed_diagnostics = MODULE.parse_objdump_with_diagnostics(malformed)
     if len(malformed_diagnostics) != 1 or "lacks a mnemonic" not in malformed_diagnostics[0].reason:
         raise RuntimeError("malformed objdump row did not produce a retained diagnostic")
+
+    prefix_rows = [
+        ("40", "rex ret"), ("41", "rex.B ret"), ("42", "rex.X ret"),
+        ("43", "rex.XB ret"), ("44", "rex.R ret"), ("45", "rex.RB ret"),
+        ("46", "rex.RX ret"), ("47", "rex.RXB ret"), ("48", "rex.W ret"),
+        ("49", "rex.WB ret"), ("4a", "rex.WX ret"), ("4b", "rex.WXB ret"),
+        ("4c", "rex.WR ret"), ("4d", "rex.WRB ret"), ("4e", "rex.WRX ret"),
+        ("4f", "rex.WRXB ret"), ("2e", "cs ret"), ("3e", "ds ret"),
+        ("26", "es ret"), ("36", "ss ret"), ("64", "fs ret"),
+        ("65", "gs ret"), ("66", "retw"), ("67", "addr32 ret"),
+        ("f0", "lock ret"), ("f2", "bnd ret"), ("f3", "repz ret"),
+    ]
+    rendered = ["Disassembly of section .text:", ""]
+    for index, (prefix, decoded) in enumerate(prefix_rows):
+        rendered.append(f"  {0x402000 + index * 2:x}: {prefix} c3\t{decoded}")
+    rendered.extend(
+        [
+            "  402036: 2e eb 00\tcs jmp 402039 <barrier+0x3>",
+            "  402039: c3\tret",
+            "  40203a: 41 ff e0\tjmp r8",
+            "  40203d: c3\tret",
+            "  40203e: 66 66 66 66\tdata16 data16 data16 data16",
+        ]
+    )
+    prefix_instructions, prefix_diagnostics = MODULE.parse_objdump_with_diagnostics("\n".join(rendered))
+    expected_prefix_returns = [0x402000 + index * 2 for index in range(len(prefix_rows))]
+    observed_prefix_returns = [item.address for item in prefix_instructions if MODULE.is_return(item)]
+    if observed_prefix_returns != expected_prefix_returns + [0x402039, 0x40203D]:
+        raise RuntimeError(
+            f"full prefix/return normalization failed: {observed_prefix_returns!r}"
+        )
+    if len(prefix_diagnostics) != 1 or "prefix-only" not in prefix_diagnostics[0].reason:
+        raise RuntimeError(f"prefix-only row was not retained as a diagnostic: {prefix_diagnostics!r}")
+    segment_jump = next(item for item in prefix_instructions if item.address == 0x402036)
+    if segment_jump.mnemonic != "jmp" or not MODULE.is_predecessor_barrier(segment_jump):
+        raise RuntimeError("segment-prefixed jump was not normalized into a predecessor barrier")
+    prefix_sequences = MODULE.build_canonical_sequences(prefix_instructions, 8)
+    if any(item.terminator == 0x402039 and item.start < 0x402039 for item in prefix_sequences):
+        raise RuntimeError("canonical sequence crossed a segment-prefixed jump")
+    if any(item.terminator == 0x40203D and item.start < 0x40203D for item in prefix_sequences):
+        raise RuntimeError("canonical sequence crossed a REX-prefixed indirect jump")
 
 
 def test_snapshots(root: Path) -> None:
@@ -166,6 +211,126 @@ def test_publication(root: Path) -> None:
         raise RuntimeError("unrelated results directory was modified")
 
 
+def test_post_rename_signal_window(root: Path) -> None:
+    """Exercise the exact syscall/next-bytecode window found during review."""
+
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        case_root = root / f"rename-window-{signal.Signals(signum).name.lower()}"
+        case_root.mkdir()
+        results = case_root / "results"
+        staging = case_root / "staging"
+        write_campaign(results, "old", "x64lens-decoder-gap-manifest-v2")
+        write_campaign(staging, "new", "x64lens-decoder-gap-manifest-v2")
+
+        path_type = type(results)
+        original_replace = path_type.replace
+        injected = False
+
+        def replace_then_interrupt(self: Path, target: Path) -> Path:
+            nonlocal injected
+            replaced = original_replace(self, target)
+            if self == results and Path(target).name.startswith(".decoder-gap-backup-"):
+                injected = True
+                raise MODULE.CampaignInterrupted(signum)
+            return replaced
+
+        path_type.replace = replace_then_interrupt
+        try:
+            try:
+                MODULE.publish_results(staging, results)
+            except MODULE.CampaignInterrupted as exc:
+                if exc.signum != signum:
+                    raise RuntimeError("rename-window probe observed the wrong signal") from exc
+            else:
+                raise RuntimeError("rename-window probe did not interrupt publication")
+        finally:
+            path_type.replace = original_replace
+
+        if not injected:
+            raise RuntimeError("rename-window probe did not execute after the prior-tree rename")
+        manifest = json.loads((results / "manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("marker") != "old":
+            raise RuntimeError("post-rename interruption did not restore the prior campaign")
+        if list(case_root.glob(".decoder-gap-backup-*")):
+            raise RuntimeError("post-rename interruption left backup residue")
+
+
+def pid_exists(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def test_measured_child_signal_cleanup(root: Path) -> None:
+    helper = root / "measured-child.py"
+    helper.write_text(
+        """#!/usr/bin/env python3
+import os
+import pathlib
+import sys
+import time
+pathlib.Path(sys.argv[1]).write_text(f\"pid={os.getpid()} pgid={os.getpgrp()}\\n\")
+time.sleep(60)
+""",
+        encoding="utf-8",
+    )
+
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        case_root = root / f"measurement-{signal.Signals(signum).name.lower()}"
+        case_root.mkdir()
+        marker = case_root / "marker.txt"
+        stdout = case_root / "stdout.bin"
+        stderr = case_root / "stderr.bin"
+        previous = signal.getsignal(signum)
+
+        def handler(observed: int, _frame: object) -> None:
+            raise MODULE.CampaignInterrupted(observed)
+
+        def sender() -> None:
+            deadline = time.monotonic() + 10.0
+            while not marker.exists() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            if marker.exists():
+                os.kill(os.getpid(), signum)
+
+        signal.signal(signum, handler)
+        thread = threading.Thread(target=sender, daemon=True)
+        thread.start()
+        try:
+            try:
+                MODULE.run_measured(
+                    [sys.executable, str(helper), str(marker)],
+                    stdout,
+                    stderr,
+                    30.0,
+                    case_root,
+                )
+            except MODULE.CampaignInterrupted as exc:
+                if exc.signum != signum:
+                    raise RuntimeError("measured-child probe observed the wrong signal") from exc
+            else:
+                raise RuntimeError("measured-child probe did not interrupt the measurement")
+        finally:
+            signal.signal(signum, previous)
+            thread.join(timeout=2.0)
+
+        if not marker.exists():
+            raise RuntimeError("measured child did not publish its PID marker")
+        fields = dict(item.split("=", 1) for item in marker.read_text(encoding="utf-8").split())
+        child_pid = int(fields["pid"])
+        deadline = time.monotonic() + 2.0
+        while pid_exists(child_pid) and time.monotonic() < deadline:
+            time.sleep(0.02)
+        if pid_exists(child_pid):
+            try:
+                os.killpg(int(fields["pgid"]), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            raise RuntimeError(f"measured child group survived {signal.Signals(signum).name}")
+
+
 def main() -> int:
     test_parser()
     with tempfile.TemporaryDirectory(prefix="x64lens-decoder-gap-hardening-") as temp:
@@ -174,7 +339,14 @@ def main() -> int:
         publication_root = root / "publication"
         publication_root.mkdir()
         test_publication(publication_root)
-    print("decoder-gap-hardening-smoke: ok parser=1 snapshots=2 publication_interruptions=8")
+        test_post_rename_signal_window(publication_root)
+        measurement_root = root / "measurement"
+        measurement_root.mkdir()
+        test_measured_child_signal_cleanup(measurement_root)
+    print(
+        "decoder-gap-hardening-smoke: ok "
+        "parser=2 snapshots=2 publication_interruptions=10 measured_signal_cleanup=2"
+    )
     return 0
 
 

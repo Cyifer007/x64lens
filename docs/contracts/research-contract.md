@@ -92,3 +92,10 @@ inputs, retain categorized disagreements and parser diagnostics, preserve raw
 facts, and measure dependency, license, binary-size, latency, RSS, and hostile-
 input costs. Patch 043 records a decoder-free default and an optional future
 adapter seam.
+
+## Acceleration evidence rule
+
+Decoder and parallel execution claims require profile-specific raw evidence.
+Report core scanning, candidate-scoped validation, and each worker-count
+condition separately. Preserve output hashes and evidence-layer counts so a
+speedup cannot hide changed work or changed semantics.

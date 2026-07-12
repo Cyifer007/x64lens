@@ -132,3 +132,16 @@ Buildx metadata.
 Patch 043 is accepted when all focused, native, campaign, interruption, archive,
 public-boundary, and qualified Docker checks pass and the checkpoint tag remains
 unchanged.
+
+## Post-validation disposition
+
+Authoritative local validation passed the analyzer, native aggregate, qualified
+Docker aggregate, immutable snapshot binding, and decoder-free runtime boundary.
+Patch 043 was not accepted as the final campaign-hardening state because focused
+review found a post-rename signal window, measured-child process leakage,
+incomplete objdump prefix/return normalization, local/central ZIP metadata and
+ZIP64 gaps, and real transfer basenames in a public negative fixture.
+
+Patch 044 is the required corrective patch. Its validation record supersedes
+the focused case counts and transaction/parser acceptance claims above while
+preserving the Patch 043 runtime and decoder decision.

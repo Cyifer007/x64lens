@@ -106,3 +106,13 @@ Reconsider an optional linked or internal decoder only after a fixed-corpus
 campaign demonstrates a material user-facing validity or semantic-coverage gap,
 and only when licensing, malformed-input handling, binary-size, runtime, and RSS
 ablation evidence are available.
+
+## Patch 044 correction note
+
+Authoritative Patch 043 validation confirmed the decoder-free default and
+immutable target binding, but found that the first transaction/parser
+implementation did not satisfy every claimed interruption and normalization
+case. Patch 044 supersedes those mechanics with observable-state rollback,
+measured-child process-group cleanup, the complete reviewed prefix/return
+fixture, and bounded local/central ZIP reconciliation. ADR 0030 governs those
+corrections and the candidate-scoped decoder/parallelism refinement.

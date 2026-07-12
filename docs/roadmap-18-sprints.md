@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 043. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds portable bundle policy and reproducible external decoder-gap measurement. Patch 043 hardens campaign integrity and records the decoder-free default with an optional verification adapter. Patch 044 is the remaining Sprint 9 closeout gate.
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 044 corrective hardening. Patches 040-041 establish report identity, completeness, schema `0.2.0`, parity, and per-candidate provenance. Patches 042-044 establish external decoder-gap evidence, immutable targets, signal-safe campaign transactions, process cleanup, external-parser integrity, portable ZIP metadata policy, and the bounded candidate-scoped decoder/parallelism decision. Patch 045 is the remaining Sprint 9 closeout gate.
 
 The implemented pipeline is:
 
@@ -61,7 +61,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
-| 9 | Candidate provenance and decoder-gap measurement | Patches 040-043 establish identity, completeness, candidate provenance, portable and transactional evidence, and the decoder-free default decision; Patch 044 performs sprint closeout. |
+| 9 | Candidate provenance and decoder-gap measurement | Patches 040-044 establish identity, completeness, provenance, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions; Patch 045 performs sprint closeout. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
@@ -264,8 +264,22 @@ optional side-car evidence profile, not a replacement scanner or mandatory
 runtime dependency. This preserves a measurable low-footprint mode for offline,
 incident-response, minimal-container, and CI/CD deployments.
 
-Patch 044 is a closeout-only boundary: architecture and contract review, public
-and private context reconciliation, development configuration review, Docker
-Buildx environment analysis, roadmap reconciliation, and the Sprint 9
-retrospective. Feature discoveries are classified for Sprint 10 or later unless
-they block an accepted Sprint 9 contract.
+Patch 044 is the corrective campaign and release-boundary hardening boundary.
+Patch 045 is closeout-only: architecture and contract review, public and private
+context reconciliation, development configuration review, Docker Buildx
+environment analysis, roadmap reconciliation, and the Sprint 9 retrospective.
+Feature discoveries are classified for Sprint 10 or later unless they block an
+accepted Sprint 9 contract.
+
+## Sprint 9 Patch 044 roadmap update
+
+Patch 044 corrects the evidence and release-boundary defects discovered after
+Patch 043 without changing analyzer assembly or schema. It also records the
+preferred bounded future architecture: scan first, optionally decode retained
+candidate windows, preserve all evidence tiers, and introduce parallelism only
+as an independently benchmarked deterministic profile.
+
+Patch 045 now owns Sprint 9 closeout and private environment/context review.
+Sprint 10 remains primitive expansion. Sprint 12/13 gain explicit
+candidate-decoder and worker-count ablations so low RSS and startup speed are
+measured rather than assumed.

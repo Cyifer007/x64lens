@@ -229,3 +229,11 @@ input bytes and must publish result trees transactionally. `SIGINT`, `SIGTERM`,
 timeout, parser failure, or child-process failure must leave either the prior
 recognized result or one complete new result. External decoder/disassembler
 facts remain adapters and may not alter analyzer runtime records.
+
+## Candidate-scoped verification and acceleration rule
+
+A future decoder must consume bounded candidate windows and emit side-car facts;
+it must not replace loader mapping or raw scanning. A future parallel profile
+must preserve deterministic output, global bounded capacity, cleanup, and a
+one-worker mode. Neither becomes the default before fixed-corpus latency, RSS,
+binary-size, and correctness evidence exists.

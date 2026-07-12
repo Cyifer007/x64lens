@@ -56,9 +56,9 @@ help:
 	@echo "  make readelf-comparison-smoke  Compare metadata and loader facts against readelf"
 	@echo "  make optional-tool-comparison-smoke  Run optional checksec/rabin2 comparison helpers"
 	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
-	@echo "  make patch-bundle-hygiene-smoke  Exercise root-agnostic bundle leak rejection"
-	@echo "  make public-docs-hygiene-smoke  Reject timestamped private attachment names"
-	@echo "  make decoder-gap-hardening-smoke  Test parser, snapshots, and publication rollback"
+	@echo "  make patch-bundle-hygiene-smoke  Reconcile local/central ZIP metadata and private paths"
+	@echo "  make public-docs-hygiene-smoke  Reject private transfer names and host paths"
+	@echo "  make decoder-gap-hardening-smoke  Test parser, child cleanup, snapshots, and rollback"
 	@echo "  make decoder-gap-smoke  Validate controlled external decoder reconciliation"
 	@echo "  make decoder-gap-campaign  Measure controlled and selected-system decoder gaps"
 	@echo "  make schema-compat-smoke  Validate schema 0.1.0 compatibility and 0.2.0 invariants"
@@ -518,6 +518,9 @@ scaffold-check: script-perms-check
 	@test -f docs/sprints/sprint-09-patch-042-validation.md
 	@test -f docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
 	@test -f docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
+	@test -f docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
+	@test -f docs/design/candidate-scoped-decoder-and-parallelism.md
+	@test -f docs/sprints/sprint-09-patch-044-validation.md
 	@test -f docs/sprints/sprint-09-patch-043-validation.md
 	@echo "scaffold-check: ok"
 

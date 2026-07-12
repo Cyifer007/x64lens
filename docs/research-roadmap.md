@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 043. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and command parity. Patch 041 added the dense candidate evidence side-car. Patch 042 added portable bundle validation and decoder-gap evidence. Patch 043 binds campaigns to immutable targets, makes result publication signal-safe, hardens external parsing, and records a decoder-free default runtime with an optional future verification adapter. Patch 044 is the remaining closeout review. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 044 corrective hardening. Patches 040-041 established report identity, completeness, schema `0.2.0`, parity, and candidate provenance. Patches 042-044 established portable decoder-gap evidence, immutable targets, signal-safe campaign transactions and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patch 045 is the remaining closeout review. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -52,7 +52,7 @@ Status: implemented for the initial exact-pattern set. Raw, exact-suffix, and se
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: active through Patch 043. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence, Patch 042 implements the external decoder-gap campaign, and Patch 043 records the architecture decision. Decoder-backed tiers remain unimplemented and optional; they may be added only through a separately measured evidence adapter.
+Status: active through Patch 044. Patches 040-041 implement the schema `0.2.0` report envelope, completeness, parity, and raw/exact/semantic provenance. Patches 042-044 implement and harden the external decoder-gap campaign, transactional evidence, parser/archive integrity, and the candidate-scoped optional decoder decision. Decoder-backed tiers remain unimplemented and optional; they may be added only through a separately measured side-car adapter.
 
 ### Stage 4: mitigation-aware triage
 
@@ -217,3 +217,12 @@ Patch 043 also strengthens research integrity: target snapshots identify the
 bytes actually analyzed, external parser diagnostics remain visible, and result
 publication is transactional across interruption. Performance and RSS values
 from this campaign remain smoke evidence and cannot support superiority claims.
+
+## Sprint 9 Patch 044 research decision
+
+Patch 044 preserves the dependency-free scanner as the product baseline and
+records a bounded hybrid research path. Candidate-scoped decoding can validate
+possible starts inside retained windows; deterministic candidate-validation or
+region/chunk profiles may later improve throughput. Sprint 12/13 must measure
+these against one-worker core analysis before integration or performance
+claims. Patch 045 completes Sprint 9 closeout and environment/context review.

@@ -189,3 +189,10 @@ actually analyzed and must survive interrupted replacement without losing a
 recognized prior result. The default release artifact remains decoder-free; a
 future decoder-enabled profile requires separate identity, dependencies,
 validation, and benchmark evidence.
+
+## Local and central ZIP metadata rule
+
+A public ZIP is accepted only when bounded local-header metadata agrees with the
+central directory and recognized extra fields have valid semantics. Release
+checks remain non-extracting. Artifact checksum manifests are siblings of the
+final artifacts; any regeneration changes the authoritative hash set.

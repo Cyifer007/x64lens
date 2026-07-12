@@ -37,3 +37,9 @@ Patch 036 hardens implemented seams discovered during historical review. Byte-sa
 See ADR 0023 for the Patch 037 decision to add automated `readelf` comparison,
 optional external mitigation/metadata helpers, and finite benchmark-row
 validation.
+
+## Sprint 9 bounded acceleration design
+
+- [`candidate-scoped-decoder-and-parallelism.md`](candidate-scoped-decoder-and-parallelism.md)
+  defines the optional decoder and deterministic concurrency gates established
+  by Patch 044.

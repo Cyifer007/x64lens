@@ -1097,3 +1097,23 @@ contradictions, and common nested ZIP containers.
 
 Patch 043 changes no runtime or schema path. The full native and qualified
 Docker aggregates remain mandatory no-regression gates.
+
+## Sprint 9 Patch 044 corrective validation
+
+Patch 044 preserves the analyzer runtime and adds focused acceptance for the
+research and release tooling. Required focused commands are:
+
+```bash
+make public-docs-hygiene-smoke
+make patch-bundle-hygiene-smoke
+make decoder-gap-hardening-smoke
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+```
+
+The public fixture gate rejects eight synthetic attachment/path variants. The
+archive gate exercises 64 layouts through both the Python implementation and
+production shell wrapper. The decoder hardening gate covers all 27 reviewed
+prefix/near-return forms, prefixed control-flow barriers, ten transaction
+interruptions including the post-rename window, and both measured-child signal
+cleanup cases. Full native and qualified Docker aggregates remain mandatory.
+See `docs/sprints/sprint-09-patch-044-validation.md`.

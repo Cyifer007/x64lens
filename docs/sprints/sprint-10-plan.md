@@ -39,3 +39,11 @@ Expand semantic primitive coverage without collapsing suffix evidence, decoded v
 ## Handoff
 
 Sprint 11 builds a reproducible compiler and hardening corpus that exercises the expanded semantic and mitigation model.
+
+## Patch 044 entry refinement
+
+Sprint 10 expands the exact and semantic catalog first. Fixtures should also
+mark which retained windows would be eligible for later candidate-scoped
+validation, but Sprint 10 does not make a decoder mandatory and does not force
+multithreading. New families must remain correct in deterministic one-worker
+execution before acceleration experiments begin.

@@ -124,7 +124,8 @@ A limited internal decoder may be justified for a tightly bounded instruction su
 - Sprint 9 Patch 041: candidate-index provenance and exact-suffix evidence.
 - Sprint 9 Patch 042: external objdump gap measurement and explicit decision gate.
 - Sprint 9 Patch 043: immutable evidence, signal-safe publication, parser hardening, and a recorded decoder-free default with an optional adapter seam.
-- Sprint 9 Patch 044: closeout audit; no mandatory decoder implementation.
+- Sprint 9 Patch 044: corrective campaign hardening and candidate-scoped decoder/parallelism gate.
+- Sprint 9 Patch 045: closeout audit; no mandatory decoder implementation.
 - Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
 - Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
 - Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
@@ -186,3 +187,17 @@ Any future adapter receives its own build identity, dependency and license
 record, failure contract, malformed-input regression suite, and performance/RSS
 ablation. It must not remove raw candidates or silently rewrite exact and
 semantic-exact history.
+
+## Patch 044 candidate-scoped refinement
+
+The preferred future decoder boundary is bounded candidate validation rather
+than whole-image decoding. The raw scanner first discovers terminators and
+retains windows. An optional adapter may then try valid starts within each
+window, emit `decode_record[]` side-car facts, and support semantic-decoded
+classification. Raw discovery remains independently runnable and measurable.
+
+Parallelism is a separate decision. Candidate-index validation is the lowest-
+risk first seam; executable-region and chunk scanning require deterministic
+ordering, overlap and deduplication rules, a global capacity contract, and
+bounded per-worker memory. Sprint 12 and Sprint 13 own the measurement and
+ablation gates before any default-runtime change.

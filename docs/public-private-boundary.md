@@ -74,3 +74,15 @@ unsupported name/type extra fields, special files, encryption, comments, nested
 containers, duplicates, case collisions, and private or generated paths under
 any archive root. Explicit public samples such as `.env.example` remain narrow
 allowances.
+
+## Patch 044 local-header and synthetic-fixture rule
+
+Public ZIP acceptance reconciles bounded local-file headers with central-
+directory names, flags, compression, timestamps, checksums, sizes, and
+recognized extra-field semantics. A clean central record cannot hide an unsafe
+local name, encryption bit, Unicode override, or unsupported extra field.
+Malformed or unnecessary ZIP64 metadata is rejected.
+
+Public negative tests use synthetic timestamps, user names, hosts, and transfer
+names. Tests must never preserve a real private attachment basename simply to
+prove that the checker would reject it.

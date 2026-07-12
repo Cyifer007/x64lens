@@ -40,6 +40,8 @@ required=(
     docs/adr/0027-candidate-evidence-sidecar-and-contract-hardening.md
     docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
     docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
+    docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
+    docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -61,6 +63,7 @@ required=(
     docs/sprints/sprint-09-patch-041-validation.md
     docs/sprints/sprint-09-patch-042-validation.md
     docs/sprints/sprint-09-patch-043-validation.md
+    docs/sprints/sprint-09-patch-044-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
@@ -141,7 +144,13 @@ grep -q 'Patch 043' docs/sprints/sprint-09-plan.md \
 grep -qi 'decoder-free' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the decoder-free default decision'
 grep -q 'Patch 044' docs/sprints/sprint-09-plan.md \
-    || fail 'Sprint 9 plan does not preserve the Patch 044 closeout boundary'
+    || fail 'Sprint 9 plan does not record the Patch 044 corrective boundary'
+grep -q 'Patch 045' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not preserve the Patch 045 closeout boundary'
+grep -qi 'candidate-scoped' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not record the bounded decoder direction'
+grep -qi 'parallel' docs/design/candidate-scoped-decoder-and-parallelism.md \
+    || fail 'bounded acceleration design does not record the parallelism gate'
 grep -q 'decoder-gap-smoke' docs/sprints/sprint-09-patch-042-validation.md \
     || fail 'Patch 042 validation does not name the controlled decoder-gap gate'
 grep -q 'require-provenance' docs/sprints/sprint-09-patch-041-validation.md \
