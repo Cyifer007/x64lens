@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and shared command parity. Patch 041 added the dense candidate evidence side-car and current per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds portable bundle validation plus controlled and selected-system decoder-gap evidence. Authoritative campaign review and the decoder decision are next. The repository now provides:
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 043. Patch 040 established report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and command parity. Patch 041 added the dense candidate evidence side-car. Patch 042 added portable bundle validation and decoder-gap evidence. Patch 043 binds campaigns to immutable targets, makes result publication signal-safe, hardens external parsing, and records a decoder-free default runtime with an optional future verification adapter. Patch 044 is the remaining closeout review. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -52,7 +52,7 @@ Status: implemented for the initial exact-pattern set. Raw, exact-suffix, and se
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: active. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence, and Patch 042 implements the external decoder-gap campaign and decision gate. Decoder-backed tiers remain unimplemented; the authoritative campaign evidence must first support a documented architecture decision.
+Status: active through Patch 043. Patch 040 implements the schema `0.2.0` report envelope and command-level completeness facts, Patch 041 implements raw, exact-suffix, and semantic-exact candidate evidence, Patch 042 implements the external decoder-gap campaign, and Patch 043 records the architecture decision. Decoder-backed tiers remain unimplemented and optional; they may be added only through a separately measured evidence adapter.
 
 ### Stage 4: mitigation-aware triage
 
@@ -200,8 +200,20 @@ smoke data, duplicate/canonicalization facts, and categorized disagreement
 samples. These artifacts are evidence for the decision gate, not publication-
 grade coverage or performance results.
 
-The embedded-decoder decision remains open until authoritative local campaign
-results are reviewed. A decoder is justified only if a measured gap affects a
-user-facing or research claim and the dependency can remain behind a side-car
-adapter while preserving independent raw-scanner metrics. Otherwise external
-verification remains the sounder architecture.
+Patch 043 records the reviewed outcome: the default runtime remains decoder-free,
+and a future decoder is optional evidence infrastructure rather than required
+runtime authority. The campaign is development evidence, not a publication
+benchmark.
+
+## Patch 043 research posture
+
+The reviewed campaign found no canonical return terminator absent from x64lens
+raw discovery in the selected development targets. The observed disagreements
+were primarily expected byte-candidate versus canonical-boundary differences.
+That evidence supports preserving the dependency-free default while keeping an
+optional decoder adapter as a future research seam.
+
+Patch 043 also strengthens research integrity: target snapshots identify the
+bytes actually analyzed, external parser diagnostics remain visible, and result
+publication is transactional across interruption. Performance and RSS values
+from this campaign remain smoke evidence and cannot support superiority claims.

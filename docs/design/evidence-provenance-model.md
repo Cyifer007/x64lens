@@ -176,3 +176,15 @@ facts.
 A canonical-boundary disagreement is not silently relabeled as a false positive.
 The source of disagreement remains explicit because objdump is section-derived
 external evidence while x64lens scanning remains program-header-authoritative.
+
+## Patch 043 immutable campaign provenance
+
+Development comparison artifacts now distinguish the requested source path from
+the retained immutable target snapshot. The snapshot SHA-256 and size identify
+the bytes analyzed by both x64lens and the external comparison tool. Source path
+and source-file metadata remain descriptive lineage; they are not allowed to
+certify different bytes.
+
+External parse diagnostics and interruption outcomes are campaign evidence, not
+runtime candidate facts. The default runtime remains decoder-free, and any
+future decoder-backed record remains additive to the candidate-index side-car.

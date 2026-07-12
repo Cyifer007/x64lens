@@ -787,3 +787,23 @@ cost. It must not:
 This keeps the future decoder decision outside the current engine until measured
 evidence justifies an adapter. Any approved decoder must still enter through
 side-car records after raw scanning, not through a scanner rewrite.
+
+## Sprint 9 Patch 043 campaign and decoder boundary
+
+Patch 043 does not alter the analyzer pipeline. It hardens the development-only
+comparison path:
+
+```text
+mutable source path
+  -> verified immutable snapshot
+  -> x64lens JSON over snapshot
+  -> canonical external disassembly over the same snapshot
+  -> categorized reconciliation plus parser diagnostics
+  -> complete staging result
+  -> signal-safe transactional publication
+```
+
+The default analyzer remains decoder-free. A future decoder may attach through a
+separate adapter that writes candidate-index side-car facts. It must not own file
+mapping, ELF validation, program-header authority, raw enumeration, mitigation
+analysis, scoring, or output policy.

@@ -11,14 +11,17 @@ from __future__ import annotations
 import argparse
 import re
 import stat
+import struct
 import sys
 import unicodedata
 import zipfile
+import zlib
 from dataclasses import dataclass
 from pathlib import Path
 
 WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:")
 CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
+WINDOWS_FORBIDDEN_CHARS = frozenset('< > " | ? *'.replace(" ", ""))
 PUBLIC_ARCHIVE_COMMENT_RE = re.compile(rb"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})")
 WINDOWS_RESERVED_BASENAMES = {
     "CON",
@@ -26,8 +29,12 @@ WINDOWS_RESERVED_BASENAMES = {
     "AUX",
     "NUL",
     "CLOCK$",
+    "CONIN$",
+    "CONOUT$",
     *(f"COM{index}" for index in range(1, 10)),
     *(f"LPT{index}" for index in range(1, 10)),
+    *(f"COM{index}" for index in "¹²³"),
+    *(f"LPT{index}" for index in "¹²³"),
 }
 
 PRIVATE_DIRS = {
@@ -100,6 +107,14 @@ NESTED_ARCHIVE_SUFFIXES = {
     ".xz",
     ".7z",
     ".rar",
+    ".jar",
+    ".war",
+    ".ear",
+    ".whl",
+    ".apk",
+    ".xpi",
+    ".ipa",
+    ".epub",
 }
 
 GENERATED_TOY_BASENAMES = {
@@ -134,8 +149,11 @@ def contains_sequence(parts: tuple[str, ...], sequence: tuple[str, ...]) -> bool
 
 def normalize_member(info: zipfile.ZipInfo) -> MemberPath:
     original = info.filename
+    raw_original = getattr(info, "orig_filename", original)
     if not original:
         raise ValueError("empty archive member name")
+    if raw_original != original:
+        raise ValueError("raw and effective ZIP member names disagree")
     if CONTROL_RE.search(original):
         raise ValueError("control character in archive member name")
     if any(unicodedata.category(character) in {"Cc", "Cf", "Cs"} for character in original):
@@ -152,6 +170,8 @@ def normalize_member(info: zipfile.ZipInfo) -> MemberPath:
         raise ValueError("non-canonical or traversing archive path")
     if any(part.endswith((" ", ".")) for part in parts):
         raise ValueError("Windows-ambiguous trailing space or dot")
+    if any(any(character in WINDOWS_FORBIDDEN_CHARS for character in part) for part in parts):
+        raise ValueError("Windows-forbidden character in archive path")
     if any(":" in part for part in parts):
         raise ValueError("colon-bearing archive path is not portable")
     if any(part.split(".", 1)[0].upper() in WINDOWS_RESERVED_BASENAMES for part in parts):
@@ -221,6 +241,91 @@ def forbidden_reason(member: MemberPath) -> str | None:
     return None
 
 
+
+def inspect_extra_fields(info: zipfile.ZipInfo, member: MemberPath) -> list[str]:
+    """Validate recognized ZIP metadata and reject opaque name/type overrides."""
+
+    violations: list[str] = []
+    data = info.extra
+    offset = 0
+    while offset < len(data):
+        if len(data) - offset < 4:
+            violations.append("truncated ZIP extra-field header")
+            break
+        header_id, size = struct.unpack_from("<HH", data, offset)
+        offset += 4
+        if size > len(data) - offset:
+            violations.append(f"truncated ZIP extra field 0x{header_id:04x}")
+            break
+        payload = data[offset : offset + size]
+        offset += size
+
+        if header_id == 0x5455:  # extended timestamp
+            if not payload:
+                violations.append("empty extended-timestamp extra field")
+                continue
+            flags = payload[0]
+            full_size = 1 + 4 * sum(bool(flags & bit) for bit in (1, 2, 4))
+            central_size = 5 if flags & 0x01 else 1
+            if flags & ~0x07 or len(payload) not in {central_size, full_size}:
+                violations.append("malformed extended-timestamp extra field")
+        elif header_id == 0x7075:  # Info-ZIP Unicode path
+            if len(payload) < 5 or payload[0] != 1:
+                violations.append("malformed Unicode-path extra field")
+                continue
+            try:
+                unicode_name = payload[5:].decode("utf-8")
+                raw_name = member.original.encode(
+                    "utf-8" if info.flag_bits & 0x800 else "cp437"
+                )
+            except (UnicodeDecodeError, UnicodeEncodeError):
+                violations.append("invalid Unicode-path extra field encoding")
+                continue
+            expected_crc = struct.unpack_from("<I", payload, 1)[0]
+            if zlib.crc32(raw_name) & 0xFFFFFFFF != expected_crc:
+                violations.append("Unicode-path extra field has an invalid name CRC")
+            if unicode_name != member.original:
+                violations.append("Unicode-path extra field disagrees with member name")
+        elif header_id == 0x7875:  # Info-ZIP Unix UID/GID
+            if len(payload) < 3 or payload[0] != 1:
+                violations.append("malformed Unix UID/GID extra field")
+                continue
+            uid_len = payload[1]
+            uid_end = 2 + uid_len
+            if uid_len > 8 or uid_end >= len(payload):
+                violations.append("malformed Unix UID/GID extra field")
+                continue
+            gid_len = payload[uid_end]
+            if gid_len > 8 or uid_end + 1 + gid_len != len(payload):
+                violations.append("malformed Unix UID/GID extra field")
+        elif header_id == 0x0001:  # ZIP64 sizes/offsets
+            if len(payload) not in {8, 16, 24, 28}:
+                violations.append("malformed ZIP64 extra field")
+        elif header_id == 0x000A:  # NTFS timestamps
+            if len(payload) < 4:
+                violations.append("malformed NTFS extra field")
+                continue
+            cursor = 4
+            while cursor < len(payload):
+                if len(payload) - cursor < 4:
+                    violations.append("truncated NTFS extra-field attribute")
+                    break
+                tag, length = struct.unpack_from("<HH", payload, cursor)
+                cursor += 4
+                if length > len(payload) - cursor:
+                    violations.append("truncated NTFS extra-field value")
+                    break
+                if tag != 0x0001 or length != 24:
+                    violations.append("unsupported NTFS extra-field attribute")
+                cursor += length
+        elif header_id in {0x5855, 0x7855}:  # legacy Info-ZIP Unix metadata
+            if len(payload) not in {8, 12}:
+                violations.append("malformed legacy Unix extra field")
+        else:
+            violations.append(f"unsupported ZIP extra field 0x{header_id:04x}")
+
+    return violations
+
 def inspect_bundle(bundle: Path) -> tuple[int, list[Violation]]:
     violations: list[Violation] = []
     seen: dict[str, str] = {}
@@ -261,6 +366,13 @@ def inspect_bundle(bundle: Path) -> tuple[int, list[Violation]]:
             file_type = stat.S_IFMT(unix_mode)
             if file_type not in {0, stat.S_IFREG, stat.S_IFDIR, stat.S_IFLNK}:
                 violations.append(Violation(member.original, "special-file member is not permitted"))
+            dos_directory = bool(info.external_attr & 0x10)
+            if member.is_directory and file_type == stat.S_IFREG:
+                violations.append(Violation(member.original, "directory name carries regular-file metadata"))
+            if not member.is_directory and (file_type == stat.S_IFDIR or dos_directory):
+                violations.append(Violation(member.original, "file name carries directory metadata"))
+            for extra_violation in inspect_extra_fields(info, member):
+                violations.append(Violation(member.original, extra_violation))
             if info.flag_bits & 0x1:
                 violations.append(Violation(member.original, "encrypted member is not inspectable"))
             if info.comment:

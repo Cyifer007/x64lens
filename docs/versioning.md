@@ -84,3 +84,10 @@ Patch 041 remains schema `0.2.0`. Candidate evidence is optional in the formal
 schema so initial Patch 040 reports stay valid, while current-producer tests
 require it explicitly. This is a compatible addition within the `0.2.x` line,
 not a redefinition of existing fields or counts.
+
+## Patch 043 decoder-profile versioning note
+
+Patch 043 does not change the tool version or schema. The default runtime remains
+`0.1.0-dev` with schema `0.2.0`. A future decoder-enabled build or mode must carry
+an explicit profile/build identity in release and benchmark metadata so its
+results cannot be merged silently with the dependency-free core.

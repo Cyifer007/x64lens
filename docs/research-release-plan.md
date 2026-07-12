@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, retained representative final-shape `0.1.0` compatibility, and shared command parity. Patch 041 adds current per-candidate provenance. Patch 042 adds portable source-bundle validation and external decoder-gap evidence with target/tool hashes. Authoritative decoder-decision review, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, retained representative final-shape `0.1.0` compatibility, and command parity. Patch 041 adds current per-candidate provenance. Patch 042 adds portable source-bundle validation and external decoder-gap evidence. Patch 043 hardens campaign provenance and publication and records a decoder-free default runtime with an optional verification adapter. Sprint 9 closeout, reproducible corpus work, and high-resolution benchmarking remain open.
 
 ## `v0.1.0-rc1` gate
 
@@ -138,7 +138,7 @@ Sprint 8 is complete after Patch 039. Patch 040 adds report and command identity
 complete-analysis state, and schema `0.2.0`; Patch 041 adds current per-candidate
 provenance; Patch 042 adds portable bundle enforcement and external decoder-gap
 evidence with target/tool hashes. The research preview is still not ready.
-Sprint 9 must review the authoritative campaign and record the decoder decision,
+Patch 043 records the reviewed decoder decision; Sprint 9 closeout must verify that decision and the supporting evidence,
 while Sprint 11 and Sprint 12 still own corpus and benchmark freeze work.
 
 
@@ -180,3 +180,16 @@ SHA-256 hashes; exact commands; raw reports and disassembly; smoke timing/RSS;
 and categorized boundary/canonicalization facts. It does not itself authorize a
 runtime decoder. The preview gate requires a reviewed decoder decision plus the
 later reproducible corpus and high-resolution pilot campaign.
+
+## Sprint 9 Patch 043 release-gate update
+
+Research-preview evidence must identify immutable target bytes actually analyzed,
+not only a mutable source pathname. Decoder-gap publication must preserve one
+complete recognized result across ordinary failure and process interruption.
+Public archives must pass raw/effective-name, extra-metadata, cross-platform
+path, nested-container, duplicate, case-collision, encryption, comment, and
+special-file policy checks before extraction.
+
+The default release binary remains decoder-free. A future decoder-enabled
+artifact would be a separate profile with its own tool identity, dependency and
+license record, malformed-input gate, and runtime/RSS benchmark stratum.

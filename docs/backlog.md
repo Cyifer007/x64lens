@@ -87,7 +87,7 @@ later sprints rather than Patch 037:
   hashes, commands, raw artifacts, timing/RSS smoke facts, and categorized
   boundary/canonicalization differences.
 - [x] Embedded-decoder decision procedure and evidence requirements.
-- [ ] Authoritative decoder decision after local campaign review.
+- [x] Authoritative decoder decision after local campaign review: keep the default runtime decoder-free and reserve a future decoder for an optional evidence adapter.
 
 ### Sprint 10: primitive expansion
 
@@ -255,7 +255,7 @@ Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 ## Sprint 8 closeout correction disposition
 
-Patch 039 closed the Patch 038 closeout blockers: missing non-finite-RSS benchmark-integrity fixtures, strict shell lint findings, and closeout-documentation drift. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, Patch 041 adds the initial candidate provenance side-car, and Patch 042 adds portable bundle enforcement plus decoder-gap evidence. Remaining Sprint 9 work is authoritative campaign review, the decoder decision record, and any narrowly justified target-identity refinement.
+Patch 039 closed the Patch 038 closeout blockers. Patch 040 supplies the schema `0.2.0` report-identity and completeness foundation, Patch 041 adds the candidate provenance side-car, Patch 042 adds portable bundle enforcement and decoder-gap evidence, and Patch 043 binds that evidence to immutable snapshots, hardens transactional publication and external parsing, and records the decoder-free default. Remaining Sprint 9 work is the Patch 044 closeout audit and context/environment refresh.
 
 
 ## Sprint 9 Patch 040 backlog update
@@ -302,3 +302,16 @@ embedding is deferred, exposed only as optional external verification, or
 approved behind an isolated adapter. Target digest work should be added to the
 runtime report only if that review or the later corpus contract demonstrates a
 machine-consumer need that cannot be satisfied by external manifests.
+
+## Sprint 9 Patch 043 backlog update
+
+Patch 043 closes the reviewed decoder-gap campaign integrity and public artifact
+boundary defects. The default runtime remains freestanding and decoder-free.
+Future decoder work is optional and must use side-car facts, preserve raw
+metrics, and justify its dependency, license, binary-size, latency, RSS, and
+hostile-input costs through fixed-corpus evidence.
+
+Sprint 9 has one remaining planned patch: Patch 044 closeout. It must review
+architecture and contracts, refresh private project context, inspect development
+configuration and Docker Buildx behavior, reconcile the roadmap, and publish the
+Sprint 9 retrospective without adding unreviewed primitive breadth.

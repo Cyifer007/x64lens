@@ -145,3 +145,24 @@ reason.
 No single mismatch percentage automatically approves a decoder. The decision
 must explain which user-facing or research claim is affected, which evidence
 would become stronger, and what cost is introduced.
+
+## Patch 043 recorded decision
+
+The reviewed selected-system development campaign did not expose a canonical
+return terminator absent from x64lens raw discovery. Its principal differences
+were expected byte-oriented observations that did not begin at canonical
+instruction boundaries. Those facts do not invalidate the documented raw,
+exact-suffix, or semantic-exact claims.
+
+The decision is therefore **defer mandatory embedding**. The default runtime
+remains decoder-free and dependency-free. A future decoder may be implemented
+only as an optional external or linked verification profile when a frozen corpus
+demonstrates a material user-facing validity or semantic-coverage gap and when
+license, binary-size, latency, RSS, malformed-input, and deployment costs are
+measured as a separate stratum.
+
+Patch 043 strengthens the evidence used by this decision: every comparison uses
+one immutable target snapshot, objdump parse diagnostics are retained, and
+result publication is transactional across ordinary failures, `SIGINT`, and
+`SIGTERM`. The campaign remains development evidence and is not a publication
+performance result.

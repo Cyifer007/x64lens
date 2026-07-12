@@ -215,3 +215,16 @@ These are comparison metrics, not new gadget populations in schema `0.2.0`.
 They must not be added to raw/exact/semantic counts or interpreted as
 exploitability. The raw disassembly and report artifacts remain necessary for
 reviewing section coverage, canonicalization, and max-depth differences.
+
+## Patch 043 decoder-decision metric boundary
+
+The selected-system decoder-gap campaign is a definition-reconciliation surface,
+not a generic gadget-count benchmark. Byte candidates outside canonical
+instruction boundaries remain raw observations. Canonical sequences not selected
+by the one-record-per-terminator policy remain separate alternatives. External
+parser diagnostics are reported separately from both populations.
+
+Development wall time and RSS from this campaign may motivate an architecture
+decision, but they are not publication performance evidence. A future optional
+decoder profile must have distinct tool/build identity and separate runtime/RSS
+rows from the dependency-free core.

@@ -39,6 +39,7 @@ required=(
     docs/adr/0026-report-identity-and-analysis-completeness.md
     docs/adr/0027-candidate-evidence-sidecar-and-contract-hardening.md
     docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
+    docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -59,6 +60,7 @@ required=(
     docs/sprints/sprint-09-patch-040-validation.md
     docs/sprints/sprint-09-patch-041-validation.md
     docs/sprints/sprint-09-patch-042-validation.md
+    docs/sprints/sprint-09-patch-043-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     tests/malformed/README.md
@@ -72,6 +74,8 @@ required=(
     tools/patch-bundle-hygiene-smoke.py
     tools/check-patch-bundle-hygiene.py
     tools/decoder-gap-smoke.py
+    tools/decoder-gap-hardening-smoke.py
+    tools/public-docs-hygiene-smoke.sh
     tools/readelf-comparison-smoke.py
     tools/optional-mitigation-comparison-smoke.py
     tools/schema-compat-smoke.py
@@ -132,6 +136,12 @@ grep -q 'Patch 041' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 041 provenance foundation'
 grep -q 'Patch 042' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 042 decoder-gap foundation'
+grep -q 'Patch 043' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not record the Patch 043 campaign-hardening decision'
+grep -qi 'decoder-free' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not record the decoder-free default decision'
+grep -q 'Patch 044' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 plan does not preserve the Patch 044 closeout boundary'
 grep -q 'decoder-gap-smoke' docs/sprints/sprint-09-patch-042-validation.md \
     || fail 'Patch 042 validation does not name the controlled decoder-gap gate'
 grep -q 'require-provenance' docs/sprints/sprint-09-patch-041-validation.md \
@@ -197,14 +207,18 @@ grep -q '^decoder-gap-smoke:' Makefile \
     || fail 'Makefile does not define decoder-gap-smoke'
 grep -q '^decoder-gap-campaign:' Makefile \
     || fail 'Makefile does not define decoder-gap-campaign'
+grep -q '^decoder-gap-hardening-smoke:' Makefile \
+    || fail 'Makefile does not define decoder-gap-hardening-smoke'
+grep -q '^public-docs-hygiene-smoke:' Makefile \
+    || fail 'Makefile does not define public-docs-hygiene-smoke'
 grep -q '^readelf-comparison-smoke:' Makefile \
     || fail 'Makefile does not define readelf-comparison-smoke'
 grep -q '^optional-tool-comparison-smoke:' Makefile \
     || fail 'Makefile does not define optional-tool-comparison-smoke'
 grep -q '^schema-compat-smoke:' Makefile \
     || fail 'Makefile does not define schema-compat-smoke'
-grep -Eq '^validation-smoke:.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
-    || fail 'validation-smoke does not include benchmark-integrity, bundle hygiene, schema compatibility, decoder-gap, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
+grep -Eq '^validation-smoke:.*public-docs-hygiene-smoke.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-hardening-smoke.*decoder-gap-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
+    || fail 'validation-smoke does not include public-document, benchmark, bundle, schema, decoder hardening, decoder-gap, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and shared `gadgets`/`analyze` report parity. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds a portable public-bundle policy and reproducible external decoder-gap measurement; authoritative evidence review and the decoder decision are the remaining Sprint 9 gate.
+Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 043. Patch 040 establishes report and command identity, explicit complete-analysis state, schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance. Patch 042 adds portable bundle policy and reproducible external decoder-gap measurement. Patch 043 hardens campaign integrity and records the decoder-free default with an optional verification adapter. Patch 044 is the remaining Sprint 9 closeout gate.
 
 The implemented pipeline is:
 
@@ -61,7 +61,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
-| 9 | Candidate provenance and decoder-gap measurement | Patches 040-042 establish identity, completeness, candidate provenance, portable evidence packaging, and decoder-gap measurement; authoritative decision closeout remains. |
+| 9 | Candidate provenance and decoder-gap measurement | Patches 040-043 establish identity, completeness, candidate provenance, portable and transactional evidence, and the decoder-free default decision; Patch 044 performs sprint closeout. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
@@ -255,3 +255,17 @@ campaign evidence is reviewed and the project records one of the permitted
 outcomes: defer embedding, retain optional external verification, or approve an
 isolated decoder adapter. Sprint 10 primitive expansion remains downstream of
 that decision.
+
+## Sprint 9 Patch 043 roadmap update
+
+Patch 043 completes the decoder decision required before primitive expansion.
+The core remains a freestanding dependency-free analyzer. A future decoder is an
+optional side-car evidence profile, not a replacement scanner or mandatory
+runtime dependency. This preserves a measurable low-footprint mode for offline,
+incident-response, minimal-container, and CI/CD deployments.
+
+Patch 044 is a closeout-only boundary: architecture and contract review, public
+and private context reconciliation, development configuration review, Docker
+Buildx environment analysis, roadmap reconciliation, and the Sprint 9
+retrospective. Feature discoveries are classified for Sprint 10 or later unless
+they block an accepted Sprint 9 contract.

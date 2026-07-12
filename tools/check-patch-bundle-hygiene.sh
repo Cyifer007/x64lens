@@ -16,5 +16,5 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 127
 fi
 
-script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+script_dir="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
 exec python3 "$script_dir/check-patch-bundle-hygiene.py" "$1"

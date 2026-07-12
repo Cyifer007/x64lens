@@ -481,3 +481,16 @@ results and must not be combined with the Sprint 12/13 benchmark campaign. The
 comparison also does not establish objdump as ground truth for loader-mapped
 bytes: section coverage and canonical start selection are recorded threats to
 validity.
+
+## Sprint 9 Patch 043 decoder-decision methodology
+
+Decoder-gap targets are copied to immutable snapshots before measurement. The
+snapshot hash identifies the bytes analyzed by x64lens and GNU objdump. Result
+trees retain campaign, validator, interpreter, external-tool, analyzer, target,
+command, and option identities, together with parser diagnostics and categorized
+comparison facts.
+
+The selected-system campaign is development evidence. Its timing and RSS rows
+must not be merged into publication benchmark results. A later optional decoder
+profile requires a separate benchmark stratum so the dependency-free core and
+verification mode can be compared without hiding their different workloads.

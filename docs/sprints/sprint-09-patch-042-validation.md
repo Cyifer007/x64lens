@@ -12,8 +12,7 @@ Patch-generation base:
 
 ```text
 commit: 1c79197ff8fa748d96a61356829c1b1d053fa027
-source bundle: x64lens_HEAD_20260711_145537.zip
-source bundle SHA-256: d5ff94e6fe15d44dce09e35a60422ca3f7c30d699f3d2e003a1d1325d14fb0be
+repository tree: exact Patch 041 commit contents
 ```
 
 ## Corrective findings

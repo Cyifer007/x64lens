@@ -8,6 +8,24 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 043 immutable decoder-gap target snapshots, signal-safe
+  transactional result publication, objdump parser diagnostics and barrier
+  hardening, and archive metadata/path portability enforcement.
+- `make public-docs-hygiene-smoke` and `make decoder-gap-hardening-smoke` for
+  timestamped transfer-name rejection, snapshot provenance, parser fixtures,
+  and eight signal-interruption publication states.
+- ADR 0029 records the decoder-free default runtime and optional future decoder
+  adapter boundary.
+
+- Sprint 9 Patch 043 immutable decoder-gap target snapshots, signal-safe
+  transactional result publication, objdump parser diagnostics and barrier
+  hardening, and archive metadata/path portability enforcement.
+- `make public-docs-hygiene-smoke` and `make decoder-gap-hardening-smoke` for
+  timestamped transfer-name rejection, snapshot provenance, parser fixtures,
+  and eight signal-interruption publication states.
+- ADR 0029 records the decoder-free default runtime and optional future decoder
+  adapter boundary.
+
 - Sprint 9 Patch 042 controlled and selected-system decoder-gap evidence
   generation through GNU objdump without adding a runtime decoder dependency.
 - `make decoder-gap-smoke`, `make decoder-gap-campaign`, a controlled expected-
@@ -84,6 +102,24 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Bind every decoder-gap comparison to one immutable target snapshot analyzed
+  by both x64lens and GNU objdump.
+- Keep the default analyzer freestanding and decoder-free; decoder-backed facts
+  remain an optional additive evidence profile subject to a later fixed-corpus
+  decision gate.
+- Make public archive policy independent of root depth, raw/effective ZIP-name
+  ambiguity, recognized extra metadata, Windows path portability, and common
+  ZIP-container suffixes.
+
+- Bind every decoder-gap comparison to one immutable target snapshot analyzed
+  by both x64lens and GNU objdump.
+- Keep the default analyzer freestanding and decoder-free; decoder-backed facts
+  remain an optional additive evidence profile subject to a later fixed-corpus
+  decision gate.
+- Make public archive policy independent of root depth, raw/effective ZIP-name
+  ambiguity, recognized extra metadata, Windows path portability, and common
+  ZIP-container suffixes.
+
 - Make the controlled decoder-gap reconciliation part of native and Docker
   aggregate validation while keeping the host-dependent system campaign a
   separate evidence command.
@@ -150,6 +186,24 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Prevent inter-target mutation from making campaign manifests certify bytes
+  different from those actually analyzed.
+- Restore or preserve a complete recognized decoder-gap result across `SIGINT`,
+  `SIGTERM`, and ordinary publication failures.
+- Parse prefixed return instructions and stop canonical predecessor walks at
+  invalid-byte and control-transfer barriers.
+- Reject timestamped private transfer-artifact names from public documentation
+  and correct strict shell lint in the archive-check wrapper.
+
+- Prevent inter-target mutation from making campaign manifests certify bytes
+  different from those actually analyzed.
+- Restore or preserve a complete recognized decoder-gap result across `SIGINT`,
+  `SIGTERM`, and ordinary publication failures.
+- Parse prefixed return instructions and stop canonical predecessor walks at
+  invalid-byte and control-transfer barriers.
+- Reject timestamped private transfer-artifact names from public documentation
+  and correct strict shell lint in the archive-check wrapper.
 
 - Reject private and unsafe ZIP members under zero-root, one-root, and arbitrary
   archive layouts, including `.git`, `.local`, `.codex`, `.env`, project-context

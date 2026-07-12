@@ -91,10 +91,14 @@ collect_with_find() {
   done
 }
 
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  mapfile -t FILES < <(collect_with_git | sort -u)
+if (( $# > 0 )); then
+  FILES=("$@")
 else
-  mapfile -t FILES < <(collect_with_find | sort -u)
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    mapfile -t FILES < <(collect_with_git | sort -u)
+  else
+    mapfile -t FILES < <(collect_with_find | sort -u)
+  fi
 fi
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
@@ -109,6 +113,8 @@ PATTERNS=(
   'cyifer007@'
   'DESKTOP-[A-Z0-9-]+'
   'x64lens_patch_[0-9]+'
+  'x64lens_HEAD_[0-9]{8}_[0-9]{6}([_(][0-9]+[)]?)?[.]zip'
+  'x64lens_codex_evidence_[0-9]{8}_[0-9]{6}([_(][0-9]+[)]?)?[.]tar[.]gz'
   'user-created whole-repository zip snapshots'
   'in our (chat|conversation)'
   'the file you (uploaded|attached)'

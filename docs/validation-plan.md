@@ -1066,3 +1066,34 @@ runtime decoder.
 Regeneration may replace only an existing result directory carrying the
 campaign's own `x64lens-decoder-gap-manifest-v1` marker. An unrelated directory
 must be refused without deletion.
+
+## Sprint 9 Patch 043 campaign hardening validation
+
+Required focused commands:
+
+```bash
+make patch-bundle-hygiene-smoke
+make public-docs-hygiene-smoke
+make decoder-gap-hardening-smoke
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+make decoder-gap-smoke
+```
+
+Expected focused results:
+
+```text
+patch-bundle-hygiene-smoke: ok cases=55 accepted=6 rejected=49
+public-docs-hygiene-smoke: ok cases=3 accepted=1 rejected=2
+decoder-gap-hardening-smoke: ok parser=1 snapshots=2 publication_interruptions=8
+```
+
+The campaign must prove that both comparison tools consume the same immutable
+target snapshot, retain parser diagnostics, and keep resolvable command paths
+after publication. `SIGINT` and `SIGTERM` probes cover before-backup,
+after-backup, before-publish, and after-publish states. Archive probes cover
+cross-platform invalid characters and device aliases, raw/effective name
+ambiguity, Unicode-name metadata, unknown or malformed extra fields, file/type
+contradictions, and common nested ZIP containers.
+
+Patch 043 changes no runtime or schema path. The full native and qualified
+Docker aggregates remain mandatory no-regression gates.

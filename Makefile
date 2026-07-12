@@ -43,7 +43,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -57,6 +57,8 @@ help:
 	@echo "  make optional-tool-comparison-smoke  Run optional checksec/rabin2 comparison helpers"
 	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
 	@echo "  make patch-bundle-hygiene-smoke  Exercise root-agnostic bundle leak rejection"
+	@echo "  make public-docs-hygiene-smoke  Reject timestamped private attachment names"
+	@echo "  make decoder-gap-hardening-smoke  Test parser, snapshots, and publication rollback"
 	@echo "  make decoder-gap-smoke  Validate controlled external decoder reconciliation"
 	@echo "  make decoder-gap-campaign  Measure controlled and selected-system decoder gaps"
 	@echo "  make schema-compat-smoke  Validate schema 0.1.0 compatibility and 0.2.0 invariants"
@@ -290,6 +292,12 @@ benchmark-integrity-smoke:
 patch-bundle-hygiene-smoke:
 	python3 tools/patch-bundle-hygiene-smoke.py
 
+public-docs-hygiene-smoke:
+	bash tools/public-docs-hygiene-smoke.sh
+
+decoder-gap-hardening-smoke:
+	python3 tools/decoder-gap-hardening-smoke.py
+
 # Sprint 9 controlled decoder-gap gate. GNU objdump is an external comparison
 # source only: it does not become runtime mapping authority or alter x64lens
 # candidate/classification records. Generated artifacts remain ignored.
@@ -323,7 +331,7 @@ shellcheck-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -414,6 +422,7 @@ script-perms-check:
 	@test -x tools/patch-bundle-hygiene-smoke.py
 	@test -x tools/check-patch-bundle-hygiene.py
 	@test -x tools/decoder-gap-smoke.py
+	@test -x tools/decoder-gap-hardening-smoke.py
 	@test -x tools/compare-checksec.sh
 	@test -x tools/compare-objdump.sh
 	@test -x tools/compare-rabin2.sh
@@ -433,6 +442,7 @@ script-perms-check:
 	@test -x tools/install-ropr-user.sh
 	@test -x tools/demo-checkpoint.sh
 	@test -x tools/check-public-docs.sh
+	@test -x tools/public-docs-hygiene-smoke.sh
 	@test -x tools/check-planning-docs.sh
 	@test -x tools/malformed-elf-smoke.py
 	@test -x tools/fuzz-mutated-elf-smoke.sh
@@ -501,10 +511,14 @@ scaffold-check: script-perms-check
 	@test -f tools/patch-bundle-hygiene-smoke.py
 	@test -f tools/check-patch-bundle-hygiene.py
 	@test -f tools/decoder-gap-smoke.py
+	@test -f tools/decoder-gap-hardening-smoke.py
+	@test -f tools/public-docs-hygiene-smoke.sh
 	@test -f tests/expected/decoder-gap-controlled.json
 	@test -f docs/design/decoder-gap-decision-gate.md
 	@test -f docs/sprints/sprint-09-patch-042-validation.md
 	@test -f docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
+	@test -f docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
+	@test -f docs/sprints/sprint-09-patch-043-validation.md
 	@echo "scaffold-check: ok"
 
 diagrams-check:

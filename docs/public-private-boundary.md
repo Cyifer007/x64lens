@@ -60,3 +60,17 @@ Local validation missions, operational reports, raw command logs, temporary prob
 ## Existing tracked files warning
 
 Adding a path to `.gitignore` does not remove files that Git already tracks. If a private context file was already committed, remove it from tracking with `git rm --cached <path>` and commit that removal.
+
+## Patch 043 transfer-artifact and ZIP metadata rule
+
+Public documentation must not record timestamped private transfer-artifact
+basenames or local transfer hashes as repository history. Repository-facing
+validation records identify commits, public paths, reproducible commands, and
+technical outcomes.
+
+Public ZIP validation is metadata-first and non-extracting. It rejects raw and
+effective name disagreement, traversal and cross-platform path ambiguity,
+unsupported name/type extra fields, special files, encryption, comments, nested
+containers, duplicates, case collisions, and private or generated paths under
+any archive root. Explicit public samples such as `.env.example` remain narrow
+allowances.

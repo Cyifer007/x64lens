@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 9 is active. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added a dense candidate-index evidence side-car, per-candidate raw/exact/semantic provenance, formal-schema enforcement, ABI and validation-oracle corrections, and benchmark identity stratification. Patch 042 hardens the public ZIP boundary and adds reproducible external decoder-gap evidence plus an explicit decoder decision gate. The authoritative campaign decision remains open; primitive expansion remains deferred.
+> Status: Sprint 9 is active through Patch 043. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added a dense candidate-index evidence side-car and current raw/exact/semantic provenance. Patch 042 added portable archive policy and external decoder-gap evidence. Patch 043 hardens target snapshots, interruption-safe result publication, objdump evidence parsing, and the public artifact boundary, and records a decoder-free default runtime with an optional future verification adapter. Patch 044 is the planned Sprint 9 closeout review; primitive expansion remains deferred.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -111,6 +111,8 @@ make samples
 make test
 make validation-smoke
 make patch-bundle-hygiene-smoke
+make public-docs-hygiene-smoke
+make decoder-gap-hardening-smoke
 make decoder-gap-smoke
 ```
 
@@ -198,13 +200,15 @@ make malformed-smoke
 make mitigation-matrix-smoke
 make section-label-smoke
 make patch-bundle-hygiene-smoke
+make public-docs-hygiene-smoke
+make decoder-gap-hardening-smoke
 make decoder-gap-smoke
 make validation-smoke
 make docker-test
 make docker-validation-smoke
 ```
 
-`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, public-bundle-policy, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, public-bundle-policy, public-document boundary, decoder-gap transaction/parser hardening, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
 
 Hostile-input checks can also be run directly:
 
@@ -241,7 +245,7 @@ make decoder-gap-smoke
 make decoder-gap-campaign
 ```
 
-The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries and writes hashes for the analyzer, campaign implementation, controlled expectation, canonical validator, Python interpreter, GNU objdump, GNU time, and every target; it also preserves commands, raw JSON, disassembly, timing/RSS smoke data, and categorized gap facts under `tests/results/decoder-gap/`. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores.
+The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patch 043 snapshots each target before measurement so x64lens and objdump analyze identical immutable bytes, preserves parser diagnostics and exact tool identities, and publishes result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free; a future decoder may exist only as an optional evidence adapter unless later fixed-corpus evidence changes that decision.
 
 ## Benchmark smoke workflow
 
@@ -301,7 +305,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 adds candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Decoder-backed facts remain additive future Sprint 9 work.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patch 043 records that decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

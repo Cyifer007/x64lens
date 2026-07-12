@@ -165,3 +165,17 @@ The campaign records duplicate/canonicalization facts, supported suffixes not
 selected by the one-record-per-terminator model, and unsupported canonical
 return-ending sequences separately. These categories should remain separate in
 future coverage tables rather than being collapsed into one gadget-count delta.
+
+## Sprint 9 Patch 043 publication note
+
+Patch 043 records a defensible negative architecture decision: the available
+Sprint 9 evidence does not justify making a decoder mandatory in the default
+runtime. The paper may describe this as a measured scope decision, not as proof
+that decoding has no value.
+
+The paper should evaluate the dependency-free core and any future optional
+verification profile separately. It should report raw byte discovery,
+canonical-boundary reconciliation, semantic coverage, runtime, RSS, dependency
+surface, and threats to validity as distinct dimensions. Sprint 9 campaign
+measurements remain development evidence until the fixed corpus and publication
+methodology are frozen.

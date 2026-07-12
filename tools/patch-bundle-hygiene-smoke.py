@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Regression-test root-independent public bundle policy and unsafe ZIP names."""
+"""Regression-test root-independent public bundle policy and ZIP metadata."""
 from __future__ import annotations
 
 import importlib.util
+import io
 import stat
+import struct
 import subprocess
 import sys
 import tempfile
 import warnings
 import zipfile
+import zlib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -33,6 +36,21 @@ class Case:
     symlink: tuple[str, str] | None = None
     archive_comment: bytes = b""
     member_comment: tuple[str, bytes] | None = None
+    member_extra: tuple[str, bytes] | None = None
+    directory_metadata_member: str | None = None
+    raw_nul_member: bool = False
+    nested_zip_member: str | None = None
+
+
+def extra_field(header_id: int, payload: bytes) -> bytes:
+    return struct.pack("<HH", header_id, len(payload)) + payload
+
+
+def nested_zip_payload() -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("inner.txt", "nested\n")
+    return buffer.getvalue()
 
 
 def make_zip(path: Path, case: Case) -> None:
@@ -41,18 +59,41 @@ def make_zip(path: Path, case: Case) -> None:
         with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             archive.comment = case.archive_comment
             for member in case.members:
-                if case.member_comment is not None and case.member_comment[0] == member:
+                payload: str | bytes = "fixture\n"
+                if case.nested_zip_member == member:
+                    payload = nested_zip_payload()
+                if (
+                    (case.member_comment is not None and case.member_comment[0] == member)
+                    or (case.member_extra is not None and case.member_extra[0] == member)
+                    or case.directory_metadata_member == member
+                ):
                     info = zipfile.ZipInfo(member)
-                    info.comment = case.member_comment[1]
-                    archive.writestr(info, "fixture\n")
+                    if case.member_comment is not None and case.member_comment[0] == member:
+                        info.comment = case.member_comment[1]
+                    if case.member_extra is not None and case.member_extra[0] == member:
+                        info.extra = case.member_extra[1]
+                    if case.directory_metadata_member == member:
+                        info.create_system = 3
+                        info.external_attr = (stat.S_IFDIR | 0o755) << 16
+                    archive.writestr(info, payload)
                 else:
-                    archive.writestr(member, "fixture\n")
+                    archive.writestr(member, payload)
             if case.symlink is not None:
                 name, target = case.symlink
                 info = zipfile.ZipInfo(name)
                 info.create_system = 3
                 info.external_attr = (stat.S_IFLNK | 0o777) << 16
                 archive.writestr(info, target)
+
+    if case.raw_nul_member:
+        marker = case.members[0].encode("ascii")
+        if b"X" not in marker:
+            raise RuntimeError(f"{case.name}: raw-NUL marker must contain X")
+        replacement = marker.replace(b"X", b"\0", 1)
+        blob = path.read_bytes()
+        if blob.count(marker) != 2:
+            raise RuntimeError(f"{case.name}: expected local and central raw-name copies")
+        path.write_bytes(blob.replace(marker, replacement))
 
 
 def run_case(directory: Path, case: Case) -> None:
@@ -87,6 +128,14 @@ def run_wrapper_probe(directory: Path) -> None:
 
 
 def cases() -> list[Case]:
+    timestamp_extra = extra_field(0x5455, b"\x01\x00\x00\x00\x00")
+    visible_name = b"root/src/main.asm"
+    unicode_override = extra_field(
+        0x7075,
+        b"\x01" + struct.pack("<I", zlib.crc32(visible_name) & 0xFFFFFFFF) + b"root/.git/config",
+    )
+    private_extra = extra_field(0xCAFE, b"private local handoff")
+
     clean = [
         Case("clean-zero-root", ("src/main.asm",), True),
         Case("clean-one-root", ("root/src/main.asm", "root/.env.example"), True),
@@ -97,6 +146,12 @@ def cases() -> list[Case]:
             ("src/main.asm",),
             True,
             archive_comment=b"1c79197ff8fa748d96a61356829c1b1d053fa027",
+        ),
+        Case(
+            "clean-extended-timestamp",
+            ("root/src/main.asm",),
+            True,
+            member_extra=("root/src/main.asm", timestamp_extra),
         ),
     ]
 
@@ -120,14 +175,48 @@ def cases() -> list[Case]:
         Case("private-docx", ("root/course-materials/homework.docx",), False, "private/local directory"),
         Case("private-pdf", ("root/review.pdf",), False, "generated/private file type"),
         Case("nested-archive", ("root/evidence.tar.gz",), False, "nested archive"),
+        Case("nested-jar", ("root/evidence.jar",), False, "nested archive", nested_zip_member="root/evidence.jar"),
+        Case("nested-whl", ("root/evidence.whl",), False, "nested archive", nested_zip_member="root/evidence.whl"),
         Case("unsafe-parent", ("../outside.txt",), False, "unsafe path"),
         Case("unsafe-embedded-parent", ("root/../outside.txt",), False, "unsafe path"),
         Case("unsafe-absolute", ("/absolute.txt",), False, "unsafe path"),
         Case("unsafe-drive", ("C:/private.txt",), False, "unsafe path"),
         Case("unsafe-backslash", (r"root\.git\config",), False, "unsafe path"),
         Case("unsafe-windows-device", ("root/CON.txt",), False, "Windows-reserved device"),
+        Case("unsafe-windows-com-superscript", ("root/COM¹.txt",), False, "Windows-reserved device"),
+        Case("unsafe-windows-lpt-superscript", ("root/LPT³",), False, "Windows-reserved device"),
+        Case("unsafe-windows-conin", ("root/CONIN$",), False, "Windows-reserved device"),
+        Case("unsafe-windows-conout", ("root/CONOUT$.txt",), False, "Windows-reserved device"),
+        Case("unsafe-windows-less-than", ("root/bad<name.asm",), False, "Windows-forbidden character"),
+        Case("unsafe-windows-greater-than", ("root/bad>name.asm",), False, "Windows-forbidden character"),
+        Case("unsafe-windows-quote", ('root/bad"name.asm',), False, "Windows-forbidden character"),
+        Case("unsafe-windows-pipe", ("root/bad|name.asm",), False, "Windows-forbidden character"),
+        Case("unsafe-windows-question", ("root/bad?name.asm",), False, "Windows-forbidden character"),
+        Case("unsafe-windows-star", ("root/bad*name.asm",), False, "Windows-forbidden character"),
         Case("unsafe-unicode-format", ("root/secret\u202efile.txt",), False, "Unicode control"),
         Case("unsafe-unicode-normalization", ("root/cafe\u0301.txt",), False, "non-NFC Unicode"),
+        Case("unsafe-raw-nul", ("root/src/main.asmX/.git/config",), False, "raw and effective", raw_nul_member=True),
+        Case(
+            "unsafe-unicode-path-override",
+            ("root/src/main.asm",),
+            False,
+            "raw and effective",
+            member_extra=("root/src/main.asm", unicode_override),
+        ),
+        Case(
+            "unsafe-unknown-extra-field",
+            ("root/src/main.asm",),
+            False,
+            "unsupported ZIP extra field",
+            member_extra=("root/src/main.asm", private_extra),
+        ),
+        Case(
+            "unsafe-file-directory-metadata",
+            ("root/src/main.asm",),
+            False,
+            "file name carries directory metadata",
+            directory_metadata_member="root/src/main.asm",
+        ),
         Case("casefold-git", ("root/.GIT/config",), False, "private/local directory"),
         Case("casefold-env", ("root/.EnV",), False, "local environment file"),
         Case("case-collision", ("root/src/main.asm", "ROOT/SRC/MAIN.ASM"), False, "case-colliding"),

@@ -221,3 +221,11 @@ hashes, raw outputs, and categorized disagreement facts. Generic count deltas
 are insufficient. A runtime decoder may be approved only through the documented
 decision gate and must preserve raw-scanner operation and side-car metric
 separation.
+
+## Decoder-gap campaign integrity rule
+
+A development comparison campaign must bind every tool invocation to immutable
+input bytes and must publish result trees transactionally. `SIGINT`, `SIGTERM`,
+timeout, parser failure, or child-process failure must leave either the prior
+recognized result or one complete new result. External decoder/disassembler
+facts remain adapters and may not alter analyzer runtime records.

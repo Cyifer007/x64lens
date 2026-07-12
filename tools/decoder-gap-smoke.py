@@ -19,19 +19,26 @@ import re
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "tools" / "validate-json-report.py"
 TIME_BIN = Path("/usr/bin/time")
 HEX_BYTE_RE = re.compile(r"^[0-9a-fA-F]{2}$")
 HEX_ADDRESS_RE = re.compile(r"^[0-9a-fA-F]+$")
+OBJDUMP_PREFIXES = {
+    "addr16", "addr32", "bnd", "data16", "data32", "lock", "notrack",
+    "rep", "repe", "repz", "repne", "repnz", "rex", "rex.w",
+}
+RETURN_MNEMONICS = {"ret", "retq"}
+FAR_RETURN_MNEMONICS = {"retf", "retfq", "lret", "lretq"}
 SAFE_LABEL_RE = re.compile(r"[^A-Za-z0-9_.-]+")
 SUMMARY_FIELDS = [
     "target",
@@ -51,6 +58,7 @@ SUMMARY_FIELDS = [
     "unknown_candidate_count",
     "scored_candidate_count",
     "objdump_instruction_count",
+    "objdump_parse_diagnostic_count",
     "objdump_return_terminator_count",
     "objdump_duplicate_return_terminator_count",
     "raw_terminator_intersection_count",
@@ -76,10 +84,43 @@ class Instruction:
     mnemonic: str
     operands: str
     section: str
+    prefixes: tuple[str, ...] = ()
 
     @property
     def end(self) -> int:
         return self.address + len(self.raw)
+
+    @property
+    def text(self) -> str:
+        return " ".join((*self.prefixes, self.mnemonic, self.operands)).strip()
+
+
+@dataclass(frozen=True)
+class ObjdumpDiagnostic:
+    line_number: int
+    reason: str
+    line: str
+
+
+@dataclass(frozen=True)
+class TargetSnapshot:
+    requested_path: str
+    resolved_path: str
+    snapshot_path: Path
+    sha256: str
+    size: int
+    source_device: int
+    source_inode: int
+    source_mtime_ns: int
+    source_ctime_ns: int
+
+
+class CampaignInterrupted(BaseException):
+    """Raised by SIGINT/SIGTERM handlers so publication can roll back safely."""
+
+    def __init__(self, signum: int):
+        super().__init__(f"campaign interrupted by signal {signum}")
+        self.signum = signum
 
 
 @dataclass(frozen=True)
@@ -118,6 +159,57 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def snapshot_target(requested: Path, snapshots_dir: Path, index: int) -> TargetSnapshot:
+    """Copy one stable target image and bind all later evidence to that image."""
+
+    resolved = requested.resolve(strict=True)
+    if not resolved.is_file():
+        raise RuntimeError(f"target is not a regular file: {requested}")
+    snapshots_dir.mkdir(parents=True, exist_ok=True)
+    basename = SAFE_LABEL_RE.sub("_", resolved.name) or "target"
+    destination = snapshots_dir / f"{index:02d}-{basename}.bin"
+    digest = hashlib.sha256()
+
+    with resolved.open("rb", buffering=0) as source, destination.open("xb", buffering=0) as output:
+        before = os.fstat(source.fileno())
+        if not stat.S_ISREG(before.st_mode):
+            raise RuntimeError(f"target is not a regular file: {requested}")
+        while True:
+            chunk = source.read(1024 * 1024)
+            if not chunk:
+                break
+            output.write(chunk)
+            digest.update(chunk)
+        output.flush()
+        os.fsync(output.fileno())
+        after = os.fstat(source.fileno())
+        stable_fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+        if any(getattr(before, field) != getattr(after, field) for field in stable_fields):
+            raise RuntimeError(f"target changed while its immutable snapshot was created: {requested}")
+        source.seek(0)
+        verification = hashlib.sha256()
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            verification.update(chunk)
+        if verification.hexdigest() != digest.hexdigest():
+            raise RuntimeError(f"target bytes changed while its immutable snapshot was created: {requested}")
+
+    snapshot_digest = sha256_file(destination)
+    if snapshot_digest != digest.hexdigest() or destination.stat().st_size != before.st_size:
+        raise RuntimeError(f"immutable target snapshot verification failed: {requested}")
+    destination.chmod(0o444)
+    return TargetSnapshot(
+        requested_path=str(requested),
+        resolved_path=str(resolved),
+        snapshot_path=destination,
+        sha256=snapshot_digest,
+        size=before.st_size,
+        source_device=before.st_dev,
+        source_inode=before.st_ino,
+        source_mtime_ns=before.st_mtime_ns,
+        source_ctime_ns=before.st_ctime_ns,
+    )
 
 
 def first_line(command: list[str], timeout: float) -> str:
@@ -205,10 +297,11 @@ def run_measured(
     )
 
 
-def parse_objdump(text: str) -> list[Instruction]:
+def parse_objdump_with_diagnostics(text: str) -> tuple[list[Instruction], list[ObjdumpDiagnostic]]:
     instructions: list[Instruction] = []
+    diagnostics: list[ObjdumpDiagnostic] = []
     section = "unknown"
-    for raw_line in text.splitlines():
+    for line_number, raw_line in enumerate(text.splitlines(), 1):
         line = raw_line.rstrip()
         stripped = line.strip()
         if stripped.startswith("Disassembly of section ") and stripped.endswith(":"):
@@ -224,35 +317,57 @@ def parse_objdump(text: str) -> list[Instruction]:
         byte_tokens: list[str] = []
         while tokens and HEX_BYTE_RE.fullmatch(tokens[0]):
             byte_tokens.append(tokens.pop(0))
-        if not byte_tokens or not tokens:
+        if not byte_tokens:
+            if tokens:
+                diagnostics.append(ObjdumpDiagnostic(line_number, "address row lacks instruction bytes", line))
             continue
-        mnemonic = tokens.pop(0).casefold()
+        if not tokens:
+            diagnostics.append(ObjdumpDiagnostic(line_number, "byte row lacks a mnemonic", line))
+            continue
+
+        prefixes: list[str] = []
+        while len(tokens) > 1 and tokens[0].casefold().rstrip(":") in OBJDUMP_PREFIXES:
+            prefixes.append(tokens.pop(0).casefold().rstrip(":"))
+        mnemonic = tokens.pop(0).casefold().rstrip(":")
         operands = " ".join(tokens)
+        try:
+            raw = bytes.fromhex("".join(byte_tokens))
+        except ValueError:
+            diagnostics.append(ObjdumpDiagnostic(line_number, "invalid instruction bytes", line))
+            continue
         instructions.append(
             Instruction(
                 address=int(address_text, 16),
-                raw=bytes.fromhex("".join(byte_tokens)),
+                raw=raw,
                 mnemonic=mnemonic,
                 operands=operands,
                 section=section,
+                prefixes=tuple(prefixes),
             )
         )
-    return instructions
+    return instructions, diagnostics
+
+
+def parse_objdump(text: str) -> list[Instruction]:
+    return parse_objdump_with_diagnostics(text)[0]
 
 
 def is_return(instruction: Instruction) -> bool:
-    return instruction.mnemonic in {"ret", "retq"}
+    return instruction.mnemonic in RETURN_MNEMONICS
 
 
 def is_predecessor_barrier(instruction: Instruction) -> bool:
     mnemonic = instruction.mnemonic
-    if is_return(instruction):
+    if is_return(instruction) or mnemonic in FAR_RETURN_MNEMONICS:
         return True
-    if mnemonic.startswith(("jmp", "call", "loop", "iret")):
+    if mnemonic.startswith(("jmp", "call", "loop", "iret")) or mnemonic.startswith("j"):
         return True
-    if mnemonic.startswith("j"):
+    if mnemonic.startswith(".") or mnemonic in {"(bad)", "bad"}:
         return True
-    return mnemonic in {"int", "int3", "sysenter", "sysexit", "ud2", "hlt"}
+    return mnemonic in {
+        "int", "int1", "int3", "into", "sysenter", "sysexit", "ud0", "ud1", "ud2",
+        "hlt", "rsm", "xbegin", "vmcall", "vmlaunch", "vmresume", "vmrun",
+    }
 
 
 def contiguous_runs(instructions: Iterable[Instruction]) -> list[list[Instruction]]:
@@ -286,7 +401,7 @@ def build_canonical_sequences(instructions: list[Instruction], max_depth: int) -
                     start=terminator.address,
                     terminator=terminator.address,
                     raw=terminator.raw,
-                    instructions=(f"{terminator.mnemonic} {terminator.operands}".strip(),),
+                    instructions=(terminator.text,),
                     section=terminator.section,
                 )
             )
@@ -303,9 +418,7 @@ def build_canonical_sequences(instructions: list[Instruction], max_depth: int) -
                         start=selected[0].address,
                         terminator=terminator.address,
                         raw=b"".join(item.raw for item in selected),
-                        instructions=tuple(
-                            f"{item.mnemonic} {item.operands}".strip() for item in selected
-                        ),
+                        instructions=tuple(item.text for item in selected),
                         section=terminator.section,
                     )
                 )
@@ -361,20 +474,25 @@ def compare_target(
     *,
     binary: Path,
     objdump_binary: Path,
-    target: Path,
+    source_target: Path,
+    analyzed_target: Path,
+    target_identity: dict[str, Any],
     target_dir: Path,
     max_depth: int,
     timeout: float,
     sample_limit: int,
     fixture_mode: bool,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    target_bytes = target.read_bytes()
+    target_bytes = analyzed_target.read_bytes()
     target_digest = hashlib.sha256(target_bytes).hexdigest()
+    if target_digest != target_identity["sha256"] or len(target_bytes) != target_identity["size"]:
+        raise RuntimeError(f"immutable target snapshot identity mismatch: {source_target}")
+    analyzed_argument = os.path.relpath(analyzed_target, target_dir)
 
     report_path = target_dir / "x64lens.json"
     x_stderr = target_dir / "x64lens.stderr"
     x_measurement = run_measured(
-        [str(binary), "gadgets", "--format", "json", "--max-depth", str(max_depth), str(target)],
+        [str(binary), "gadgets", "--format", "json", "--max-depth", str(max_depth), analyzed_argument],
         report_path,
         x_stderr,
         timeout,
@@ -382,7 +500,7 @@ def compare_target(
     )
     if x_measurement.exit_code != 0:
         raise RuntimeError(
-            f"x64lens failed for {target} with exit {x_measurement.exit_code}: "
+            f"x64lens failed for {source_target} with exit {x_measurement.exit_code}: "
             f"{x_stderr.read_text(encoding='utf-8', errors='replace').strip()}"
         )
 
@@ -411,17 +529,17 @@ def compare_target(
     validator_stdout.write_text(validator.stdout, encoding="utf-8")
     validator_stderr.write_text(validator.stderr, encoding="utf-8")
     if validator.returncode != 0:
-        raise RuntimeError(f"x64lens report validation failed for {target}: {validator.stderr.strip()}")
+        raise RuntimeError(f"x64lens report validation failed for {source_target}: {validator.stderr.strip()}")
 
     try:
         report = json.loads(report_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"cannot parse x64lens report for {target}: {exc}") from exc
+        raise RuntimeError(f"cannot parse x64lens report for {source_target}: {exc}") from exc
 
     objdump_path = target_dir / "objdump.txt"
     objdump_stderr = target_dir / "objdump.stderr"
     objdump_measurement = run_measured(
-        [str(objdump_binary), "-d", "-w", "-Mintel", str(target)],
+        [str(objdump_binary), "-d", "-w", "-Mintel", analyzed_argument],
         objdump_path,
         objdump_stderr,
         timeout,
@@ -429,11 +547,13 @@ def compare_target(
     )
     if objdump_measurement.exit_code != 0:
         raise RuntimeError(
-            f"objdump failed for {target} with exit {objdump_measurement.exit_code}: "
+            f"objdump failed for {source_target} with exit {objdump_measurement.exit_code}: "
             f"{objdump_stderr.read_text(encoding='utf-8', errors='replace').strip()}"
         )
 
-    instructions = parse_objdump(objdump_path.read_text(encoding="utf-8", errors="replace"))
+    instructions, parse_diagnostics = parse_objdump_with_diagnostics(
+        objdump_path.read_text(encoding="utf-8", errors="replace")
+    )
     sequences = build_canonical_sequences(instructions, max_depth)
     sequence_by_key = {sequence.key: sequence for sequence in sequences}
     duplicate_canonical_sequences = len(sequences) - len(sequence_by_key)
@@ -555,7 +675,7 @@ def compare_target(
                 f"report={counts.get(field)!r} records={expected_value}"
             )
     metrics: dict[str, Any] = {
-        "target": str(target),
+        "target": str(source_target),
         "target_sha256": target_digest,
         "target_size": len(target_bytes),
         "max_depth": max_depth,
@@ -572,6 +692,7 @@ def compare_target(
         "unknown_candidate_count": counts.get("unknown_candidate_count"),
         "scored_candidate_count": counts.get("scored_candidate_count"),
         "objdump_instruction_count": len(instructions),
+        "objdump_parse_diagnostic_count": len(parse_diagnostics),
         "objdump_return_terminator_count": len(canonical_terminators),
         "objdump_duplicate_return_terminator_count": duplicate_return_terminators,
         "raw_terminator_intersection_count": len(x_terminators & canonical_terminators),
@@ -589,11 +710,12 @@ def compare_target(
         "objdump_unsupported_sequence_count": len(unsupported_sequences),
     }
 
-    if sha256_file(target) != target_digest:
-        raise RuntimeError(f"target changed during decoder-gap measurement: {target}")
+    if sha256_file(analyzed_target) != target_digest:
+        raise RuntimeError(f"immutable target snapshot changed during decoder-gap measurement: {source_target}")
 
     comparison = {
-        "comparison_model": "x64lens-decoder-gap-v1",
+        "comparison_model": "x64lens-decoder-gap-v2",
+        "target_identity": target_identity,
         "interpretation": {
             "objdump_role": "external canonical-disassembly evidence, not loader authority",
             "x64lens_raw_not_objdump": "byte-oriented terminators absent from objdump's canonical instruction boundaries",
@@ -617,6 +739,7 @@ def compare_target(
             },
             "objdump": asdict(objdump_measurement),
         },
+        "objdump_parse_diagnostics": [asdict(item) for item in parse_diagnostics],
         "samples": {
             "x64lens_raw_not_objdump": [f"0x{value:016x}" for value in x_raw_not_objdump[:sample_limit]],
             "objdump_terminator_not_x64lens": [f"0x{value:016x}" for value in objdump_not_x_raw[:sample_limit]],
@@ -699,29 +822,50 @@ def validate_results_destination(path: Path) -> Path:
             raise RuntimeError(
                 f"refusing to replace an unrecognized existing results directory: {resolved}"
             ) from exc
-        if manifest.get("format") != "x64lens-decoder-gap-manifest-v1":
+        if manifest.get("format") not in {
+            "x64lens-decoder-gap-manifest-v1",
+            "x64lens-decoder-gap-manifest-v2",
+        }:
             raise RuntimeError(
                 f"refusing to replace an unrecognized existing results directory: {resolved}"
             )
     return resolved
 
 
-def publish_results(staging: Path, results_dir: Path) -> None:
-    """Publish one complete result tree, restoring the prior tree on failure."""
+def publish_results(
+    staging: Path,
+    results_dir: Path,
+    hook: Callable[[str], None] | None = None,
+) -> None:
+    """Publish one complete result tree without losing a recognized prior tree."""
 
-    if not results_dir.exists():
-        staging.replace(results_dir)
-        return
-
-    backup = Path(tempfile.mkdtemp(prefix=".decoder-gap-backup-", dir=results_dir.parent))
-    backup.rmdir()
-    results_dir.replace(backup)
+    callback = hook or (lambda _stage: None)
+    backup: Path | None = None
+    prior_moved = False
     try:
+        callback("before_backup")
+        if results_dir.exists():
+            backup = Path(tempfile.mkdtemp(prefix=".decoder-gap-backup-", dir=results_dir.parent))
+            backup.rmdir()
+            results_dir.replace(backup)
+            prior_moved = True
+            callback("after_backup")
+
+        callback("before_publish")
         staging.replace(results_dir)
-    except Exception:
-        backup.replace(results_dir)
+        callback("after_publish")
+        if backup is not None and backup.exists():
+            shutil.rmtree(backup)
+    except BaseException:
+        # If the new tree is already visible, it is a complete valid result and
+        # remains the committed value. Otherwise restore the prior recognized tree.
+        new_visible = results_dir.exists() and not staging.exists()
+        if new_visible:
+            if backup is not None and backup.exists():
+                shutil.rmtree(backup, ignore_errors=True)
+        elif prior_moved and backup is not None and backup.exists():
+            backup.replace(results_dir)
         raise
-    shutil.rmtree(backup)
 
 
 def main(argv: list[str]) -> int:
@@ -757,6 +901,15 @@ def main(argv: list[str]) -> int:
         print("decoder-gap-smoke: error: objdump is required", file=sys.stderr)
         return 127
 
+    old_handlers: dict[int, Any] = {}
+
+    def interrupt_handler(signum: int, _frame: Any) -> None:
+        raise CampaignInterrupted(signum)
+
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        old_handlers[signum] = signal.getsignal(signum)
+        signal.signal(signum, interrupt_handler)
+
     try:
         controlled_spec = load_controlled_spec(args.controlled_spec)
         results_dir = validate_results_destination(args.results_dir)
@@ -791,27 +944,39 @@ def main(argv: list[str]) -> int:
         rows: list[dict[str, Any]] = []
         comparisons: list[dict[str, Any]] = []
         try:
-            binary_hash = sha256_file(args.binary)
+            binary_path = args.binary.resolve(strict=True)
+            binary_hash = sha256_file(binary_path)
             campaign_hash = sha256_file(campaign_path)
             controlled_spec_hash = sha256_file(controlled_spec_path)
             objdump_hash = sha256_file(objdump_binary)
             objdump_version = first_line([str(objdump_binary), "--version"], args.timeout)
-            binary_version = first_line([str(args.binary), "version"], args.timeout)
+            binary_version = first_line([str(binary_path), "version"], args.timeout)
             validator_hash = sha256_file(VALIDATOR)
             python_hash = sha256_file(python_binary)
             time_hash = sha256_file(time_binary)
             time_version = first_line([str(time_binary), "--version"], args.timeout)
-            target_inventory = []
-            for target in unique_targets:
-                resolved = target.resolve(strict=True)
+
+            snapshots_dir = staging / "inputs"
+            snapshots = [
+                snapshot_target(target, snapshots_dir, index)
+                for index, target in enumerate(unique_targets)
+            ]
+            target_inventory: list[dict[str, Any]] = []
+            for snapshot in snapshots:
                 target_inventory.append(
                     {
-                        "requested_path": str(target),
-                        "resolved_path": str(resolved),
-                        "sha256": sha256_file(resolved),
-                        "size": resolved.stat().st_size,
+                        "requested_path": snapshot.requested_path,
+                        "resolved_path": snapshot.resolved_path,
+                        "snapshot_path": snapshot.snapshot_path.relative_to(staging).as_posix(),
+                        "sha256": snapshot.sha256,
+                        "size": snapshot.size,
+                        "source_device": snapshot.source_device,
+                        "source_inode": snapshot.source_inode,
+                        "source_mtime_ns": snapshot.source_mtime_ns,
+                        "source_ctime_ns": snapshot.source_ctime_ns,
                     }
                 )
+
             run_identity = hashlib.sha256(
                 json.dumps(
                     {
@@ -842,16 +1007,18 @@ def main(argv: list[str]) -> int:
                 ).encode("utf-8")
             ).hexdigest()
 
-            for index, target in enumerate(unique_targets):
-                resolved = target.resolve(strict=True)
-                digest = sha256_file(resolved)
-                directory = staging / target_label(target, digest, index)
+            for index, (target, snapshot, identity) in enumerate(
+                zip(unique_targets, snapshots, target_inventory, strict=True)
+            ):
+                directory = staging / target_label(target, snapshot.sha256, index)
                 directory.mkdir(parents=True)
-                is_controlled = resolved == controlled_target
+                is_controlled = Path(snapshot.resolved_path) == controlled_target
                 metrics, comparison = compare_target(
-                    binary=args.binary.resolve(),
+                    binary=binary_path,
                     objdump_binary=objdump_binary,
-                    target=resolved,
+                    source_target=Path(snapshot.resolved_path),
+                    analyzed_target=snapshot.snapshot_path,
+                    target_identity=identity,
                     target_dir=directory,
                     max_depth=args.max_depth,
                     timeout=args.timeout,
@@ -872,23 +1039,26 @@ def main(argv: list[str]) -> int:
                 rows.append(metrics)
                 comparisons.append(
                     {
-                        "target": str(resolved),
+                        "target": snapshot.resolved_path,
+                        "snapshot": identity,
                         "directory": directory.name,
                         "metrics": metrics,
                     }
                 )
 
+            for snapshot in snapshots:
+                if sha256_file(snapshot.snapshot_path) != snapshot.sha256:
+                    raise RuntimeError(
+                        f"immutable target snapshot changed before publication: {snapshot.resolved_path}"
+                    )
+
             write_tsv(staging / "decoder-gap-summary.tsv", rows)
             aggregate = {
-                "format": "x64lens-decoder-gap-summary-v1",
+                "format": "x64lens-decoder-gap-summary-v2",
                 "run_id": run_identity,
                 "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "max_depth": args.max_depth,
-                "binary": {
-                    "path": str(args.binary.resolve()),
-                    "sha256": binary_hash,
-                    "version": binary_version,
-                },
+                "binary": {"path": str(binary_path), "sha256": binary_hash, "version": binary_version},
                 "campaign": {
                     "path": str(campaign_path),
                     "sha256": campaign_hash,
@@ -905,36 +1075,24 @@ def main(argv: list[str]) -> int:
                     "python_sha256": python_hash,
                     "python_version": sys.version.split()[0],
                 },
-                "objdump": {
-                    "path": str(objdump_binary),
-                    "sha256": objdump_hash,
-                    "version": objdump_version,
-                },
-                "time": {
-                    "path": str(time_binary),
-                    "sha256": time_hash,
-                    "version": time_version,
-                },
+                "objdump": {"path": str(objdump_binary), "sha256": objdump_hash, "version": objdump_version},
+                "time": {"path": str(time_binary), "sha256": time_hash, "version": time_version},
                 "host": {
                     "system": platform.system(),
                     "release": platform.release(),
                     "machine": platform.machine(),
                 },
-                "controlled_spec": {
-                    "path": str(controlled_spec_path),
-                    "sha256": controlled_spec_hash,
-                },
+                "controlled_spec": {"path": str(controlled_spec_path), "sha256": controlled_spec_hash},
                 "targets": comparisons,
                 "decision_policy": "facts only; apply docs/design/decoder-gap-decision-gate.md after review",
             }
             (staging / "decoder-gap-summary.json").write_text(
-                json.dumps(aggregate, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
+                json.dumps(aggregate, indent=2, sort_keys=True) + "\n", encoding="utf-8"
             )
             (staging / "manifest.json").write_text(
                 json.dumps(
                     {
-                        "format": "x64lens-decoder-gap-manifest-v1",
+                        "format": "x64lens-decoder-gap-manifest-v2",
                         "run_id": run_identity,
                         "binary_sha256": binary_hash,
                         "campaign_path": str(campaign_path),
@@ -965,24 +1123,23 @@ def main(argv: list[str]) -> int:
                 encoding="utf-8",
             )
 
-            if sha256_file(args.binary) != binary_hash:
-                raise RuntimeError("x64lens analyzer changed during decoder-gap measurement")
-            if sha256_file(campaign_path) != campaign_hash:
-                raise RuntimeError("decoder-gap campaign implementation changed during measurement")
-            if sha256_file(controlled_spec_path) != controlled_spec_hash:
-                raise RuntimeError("controlled decoder-gap expectation changed during measurement")
-            if sha256_file(VALIDATOR) != validator_hash:
-                raise RuntimeError("canonical JSON validator changed during decoder-gap measurement")
-            if sha256_file(objdump_binary) != objdump_hash:
-                raise RuntimeError("objdump executable changed during decoder-gap measurement")
-            if sha256_file(python_binary) != python_hash:
-                raise RuntimeError("Python executable changed during decoder-gap measurement")
-            if sha256_file(time_binary) != time_hash:
-                raise RuntimeError("GNU time executable changed during decoder-gap measurement")
+            stable_files = [
+                (binary_path, binary_hash, "x64lens analyzer"),
+                (campaign_path, campaign_hash, "decoder-gap campaign implementation"),
+                (controlled_spec_path, controlled_spec_hash, "controlled decoder-gap expectation"),
+                (VALIDATOR, validator_hash, "canonical JSON validator"),
+                (objdump_binary, objdump_hash, "objdump executable"),
+                (python_binary, python_hash, "Python executable"),
+                (time_binary, time_hash, "GNU time executable"),
+            ]
+            for stable_path, expected_hash, label in stable_files:
+                if sha256_file(stable_path) != expected_hash:
+                    raise RuntimeError(f"{label} changed during decoder-gap measurement")
 
             publish_results(staging, results_dir)
-        except Exception:
-            shutil.rmtree(staging, ignore_errors=True)
+        except BaseException:
+            if staging.exists():
+                shutil.rmtree(staging, ignore_errors=True)
             raise
 
         total_boundary_disagreements = sum(row["x64lens_exact_boundary_disagreement_count"] for row in rows)
@@ -993,9 +1150,15 @@ def main(argv: list[str]) -> int:
             f"canonical_only_terminators={total_canonical_only} results={results_dir}"
         )
         return 0
+    except CampaignInterrupted as exc:
+        print(f"decoder-gap-smoke: interrupted by signal {exc.signum}", file=sys.stderr)
+        return 128 + exc.signum
     except (OSError, RuntimeError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
         print(f"decoder-gap-smoke: error: {exc}", file=sys.stderr)
         return 1
+    finally:
+        for signum, previous in old_handlers.items():
+            signal.signal(signum, previous)
 
 
 if __name__ == "__main__":

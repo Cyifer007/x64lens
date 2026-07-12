@@ -83,3 +83,12 @@ separate.
 An embedded decoder decision must identify the affected claim and explain why an
 external validation path is insufficient. No decoder is approved solely because
 its count differs from the byte-oriented scanner.
+
+## Decoder decision evidence rule
+
+A mandatory decoder may not be introduced from count disagreement alone. The
+decision must identify a material user-facing claim or task, use immutable
+inputs, retain categorized disagreements and parser diagnostics, preserve raw
+facts, and measure dependency, license, binary-size, latency, RSS, and hostile-
+input costs. Patch 043 records a decoder-free default and an optional future
+adapter seam.

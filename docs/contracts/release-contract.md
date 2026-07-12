@@ -176,3 +176,16 @@ controlled fixture. `make decoder-gap-campaign` preserves host-dependent
 comparison evidence but remains separate from publication-grade benchmarks.
 The campaign informs the embedded-decoder decision and must not alter runtime
 facts or be treated as decoded-valid candidate output.
+
+## Sprint 9 Patch 043 release-hygiene update
+
+Public ZIP checks must run before extraction and validate raw/effective member
+names, recognized extra metadata, portable path semantics, file-type metadata,
+duplicate and case-colliding names, encryption, comments, nested containers,
+and private/generated paths independently of archive-root depth.
+
+Decoder-gap artifacts used for a release decision must identify immutable bytes
+actually analyzed and must survive interrupted replacement without losing a
+recognized prior result. The default release artifact remains decoder-free; a
+future decoder-enabled profile requires separate identity, dependencies,
+validation, and benchmark evidence.

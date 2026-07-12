@@ -123,7 +123,8 @@ A limited internal decoder may be justified for a tightly bounded instruction su
 - Sprint 9 Patch 040: report identity and analysis-completeness envelope.
 - Sprint 9 Patch 041: candidate-index provenance and exact-suffix evidence.
 - Sprint 9 Patch 042: external objdump gap measurement and explicit decision gate.
-- Remaining Sprint 9: review authoritative campaign evidence and record the decoder decision.
+- Sprint 9 Patch 043: immutable evidence, signal-safe publication, parser hardening, and a recorded decoder-free default with an optional adapter seam.
+- Sprint 9 Patch 044: closeout audit; no mandatory decoder implementation.
 - Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
 - Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
 - Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
@@ -172,3 +173,16 @@ into `candidate_evidence_record`, change semantic classes, or alter scores.
 The controlled fixture is a regression gate. Selected system binaries are a
 research campaign whose counts are interpreted under
 [`decoder-gap-decision-gate.md`](decoder-gap-decision-gate.md).
+
+## Patch 043 decoder decision
+
+The default `x64lens` binary remains decoder-free. This preserves the core
+research variable and operational contract: freestanding NASM, direct syscalls,
+small dependency surface, low startup/RSS potential, and straightforward
+air-gapped or minimal-container deployment.
+
+Decoder-backed facts remain useful, but they must be optional side-car evidence.
+Any future adapter receives its own build identity, dependency and license
+record, failure contract, malformed-input regression suite, and performance/RSS
+ablation. It must not remove raw candidates or silently rewrite exact and
+semantic-exact history.
