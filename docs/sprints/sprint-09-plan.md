@@ -2,8 +2,7 @@
 
 ## Status
 
-Active through Patch 044 corrective hardening; Patch 045 is the planned
-closeout review.
+Closed by Patch 045.
 
 ## Sprint goal
 
@@ -11,108 +10,85 @@ Make candidate validity, evidence source, analysis completeness, report
 identity, and the decoder decision explicit before adding more primitive
 families.
 
-## Planned deliverables
+## Delivered work
 
-- [x] Add a fixed-size analysis-summary record for command identity and bounded
+- [x] Fixed-size analysis-summary record for command identity and bounded
   completion facts.
-- [x] Add candidate capacity, truncation, dropped-count knowledge, region
-  progress, and analysis-complete facts to successful reports.
-- [x] Add top-level report type and command identity.
-- [x] Introduce schema `0.2.0` and migration notes.
-- [x] Add retained representative final-shape schema `0.1.0` compatibility.
-- [x] Preserve `gadgets` and `analyze` JSON parity while distinguishing command
-  identity.
-- [x] Add a dense evidence side-car keyed by candidate index.
-- [x] Distinguish raw, exact-suffix, semantic-exact, and future decoder-backed
-  evidence without redefining historical counts.
-- [x] Add per-candidate evidence kind and validator identity to JSON.
-- [x] Add controlled and selected-system external decoder-gap campaigns.
-- [x] Bind campaign evidence to immutable analyzed target snapshots.
-- [x] Make result publication transactional across ordinary failures, `SIGINT`,
-  and `SIGTERM`, including the post-rename delivery window.
-- [x] Kill and reap measured child process groups on timeout or interruption.
-- [x] Normalize reviewed objdump prefix/return forms and control-flow barriers.
-- [x] Reconcile ZIP local and central metadata and validate ZIP64 semantics.
-- [x] Remove real transfer-artifact basenames from public negative fixtures.
-- [x] Record the decoder-free default plus candidate-scoped optional decoder
-  and evidence-gated parallelism direction.
-- [x] Keep raw scanner output independently measurable.
-- [ ] Complete the Sprint 9 architecture, documentation, environment,
-  public/private-boundary, configuration, and roadmap closeout review.
+- [x] Candidate capacity, truncation, dropped-count knowledge, region progress,
+  and analysis-complete facts for successful reports.
+- [x] Top-level report type and command identity.
+- [x] Schema `0.2.0` with migration and compatibility documentation.
+- [x] Retained representative final-shape schema `0.1.0` compatibility.
+- [x] `gadgets` and `analyze` JSON parity with distinct command identity.
+- [x] Dense evidence side-car keyed by candidate index.
+- [x] Raw, exact-suffix, semantic-exact, and reserved decoder-backed evidence
+  tiers without historical count redefinition.
+- [x] Per-candidate evidence kind, validator identity, and matched suffix range.
+- [x] Controlled and selected-system external decoder-gap campaigns.
+- [x] Immutable target snapshots and complete campaign identity.
+- [x] Transactional publication across ordinary failure, `SIGINT`, and
+  `SIGTERM`.
+- [x] Complete measured-child process-group cleanup.
+- [x] Reviewed objdump prefix/return normalization and control-flow barriers.
+- [x] Local/central ZIP metadata reconciliation and strict ZIP64 handling.
+- [x] Synthetic public-boundary fixtures and root-independent archive policy.
+- [x] Decoder-free default, candidate-scoped optional decoder, and measured
+  parallelism gates.
+- [x] Sprint-wide architecture, contract, documentation, release-boundary,
+  metric, schema, and roadmap closeout review.
 
 ## Patch sequence
 
 1. **Patch 040:** report and command identity, complete-analysis summary, schema
-   `0.2.0`, retained representative `0.1.0` compatibility, and parity gates.
+   `0.2.0`, representative historical compatibility, and parity gates.
 2. **Patch 041:** candidate evidence side-car, exact/semantic provenance, ABI
    correction, formal schema enforcement, and validation hardening.
-3. **Patch 042:** portable public-bundle policy, controlled and selected-system
-   decoder-gap measurement, and an explicit decision gate.
-4. **Patch 043:** immutable target snapshots, initial signal-aware result
-   publication, external-disassembly parser hardening, and the decoder-free
-   default decision.
-5. **Patch 044:** corrective campaign and release-boundary hardening for signal
-   windows, measured-child cleanup, objdump normalization, ZIP local/central
-   reconciliation, ZIP64 semantics, public fixtures, and bounded acceleration
-   design gates.
-6. **Patch 045:** Sprint 9 closeout: architecture and contract audit, 40-file
-   project-context refresh, development and Docker Buildx review, configuration
-   and integration review, roadmap reconciliation, retrospective, and Sprint 10
-   entry decision.
-
-The sequence is intentionally additive. Decoder evidence remains a side-car and
-may not replace raw scanner facts, exact suffix evidence, semantic-exact
-classification, unknowns, or scores.
+3. **Patch 042:** portable public-bundle policy, decoder-gap measurement, and
+   explicit decoder decision gate.
+4. **Patch 043:** immutable target snapshots, campaign transaction and parser
+   hardening, and the decoder-free default.
+5. **Patch 044:** signal-window, child-cleanup, external-parser, ZIP metadata,
+   and public-fixture corrections plus bounded acceleration design gates.
+6. **Patch 045:** strict closeout correction, defensive deployment profile,
+   documentation and release audit, retrospective, and Sprint 10 handoff.
 
 ## Acceptance criteria
 
-- [x] Existing raw, exact, semantic, unknown, and scored counts retain their
-  documented meanings.
-- [x] Successful reports state whether bounded candidate enumeration completed
-  without capacity truncation.
-- [x] Schema validators reject internally inconsistent identity, completeness,
-  and current provenance state.
-- [x] `gadgets` and `analyze` share report facts and one JSON implementation.
-- [x] Candidate-arena overflow remains fail-closed with no partial stdout.
-- [x] Candidate provenance is additive and does not redefine historical counts.
-- [x] The decoder decision is documented from measured evidence.
-- [x] The default runtime remains freestanding, single-worker, and decoder-free.
-- [x] A future decoder is candidate-scoped and optional.
-- [x] Any future parallel profile has deterministic merge, bounded global
-  capacity, and measured RSS/latency gates.
-- [ ] Patch 045 completes the sprint-wide closeout audit and retrospective.
+- [x] Raw, exact, semantic, unknown, and scored counts retain their meanings.
+- [x] Successful reports state bounded enumeration completion.
+- [x] Validators reject inconsistent identity, completeness, and provenance.
+- [x] `gadgets` and `analyze` reuse shared report facts and adapters.
+- [x] Capacity overflow remains fail-closed with no partial stdout.
+- [x] Candidate provenance remains additive.
+- [x] The decoder decision is evidence-based.
+- [x] The default runtime remains freestanding, decoder-free, and single-worker.
+- [x] Future decoder and parallel profiles have bounded, deterministic,
+  reproducible acceptance gates.
+- [x] Sprint closeout validation and retrospective are documented.
 
-## Recorded decoder and acceleration decision
+## Final decoder and acceleration decision
 
-The selected-system development campaign found no canonical return terminator
-that was absent from x64lens raw discovery in the reviewed target set. It did
-show expected byte-oriented candidates that do not begin at canonical
-instruction boundaries and canonical return-ending sequences outside the
-current exact catalog.
+The development campaign demonstrated raw terminator recall for the reviewed
+canonical return set, expected unaligned byte observations, and exact-catalog
+undercoverage. It did not prove universal recall or justify whole-image decoding.
 
-The default analyzer therefore remains dependency-free. A future decoder may
-validate possible starts only inside retained candidate windows and write
-side-car facts. This candidate-scoped design can reduce validity uncertainty
-and expand semantic coverage without forcing whole-image decoding on every
-invocation.
+The core remains dependency-free. A future decoder may validate starts inside
+retained candidate windows and write side-car evidence. Target-level parallelism
+is available to external orchestration; candidate validation is the preferred
+first in-process worker seam. Sprints 12 and 13 measure optional profiles before
+any default changes.
 
-Multithreading is not forced in Sprint 9. Candidate validation is the preferred
-first parallel seam; executable-region or chunk scanning requires overlap,
-deduplication, global capacity, and deterministic merge. Sprint 12 and Sprint
-13 will measure these profiles against one-worker operation before any default
-changes.
-
-## Out of scope
+## Out of scope retained after closeout
 
 - Mandatory embedded decoder dependency.
-- Forced multithreading or an unmeasured `--jobs` default.
+- Forced multithreading or an unmeasured worker default.
 - Broad primitive expansion.
-- Publication-grade benchmark claims from Sprint 9 smoke evidence.
-- Intentional partial-report output before scanner progress and dropped-count
-  semantics are implemented and validated.
+- Publication-grade claims from development campaign evidence.
+- Intentional partial-report output without truthful scanner progress and
+  dropped-count semantics.
 
 ## Handoff
 
-Patch 045 closes Sprint 9 without introducing a stealth feature tranche. Sprint
-10 may expand primitive coverage only through the evidence-aware records,
-fixtures, and bounded decoder/parallelism gates established here.
+Sprint 10 expands primitive coverage through evidence-aware records and
+controlled fixtures. It must preserve the defensive deployment profile and may
+not use decoder or concurrency work to bypass semantic correctness.

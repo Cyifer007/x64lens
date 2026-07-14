@@ -55,3 +55,9 @@ Before any `1.0.0` release, require:
 - release checksum generation,
 - reproducible benchmark results,
 - documented safety boundaries.
+
+## Defensive deployment profile
+
+The reference x64lens artifact is designed for environments where operational simplicity matters: air-gapped systems, minimal CI runners, incident-response staging, and constrained binary triage. Its direct-syscall, static, decoder-free design reduces required packages, shared libraries, helper processes, and deployment assumptions.
+
+This profile is not a claim of invisibility. Its value is a small dependency and resource surface, deterministic output, bounded memory, read-only target handling, and stable machine-readable evidence. Optional candidate-scoped validation or concurrency must remain separately identifiable so operators can choose assurance or throughput without losing the minimal core.

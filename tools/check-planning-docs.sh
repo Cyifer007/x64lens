@@ -41,7 +41,9 @@ required=(
     docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
     docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
     docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
+    docs/adr/0031-sprint9-closeout-and-defensive-deployment-profile.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
+    docs/design/defensive-deployment-profile.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
     docs/sprints/sprint-07-patch-025-validation.md
@@ -64,8 +66,10 @@ required=(
     docs/sprints/sprint-09-patch-042-validation.md
     docs/sprints/sprint-09-patch-043-validation.md
     docs/sprints/sprint-09-patch-044-validation.md
+    docs/sprints/sprint-09-patch-045-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
+    docs/sprints/sprint-09-retro.md
     tests/malformed/README.md
     tests/malformed/regressions/README.md
     tests/malformed/regressions/elf64-shentsize-63.bin
@@ -131,8 +135,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 is not marked closed or complete'
-grep -Eq '^(Next|Active)' docs/sprints/sprint-09-plan.md \
-    || fail 'Sprint 9 is not marked as the next or active implementation tranche'
+grep -Eq '^(Closed|Complete)' docs/sprints/sprint-09-plan.md \
+    || fail 'Sprint 9 is not marked closed or complete'
+grep -Eq '^(Next|Active)' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 is not marked as the next or active implementation tranche'
 grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 040 foundation'
 grep -q 'Patch 041' docs/sprints/sprint-09-plan.md \
@@ -147,6 +153,12 @@ grep -q 'Patch 044' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 044 corrective boundary'
 grep -q 'Patch 045' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not preserve the Patch 045 closeout boundary'
+grep -q 'Sprint 10' docs/sprints/sprint-09-retro.md \
+    || fail 'Sprint 9 retrospective does not hand off to Sprint 10'
+grep -qi 'defensive deployment' docs/adr/0031-sprint9-closeout-and-defensive-deployment-profile.md \
+    || fail 'Sprint 9 closeout ADR does not record the defensive deployment profile'
+grep -qi 'air-gapped' docs/design/defensive-deployment-profile.md \
+    || fail 'defensive deployment profile does not record air-gapped operation'
 grep -qi 'candidate-scoped' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the bounded decoder direction'
 grep -qi 'parallel' docs/design/candidate-scoped-decoder-and-parallelism.md \
@@ -226,6 +238,8 @@ grep -q '^optional-tool-comparison-smoke:' Makefile \
     || fail 'Makefile does not define optional-tool-comparison-smoke'
 grep -q '^schema-compat-smoke:' Makefile \
     || fail 'Makefile does not define schema-compat-smoke'
+grep -q '^sprint-closeout-smoke:' Makefile \
+    || fail 'Makefile does not define sprint-closeout-smoke'
 grep -Eq '^validation-smoke:.*public-docs-hygiene-smoke.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-hardening-smoke.*decoder-gap-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
     || fail 'validation-smoke does not include public-document, benchmark, bundle, schema, decoder hardening, decoder-gap, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 

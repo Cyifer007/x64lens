@@ -86,3 +86,9 @@ Malformed or unnecessary ZIP64 metadata is rejected.
 Public negative tests use synthetic timestamps, user names, hosts, and transfer
 names. Tests must never preserve a real private attachment basename simply to
 prove that the checker would reject it.
+
+## Sprint 9 closeout boundary
+
+Public closeout records describe architecture, contracts, reproducible commands, technical outcomes, known limitations, and future roadmap decisions. Local command transcripts, workstation-specific configuration, transfer filenames, private planning bundles, and platform-specific workflow notes remain outside the public tree.
+
+Public smoke fixtures must use synthetic identifiers. A validator may be strengthened by locally observed evidence, but the committed regression must express the general policy rather than reconstructing a private basename or path.

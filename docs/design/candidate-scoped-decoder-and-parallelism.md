@@ -106,3 +106,9 @@ Do not ship or default-enable acceleration until fixed-corpus evidence shows:
 Sprint 12 builds the measurement infrastructure. Sprint 13 performs the fixed
 comparative and ablation campaign. Any implementation before those gates is an
 experimental profile, not the default runtime.
+
+## Sprint 9 closeout decision
+
+The reference profile is one worker with no decoder. Candidate-scoped validation is the preferred optional correctness profile because it bounds decoder work to evidence already retained by the fast scanner. Parallelism is not forced into the core before measurement.
+
+The first throughput ablation should compare target-level concurrency, candidate-validation concurrency, and region-level concurrency. Any in-process mode must produce the same ordered facts, global capacity outcome, exit status, and JSON bytes as the one-worker reference while reporting additional CPU, RSS, startup, and synchronization cost.

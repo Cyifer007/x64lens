@@ -1117,3 +1117,15 @@ prefix/near-return forms, prefixed control-flow barriers, ten transaction
 interruptions including the post-rename window, and both measured-child signal
 cleanup cases. Full native and qualified Docker aggregates remain mandatory.
 See `docs/sprints/sprint-09-patch-044-validation.md`.
+
+## Sprint 9 Patch 045 closeout validation
+
+Patch 045 closes Sprint 9 with no analyzer assembly or schema change. Run:
+
+```bash
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+make sprint-closeout-smoke
+```
+
+The closeout target requires strict ShellCheck to be installed, reruns strict shell lint, then runs the complete native aggregate. Docker remains a separate environment-qualified reproducibility gate. Current capacity behavior remains exact at 4096 candidates and fail-closed at 4097 with exit 6, empty stdout, and the stable unsupported-feature diagnostic.

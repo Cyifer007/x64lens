@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established the first deterministic hostile-input and candidate-capacity evidence required by the preview gate. Patch 028 added shared checked table arithmetic and table-end overflow coverage. Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patch 040 begins Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, retained representative final-shape `0.1.0` compatibility, and command parity. Patch 041 adds current per-candidate provenance. Patch 042 adds portable source-bundle validation and external decoder-gap evidence. Patch 043 hardens campaign provenance and publication and records a decoder-free default runtime with an optional verification adapter. Sprint 9 closeout, reproducible corpus work, and high-resolution benchmarking remain open.
+Patch 025 established deterministic hostile-input and candidate-capacity evidence, Patch 028 added shared checked table arithmetic, and Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patches 040 through 045 complete Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, per-candidate provenance, compatibility fixtures, portable decoder-gap evidence, immutable and transaction-safe campaign artifacts, a decoder-free reference runtime, and public-release boundary hardening. Reproducible corpus work and high-resolution benchmarking remain open in Sprints 11 and 12.
 
 ## `v0.1.0-rc1` gate
 
@@ -193,3 +193,9 @@ special-file policy checks before extraction.
 The default release binary remains decoder-free. A future decoder-enabled
 artifact would be a separate profile with its own tool identity, dependency and
 license record, malformed-input gate, and runtime/RSS benchmark stratum.
+
+## Sprint 9 gate status
+
+The provenance and schema portions of the preview gate are complete. Sprint 9 does not satisfy the full `v0.1.0-rc1` gate by itself: the fixed preview corpus, higher-resolution benchmark runner, pilot baseline campaign, preview artifact rehearsal, and release-tag decision remain later work.
+
+The default release profile remains dependency-free and decoder-free. Any optional decoder-enabled or parallel profile must have a distinct build/runtime identity, independent benchmark rows, explicit dependency and licensing records, and equivalent malformed-input, capacity, completeness, and output-contract validation.

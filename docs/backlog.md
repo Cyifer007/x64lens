@@ -72,7 +72,7 @@ later sprints rather than Patch 037:
   normalized baseline definitions remain Sprint 12 and Sprint 13 work.
 - SARIF, CI policy gates, and enterprise export formats remain Sprint 15 work.
 
-### Sprint 9: evidence provenance and schema transition
+### Sprint 9: evidence provenance and schema transition — complete
 
 - [x] Fixed-size command-level analysis summary.
 - [x] Analysis completeness, candidate capacity, truncation, dropped-count knowledge, and region-progress fields.
@@ -80,16 +80,18 @@ later sprints rather than Patch 037:
 - [x] Schema `0.2.0`, migration notes, and retained representative final-shape
   `0.1.0` compatibility gate.
 - [x] `gadgets` and `analyze` shared-report parity with distinct command identity.
-- [ ] Target digest and additional run identity where the final provenance contract requires them.
 - [x] Candidate evidence side-car record.
-- [x] Raw, exact, and semantic-exact candidate evidence tiers; decoder-valid and semantic-decoded remain pending measured decoder work.
+- [x] Raw, exact, and semantic-exact candidate evidence tiers; decoder-valid and semantic-decoded remain reserved future layers.
 - [x] Controlled and selected-system decoder-gap measurement harness with
   hashes, commands, raw artifacts, timing/RSS smoke facts, and categorized
   boundary/canonicalization differences.
+- [x] Immutable campaign inputs, signal-safe publication, child-process cleanup, external-parser integrity, and portable archive policy.
 - [x] Embedded-decoder decision procedure and evidence requirements.
-- [x] Authoritative decoder decision after local campaign review: keep the default runtime decoder-free and reserve a future decoder for an optional evidence adapter.
+- [x] Decoder-free, single-worker reference profile with candidate-scoped decoder and deterministic parallelism ablation gates.
+- [x] Sprint 9 architecture, contract, public-boundary, release, roadmap, and validation closeout.
+- [ ] Target digest inside the runtime report, if later required by the final provenance contract; campaign and benchmark artifacts already retain target hashes externally.
 
-### Sprint 10: primitive expansion
+### Sprint 10: primitive expansion — active next tranche
 
 - [ ] Multi-pop patterns.
 - [ ] Conservative register-transfer patterns.
@@ -168,9 +170,9 @@ later sprints rather than Patch 037:
 
 ### Decoder and validity
 
-- [ ] Keep external tools as validators until measured gaps justify an embedded decoder.
-- [ ] Preserve raw scanner metrics independently from decoder-backed metrics.
-- [ ] Document decoder licensing, dependencies, and performance cost before integration.
+- [x] Keep external tools as validators until measured gaps justify an embedded decoder; Sprint 9 retains a decoder-free default.
+- [x] Preserve raw scanner metrics independently from decoder-backed metrics.
+- [x] Define decoder licensing, dependency, RSS, latency, and failure-mode gates before integration; quantitative ablation remains future work.
 
 ### Metrics and scoring
 
@@ -340,3 +342,11 @@ Deferred with explicit classification:
 - optional decoder and concurrency implementation: measured Sprint 12/13 gate;
 - primitive-family expansion: Sprint 10;
 - publication-grade claims: Sprints 12 and 13.
+
+## Sprint 9 closeout decisions
+
+- The default runtime remains a static, dependency-free, single-worker analyzer.
+- Candidate-scoped decoder validation is the preferred future experiment; whole-image mandatory decoding is not approved.
+- Target-level concurrency is the safest early throughput option. Candidate-validation and region-level concurrency require deterministic merge, global-capacity, RSS, and no-partial-output proofs.
+- The recurring Buildx activity-metadata failure is an environment concern. Product acceptance uses a writable, isolated Buildx configuration while keeping the Dockerfile and build context under normal validation.
+- Sprint 10 must not redefine raw, exact, semantic, unknown, provenance, completeness, or score metrics while adding new primitive families.

@@ -99,3 +99,9 @@ Decoder and parallel execution claims require profile-specific raw evidence.
 Report core scanning, candidate-scoped validation, and each worker-count
 condition separately. Preserve output hashes and evidence-layer counts so a
 speedup cannot hide changed work or changed semantics.
+
+## Decoder and parallel-profile evidence rule
+
+A decoder or parallel profile is a separate experimental condition. Its identity, dependencies, worker count, commands, binary hash, target hash, raw rows, CPU, RSS, and output-definition effects must be recorded. Candidate-scoped decoder validation must preserve raw and exact evidence and may not erase disagreement.
+
+Claims about low observability are limited to dependency, import, helper-process, and resource surface. The project must not claim invisibility or guaranteed evasion of anti-analysis controls without separate evidence.

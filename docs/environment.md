@@ -254,3 +254,18 @@ make decoder-gap-campaign
 The controlled command is part of aggregate validation. The system campaign is
 host-dependent evidence and remains separate. Generated artifacts live under
 `tests/results/decoder-gap/` and are removed by `make clean-results`.
+
+## Buildx metadata in restricted environments
+
+Some managed environments permit Docker daemon access but prevent Buildx from updating its default activity metadata directory. Treat this separately from a Dockerfile or analyzer failure. A qualified validation run may use a writable, per-run Buildx configuration:
+
+```bash
+export BUILDX_CONFIG="$(mktemp -d "${TMPDIR:-/tmp}/x64lens-buildx.XXXXXX")"
+make docker-build
+make docker-test
+make docker-context-hygiene-smoke
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+rm -rf "$BUILDX_CONFIG"
+```
+
+Retain the default failure and qualified rerun as separate evidence. Do not weaken Docker context hygiene or product validation to accommodate a metadata-path restriction.

@@ -827,3 +827,19 @@ fast scan. Future parallel work must preserve one deterministic record order,
 one global bounded-capacity result, and no-partial-output failure behavior. It
 may not move loader authority, scanning, classification, scoring, or reporting
 into external helpers.
+
+## Sprint 9 closeout architecture
+
+Sprint 9 adds two command-owned fact surfaces without changing loader authority:
+
+```text
+analysis_summary
+  report identity, command identity, bounded completeness, capacity, progress
+
+candidate_evidence_record[]
+  index-aligned raw, exact-suffix, semantic-source, validator, validity state
+```
+
+The scanner still owns raw terminator-centered windows. Pattern matching owns exact suffix IDs. The classifier owns semantic promotion. Scoring owns relative utility. Reporters render records. External decoder-gap tooling is a development oracle and cannot mutate runtime facts.
+
+The default deployment profile remains static, decoder-free, and single-worker. A future candidate-scoped decoder consumes retained windows and writes additive side-car facts. A future parallel profile must preserve one-worker output order, global capacity semantics, bounded memory, cleanup, and byte-for-byte machine-readable parity.

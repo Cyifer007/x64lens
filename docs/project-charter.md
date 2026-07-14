@@ -127,3 +127,9 @@ The canonical implementation plan is `docs/roadmap-18-sprints.md`.
 ## Success criteria
 
 The initial project succeeds if another technical user can clone the repository, build the tool, run the documented tests, analyze simple ELF64 binaries, inspect JSON output, reproduce benchmark commands, and understand the roadmap without private context.
+
+## Defensive deployment constraint
+
+The default product profile should remain suitable for air-gapped analysis, constrained incident response, minimal CI/CD runners, and defensive malware triage. Dependency count, binary size, startup cost, max RSS, helper-process count, deterministic output, and failure behavior are product characteristics to preserve and measure.
+
+Future decoding should prefer validation of retained candidate windows over mandatory whole-image decoding. Future parallelism should be optional and evidence-gated. Neither enhancement may erase the dependency-free one-worker reference profile or weaken provenance, capacity, or malformed-input contracts.

@@ -94,3 +94,7 @@ The current values are hypotheses. Calibration may use:
 - mitigation-aware case studies.
 
 Until validated, the correct wording is “relative utility under the current model.”
+
+## Sprint 9 closeout constraint
+
+Patch 045 does not recalibrate scores. A candidate-scoped decoder may later add an explicit uncertainty factor only after decoder evidence is represented and benchmarked. A parallel profile must produce identical scores and ordering to the one-worker reference. No throughput optimization may change scoring facts.

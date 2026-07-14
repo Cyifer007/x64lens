@@ -252,3 +252,9 @@ Every schema change requires updates to:
 8. `CHANGELOG.md`,
 9. migration notes,
 10. both `gadgets` and `analyze` validation.
+
+## Sprint 9 closeout status
+
+Schema `0.2.0` is the current producer contract. It carries top-level report and command identity, an `analysis` completeness/capacity object, and per-candidate evidence. Current successful reports describe complete bounded enumeration; candidate-capacity exhaustion still fails before report emission.
+
+Decoder-backed validity remains optional future evidence. It must be added compatibly within `0.2.x` when possible and must not redefine raw, exact, semantic-exact, unknown, or scored counts. Historical compatibility is limited to the retained representative final-shape `0.1.0` fixture and versioned validator path.

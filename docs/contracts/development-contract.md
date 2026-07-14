@@ -237,3 +237,9 @@ it must not replace loader mapping or raw scanning. A future parallel profile
 must preserve deterministic output, global bounded capacity, cleanup, and a
 one-worker mode. Neither becomes the default before fixed-corpus latency, RSS,
 binary-size, and correctness evidence exists.
+
+## Sprint closeout gate
+
+A sprint that changes public shell helpers or validation tooling closes only after strict ShellCheck and the full native aggregate pass through `make sprint-closeout-smoke`. Docker validation remains separately required when the sprint acceptance plan names it.
+
+The reference runtime must remain independently buildable and measurable without optional decoders or worker libraries. Candidate-scoped decoding and parallel execution are allowed only as explicit, evidence-backed profiles that preserve existing module and metric boundaries.

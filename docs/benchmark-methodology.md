@@ -513,3 +513,17 @@ valid optimization conclusion: small targets may regress because worker
 creation, stacks, arenas, overlap, and merge dominate useful work. Sprint 12
 provides high-resolution measurement and Sprint 13 provides the fixed-corpus
 ablation decision.
+
+## Sprint 9 profile-ablation requirement
+
+Future performance claims must distinguish at least these profiles:
+
+```text
+core-1w              dependency-free scanner, one worker
+core-N-targets       independent target-level concurrency
+candidate-decode-1w  optional decoder over retained candidate windows
+candidate-decode-Nw  optional bounded candidate-validation workers
+region-Nw            optional deterministic executable-region workers
+```
+
+Each row must record profile identity, worker count, decoder identity and version when present, binary hash, dependencies, target hash, wall time, child CPU, max RSS, output bytes, and the precise raw/exact/semantic/validated count definitions. A faster wall-clock result with materially higher aggregate CPU or RSS must not be reported as an unqualified improvement.

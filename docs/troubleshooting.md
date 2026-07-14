@@ -180,3 +180,11 @@ First identify the named valid or malformed case in stderr. For a valid case, co
 ## Broken PATH tool diagnostics
 
 `tools/check-dev-tools.sh` uses shell builtins for its install hint so a badly damaged `PATH` can still produce the actionable missing-tool message. If `PATH` is empty or points only at a temporary directory, invoke the script through an absolute shell path, for example `/usr/bin/bash tools/check-dev-tools.sh --dev`.
+
+## Buildx cannot update activity metadata
+
+**Symptom:** Docker is reachable, but `docker buildx build` fails before a Dockerfile step while writing Buildx activity metadata.
+
+**Classification:** environment state, provided the same build and validation pass with an isolated writable Buildx configuration.
+
+**Qualified rerun:** set `BUILDX_CONFIG` to a per-run writable directory, rerun build, tests, context hygiene, and the full Docker aggregate, then remove the directory. Preserve both results. Do not classify the issue as a product defect unless Dockerfile execution or analyzer validation then fails.

@@ -130,7 +130,7 @@ HOME_PATH_PATTERNS=(
   '/Users/[A-Za-z0-9._-]+(/|$)'
   '/mnt/[A-Za-z]/Users/[A-Za-z0-9._-]+/'
   '[A-Za-z]:[\\/]Users[\\/][A-Za-z0-9._-]+[\\/]'
-  '\\\\wsl([.]localhost)?\\[^\\]+\\home\\[A-Za-z0-9._-]+\\'
+  '\\\\wsl([.]localhost)?\\[^\\]+\\home\\[A-Za-z0-9._-]+[\\]'
 )
 
 failed=0

@@ -159,3 +159,9 @@ Draft 2020-12 validation is authoritative for structural constraints. The
 bundled semantic validator remains authoritative for relationships that compare
 sibling properties or arrays, such as count equality, coverage agreement, and
 suffix-range reconciliation.
+
+## Sprint 9 closeout decision
+
+The planned `0.2.0` transition is complete. Report identity, command identity, successful-analysis completeness, capacity, and candidate provenance are implemented and validated for both `gadgets` and `analyze`.
+
+Future decoder, corpus, automation, or triage additions must remain additive within `0.2.x` where field meanings permit. A new required field or changed metric meaning requires an explicit compatibility review and, after campaign freeze, a new dataset or complete rerun.

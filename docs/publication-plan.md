@@ -69,7 +69,7 @@ Examples:
 |---|---|
 | 7 | Deterministic hostile-input results, minimized parser regressions, explicit capacity behavior, and checked table-arithmetic foundation. |
 | 8 | Mitigation accuracy fixtures and comparison evidence. |
-| 9 | Provenance model and schema `0.2.0`. |
+| 9 | Complete: provenance model, schema `0.2.0`, completeness, decoder-gap evidence, and deployment-profile decision. |
 | 11 | Reproducible corpus and manifest freeze candidate. |
 | 12 | High-resolution pilot results and `v0.1.0-rc1` preview package. |
 | 13 | Publication-grade comparative campaign and raw-result freeze. |
@@ -188,3 +188,9 @@ false negatives from a small system sample, invisibility from anti-analysis, or
 parallel speedup without fixed-corpus timing and RSS evidence. Defensive value
 should be framed as low deployment friction, small dependency surface, bounded
 resource use, and explicit provenance.
+
+## Sprint 9 publication posture
+
+Sprint 9 supports claims about explicit report identity, bounded analysis completeness, candidate provenance, and a reproducible external decoder-gap method. It does not support claims of complete decoded gadget coverage, universal false-positive elimination, superiority over baseline tools, or anti-analysis invisibility.
+
+The paper should evaluate the dependency-free scanner as the reference profile and may later compare candidate-scoped decoder validation and deterministic parallel profiles as ablations. Runtime, CPU, max RSS, coverage, and output-definition differences must remain separate results.

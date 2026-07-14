@@ -43,7 +43,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -51,6 +51,7 @@ help:
 	@echo "  make samples             Build controlled test fixtures"
 	@echo "  make test                Run the core regression suite"
 	@echo "  make validation-smoke    Run the complete native validation aggregate"
+	@echo "  make sprint-closeout-smoke  Require strict shell lint, then run validation-smoke"
 	@echo "  make mitigation-matrix-smoke  Run the deterministic mitigation oracle"
 	@echo "  make section-label-smoke  Run section-label annotation hardening probes"
 	@echo "  make readelf-comparison-smoke  Compare metadata and loader facts against readelf"
@@ -329,6 +330,18 @@ shellcheck-smoke:
 		echo "shellcheck-smoke: skipped (shellcheck not installed)"; \
 	fi
 
+# Sprint closeout gate. Normal development keeps ShellCheck optional, but a
+# sprint cannot close unless strict lint is available and the complete native
+# aggregate passes. Docker remains a separate reproducibility gate.
+sprint-closeout-smoke:
+	@command -v shellcheck >/dev/null 2>&1 || { \
+		echo "error: sprint-closeout-smoke requires shellcheck" >&2; \
+		exit 127; \
+	}
+	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
+	@$(MAKE) --no-print-directory validation-smoke
+	@echo "sprint-closeout-smoke: ok"
+
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
 validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
@@ -519,8 +532,12 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0028-decoder-gap-evidence-and-portable-bundle-policy.md
 	@test -f docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
 	@test -f docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
+	@test -f docs/adr/0031-sprint9-closeout-and-defensive-deployment-profile.md
 	@test -f docs/design/candidate-scoped-decoder-and-parallelism.md
+	@test -f docs/design/defensive-deployment-profile.md
 	@test -f docs/sprints/sprint-09-patch-044-validation.md
+	@test -f docs/sprints/sprint-09-patch-045-validation.md
+	@test -f docs/sprints/sprint-09-retro.md
 	@test -f docs/sprints/sprint-09-patch-043-validation.md
 	@echo "scaffold-check: ok"
 

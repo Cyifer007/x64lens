@@ -161,3 +161,7 @@ be rendered as full decoded validity; current `full_sequence_valid` is `null`.
 The formal schema keeps candidate evidence optional for Patch 040 compatibility.
 Current-producer validation requires all candidate evidence with
 `--require-provenance`. Partial evidence arrays are invalid.
+
+## Sprint 9 closeout output rule
+
+Schema `0.2.0` remains the current output contract. Patch 045 adds no output field. Future decoder and parallel profiles must preserve command identity, completeness, provenance, count meaning, no-partial-output behavior, and deterministic ordering. Profile identity must be represented in release and benchmark provenance before different profiles are compared or aggregated.

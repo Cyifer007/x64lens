@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprint 9 is active through Patch 044 corrective hardening. Patch 040 established schema `0.2.0`, report/command identity, explicit complete-analysis state, retained representative schema `0.1.0` compatibility, and `gadgets`/`analyze` parity. Patch 041 added the candidate-index evidence side-car. Patch 042 added external decoder-gap evidence. Patch 043 bound that evidence to immutable snapshots and recorded a decoder-free default. Patch 044 closes signal, measured-child, objdump-parser, ZIP-metadata, and public-fixture defects and defines candidate-scoped decoder and evidence-gated parallelism seams. Patch 045 is the planned Sprint 9 closeout review; primitive expansion remains deferred.
+> Status: Sprints 1 through 9 are complete after Patch 045. Sprint 9 established schema `0.2.0`, report and command identity, bounded complete-analysis state, candidate-index provenance, hardened external decoder-gap evidence, portable archive policy, and the decoder-free defensive deployment profile. Sprint 10 is the next implementation tranche for evidence-aware primitive expansion.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -81,7 +81,7 @@ The current line does not implement exploit generation, payload generation, remo
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
-See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
+See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -110,6 +110,7 @@ make
 make samples
 make test
 make validation-smoke
+make sprint-closeout-smoke
 make patch-bundle-hygiene-smoke
 make public-docs-hygiene-smoke
 make decoder-gap-hardening-smoke
@@ -277,7 +278,7 @@ file mapping and bounds
 
 Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
 
-See [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
+See [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
 ## Roadmap and release gates
 

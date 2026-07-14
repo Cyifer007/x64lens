@@ -116,3 +116,7 @@ See [`design/metric-boundaries.md`](design/metric-boundaries.md) and [`design/ev
 ## Exploitability rule
 
 Primitive availability does not establish vulnerability or exploitability. Any strategy interpretation assumes an independent vulnerability, reachable control, required disclosures, and relevant runtime conditions.
+
+## Sprint 9 closeout constraint
+
+Sprint 10 expands this taxonomy from the semantic-exact evidence surface established in Sprint 9. Decoder-backed semantic promotion remains optional and must retain its evidence source. Parallel execution may change scheduling only; it may not change classification rules, candidate order, or unknown preservation.

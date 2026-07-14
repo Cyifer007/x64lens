@@ -196,3 +196,15 @@ A public ZIP is accepted only when bounded local-header metadata agrees with the
 central directory and recognized extra fields have valid semantics. Release
 checks remain non-extracting. Artifact checksum manifests are siblings of the
 final artifacts; any regeneration changes the authoritative hash set.
+
+## Sprint 9 closeout release rule
+
+Before a sprint closeout artifact is accepted:
+
+- strict shell lint and the complete native aggregate must pass;
+- required checksum manifests must be supplied next to the final artifacts;
+- public documentation and archive-policy gates must pass;
+- environment-only Docker metadata failures must be separated from Dockerfile or product failures and followed by a qualified writable-metadata rerun;
+- optional decoder or parallel profiles must not replace the dependency-free reference artifact.
+
+Exact diagnostic wording from development validators is stable only when a contract or fixture explicitly version-controls it. Allow/reject outcomes remain the primary archive-policy compatibility surface.

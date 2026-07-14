@@ -188,3 +188,9 @@ certify different bytes.
 External parse diagnostics and interruption outcomes are campaign evidence, not
 runtime candidate facts. The default runtime remains decoder-free, and any
 future decoder-backed record remains additive to the candidate-index side-car.
+
+## Sprint 9 closeout status
+
+The candidate-index side-car is implemented for raw, exact-suffix, and semantic-exact evidence. Current `full_sequence_valid` remains unknown because the core does not decode complete instruction sequences. Decoder-valid and semantic-decoded states remain reserved additive layers.
+
+The preferred future experiment validates only retained candidate windows after fast scanning and exact recognition. This preserves raw scanner evidence and cost measurements while bounding decoder work. Decoder disagreement must remain visible rather than deleting or rewriting raw and exact facts.

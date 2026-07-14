@@ -8,18 +8,17 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 9 Patch 045 closeout validation, retrospective, ADR 0031, and the
+  defensive deployment profile for air-gapped, incident-response, minimal-
+  container, and CI/CD operation.
+- `make sprint-closeout-smoke`, which requires strict shell lint before the
+  complete native aggregate can close a sprint.
+- A direct Linux home-path public-document regression alongside the existing
+  Windows, WSL, and macOS cases.
+
 - Sprint 9 Patch 044 adversarial regressions for post-rename signal rollback, measured-child process-group cleanup, 27 reviewed objdump prefix/return forms, local/central ZIP metadata reconciliation, strict ZIP64 semantics, production-wrapper archive replay, and synthetic public-boundary fixtures.
 - ADR 0030 and the candidate-scoped decoder/parallelism design gate.
 - Sprint 9 Patch 044 validation record; Sprint 9 closeout moves to Patch 045.
-
-- Sprint 9 Patch 043 immutable decoder-gap target snapshots, signal-safe
-  transactional result publication, objdump parser diagnostics and barrier
-  hardening, and archive metadata/path portability enforcement.
-- `make public-docs-hygiene-smoke` and `make decoder-gap-hardening-smoke` for
-  timestamped transfer-name rejection, snapshot provenance, parser fixtures,
-  and eight signal-interruption publication states.
-- ADR 0029 records the decoder-free default runtime and optional future decoder
-  adapter boundary.
 
 - Sprint 9 Patch 043 immutable decoder-gap target snapshots, signal-safe
   transactional result publication, objdump parser diagnostics and barrier
@@ -105,6 +104,15 @@ The project follows semantic versioning once the first public release is cut.
 - Sprint 6 Patch 024 validation and closeout planning documentation.
 
 ### Changed
+
+- Close Sprint 9 and advance Sprint 10 as the next implementation tranche.
+- Preserve the dependency-free one-worker analyzer as the reference profile;
+  candidate-scoped decoding and parallelism remain optional measured ablations.
+- Separate archive policy outcomes from optional exact diagnostic wording and
+  document a generic qualified Buildx configuration for read-only metadata
+  environments.
+- Reconcile onboarding, schema, metric, release, publication, architecture,
+  and roadmap documentation with the completed Sprint 9 state.
 
 - Keep the default analyzer single-worker, freestanding, and decoder-free while defining an optional candidate-scoped decoder and evidence-gated parallel profiles.
 - Make decoder-gap publication recover from observable filesystem state and reap measured child sessions on every interruption.
@@ -194,6 +202,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Rewrite the WSL UNC public-document regex so strict ShellCheck no longer
+  reports `SC1003` while the functional rejection remains enforced.
+- Remove the duplicated Patch 043 changelog block.
 
 - Preserve a recognized decoder-gap result across the post-rename signal window.
 - Prevent interrupted GNU-time/analyzer measurements from leaving child process groups alive.

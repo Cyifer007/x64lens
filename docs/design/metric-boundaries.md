@@ -228,3 +228,9 @@ Development wall time and RSS from this campaign may motivate an architecture
 decision, but they are not publication performance evidence. A future optional
 decoder profile must have distinct tool/build identity and separate runtime/RSS
 rows from the dependency-free core.
+
+## Sprint 9 closeout metrics
+
+Implemented `0.2.0` facts now include candidate capacity, candidate count, truncation state, dropped-count knowledge, region progress, and complete-analysis state. Successful reports are complete and untruncated; current overflow still fails before output because the scanner does not continue far enough to compute a truthful dropped count.
+
+Decoder-valid and semantic-decoded counts remain future additive metrics. Candidate-scoped decoder and parallel experiments must report their own profile identity, timing, CPU, RSS, and output counts rather than merging them with the dependency-free one-worker profile.

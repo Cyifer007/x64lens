@@ -219,3 +219,7 @@ full-sequence-validity state. Current exact-pattern reports use
 
 Text output remains unchanged in Patch 041. The provenance extension is
 machine-readable and backward-compatible within schema `0.2.0`.
+
+## Sprint 9 closeout
+
+Patch 045 changes no command, flag, exit code, or output field. The default CLI remains decoder-free and single-worker. Any future decoder or worker control must be introduced as an explicit profile or option with documented identity, compatibility, failure semantics, and benchmark separation; it must not silently alter existing command meaning.

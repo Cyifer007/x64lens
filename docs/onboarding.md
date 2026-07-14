@@ -139,13 +139,17 @@ The table below lists the public Make targets. A new development environment sho
 | `make pattern-smoke` | Compatibility alias for fixture validation after pattern matching. |
 | `make arena-smoke` | Validate arena-backed candidate storage invariants. |
 | `make semantic-smoke` | Validate semantic and scoring facts for the controlled fixture. |
+| `make schema-compat-smoke` | Validate the retained representative schema `0.1.0` fixture and current schema `0.2.0` invariants. |
 | `make json-smoke` | Validate JSON output for the controlled fixture. |
 | `make analyze-smoke` | Validate integrated text and JSON analysis output. |
 | `make system-smoke` | Validate installed system ELF64 binaries. |
 | `make capacity-smoke` | Verify candidate-arena exhaustion returns exit `6` without partial output. |
 | `make malformed-smoke` | Run the deterministic 31-case hostile-input regression campaign. |
+| `make mitigation-matrix-smoke` | Run the deterministic loader and mitigation evidence oracle. |
+| `make section-label-smoke` | Validate bounded section-label annotation and escaping rules. |
 | `make fuzz-mutated-elf-smoke` | Compatibility alias for `malformed-smoke`. |
 | `make validation-smoke` | Run the local pre-commit validation bundle, including malformed, capacity, bundle-policy, schema, and controlled decoder-gap gates. |
+| `make sprint-closeout-smoke` | Require strict ShellCheck, then run the complete native validation aggregate. |
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |
 | `make bench-baselines-smoke` | Run development-level x64lens plus optional baseline smoke benchmarking. |
@@ -160,12 +164,19 @@ The table below lists the public Make targets. A new development environment sho
 | `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 18 planning structure. |
 | `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
 | `make patch-bundle-hygiene-smoke` | Regression-test portable unsafe/private/generated ZIP rejection under varied roots. |
+| `make public-docs-hygiene-smoke` | Regression-test transfer-name and host-path rejection. |
+| `make benchmark-integrity-smoke` | Validate benchmark row domains and identity stratification. |
+| `make decoder-gap-hardening-smoke` | Validate parser, immutable snapshot, process cleanup, and transactional publication regressions. |
 | `make decoder-gap-smoke` | Reconcile the controlled fixture against canonical GNU objdump boundaries. |
 | `make decoder-gap-campaign` | Generate decoder-gap evidence for the controlled fixture and selected installed system binaries. |
+| `make readelf-comparison-smoke` | Compare bounded ELF and loader facts with GNU readelf. |
+| `make optional-tool-comparison-smoke` | Run optional checksec and rabin2 comparison helpers. |
+| `make shellcheck-smoke` | Run shell lint when ShellCheck is installed; use `SHELLCHECK_STRICT=1` to fail on findings. |
 | `make docker-available-check` | Verify Docker is installed and reachable. |
 | `make docker-build` | Build the development Docker image. |
 | `make docker-shell` | Open a Docker shell without root-owned bind-mount artifacts. |
 | `make docker-test` | Rebuild the development Docker image, then run clean build and core tests in Docker. |
+| `make docker-context-hygiene-smoke` | Verify private environment files stay outside the Docker context and image. |
 | `make docker-validation-smoke` | Rebuild the image, then run the full native-equivalent validation bundle in Docker. |
 | `make ownership-check` | Detect root-owned generated artifacts. |
 | `make fix-perms` | Repair generated artifact ownership. |
@@ -184,6 +195,16 @@ make docker-validation-smoke
 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 BUNDLE=/path/to/patch.zip make patch-bundle-hygiene
 ```
+
+A sprint closeout additionally requires:
+
+```bash
+make sprint-closeout-smoke
+```
+
+This target fails when ShellCheck is unavailable or reports a finding, then runs
+the normal native aggregate. Docker validation remains a separate environment
+and reproducibility gate.
 
 A documentation-only patch may use the lighter path:
 

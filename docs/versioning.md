@@ -91,3 +91,9 @@ Patch 043 does not change the tool version or schema. The default runtime remain
 `0.1.0-dev` with schema `0.2.0`. A future decoder-enabled build or mode must carry
 an explicit profile/build identity in release and benchmark metadata so its
 results cannot be merged silently with the dependency-free core.
+
+## Sprint 9 closeout version state
+
+Patch 045 retains tool version `0.1.0-dev` and schema `0.2.0`. No release tag moves. Sprint 10 additions should remain compatible within schema `0.2.x` unless a new durable concept cannot be represented additively.
+
+A future decoder-enabled or parallel build profile must have unambiguous artifact and benchmark provenance even if the CLI schema remains compatible. Different profiles must not be silently aggregated.

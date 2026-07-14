@@ -7,6 +7,7 @@ This directory records future-facing architecture seams that should be understoo
   - Implemented Patch 025 surfaces: `tools/malformed-elf-smoke.py`, `make malformed-smoke`, `make capacity-smoke`, and ADR 0013.
 - [`mitigation-fixture-matrix.md`](mitigation-fixture-matrix.md): compiler-independent valid and malformed program-header layouts used by the mitigation oracle, including Patch 030 dynamic-table evidence, Patch 031 RELRO refinement, and Patch 032 canary indicators.
 - [`decoder-roadmap.md`](decoder-roadmap.md): optional decoder integration without replacing the raw scanner.
+- [`defensive-deployment-profile.md`](defensive-deployment-profile.md): reference runtime constraints for dependency-free, air-gapped, low-resource defensive deployment.
 - [`evidence-provenance-model.md`](evidence-provenance-model.md): raw, suffix, semantic, decoder, completeness, and truncation evidence layers.
 - [`metric-boundaries.md`](metric-boundaries.md): required separation between discovery, recognition, validation, semantic, score, and triage metrics.
 - [`schema-evolution.md`](schema-evolution.md): current schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and future `0.2.x` evolution rules.

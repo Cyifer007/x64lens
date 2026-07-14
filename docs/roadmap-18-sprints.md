@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 8 are validated through the Sprint 8 closeout checkpoint. Sprint 9 is active through Patch 044 corrective hardening. Patches 040-041 establish report identity, completeness, schema `0.2.0`, parity, and per-candidate provenance. Patches 042-044 establish external decoder-gap evidence, immutable targets, signal-safe campaign transactions, process cleanup, external-parser integrity, portable ZIP metadata policy, and the bounded candidate-scoped decoder/parallelism decision. Patch 045 is the remaining Sprint 9 closeout gate.
+Sprints 1 through 9 are complete after the Patch 045 closeout. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the measured candidate-scoped decoder and parallelism decision. Sprint 10 is the next implementation tranche for evidence-aware primitive expansion.
 
 The implemented pipeline is:
 
@@ -61,7 +61,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 6 | Integrated checkpoint | `analyze`, composable reporters, repeatable demo, checkpoint tag, and roadmap review. |
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
-| 9 | Candidate provenance and decoder-gap measurement | Patches 040-044 establish identity, completeness, provenance, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions; Patch 045 performs sprint closeout. |
+| 9 | Candidate provenance and decoder-gap measurement | Complete through Patch 045: identity, completeness, provenance, schema `0.2.0`, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions. |
 | 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
@@ -265,9 +265,8 @@ runtime dependency. This preserves a measurable low-footprint mode for offline,
 incident-response, minimal-container, and CI/CD deployments.
 
 Patch 044 is the corrective campaign and release-boundary hardening boundary.
-Patch 045 is closeout-only: architecture and contract review, public and private
-context reconciliation, development configuration review, Docker Buildx
-environment analysis, roadmap reconciliation, and the Sprint 9 retrospective.
+Patch 045 completes the public architecture, contract, release-boundary,
+roadmap, and validation review and publishes the Sprint 9 retrospective.
 Feature discoveries are classified for Sprint 10 or later unless they block an
 accepted Sprint 9 contract.
 
@@ -279,7 +278,21 @@ preferred bounded future architecture: scan first, optionally decode retained
 candidate windows, preserve all evidence tiers, and introduce parallelism only
 as an independently benchmarked deterministic profile.
 
-Patch 045 now owns Sprint 9 closeout and private environment/context review.
+Patch 045 now owns the Sprint 9 public closeout and release-readiness review.
 Sprint 10 remains primitive expansion. Sprint 12/13 gain explicit
 candidate-decoder and worker-count ablations so low RSS and startup speed are
 measured rather than assumed.
+
+## Sprint 9 closeout checkpoint
+
+Patch 045 closes Sprint 9 without changing analyzer assembly, record layouts, CLI behavior, or schema shape. The accepted Sprint 9 boundary is:
+
+- schema `0.2.0` report and command identity;
+- explicit complete-analysis and capacity facts;
+- candidate-index provenance for raw, exact-suffix, and semantic-exact evidence;
+- external decoder-gap measurement with immutable inputs and transactional publication;
+- a decoder-free, single-worker reference runtime;
+- an optional future candidate-scoped validation profile and measured parallelism gate;
+- portable public-archive and documentation-hygiene enforcement.
+
+Sprint 10 may expand primitive families only through the established evidence, side-effect, fixture, and score boundaries. Decoder integration and in-process parallelism remain ablations for the reproducible corpus and benchmark stages rather than hidden prerequisites for primitive work.

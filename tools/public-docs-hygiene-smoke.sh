@@ -27,6 +27,7 @@ printf 'evidence: x64lens_%s_%s-%s.tar.gz\n' "$evidence_token" "$stamp" "$copy_t
 printf 'path: C:\\Users\\%s\\repo\\report.md\n' "$user_token" > "$tmp/windows-home.md"
 printf 'path: \\\\wsl.localhost\\%s\\home\\%s\\repo\\report.md\n' "$host_token" "$user_token" > "$tmp/wsl-home.md"
 printf 'path: /Users/%s/repo/report.md\n' "$user_token" > "$tmp/macos-home.md"
+printf 'path: /home/%s/repo/report.md\n' "$user_token" > "$tmp/linux-home.md"
 
 bash "$CHECKER" "$tmp/clean.md" >/dev/null
 
@@ -39,7 +40,8 @@ for fixture in \
   evidence-copy.md \
   windows-home.md \
   wsl-home.md \
-  macos-home.md; do
+  macos-home.md \
+  linux-home.md; do
   if bash "$CHECKER" "$tmp/$fixture" >/dev/null 2>&1; then
     echo "public-docs-hygiene-smoke: prohibited fixture escaped policy: $fixture" >&2
     exit 1
@@ -47,4 +49,4 @@ for fixture in \
   rejected=$((rejected + 1))
 done
 
-echo "public-docs-hygiene-smoke: ok cases=9 accepted=1 rejected=$rejected"
+echo "public-docs-hygiene-smoke: ok cases=10 accepted=1 rejected=$rejected"
