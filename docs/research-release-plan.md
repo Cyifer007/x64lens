@@ -14,7 +14,7 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Current gate progress
 
-Patch 025 established deterministic hostile-input and candidate-capacity evidence, Patch 028 added shared checked table arithmetic, and Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patches 040 through 045 complete Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, per-candidate provenance, compatibility fixtures, portable decoder-gap evidence, immutable and transaction-safe campaign artifacts, a decoder-free reference runtime, and public-release boundary hardening. Reproducible corpus work and high-resolution benchmarking remain open in Sprints 11 and 12.
+Patch 025 established deterministic hostile-input and candidate-capacity evidence, Patch 028 added shared checked table arithmetic, and Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patches 040 through 045 complete Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, per-candidate provenance, compatibility fixtures, portable decoder-gap evidence, immutable and transaction-safe campaign artifacts, a decoder-free reference runtime, and public-release boundary hardening. Patch 046 begins Sprint 10 with ordered two-pop semantic evidence and explicit effect fields. Reproducible corpus work and high-resolution benchmarking remain open in Sprints 11 and 12.
 
 ## `v0.1.0-rc1` gate
 
@@ -25,7 +25,8 @@ The preview candidate must include:
 - full/partial/no RELRO reporting when evidence exists,
 - canary and stripped indicators with confidence wording,
 - explicit candidate capacity and truncation state,
-- schema `0.2.0` or later if provenance fields are introduced,
+- current schema `0.2.0` identity, completeness, and provenance, or an explicitly
+  reviewed successor,
 - a reviewed decoder-gap campaign and documented embedded-decoder decision,
 - target and tool hashes in benchmark metadata,
 - a reproducible corpus manifest,
@@ -92,7 +93,7 @@ Publication artifacts remain under `paper/` and benchmark evidence remains under
 
 ## Tag policy
 
-- `v0.1.0-dev` remains the local integrated checkpoint tag.
+- `v0.1.0-dev` identifies the Sprint 6 integrated checkpoint.
 - `v0.1.0-rc1` is the first publishable preview tag after the Sprint 12 gate.
 - `v0.1.0` is the first research release after the Sprint 18 gate.
 
@@ -138,8 +139,8 @@ Sprint 8 is complete after Patch 039. Patch 040 adds report and command identity
 complete-analysis state, and schema `0.2.0`; Patch 041 adds current per-candidate
 provenance; Patch 042 adds portable bundle enforcement and external decoder-gap
 evidence with target/tool hashes. The research preview is still not ready.
-Patch 043 records the reviewed decoder decision; Sprint 9 closeout must verify that decision and the supporting evidence,
-while Sprint 11 and Sprint 12 still own corpus and benchmark freeze work.
+Patch 043 records the reviewed decoder decision; Patch 045 subsequently verified
+that decision and its supporting evidence. Sprint 11 and Sprint 12 still own corpus and benchmark freeze work.
 
 
 ## Sprint 9 Patch 040 release-gate update

@@ -967,9 +967,11 @@ Current producer validation requires:
 
 ```bash
 python3 tools/validate-json-report.py \
-  --require-schema 0.2.0 --expected-command gadgets <gadgets-report.json>
+  --require-schema 0.2.0 --expected-command gadgets \
+  --require-provenance --require-sprint10-effects <gadgets-report.json>
 python3 tools/validate-json-report.py \
-  --require-schema 0.2.0 --expected-command analyze <analyze-report.json>
+  --require-schema 0.2.0 --expected-command analyze \
+  --require-provenance --require-sprint10-effects <analyze-report.json>
 ```
 
 For the same fixture and maximum depth, the two reports must have identical
@@ -1129,3 +1131,31 @@ make sprint-closeout-smoke
 ```
 
 The closeout target requires strict ShellCheck to be installed, reruns strict shell lint, then runs the complete native aggregate. Docker remains a separate environment-qualified reproducibility gate. Current capacity behavior remains exact at 4096 candidates and fail-closed at 4097 with exit 6, empty stdout, and the stable unsupported-feature diagnostic.
+
+See [Sprint 09 Patch 045 validation](sprints/sprint-09-patch-045-validation.md),
+the [Sprint 09 retrospective](sprints/sprint-09-retro.md), and
+[ADR 0031](adr/0031-sprint9-closeout-and-defensive-deployment-profile.md).
+
+## Sprint 10 Patch 046 primitive-effect validation
+
+Run:
+
+```bash
+make sprint10-primitive-smoke
+```
+
+The separate `gadgets_sprint10` fixture verifies three exact ordered multi-pop
+argument-control candidates and two conservative single-pop fallbacks. Both
+`gadgets` and `analyze` JSON must validate under schema `0.2.0` and compare equal
+after removing only command identity.
+
+Expected:
+
+```text
+sprint10-primitive-smoke: ok candidates=5 multi_pop=3 fallback=2 scored=2
+```
+
+The validation also requires exact stack-pop order, empty clobber sets, explicit
+side effects, 24-byte multi-pop stack deltas, unknown full-sequence validity,
+and `null` multi-pop scores. The historical 11-candidate fixture remains
+unchanged.

@@ -108,7 +108,7 @@ fi
 
 PATTERNS=(
   '/mnt/data/'
-  'cyifer007@'
+  '^[[:space:]]*[A-Za-z0-9._-]+@[A-Za-z0-9._-]+:([~/]|[A-Za-z]:)'
   'DESKTOP-[A-Z0-9-]+'
   'x64lens_patch_[0-9]+'
   'user-created whole-repository zip snapshots'

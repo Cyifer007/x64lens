@@ -97,20 +97,20 @@ claim a dropped count for that failure.
 - Benchmark rows from incompatible schemas are not aggregated without explicit
   normalization.
 
-## Remaining Sprint 9 additions
+## Sprint 9 provenance additions
 
-Patch 041 implements the optional per-candidate `evidence` object and requires it
-for current-producer validation. Patch 042 adds external decoder-gap artifacts
-without changing the `0.2.0` runtime report.
+Patch 041 implemented the optional per-candidate `evidence` object and requires
+it for current-producer validation. Patches 042-045 completed the external
+decoder-gap campaign and architecture decision without changing schema `0.2.0`.
 
-Remaining work is to review the controlled and selected-system campaign,
-classify boundary and coverage disagreements, and record the embedded-decoder
-decision. A future decoder must augment raw and exact facts through side-car
-records rather than replace them.
+The accepted decision retains a decoder-free default and reserves any
+candidate-scoped decoder for an additive, separately measured profile. A future
+decoder must augment raw and exact-suffix facts through side-car records rather
+than replace them.
 
-Target digests are recorded in Patch 042 comparison manifests. Adding a digest
-to the runtime report remains a separate compatible `0.2.x` decision after the
-runtime hashing source, cost, and validation rules are fixed.
+Target digests are recorded in comparison manifests. A runtime target digest
+remains a separate compatible `0.2.x` decision after its source, cost, and
+validation rules are fixed.
 
 ## Change procedure
 
@@ -165,3 +165,15 @@ suffix-range reconciliation.
 The planned `0.2.0` transition is complete. Report identity, command identity, successful-analysis completeness, capacity, and candidate provenance are implemented and validated for both `gadgets` and `analyze`.
 
 Future decoder, corpus, automation, or triage additions must remain additive within `0.2.x` where field meanings permit. A new required field or changed metric meaning requires an explicit compatibility review and, after campaign freeze, a new dataset or complete rerun.
+
+## Patch 046 compatible effect-field addition
+
+Patch 046 keeps schema version `0.2.0`. Candidate `stack_pop_order`, `clobbers`,
+and `side_effects` are optional in the formal schema so earlier `0.2.0` reports
+remain consumable. Current producers are held to the stronger contract through
+the bundled semantic validator.
+
+This is patch-compatible because existing field meanings do not change and
+absence remains attributable to an earlier producer. Making these fields
+required in the formal schema, adding required memory operands, or changing
+count meaning would require a separately reviewed schema transition.

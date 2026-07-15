@@ -11,7 +11,9 @@ Use a layered environment strategy:
 
 ## Why WSL2 first
 
-WSL2 is the best daily development environment for this project if the main workstation is Windows. It gives a Linux userspace, clean access to NASM/binutils/GDB, fast edit-build-test loops, and excellent VS Code integration.
+WSL2 Ubuntu 24.04 is the documented primary development profile for contributors
+working on Windows. It provides a Linux userspace with NASM, binutils, GDB, and
+VS Code Remote WSL integration.
 
 Recommended setup:
 
@@ -269,3 +271,10 @@ rm -rf "$BUILDX_CONFIG"
 ```
 
 Retain the default failure and qualified rerun as separate evidence. Do not weaken Docker context hygiene or product validation to accommodate a metadata-path restriction.
+
+## Sprint 10 Patch 046 dependency surface
+
+The ordered multi-pop family uses existing NASM source modules and fixed records.
+It adds no runtime package, shared library, decoder, worker runtime, or helper
+process. Python and `jsonschema` remain development/CI validation dependencies,
+not x64lens runtime dependencies.

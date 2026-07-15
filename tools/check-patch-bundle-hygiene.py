@@ -59,7 +59,7 @@ NESTED_ARCHIVE_SUFFIXES = {
 }
 GENERATED_TOY_BASENAMES = {
     "minimal_nopie", "minimal_pie_canary", "minimal_execstack", "gadgets",
-    "gadgets_capacity_exact", "gadgets_capacity",
+    "gadgets_sprint10", "gadgets_capacity_exact", "gadgets_capacity",
 }
 
 LOCAL_FILE_HEADER = struct.Struct("<IHHHHHIIIHH")

@@ -2,9 +2,10 @@
 
 ## Purpose
 
-x64lens is intended to remain useful in constrained defensive environments, not
-only in offensive research workstations. This profile records the product
-properties that must remain measurable while primitive coverage expands.
+x64lens uses a freestanding, bounded analyzer core for constrained defensive
+environments. This profile separates implemented core properties, development
+evidence, current limitations, and the gates for future decoder and parallel
+profiles.
 
 ## Core profile
 
@@ -18,11 +19,24 @@ The default analyzer profile remains:
 - deterministic for identical input bytes and options;
 - single-worker until a parallel profile passes the acceleration gate;
 - decoder-free until an optional validation profile passes the decoder gate;
-- suitable for offline, air-gapped, minimal-container, CI/CD, and incident-
+- designed to support offline, air-gapped, minimal-container, CI/CD, and incident-
   response staging.
 
 The core profile is the product baseline. Optional research tools, external
 comparators, and development validators do not become runtime dependencies.
+
+## Evidence status
+
+The core-profile properties above describe the current implementation. `make
+schema-compat-smoke`, `make validation-smoke`, and `make sprint-closeout-smoke`
+exercise the current report, provenance, and closeout contracts. Decoder-gap
+timing and RSS are development smoke evidence, not publication-grade performance
+or operational-effectiveness results.
+
+The candidate-validation and parallel sections below describe future optional
+profiles, not current runtime modes. The current runtime report identifies its
+command, schema, and bounded completion state but does not embed a target digest;
+campaign and benchmark manifests retain target hashes separately.
 
 ## Defensive operating goals
 
@@ -36,8 +50,8 @@ require the documented toolchain, but target analysis must remain self-contained
 
 The analyzer should be easy to stage on a constrained host and should avoid
 unnecessary helper processes, imports, writable target mappings, or persistent
-state. This produces a low-observable dependency and process surface. It is not
-a guarantee of invisibility, anti-forensic behavior, or evasion of malware
+state. This limits its dependency and helper-process surface; it does not make
+analyzer execution invisible or provide anti-forensic behavior or evasion of
 anti-analysis controls.
 
 ### CI/CD integration
@@ -55,7 +69,7 @@ silently increasing another.
 
 ## Optional candidate-validation profile
 
-A future decoder should consume only retained candidate windows after the fast
+A future decoder should consume only retained candidate windows after the bounded
 byte scan, exact suffix matcher, and semantic-exact classifier have completed:
 
 ```text
@@ -69,9 +83,10 @@ loader-authoritative executable regions
   -> optional semantic-decoded classification
 ```
 
-This profile must preserve raw, exact, semantic-exact, unknown, decoder-valid,
-semantic-decoded, and scored populations independently. It must not decode the
-whole image merely because a decoder is available.
+This profile must preserve raw-candidate, exact-suffix, semantic-exact,
+unknown-candidate, decoder-validated, semantic-decoded, and scored populations
+independently. It must not decode the whole image merely because a decoder is
+available.
 
 Approval requires a fixed-corpus ablation showing that the validity or coverage
 benefit justifies dependency, license, binary-size, latency, peak-RSS, and
@@ -92,8 +107,9 @@ Any in-process worker profile must prove:
 - bounded worker count, stack use, and private state;
 - complete cleanup after failure or interruption;
 - no malformed-input deadlock or partial report;
-- meaningful wall-time improvement on defined target classes;
-- acceptable peak-RSS and startup-cost growth.
+- meaningful wall-time improvement on defined target classes, with aggregate
+  child-CPU reported separately;
+- acceptable peak-RSS, startup-cost, and binary-size growth.
 
 Region or chunk parallelism requires explicit overlap, deduplication, and stable
 merge rules before implementation.
@@ -112,3 +128,15 @@ The project may describe the core as dependency-light, bounded, and designed for
 low-footprint defensive deployment. Performance, memory superiority, comparable
 coverage, anti-analysis resilience, or operational usefulness remain hypotheses
 until the relevant corpus, baselines, commands, and repeated measurements exist.
+
+## Sprint 10 Patch 046 resource preservation
+
+The first primitive expansion reuses eight reserved bytes already present in
+each 112-byte candidate record. It does not increase the candidate record
+stride, side-car size, 4,096-record capacity, or 655,360-byte combined analysis
+arena. No decoder, worker library, helper process, or user-space runtime
+library is added.
+
+This is an architectural preservation result, not a measured performance claim.
+Sprint 12 and Sprint 13 remain responsible for wall-time, CPU, RSS, binary-size,
+and optional-profile ablations.

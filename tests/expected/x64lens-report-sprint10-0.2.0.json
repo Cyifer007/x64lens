@@ -1,0 +1,232 @@
+{
+  "schema_version": "0.2.0",
+  "tool": "x64lens",
+  "tool_version": "0.1.0-dev",
+  "report_type": "analysis",
+  "command": "gadgets",
+  "analysis": {
+    "complete": true,
+    "max_depth": 4,
+    "candidate_capacity": 4096,
+    "candidate_count": 5,
+    "candidate_truncated": false,
+    "candidate_dropped_count": 0,
+    "candidate_dropped_count_known": true,
+    "regions_scanned": 1,
+    "regions_total": 1
+  },
+  "target": {
+    "path": "sprint10-ordered-multi-pop-fixture",
+    "format": "ELF64",
+    "arch": "x86_64",
+    "file_size": 17,
+    "entry": "0x0000000000000000"
+  },
+  "mitigations": {
+    "nx_stack": null,
+    "pie": false,
+    "relro": "none",
+    "canary": "unknown",
+    "stripped": "not_stripped",
+    "rwx_load_segment": false,
+    "dynamic_linking": false,
+    "bind_now": null,
+    "dynamic_entry_count": 0,
+    "dynamic_terminated": null
+  },
+  "counts": {
+    "raw_candidate_count": 5,
+    "ret_count": 5,
+    "ret_imm16_count": 0,
+    "exact_pattern_count": 5,
+    "semantic_candidate_count": 5,
+    "unknown_candidate_count": 0,
+    "scored_candidate_count": 2
+  },
+  "primitive_coverage": {
+    "arg_control": true,
+    "syscall_num_control": false,
+    "syscall_trigger": false,
+    "stack_pivot": false,
+    "alignment": false,
+    "registers": [
+      "rcx",
+      "rdx",
+      "rsi",
+      "rdi",
+      "r8",
+      "r9"
+    ]
+  },
+  "gadgets": [
+    {
+      "va": "0x0000000000000002",
+      "file_offset": "0x0000000000000002",
+      "section": ".text",
+      "bytes": "5f5ec3",
+      "terminator": "ret",
+      "pattern": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rsi",
+        "rdi"
+      ],
+      "stack_pop_order": [
+        "rdi",
+        "rsi"
+      ],
+      "clobbers": [],
+      "side_effects": [
+        "stack_read"
+      ],
+      "stack_delta": 24,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x0000000000000007",
+      "file_offset": "0x0000000000000007",
+      "section": ".text",
+      "bytes": "41584159c3",
+      "terminator": "ret",
+      "pattern": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "r8",
+        "r9"
+      ],
+      "stack_pop_order": [
+        "r8",
+        "r9"
+      ],
+      "clobbers": [],
+      "side_effects": [
+        "stack_read"
+      ],
+      "stack_delta": 24,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 5,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x000000000000000a",
+      "file_offset": "0x000000000000000a",
+      "section": ".text",
+      "bytes": "5a59c3",
+      "terminator": "ret",
+      "pattern": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rcx",
+        "rdx"
+      ],
+      "stack_pop_order": [
+        "rdx",
+        "rcx"
+      ],
+      "clobbers": [],
+      "side_effects": [
+        "stack_read"
+      ],
+      "stack_delta": 24,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x000000000000000d",
+      "file_offset": "0x000000000000000d",
+      "section": ".text",
+      "bytes": "5f5fc3",
+      "terminator": "ret",
+      "pattern": "pop rdi; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rdi"
+      ],
+      "stack_pop_order": [
+        "rdi"
+      ],
+      "clobbers": [],
+      "side_effects": [
+        "stack_read"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      },
+      "score": 90
+    },
+    {
+      "va": "0x0000000000000010",
+      "file_offset": "0x0000000000000010",
+      "section": ".text",
+      "bytes": "5b5fc3",
+      "terminator": "ret",
+      "pattern": "pop rdi; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rdi"
+      ],
+      "stack_pop_order": [
+        "rdi"
+      ],
+      "clobbers": [],
+      "side_effects": [
+        "stack_read"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      },
+      "score": 90
+    }
+  ],
+  "limitations": [
+    "Sprint 10 controlled exact-suffix fixture; full instruction-sequence validity remains unknown."
+  ]
+}

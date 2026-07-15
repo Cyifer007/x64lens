@@ -36,6 +36,17 @@ pattern_suffix_lengths:
     db 3, 3, 3, 3, 3, 3, 3, 3 ; pop r8..r15; ret
     db 2                      ; leave; ret
     db 3                      ; syscall; ret
+    db 0                      ; multi-pop length is derived from ordered metadata
+
+; Indexed by PATTERN_* ID. Values are canonical register IDs for the single-pop
+; family and 0xff for patterns that do not carry one ordered pop register.
+pattern_single_pop_regs:
+    db 0xff, 0xff, 0xff
+    db REG_RAX_BIT, REG_RCX_BIT, REG_RDX_BIT, REG_RBX_BIT
+    db REG_RSP_BIT, REG_RBP_BIT, REG_RSI_BIT, REG_RDI_BIT
+    db REG_R8_BIT, REG_R9_BIT, REG_R10_BIT, REG_R11_BIT
+    db REG_R12_BIT, REG_R13_BIT, REG_R14_BIT, REG_R15_BIT
+    db 0xff, 0xff, 0xff
 
 section .text
 global x64lens_candidate_evidence_from_exact
@@ -114,14 +125,71 @@ x64lens_candidate_evidence_from_exact:
     mov     eax, [r12 + GADGET_PATTERN_ID]
     test    eax, eax
     jz      .require_unknown_semantic
-    cmp     eax, PATTERN_SYSCALL_RET
+    cmp     eax, PATTERN_MULTI_POP_RET
     ja      .bounds_error
+    cmp     eax, PATTERN_MULTI_POP_RET
+    je      .multi_pop_suffix_length
 
+    cmp     eax, PATTERN_POP_RAX_RET
+    jb      .require_no_pop_metadata
+    cmp     eax, PATTERN_POP_R15_RET
+    jbe     .require_single_pop_metadata
+
+.require_no_pop_metadata:
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 0
+    jne     .bounds_error
+    cmp     dword [r12 + GADGET_PATTERN_REG_ORDER], 0
+    jne     .bounds_error
+    jmp     .static_suffix_length
+
+.require_single_pop_metadata:
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 1
+    jne     .bounds_error
+    lea     rdx, [rel pattern_single_pop_regs]
+    movzx   edx, byte [rdx + rax]
+    cmp     edx, 0xff
+    je      .bounds_error
+    cmp     dword [r12 + GADGET_PATTERN_REG_ORDER], edx
+    jne     .bounds_error
+
+.static_suffix_length:
     lea     rdx, [rel pattern_suffix_lengths]
     movzx   ecx, byte [rdx + rax]
     test    ecx, ecx
     jz      .bounds_error
+    jmp     .suffix_length_ready
 
+.multi_pop_suffix_length:
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    mov     eax, edi
+    and     eax, 0x0f
+    shr     edi, 4
+    and     edi, 0x0f
+    cmp     eax, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edi, REG_R15_BIT
+    ja      .bounds_error
+    cmp     eax, edi
+    je      .bounds_error
+    mov     edx, ARG_CONTROL_REG_MASK
+    bt      edx, eax
+    jnc     .bounds_error
+    bt      edx, edi
+    jnc     .bounds_error
+
+    ; One byte for ret plus one byte per legacy pop or two bytes per REX.B pop.
+    mov     ecx, 3
+    cmp     eax, REG_R8_BIT
+    jb      .multi_first_done
+    inc     ecx
+.multi_first_done:
+    cmp     edi, REG_R8_BIT
+    jb      .suffix_length_ready
+    inc     ecx
+
+.suffix_length_ready:
     mov     rdx, [r12 + GADGET_BYTE_LEN]
     cmp     rdx, rcx
     jb      .bounds_error

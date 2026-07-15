@@ -144,8 +144,11 @@ candidate_pattern:     db ", pattern: ", 0
 candidate_semantic:    db ", semantic: ", 0
 candidate_regs:        db ", regs: ", 0
 candidate_stack_delta: db ", stack delta: ", 0
-candidate_score:      db ", score: ", 0
+candidate_score:       db ", score: ", 0
 candidate_bytes:       db ", bytes: ", 0
+candidate_pop_order:   db ", stack pop order: ", 0
+candidate_clobbers:    db ", clobbers: ", 0
+candidate_effects:     db ", side effects: ", 0
 term_ret:              db "ret", 0
 term_ret_imm16:        db "ret imm16", 0
 term_unknown:          db "unknown", 0
@@ -170,6 +173,7 @@ pattern_pop_r14_ret:   db "pop r14; ret", 0
 pattern_pop_r15_ret:   db "pop r15; ret", 0
 pattern_leave_ret:     db "leave; ret", 0
 pattern_syscall_ret:   db "syscall; ret", 0
+pattern_multi_pop_ret: db "pop reg; pop reg; ret", 0
 semantic_unknown:      db "unknown_candidate", 0
 semantic_arg_control:  db "arg_control", 0
 semantic_syscall_num:  db "syscall_num_control", 0
@@ -182,6 +186,11 @@ semantic_alignment:    db "alignment", 0
 semantic_clobber:      db "clobber_heavy", 0
 regs_none:             db "none", 0
 reg_sep:               db "|", 0
+reg_order_sep:         db "->", 0
+side_effect_stack_read:  db "stack_read", 0
+side_effect_stack_pivot: db "stack_pivot", 0
+side_effect_syscall:     db "syscall", 0
+side_effect_ret_imm16:   db "ret_imm16", 0
 reg_rax:               db "rax", 0
 reg_rbx:               db "rbx", 0
 reg_rcx:               db "rcx", 0
@@ -943,6 +952,21 @@ x64lens_report_text_gadgets:
     lea     rdi, [candidate_bytes]
     call    print_cstr
     call    report_text_print_candidate_bytes
+
+    lea     rdi, [candidate_pop_order]
+    call    print_cstr
+    mov     rdi, r15
+    call    report_text_print_pattern_reg_order
+
+    lea     rdi, [candidate_clobbers]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_REGS_CLOBBERED]
+    call    report_text_print_regs_bitmap
+
+    lea     rdi, [candidate_effects]
+    call    print_cstr
+    mov     rdi, [r15 + GADGET_SIDE_EFFECT_FLAGS]
+    call    report_text_print_side_effects
     call    print_nl
 
     inc     rbp
@@ -1022,6 +1046,8 @@ report_text_print_pattern:
     je      .pattern_leave_ret
     cmp     edi, PATTERN_SYSCALL_RET
     je      .pattern_syscall_ret
+    cmp     edi, PATTERN_MULTI_POP_RET
+    je      .pattern_multi_pop_ret
     lea     rdi, [pattern_unknown]
     jmp     print_cstr
 .pattern_ret:
@@ -1083,6 +1109,9 @@ report_text_print_pattern:
     jmp     print_cstr
 .pattern_syscall_ret:
     lea     rdi, [pattern_syscall_ret]
+    jmp     print_cstr
+.pattern_multi_pop_ret:
+    lea     rdi, [pattern_multi_pop_ret]
     jmp     print_cstr
 
 
@@ -1187,6 +1216,155 @@ report_text_print_regs_bitmap:
     lea     rdi, [regs_none]
     call    print_cstr
 .regs_done:
+    add     rsp, 8
+    pop     r12
+    pop     rbx
+    ret
+
+; report_text_print_reg_id(edi=canonical register ID)
+;
+; Prints one register name without punctuation or a trailing newline.
+report_text_print_reg_id:
+    cmp     edi, REG_RAX_BIT
+    je      .reg_id_rax
+    cmp     edi, REG_RBX_BIT
+    je      .reg_id_rbx
+    cmp     edi, REG_RCX_BIT
+    je      .reg_id_rcx
+    cmp     edi, REG_RDX_BIT
+    je      .reg_id_rdx
+    cmp     edi, REG_RSI_BIT
+    je      .reg_id_rsi
+    cmp     edi, REG_RDI_BIT
+    je      .reg_id_rdi
+    cmp     edi, REG_RBP_BIT
+    je      .reg_id_rbp
+    cmp     edi, REG_RSP_BIT
+    je      .reg_id_rsp
+    cmp     edi, REG_R8_BIT
+    je      .reg_id_r8
+    cmp     edi, REG_R9_BIT
+    je      .reg_id_r9
+    cmp     edi, REG_R10_BIT
+    je      .reg_id_r10
+    cmp     edi, REG_R11_BIT
+    je      .reg_id_r11
+    cmp     edi, REG_R12_BIT
+    je      .reg_id_r12
+    cmp     edi, REG_R13_BIT
+    je      .reg_id_r13
+    cmp     edi, REG_R14_BIT
+    je      .reg_id_r14
+    cmp     edi, REG_R15_BIT
+    je      .reg_id_r15
+    lea     rdi, [regs_none]
+    jmp     print_cstr
+.reg_id_rax: lea rdi, [reg_rax]
+    jmp print_cstr
+.reg_id_rbx: lea rdi, [reg_rbx]
+    jmp print_cstr
+.reg_id_rcx: lea rdi, [reg_rcx]
+    jmp print_cstr
+.reg_id_rdx: lea rdi, [reg_rdx]
+    jmp print_cstr
+.reg_id_rsi: lea rdi, [reg_rsi]
+    jmp print_cstr
+.reg_id_rdi: lea rdi, [reg_rdi]
+    jmp print_cstr
+.reg_id_rbp: lea rdi, [reg_rbp]
+    jmp print_cstr
+.reg_id_rsp: lea rdi, [reg_rsp]
+    jmp print_cstr
+.reg_id_r8: lea rdi, [reg_r8]
+    jmp print_cstr
+.reg_id_r9: lea rdi, [reg_r9]
+    jmp print_cstr
+.reg_id_r10: lea rdi, [reg_r10]
+    jmp print_cstr
+.reg_id_r11: lea rdi, [reg_r11]
+    jmp print_cstr
+.reg_id_r12: lea rdi, [reg_r12]
+    jmp print_cstr
+.reg_id_r13: lea rdi, [reg_r13]
+    jmp print_cstr
+.reg_id_r14: lea rdi, [reg_r14]
+    jmp print_cstr
+.reg_id_r15: lea rdi, [reg_r15]
+    jmp print_cstr
+
+; report_text_print_pattern_reg_order(rdi=gadget_record)
+;
+; Prints exact pop order from the compact pattern-owned metadata. This is an
+; exact suffix fact and is intentionally separate from the unordered controls
+; bitmap populated by classifier.asm.
+report_text_print_pattern_reg_order:
+    push    r12
+    push    r13
+    push    r14
+
+    mov     r12d, [rdi + GADGET_PATTERN_REG_COUNT]
+    mov     r13d, [rdi + GADGET_PATTERN_REG_ORDER]
+    xor     r14d, r14d
+    test    r12d, r12d
+    jz      .pattern_order_none
+    cmp     r12d, PATTERN_REG_ORDER_MAX
+    ja      .pattern_order_none
+.pattern_order_loop:
+    test    r14d, r14d
+    jz      .pattern_order_no_sep
+    lea     rdi, [reg_order_sep]
+    call    print_cstr
+.pattern_order_no_sep:
+    mov     eax, r13d
+    mov     ecx, r14d
+    shl     ecx, 2
+    shr     eax, cl
+    and     eax, 0x0f
+    mov     edi, eax
+    call    report_text_print_reg_id
+    inc     r14d
+    cmp     r14d, r12d
+    jb      .pattern_order_loop
+    jmp     .pattern_order_done
+.pattern_order_none:
+    lea     rdi, [regs_none]
+    call    print_cstr
+.pattern_order_done:
+    pop     r14
+    pop     r13
+    pop     r12
+    ret
+
+%macro PRINT_EFFECT_IF_SET 2
+    test    rbx, %1
+    jz      %%skip
+    test    r12, r12
+    jz      %%no_sep
+    lea     rdi, [reg_sep]
+    call    print_cstr
+%%no_sep:
+    lea     rdi, [%2]
+    call    print_cstr
+    mov     r12, 1
+%%skip:
+%endmacro
+
+; report_text_print_side_effects(rdi=side-effect bitmap)
+report_text_print_side_effects:
+    push    rbx
+    push    r12
+    sub     rsp, 8
+    mov     rbx, rdi
+    xor     r12, r12
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_STACK_READ, side_effect_stack_read
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_STACK_PIVOT, side_effect_stack_pivot
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16
+    test    r12, r12
+    jne     .side_effects_done
+    lea     rdi, [regs_none]
+    call    print_cstr
+.side_effects_done:
     add     rsp, 8
     pop     r12
     pop     rbx

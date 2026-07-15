@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete after Patch 045. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Sprint 10 is the next implementation tranche. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 046 ordered multi-pop foundation. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Sprint 10 is the next implementation tranche. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,7 +20,7 @@ Sprints 1 through 9 are complete after Patch 045. Sprint 9 established report id
 - benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
-The local `v0.1.0-dev` tag marks an integrated prototype. It is not a research release or evidence of universal performance superiority.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patch 045 is later pre-release work, not a research release or evidence of universal performance superiority.
 
 ## Sprint 7 evidence checkpoint
 
@@ -52,7 +52,7 @@ Status: implemented for the initial exact-pattern set. Raw, exact-suffix, and se
 
 Distinguish raw byte observations, exact suffix evidence, semantic-exact classification, decoder validation, and analysis completeness.
 
-Status: complete for the Sprint 9 scope. Patches 040-041 implement the schema `0.2.0` report envelope, completeness, parity, and raw/exact/semantic provenance. Patches 042-045 implement and harden the external decoder-gap campaign, transactional evidence, parser/archive integrity, public-release boundaries, and the candidate-scoped optional decoder decision. Decoder-backed tiers remain unimplemented and optional; they may be added only through a separately measured side-car adapter.
+Status: complete for the Sprint 9 scope. Patches 040-041 implement the schema `0.2.0` report envelope, completeness, parity, and raw/exact-suffix/semantic-exact provenance. Patches 042-045 implement and harden the external decoder-gap campaign, transactional evidence, parser/archive integrity, public-release boundaries, and the candidate-scoped optional decoder decision. Decoder-backed tiers remain unimplemented and optional; they may be added only through a separately measured side-car adapter.
 
 ### Stage 4: mitigation-aware triage
 
@@ -99,7 +99,7 @@ Can a dependency-light static analyzer support CI, vulnerability-management enri
 | NASM may not provide meaningful benefit | Measure runtime and memory, include task-equivalence caveats, and consider a narrow C/Rust ablation only if needed. |
 | Assembly parser safety is weak | Add deterministic mutation smoke tests, parser regressions, explicit bounds invariants, and no formal memory-safety claim. |
 | Exact suffix matching is brittle | Preserve evidence tiers, quantify decoder gaps, and add a decoder only through the measured decision gate. |
-| Raw counts are noisy | Keep raw, exact, semantic, decoder-valid, unknown, and scored metrics separate. |
+| Raw counts are noisy | Keep raw-candidate, exact-suffix, semantic-exact, decoder-validated, unknown-candidate, and scored metrics separate. |
 | Mitigation findings can be overstated | Report evidence and confidence, distinguish indicators from proof, and avoid exploitability verdicts. |
 | Benchmarks are not comparable | Separate gadget-discovery and end-to-end tasks, freeze commands and corpus, and reconcile definitions. |
 | Results are not reproducible | Preserve hashes, versions, commands, raw rows, generated summaries, and a clean-environment rehearsal. |
@@ -176,9 +176,9 @@ hash provenance. A complete report can still contain exact-suffix evidence that
 has not been decoder validated.
 
 The next research risk is therefore unchanged at the candidate layer: quantify
-false-positive and undercount gaps, preserve external decoder comparison
-artifacts, and decide whether an embedded decoder is justified from measured
-impact rather than implementation preference.
+canonical-boundary, selection-model, and exact-catalog gaps, preserve external
+decoder comparison artifacts, and decide whether an embedded decoder is
+justified from measured impact rather than implementation preference.
 
 
 ## Patch 041 research posture
@@ -225,7 +225,7 @@ records a bounded hybrid research path. Candidate-scoped decoding can validate
 possible starts inside retained windows; deterministic candidate-validation or
 region/chunk profiles may later improve throughput. Sprint 12/13 must measure
 these against one-worker core analysis before integration or performance
-claims. Patch 045 completes the Sprint 9 closeout and release-readiness review.
+claims. Patch 045 subsequently completed the Sprint 9 closeout and release-readiness review.
 
 ## Sprint 9 research decision
 
@@ -233,11 +233,19 @@ The Sprint 9 evidence does not justify replacing the dependency-free scanner wit
 
 ```text
 loader-authoritative executable regions
-  -> fast terminator scan
+  -> bounded terminator scan
   -> exact recognition
   -> semantic-exact classification
   -> optional candidate-scoped decoder validation
   -> optional semantic-decoded classification
 ```
 
-This preserves independent scanner timing and RSS while allowing a later fixed-corpus campaign to measure whether decoding only retained candidate windows reduces false positives without materially increasing memory, startup cost, or deployment friction. Deterministic target-level or candidate-validation parallelism is measured separately; the one-worker core remains the reference profile.
+This preserves independent scanner timing and RSS while allowing a later fixed-corpus campaign to measure how decoding retained candidate windows qualifies candidate starts and changes decoder-validated or semantic-decoded coverage without materially increasing memory, startup cost, or deployment friction. Deterministic target-level or candidate-validation parallelism is measured separately; the one-worker core remains the reference profile.
+
+## Sprint 10 entry status
+
+Patch 046 demonstrates the first evidence-aware semantic expansion after the
+Sprint 9 provenance gate. It adds ordered exact facts and explicit semantic
+effects without increasing the fixed arena or adding a runtime dependency.
+Register-transfer and memory families remain open and must follow the same
+fixture, provenance, and scoring boundaries.

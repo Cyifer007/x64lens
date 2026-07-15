@@ -81,7 +81,8 @@ later sprints rather than Patch 037:
   `0.1.0` compatibility gate.
 - [x] `gadgets` and `analyze` shared-report parity with distinct command identity.
 - [x] Candidate evidence side-car record.
-- [x] Raw, exact, and semantic-exact candidate evidence tiers; decoder-valid and semantic-decoded remain reserved future layers.
+- [x] Raw-candidate, exact-suffix, and semantic-exact evidence tiers;
+  decoder-validated and semantic-decoded remain reserved future layers.
 - [x] Controlled and selected-system decoder-gap measurement harness with
   hashes, commands, raw artifacts, timing/RSS smoke facts, and categorized
   boundary/canonicalization differences.
@@ -91,14 +92,19 @@ later sprints rather than Patch 037:
 - [x] Sprint 9 architecture, contract, public-boundary, release, roadmap, and validation closeout.
 - [ ] Target digest inside the runtime report, if later required by the final provenance contract; campaign and benchmark artifacts already retain target hashes externally.
 
-### Sprint 10: primitive expansion — active next tranche
+### Sprint 10: primitive expansion — active
 
-- [ ] Multi-pop patterns.
+- [x] First ordered multi-pop argument-control family with conservative fallback.
+- [x] Exact `stack_pop_order` plus machine-readable `clobbers` and
+  `side_effects` fields for current reports.
+- [x] Separate five-candidate fixture, JSON parity, and unscored-family gate.
+- [ ] Additional selected multi-pop families only when their effects remain
+  unambiguous.
 - [ ] Conservative register-transfer patterns.
 - [ ] Narrow memory-read and memory-write patterns.
-- [ ] Clobber and memory side-effect facts.
+- [ ] Non-empty clobber and memory-dereference facts where justified.
 - [ ] Controlled fixture for every new semantic rule.
-- [ ] Score entries only after semantic validation.
+- [ ] Score entries only after independent semantic and effect validation.
 
 ### Sprint 11: reproducible corpus
 
@@ -257,7 +263,7 @@ Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
 ## Sprint 8 closeout correction disposition
 
-Patch 039 closed the Patch 038 closeout blockers. Patches 040-041 supply schema `0.2.0`, report identity, completeness, parity, and candidate provenance. Patches 042-043 add decoder-gap evidence, immutable snapshots, and the decoder-free default. Patch 044 corrects the remaining campaign, parser, archive, and public-fixture defects. Remaining Sprint 9 work is the Patch 045 closeout audit and context/environment refresh.
+Patch 039 closed the Patch 038 closeout blockers. Patches 040-041 supply schema `0.2.0`, report identity, completeness, parity, and candidate provenance. Patches 042-043 add decoder-gap evidence, immutable snapshots, and the decoder-free default. Patch 044 corrects the remaining campaign, parser, archive, and public-fixture defects. At that checkpoint, Patch 045 remained as the public architecture, contract, release-boundary, roadmap, and validation closeout.
 
 
 ## Sprint 9 Patch 040 backlog update
@@ -298,12 +304,12 @@ objdump, and target identity; SHA-256 hashes; exact commands; raw JSON and
 disassembly; smoke timing/RSS; duplicate/canonicalization facts; boundary
 disagreements; and unsupported canonical sequences.
 
-The remaining Sprint 9 decision is interpretive rather than another measurement
-surface: review the authoritative local campaign and record whether decoder
-embedding is deferred, exposed only as optional external verification, or
-approved behind an isolated adapter. Target digest work should be added to the
-runtime report only if that review or the later corpus contract demonstrates a
-machine-consumer need that cannot be satisfied by external manifests.
+At that checkpoint, the remaining Sprint 9 decision was interpretive: review
+the controlled and selected-system campaign evidence and choose among deferring
+decoder embedding, retaining optional external verification, or approving an
+isolated adapter. Runtime target-digest work remains a separate compatible
+decision unless a later corpus contract establishes a machine-consumer need
+that external manifests cannot satisfy.
 
 ## Sprint 9 Patch 043 backlog update
 
@@ -318,10 +324,10 @@ closes the post-rename signal race, measured-child cleanup, objdump prefix and
 barrier parsing, local/central ZIP metadata, ZIP64 semantics, production-wrapper
 coverage, and public negative-fixture defects.
 
-Sprint 9 has one remaining planned patch: Patch 045 closeout. It reviews
-architecture and contracts, refreshes private project context, inspects
-development configuration and Docker Buildx behavior, reconciles the roadmap,
-and publishes the Sprint 9 retrospective without adding primitive breadth.
+Patch 045 completed the Sprint 9 closeout by reviewing architecture and
+contracts, reconciling the public roadmap and release boundary, recording the
+defensive deployment profile, and publishing the retrospective without adding
+primitive breadth.
 
 ## Sprint 9 Patch 044 backlog update
 
@@ -337,9 +343,8 @@ Completed in Patch 044:
 
 Deferred with explicit classification:
 
-- private 40-file context and orchestration/configuration refresh: Patch 045;
-- Docker Buildx host-state remediation: Patch 045 environment review;
-- optional decoder and concurrency implementation: measured Sprint 12/13 gate;
+- Docker Buildx metadata-path portability guidance: Patch 045 closeout;
+- optional decoder and concurrency implementation: measurement gate in Sprints 12/13;
 - primitive-family expansion: Sprint 10;
 - publication-grade claims: Sprints 12 and 13.
 
@@ -348,5 +353,6 @@ Deferred with explicit classification:
 - The default runtime remains a static, dependency-free, single-worker analyzer.
 - Candidate-scoped decoder validation is the preferred future experiment; whole-image mandatory decoding is not approved.
 - Target-level concurrency is the safest early throughput option. Candidate-validation and region-level concurrency require deterministic merge, global-capacity, RSS, and no-partial-output proofs.
-- The recurring Buildx activity-metadata failure is an environment concern. Product acceptance uses a writable, isolated Buildx configuration while keeping the Dockerfile and build context under normal validation.
-- Sprint 10 must not redefine raw, exact, semantic, unknown, provenance, completeness, or score metrics while adding new primitive families.
+- Buildx metadata-path write failures are environment-specific only when the complete Docker validation passes with an isolated writable Buildx configuration.
+- Sprint 10 must not redefine raw, exact-suffix, semantic-exact, unknown,
+  provenance, completeness, or score metrics while adding new primitive families.

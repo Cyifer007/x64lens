@@ -12,11 +12,11 @@ An assembly-first gadget scanning engine may reduce runtime and memory footprint
 
 ### H2
 
-Semantic primitive classification provides more actionable exploitability triage than raw gadget enumeration alone.
+Semantic primitive classification may provide more actionable defensive triage evidence than raw gadget enumeration alone.
 
 ### H3
 
-A dependency-light analyzer can be integrated into enterprise workflows with lower operational friction than heavyweight reverse engineering frameworks.
+A dependency-light analyzer may reduce operational friction relative to heavyweight reverse engineering frameworks.
 
 ## Baseline tools
 
@@ -527,3 +527,18 @@ region-Nw            optional deterministic executable-region workers
 ```
 
 Each row must record profile identity, worker count, decoder identity and version when present, binary hash, dependencies, target hash, wall time, child CPU, max RSS, output bytes, and the precise raw/exact/semantic/validated count definitions. A faster wall-clock result with materially higher aggregate CPU or RSS must not be reported as an unqualified improvement.
+
+## Sprint 10 semantic-expansion comparison rule
+
+Primitive-expansion rows must preserve both semantic and score counts. Patch 046
+adds semantic multi-pop candidates without scoring them, so benchmark summaries
+must not assume:
+
+```text
+semantic_candidate_count == scored_candidate_count
+```
+
+When comparing the new family with baseline tools, record the exact ordered
+sequence, maximum-depth policy, duplicate policy, and whether the baseline
+reports every canonical start or one terminator-centered record. Resource claims
+remain deferred to the fixed corpus and high-resolution runner.

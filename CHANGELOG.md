@@ -8,6 +8,14 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 046 ordered two-pop argument-control recognition for two
+  distinct System V argument registers, with exact execution order retained in
+  the existing fixed-size gadget record.
+- Machine-readable `stack_pop_order`, `clobbers`, and `side_effects` candidate
+  fields, current-producer validation, a five-candidate Sprint 10 fixture, and
+  `make sprint10-primitive-smoke`.
+- ADR 0032, the primitive-effect model, and the Patch 046 validation record.
+
 - Sprint 9 Patch 045 closeout validation, retrospective, ADR 0031, and the
   defensive deployment profile for air-gapped, incident-response, minimal-
   container, and CI/CD operation.
@@ -107,7 +115,8 @@ The project follows semantic versioning once the first public release is cut.
 
 - Close Sprint 9 and advance Sprint 10 as the next implementation tranche.
 - Preserve the dependency-free one-worker analyzer as the reference profile;
-  candidate-scoped decoding and parallelism remain optional measured ablations.
+  candidate-scoped decoding and parallelism remain optional ablations to be
+  measured separately.
 - Separate archive policy outcomes from optional exact diagnostic wording and
   document a generic qualified Buildx configuration for read-only metadata
   environments.
@@ -117,15 +126,6 @@ The project follows semantic versioning once the first public release is cut.
 - Keep the default analyzer single-worker, freestanding, and decoder-free while defining an optional candidate-scoped decoder and evidence-gated parallel profiles.
 - Make decoder-gap publication recover from observable filesystem state and reap measured child sessions on every interruption.
 - Reconcile raw local ZIP headers with central-directory records before any public bundle is accepted.
-
-- Bind every decoder-gap comparison to one immutable target snapshot analyzed
-  by both x64lens and GNU objdump.
-- Keep the default analyzer freestanding and decoder-free; decoder-backed facts
-  remain an optional additive evidence profile subject to a later fixed-corpus
-  decision gate.
-- Make public archive policy independent of root depth, raw/effective ZIP-name
-  ambiguity, recognized extra metadata, Windows path portability, and common
-  ZIP-container suffixes.
 
 - Bind every decoder-gap comparison to one immutable target snapshot analyzed
   by both x64lens and GNU objdump.
@@ -212,15 +212,6 @@ The project follows semantic versioning once the first public release is cut.
 - Normalize reviewed GNU objdump prefix and near-return variants and stop canonical sequences at prefixed control transfers.
 - Reject contradictory local ZIP names, flags, extras, malformed ZIP64 values, zero-width UID/GID metadata, invalid NTFS metadata, and duplicate recognized extra fields.
 - Remove real transfer-artifact basenames from tracked public-boundary smoke fixtures and detect broader copy, case, Windows, WSL, and macOS path variants.
-
-- Prevent inter-target mutation from making campaign manifests certify bytes
-  different from those actually analyzed.
-- Restore or preserve a complete recognized decoder-gap result across `SIGINT`,
-  `SIGTERM`, and ordinary publication failures.
-- Parse prefixed return instructions and stop canonical predecessor walks at
-  invalid-byte and control-transfer barriers.
-- Reject timestamped private transfer-artifact names from public documentation
-  and correct strict shell lint in the archive-check wrapper.
 
 - Prevent inter-target mutation from making campaign manifests certify bytes
   different from those actually analyzed.

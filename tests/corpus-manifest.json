@@ -19,6 +19,11 @@
       "purpose": "known raw ret and ret-imm gadget fixture for Sprint 3 scanner and future semantic classification"
     },
     {
+      "path": "tests/toy-src/gadgets_sprint10.S",
+      "type": "source",
+      "purpose": "controlled ordered two-pop and conservative fallback fixture for Sprint 10 semantic expansion"
+    },
+    {
       "path": "tests/toy-src/gadgets_capacity_exact.S",
       "type": "source",
       "purpose": "controlled 4096-ret fixture that verifies the final valid candidate slot remains usable"
@@ -47,6 +52,11 @@
       "path": "tests/bin/gadgets",
       "type": "generated",
       "purpose": "generated known-gadget binary used by raw scanner regression tests"
+    },
+    {
+      "path": "tests/bin/gadgets_sprint10",
+      "type": "generated",
+      "purpose": "generated Sprint 10 ordered multi-pop semantic fixture"
     },
     {
       "path": "tests/bin/gadgets_capacity_exact",

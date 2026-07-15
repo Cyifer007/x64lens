@@ -42,7 +42,9 @@ required=(
     docs/adr/0029-decoder-free-default-and-campaign-transaction-safety.md
     docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
     docs/adr/0031-sprint9-closeout-and-defensive-deployment-profile.md
+    docs/adr/0032-ordered-multi-pop-foundation.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
+    docs/design/primitive-effect-model.md
     docs/design/defensive-deployment-profile.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
@@ -67,6 +69,7 @@ required=(
     docs/sprints/sprint-09-patch-043-validation.md
     docs/sprints/sprint-09-patch-044-validation.md
     docs/sprints/sprint-09-patch-045-validation.md
+    docs/sprints/sprint-10-patch-046-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -92,7 +95,9 @@ required=(
     tests/expected/x64lens-report-0.1.0.json
     tests/expected/x64lens-report-0.2.0.json
     tests/expected/x64lens-report-0.2.0-p040.json
+    tests/expected/x64lens-report-sprint10-0.2.0.json
     tests/expected/decoder-gap-controlled.json
+    tests/toy-src/gadgets_sprint10.S
 )
 
 for path in "${required[@]}"; do
@@ -139,6 +144,14 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 is not marked closed or complete'
 grep -Eq '^(Next|Active)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked as the next or active implementation tranche'
+grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
+grep -qi 'ordered multi-pop' docs/adr/0032-ordered-multi-pop-foundation.md \
+    || fail 'ADR 0032 does not record the ordered multi-pop decision'
+grep -q 'stack_pop_order' docs/design/primitive-effect-model.md \
+    || fail 'primitive-effect model does not define ordered pop facts'
+grep -q 'sprint10-primitive-smoke' docs/sprints/sprint-10-patch-046-validation.md \
+    || fail 'Patch 046 validation does not name the focused primitive gate'
 grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 040 foundation'
 grep -q 'Patch 041' docs/sprints/sprint-09-plan.md \
@@ -238,10 +251,12 @@ grep -q '^optional-tool-comparison-smoke:' Makefile \
     || fail 'Makefile does not define optional-tool-comparison-smoke'
 grep -q '^schema-compat-smoke:' Makefile \
     || fail 'Makefile does not define schema-compat-smoke'
+grep -q '^sprint10-primitive-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-primitive-smoke'
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
-grep -Eq '^validation-smoke:.*public-docs-hygiene-smoke.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-hardening-smoke.*decoder-gap-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
-    || fail 'validation-smoke does not include public-document, benchmark, bundle, schema, decoder hardening, decoder-gap, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
+grep -Eq '^validation-smoke:.*public-docs-hygiene-smoke.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-hardening-smoke.*decoder-gap-smoke.*sprint10-primitive-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
+    || fail 'validation-smoke does not include public-document, benchmark, bundle, schema, decoder hardening, decoder-gap, Sprint 10 primitive, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

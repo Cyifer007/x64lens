@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete after Patch 045. Sprint 9 established schema `0.2.0`, report and command identity, bounded complete-analysis state, candidate-index provenance, hardened external decoder-gap evidence, portable archive policy, and the decoder-free defensive deployment profile. Sprint 10 is the next implementation tranche for evidence-aware primitive expansion.
+> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 046 entry candidate, which adds the first ordered two-pop argument-control family, explicit effect fields, and a separate controlled fixture while preserving the decoder-free one-worker reference profile.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -31,8 +31,8 @@ read-only file mapping
   -> executable PT_LOAD + PF_X regions
   -> optional section-header metadata annotations
   -> raw ret and ret imm16 candidate windows
-  -> exact suffix pattern IDs
-  -> conservative semantic classes
+  -> exact suffix pattern IDs and ordered structural facts
+  -> conservative semantic classes and explicit effects
   -> heuristic scores
   -> command-owned report identity and complete-analysis summary
   -> text or JSON reporting
@@ -77,6 +77,7 @@ The current line does not implement exploit generation, payload generation, remo
 - A **score** is relative utility under the current heuristic model, not exploitability.
 - A successful schema `0.2.0` report states command identity and bounded enumeration completeness. Candidate-capacity exhaustion still fails before output; it is not silently converted into a partial report.
 - Per-candidate `evidence` identifies raw, exact-suffix, and semantic-exact provenance; `full_sequence_valid` remains `null` until decoder evidence exists.
+- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, and represented `side_effects`. Patch 046 multi-pop candidates remain unscored until the score model is reviewed independently.
 - Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoded-valid instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
@@ -113,6 +114,7 @@ make validation-smoke
 make sprint-closeout-smoke
 make patch-bundle-hygiene-smoke
 make public-docs-hygiene-smoke
+make sprint10-primitive-smoke
 make decoder-gap-hardening-smoke
 make decoder-gap-smoke
 ```
@@ -166,7 +168,7 @@ Generate and validate JSON:
 python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command analyze \
-  --require-provenance /tmp/x64lens-analysis.json
+  --require-provenance --require-sprint10-effects /tmp/x64lens-analysis.json
 ```
 
 The same flags are accepted in either documented order:
@@ -193,6 +195,7 @@ make test
 make validate-gadget-fixture
 make semantic-smoke
 make schema-compat-smoke
+make sprint10-primitive-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
@@ -209,7 +212,7 @@ make docker-test
 make docker-validation-smoke
 ```
 
-`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, local/central ZIP metadata policy, public-document boundary, decoder-gap transaction/process/parser hardening, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
+`make validation-smoke` is the local aggregate. It includes deterministic malformed-input, candidate-capacity, ordered Sprint 10 primitive effects, local/central ZIP metadata policy, public-document boundary, decoder-gap transaction/process/parser hardening, and controlled decoder-gap checks. Docker remains a separate reproducibility check because engine availability is environment-dependent.
 
 Hostile-input checks can also be run directly:
 
@@ -246,7 +249,7 @@ make decoder-gap-smoke
 make decoder-gap-campaign
 ```
 
-The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patches 043 and 044 snapshot each target before measurement so x64lens and objdump analyze identical immutable bytes, reap interrupted child process groups, normalize reviewed objdump prefix/return spellings, and publish result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free and single-worker. A future decoder is candidate-scoped and optional, and any parallel profile must pass deterministic-output, RSS, latency, and capacity gates before default use.
+The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patches 043 and 044 snapshot each target before measurement so x64lens and objdump analyze identical immutable bytes, reap interrupted child process groups, normalize reviewed objdump prefix/return spellings, and publish result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free and single-worker. A future decoder is candidate-scoped and optional, and any parallel profile must pass deterministic-output, global-capacity, cleanup, wall-time, aggregate CPU, peak-RSS, startup-cost, and binary-size gates before default use.
 
 ## Benchmark smoke workflow
 
@@ -269,8 +272,8 @@ The core separation is mandatory:
 file mapping and bounds
   -> ELF and loader facts
   -> raw scanner
-  -> exact pattern matcher
-  -> semantic classifier
+  -> exact pattern matcher and ordered structural facts
+  -> semantic classifier and explicit effects
   -> scoring
   -> report identity and completeness facts
   -> text/JSON adapters
@@ -278,7 +281,7 @@ file mapping and bounds
 
 Future decoder facts, mitigation evidence, and output adapters must be added through bounded views or side-car records. They must not replace raw candidate facts or duplicate the analysis pipeline.
 
-See [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
+See [`docs/design/primitive-effect-model.md`](docs/design/primitive-effect-model.md), [`docs/adr/0032-ordered-multi-pop-foundation.md`](docs/adr/0032-ordered-multi-pop-foundation.md), [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
 ## Roadmap and release gates
 
@@ -287,7 +290,7 @@ The canonical eighteen-sprint roadmap defines:
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 primitive expansion,
+- Sprint 10 evidence-aware primitive expansion, active with the ordered two-pop foundation,
 - Sprint 11 reproducible corpus,
 - Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
 - Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.
@@ -296,7 +299,8 @@ See [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md) and [`docs/resear
 
 ## Versioning
 
-The current integrated checkpoint is `v0.1.0-dev`. The tag remains local unless explicitly pushed.
+The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
+identifies the Sprint 6 integrated checkpoint; Patch 046 is later pre-release work.
 
 Planned release sequence:
 
@@ -306,7 +310,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patch 043 records that decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patch 046 adds compatible ordered-pop, clobber, and side-effect fields; current-producer validation requires them while earlier `0.2.0` reports remain consumable. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

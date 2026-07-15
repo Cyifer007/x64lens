@@ -170,7 +170,7 @@ Controlled `gadgets` report:
   ./tests/bin/gadgets > /tmp/x64lens-gadgets.json
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command gadgets \
-  --require-provenance /tmp/x64lens-gadgets.json
+  --require-provenance --require-sprint10-effects /tmp/x64lens-gadgets.json
 ```
 
 Integrated `analyze` report:
@@ -180,7 +180,7 @@ Integrated `analyze` report:
   ./tests/bin/gadgets > /tmp/x64lens-analysis.json
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command analyze \
-  --require-provenance /tmp/x64lens-analysis.json
+  --require-provenance --require-sprint10-effects /tmp/x64lens-analysis.json
 ```
 
 Historical and current compatibility:
@@ -228,15 +228,15 @@ schemas/x64lens-report.schema.json
 - Benchmark campaigns must not merge incompatible schema versions without
   explicit normalization.
 
-## Remaining Sprint 9 provenance work
+## Sprint 9 provenance decision
 
-Patch 041 emits the initial per-candidate provenance surface. Patch 042 records
-target/tool hashes and decoder-gap comparison provenance outside the runtime
-report. Remaining Sprint 9 work is authoritative campaign review, the evidence-
-backed embedded-decoder decision, and a separate determination of whether a
-runtime target digest adds machine-consumer value beyond campaign and corpus
-manifests. Decoder validity fields remain reserved but unknown until implemented
-evidence exists.
+Patch 041 emitted the current per-candidate provenance surface. Patches 042-045
+recorded and hardened decoder-gap comparison provenance outside the runtime
+report and retained the decoder-free core with candidate-scoped validation as
+an optional future profile. A runtime target digest remains a separate compatible
+`0.2.x` decision if later corpus or machine-consumer requirements justify its
+source, cost, and validation rules. Decoder-validity fields remain reserved and
+unknown until implemented evidence exists.
 
 ## Change checklist
 
@@ -258,3 +258,30 @@ Every schema change requires updates to:
 Schema `0.2.0` is the current producer contract. It carries top-level report and command identity, an `analysis` completeness/capacity object, and per-candidate evidence. Current successful reports describe complete bounded enumeration; candidate-capacity exhaustion still fails before report emission.
 
 Decoder-backed validity remains optional future evidence. It must be added compatibly within `0.2.x` when possible and must not redefine raw, exact, semantic-exact, unknown, or scored counts. Historical compatibility is limited to the retained representative final-shape `0.1.0` fixture and versioned validator path.
+
+## Sprint 10 Patch 046 effect fields
+
+Current producers emit these compatible candidate fields:
+
+```json
+{
+  "stack_pop_order": ["rdi", "rsi"],
+  "clobbers": [],
+  "side_effects": ["stack_read"]
+}
+```
+
+- `stack_pop_order` preserves exact execution order and is empty for patterns
+  without represented pops.
+- `controls` remains the unordered semantic register set.
+- `clobbers` contains only explicitly modeled clobber facts.
+- `side_effects` contains only classifier-produced facts.
+
+The formal schema keeps the fields optional so Patch 040 and Patch 041 schema
+`0.2.0` reports remain consumable. Current-producer validation requires all
+three fields and checks their relationships to pattern bytes, semantic class,
+controls, stack delta, evidence range, and score.
+
+The first generic multi-pop family uses pattern text
+`pop reg; pop reg; ret`, stores the exact registers in `stack_pop_order`, has a
+known stack delta of 24, and remains unscored.

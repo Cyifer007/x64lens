@@ -10,11 +10,11 @@
 ;   does not scan bytes, parse ELF data, score gadgets, print reports, or claim
 ;   exploitability.
 ;
-; Sprint 4 scope:
-;   Map the Sprint 3 exact suffix patterns into conservative semantic classes.
-;   This is still not full instruction decoding. A semantic label here means
-;   the exact suffix pattern is meaningful enough for first-pass primitive
-;   coverage, not that the entire raw candidate window was decoded.
+; Current scope:
+;   Map supported exact suffix patterns into conservative semantic classes.
+;   Sprint 10 Patch 046 adds a two-pop argument-control family whose ordered
+;   register facts are provided by patterns.asm. This is still not full
+;   instruction decoding; semantic promotion describes exact suffix evidence.
 ;
 ; Safety model:
 ;   Candidate records and exact pattern IDs are produced only after parser,
@@ -141,6 +141,8 @@ x64lens_classifier_apply_exact:
     je      .class_leave_pivot
     cmp     eax, PATTERN_POP_RSP_RET
     je      .class_pop_rsp_pivot
+    cmp     eax, PATTERN_MULTI_POP_RET
+    je      .class_multi_pop_arg
 
     ; Conservative default: known exact patterns that are not yet mapped to a
     ; semantic primitive remain unknown_candidate for Sprint 4 metrics.
@@ -176,6 +178,42 @@ x64lens_classifier_apply_exact:
 .class_pop_r9_arg:
     CLASSIFY_REG SEM_ARG_CONTROL, REG_R9_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
 
+.class_multi_pop_arg:
+    ; Pattern matching owns exact ordered-pop recognition. Recheck the compact
+    ; structural record before semantic promotion so contradictory internal
+    ; state fails closed instead of creating an unsupported primitive fact.
+    cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     ebx, [r15 + GADGET_PATTERN_REG_ORDER]
+    mov     ecx, ebx
+    and     ecx, 0x0f           ; first pop in execution order
+    shr     ebx, 4
+    mov     edx, ebx
+    and     edx, 0x0f           ; second pop in execution order
+    cmp     ecx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     ecx, edx
+    je      .bounds_error
+    mov     r8d, ARG_CONTROL_REG_MASK
+    bt      r8d, ecx
+    jnc     .bounds_error
+    bt      r8d, edx
+    jnc     .bounds_error
+
+    xor     eax, eax
+    bts     rax, rcx
+    bts     rax, rdx
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ARG_CONTROL
+    mov     [r15 + GADGET_REGS_CONTROLLED], rax
+    or      [r13 + GADGET_SUMMARY_REGS_CONTROLLED], rax
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_TWO_POP_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_ARG_CONTROL_COUNT]
+    jmp     .next_candidate
+
 .class_pop_rax_syscall_num:
     CLASSIFY_REG SEM_SYSCALL_NUM_CONTROL, REG_RAX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_SYSCALL_NUM_COUNT
 
@@ -197,7 +235,13 @@ x64lens_classifier_apply_exact:
     jmp     .candidate_loop
 
 .ok:
-    xor     rax, rax
+    xor     eax, eax
+    jmp     .done
+
+.bounds_error:
+    mov     eax, EXIT_BOUNDS
+
+.done:
     pop     r15
     pop     r14
     pop     r13

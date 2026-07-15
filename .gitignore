@@ -31,6 +31,7 @@
 /tests/toy-src/*_pie*
 /tests/toy-src/minimal_execstack
 /tests/toy-src/gadgets
+/tests/toy-src/gadgets_sprint10
 /tests/toy-src/gadgets_capacity_exact
 /tests/toy-src/gadgets_capacity
 

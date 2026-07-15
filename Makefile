@@ -43,7 +43,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -63,6 +63,7 @@ help:
 	@echo "  make decoder-gap-smoke  Validate controlled external decoder reconciliation"
 	@echo "  make decoder-gap-campaign  Measure controlled and selected-system decoder gaps"
 	@echo "  make schema-compat-smoke  Validate schema 0.1.0 compatibility and 0.2.0 invariants"
+	@echo "  make sprint10-primitive-smoke  Validate ordered two-pop primitive facts and fallback"
 	@echo "  make shellcheck-smoke  Run shellcheck when installed"
 	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
 	@echo "  make analysis-tools-check  Inventory optional analysis/comparison tools"
@@ -155,6 +156,7 @@ samples: sample-tools-check
 	cp tests/toy-src/minimal_pie_canary tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/minimal_execstack tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/gadgets_sprint10 tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity_exact tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity tests/bin/ 2>/dev/null || true
 
@@ -187,11 +189,31 @@ json-smoke: dev-tools-check all samples
 	trap 'rm -rf "$$tmp"' EXIT; \
 	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke.json"; \
 	python3 -m json.tool "$$tmp/x64lens-json-smoke.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance "$$tmp/x64lens-json-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects "$$tmp/x64lens-json-smoke.json" >/dev/null; \
 	./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
 	echo "json-smoke: ok"
 
+
+
+# Sprint 10 Patch 046 entry gate. The historical fixture remains unchanged;
+# this separate source proves ordered two-pop facts, conservative fallback,
+# current-producer JSON effects, and gadgets/analyze command-only parity.
+sprint10-primitive-smoke: dev-tools-check all samples
+	@tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-primitive.XXXXXX")"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	python3 tools/validate-sprint10-disassembly.py ./tests/bin/gadgets_sprint10 >/dev/null; \
+	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/gadgets.json"; \
+	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/analyze.json"; \
+	python3 tools/validate-json-report.py --mode sprint10-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects "$$tmp/gadgets.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode sprint10-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects "$$tmp/analyze.json" >/dev/null; \
+	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
+	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/gadgets.txt"; \
+	grep -q 'pattern: pop reg; pop reg; ret' "$$tmp/gadgets.txt"; \
+	grep -q 'stack pop order: rdi->rsi' "$$tmp/gadgets.txt"; \
+	grep -q 'stack pop order: r8->r9' "$$tmp/gadgets.txt"; \
+	grep -q 'side effects: stack_read' "$$tmp/gadgets.txt"; \
+	echo "sprint10-primitive-smoke: ok candidates=5 multi_pop=3 fallback=2 scored=2"
 
 # Sprint 9 schema transition gate. This target keeps a representative 0.1.0
 # report consumable and proves that inconsistent 0.2.0 identity/completeness
@@ -216,9 +238,9 @@ analyze-smoke: dev-tools-check all samples
 	grep -q "Candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Scored candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
 	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-gadgets-parity.json"; \
 	python3 tools/validate-report-parity.py "$$tmp/x64lens-gadgets-parity.json" "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	echo "analyze-smoke: ok"
@@ -344,7 +366,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -447,6 +469,7 @@ script-perms-check:
 	@test -x tools/readelf-comparison-smoke.py
 	@test -x tools/validate-gadget-fixture.sh
 	@test -x tools/validate-json-report.py
+	@test -x tools/validate-sprint10-disassembly.py
 	@test -x tools/validate-report-parity.py
 	@test -x tools/schema-compat-smoke.py
 	@test -x tools/system-binary-smoke.sh

@@ -61,6 +61,9 @@
       "pattern": "ret",
       "semantic_class": "alignment",
       "controls": [],
+      "stack_pop_order": [],
+      "clobbers": [],
+      "side_effects": [],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {

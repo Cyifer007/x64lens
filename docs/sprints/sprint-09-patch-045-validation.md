@@ -2,11 +2,11 @@
 
 ## Status
 
-Sprint closeout gate.
+Accepted Sprint 9 closeout matrix; Sprint 10 is next.
 
 ## Purpose
 
-Patch 045 closes Sprint 9 by correcting the strict public-document lint defect,
+Patch 045 closed Sprint 9 by correcting the strict public-document lint defect,
 removing documentation drift, reconciling schema and metric status, recording
 the defensive deployment profile, and advancing Sprint 10 to the next
 implementation tranche.
@@ -137,6 +137,7 @@ regeneration.
 
 ## Sprint decision
 
-When this matrix passes, Sprint 9 is closed and Sprint 10 begins with bounded
-primitive expansion. Decoder integration and in-process parallelism remain
-measured optional profiles rather than Sprint 10 defaults.
+This matrix is the Sprint 9 closeout gate. Patch 045 records it as satisfied:
+Sprint 9 is closed, and Sprint 10 begins with bounded primitive expansion.
+Decoder integration and in-process parallelism remain optional profiles to be
+measured separately rather than Sprint 10 defaults.

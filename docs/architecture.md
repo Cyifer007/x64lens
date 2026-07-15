@@ -14,8 +14,8 @@ x64lens CLI
   -> ELF64 parser
   -> executable region mapper
   -> fast gadget candidate scanner
-  -> pattern matcher
-  -> semantic primitive classifier
+  -> pattern matcher and ordered structural facts
+  -> semantic primitive classifier and explicit effects
   -> candidate evidence side-car materializer
   -> scoring engine
   -> mitigation-aware interpretation
@@ -40,9 +40,9 @@ x64lens CLI
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
 | `scanner.asm` | Candidate byte window discovery | Semantic scoring |
-| `patterns.asm` | Exact opcode-template matching and pattern IDs | File parsing, semantic scoring, or exploitability interpretation |
-| `classifier.asm` | Semantic primitive classification | Raw file I/O |
-| `candidate_evidence.asm` | Dense per-candidate raw/exact/semantic provenance side-car | Scan bytes, decode instructions, score, or report |
+| `patterns.asm` | Exact opcode-template matching, pattern IDs, and bounded ordered structural facts | File parsing, semantic scoring, or exploitability interpretation |
+| `classifier.asm` | Semantic primitive classification plus controlled, clobbered, stack, and represented side-effect facts | Raw file I/O or score policy |
+| `candidate_evidence.asm` | Dense per-candidate raw/exact-suffix/semantic-exact provenance side-car | Scan bytes, decode instructions, score, or report |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
@@ -89,28 +89,34 @@ This aligns with the assembly-first goal and avoids unnecessary runtime dependen
 
 ## Design decision 3: pattern-based scanner first
 
-The validated `0.1.0-dev` checkpoint does not implement a full x86_64 instruction decoder. The first scanner will:
+The validated `0.1.0-dev` checkpoint implements a byte-oriented scanner that:
 
-1. find terminator bytes,
-2. walk backward up to `--max-depth`,
-3. match known opcode templates,
-4. classify exact or near-exact gadget forms.
+1. finds supported terminator bytes;
+2. walks backward up to `--max-depth`;
+3. records bounded candidate windows;
+4. recognizes exact suffix templates; and
+5. promotes only supported exact-suffix facts through the conservative
+   classifier.
 
-This keeps the semester deliverable achievable while preserving future decoder integration.
+This preserves raw and exact evidence while leaving an additive decoder seam.
 
 ## Future decoder integration contract
 
-The scanner must be written so that a future decoder can replace or augment pattern matching without replacing the full tool.
+A future decoder may augment retained candidate windows through candidate-indexed
+side-car facts. It must not replace raw discovery, exact-suffix recognition, or
+semantic-exact provenance.
 
 The future interface should look conceptually like:
 
 ```text
 scan_region(region) -> candidate_windows
-candidate_window -> decoder_or_pattern_matcher -> instruction_sequence
-instruction_sequence -> classifier -> semantic_record
+candidate_window -> exact_suffix_matcher -> exact_evidence
+candidate_window -> optional_decoder -> decode_record
+exact_evidence + optional decode_record -> evidence-qualified semantic_record
 ```
 
-The classifier should accept abstract instruction facts where possible, not raw byte-only assumptions.
+The classifier should consume evidence-qualified instruction facts rather than
+infer decoded validity from raw byte windows.
 
 ## Design decision 4: scanner and classifier separation
 
@@ -543,7 +549,8 @@ candidate_evidence_record[]
 decode_record[]          optional
 ```
 
-This preserves existing raw, exact, semantic, unknown, and scored metrics while allowing decoder-backed facts to be added later.
+This preserves existing raw-candidate, exact-suffix, semantic-exact, unknown-candidate,
+and scored metrics while allowing decoder-backed facts to be added later.
 
 ### Analysis completeness
 
@@ -843,3 +850,26 @@ candidate_evidence_record[]
 The scanner still owns raw terminator-centered windows. Pattern matching owns exact suffix IDs. The classifier owns semantic promotion. Scoring owns relative utility. Reporters render records. External decoder-gap tooling is a development oracle and cannot mutate runtime facts.
 
 The default deployment profile remains static, decoder-free, and single-worker. A future candidate-scoped decoder consumes retained windows and writes additive side-car facts. A future parallel profile must preserve one-worker output order, global capacity semantics, bounded memory, cleanup, and byte-for-byte machine-readable parity.
+
+## Sprint 10 Patch 046 ordered-effect extension
+
+Patch 046 uses the reserved final eight bytes of the existing 112-byte
+`gadget_record`:
+
+```text
+pattern_register_count   dword
+pattern_register_order   dword
+```
+
+The packed order uses four-bit canonical register IDs in execution order. This
+keeps the record stride, 4,096-candidate capacity, and combined 655,360-byte
+analysis arena unchanged.
+
+The first consumer is the exact `pop reg; pop reg; ret` family for two distinct
+System V argument registers. Pattern recognition stores exact order;
+classification validates it and emits an unordered controlled-register bitmap,
+24-byte stack delta, and `stack_read` side effect. Reporters only render those
+facts. Multi-pop remains unscored until scoring policy is reviewed separately.
+
+See [ADR 0032](adr/0032-ordered-multi-pop-foundation.md) and the
+[Primitive Effect Model](design/primitive-effect-model.md).

@@ -8,7 +8,7 @@ The taxonomy defines when a byte-level candidate can be promoted into an exploit
 
 | Class | Meaning | Current status |
 |---|---|---|
-| `arg_control` | Controls supported System V argument registers. | Implemented for exact `pop rdi/rsi/rdx/rcx/r8/r9; ret` suffixes. |
+| `arg_control` | Controls supported System V argument registers. | Implemented for exact single-pop argument suffixes and the Patch 046 two-distinct-argument-pop family. |
 | `syscall_num_control` | Controls `rax` for Linux syscall-number setup. | Implemented for `pop rax; ret`. |
 | `syscall_trigger` | Provides a `syscall; ret` suffix. | Implemented. |
 | `stack_pivot` | Makes `rsp` input-dependent or derives it through a pivot sequence. | Implemented for `pop rsp; ret` and `leave; ret`. |
@@ -27,7 +27,8 @@ The matcher recognizes:
 - `ret imm16`,
 - `pop rax` through `pop r15` followed by `ret`,
 - `leave; ret`,
-- `syscall; ret`.
+- `syscall; ret`,
+- `pop <arg-register>; pop <arg-register>; ret` for two distinct supported System V argument registers.
 
 Only the currently documented subset receives semantic promotion. For example, `pop rbx; ret`, `pop rbp; ret`, and several extended-register patterns remain exact observations but may remain `unknown_candidate` until their semantic role and score policy are defined.
 
@@ -120,3 +121,25 @@ Primitive availability does not establish vulnerability or exploitability. Any s
 ## Sprint 9 closeout constraint
 
 Sprint 10 expands this taxonomy from the semantic-exact evidence surface established in Sprint 9. Decoder-backed semantic promotion remains optional and must retain its evidence source. Parallel execution may change scheduling only; it may not change classification rules, candidate order, or unknown preservation.
+
+## Sprint 10 Patch 046 ordered multi-pop rule
+
+The generic multi-pop family is promoted only when both exact pops control
+distinct registers in `rdi`, `rsi`, `rdx`, `rcx`, `r8`, or `r9`.
+
+Reported facts:
+
+```text
+semantic class: arg_control
+controlled registers: both popped registers
+stack pop order: exact execution order
+stack delta: 24 bytes
+side effects: stack_read
+clobbers: none represented
+score: unscored
+```
+
+Duplicate pairs and unsupported leading pops are not promoted as the generic
+family. The strongest existing single-pop suffix immediately before `ret`
+remains available. This fallback is deliberate underclassification rather than
+an attempt to describe unsupported preceding instructions.

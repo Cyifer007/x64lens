@@ -32,8 +32,8 @@ families.
 - [x] Reviewed objdump prefix/return normalization and control-flow barriers.
 - [x] Local/central ZIP metadata reconciliation and strict ZIP64 handling.
 - [x] Synthetic public-boundary fixtures and root-independent archive policy.
-- [x] Decoder-free default, candidate-scoped optional decoder, and measured
-  parallelism gates.
+- [x] Decoder-free default, optional candidate-scoped validation direction, and
+  measurement gates for future parallel profiles.
 - [x] Sprint-wide architecture, contract, documentation, release-boundary,
   metric, schema, and roadmap closeout review.
 
@@ -41,8 +41,9 @@ families.
 
 1. **Patch 040:** report and command identity, complete-analysis summary, schema
    `0.2.0`, representative historical compatibility, and parity gates.
-2. **Patch 041:** candidate evidence side-car, exact/semantic provenance, ABI
-   correction, formal schema enforcement, and validation hardening.
+2. **Patch 041:** candidate evidence side-car, exact-suffix/semantic-exact
+   provenance, ABI correction, formal schema enforcement, and validation
+   hardening.
 3. **Patch 042:** portable public-bundle policy, decoder-gap measurement, and
    explicit decoder decision gate.
 4. **Patch 043:** immutable target snapshots, campaign transaction and parser
@@ -54,7 +55,8 @@ families.
 
 ## Acceptance criteria
 
-- [x] Raw, exact, semantic, unknown, and scored counts retain their meanings.
+- [x] Raw, exact-suffix, semantic-exact, unknown, and scored counts retain their
+  meanings.
 - [x] Successful reports state bounded enumeration completion.
 - [x] Validators reject inconsistent identity, completeness, and provenance.
 - [x] `gadgets` and `analyze` reuse shared report facts and adapters.

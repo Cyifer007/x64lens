@@ -118,6 +118,9 @@ f_terminator:           db '      "terminator":"', 0
 f_pattern:              db '      "pattern":"', 0
 f_semantic:             db '      "semantic_class":"', 0
 f_controls:             db '      "controls":', 0
+f_stack_pop_order:      db '      "stack_pop_order":', 0
+f_clobbers:             db '      "clobbers":', 0
+f_side_effects:         db '      "side_effects":', 0
 f_stack_delta:          db '      "stack_delta":', 0
 f_stack_known:          db '      "stack_delta_known":', 0
 f_evidence_open:        db '      "evidence":{', 10, 0
@@ -170,6 +173,7 @@ pattern_pop_r14_s:      db "pop r14; ret", 0
 pattern_pop_r15_s:      db "pop r15; ret", 0
 pattern_leave_s:        db "leave; ret", 0
 pattern_syscall_s:      db "syscall; ret", 0
+pattern_multi_pop_s:    db "pop reg; pop reg; ret", 0
 semantic_unknown_s:     db "unknown_candidate", 0
 semantic_arg_s:         db "arg_control", 0
 semantic_sysnum_s:      db "syscall_num_control", 0
@@ -196,6 +200,10 @@ reg_r12_s:              db "r12", 0
 reg_r13_s:              db "r13", 0
 reg_r14_s:              db "r14", 0
 reg_r15_s:              db "r15", 0
+side_effect_stack_read_s:  db "stack_read", 0
+side_effect_stack_pivot_s: db "stack_pivot", 0
+side_effect_syscall_s:     db "syscall", 0
+side_effect_ret_imm16_s:   db "ret_imm16", 0
 
 section .bss
 json_path_ptr:          resq 1
@@ -221,6 +229,24 @@ global x64lens_report_json_gadgets
 %macro JSON_REG_IF_SET 2
     mov     rax, rbx
     test    rax, (1 << %1)
+    jz      %%skip
+    test    r12, r12
+    jz      %%no_comma
+    lea     rdi, [j_comma]
+    call    print_cstr
+%%no_comma:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [%2]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    mov     r12, 1
+%%skip:
+%endmacro
+
+%macro JSON_EFFECT_IF_SET 2
+    test    rbx, %1
     jz      %%skip
     test    r12, r12
     jz      %%no_comma
@@ -837,6 +863,26 @@ json_print_one_gadget:
     call    json_print_regs_array
     JSON_FIELD_COMMA_NL
 
+    lea     rdi, [f_stack_pop_order]
+    call    print_cstr
+    mov     rdi, [json_current_record]
+    call    json_print_pattern_reg_order
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_clobbers]
+    call    print_cstr
+    mov     rbx, [json_current_record]
+    mov     rdi, [rbx + GADGET_REGS_CLOBBERED]
+    call    json_print_regs_array
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_side_effects]
+    call    print_cstr
+    mov     rbx, [json_current_record]
+    mov     rdi, [rbx + GADGET_SIDE_EFFECT_FLAGS]
+    call    json_print_side_effects_array
+    JSON_FIELD_COMMA_NL
+
     lea     rdi, [f_stack_delta]
     call    print_cstr
     mov     rbx, [json_current_record]
@@ -1233,6 +1279,143 @@ json_print_regs_array:
     pop     rbx
     ret
 
+json_print_reg_id:
+    cmp     edi, REG_RAX_BIT
+    je      .reg_id_rax
+    cmp     edi, REG_RBX_BIT
+    je      .reg_id_rbx
+    cmp     edi, REG_RCX_BIT
+    je      .reg_id_rcx
+    cmp     edi, REG_RDX_BIT
+    je      .reg_id_rdx
+    cmp     edi, REG_RSI_BIT
+    je      .reg_id_rsi
+    cmp     edi, REG_RDI_BIT
+    je      .reg_id_rdi
+    cmp     edi, REG_RBP_BIT
+    je      .reg_id_rbp
+    cmp     edi, REG_RSP_BIT
+    je      .reg_id_rsp
+    cmp     edi, REG_R8_BIT
+    je      .reg_id_r8
+    cmp     edi, REG_R9_BIT
+    je      .reg_id_r9
+    cmp     edi, REG_R10_BIT
+    je      .reg_id_r10
+    cmp     edi, REG_R11_BIT
+    je      .reg_id_r11
+    cmp     edi, REG_R12_BIT
+    je      .reg_id_r12
+    cmp     edi, REG_R13_BIT
+    je      .reg_id_r13
+    cmp     edi, REG_R14_BIT
+    je      .reg_id_r14
+    cmp     edi, REG_R15_BIT
+    je      .reg_id_r15
+    lea     rdi, [identity_unknown]
+    jmp     print_cstr
+.reg_id_rax: lea rdi, [reg_rax_s]
+    jmp print_cstr
+.reg_id_rbx: lea rdi, [reg_rbx_s]
+    jmp print_cstr
+.reg_id_rcx: lea rdi, [reg_rcx_s]
+    jmp print_cstr
+.reg_id_rdx: lea rdi, [reg_rdx_s]
+    jmp print_cstr
+.reg_id_rsi: lea rdi, [reg_rsi_s]
+    jmp print_cstr
+.reg_id_rdi: lea rdi, [reg_rdi_s]
+    jmp print_cstr
+.reg_id_rbp: lea rdi, [reg_rbp_s]
+    jmp print_cstr
+.reg_id_rsp: lea rdi, [reg_rsp_s]
+    jmp print_cstr
+.reg_id_r8: lea rdi, [reg_r8_s]
+    jmp print_cstr
+.reg_id_r9: lea rdi, [reg_r9_s]
+    jmp print_cstr
+.reg_id_r10: lea rdi, [reg_r10_s]
+    jmp print_cstr
+.reg_id_r11: lea rdi, [reg_r11_s]
+    jmp print_cstr
+.reg_id_r12: lea rdi, [reg_r12_s]
+    jmp print_cstr
+.reg_id_r13: lea rdi, [reg_r13_s]
+    jmp print_cstr
+.reg_id_r14: lea rdi, [reg_r14_s]
+    jmp print_cstr
+.reg_id_r15: lea rdi, [reg_r15_s]
+    jmp print_cstr
+
+; json_print_pattern_reg_order(rdi=gadget_record)
+json_print_pattern_reg_order:
+    push    r12
+    push    r13
+    push    r14
+    push    r15
+    sub     rsp, 8
+
+    mov     r12d, [rdi + GADGET_PATTERN_REG_COUNT]
+    mov     r13d, [rdi + GADGET_PATTERN_REG_ORDER]
+    xor     r14d, r14d
+    xor     r15d, r15d
+    lea     rdi, [j_array_open]
+    call    print_cstr
+    test    r12d, r12d
+    jz      .pattern_order_close
+    cmp     r12d, PATTERN_REG_ORDER_MAX
+    ja      .pattern_order_close
+.pattern_order_loop:
+    test    r15d, r15d
+    jz      .pattern_order_no_comma
+    lea     rdi, [j_comma]
+    call    print_cstr
+.pattern_order_no_comma:
+    lea     rdi, [j_q]
+    call    print_cstr
+    mov     eax, r13d
+    mov     ecx, r14d
+    shl     ecx, 2
+    shr     eax, cl
+    and     eax, 0x0f
+    mov     edi, eax
+    call    json_print_reg_id
+    lea     rdi, [j_q]
+    call    print_cstr
+    mov     r15d, 1
+    inc     r14d
+    cmp     r14d, r12d
+    jb      .pattern_order_loop
+.pattern_order_close:
+    lea     rdi, [j_array_close]
+    call    print_cstr
+    add     rsp, 8
+    pop     r15
+    pop     r14
+    pop     r13
+    pop     r12
+    ret
+
+; json_print_side_effects_array(rdi=side-effect bitmap)
+json_print_side_effects_array:
+    push    rbx
+    push    r12
+    sub     rsp, 8
+    mov     rbx, rdi
+    xor     r12, r12
+    lea     rdi, [j_array_open]
+    call    print_cstr
+    JSON_EFFECT_IF_SET SIDE_EFFECT_STACK_READ, side_effect_stack_read_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_STACK_PIVOT, side_effect_stack_pivot_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16_s
+    lea     rdi, [j_array_close]
+    call    print_cstr
+    add     rsp, 8
+    pop     r12
+    pop     rbx
+    ret
+
 json_print_terminator:
     cmp     edi, GADGET_TERM_RET
     je      .ret
@@ -1288,6 +1471,8 @@ json_print_pattern:
     je      .leave
     cmp     edi, PATTERN_SYSCALL_RET
     je      .syscall
+    cmp     edi, PATTERN_MULTI_POP_RET
+    je      .multi_pop
     lea     rdi, [pattern_unknown_s]
     jmp     print_cstr
 .ret:      lea rdi, [pattern_ret_s]       ; fall through via jmp below
@@ -1329,6 +1514,8 @@ json_print_pattern:
 .leave:    lea rdi, [pattern_leave_s]
            jmp print_cstr
 .syscall:  lea rdi, [pattern_syscall_s]
+           jmp print_cstr
+.multi_pop: lea rdi, [pattern_multi_pop_s]
            jmp print_cstr
 
 json_print_semantic:

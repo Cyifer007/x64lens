@@ -15,8 +15,8 @@ and decoder uncertainty explicit before primitive expansion.
   analysis summary, successful-analysis completeness, representative final-shape
   `0.1.0` compatibility, and `gadgets`/`analyze` parity.
 - Patch 041 added the dense candidate-index evidence side-car, current per-
-  candidate raw/exact/semantic-exact provenance, formal schema enforcement, and
-  ABI and validation hardening.
+  candidate raw-candidate/exact-suffix/semantic-exact provenance, formal schema
+  enforcement, and ABI and validation hardening.
 - Patch 042 added root-independent public ZIP policy and controlled plus selected-
   system decoder-gap evidence without adding a runtime decoder.
 - Patch 043 bound comparison evidence to immutable snapshots, hardened
@@ -71,9 +71,10 @@ The reviewed development campaign found expected unaligned byte observations and
 canonical sequences outside the current exact catalog. It did not justify a
 mandatory whole-image decoder.
 
-The preferred future path is candidate-scoped validation after the fast scan and
-exact/semantic-exact stages. Decoder evidence must be additive, independently
-measurable, and optional in the default deployment profile.
+The preferred future path is candidate-scoped validation after the bounded
+terminator scan and exact/semantic-exact stages. Decoder evidence must be
+additive, independently measurable, and optional in the default deployment
+profile.
 
 ## Parallelism decision
 
@@ -82,19 +83,24 @@ available to external corpus orchestration. Candidate-validation parallelism is
 the preferred first in-process seam because candidate order and loader facts are
 stable before workers begin.
 
-No worker profile becomes default until fixed-corpus evidence proves deterministic
-output, bounded global capacity, complete cleanup, meaningful wall-time benefit,
-and acceptable peak-RSS and startup cost.
+No worker profile becomes default until fixed-corpus evidence proves
+deterministic output, bounded global capacity, complete cleanup, meaningful
+wall-time benefit, and acceptable aggregate CPU, peak-RSS, startup-cost, and
+binary-size growth.
 
 ## Defensive deployment review
 
-The default core remains suitable for air-gapped analysis, minimal containers,
-incident-response staging, malware triage, and CI/CD use because it is static,
-dependency-free at runtime, deterministic, bounded, and free of mandatory helper
-processes.
+The default core preserves the properties intended for air-gapped analysis,
+minimal containers, incident-response staging, malware triage, and CI/CD: it is
+statically linked, has no mandatory user-space runtime libraries or helper
+processes, produces deterministic output, uses explicit capacities, and maps
+targets read-only. Operational usefulness remains a later case-study question.
 
-The project may describe a low-observable dependency and process surface. It
-must not claim invisibility or guaranteed resistance to anti-analysis controls.
+The project may describe this limited dependency and helper-process surface. It
+must not claim invisibility, stealth, anti-analysis evasion, or guaranteed
+resistance to anti-analysis controls.
+
+See the [Defensive Deployment Profile](../design/defensive-deployment-profile.md).
 
 ## Validation lessons
 

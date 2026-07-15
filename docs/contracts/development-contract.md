@@ -243,3 +243,20 @@ binary-size, and correctness evidence exists.
 A sprint that changes public shell helpers or validation tooling closes only after strict ShellCheck and the full native aggregate pass through `make sprint-closeout-smoke`. Docker validation remains separately required when the sprint acceptance plan names it.
 
 The reference runtime must remain independently buildable and measurable without optional decoders or worker libraries. Candidate-scoped decoding and parallel execution are allowed only as explicit, evidence-backed profiles that preserve existing module and metric boundaries.
+
+## Ordered primitive-effect rule
+
+Expanded exact families must carry structural facts before semantic promotion.
+When instruction order matters, an unordered register bitmap is insufficient.
+Pattern recognition records order; classification records controlled,
+clobbered, stack, and side-effect facts; scoring remains independent; reporters
+render records without reconstructing semantics.
+
+Every new family requires:
+
+1. a controlled source fixture;
+2. exact byte and fallback expectations;
+3. text and JSON parity;
+4. provenance and schema validation;
+5. explicit score inclusion or deliberate unscored status;
+6. unchanged fail-closed capacity and malformed-input behavior.

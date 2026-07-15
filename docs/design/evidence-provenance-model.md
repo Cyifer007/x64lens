@@ -38,17 +38,15 @@ The implemented record contains no decoded instruction sequence. Future
 variable-length instruction text or operand lists should live in separate
 arena-backed storage and be referenced by offset/length pairs.
 
-## Confidence rule
+## Evidence-kind vocabulary
 
-Confidence describes the evidence source, not exploitability.
+The schema evidence-kind values are:
 
-Suggested values:
+- current producer values: `raw_only`, `exact_suffix`, and `semantic_exact`;
+- reserved future values: `decoder_validated` and `semantic_decoded`.
 
-- `raw_only`,
-- `exact_suffix`,
-- `decoded_validated`,
-- `semantic_exact`,
-- `semantic_decoded`.
+These values describe the evidence source, not exploitability or a numeric
+confidence score.
 
 A candidate can be useful while still carrying `exact_suffix` evidence only. Reports must expose that distinction.
 
@@ -107,7 +105,11 @@ Coverage comparisons must state which evidence layer is compared. Raw terminator
 
 ## Release gate
 
-Patch 040 introduced the schema `0.2.0` report envelope and analysis-completeness foundation. Patch 041 adds per-candidate raw, exact-suffix, and semantic-exact provenance through the side-car model without redefining the Patch 040 fields. Decoder-backed provenance remains required before the final decoder decision gate, not before the side-car itself is useful.
+Patches 040-041 established schema `0.2.0` and per-candidate raw,
+exact-suffix, and semantic-exact provenance. Patches 042-045 supplied external
+comparison evidence for the decoder decision without adding runtime decoder
+facts. Decoder-backed provenance remains a reserved additive layer for a future
+optional profile.
 
 
 ## Sprint 9 Patch 040 foundation
@@ -122,7 +124,7 @@ analysis_summary
 
 candidate_evidence_record[]
   implemented dense record per candidate index
-  raw, exact, semantic-exact, validator, and future decoder facts
+  raw-candidate, exact-suffix, semantic-exact, validator, and future decoder facts
 ```
 
 This avoids overloading `gadget_record` and prevents `analysis.complete` from
@@ -131,9 +133,8 @@ candidate windows while every candidate still carries only exact-suffix or
 unknown semantic evidence.
 
 `gadgets` and `analyze` share one report type (`analysis`) and one report body,
-but preserve command identity. Patch 041 consumes this envelope and emits candidate evidence records without
-reopening the schema transition. The next patch should measure decoder gaps and
-add comparison evidence rather than broadening primitive families.
+but preserve command identity. Patches 042-045 used this envelope for external
+decoder-gap measurement rather than broadening primitive families.
 
 
 ## Sprint 9 Patch 041 current JSON evidence
@@ -170,8 +171,8 @@ Every campaign records analyzer, canonical validator, objdump executable, and
 target SHA-256 hashes; tool versions; exact commands; max depth; raw reports;
 raw disassembly; smoke-level timing/RSS; and duplicate/canonicalization facts.
 These artifacts may qualify or challenge an exact-suffix interpretation, but
-they do not mutate the original raw, exact, semantic-exact, unknown, or scored
-facts.
+they do not mutate the original raw-candidate, exact-suffix, semantic-exact,
+unknown-candidate, or scored facts.
 
 A canonical-boundary disagreement is not silently relabeled as a false positive.
 The source of disagreement remains explicit because objdump is section-derived
@@ -191,6 +192,26 @@ future decoder-backed record remains additive to the candidate-index side-car.
 
 ## Sprint 9 closeout status
 
-The candidate-index side-car is implemented for raw, exact-suffix, and semantic-exact evidence. Current `full_sequence_valid` remains unknown because the core does not decode complete instruction sequences. Decoder-valid and semantic-decoded states remain reserved additive layers.
+The candidate-index side-car is implemented for raw, exact-suffix, and semantic-exact evidence. Current `full_sequence_valid` remains unknown because the core does not decode complete instruction sequences. Decoder-validated and semantic-decoded states remain reserved additive layers.
 
-The preferred future experiment validates only retained candidate windows after fast scanning and exact recognition. This preserves raw scanner evidence and cost measurements while bounding decoder work. Decoder disagreement must remain visible rather than deleting or rewriting raw and exact facts.
+The preferred future experiment validates only retained candidate windows after bounded scanning and exact recognition. This preserves raw scanner evidence and cost measurements while bounding decoder work. Decoder disagreement must remain visible rather than deleting or rewriting raw and exact facts.
+
+## Sprint 10 ordered structural facts
+
+Patch 046 adds exact structural facts to the existing raw candidate record
+without changing the evidence side-car size:
+
+```text
+pattern_register_count
+pattern_register_order
+```
+
+These facts describe the recognized suffix and are validated before semantic
+promotion. They do not change `full_sequence_valid`, which remains unknown for
+exact-suffix evidence. JSON `stack_pop_order` therefore belongs to the exact
+recognition layer, while `controls`, `clobbers`, stack delta, and
+`side_effects` belong to semantic classification.
+
+For multi-pop candidates, the external validator checks that ordered metadata,
+exact suffix bytes, evidence length, controlled-register set, and semantic facts
+agree. The candidate remains `semantic_exact`, not decoder validated.

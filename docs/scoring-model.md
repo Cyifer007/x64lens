@@ -60,11 +60,12 @@ Every factor requires a corresponding fact in internal records. A score rule mus
 
 ## Provenance interaction
 
-Schema `0.2.0` should allow score interpretation to reference evidence kind:
+Schema `0.2.0` exposes evidence kind alongside each current candidate. Any future
+decoder-backed score interpretation must continue to distinguish:
 
-- semantic-exact candidate,
-- decoder-backed semantic candidate,
-- unknown candidate.
+- semantic-exact candidates;
+- decoder-backed semantic candidates; and
+- unknown candidates.
 
 A decoder-backed candidate may receive a different uncertainty adjustment, but existing scores should not silently change. Any recalibration requires documented score-model versioning or explicit changelog notes and fixture updates.
 
@@ -98,3 +99,21 @@ Until validated, the correct wording is “relative utility under the current mo
 ## Sprint 9 closeout constraint
 
 Patch 045 does not recalibrate scores. A candidate-scoped decoder may later add an explicit uncertainty factor only after decoder evidence is represented and benchmarked. A parallel profile must produce identical scores and ordering to the one-worker reference. No throughput optimization may change scoring facts.
+
+## Sprint 10 Patch 046 multi-pop status
+
+The first two-pop argument-control family is intentionally unscored. It provides
+more controlled registers than a single-pop primitive, but it also consumes more
+stack and introduces order-sensitive effects. Assigning a score before clobber,
+memory, decoder-confidence, and comparative-utility policy is defined would
+collapse semantic evidence into an unsupported ranking.
+
+Patch 046 therefore permits:
+
+```text
+semantic_class = arg_control
+score = null
+```
+
+This is a deliberate model state, not a missing reporter value. A later score
+entry requires separate fixtures and scoring-model validation.

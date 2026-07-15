@@ -212,6 +212,7 @@
 %define PATTERN_POP_R15_RET           18
 %define PATTERN_LEAVE_RET             19
 %define PATTERN_SYSCALL_RET           20
+%define PATTERN_MULTI_POP_RET          21
 
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
@@ -229,6 +230,12 @@
 %define GADGET_SECTION_NAME_PTR     80
 %define GADGET_SECTION_NAME_LEN     88
 %define GADGET_SECTION_INDEX        96
+; Sprint 10 reuses the reserved final eight bytes of the existing 112-byte
+; record for ordered exact-pop facts. The packed order stores one four-bit
+; register ID per pop, least-significant nibble first. The explicit count makes
+; register ID zero (RAX) unambiguous and keeps the arena footprint unchanged.
+%define GADGET_PATTERN_REG_COUNT    104
+%define GADGET_PATTERN_REG_ORDER    108
 %define GADGET_RECORD_SIZE          112
 
 ; candidate_evidence_record offsets
@@ -289,6 +296,11 @@
 %define REG_R14_BIT                 14
 %define REG_R15_BIT                 15
 
+; Exact-pattern register metadata supports up to eight ordered register IDs in
+; one dword. Sprint 10 Patch 046 emits one or two entries only.
+%define PATTERN_REG_ORDER_MAX       8
+%define ARG_CONTROL_REG_MASK        ((1 << REG_RDI_BIT) | (1 << REG_RSI_BIT) | (1 << REG_RDX_BIT) | (1 << REG_RCX_BIT) | (1 << REG_R8_BIT) | (1 << REG_R9_BIT))
+
 ; semantic classes
 %define SEM_UNKNOWN_CANDIDATE       0
 %define SEM_ARG_CONTROL             1
@@ -307,6 +319,7 @@
 %define STACK_DELTA_UNKNOWN         0
 %define STACK_DELTA_RET             8
 %define STACK_DELTA_POP_RET         16
+%define STACK_DELTA_TWO_POP_RET     24
 
 ; side-effect flags. These are intentionally minimal and should be
 ; extended only when classifier/scoring behavior needs the distinction.

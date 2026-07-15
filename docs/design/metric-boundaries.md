@@ -43,9 +43,9 @@ Every current candidate identifies raw presence, exact-suffix presence, semantic
 source, validator identity, matched suffix range, and full-sequence-validity
 state. `full_sequence_valid` remains unknown until decoder evidence exists.
 
-## Planned decoder metrics
+## Future decoder metrics
 
-Later Sprint 9 work may add, where implemented:
+A future optional decoder profile may add, where implemented:
 
 | Metric | Meaning |
 |---|---|
@@ -153,7 +153,7 @@ Section labels are intentionally absent when section metadata is ambiguous. Miss
 all program-header-derived executable regions without emitting a truncated
 candidate set? It does not mean:
 
-- every candidate is decoder-valid,
+- every candidate is decoder-validated,
 - every useful gadget family is recognized,
 - semantic classification is complete,
 - mitigation metadata is complete,
@@ -188,7 +188,7 @@ gadgets[i].evidence
   which evidence justifies facts for candidate i
 ```
 
-`semantic_exact` does not mean decoder-valid. `analysis.complete` does not
+`semantic_exact` does not mean decoder-validated. `analysis.complete` does not
 upgrade candidate evidence. Scores continue to consume semantic facts and do
 not consume or manufacture decoder validity.
 
@@ -234,3 +234,22 @@ rows from the dependency-free core.
 Implemented `0.2.0` facts now include candidate capacity, candidate count, truncation state, dropped-count knowledge, region progress, and complete-analysis state. Successful reports are complete and untruncated; current overflow still fails before output because the scanner does not continue far enough to compute a truthful dropped count.
 
 Decoder-valid and semantic-decoded counts remain future additive metrics. Candidate-scoped decoder and parallel experiments must report their own profile identity, timing, CPU, RSS, and output counts rather than merging them with the dependency-free one-worker profile.
+
+## Sprint 10 effect facts
+
+Patch 046 adds per-candidate facts without adding or redefining aggregate
+candidate populations:
+
+| Field | Meaning |
+|---|---|
+| `stack_pop_order` | Exact execution order of recognized pop instructions. |
+| `clobbers` | Registers modified without a justified controlled value. |
+| `side_effects` | Explicit classifier facts such as stack read or pivot. |
+
+`controls` remains an unordered semantic set. `stack_pop_order` is an ordered
+exact fact. Neither field is a count, and neither changes raw, exact, semantic,
+unknown, decoder-backed, or scored metrics.
+
+The first multi-pop family increases semantic coverage but remains unscored, so
+`semantic_candidate_count` may increase without the same increase in
+`scored_candidate_count`.

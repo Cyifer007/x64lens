@@ -58,6 +58,34 @@ ALLOWED_EVIDENCE_VALIDATORS = {
     "x64lens-exact-suffix",
     "x64lens-decoder",
 }
+ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16"}
+CURRENT_EFFECT_FIELDS = {"stack_pop_order", "clobbers", "side_effects"}
+MULTI_POP_PATTERN = "pop reg; pop reg; ret"
+ARG_CONTROL_REGS = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"}
+POP_ENCODING_BY_REG = {
+    "rax": "58", "rbx": "5b", "rcx": "59", "rdx": "5a",
+    "rsi": "5e", "rdi": "5f", "rbp": "5d", "rsp": "5c",
+    "r8": "4158", "r9": "4159", "r10": "415a", "r11": "415b",
+    "r12": "415c", "r13": "415d", "r14": "415e", "r15": "415f",
+}
+SINGLE_POP_REG_BY_PATTERN = {
+    "pop rax; ret": "rax",
+    "pop rbx; ret": "rbx",
+    "pop rcx; ret": "rcx",
+    "pop rdx; ret": "rdx",
+    "pop rsi; ret": "rsi",
+    "pop rdi; ret": "rdi",
+    "pop rbp; ret": "rbp",
+    "pop rsp; ret": "rsp",
+    "pop r8; ret": "r8",
+    "pop r9; ret": "r9",
+    "pop r10; ret": "r10",
+    "pop r11; ret": "r11",
+    "pop r12; ret": "r12",
+    "pop r13; ret": "r13",
+    "pop r14; ret": "r14",
+    "pop r15; ret": "r15",
+}
 PATTERN_SUFFIX_LENGTHS = {
     "ret": 1,
     "ret imm16": 3,
@@ -169,6 +197,27 @@ def require_hex64(value: Any, name: str) -> None:
     require(isinstance(value, str) and HEX64_RE.match(value) is not None, f"{name} must be a 16-digit hex string")
 
 
+def expected_suffix_length(gadget: dict[str, Any], prefix: str) -> int | None:
+    pattern = gadget["pattern"]
+    if pattern != MULTI_POP_PATTERN:
+        return PATTERN_SUFFIX_LENGTHS.get(pattern)
+
+    order = gadget.get("stack_pop_order")
+    require(isinstance(order, list), f"{prefix}.stack_pop_order is required for multi-pop evidence")
+    require(len(order) == 2, f"{prefix}.multi-pop order must contain exactly two registers")
+    length = 1  # ret
+    for reg in order:
+        require(reg in ARG_CONTROL_REGS, f"{prefix}.multi-pop register {reg!r} is outside the supported argument set")
+        length += 2 if reg in {"r8", "r9"} else 1
+    return length
+
+def require_pop_suffix_bytes(gadget: dict[str, Any], order: list[str], prefix: str) -> None:
+    """Require ordered pop metadata to agree with the exact bytes ending at ret."""
+    expected = "".join(POP_ENCODING_BY_REG[reg] for reg in order) + "c3"
+    observed = gadget["bytes"].lower()
+    require(observed.endswith(expected), f"{prefix}.stack_pop_order disagrees with exact suffix bytes")
+
+
 def load_report(path: Path) -> dict[str, Any]:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -185,6 +234,7 @@ def validate_common(
     required_schema: str | None = None,
     expected_command: str | None = None,
     require_provenance: bool = False,
+    require_sprint10_effects: bool = False,
 ) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
@@ -210,6 +260,7 @@ def validate_common(
     else:
         require(expected_command is None, "command identity requires schema 0.2.0")
         require(not require_provenance, "candidate provenance requires schema 0.2.0")
+        require(not require_sprint10_effects, "Sprint 10 effect fields require schema 0.2.0")
 
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
@@ -387,6 +438,52 @@ def validate_common(
         )
         semantic_classes_seen.add(gadget["semantic_class"])
 
+        if require_sprint10_effects:
+            missing_effect_fields = CURRENT_EFFECT_FIELDS - set(gadget)
+            require(
+                not missing_effect_fields,
+                f"{prefix} missing current Sprint 10 effect fields: {sorted(missing_effect_fields)}",
+            )
+
+        if "stack_pop_order" in gadget:
+            order = gadget["stack_pop_order"]
+            require(isinstance(order, list), f"{prefix}.stack_pop_order must be an array")
+            require(len(order) <= 8, f"{prefix}.stack_pop_order exceeds the compact record capacity")
+            for reg in order:
+                require(isinstance(reg, str) and reg in ALLOWED_REGS, f"{prefix}.stack_pop_order contains unknown register {reg}")
+        else:
+            order = None
+
+        if "clobbers" in gadget:
+            clobbers = gadget["clobbers"]
+            require(isinstance(clobbers, list), f"{prefix}.clobbers must be an array")
+            for reg in clobbers:
+                require(isinstance(reg, str) and reg in ALLOWED_REGS, f"{prefix}.clobbers contains unknown register {reg}")
+            require(len(clobbers) == len(set(clobbers)), f"{prefix}.clobbers must not contain duplicates")
+            if require_sprint10_effects:
+                require(clobbers == [], f"{prefix}.clobbers must remain empty until a supported rule populates clobber facts")
+
+        if "side_effects" in gadget:
+            side_effects = gadget["side_effects"]
+            require(isinstance(side_effects, list), f"{prefix}.side_effects must be an array")
+            require(len(side_effects) == len(set(side_effects)), f"{prefix}.side_effects must not contain duplicates")
+            require(set(side_effects) <= ALLOWED_SIDE_EFFECTS, f"{prefix}.side_effects contains an unsupported value")
+        else:
+            side_effects = None
+
+        if order is not None:
+            single_pop_reg = SINGLE_POP_REG_BY_PATTERN.get(gadget["pattern"])
+            if single_pop_reg is not None:
+                require(order == [single_pop_reg], f"{prefix}.stack_pop_order disagrees with the single-pop pattern")
+                require_pop_suffix_bytes(gadget, order, prefix)
+            elif gadget["pattern"] == MULTI_POP_PATTERN:
+                require(len(order) == 2, f"{prefix}.multi-pop order must contain exactly two registers")
+                require(len(set(order)) == 2, f"{prefix}.multi-pop registers must be distinct")
+                require(set(order) <= ARG_CONTROL_REGS, f"{prefix}.multi-pop registers must be supported argument registers")
+                require_pop_suffix_bytes(gadget, order, prefix)
+            else:
+                require(order == [], f"{prefix}.non-pop pattern must have an empty stack_pop_order")
+
         pattern_is_exact = gadget["pattern"] != "unknown"
         if pattern_is_exact:
             exact_seen += 1
@@ -437,7 +534,7 @@ def validate_common(
                     f"{prefix}.evidence.matched_suffix_length",
                     min_value=1,
                 )
-                expected_suffix_len = PATTERN_SUFFIX_LENGTHS.get(gadget["pattern"])
+                expected_suffix_len = expected_suffix_length(gadget, prefix)
                 require(expected_suffix_len is not None, f"{prefix}.pattern has no suffix-length contract")
                 require(
                     evidence["matched_suffix_length"] == expected_suffix_len,
@@ -511,6 +608,24 @@ def validate_common(
             require_int(gadget["stack_delta"], f"{prefix}.stack_delta")
         else:
             require(gadget["stack_delta"] is None, f"{prefix}.stack_delta must be null when stack_delta_known is false")
+
+        if gadget["pattern"] == MULTI_POP_PATTERN:
+            require(gadget["semantic_class"] == "arg_control", f"{prefix}.multi-pop semantic class must be arg_control")
+            require(set(gadget["controls"]) == set(gadget.get("stack_pop_order", [])), f"{prefix}.multi-pop controls must cover the ordered pop registers")
+            require(known is True and gadget["stack_delta"] == 24, f"{prefix}.multi-pop stack delta must be 24")
+            require(gadget["score"] is None, f"{prefix}.multi-pop remains unscored in Patch 046")
+
+        if side_effects is not None:
+            expected_effects: set[str] = set()
+            if gadget["semantic_class"] != "unknown_candidate" and gadget.get("stack_pop_order"):
+                expected_effects.add("stack_read")
+            if gadget["semantic_class"] == "stack_pivot":
+                expected_effects.add("stack_pivot")
+            if gadget["semantic_class"] == "syscall_trigger":
+                expected_effects.add("syscall")
+            if gadget["terminator"] == "ret imm16":
+                expected_effects.add("ret_imm16")
+            require(set(side_effects) == expected_effects, f"{prefix}.side_effects disagrees with represented semantic effects")
 
         score = gadget["score"]
         if score is not None:
@@ -653,16 +768,62 @@ def validate_fixture(doc: dict[str, Any]) -> None:
     require(g["score"] == 40, "ret imm16 score mismatch")
 
 
+def validate_sprint10_fixture(doc: dict[str, Any]) -> None:
+    counts = doc["counts"]
+    expected_counts = {
+        "raw_candidate_count": 5,
+        "ret_count": 5,
+        "ret_imm16_count": 0,
+        "exact_pattern_count": 5,
+        "semantic_candidate_count": 5,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 2,
+    }
+    for key, value in expected_counts.items():
+        require(counts[key] == value, f"Sprint 10 fixture {key} expected {value}, got {counts[key]}")
+
+    gadgets = doc["gadgets"]
+    multi = [g for g in gadgets if g["pattern"] == MULTI_POP_PATTERN]
+    require(len(multi) == 3, f"Sprint 10 fixture expected 3 multi-pop candidates, got {len(multi)}")
+    expected_orders = [["rdi", "rsi"], ["r8", "r9"], ["rdx", "rcx"]]
+    require([g["stack_pop_order"] for g in multi] == expected_orders, "Sprint 10 multi-pop order mismatch")
+    for gadget in multi:
+        require(gadget["semantic_class"] == "arg_control", "Sprint 10 multi-pop semantic mismatch")
+        require(set(gadget["controls"]) == set(gadget["stack_pop_order"]), "Sprint 10 multi-pop controls/order mismatch")
+        require(gadget["stack_delta"] == 24 and gadget["stack_delta_known"] is True, "Sprint 10 multi-pop stack delta mismatch")
+        require(gadget["score"] is None, "Sprint 10 multi-pop must remain unscored")
+        require(gadget["clobbers"] == [], "Sprint 10 multi-pop clobbers must be empty")
+        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 multi-pop side effects mismatch")
+
+    fallback = [g for g in gadgets if g["pattern"] == "pop rdi; ret"]
+    require(len(fallback) == 2, f"Sprint 10 fixture expected 2 conservative single-pop fallbacks, got {len(fallback)}")
+    for gadget in fallback:
+        require(gadget["stack_pop_order"] == ["rdi"], "Sprint 10 fallback order mismatch")
+        require(gadget["controls"] == ["rdi"], "Sprint 10 fallback controls mismatch")
+        require(gadget["stack_delta"] == 16 and gadget["score"] == 90, "Sprint 10 fallback semantic mismatch")
+
+    coverage = doc["primitive_coverage"]
+    require(coverage["arg_control"] is True, "Sprint 10 fixture must expose argument control")
+    require(set(coverage["registers"]) == {"rcx", "rdx", "rsi", "rdi", "r8", "r9"}, "Sprint 10 fixture register coverage mismatch")
+    analysis = doc["analysis"]
+    require(analysis["complete"] is True and analysis["candidate_count"] == 5, "Sprint 10 fixture analysis summary mismatch")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
-    parser.add_argument("--mode", choices=["generic", "fixture", "system"], default="generic")
+    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     parser.add_argument(
         "--require-provenance",
         action="store_true",
         help="require every schema 0.2.0 gadget to carry current-producer evidence",
+    )
+    parser.add_argument(
+        "--require-sprint10-effects",
+        action="store_true",
+        help="require current ordered-pop, clobber, and side-effect fields",
     )
     args = parser.parse_args(argv)
 
@@ -673,9 +834,12 @@ def main(argv: list[str]) -> int:
             required_schema=args.require_schema,
             expected_command=args.expected_command,
             require_provenance=args.require_provenance,
+            require_sprint10_effects=args.require_sprint10_effects,
         )
         if args.mode == "fixture":
             validate_fixture(doc)
+        elif args.mode == "sprint10-fixture":
+            validate_sprint10_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1

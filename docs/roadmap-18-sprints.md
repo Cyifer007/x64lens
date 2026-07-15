@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete after the Patch 045 closeout. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the measured candidate-scoped decoder and parallelism decision. Sprint 10 is the next implementation tranche for evidence-aware primitive expansion.
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 046 ordered multi-pop and effect-fact foundation. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately. Sprint 10 is the next implementation tranche for evidence-aware primitive expansion.
 
 The implemented pipeline is:
 
@@ -29,7 +29,7 @@ ELF64 validation
   -> smoke validation and baseline benchmark plumbing
 ```
 
-The current checkpoint is tagged locally as `v0.1.0-dev`. It is a functional integrated prototype, not the first research release. Sprint 8 closes the mitigation-depth tranche with bounded dynamic-table evidence, RELRO refinement, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, evidence-hygiene gates, automated `readelf` comparison, and optional `checksec` / `rabin2 -I` comparison helpers.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patch 045 is later pre-release development state, not the first research release. Sprint 8 closed the mitigation-depth tranche with bounded dynamic-table evidence, RELRO refinement, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, evidence-hygiene gates, automated `readelf` comparison, and optional `checksec` / `rabin2 -I` comparison helpers.
 
 ## Sprint 7 closeout checkpoint
 
@@ -62,7 +62,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
 | 9 | Candidate provenance and decoder-gap measurement | Complete through Patch 045: identity, completeness, provenance, schema `0.2.0`, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions. |
-| 10 | Primitive expansion | Multi-pop, register-transfer, and narrowly justified memory primitives with side-effect facts and fixture coverage. |
+| 10 | Primitive expansion | Active: Patch 046 establishes ordered two-pop argument control and effect fields; register-transfer and narrowly justified memory primitives remain. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
 | 13 | Comparative benchmark campaign | Publication-grade repeated trials, coverage reconciliation, output-normalization analysis, and raw-result freeze. |
@@ -82,8 +82,11 @@ The `v0.1.0-rc1` gate requires all of the following:
 - full versus partial RELRO distinction when evidence is available,
 - canary and stripped-status indicators documented as indicators,
 - section labels that remain subordinate to program-header mapping authority,
-- evidence provenance that distinguishes raw, exact-suffix, semantic, and decoder-validated facts,
-- schema evolution from `0.1.0` when provenance or truncation fields materially change report meaning,
+- evidence provenance that distinguishes current raw, exact-suffix, and
+  semantic-exact facts, preserves unknown and scored populations separately,
+  and reserves decoder-validated facts as optional additive evidence,
+- current schema `0.2.0` report identity, bounded completeness, and candidate
+  provenance, with explicit migration review for any incompatible future change,
 - a reproducible corpus manifest with target hashes and build commands,
 - a higher-resolution benchmark runner that avoids zero-valued timing on small binaries,
 - documented baseline versions and exact commands,
@@ -124,7 +127,7 @@ Primitive breadth must not outrun evidence quality. Benchmark scale must not out
 ## Schema timeline
 
 - Keep schema `0.1.0` through Sprint 8 for compatible, optional mitigation additions.
-- Schema `0.2.0` is introduced in Sprint 9 Patch 040 for report identity and complete-analysis state; compatible per-candidate provenance follows within the `0.2.x` line.
+- Schema `0.2.0` is the current producer contract, introduced in Sprint 9 Patch 040 for report identity and complete-analysis state and extended compatibly with per-candidate provenance in Patch 041.
 - Keep `0.2.x` backward-compatible through the preview and benchmark campaign.
 - Do not introduce another breaking schema before `v0.1.0` unless a release-blocking correctness issue requires it.
 
@@ -132,7 +135,7 @@ See `docs/design/schema-evolution.md`.
 
 ## Decoder decision timeline
 
-The raw scanner remains a fast prefilter. External decoders and baseline tools remain validators until measured evidence justifies an embedded decoder.
+The raw scanner remains a bounded candidate prefilter. External decoders and baseline tools remain validators until measured evidence justifies an embedded decoder.
 
 The decision gate occurs after Sprint 9 evidence capture and no later than Sprint 13 coverage reconciliation. An embedded decoder is approved only if:
 
@@ -164,7 +167,8 @@ A new exact pattern does not automatically become a semantic primitive. A semant
 - Keep program headers authoritative for runtime mappings.
 - Keep section headers and symbols as optional analyst annotations.
 - Generate JSON and future outputs from internal facts, never from text scraping.
-- Preserve raw, exact, semantic, validated, unknown, and scored metrics separately.
+- Preserve raw-candidate, exact-suffix, semantic-exact, decoder-validated,
+  unknown-candidate, and scored metrics separately.
 - Preserve smoke evidence separately from publication evidence.
 - Make schema changes at explicit gates, not opportunistically inside feature patches.
 
@@ -230,7 +234,7 @@ The provenance foundation now has two separate records:
 
 ```text
 analysis_summary                 command identity and enumeration completeness
-candidate_evidence_record[]      per-candidate raw/exact/semantic provenance
+candidate_evidence_record[]      per-candidate raw/exact-suffix/semantic-exact provenance
 ```
 
 This completes the record seam required before decoder-gap measurement. The
@@ -278,21 +282,21 @@ preferred bounded future architecture: scan first, optionally decode retained
 candidate windows, preserve all evidence tiers, and introduce parallelism only
 as an independently benchmarked deterministic profile.
 
-Patch 045 now owns the Sprint 9 public closeout and release-readiness review.
-Sprint 10 remains primitive expansion. Sprint 12/13 gain explicit
-candidate-decoder and worker-count ablations so low RSS and startup speed are
+Patch 045 subsequently completed the Sprint 9 public closeout and release-readiness review.
+Sprint 10 is the next primitive-expansion tranche. Sprints 12 and 13 retain
+candidate-decoder and worker-count ablations so RSS and startup cost are
 measured rather than assumed.
 
 ## Sprint 9 closeout checkpoint
 
-Patch 045 closes Sprint 9 without changing analyzer assembly, record layouts, CLI behavior, or schema shape. The accepted Sprint 9 boundary is:
+Patch 045 closed Sprint 9 without changing analyzer assembly, record layouts, CLI behavior, or schema shape. The accepted Sprint 9 boundary is:
 
 - schema `0.2.0` report and command identity;
 - explicit complete-analysis and capacity facts;
 - candidate-index provenance for raw, exact-suffix, and semantic-exact evidence;
 - external decoder-gap measurement with immutable inputs and transactional publication;
 - a decoder-free, single-worker reference runtime;
-- an optional future candidate-scoped validation profile and measured parallelism gate;
+- optional future candidate-scoped validation and parallel profiles, each gated by fixed-corpus measurement;
 - portable public-archive and documentation-hygiene enforcement.
 
 Sprint 10 may expand primitive families only through the established evidence, side-effect, fixture, and score boundaries. Decoder integration and in-process parallelism remain ablations for the reproducible corpus and benchmark stages rather than hidden prerequisites for primitive work.

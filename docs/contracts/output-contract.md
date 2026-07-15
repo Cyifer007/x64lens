@@ -165,3 +165,21 @@ Current-producer validation requires all candidate evidence with
 ## Sprint 9 closeout output rule
 
 Schema `0.2.0` remains the current output contract. Patch 045 adds no output field. Future decoder and parallel profiles must preserve command identity, completeness, provenance, count meaning, no-partial-output behavior, and deterministic ordering. Profile identity must be represented in release and benchmark provenance before different profiles are compared or aggregated.
+
+## Sprint 10 candidate-effect rule
+
+Current schema `0.2.0` producers emit `stack_pop_order`, `clobbers`, and
+`side_effects` for every candidate. Earlier compatible `0.2.0` reports may omit
+these additive fields.
+
+- Ordered pop facts come from exact pattern metadata.
+- Controlled and clobbered registers come from semantic classification.
+- Side effects come from classifier facts, not reporter inference.
+- `controls` ordering is canonical bitmap order and must not be interpreted as
+  instruction order.
+- A semantic candidate may remain unscored when the scoring model has no
+  reviewed entry.
+
+The generic Patch 046 multi-pop family must report two ordered distinct argument
+registers, a matching controlled-register set, stack delta 24, `stack_read`, an
+empty clobber set, and `score: null`.

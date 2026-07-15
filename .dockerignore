@@ -40,6 +40,7 @@ tests/toy-src/minimal_nopie
 tests/toy-src/minimal_pie_canary
 tests/toy-src/minimal_execstack
 tests/toy-src/gadgets
+tests/toy-src/gadgets_sprint10
 tests/toy-src/gadgets_capacity_exact
 tests/toy-src/gadgets_capacity
 tests/toy-src/*.o

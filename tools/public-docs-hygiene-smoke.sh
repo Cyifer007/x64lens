@@ -28,6 +28,7 @@ printf 'path: C:\\Users\\%s\\repo\\report.md\n' "$user_token" > "$tmp/windows-ho
 printf 'path: \\\\wsl.localhost\\%s\\home\\%s\\repo\\report.md\n' "$host_token" "$user_token" > "$tmp/wsl-home.md"
 printf 'path: /Users/%s/repo/report.md\n' "$user_token" > "$tmp/macos-home.md"
 printf 'path: /home/%s/repo/report.md\n' "$user_token" > "$tmp/linux-home.md"
+printf '%s@%s:~/repo$ make test\n' "$user_token" "$host_token" > "$tmp/shell-prompt.md"
 
 bash "$CHECKER" "$tmp/clean.md" >/dev/null
 
@@ -41,7 +42,8 @@ for fixture in \
   windows-home.md \
   wsl-home.md \
   macos-home.md \
-  linux-home.md; do
+  linux-home.md \
+  shell-prompt.md; do
   if bash "$CHECKER" "$tmp/$fixture" >/dev/null 2>&1; then
     echo "public-docs-hygiene-smoke: prohibited fixture escaped policy: $fixture" >&2
     exit 1
@@ -49,4 +51,4 @@ for fixture in \
   rejected=$((rejected + 1))
 done
 
-echo "public-docs-hygiene-smoke: ok cases=10 accepted=1 rejected=$rejected"
+echo "public-docs-hygiene-smoke: ok cases=11 accepted=1 rejected=$rejected"

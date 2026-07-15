@@ -11,22 +11,22 @@ state, schema `0.2.0`, per-candidate provenance, external decoder-gap evidence,
 immutable campaign inputs, transaction-safe publication, external-parser
 hardening, and portable archive validation.
 
-The remaining closeout work is to correct the strict shell-lint defect, remove
-documentation drift, reconcile release and roadmap language, and state the
-product properties that future primitive, decoder, and acceleration work must
-preserve.
+Patch 045 corrected the strict shell-lint defect, removed documentation drift,
+reconciled release and roadmap language, and recorded the product properties
+that future primitive, decoder, and acceleration work must preserve. Those
+properties are defined in the [Defensive Deployment Profile](../design/defensive-deployment-profile.md).
 
 ## Decision
 
-1. Sprint 9 closes with Patch 045 after the native closeout gate and qualified
+1. Sprint 9 closed with Patch 045 after the native closeout gate and qualified
    Docker validation pass.
 2. The default runtime remains freestanding, statically linked, decoder-free,
    and single-worker.
 3. A future decoder is candidate-scoped and optional. It augments the evidence
    side-car and never replaces raw discovery or exact/semantic-exact facts.
 4. Parallel execution is an experimental profile until deterministic output,
-   global capacity, cleanup, wall-time, peak-RSS, startup, and binary-size gates
-   pass on a fixed corpus.
+   global capacity, cleanup, wall-time, aggregate CPU, peak-RSS, startup-cost,
+   and binary-size gates pass on a fixed corpus.
 5. Sprint 10 expands primitive coverage in deterministic one-worker operation.
    Decoder and parallel ablations are measured in Sprints 12 and 13.
 6. Public documentation describes repository facts and reproducible behavior.
