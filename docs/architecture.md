@@ -4,7 +4,7 @@
 
 x64lens uses a hybrid architecture:
 
-1. **Path 1, engine:** fast assembly-first ELF64 parsing and gadget candidate scanning.
+1. **Path 1, engine:** bounded assembly-first ELF64 parsing and gadget candidate scanning.
 2. **Path 2, value layer:** semantic primitive classification, mitigation-aware analysis, scoring, and reporting.
 
 ```text
@@ -13,7 +13,7 @@ x64lens CLI
   -> file mapper
   -> ELF64 parser
   -> executable region mapper
-  -> fast gadget candidate scanner
+  -> bounded gadget candidate scanner
   -> pattern matcher and ordered structural facts
   -> semantic primitive classifier and explicit effects
   -> candidate evidence side-car materializer
@@ -382,7 +382,7 @@ Patch 14 records several future-facing seams that should prevent large refactors
 
 The NASM implementation is the first engine, not a claim that every future layer must be pure assembly. The engine should remain small, measurable, and explicit. Higher-level value comes from semantic classification, mitigation-aware interpretation, JSON contracts, and reproducible benchmarks.
 
-### Raw, exact, semantic, and decoded records
+### Raw, exact-suffix, semantic-exact, decoder, and score records
 
 Do not collapse all gadget facts into one overloaded record. Preserve this conceptual split:
 
@@ -405,7 +405,7 @@ Any future parser expansion, especially dynamic-section, symbol-table, string-ta
 
 ### Metric seam
 
-Raw candidate count, exact pattern count, semantic primitive count, and scored gadget count must remain distinct in internal records, benchmark TSVs, JSON reports, and paper tables.
+Raw-candidate, exact-pattern, semantic-candidate, unknown-candidate, and scored-candidate counts must remain distinct in internal records, benchmark TSVs, JSON reports, and paper tables. Any future decoder-validated and semantic-decoded counts remain additive layers.
 
 
 ## Sprint 4 closeout architecture note
@@ -705,10 +705,10 @@ analysis_summary             one command-level completion record
 candidate_evidence_record[]  one future provenance record per candidate index
 ```
 
-This preserves raw scanner facts, exact patterns, semantic classes, scores, and
-future decoder evidence as separate layers. Program headers remain executable-
-region authority; section and dynamic metadata remain bounded evidence or
-annotations.
+This preserves raw-candidate facts, exact-suffix patterns, semantic-exact
+classes, scores, and future decoder evidence as separate layers. Program
+headers remain executable-region authority; section and dynamic metadata
+remain bounded evidence or annotations.
 
 
 ## Sprint 9 Patch 041 candidate evidence side-car
@@ -718,10 +718,10 @@ Patch 041 adds a dense fixed-size `candidate_evidence_record[]` without changing
 
 ```text
 gadget_record[i]
-  raw scanner, exact pattern, semantic, score, and annotation facts
+  raw scanner, exact-suffix pattern, semantic-exact, score, and annotation facts
 
 candidate_evidence_record[i]
-  raw/exact/semantic evidence flags
+  raw-candidate/exact-suffix/semantic-exact evidence flags
   semantic evidence source
   validator identity
   matched suffix offset and length
@@ -830,7 +830,8 @@ immutable target snapshot
 
 The default runtime remains the existing single-threaded direct-syscall NASM
 pipeline. Future decoder facts belong in candidate-index side-cars after the
-fast scan. Future parallel work must preserve one deterministic record order,
+bounded raw scan. Future parallel work must preserve one deterministic record
+order,
 one global bounded-capacity result, and no-partial-output failure behavior. It
 may not move loader authority, scanning, classification, scoring, or reporting
 into external helpers.
@@ -871,5 +872,30 @@ classification validates it and emits an unordered controlled-register bitmap,
 24-byte stack delta, and `stack_read` side effect. Reporters only render those
 facts. Multi-pop remains unscored until scoring policy is reviewed separately.
 
-See [ADR 0032](adr/0032-ordered-multi-pop-foundation.md) and the
-[Primitive Effect Model](design/primitive-effect-model.md).
+See [ADR 0032](adr/0032-ordered-multi-pop-foundation.md), the
+[Primitive Effect Model](design/primitive-effect-model.md), the
+[Sprint 10 Plan](sprints/sprint-10-plan.md), the
+[Patch 046 Validation Plan](sprints/sprint-10-patch-046-validation.md), and the
+[canonical roadmap](roadmap-18-sprints.md).
+
+## Sprint 10 Patch 047 exact register-transfer seam
+
+Patch 047 extends the existing staged path without changing module ownership:
+
+```text
+scanner.asm
+  -> patterns.asm: exact register-direct move and operand roles
+  -> classifier.asm: reg_transfer, destination clobber, stack/effect facts
+  -> candidate_evidence.asm: semantic-exact suffix provenance
+  -> scoring.asm: no new score rule
+  -> report_text.asm / report_json.asm: relation rendering only
+```
+
+The matcher accepts only `REX.W` register-direct opcode `89 /r` or `8b /r`
+forms followed by `ret`, with distinct non-`rsp` operands. The existing 112-byte
+candidate record stores destination then source in its bounded pattern metadata
+tail. The candidate arena remains 655,360 bytes with capacity 4,096.
+
+Reporters do not infer operand roles from text or pattern names. They render the
+recorded source/destination relation. Full instruction-sequence validity remains
+unknown because no decoder is introduced.

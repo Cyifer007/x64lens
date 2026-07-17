@@ -223,3 +223,10 @@ machine-readable and backward-compatible within schema `0.2.0`.
 ## Sprint 9 closeout
 
 Patch 045 changes no command, flag, exit code, or output field. The default CLI remains decoder-free and single-worker. Any future decoder or worker control must be introduced as an explicit profile or option with documented identity, compatibility, failure semantics, and benchmark separation; it must not silently alter existing command meaning.
+
+## Sprint 10 Patch 047 gadget-effect behavior
+
+The CLI syntax and exit codes are unchanged. `gadgets` and `analyze` may now
+report exact `mov r64,r64; ret` register-transfer candidates with explicit
+source/destination, clobber, stack, and side-effect facts. Unsupported transfer
+forms retain the strongest existing suffix interpretation.

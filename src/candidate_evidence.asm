@@ -37,6 +37,7 @@ pattern_suffix_lengths:
     db 2                      ; leave; ret
     db 3                      ; syscall; ret
     db 0                      ; multi-pop length is derived from ordered metadata
+    db 4                      ; REX.W + mov r64,r64 + ret
 
 ; Indexed by PATTERN_* ID. Values are canonical register IDs for the single-pop
 ; family and 0xff for patterns that do not carry one ordered pop register.
@@ -46,7 +47,7 @@ pattern_single_pop_regs:
     db REG_RSP_BIT, REG_RBP_BIT, REG_RSI_BIT, REG_RDI_BIT
     db REG_R8_BIT, REG_R9_BIT, REG_R10_BIT, REG_R11_BIT
     db REG_R12_BIT, REG_R13_BIT, REG_R14_BIT, REG_R15_BIT
-    db 0xff, 0xff, 0xff
+    db 0xff, 0xff, 0xff, 0xff
 
 section .text
 global x64lens_candidate_evidence_from_exact
@@ -125,10 +126,12 @@ x64lens_candidate_evidence_from_exact:
     mov     eax, [r12 + GADGET_PATTERN_ID]
     test    eax, eax
     jz      .require_unknown_semantic
-    cmp     eax, PATTERN_MULTI_POP_RET
+    cmp     eax, PATTERN_MOV_REG_REG_RET
     ja      .bounds_error
     cmp     eax, PATTERN_MULTI_POP_RET
     je      .multi_pop_suffix_length
+    cmp     eax, PATTERN_MOV_REG_REG_RET
+    je      .register_transfer_suffix_length
 
     cmp     eax, PATTERN_POP_RAX_RET
     jb      .require_no_pop_metadata
@@ -163,6 +166,8 @@ x64lens_candidate_evidence_from_exact:
     cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
     jne     .bounds_error
     mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    test    edi, 0xffffff00
+    jne     .bounds_error
     mov     eax, edi
     and     eax, 0x0f
     shr     edi, 4
@@ -188,6 +193,30 @@ x64lens_candidate_evidence_from_exact:
     cmp     edi, REG_R8_BIT
     jb      .suffix_length_ready
     inc     ecx
+    jmp     .suffix_length_ready
+
+.register_transfer_suffix_length:
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    test    edi, 0xffffff00
+    jne     .bounds_error
+    mov     eax, edi
+    and     eax, 0x0f           ; destination
+    shr     edi, 4
+    and     edi, 0x0f           ; source
+    cmp     eax, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edi, REG_R15_BIT
+    ja      .bounds_error
+    cmp     eax, edi
+    je      .bounds_error
+    cmp     eax, REG_RSP_BIT
+    je      .bounds_error
+    cmp     edi, REG_RSP_BIT
+    je      .bounds_error
+    mov     ecx, 4
+    jmp     .suffix_length_ready
 
 .suffix_length_ready:
     mov     rdx, [r12 + GADGET_BYTE_LEN]

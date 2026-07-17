@@ -252,7 +252,7 @@ def validate_current_report(stdout: bytes, command: str) -> None:
                 "0.2.0",
                 "--expected-command",
                 command,
-                "--require-provenance", "--require-sprint10-effects",
+                "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",
                 str(report_path),
             ],
             stdout=subprocess.PIPE,

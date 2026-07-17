@@ -987,7 +987,7 @@ def validate_current_report(case: ValidCase, stdout: bytes, command: str) -> Non
                 "0.2.0",
                 "--expected-command",
                 command,
-                "--require-provenance", "--require-sprint10-effects",
+                "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",
                 str(report_path),
             ],
             stdout=subprocess.PIPE,

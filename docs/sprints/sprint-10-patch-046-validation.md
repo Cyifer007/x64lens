@@ -10,6 +10,11 @@ Patch 046 begins Sprint 10 with one bounded primitive family and one explicit
 record-model extension. It also reconciles public documentation with the
 validated Sprint 9 closeout state.
 
+Related documentation: the [Sprint 10 Plan](sprint-10-plan.md),
+[ADR 0032](../adr/0032-ordered-multi-pop-foundation.md), the
+[Primitive Effect Model](../design/primitive-effect-model.md), and the
+[canonical roadmap](../roadmap-18-sprints.md).
+
 The implementation adds ordered two-pop argument-control evidence, explicit
 clobber and side-effect output fields, a separate controlled fixture, and
 current-producer validation. It does not add a decoder, worker runtime, memory
@@ -17,9 +22,9 @@ primitive, register-transfer primitive, or score rule.
 
 ## Source boundary
 
-Patch 046 is generated from the accepted Patch 045 source commit. The complete
-public change is represented by one raw Git patch and introduces no dependency
-on external operational state.
+Patch 046 starts from the accepted Patch 045 source state. Acceptance covers the
+complete public tree and depends only on repository-visible source, fixtures,
+and reproducible validation.
 
 ## Required invariants
 
@@ -139,8 +144,8 @@ make docker-context-hygiene-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-When the default Buildx metadata directory is not writable, retain that failure
-and rerun the complete sequence with an isolated writable `BUILDX_CONFIG`.
+Docker acceptance requires the complete sequence in a qualified environment;
+an environment-only failure does not establish Patch acceptance.
 
 ## Failure expectations
 
@@ -157,3 +162,9 @@ Patch 046 is accepted only after the authoritative worktree passes the native,
 strict ShellCheck, focused Sprint 10, capacity, malformed-input, parity, and
 qualified Docker gates. A failure in the new family receives the smallest
 corrective patch before additional Sprint 10 primitive families are added.
+
+## Follow-on validation
+
+Patch 047 strengthens common single-pop relation checks and adds a separate
+register-transfer fixture. Patch 046 remains the historical ordered multi-pop
+foundation; current acceptance should also run the Patch 047 gates.

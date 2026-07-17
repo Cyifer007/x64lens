@@ -58,10 +58,16 @@ ALLOWED_EVIDENCE_VALIDATORS = {
     "x64lens-exact-suffix",
     "x64lens-decoder",
 }
-ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16"}
+ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write"}
 CURRENT_EFFECT_FIELDS = {"stack_pop_order", "clobbers", "side_effects"}
+CURRENT_TRANSFER_FIELDS = {"register_transfer"}
 MULTI_POP_PATTERN = "pop reg; pop reg; ret"
+REGISTER_TRANSFER_PATTERN = "mov reg, reg; ret"
 ARG_CONTROL_REGS = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"}
+X86_REG_BY_ENCODING = (
+    "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi",
+    "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
+)
 POP_ENCODING_BY_REG = {
     "rax": "58", "rbx": "5b", "rcx": "59", "rdx": "5a",
     "rsi": "5e", "rdi": "5f", "rbp": "5d", "rsp": "5c",
@@ -107,6 +113,7 @@ PATTERN_SUFFIX_LENGTHS = {
     "pop r15; ret": 3,
     "leave; ret": 2,
     "syscall; ret": 3,
+    REGISTER_TRANSFER_PATTERN: 4,
 }
 COVERAGE_CLASS_MAP = {
     "arg_control": "arg_control",
@@ -114,6 +121,7 @@ COVERAGE_CLASS_MAP = {
     "syscall_trigger": "syscall_trigger",
     "stack_pivot": "stack_pivot",
     "alignment": "alignment",
+    "reg_transfer": "reg_transfer",
 }
 REQUIRED_TOP = {
     "schema_version",
@@ -218,6 +226,30 @@ def require_pop_suffix_bytes(gadget: dict[str, Any], order: list[str], prefix: s
     require(observed.endswith(expected), f"{prefix}.stack_pop_order disagrees with exact suffix bytes")
 
 
+def decode_register_transfer_suffix(gadget: dict[str, Any], prefix: str) -> tuple[str, str]:
+    """Return (source, destination) from the exact REX.W mov r64,r64;ret suffix."""
+    observed = gadget["bytes"].lower()
+    require(len(observed) >= 8, f"{prefix}.register-transfer bytes are too short")
+    suffix = bytes.fromhex(observed[-8:])
+    rex, opcode, modrm, terminator = suffix
+    require(0x48 <= rex <= 0x4F, f"{prefix}.register-transfer suffix requires REX.W")
+    require(opcode in {0x89, 0x8B}, f"{prefix}.register-transfer opcode is unsupported")
+    require((modrm & 0xC0) == 0xC0, f"{prefix}.register-transfer must use ModRM.mod=3")
+    require(terminator == 0xC3, f"{prefix}.register-transfer must end in ret")
+
+    rm_id = (modrm & 0x07) + (8 if rex & 0x01 else 0)
+    reg_id = ((modrm >> 3) & 0x07) + (8 if rex & 0x04 else 0)
+    if opcode == 0x89:
+        destination_id, source_id = rm_id, reg_id
+    else:
+        destination_id, source_id = reg_id, rm_id
+    source = X86_REG_BY_ENCODING[source_id]
+    destination = X86_REG_BY_ENCODING[destination_id]
+    require(source != destination, f"{prefix}.register-transfer source and destination must differ")
+    require(source != "rsp" and destination != "rsp", f"{prefix}.register-transfer cannot involve rsp")
+    return source, destination
+
+
 def load_report(path: Path) -> dict[str, Any]:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -235,6 +267,7 @@ def validate_common(
     expected_command: str | None = None,
     require_provenance: bool = False,
     require_sprint10_effects: bool = False,
+    require_sprint10_transfer: bool = False,
 ) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
@@ -261,6 +294,7 @@ def validate_common(
         require(expected_command is None, "command identity requires schema 0.2.0")
         require(not require_provenance, "candidate provenance requires schema 0.2.0")
         require(not require_sprint10_effects, "Sprint 10 effect fields require schema 0.2.0")
+        require(not require_sprint10_transfer, "Sprint 10 register-transfer fields require schema 0.2.0")
 
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
@@ -393,6 +427,10 @@ def validate_common(
     require(isinstance(coverage, dict), "primitive_coverage must be an object")
     for key in ["arg_control", "syscall_num_control", "syscall_trigger", "stack_pivot", "alignment"]:
         require(isinstance(coverage.get(key), bool), f"primitive_coverage.{key} must be a boolean")
+    if require_sprint10_transfer:
+        require("reg_transfer" in coverage, "primitive_coverage.reg_transfer is required for the current producer")
+    if "reg_transfer" in coverage:
+        require(isinstance(coverage["reg_transfer"], bool), "primitive_coverage.reg_transfer must be a boolean")
     registers = coverage.get("registers")
     require(isinstance(registers, list), "primitive_coverage.registers must be an array")
     for reg in registers:
@@ -444,6 +482,12 @@ def validate_common(
                 not missing_effect_fields,
                 f"{prefix} missing current Sprint 10 effect fields: {sorted(missing_effect_fields)}",
             )
+        if require_sprint10_transfer:
+            missing_transfer_fields = CURRENT_TRANSFER_FIELDS - set(gadget)
+            require(
+                not missing_transfer_fields,
+                f"{prefix} missing current Sprint 10 register-transfer fields: {sorted(missing_transfer_fields)}",
+            )
 
         if "stack_pop_order" in gadget:
             order = gadget["stack_pop_order"]
@@ -454,14 +498,23 @@ def validate_common(
         else:
             order = None
 
+        transfer = gadget.get("register_transfer")
+        if transfer is not None:
+            require(isinstance(transfer, dict), f"{prefix}.register_transfer must be an object or null")
+            require(set(transfer) == {"source", "destination"}, f"{prefix}.register_transfer fields are invalid")
+            require(transfer["source"] in ALLOWED_REGS, f"{prefix}.register_transfer.source is invalid")
+            require(transfer["destination"] in ALLOWED_REGS, f"{prefix}.register_transfer.destination is invalid")
+        elif "register_transfer" in gadget:
+            require(transfer is None, f"{prefix}.register_transfer must be an object or null")
+
         if "clobbers" in gadget:
             clobbers = gadget["clobbers"]
             require(isinstance(clobbers, list), f"{prefix}.clobbers must be an array")
             for reg in clobbers:
                 require(isinstance(reg, str) and reg in ALLOWED_REGS, f"{prefix}.clobbers contains unknown register {reg}")
             require(len(clobbers) == len(set(clobbers)), f"{prefix}.clobbers must not contain duplicates")
-            if require_sprint10_effects:
-                require(clobbers == [], f"{prefix}.clobbers must remain empty until a supported rule populates clobber facts")
+        else:
+            clobbers = None
 
         if "side_effects" in gadget:
             side_effects = gadget["side_effects"]
@@ -609,6 +662,44 @@ def validate_common(
         else:
             require(gadget["stack_delta"] is None, f"{prefix}.stack_delta must be null when stack_delta_known is false")
 
+        single_pop_reg = SINGLE_POP_REG_BY_PATTERN.get(gadget["pattern"])
+        if single_pop_reg is not None:
+            if single_pop_reg in ARG_CONTROL_REGS:
+                require(gadget["semantic_class"] == "arg_control", f"{prefix}.single-pop semantic class mismatch")
+                require(gadget["controls"] == [single_pop_reg], f"{prefix}.single-pop controls disagree with pattern")
+                require(known is True and gadget["stack_delta"] == 16, f"{prefix}.single-pop stack delta mismatch")
+                require(gadget["score"] == 90, f"{prefix}.single-pop score mismatch")
+            elif single_pop_reg == "rax":
+                require(gadget["semantic_class"] == "syscall_num_control", f"{prefix}.pop rax semantic class mismatch")
+                require(gadget["controls"] == ["rax"], f"{prefix}.pop rax controls mismatch")
+                require(known is True and gadget["stack_delta"] == 16, f"{prefix}.pop rax stack delta mismatch")
+                require(gadget["score"] == 85, f"{prefix}.pop rax score mismatch")
+            elif single_pop_reg == "rsp":
+                require(gadget["semantic_class"] == "stack_pivot", f"{prefix}.pop rsp semantic class mismatch")
+                require(gadget["controls"] == ["rsp"], f"{prefix}.pop rsp controls mismatch")
+                require(known is False and gadget["stack_delta"] is None, f"{prefix}.pop rsp stack uncertainty mismatch")
+                require(gadget["score"] == 70, f"{prefix}.pop rsp score mismatch")
+            else:
+                require(gadget["semantic_class"] == "unknown_candidate", f"{prefix}.unsupported single-pop must remain unknown")
+                require(gadget["controls"] == [], f"{prefix}.unsupported single-pop controls must be empty")
+                require(known is False and gadget["stack_delta"] is None, f"{prefix}.unsupported single-pop stack state must remain unknown")
+                require(gadget["score"] is None, f"{prefix}.unsupported single-pop must remain unscored")
+
+        if gadget["pattern"] == REGISTER_TRANSFER_PATTERN:
+            source, destination = decode_register_transfer_suffix(gadget, prefix)
+            require(transfer == {"source": source, "destination": destination}, f"{prefix}.register_transfer disagrees with exact suffix bytes")
+            require(gadget["semantic_class"] == "reg_transfer", f"{prefix}.register-transfer semantic class mismatch")
+            require(gadget["controls"] == [], f"{prefix}.register-transfer must not assert independent control")
+            require(clobbers == [destination], f"{prefix}.register-transfer clobber must equal destination")
+            require(known is True and gadget["stack_delta"] == 8, f"{prefix}.register-transfer stack delta must be 8")
+            require(gadget["score"] is None, f"{prefix}.register-transfer remains unscored")
+            require(order == [], f"{prefix}.register-transfer must not populate stack_pop_order")
+        else:
+            if "register_transfer" in gadget:
+                require(transfer is None, f"{prefix}.non-transfer pattern must use register_transfer null")
+            if require_sprint10_effects:
+                require(clobbers == [], f"{prefix}.non-transfer clobbers must remain empty")
+
         if gadget["pattern"] == MULTI_POP_PATTERN:
             require(gadget["semantic_class"] == "arg_control", f"{prefix}.multi-pop semantic class must be arg_control")
             require(set(gadget["controls"]) == set(gadget.get("stack_pop_order", [])), f"{prefix}.multi-pop controls must cover the ordered pop registers")
@@ -625,6 +716,8 @@ def validate_common(
                 expected_effects.add("syscall")
             if gadget["terminator"] == "ret imm16":
                 expected_effects.add("ret_imm16")
+            if gadget["semantic_class"] == "reg_transfer":
+                expected_effects.add("register_write")
             require(set(side_effects) == expected_effects, f"{prefix}.side_effects disagrees with represented semantic effects")
 
         score = gadget["score"]
@@ -651,6 +744,8 @@ def validate_common(
         "primitive_coverage.registers must equal the union of gadget controls",
     )
     for coverage_key, semantic_class in COVERAGE_CLASS_MAP.items():
+        if coverage_key not in coverage:
+            continue
         expected = semantic_class in semantic_classes_seen
         require(
             coverage[coverage_key] is expected,
@@ -809,10 +904,59 @@ def validate_sprint10_fixture(doc: dict[str, Any]) -> None:
     require(analysis["complete"] is True and analysis["candidate_count"] == 5, "Sprint 10 fixture analysis summary mismatch")
 
 
+def validate_sprint10_transfer_fixture(doc: dict[str, Any]) -> None:
+    counts = doc["counts"]
+    expected_counts = {
+        "raw_candidate_count": 10,
+        "ret_count": 10,
+        "ret_imm16_count": 0,
+        "exact_pattern_count": 10,
+        "semantic_candidate_count": 10,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 6,
+    }
+    for key, value in expected_counts.items():
+        require(counts[key] == value, f"Sprint 10 transfer fixture {key} expected {value}, got {counts[key]}")
+
+    gadgets = doc["gadgets"]
+    transfers = [g for g in gadgets if g["pattern"] == REGISTER_TRANSFER_PATTERN]
+    require(len(transfers) == 4, f"Sprint 10 transfer fixture expected 4 transfers, got {len(transfers)}")
+    expected = [
+        {"source": "rax", "destination": "rdi"},
+        {"source": "r9", "destination": "r8"},
+        {"source": "rdx", "destination": "r13"},
+        {"source": "r14", "destination": "rbx"},
+    ]
+    require([g["register_transfer"] for g in transfers] == expected, "Sprint 10 transfer relation order mismatch")
+    for gadget in transfers:
+        destination = gadget["register_transfer"]["destination"]
+        require(gadget["semantic_class"] == "reg_transfer", "Sprint 10 transfer semantic mismatch")
+        require(gadget["controls"] == [], "Sprint 10 transfer controls must be empty")
+        require(gadget["clobbers"] == [destination], "Sprint 10 transfer clobber mismatch")
+        require(gadget["stack_pop_order"] == [], "Sprint 10 transfer pop order must be empty")
+        require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 transfer stack delta mismatch")
+        require(gadget["side_effects"] == ["register_write"], "Sprint 10 transfer side effects mismatch")
+        require(gadget["score"] is None, "Sprint 10 transfer candidates must remain unscored")
+
+    fallback = [g for g in gadgets if g["pattern"] == "ret"]
+    require(len(fallback) == 6, f"Sprint 10 transfer fixture expected 6 conservative ret fallbacks, got {len(fallback)}")
+    for gadget in fallback:
+        require(gadget["register_transfer"] is None, "Sprint 10 fallback transfer relation must be null")
+        require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
+        require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
+
+    coverage = doc["primitive_coverage"]
+    require(coverage["reg_transfer"] is True, "Sprint 10 transfer fixture must expose reg_transfer coverage")
+    require(coverage["arg_control"] is False, "Sprint 10 transfer fixture must not assert argument control")
+    require(coverage["registers"] == [], "Sprint 10 transfer fixture controlled-register coverage must be empty")
+    analysis = doc["analysis"]
+    require(analysis["complete"] is True and analysis["candidate_count"] == 10, "Sprint 10 transfer fixture analysis summary mismatch")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
-    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "system"], default="generic")
+    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     parser.add_argument(
@@ -825,6 +969,11 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="require current ordered-pop, clobber, and side-effect fields",
     )
+    parser.add_argument(
+        "--require-sprint10-transfer",
+        action="store_true",
+        help="require current register-transfer relation and coverage fields",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -835,11 +984,14 @@ def main(argv: list[str]) -> int:
             expected_command=args.expected_command,
             require_provenance=args.require_provenance,
             require_sprint10_effects=args.require_sprint10_effects,
+            require_sprint10_transfer=args.require_sprint10_transfer,
         )
         if args.mode == "fixture":
             validate_fixture(doc)
         elif args.mode == "sprint10-fixture":
             validate_sprint10_fixture(doc)
+        elif args.mode == "sprint10-transfer-fixture":
+            validate_sprint10_transfer_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1

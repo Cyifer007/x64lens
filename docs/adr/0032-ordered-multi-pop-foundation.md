@@ -4,6 +4,12 @@
 
 Accepted for Sprint 10 Patch 046.
 
+Related documentation: the
+[Primitive Effect Model](../design/primitive-effect-model.md), the
+[Sprint 10 Plan](../sprints/sprint-10-plan.md), the
+[Patch 046 Validation Plan](../sprints/sprint-10-patch-046-validation.md), and
+the [canonical roadmap](../roadmap-18-sprints.md).
+
 ## Context
 
 Sprint 10 expands primitive coverage after Sprint 9 established report identity,
@@ -104,3 +110,9 @@ remains an optional, separately measured future profile.
 
 Rejected because a larger controlled-register set does not by itself define a
 sound utility score. Scoring remains a downstream, evidence-backed policy.
+
+## Follow-on
+
+Patch 047 preserves this ordered-pop model, adds complete common-validator
+coverage for all single-pop metadata entries, and introduces the separate exact
+register-transfer relation documented in ADR 0033.

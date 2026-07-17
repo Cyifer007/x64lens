@@ -1159,3 +1159,26 @@ The validation also requires exact stack-pop order, empty clobber sets, explicit
 side effects, 24-byte multi-pop stack deltas, unknown full-sequence validity,
 and `null` multi-pop scores. The historical 11-candidate fixture remains
 unchanged.
+
+## Sprint 10 Patch 047 register-transfer validation
+
+Run:
+
+```bash
+make sprint10-register-transfer-smoke
+make json-effect-consistency-smoke
+make schema-compat-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+```
+
+The controlled fixture must report ten candidates: four exact register
+transfers and six conservative `ret` fallbacks. Transfer candidates report
+explicit source/destination, an empty independent-control set, destination
+clobber, `register_write`, known stack delta eight, null score, and unknown full
+sequence validity.
+
+The validator-only relation smoke covers all 16 single-pop patterns plus mixed
+legacy/REX multi-pop order. It must reject per-candidate contradictions even
+when aggregate register coverage still appears valid.
+
+See [`sprints/sprint-10-patch-047-validation.md`](sprints/sprint-10-patch-047-validation.md).

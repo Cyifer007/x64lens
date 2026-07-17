@@ -24,6 +24,11 @@
       "purpose": "controlled ordered two-pop and conservative fallback fixture for Sprint 10 semantic expansion"
     },
     {
+      "path": "tests/toy-src/gadgets_sprint10_transfer.S",
+      "type": "source",
+      "purpose": "controlled exact register-transfer and conservative fallback fixture for Sprint 10 semantic expansion"
+    },
+    {
       "path": "tests/toy-src/gadgets_capacity_exact.S",
       "type": "source",
       "purpose": "controlled 4096-ret fixture that verifies the final valid candidate slot remains usable"
@@ -57,6 +62,11 @@
       "path": "tests/bin/gadgets_sprint10",
       "type": "generated",
       "purpose": "generated Sprint 10 ordered multi-pop semantic fixture"
+    },
+    {
+      "path": "tests/bin/gadgets_sprint10_transfer",
+      "type": "generated",
+      "purpose": "generated Sprint 10 register-transfer semantic fixture"
     },
     {
       "path": "tests/bin/gadgets_capacity_exact",

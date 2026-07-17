@@ -281,7 +281,7 @@ echo "[test] gadget JSON output"
 GADGETS_JSON="$TMPDIR/x64lens-gadgets.json"
 "$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_JSON"
 python3 -m json.tool "$GADGETS_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects "$GADGETS_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer "$GADGETS_JSON" >/dev/null
 python3 - "$GADGETS_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
@@ -296,7 +296,7 @@ assert sections == {".text"}, sections
 PY
 
 "$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
 
 
 echo "[test] analyze integrated text output"
@@ -328,7 +328,7 @@ echo "[test] analyze JSON output"
 ANALYZE_JSON="$TMPDIR/x64lens-analyze.json"
 "$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_JSON"
 python3 -m json.tool "$ANALYZE_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects "$ANALYZE_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer "$ANALYZE_JSON" >/dev/null
 python3 - "$ANALYZE_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
@@ -343,7 +343,7 @@ assert sections == {".text"}, sections
 PY
 
 "$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
 python3 "$ROOT/tools/validate-report-parity.py" "$GADGETS_JSON" "$ANALYZE_JSON" >/dev/null
 
 echo "[test] candidate capacity rejection"

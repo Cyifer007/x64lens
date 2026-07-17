@@ -2,7 +2,13 @@
 
 ## Status
 
-Active. Patch 046 establishes the ordered multi-pop and effect-fact foundation.
+Active. Patch 046 establishes ordered multi-pop effects; Patch 047 adds exact register-transfer effects and closes the common single-pop validation gap.
+
+Related documentation: [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md),
+[ADR 0033](../adr/0033-exact-register-transfer-effects.md), the
+[Primitive Effect Model](../design/primitive-effect-model.md), the
+[Patch 047 Validation Plan](sprint-10-patch-047-validation.md), and the
+[canonical roadmap](../roadmap-18-sprints.md).
 
 ## Sprint goal
 
@@ -12,15 +18,17 @@ validity, side effects, score meaning, or the defensive deployment profile.
 ## Planned deliverables
 
 - [x] Add the first selected multi-pop family with ordered controlled-register facts. Patch 046 recognizes two distinct System V argument-register pops before `ret`.
-- [ ] Add conservative register-transfer patterns where source and destination
-  are unambiguous.
+- [x] Add the first conservative register-transfer family with unambiguous
+  source and destination roles. Patch 047 recognizes distinct non-`rsp`
+  register-direct 64-bit moves before `ret`.
 - [ ] Add narrowly scoped memory-read and memory-write patterns only when
   operand semantics are justified.
 - [ ] Complete controlled and clobbered register modeling. Patch 046 preserves
-  controlled sets and exposes an empty clobber set; later families must
-  populate justified clobbers.
+  ordered controls; Patch 047 populates the overwritten transfer destination
+  as a clobber. Memory-family clobbers remain open.
 - [ ] Complete side-effect modeling. Patch 046 exposes stack-read, pivot,
-  syscall, and `ret imm16` facts; memory dereference facts remain open.
+  syscall, and `ret imm16` facts; Patch 047 adds `register_write`; memory
+  dereference facts remain open.
 - [x] Add known/unknown stack-delta representation for the first expanded
   family.
 - [x] Add a separate controlled source fixture and expected disassembly for the
@@ -29,7 +37,7 @@ validity, side effects, score meaning, or the defensive deployment profile.
   Patch 046 documents conservative fallback; later families remain open.
 - [ ] Add score entries only after semantic and side-effect facts are validated.
   Multi-pop remains deliberately unscored in Patch 046.
-- [ ] Preserve candidate-index provenance and schema `0.2.x` compatibility.
+- [x] Preserve candidate-index provenance and schema `0.2.x` compatibility for the Patch 046 and Patch 047 additions.
 
 ## Patch 046 entry boundary
 
@@ -52,8 +60,8 @@ transfers, decoder validation, parallel execution, or a new score rule.
 ## Recommended patch sequence
 
 1. Patch 046: ordered two-pop foundation and effect-field contract.
-2. Add conservative register-transfer patterns with explicit source,
-   destination, controlled, and clobbered facts.
+2. Patch 047: add the first exact register-transfer family and harden all
+   single-pop effect relations.
 3. Add narrowly justified memory-read/write families and dereference facts.
 4. Review scoring only after each semantic family and its effects pass fixtures.
 5. Close Sprint 10 with corpus-facing fixture coverage and Sprint 11 handoff.
@@ -99,3 +107,15 @@ core profile.
 Sprint 11 builds a reproducible compiler and hardening corpus that exercises the
 expanded semantic and mitigation model. Sprints 12 and 13 measure optional
 candidate-validation and worker profiles.
+
+## Patch 047 boundary
+
+Patch 047 recognizes exact `mov r64,r64; ret` register-direct suffixes with
+explicit source, destination, destination-clobber, `register_write`, and known
+return stack-delta facts. The family remains unscored. It excludes self moves,
+`rsp`, memory operands, and 32-bit forms and preserves their strongest existing
+fallback.
+
+The patch also adds common-validator regression coverage for all 16 single-pop
+patterns and mixed legacy/REX multi-pop order so per-candidate contradictions
+cannot hide behind aggregate coverage.

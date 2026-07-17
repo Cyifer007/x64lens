@@ -106,6 +106,7 @@ field_cov_sysnum:       db '    "syscall_num_control":', 0
 field_cov_systrig:      db '    "syscall_trigger":', 0
 field_cov_pivot:        db '    "stack_pivot":', 0
 field_cov_align:        db '    "alignment":', 0
+field_cov_reg_transfer: db '    "reg_transfer":', 0
 field_cov_registers:    db '    "registers":', 0
 field_gadgets_open:     db '  "gadgets":[', 10, 0
 field_limitations:      db '  "limitations":["Pattern-based scanner, not full x86_64 decoder","Pattern labels describe recognized suffixes, not necessarily complete decoded instruction windows","Analysis completeness covers bounded candidate enumeration, not decoder validation","Exploitability requires an independent vulnerability and runtime context"]', 10, 0
@@ -119,6 +120,9 @@ f_pattern:              db '      "pattern":"', 0
 f_semantic:             db '      "semantic_class":"', 0
 f_controls:             db '      "controls":', 0
 f_stack_pop_order:      db '      "stack_pop_order":', 0
+f_register_transfer:    db '      "register_transfer":', 0
+f_transfer_source:      db '"source":"', 0
+f_transfer_destination: db ',"destination":"', 0
 f_clobbers:             db '      "clobbers":', 0
 f_side_effects:         db '      "side_effects":', 0
 f_stack_delta:          db '      "stack_delta":', 0
@@ -174,6 +178,7 @@ pattern_pop_r15_s:      db "pop r15; ret", 0
 pattern_leave_s:        db "leave; ret", 0
 pattern_syscall_s:      db "syscall; ret", 0
 pattern_multi_pop_s:    db "pop reg; pop reg; ret", 0
+pattern_mov_reg_reg_s:  db "mov reg, reg; ret", 0
 semantic_unknown_s:     db "unknown_candidate", 0
 semantic_arg_s:         db "arg_control", 0
 semantic_sysnum_s:      db "syscall_num_control", 0
@@ -204,6 +209,7 @@ side_effect_stack_read_s:  db "stack_read", 0
 side_effect_stack_pivot_s: db "stack_pivot", 0
 side_effect_syscall_s:     db "syscall", 0
 side_effect_ret_imm16_s:   db "ret_imm16", 0
+side_effect_register_write_s: db "register_write", 0
 
 section .bss
 json_path_ptr:          resq 1
@@ -721,6 +727,12 @@ json_print_coverage:
     call    json_print_bool_nonzero
     JSON_FIELD_COMMA_NL
 
+    lea     rdi, [field_cov_reg_transfer]
+    call    print_cstr
+    mov     rdi, [rbx + GADGET_SUMMARY_REG_TRANSFER_COUNT]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
     lea     rdi, [field_cov_registers]
     call    print_cstr
     mov     rdi, [rbx + GADGET_SUMMARY_REGS_CONTROLLED]
@@ -867,6 +879,12 @@ json_print_one_gadget:
     call    print_cstr
     mov     rdi, [json_current_record]
     call    json_print_pattern_reg_order
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_register_transfer]
+    call    print_cstr
+    mov     rdi, [json_current_record]
+    call    json_print_register_transfer
     JSON_FIELD_COMMA_NL
 
     lea     rdi, [f_clobbers]
@@ -1355,12 +1373,21 @@ json_print_pattern_reg_order:
     push    r15
     sub     rsp, 8
 
-    mov     r12d, [rdi + GADGET_PATTERN_REG_COUNT]
-    mov     r13d, [rdi + GADGET_PATTERN_REG_ORDER]
+    mov     r12, rdi
     xor     r14d, r14d
     xor     r15d, r15d
     lea     rdi, [j_array_open]
     call    print_cstr
+    mov     eax, [r12 + GADGET_PATTERN_ID]
+    cmp     eax, PATTERN_MULTI_POP_RET
+    je      .pattern_order_load
+    cmp     eax, PATTERN_POP_RAX_RET
+    jb      .pattern_order_close
+    cmp     eax, PATTERN_POP_R15_RET
+    ja      .pattern_order_close
+.pattern_order_load:
+    mov     r13d, [r12 + GADGET_PATTERN_REG_ORDER]
+    mov     r12d, [r12 + GADGET_PATTERN_REG_COUNT]
     test    r12d, r12d
     jz      .pattern_order_close
     cmp     r12d, PATTERN_REG_ORDER_MAX
@@ -1396,6 +1423,43 @@ json_print_pattern_reg_order:
     pop     r12
     ret
 
+; json_print_register_transfer(rdi=gadget_record)
+; Emits null for non-transfer candidates or a source/destination object for the
+; exact register-direct transfer family.
+json_print_register_transfer:
+    push    r12
+    mov     r12, rdi
+    cmp     dword [r12 + GADGET_PATTERN_ID], PATTERN_MOV_REG_REG_RET
+    jne     .register_transfer_null
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .register_transfer_null
+    lea     rdi, [j_object_open]
+    call    print_cstr
+    lea     rdi, [f_transfer_source]
+    call    print_cstr
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    shr     edi, 4
+    and     edi, 0x0f
+    call    json_print_reg_id
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [f_transfer_destination]
+    call    print_cstr
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    and     edi, 0x0f
+    call    json_print_reg_id
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [j_object_close]
+    call    print_cstr
+    jmp     .register_transfer_done
+.register_transfer_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.register_transfer_done:
+    pop     r12
+    ret
+
 ; json_print_side_effects_array(rdi=side-effect bitmap)
 json_print_side_effects_array:
     push    rbx
@@ -1409,6 +1473,7 @@ json_print_side_effects_array:
     JSON_EFFECT_IF_SET SIDE_EFFECT_STACK_PIVOT, side_effect_stack_pivot_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write_s
     lea     rdi, [j_array_close]
     call    print_cstr
     add     rsp, 8
@@ -1473,6 +1538,8 @@ json_print_pattern:
     je      .syscall
     cmp     edi, PATTERN_MULTI_POP_RET
     je      .multi_pop
+    cmp     edi, PATTERN_MOV_REG_REG_RET
+    je      .mov_reg_reg
     lea     rdi, [pattern_unknown_s]
     jmp     print_cstr
 .ret:      lea rdi, [pattern_ret_s]       ; fall through via jmp below
@@ -1516,6 +1583,8 @@ json_print_pattern:
 .syscall:  lea rdi, [pattern_syscall_s]
            jmp print_cstr
 .multi_pop: lea rdi, [pattern_multi_pop_s]
+           jmp print_cstr
+.mov_reg_reg: lea rdi, [pattern_mov_reg_reg_s]
            jmp print_cstr
 
 json_print_semantic:

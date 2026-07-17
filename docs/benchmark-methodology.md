@@ -61,12 +61,13 @@ Every benchmark run should record:
 - max RSS,
 - input file size,
 - throughput MiB/s,
-- gadget count,
-- unique gadget count,
-- semantic primitive count,
-- scored candidate count,
-- unknown candidate count,
-- exact pattern count,
+- x64lens `raw_candidate_count`,
+- each baseline's tool-reported and deduplicated candidate counts, labeled with
+  the tool-specific definition until reconciled,
+- x64lens `semantic_candidate_count`,
+- x64lens `scored_candidate_count`,
+- x64lens `unknown_candidate_count`,
+- x64lens `exact_pattern_count`,
 - output size,
 - exit code,
 - error count.
@@ -507,8 +508,10 @@ region/chunk scanning with N workers, if implemented
 ```
 
 Rows must preserve profile identity, worker count, decoder identity/version,
-binary size, wall/user/system time, peak RSS, output size, raw/exact/semantic/
-decoder counts, and deterministic-output hash. Forced multithreading is not a
+binary size, wall/user/system time, peak RSS, output size, applicable
+raw-candidate, exact-suffix, semantic-exact, decoder-validated,
+semantic-decoded, unknown-candidate, and scored counts, and the
+deterministic-output hash. Forced multithreading is not a
 valid optimization conclusion: small targets may regress because worker
 creation, stacks, arenas, overlap, and merge dominate useful work. Sprint 12
 provides high-resolution measurement and Sprint 13 provides the fixed-corpus
@@ -526,7 +529,7 @@ candidate-decode-Nw  optional bounded candidate-validation workers
 region-Nw            optional deterministic executable-region workers
 ```
 
-Each row must record profile identity, worker count, decoder identity and version when present, binary hash, dependencies, target hash, wall time, child CPU, max RSS, output bytes, and the precise raw/exact/semantic/validated count definitions. A faster wall-clock result with materially higher aggregate CPU or RSS must not be reported as an unqualified improvement.
+Each row must record profile identity, worker count, decoder identity and version when present, binary hash, dependencies, target hash, wall time, child CPU, max RSS, output bytes, and the applicable raw-candidate, exact-suffix, semantic-exact, decoder-validated, semantic-decoded, unknown-candidate, and scored count definitions. A faster wall-clock result with materially higher aggregate CPU or RSS must not be reported as an unqualified improvement.
 
 ## Sprint 10 semantic-expansion comparison rule
 

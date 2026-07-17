@@ -75,19 +75,27 @@ no-silent-truncation rule.
 
 ## Metric interaction
 
-Provenance adds new metrics without redefining existing ones:
+Provenance preserves current metrics and reserves decoder-backed metrics as
+additive layers. Current schema `0.2.0` reports use:
 
 ```text
 raw_candidate_count
 exact_pattern_count
 semantic_candidate_count
-decoder_validated_count
-semantic_decoded_count
 unknown_candidate_count
 scored_candidate_count
 ```
 
-The existing counts remain valid historical measures. Decoder-backed counts are additional layers.
+A future optional decoder profile may add:
+
+```text
+semantic_exact_count
+decoder_validated_count
+semantic_decoded_count
+```
+
+Future decoder-backed counts must not redefine or be merged with current
+populations.
 
 ## Classifier interaction
 
@@ -214,4 +222,21 @@ recognition layer, while `controls`, `clobbers`, stack delta, and
 
 For multi-pop candidates, the external validator checks that ordered metadata,
 exact suffix bytes, evidence length, controlled-register set, and semantic facts
-agree. The candidate remains `semantic_exact`, not decoder validated.
+agree. The candidate remains `semantic_exact`, not decoder-validated.
+
+## Sprint 10 Patch 047 relation evidence
+
+Register-transfer candidates remain `semantic_exact`: the exact suffix matcher
+records source and destination roles, the classifier records the destination
+write, and the evidence side-car records the four-byte matched suffix. The
+relation does not change `full_sequence_valid`, which remains `null` without a
+decoder.
+
+`register_transfer`, `controls`, and `clobbers` answer different questions:
+
+- `register_transfer` records the exact source/destination relation;
+- `controls` records registers independently justified as controlled;
+- `clobbers` records registers overwritten by the represented primitive.
+
+For Patch 047 transfers, `controls` is empty and `clobbers` contains the
+destination.

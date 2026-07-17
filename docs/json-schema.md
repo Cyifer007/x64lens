@@ -285,3 +285,24 @@ controls, stack delta, evidence range, and score.
 The first generic multi-pop family uses pattern text
 `pop reg; pop reg; ret`, stores the exact registers in `stack_pop_order`, has a
 known stack delta of 24, and remains unscored.
+
+## Sprint 10 Patch 047 register-transfer fields
+
+Current producer candidates include:
+
+```json
+"register_transfer": {
+  "source": "rax",
+  "destination": "rdi"
+}
+```
+
+Non-transfer candidates use `null`. Transfer candidates use semantic class
+`reg_transfer`, empty `controls`, destination-only `clobbers`,
+`side_effects:["register_write"]`, a known stack delta of eight, and `score:null`.
+The formal schema keeps the field optional for earlier schema `0.2.0` reports;
+current-producer validation requires it through `--require-sprint10-transfer`.
+
+The common validator also enforces every single-pop pattern/order/control
+relationship. Aggregate register coverage is not accepted as a substitute for
+per-candidate consistency.

@@ -54,8 +54,8 @@ candidate index.
 ## Metric and schema review
 
 Schema `0.2.0` is the current producer contract. It adds identity, bounded
-completion, and candidate evidence without redefining historical raw, exact,
-semantic, unknown, or scored counts.
+completion, and candidate evidence without redefining historical raw-candidate,
+exact-pattern, semantic-candidate, unknown-candidate, or scored-candidate counts.
 
 `complete: true` means every loader-authoritative executable region was scanned
 within the configured capacity. It does not mean every candidate was decoded or
@@ -72,7 +72,8 @@ canonical sequences outside the current exact catalog. It did not justify a
 mandatory whole-image decoder.
 
 The preferred future path is candidate-scoped validation after the bounded
-terminator scan and exact/semantic-exact stages. Decoder evidence must be
+terminator scan, exact-suffix recognition, and semantic-exact classification
+stages. Decoder evidence must be
 additive, independently measurable, and optional in the default deployment
 profile.
 

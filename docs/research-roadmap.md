@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 046 ordered multi-pop foundation. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Sprint 10 is the next implementation tranche. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 047 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 and 047 establish ordered multi-pop and exact register-transfer foundations. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,7 +20,7 @@ Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 046 orde
 - benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
-The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patch 045 is later pre-release work, not a research release or evidence of universal performance superiority.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 and 047 are later pre-release work, not a research release or evidence of universal performance superiority.
 
 ## Sprint 7 evidence checkpoint
 
@@ -240,12 +240,20 @@ loader-authoritative executable regions
   -> optional semantic-decoded classification
 ```
 
-This preserves independent scanner timing and RSS while allowing a later fixed-corpus campaign to measure how decoding retained candidate windows qualifies candidate starts and changes decoder-validated or semantic-decoded coverage without materially increasing memory, startup cost, or deployment friction. Deterministic target-level or candidate-validation parallelism is measured separately; the one-worker core remains the reference profile.
+This preserves independent scanner timing and RSS while allowing a later fixed-corpus campaign to measure how decoding retained candidate windows qualifies candidate starts and changes decoder-validated or semantic-decoded coverage, memory, startup cost, and deployment friction as separate outcomes. Deterministic target-level or candidate-validation parallelism is measured separately; the one-worker core remains the reference profile.
 
 ## Sprint 10 entry status
 
 Patch 046 demonstrates the first evidence-aware semantic expansion after the
-Sprint 9 provenance gate. It adds ordered exact facts and explicit semantic
-effects without increasing the fixed arena or adding a runtime dependency.
-Register-transfer and memory families remain open and must follow the same
+Sprint 9 provenance gate. Patch 047 adds the first exact register-transfer
+family and strengthens common effect validation without increasing the fixed
+arena or adding a runtime dependency. Memory families remain open and must
+follow the same
 fixture, provenance, and scoring boundaries.
+
+## Sprint 10 Patch 047 checkpoint
+
+Patch 047 adds a bounded semantic-exact register-transfer family without changing
+the 112-byte candidate record, 4,096-candidate capacity, or dependency-free
+runtime profile. The family records operand roles and destination clobber facts
+but remains unscored. Memory primitives remain the next evidence-model challenge.

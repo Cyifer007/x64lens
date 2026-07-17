@@ -233,7 +233,7 @@ rows from the dependency-free core.
 
 Implemented `0.2.0` facts now include candidate capacity, candidate count, truncation state, dropped-count knowledge, region progress, and complete-analysis state. Successful reports are complete and untruncated; current overflow still fails before output because the scanner does not continue far enough to compute a truthful dropped count.
 
-Decoder-valid and semantic-decoded counts remain future additive metrics. Candidate-scoped decoder and parallel experiments must report their own profile identity, timing, CPU, RSS, and output counts rather than merging them with the dependency-free one-worker profile.
+Decoder-validated and semantic-decoded counts remain future additive metrics. Candidate-scoped decoder and parallel experiments must report their own profile identity, timing, CPU, RSS, and output counts rather than merging them with the dependency-free one-worker profile.
 
 ## Sprint 10 effect facts
 
@@ -253,3 +253,15 @@ unknown, decoder-backed, or scored metrics.
 The first multi-pop family increases semantic coverage but remains unscored, so
 `semantic_candidate_count` may increase without the same increase in
 `scored_candidate_count`.
+
+## Sprint 10 effect-relation boundary
+
+`reg_transfer` coverage is a binary-level presence fact for the implemented
+semantic class. It is not a controlled-register count and it does not increase
+`primitive_coverage.registers`, because the exact move alone does not establish
+external control of the source value.
+
+Patch 047 does not add an aggregate transfer count to the public `counts`
+object. Per-candidate relations plus `primitive_coverage.reg_transfer` are
+compatible schema additions. Raw, exact, semantic, unknown, and scored counts
+retain their established meanings.

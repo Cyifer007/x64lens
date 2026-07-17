@@ -15,7 +15,7 @@ The taxonomy defines when a byte-level candidate can be promoted into an exploit
 | `alignment` | Return or stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret` and `ret imm16`. |
 | `memory_write` | Writes data to memory with known operand roles. | Planned. |
 | `memory_read` | Reads memory into a register with known operand roles. | Planned. |
-| `reg_transfer` | Moves or exchanges values between known registers. | Planned. |
+| `reg_transfer` | Transfers a value between known registers with explicit source and destination roles. | Implemented for the Patch 047 exact register-direct 64-bit move family. |
 | `clobber_heavy` | Potentially useful sequence with substantial side effects. | Planned as a qualifier or class after side-effect modeling. |
 | `unknown_candidate` | Candidate without a justified semantic mapping. | Implemented and deliberately preserved. |
 
@@ -28,7 +28,8 @@ The matcher recognizes:
 - `pop rax` through `pop r15` followed by `ret`,
 - `leave; ret`,
 - `syscall; ret`,
-- `pop <arg-register>; pop <arg-register>; ret` for two distinct supported System V argument registers.
+- `pop <arg-register>; pop <arg-register>; ret` for two distinct supported System V argument registers,
+- exact register-direct `mov r64,r64; ret` suffixes under the Patch 047 restrictions.
 
 Only the currently documented subset receives semantic promotion. For example, `pop rbx; ret`, `pop rbp; ret`, and several extended-register patterns remain exact observations but may remain `unknown_candidate` until their semantic role and score policy are defined.
 
@@ -94,7 +95,7 @@ Every new family requires:
 Planned bounded families:
 
 - selected multi-pop sequences,
-- unambiguous register transfers,
+- additional unambiguous register transfers beyond the Patch 047 foundation,
 - narrowly defined memory read/write templates.
 
 JOP, COP, SROP, symbolic equivalence, and broad instruction-sequence reasoning remain outside the pre-`v0.1.0` core unless the research scope changes.
@@ -139,7 +140,30 @@ clobbers: none represented
 score: unscored
 ```
 
-Duplicate pairs and unsupported leading pops are not promoted as the generic
-family. The strongest existing single-pop suffix immediately before `ret`
+Duplicate pairs and pairs with either pop outside the supported argument-
+register set are not promoted as the generic family. The strongest existing
+single-pop suffix immediately before `ret`
 remains available. This fallback is deliberate underclassification rather than
 an attempt to describe unsupported preceding instructions.
+
+## Sprint 10 Patch 047 register-transfer rule
+
+The exact family is promoted only for distinct, non-`rsp`, register-direct
+64-bit moves using opcode `89 /r` or `8b /r` under `REX.W`, immediately followed
+by `ret`.
+
+Reported facts:
+
+```text
+semantic class: reg_transfer
+source/destination: exact operand roles
+controlled registers: none independently asserted
+clobbered registers: destination
+stack delta: 8 bytes
+side effects: register_write
+score: unscored
+```
+
+Memory forms, 32-bit moves, self moves, and `rsp` participation are not promoted.
+This is conservative semantic-exact evidence, not decoder validation of an
+arbitrary backward window.

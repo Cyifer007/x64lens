@@ -49,7 +49,6 @@
     "syscall_trigger": false,
     "stack_pivot": false,
     "alignment": true,
-    "reg_transfer": false,
     "registers": []
   },
   "gadgets": [
@@ -63,7 +62,6 @@
       "semantic_class": "alignment",
       "controls": [],
       "stack_pop_order": [],
-      "register_transfer": null,
       "clobbers": [],
       "side_effects": [],
       "stack_delta": 8,

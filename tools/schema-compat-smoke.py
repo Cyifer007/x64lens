@@ -33,8 +33,10 @@ LEGACY_SCHEMA_PATH = ROOT / "schemas" / "x64lens-report-0.1.0.schema.json"
 CURRENT_SCHEMA_PATH = ROOT / "schemas" / "x64lens-report.schema.json"
 LEGACY_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.1.0.json"
 PATCH040_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.2.0-p040.json"
+PATCH046_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.2.0-p046.json"
 CURRENT_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.2.0.json"
 SPRINT10_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-0.2.0.json"
+SPRINT10_TRANSFER_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-transfer-0.2.0.json"
 
 
 class SmokeError(RuntimeError):
@@ -106,15 +108,19 @@ def main() -> int:
 
     legacy = load_json(LEGACY_REPORT_PATH)
     patch040 = load_json(PATCH040_REPORT_PATH)
+    patch046 = load_json(PATCH046_REPORT_PATH)
     current = load_json(CURRENT_REPORT_PATH)
     sprint10 = load_json(SPRINT10_REPORT_PATH)
+    sprint10_transfer = load_json(SPRINT10_TRANSFER_REPORT_PATH)
 
     # Historical 0.1.0 reports, Patch 040's initial 0.2.0 shape, and the current
     # provenance-bearing producer shape all remain consumable.
     require_formal_accept(legacy_schema, "legacy-0.1.0", legacy)
     require_formal_accept(current_schema, "patch040-0.2.0", patch040)
+    require_formal_accept(current_schema, "patch046-0.2.0", patch046)
     require_formal_accept(current_schema, "current-0.2.0", current)
     require_formal_accept(current_schema, "sprint10-0.2.0", sprint10)
+    require_formal_accept(current_schema, "sprint10-transfer-0.2.0", sprint10_transfer)
 
     run_custom(LEGACY_REPORT_PATH, "--require-schema", "0.1.0", expect_success=True)
     run_custom(
@@ -133,6 +139,17 @@ def main() -> int:
         "gadgets",
         "--require-provenance",
         "--require-sprint10-effects",
+        "--require-sprint10-transfer",
+        expect_success=True,
+    )
+    run_custom(
+        PATCH046_REPORT_PATH,
+        "--require-schema",
+        "0.2.0",
+        "--expected-command",
+        "gadgets",
+        "--require-provenance",
+        "--require-sprint10-effects",
         expect_success=True,
     )
     run_custom(
@@ -145,6 +162,19 @@ def main() -> int:
         "gadgets",
         "--require-provenance",
         "--require-sprint10-effects",
+        expect_success=True,
+    )
+    run_custom(
+        SPRINT10_TRANSFER_REPORT_PATH,
+        "--mode",
+        "sprint10-transfer-fixture",
+        "--require-schema",
+        "0.2.0",
+        "--expected-command",
+        "gadgets",
+        "--require-provenance",
+        "--require-sprint10-effects",
+        "--require-sprint10-transfer",
         expect_success=True,
     )
 
@@ -210,6 +240,14 @@ def main() -> int:
         mutation["gadgets"][0]["semantic_class"] = "unknown_candidate"
         formal_cases.append(("unknown-candidate-is-scored", mutation))
 
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][0]["register_transfer"]["source"] = "rip"
+        formal_cases.append(("unknown-transfer-register", mutation))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][0]["side_effects"] = ["memory_write"]
+        formal_cases.append(("unknown-side-effect", mutation))
+
         for name, document in formal_cases:
             require_formal_reject(current_schema, name, document)
             formal_rejections += 1
@@ -221,23 +259,23 @@ def main() -> int:
 
         mutation = deepcopy(current)
         mutation["analysis"]["candidate_count"] = 0
-        semantic_cases.append(("analysis-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects",)))
+        semantic_cases.append(("analysis-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         mutation = deepcopy(current)
         mutation["analysis"]["regions_scanned"] = 2
-        semantic_cases.append(("region-overrun", mutation, ("--require-provenance", "--require-sprint10-effects",)))
+        semantic_cases.append(("region-overrun", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         mutation = deepcopy(current)
         mutation["primitive_coverage"]["alignment"] = False
-        semantic_cases.append(("coverage-class-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects",)))
+        semantic_cases.append(("coverage-class-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         mutation = deepcopy(current)
         mutation["counts"]["exact_pattern_count"] = 0
-        semantic_cases.append(("exact-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects",)))
+        semantic_cases.append(("exact-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         mutation = deepcopy(current)
         mutation["gadgets"][0]["evidence"]["matched_suffix_offset"] = 1
-        semantic_cases.append(("suffix-range-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects",)))
+        semantic_cases.append(("suffix-range-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["stack_pop_order"] = ["rsi", "rdi"]
@@ -259,6 +297,40 @@ def main() -> int:
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["clobbers"] = ["rax"]
         semantic_cases.append(("unsupported-clobber-fact", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects",)))
+
+        # Patch 046 review regression: controls and coverage cannot be rewritten
+        # independently from an exact single-pop pattern and its ordered fact.
+        mutation = deepcopy(current)
+        pop = next(g for g in mutation["gadgets"] if g["pattern"] == "ret")
+        # The one-record generic fixture cannot exercise the pop relation, so use
+        # the retained Sprint 10 fixture's first single-pop fallback instead.
+        mutation = deepcopy(sprint10)
+        pop = next(g for g in mutation["gadgets"] if g["pattern"] == "pop rdi; ret")
+        pop["controls"] = ["rsi"]
+        mutation["primitive_coverage"]["registers"] = sorted(
+            {reg for gadget in mutation["gadgets"] for reg in gadget["controls"]}
+        )
+        semantic_cases.append(("single-pop-controls-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects",)))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][0]["register_transfer"] = {"source": "rax", "destination": "rsi"}
+        semantic_cases.append(("transfer-relation-disagrees-with-bytes", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][0]["clobbers"] = ["rsi"]
+        semantic_cases.append(("transfer-clobber-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][0]["side_effects"] = []
+        semantic_cases.append(("transfer-side-effect-missing", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["primitive_coverage"]["reg_transfer"] = False
+        semantic_cases.append(("transfer-coverage-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_transfer)
+        mutation["gadgets"][4]["register_transfer"] = {"source": "rax", "destination": "rdi"}
+        semantic_cases.append(("non-transfer-carries-transfer-relation", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
         for name, document, extra_args in semantic_cases:
             require_formal_accept(current_schema, name, document)
@@ -291,14 +363,14 @@ def main() -> int:
             "0.2.0",
             "--expected-command",
             "analyze",
-            "--require-provenance", "--require-sprint10-effects",
+            "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",
             expect_success=False,
         )
         semantic_rejections += 1
 
     print(
         "schema-compat-smoke: ok "
-        "legacy=0.1.0 patch040=0.2.0 current=0.2.0 "
+        "legacy=0.1.0 patch040=0.2.0 patch046=0.2.0 current=0.2.0 transfer=0.2.0 "
         f"formal_rejections={formal_rejections} "
         f"semantic_rejections={semantic_rejections}"
     )

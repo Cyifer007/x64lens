@@ -22,8 +22,9 @@ The default analyzer profile remains:
 - designed to support offline, air-gapped, minimal-container, CI/CD, and incident-
   response staging.
 
-The core profile is the product baseline. Optional research tools, external
-comparators, and development validators do not become runtime dependencies.
+The dependency-free, decoder-free, one-worker core profile is the product and
+measurement reference baseline. Optional research tools, external comparators,
+and development validators do not become runtime dependencies.
 
 ## Evidence status
 

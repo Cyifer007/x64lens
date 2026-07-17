@@ -63,11 +63,13 @@
 The historical review also produced items that remain intentionally deferred to
 later sprints rather than Patch 037:
 
-- Decoder-backed candidate validity and coverage reconciliation remain Sprint 9
-  and Sprint 13 work.
+- Sprint 9 completed current candidate provenance and external decoder-gap
+  reconciliation. Decoder-backed runtime validity and the Sprint 13 coverage
+  reconciliation remain future work.
 - Schema `0.2.0`, report identity, command identity, and
-  completeness/truncation fields are implemented in Patch 040. Target digests
-  remain Sprint 9 work; Patch 041 completes raw, exact-suffix, and semantic-exact per-candidate provenance.
+  completeness/truncation fields are implemented in Patch 040. Campaign and
+  benchmark artifacts retain target digests externally; Patch 041 completes
+  raw, exact-suffix, and semantic-exact per-candidate provenance.
 - Publication-grade benchmarking, high-resolution timing, frozen corpus, and
   normalized baseline definitions remain Sprint 12 and Sprint 13 work.
 - SARIF, CI policy gates, and enterprise export formats remain Sprint 15 work.
@@ -90,7 +92,7 @@ later sprints rather than Patch 037:
 - [x] Embedded-decoder decision procedure and evidence requirements.
 - [x] Decoder-free, single-worker reference profile with candidate-scoped decoder and deterministic parallelism ablation gates.
 - [x] Sprint 9 architecture, contract, public-boundary, release, roadmap, and validation closeout.
-- [ ] Target digest inside the runtime report, if later required by the final provenance contract; campaign and benchmark artifacts already retain target hashes externally.
+- Deferred beyond Sprint 9: a target digest inside the runtime report remains optional if later required by the final provenance contract; campaign and benchmark artifacts already retain target hashes externally.
 
 ### Sprint 10: primitive expansion — active
 
@@ -100,9 +102,11 @@ later sprints rather than Patch 037:
 - [x] Separate five-candidate fixture, JSON parity, and unscored-family gate.
 - [ ] Additional selected multi-pop families only when their effects remain
   unambiguous.
-- [ ] Conservative register-transfer patterns.
+- [x] First conservative register-transfer family with explicit source,
+  destination, destination clobber, stack, and `register_write` facts. Patch 047.
+- [ ] Additional register-transfer forms only when operand roles remain exact.
 - [ ] Narrow memory-read and memory-write patterns.
-- [ ] Non-empty clobber and memory-dereference facts where justified.
+- [ ] Memory-dereference facts and additional clobbers where justified.
 - [ ] Controlled fixture for every new semantic rule.
 - [ ] Score entries only after independent semantic and effect validation.
 
@@ -182,7 +186,7 @@ later sprints rather than Patch 037:
 
 ### Metrics and scoring
 
-- [ ] Keep raw, exact, semantic, validated, unknown, and scored counts distinct.
+- [ ] Keep raw-candidate, exact-pattern, semantic-candidate, decoder-validated, semantic-decoded, unknown-candidate, and scored-candidate counts distinct.
 - [ ] Add bad-byte, clobber, dereference, and uncertainty adjustments only after facts exist.
 - [ ] Keep binary-level triage separate from per-gadget score.
 
@@ -200,10 +204,6 @@ later sprints rather than Patch 037:
 - [ ] Keep release artifacts separate from generated development state.
 - [ ] Require public documentation, bundle hygiene, checksums, and clean-tag verification.
 - [ ] Keep ARM64, PE, Mach-O, JOP/COP/SROP, and full decoder work out of `v0.1.0` unless evidence changes the scope.
-
-## Local-only process boundary
-
-Private course context and state tracking belong under `.local/project-context/` and remain excluded from public source bundles. Public backlog entries describe repository work and evidence only.
 
 ## Patch 026 and Patch 027 checkpoint
 
@@ -250,9 +250,10 @@ annotations, hostile metadata hardening, byte-safe JSON rendering, automated
 Docker context hygiene, benchmark-integrity gates, and final optional-helper
 argument validation.
 
-The next active tranche is Sprint 9. Do not add new semantic primitive families
-until Sprint 9 has established report identity, provenance, candidate
-completeness, truncation state, and schema `0.2.0` transition rules.
+At that checkpoint, Sprint 9 became the next active tranche. New semantic
+primitive families remained deferred until Sprint 9 established report identity,
+provenance, candidate completeness, truncation state, and schema `0.2.0`
+transition rules.
 
 Patch 039 resolves the remaining Patch 037/Patch 038 validation follow-ups:
 
@@ -274,7 +275,8 @@ final-shape `0.1.0` compatibility, and focused schema/parity validation. It pres
 4096/4097 capacity contract and does not emit partial reports.
 
 The next backlog priority is the candidate evidence side-car. It must be keyed
-by candidate index, preserve existing raw/exact/semantic/unknown/scored counts,
+by candidate index, preserve existing raw-candidate/exact-pattern/
+semantic-candidate/unknown-candidate/scored-candidate counts,
 and expose exact-suffix versus semantic-exact provenance without embedding
 variable-length decoder state in `gadget_record`. Decoder-gap measurement and
 target digest policy follow that evidence foundation.
@@ -343,7 +345,7 @@ Completed in Patch 044:
 
 Deferred with explicit classification:
 
-- Docker Buildx metadata-path portability guidance: Patch 045 closeout;
+- Docker-environment qualification guidance: Patch 045 closeout;
 - optional decoder and concurrency implementation: measurement gate in Sprints 12/13;
 - primitive-family expansion: Sprint 10;
 - publication-grade claims: Sprints 12 and 13.
@@ -353,6 +355,13 @@ Deferred with explicit classification:
 - The default runtime remains a static, dependency-free, single-worker analyzer.
 - Candidate-scoped decoder validation is the preferred future experiment; whole-image mandatory decoding is not approved.
 - Target-level concurrency is the safest early throughput option. Candidate-validation and region-level concurrency require deterministic merge, global-capacity, RSS, and no-partial-output proofs.
-- Buildx metadata-path write failures are environment-specific only when the complete Docker validation passes with an isolated writable Buildx configuration.
+- Docker-environment failures are classified separately from product failures only when the complete Docker validation passes in a qualified environment.
 - Sprint 10 must not redefine raw, exact-suffix, semantic-exact, unknown,
   provenance, completeness, or score metrics while adding new primitive families.
+
+### Patch 047 validation follow-up
+
+- [x] Reject single-pop `controls` values that disagree with exact pattern and `stack_pop_order` facts.
+- [x] Exercise all 16 single-pop metadata entries and mixed legacy/REX two-pop order.
+- [x] Remove unmeasured resource language from the decoder-ablation roadmap.
+- [x] Regenerate a complete, self-authenticating application and evidence package.

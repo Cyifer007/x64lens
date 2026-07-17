@@ -130,6 +130,7 @@ label_sysnum_count:    db "  syscall_num_control count: ", 0
 label_systrig_count:   db "  syscall_trigger count: ", 0
 label_pivot_count:     db "  stack_pivot count: ", 0
 label_align_count:     db "  alignment count: ", 0
+label_reg_transfer_count: db "  reg_transfer count: ", 0
 label_reg_coverage:    db "  Register coverage: ", 0
 no_candidates:         db "  none discovered in executable regions", 10, 0
 candidate_prefix:      db "  - VA ", 0
@@ -147,6 +148,7 @@ candidate_stack_delta: db ", stack delta: ", 0
 candidate_score:       db ", score: ", 0
 candidate_bytes:       db ", bytes: ", 0
 candidate_pop_order:   db ", stack pop order: ", 0
+candidate_transfer:    db ", register transfer: ", 0
 candidate_clobbers:    db ", clobbers: ", 0
 candidate_effects:     db ", side effects: ", 0
 term_ret:              db "ret", 0
@@ -174,6 +176,7 @@ pattern_pop_r15_ret:   db "pop r15; ret", 0
 pattern_leave_ret:     db "leave; ret", 0
 pattern_syscall_ret:   db "syscall; ret", 0
 pattern_multi_pop_ret: db "pop reg; pop reg; ret", 0
+pattern_mov_reg_reg_ret: db "mov reg, reg; ret", 0
 semantic_unknown:      db "unknown_candidate", 0
 semantic_arg_control:  db "arg_control", 0
 semantic_syscall_num:  db "syscall_num_control", 0
@@ -191,6 +194,7 @@ side_effect_stack_read:  db "stack_read", 0
 side_effect_stack_pivot: db "stack_pivot", 0
 side_effect_syscall:     db "syscall", 0
 side_effect_ret_imm16:   db "ret_imm16", 0
+side_effect_register_write: db "register_write", 0
 reg_rax:               db "rax", 0
 reg_rbx:               db "rbx", 0
 reg_rcx:               db "rcx", 0
@@ -868,6 +872,12 @@ x64lens_report_text_gadgets:
     call    print_hex64
     call    print_nl
 
+    lea     rdi, [label_reg_transfer_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_REG_TRANSFER_COUNT]
+    call    print_hex64
+    call    print_nl
+
     lea     rdi, [label_reg_coverage]
     call    print_cstr
     mov     rdi, [r12 + GADGET_SUMMARY_REGS_CONTROLLED]
@@ -957,6 +967,11 @@ x64lens_report_text_gadgets:
     call    print_cstr
     mov     rdi, r15
     call    report_text_print_pattern_reg_order
+
+    lea     rdi, [candidate_transfer]
+    call    print_cstr
+    mov     rdi, r15
+    call    report_text_print_register_transfer
 
     lea     rdi, [candidate_clobbers]
     call    print_cstr
@@ -1048,6 +1063,8 @@ report_text_print_pattern:
     je      .pattern_syscall_ret
     cmp     edi, PATTERN_MULTI_POP_RET
     je      .pattern_multi_pop_ret
+    cmp     edi, PATTERN_MOV_REG_REG_RET
+    je      .pattern_mov_reg_reg_ret
     lea     rdi, [pattern_unknown]
     jmp     print_cstr
 .pattern_ret:
@@ -1112,6 +1129,9 @@ report_text_print_pattern:
     jmp     print_cstr
 .pattern_multi_pop_ret:
     lea     rdi, [pattern_multi_pop_ret]
+    jmp     print_cstr
+.pattern_mov_reg_reg_ret:
+    lea     rdi, [pattern_mov_reg_reg_ret]
     jmp     print_cstr
 
 
@@ -1294,14 +1314,22 @@ report_text_print_reg_id:
 
 ; report_text_print_pattern_reg_order(rdi=gadget_record)
 ;
-; Prints exact pop order from the compact pattern-owned metadata. This is an
-; exact suffix fact and is intentionally separate from the unordered controls
-; bitmap populated by classifier.asm.
+; Prints exact pop order from the compact pattern-owned metadata. The same
+; compact fields are also reused by the register-transfer exact family, so this
+; helper first verifies that the pattern itself is a pop family.
 report_text_print_pattern_reg_order:
     push    r12
     push    r13
     push    r14
 
+    mov     eax, [rdi + GADGET_PATTERN_ID]
+    cmp     eax, PATTERN_MULTI_POP_RET
+    je      .pattern_order_load
+    cmp     eax, PATTERN_POP_RAX_RET
+    jb      .pattern_order_none
+    cmp     eax, PATTERN_POP_R15_RET
+    ja      .pattern_order_none
+.pattern_order_load:
     mov     r12d, [rdi + GADGET_PATTERN_REG_COUNT]
     mov     r13d, [rdi + GADGET_PATTERN_REG_ORDER]
     xor     r14d, r14d
@@ -1335,6 +1363,36 @@ report_text_print_pattern_reg_order:
     pop     r12
     ret
 
+; report_text_print_register_transfer(rdi=gadget_record)
+;
+; Prints source->destination for the exact register-direct transfer family.
+; The compact record stores destination in the low nibble and source in the
+; next nibble; other patterns print an explicit none value.
+report_text_print_register_transfer:
+    push    r12
+    mov     r12, rdi
+    cmp     dword [r12 + GADGET_PATTERN_ID], PATTERN_MOV_REG_REG_RET
+    jne     .register_transfer_none
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .register_transfer_none
+    mov     eax, [r12 + GADGET_PATTERN_REG_ORDER]
+    mov     edi, eax
+    shr     edi, 4
+    and     edi, 0x0f
+    call    report_text_print_reg_id
+    lea     rdi, [reg_order_sep]
+    call    print_cstr
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    and     edi, 0x0f
+    call    report_text_print_reg_id
+    jmp     .register_transfer_done
+.register_transfer_none:
+    lea     rdi, [regs_none]
+    call    print_cstr
+.register_transfer_done:
+    pop     r12
+    ret
+
 %macro PRINT_EFFECT_IF_SET 2
     test    rbx, %1
     jz      %%skip
@@ -1360,6 +1418,7 @@ report_text_print_side_effects:
     PRINT_EFFECT_IF_SET SIDE_EFFECT_STACK_PIVOT, side_effect_stack_pivot
     PRINT_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall
     PRINT_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write
     test    r12, r12
     jne     .side_effects_done
     lea     rdi, [regs_none]

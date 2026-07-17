@@ -1,0 +1,358 @@
+{
+  "schema_version": "0.2.0",
+  "tool": "x64lens",
+  "tool_version": "0.1.0-dev",
+  "report_type": "analysis",
+  "command": "gadgets",
+  "analysis": {
+    "complete": true,
+    "max_depth": 4,
+    "candidate_capacity": 4096,
+    "candidate_count": 10,
+    "candidate_truncated": false,
+    "candidate_dropped_count": 0,
+    "candidate_dropped_count_known": true,
+    "regions_scanned": 1,
+    "regions_total": 1
+  },
+  "target": {
+    "path": "sprint10-register-transfer-fixture",
+    "format": "ELF64",
+    "arch": "x86_64",
+    "file_size": 8944,
+    "entry": "0x0000000000401000"
+  },
+  "mitigations": {
+    "nx_stack": null,
+    "pie": false,
+    "relro": "none",
+    "canary": "unknown",
+    "stripped": "not_stripped",
+    "rwx_load_segment": false,
+    "dynamic_linking": false,
+    "bind_now": null,
+    "dynamic_entry_count": 0,
+    "dynamic_terminated": null
+  },
+  "counts": {
+    "raw_candidate_count": 10,
+    "ret_count": 10,
+    "ret_imm16_count": 0,
+    "exact_pattern_count": 10,
+    "semantic_candidate_count": 10,
+    "unknown_candidate_count": 0,
+    "scored_candidate_count": 6
+  },
+  "primitive_coverage": {
+    "arg_control": false,
+    "syscall_num_control": false,
+    "syscall_trigger": false,
+    "stack_pivot": false,
+    "alignment": true,
+    "reg_transfer": true,
+    "registers": []
+  },
+  "gadgets": [
+    {
+      "va": "0x0000000000401003",
+      "file_offset": "0x0000000000001003",
+      "section": ".text",
+      "bytes": "4889c7c3",
+      "terminator": "ret",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": {
+        "source": "rax",
+        "destination": "rdi"
+      },
+      "clobbers": [
+        "rdi"
+      ],
+      "side_effects": [
+        "register_write"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x0000000000401007",
+      "file_offset": "0x0000000000001007",
+      "section": ".text",
+      "bytes": "c34d89c8c3",
+      "terminator": "ret",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": {
+        "source": "r9",
+        "destination": "r8"
+      },
+      "clobbers": [
+        "r8"
+      ],
+      "side_effects": [
+        "register_write"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x000000000040100b",
+      "file_offset": "0x000000000000100b",
+      "section": ".text",
+      "bytes": "c34c8beac3",
+      "terminator": "ret",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": {
+        "source": "rdx",
+        "destination": "r13"
+      },
+      "clobbers": [
+        "r13"
+      ],
+      "side_effects": [
+        "register_write"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x000000000040100f",
+      "file_offset": "0x000000000000100f",
+      "section": ".text",
+      "bytes": "c3498bdec3",
+      "terminator": "ret",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": {
+        "source": "r14",
+        "destination": "rbx"
+      },
+      "clobbers": [
+        "rbx"
+      ],
+      "side_effects": [
+        "register_write"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x0000000000401013",
+      "file_offset": "0x0000000000001013",
+      "section": ".text",
+      "bytes": "c34889ffc3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401017",
+      "file_offset": "0x0000000000001017",
+      "section": ".text",
+      "bytes": "c34889c4c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x000000000040101b",
+      "file_offset": "0x000000000000101b",
+      "section": ".text",
+      "bytes": "c34889e7c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x000000000040101f",
+      "file_offset": "0x000000000000101f",
+      "section": ".text",
+      "bytes": "c3488938c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401022",
+      "file_offset": "0x0000000000001022",
+      "section": ".text",
+      "bytes": "38c389c7c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401026",
+      "file_offset": "0x0000000000001026",
+      "section": ".text",
+      "bytes": "c3488b38c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    }
+  ],
+  "limitations": [
+    "Sprint 10 exact register-transfer fixture; full instruction-sequence validity remains unknown."
+  ]
+}

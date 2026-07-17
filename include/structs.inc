@@ -124,7 +124,8 @@
 %define GADGET_SUMMARY_ALIGNMENT_COUNT    96
 %define GADGET_SUMMARY_REGS_CONTROLLED    104
 %define GADGET_SUMMARY_SCORED_COUNT       112
-%define GADGET_SUMMARY_RECORD_SIZE        120
+%define GADGET_SUMMARY_REG_TRANSFER_COUNT 120
+%define GADGET_SUMMARY_RECORD_SIZE        128
 
 ; analysis_summary record offsets
 ;
@@ -213,6 +214,7 @@
 %define PATTERN_LEAVE_RET             19
 %define PATTERN_SYSCALL_RET           20
 %define PATTERN_MULTI_POP_RET          21
+%define PATTERN_MOV_REG_REG_RET        22
 
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
@@ -231,9 +233,10 @@
 %define GADGET_SECTION_NAME_LEN     88
 %define GADGET_SECTION_INDEX        96
 ; Sprint 10 reuses the reserved final eight bytes of the existing 112-byte
-; record for ordered exact-pop facts. The packed order stores one four-bit
-; register ID per pop, least-significant nibble first. The explicit count makes
-; register ID zero (RAX) unambiguous and keeps the arena footprint unchanged.
+; record for bounded exact-pattern register operands. Pop patterns store
+; execution order, least-significant nibble first. Register-transfer patterns
+; store destination then source. The explicit count makes register ID zero
+; (RAX) unambiguous and keeps the arena footprint unchanged.
 %define GADGET_PATTERN_REG_COUNT    104
 %define GADGET_PATTERN_REG_ORDER    108
 %define GADGET_RECORD_SIZE          112
@@ -297,7 +300,8 @@
 %define REG_R15_BIT                 15
 
 ; Exact-pattern register metadata supports up to eight ordered register IDs in
-; one dword. Sprint 10 Patch 046 emits one or two entries only.
+; one dword. Sprint 10 emits one or two entries only. Pop patterns use execution
+; order; the register-transfer family uses destination then source.
 %define PATTERN_REG_ORDER_MAX       8
 %define ARG_CONTROL_REG_MASK        ((1 << REG_RDI_BIT) | (1 << REG_RSI_BIT) | (1 << REG_RDX_BIT) | (1 << REG_RCX_BIT) | (1 << REG_R8_BIT) | (1 << REG_R9_BIT))
 
@@ -328,5 +332,6 @@
 %define SIDE_EFFECT_STACK_PIVOT     (1 << 1)
 %define SIDE_EFFECT_SYSCALL         (1 << 2)
 %define SIDE_EFFECT_RET_IMM16       (1 << 3)
+%define SIDE_EFFECT_REGISTER_WRITE   (1 << 4)
 
 %endif

@@ -117,3 +117,11 @@ score = null
 
 This is a deliberate model state, not a missing reporter value. A later score
 entry requires separate fixtures and scoring-model validation.
+
+## Sprint 10 Patch 047 score decision
+
+The first `reg_transfer` family remains unscored. Its usefulness depends on the
+source value, destination role, chain context, clobber cost, and future decoder
+confidence. Patch 047 adds those structural facts without assigning an
+unsupported utility value. Any later score requires a documented table entry or
+factor rule plus fixture updates.

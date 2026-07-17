@@ -255,7 +255,7 @@ def validate_successful_json(stdout: bytes, command: str, case_id: str) -> None:
                 "0.2.0",
                 "--expected-command",
                 command,
-                "--require-provenance", "--require-sprint10-effects",
+                "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",
                 str(report_path),
             ],
             stdout=subprocess.PIPE,

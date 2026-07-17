@@ -183,3 +183,15 @@ these additive fields.
 The generic Patch 046 multi-pop family must report two ordered distinct argument
 registers, a matching controlled-register set, stack delta 24, `stack_read`, an
 empty clobber set, and `score: null`.
+
+## Sprint 10 register-transfer output
+
+Patch 047 adds a compatible per-candidate `register_transfer` relation and
+`primitive_coverage.reg_transfer`. Source and destination are record-backed
+facts. A transfer does not populate `controls` unless a separate semantic rule
+justifies control; the exact family currently records the destination in
+`clobbers` and emits `register_write`.
+
+Earlier schema `0.2.0` reports without the optional relation remain consumable.
+Current producer validation requires the relation field and rejects
+source/destination, control, clobber, stack, or side-effect contradictions.

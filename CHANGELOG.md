@@ -8,6 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 047 exact register-direct `mov r64,r64; ret` recognition with explicit source/destination, destination clobber, `register_write`, and known return stack-delta facts.
+- A ten-candidate transfer/fallback fixture, `make sprint10-register-transfer-smoke`, and an objdump-backed transfer disassembly oracle.
+- `make json-effect-consistency-smoke`, covering all 16 single-pop metadata relations and mixed legacy/REX two-pop order with contradiction rejection.
+- ADR 0033 and the Patch 047 validation record.
+
 - Sprint 10 Patch 046 ordered two-pop argument-control recognition for two
   distinct System V argument registers, with exact execution order retained in
   the existing fixed-size gadget record.
@@ -113,13 +118,17 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance Sprint 10 through Patch 047 while preserving the 112-byte candidate record, 655,360-byte arena, 4,096-candidate capacity, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
+- Require current-producer validation to reconcile single-pop pattern, exact order, semantic controls, and score facts per candidate.
+- Keep register-transfer candidates unscored and preserve `controls` as independent control evidence rather than treating every value transfer as external control.
+
 - Close Sprint 9 and advance Sprint 10 as the next implementation tranche.
 - Preserve the dependency-free one-worker analyzer as the reference profile;
   candidate-scoped decoding and parallelism remain optional ablations to be
   measured separately.
 - Separate archive policy outcomes from optional exact diagnostic wording and
-  document a generic qualified Buildx configuration for read-only metadata
-  environments.
+  require the complete Docker matrix before metadata-path write failures are
+  classified as environment-specific.
 - Reconcile onboarding, schema, metric, release, publication, architecture,
   and roadmap documentation with the completed Sprint 9 state.
 
@@ -182,7 +191,7 @@ The project follows semantic versioning once the first public release is cut.
 - Route program-header entry derivation through a bounded per-entry helper before forming pointers.
 - Expand the mitigation-matrix malformed case count from five to seven after adding table-end overflow probes.
 - Make public-documentation hygiene scan tracked and untracked public files while ignoring generated `tests/results/` evidence.
-- Exclude private local agent workspaces from permission normalization, Docker build context filtering, Git ignore gaps, and patch-bundle hygiene.
+- Exclude non-source workspace state from permission normalization, Docker build context filtering, Git-ignore coverage, and patch-bundle hygiene.
 - Reject invalid file-backed `PT_LOAD` ranges during shared ELF64 validation so `info`, `mitigations`, and `analyze` fail consistently.
 - Include the mitigation matrix in native and Docker aggregate validation.
 - Make planning validation distinguish all 18 sprint plans from the 12 forward plans.
@@ -203,7 +212,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Rewrite the WSL UNC public-document regex so strict ShellCheck no longer
+- Rewrite the UNC-path public-document regex so strict ShellCheck no longer
   reports `SC1003` while the functional rejection remains enforced.
 - Remove the duplicated Patch 043 changelog block.
 
@@ -211,7 +220,7 @@ The project follows semantic versioning once the first public release is cut.
 - Prevent interrupted GNU-time/analyzer measurements from leaving child process groups alive.
 - Normalize reviewed GNU objdump prefix and near-return variants and stop canonical sequences at prefixed control transfers.
 - Reject contradictory local ZIP names, flags, extras, malformed ZIP64 values, zero-width UID/GID metadata, invalid NTFS metadata, and duplicate recognized extra fields.
-- Remove real transfer-artifact basenames from tracked public-boundary smoke fixtures and detect broader copy, case, Windows, WSL, and macOS path variants.
+- Remove transfer-artifact basenames from tracked public-boundary smoke fixtures and detect broader copy, case, and platform-specific path variants.
 
 - Prevent inter-target mutation from making campaign manifests certify bytes
   different from those actually analyzed.
@@ -219,13 +228,13 @@ The project follows semantic versioning once the first public release is cut.
   `SIGTERM`, and ordinary publication failures.
 - Parse prefixed return instructions and stop canonical predecessor walks at
   invalid-byte and control-transfer barriers.
-- Reject timestamped private transfer-artifact names from public documentation
+- Reject timestamped transfer-artifact names from public documentation
   and correct strict shell lint in the archive-check wrapper.
 
-- Reject private and unsafe ZIP members under zero-root, one-root, and arbitrary
-  archive layouts, including `.git`, `.local`, `.codex`, `.env`, project-context
-  files, secrets, symlinks, case collisions, generated outputs, and nested
-  archives.
+- Reject unsafe or non-public ZIP members under zero-root, one-root, and
+  arbitrary archive layouts, including version-control metadata, non-source
+  workspace state, environment files, secrets, symlinks, case collisions,
+  generated outputs, and nested archives.
 - Prevent decoder-gap evidence regeneration from deleting an unrelated existing
   directory by requiring the tool's own manifest before replacement.
 
@@ -240,6 +249,9 @@ The project follows semantic versioning once the first public release is cut.
 - Remove ambiguity between `gadgets` and `analyze` JSON producers by adding explicit command identity without duplicating the report implementation.
 - Make successful report completeness explicit instead of requiring consumers to infer it from candidate counts and capacity.
 
+- Add the missing benchmark-integrity non-finite RSS fixtures: `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`.
+- Clean strict shell-helper lint for patch-bundle unsafe-path checks and intentional literal Markdown-backtick planning checks.
+- Align Sprint 8 closeout planning and validation records with the accepted Patch 039 baseline.
 - Reject non-finite benchmark summary values such as `nan`, `inf`, and `-inf`.
 - Preserve JSON validity and byte fidelity for high-bit and control bytes in target paths and section labels.
 - Reject benchmark smoke runs with non-positive `RUNS`, invalid `MAX_DEPTH`, nonnumeric timing/RSS fields, or negative timing/RSS values.
@@ -252,7 +264,7 @@ The project follows semantic versioning once the first public release is cut.
 - Preserve the half-open range interpretation for zero-length dynamic string-table evidence at a load endpoint.
 - Promote the zero-sized dynamic string-table and over-cap string-table review cases into the permanent mitigation oracle.
 - Close the Patch 030 dynamic malformed oracle gap by covering `gadgets` text and JSON callers as well as `mitigations` and integrated `analyze`.
-- Classify the Patch 028 Docker Buildx metadata failure as an environment defect after Docker validation passed outside the restricted filesystem sandbox.
+- Classify the Patch 028 Docker metadata-path failure as environment-specific only after the complete Docker validation matrix passed in a qualified environment.
 - Correct the mitigation oracle zero-executable-region expectation to match the stable text reporter line, `none discovered from PT_LOAD + PF_X`.
 - Reject malformed ELF64 files that previously used a nonzero but invalid section-header entry stride.
 - Verify candidate-record exhaustion returns a stable unsupported-feature error instead of silently truncating analysis.
@@ -301,13 +313,6 @@ The project follows semantic versioning once the first public release is cut.
 - Fixed Docker validation failure caused by missing archive tools inside the container image.
 - Fixed false `REQUIRE_BASELINES=1` failures when the variable propagated into `dev-tools-check`.
 - Replaced the brittle `cargo install ropr` onboarding path with a rustup-aware helper and explicit remediation guidance.
-
-
-### Fixed
-
-- Added the missing benchmark-integrity non-finite RSS fixtures: `nan-rss.tsv`, `inf-rss.tsv`, and `neg-inf-rss.tsv`.
-- Cleaned strict shell-helper lint for patch-bundle unsafe-path checks and intentional literal Markdown-backtick planning checks.
-- Aligned Sprint 8 closeout planning and validation records with the accepted Patch 039 baseline.
 
 ## [0.1.0-dev] - Development history through Sprint 05 Patch 020
 
@@ -379,21 +384,20 @@ The project follows semantic versioning once the first public release is cut.
 - Added `make docker-test` for reproducible container smoke testing.
 - Added `make ownership-check` and `make fix-perms` for diagnosing and repairing local generated artifact ownership issues.
 - Added `make normalize-perms` for local permission hygiene after extracting patch bundles.
-- Documented Sprint 1 closeout with actual WSL2 and Docker validation output.
+- Documented Sprint 1 closeout with native and container validation output.
 
 ### Changed
 
 - `make test`, JSON smoke, system smoke, and benchmark targets now perform clearer prerequisite checks before running.
 - README startup instructions now distinguish required build tools, required validation tools, and optional baseline tools.
-- Public documentation is now separated from local-only private project context.
-- Local-only planning/context files are expected under `.local/project-context/` and excluded by `.gitignore`.
+- Public documentation and repository structure now exclude non-source workspace state.
 - Makefile scaffold checks now validate only public repository structure.
 - Sprint planning now treats Sprint 5 as scoring, JSON, benchmark comparison, and classifier fixture hardening rather than additional raw scanner breadth.
 
 ### Fixed
 
 - Prevented Docker bind-mounted development sessions from creating root-owned build artifacts by running Docker shells/tests with the caller's UID/GID.
-- Added `.dockerignore` to keep local context, generated artifacts, `.git/`, and private/course files out of Docker build contexts.
+- Added `.dockerignore` to keep non-source workspace state, generated artifacts, and version-control metadata out of Docker build contexts.
 - Added troubleshooting documentation for `make clean` permission failures caused by root-owned generated files.
 - Consolidated duplicate `Unreleased` changelog sections introduced during rapid sprint patching.
 

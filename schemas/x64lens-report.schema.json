@@ -252,6 +252,9 @@
         "alignment": {
           "type": "boolean"
         },
+        "reg_transfer": {
+          "type": "boolean"
+        },
         "registers": {
           "type": "array",
           "items": {
@@ -395,6 +398,62 @@
             "maxItems": 8,
             "description": "Exact pop-register order for the recognized suffix; empty when no pop sequence is represented."
           },
+          "register_transfer": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Exact source/destination relation for a supported register-direct transfer; null for other candidates.",
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "rax",
+                  "rbx",
+                  "rcx",
+                  "rdx",
+                  "rsi",
+                  "rdi",
+                  "rbp",
+                  "rsp",
+                  "r8",
+                  "r9",
+                  "r10",
+                  "r11",
+                  "r12",
+                  "r13",
+                  "r14",
+                  "r15"
+                ]
+              },
+              "destination": {
+                "type": "string",
+                "enum": [
+                  "rax",
+                  "rbx",
+                  "rcx",
+                  "rdx",
+                  "rsi",
+                  "rdi",
+                  "rbp",
+                  "rsp",
+                  "r8",
+                  "r9",
+                  "r10",
+                  "r11",
+                  "r12",
+                  "r13",
+                  "r14",
+                  "r15"
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "destination"
+            ],
+            "additionalProperties": false
+          },
           "clobbers": {
             "type": "array",
             "items": {
@@ -429,7 +488,8 @@
                 "stack_read",
                 "stack_pivot",
                 "syscall",
-                "ret_imm16"
+                "ret_imm16",
+                "register_write"
               ]
             },
             "uniqueItems": true,

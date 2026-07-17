@@ -94,6 +94,7 @@ x64lens_classifier_apply_exact:
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_STACK_PIVOT_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_ALIGNMENT_COUNT
+    CLEAR_SUMMARY_QWORD GADGET_SUMMARY_REG_TRANSFER_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_REGS_CONTROLLED
 
     xor     rbp, rbp            ; candidate index
@@ -143,6 +144,8 @@ x64lens_classifier_apply_exact:
     je      .class_pop_rsp_pivot
     cmp     eax, PATTERN_MULTI_POP_RET
     je      .class_multi_pop_arg
+    cmp     eax, PATTERN_MOV_REG_REG_RET
+    je      .class_reg_transfer
 
     ; Conservative default: known exact patterns that are not yet mapped to a
     ; semantic primitive remain unknown_candidate for Sprint 4 metrics.
@@ -185,6 +188,8 @@ x64lens_classifier_apply_exact:
     cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 2
     jne     .bounds_error
     mov     ebx, [r15 + GADGET_PATTERN_REG_ORDER]
+    test    ebx, 0xffffff00
+    jne     .bounds_error
     mov     ecx, ebx
     and     ecx, 0x0f           ; first pop in execution order
     shr     ebx, 4
@@ -212,6 +217,46 @@ x64lens_classifier_apply_exact:
     mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ARG_CONTROL_COUNT]
+    jmp     .next_candidate
+
+.class_reg_transfer:
+    ; Exact-pattern metadata stores destination in the low nibble and source in
+    ; the next nibble. Register transfer does not independently establish that
+    ; the destination value is externally controlled, so controls remain empty.
+    ; The overwritten destination is recorded as a clobber and the relation is
+    ; rendered separately as source/destination evidence.
+    cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     ebx, [r15 + GADGET_PATTERN_REG_ORDER]
+    test    ebx, 0xffffff00
+    jne     .bounds_error
+
+    mov     ecx, ebx
+    and     ecx, 0x0f           ; destination
+    shr     ebx, 4
+    mov     edx, ebx
+    and     edx, 0x0f           ; source
+
+    cmp     ecx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     ecx, edx
+    je      .bounds_error
+    cmp     ecx, REG_RSP_BIT
+    je      .bounds_error
+    cmp     edx, REG_RSP_BIT
+    je      .bounds_error
+
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_REG_TRANSFER
+    mov     qword [r15 + GADGET_REGS_CONTROLLED], 0
+    xor     eax, eax
+    bts     rax, rcx
+    mov     [r15 + GADGET_REGS_CLOBBERED], rax
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_REGISTER_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_REG_TRANSFER_COUNT]
     jmp     .next_candidate
 
 .class_pop_rax_syscall_num:
