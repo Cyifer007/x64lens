@@ -40,6 +40,8 @@ j_null:                 db "null", 0
 j_empty_array:          db "[]", 0
 j_array_open:           db "[", 0
 j_array_close:          db "]", 0
+j_object_open:          db "{", 0
+j_object_close:         db "}", 0
 j_comma:                db ",", 0
 j_u00_prefix:           db 0x5c, "u00", 0
 j_indent2:              db "  ", 0
@@ -179,6 +181,7 @@ pattern_leave_s:        db "leave; ret", 0
 pattern_syscall_s:      db "syscall; ret", 0
 pattern_multi_pop_s:    db "pop reg; pop reg; ret", 0
 pattern_mov_reg_reg_s:  db "mov reg, reg; ret", 0
+pattern_add_rsp_imm8_s: db "add rsp, imm8; ret", 0
 semantic_unknown_s:     db "unknown_candidate", 0
 semantic_arg_s:         db "arg_control", 0
 semantic_sysnum_s:      db "syscall_num_control", 0
@@ -210,6 +213,8 @@ side_effect_stack_pivot_s: db "stack_pivot", 0
 side_effect_syscall_s:     db "syscall", 0
 side_effect_ret_imm16_s:   db "ret_imm16", 0
 side_effect_register_write_s: db "register_write", 0
+side_effect_stack_adjust_s: db "stack_adjust", 0
+side_effect_flags_write_s: db "flags_write", 0
 
 section .bss
 json_path_ptr:          resq 1
@@ -1474,6 +1479,8 @@ json_print_side_effects_array:
     JSON_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_STACK_ADJUST, side_effect_stack_adjust_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write_s
     lea     rdi, [j_array_close]
     call    print_cstr
     add     rsp, 8
@@ -1540,6 +1547,8 @@ json_print_pattern:
     je      .multi_pop
     cmp     edi, PATTERN_MOV_REG_REG_RET
     je      .mov_reg_reg
+    cmp     edi, PATTERN_ADD_RSP_IMM8_RET
+    je      .add_rsp_imm8
     lea     rdi, [pattern_unknown_s]
     jmp     print_cstr
 .ret:      lea rdi, [pattern_ret_s]       ; fall through via jmp below
@@ -1585,6 +1594,8 @@ json_print_pattern:
 .multi_pop: lea rdi, [pattern_multi_pop_s]
            jmp print_cstr
 .mov_reg_reg: lea rdi, [pattern_mov_reg_reg_s]
+           jmp print_cstr
+.add_rsp_imm8: lea rdi, [pattern_add_rsp_imm8_s]
            jmp print_cstr
 
 json_print_semantic:

@@ -3,8 +3,9 @@
 
 This validator-only smoke closes the Patch 046 review gap by proving that all
 16 exact single-pop patterns have canonical per-candidate controls/order facts.
-It also covers mixed legacy/REX ordered two-pop forms so register metadata cannot
-silently drift while aggregate register coverage remains unchanged.
+It also covers mixed legacy/REX ordered two-pop forms, bare-ret relational
+invariants found during Patch 047 review, and the bounded Patch 048 stack-adjust
+family so aggregate coverage cannot conceal contradictory candidate facts.
 """
 
 from __future__ import annotations
@@ -184,6 +185,43 @@ def mixed_multi_pop_document(base: dict[str, Any], first: str, second: str) -> d
     return doc
 
 
+def stack_adjust_document(base: dict[str, Any], immediate: int) -> dict[str, Any]:
+    doc = copy.deepcopy(base)
+    gadget = doc["gadgets"][0]
+    bytes_hex = f"4883c4{immediate:02x}c3"
+    gadget.update(
+        {
+            "bytes": bytes_hex,
+            "pattern": "add rsp, imm8; ret",
+            "semantic_class": "alignment",
+            "controls": [],
+            "stack_pop_order": [],
+            "register_transfer": None,
+            "clobbers": [],
+            "side_effects": ["stack_adjust", "flags_write"],
+            "stack_delta": immediate + 8,
+            "stack_delta_known": True,
+            "score": None,
+            "evidence": {
+                "kind": "semantic_exact",
+                "raw_candidate": True,
+                "exact_suffix": True,
+                "semantic_source": "exact",
+                "validator": "x64lens-exact-suffix",
+                "matched_suffix_offset": 0,
+                "matched_suffix_length": 5,
+                "full_sequence_valid": None,
+            },
+        }
+    )
+    set_one_candidate_counts(doc, semantic=True, scored=False)
+    doc["primitive_coverage"] = coverage_for("alignment", [])
+    doc["primitive_coverage"]["alignment"] = True
+    doc["target"]["path"] = f"validator-stack-adjust-{immediate}"
+    doc["target"]["file_size"] = 5
+    return doc
+
+
 def load_validator_module() -> Any:
     spec = importlib.util.spec_from_file_location("x64lens_validate_json_report", VALIDATOR)
     if spec is None or spec.loader is None:
@@ -228,6 +266,9 @@ def main() -> int:
     single_negative = 0
     mixed_positive = 0
     mixed_negative = 0
+    bare_ret_negative = 0
+    stack_adjust_positive = 0
+    stack_adjust_negative = 0
 
     with tempfile.TemporaryDirectory(prefix="x64lens-json-effect-") as temp:
         directory = Path(temp)
@@ -260,12 +301,63 @@ def main() -> int:
             run_validator(validator, negative, expect_success=False)
             mixed_negative += 1
 
+        # Patch 047 review regressions: generic validation must not accept a
+        # recognized bare ret with contradictory terminator, controls, or stack
+        # delta simply because aggregate counts still reconcile.
+        bare_ret = copy.deepcopy(base)
+        bare_mutations = []
+
+        mutation = copy.deepcopy(bare_ret)
+        mutation["gadgets"][0]["terminator"] = "unknown"
+        bare_mutations.append(("bare-ret-unknown-terminator", mutation))
+
+        mutation = copy.deepcopy(bare_ret)
+        mutation["gadgets"][0]["controls"] = ["rdi"]
+        mutation["primitive_coverage"]["registers"] = ["rdi"]
+        bare_mutations.append(("bare-ret-controls", mutation))
+
+        mutation = copy.deepcopy(bare_ret)
+        mutation["gadgets"][0]["stack_delta"] = 24
+        bare_mutations.append(("bare-ret-stack-delta", mutation))
+
+        for name, mutation in bare_mutations:
+            path = write_case(directory, name, mutation)
+            run_validator(validator, path, expect_success=False)
+            bare_ret_negative += 1
+
+        for immediate in (8, 32):
+            document = stack_adjust_document(base, immediate)
+            path = write_case(directory, f"stack-adjust-{immediate}-positive", document)
+            run_validator(validator, path, expect_success=True)
+            stack_adjust_positive += 1
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["stack_delta"] += 8
+            negative = write_case(directory, f"stack-adjust-{immediate}-delta-mismatch", mutation)
+            run_validator(validator, negative, expect_success=False)
+            stack_adjust_negative += 1
+
+        mutation = stack_adjust_document(base, 8)
+        mutation["gadgets"][0]["bytes"] = "4883c407c3"
+        negative = write_case(directory, "stack-adjust-unaligned-immediate", mutation)
+        run_validator(validator, negative, expect_success=False)
+        stack_adjust_negative += 1
+
+        mutation = stack_adjust_document(base, 8)
+        mutation["gadgets"][0]["side_effects"] = []
+        negative = write_case(directory, "stack-adjust-missing-effect", mutation)
+        run_validator(validator, negative, expect_success=False)
+        stack_adjust_negative += 1
+
     print(
         "json-effect-consistency-smoke: ok "
         f"single_pop={single_positive} "
         f"single_pop_rejections={single_negative} "
         f"mixed_multi_pop={mixed_positive} "
-        f"mixed_rejections={mixed_negative}"
+        f"mixed_rejections={mixed_negative} "
+        f"bare_ret_rejections={bare_ret_negative} "
+        f"stack_adjust={stack_adjust_positive} "
+        f"stack_adjust_rejections={stack_adjust_negative}"
     )
     return 0
 

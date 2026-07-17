@@ -97,3 +97,7 @@ results cannot be merged silently with the dependency-free core.
 Patch 045 retains tool version `0.1.0-dev` and schema `0.2.0`. No release tag moves. Sprint 10 additions should remain compatible within schema `0.2.x` unless a new durable concept cannot be represented additively.
 
 A future decoder-enabled or parallel build profile must have unambiguous artifact and benchmark provenance even if the CLI schema remains compatible. Different profiles must not be silently aggregated.
+
+## Patch 048 compatibility note
+
+Patch 048 retains tool version `0.1.0-dev` and schema version `0.2.0`. `stack_adjust` and `flags_write` are compatible additions to the existing side-effect enumeration; no required historical field or count meaning changes. A future required condition-flag structure or memory-operand object requires a separate schema decision.

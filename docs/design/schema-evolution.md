@@ -177,3 +177,17 @@ This is patch-compatible because existing field meanings do not change and
 absence remains attributable to an earlier producer. Making these fields
 required in the formal schema, adding required memory operands, or changing
 count meaning would require a separately reviewed schema transition.
+
+## Patch 047 compatible register-transfer addition
+
+Patch 047 keeps schema version `0.2.0`. Candidate `register_transfer` and
+`primitive_coverage.reg_transfer` remain optional in the formal schema so Patch
+040 and Patch 046 reports remain consumable. Current-producer validation
+requires the transfer field and reconciles its source, destination, control,
+clobber, stack, side-effect, and coverage facts.
+
+## Patch 048 compatible stack-adjust addition
+
+Patch 048 keeps schema version `0.2.0`. It extends the existing `side_effects` enumeration with `stack_adjust` and `flags_write` and adds no required top-level or candidate property. Current-producer validation enforces the exact suffix, immediate domain, total stack delta, empty control/order/clobber relations, and score state.
+
+This is patch-compatible because existing field meanings and count meanings do not change. A future condition-flag bitmap, required memory-operand object, or changed aggregate population would require a separately reviewed schema decision.

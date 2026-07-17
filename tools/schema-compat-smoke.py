@@ -9,8 +9,10 @@ Purpose:
 """
 from __future__ import annotations
 
+import contextlib
+import importlib.util
+import io
 import json
-import subprocess
 import sys
 import tempfile
 from copy import deepcopy
@@ -37,6 +39,19 @@ PATCH046_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.2.0-p046.
 CURRENT_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-0.2.0.json"
 SPRINT10_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-0.2.0.json"
 SPRINT10_TRANSFER_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-transfer-0.2.0.json"
+SPRINT10_STACK_ADJUST_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-stack-adjust-0.2.0.json"
+
+
+def load_custom_validator() -> Any:
+    spec = importlib.util.spec_from_file_location("x64lens_validate_json_report", CUSTOM_VALIDATOR)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot import validator from {CUSTOM_VALIDATOR}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+CUSTOM_VALIDATOR_MODULE = load_custom_validator()
 
 
 class SmokeError(RuntimeError):
@@ -92,13 +107,15 @@ def run_custom(
     *args: str,
     expect_success: bool,
 ) -> None:
-    command = [sys.executable, str(CUSTOM_VALIDATOR), *args, str(path)]
-    result = subprocess.run(command, capture_output=True, text=True, check=False)
-    if expect_success and result.returncode != 0:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        status = CUSTOM_VALIDATOR_MODULE.main([*args, str(path)])
+    if expect_success and status != 0:
         raise SmokeError(
-            f"custom validator unexpectedly rejected {path.name}: {result.stderr.strip()}"
+            f"custom validator unexpectedly rejected {path.name}: {stderr.getvalue().strip()}"
         )
-    if not expect_success and result.returncode == 0:
+    if not expect_success and status == 0:
         raise SmokeError(f"custom validator unexpectedly accepted {path.name}")
 
 
@@ -112,6 +129,7 @@ def main() -> int:
     current = load_json(CURRENT_REPORT_PATH)
     sprint10 = load_json(SPRINT10_REPORT_PATH)
     sprint10_transfer = load_json(SPRINT10_TRANSFER_REPORT_PATH)
+    sprint10_stack_adjust = load_json(SPRINT10_STACK_ADJUST_REPORT_PATH)
 
     # Historical 0.1.0 reports, Patch 040's initial 0.2.0 shape, and the current
     # provenance-bearing producer shape all remain consumable.
@@ -121,6 +139,7 @@ def main() -> int:
     require_formal_accept(current_schema, "current-0.2.0", current)
     require_formal_accept(current_schema, "sprint10-0.2.0", sprint10)
     require_formal_accept(current_schema, "sprint10-transfer-0.2.0", sprint10_transfer)
+    require_formal_accept(current_schema, "sprint10-stack-adjust-0.2.0", sprint10_stack_adjust)
 
     run_custom(LEGACY_REPORT_PATH, "--require-schema", "0.1.0", expect_success=True)
     run_custom(
@@ -168,6 +187,19 @@ def main() -> int:
         SPRINT10_TRANSFER_REPORT_PATH,
         "--mode",
         "sprint10-transfer-fixture",
+        "--require-schema",
+        "0.2.0",
+        "--expected-command",
+        "gadgets",
+        "--require-provenance",
+        "--require-sprint10-effects",
+        "--require-sprint10-transfer",
+        expect_success=True,
+    )
+    run_custom(
+        SPRINT10_STACK_ADJUST_REPORT_PATH,
+        "--mode",
+        "sprint10-stack-adjust-fixture",
         "--require-schema",
         "0.2.0",
         "--expected-command",
@@ -332,6 +364,34 @@ def main() -> int:
         mutation["gadgets"][4]["register_transfer"] = {"source": "rax", "destination": "rdi"}
         semantic_cases.append(("non-transfer-carries-transfer-relation", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
 
+        # Patch 047 review regressions: exact bare-ret facts must agree per
+        # candidate even when aggregate counts and register coverage are edited
+        # to remain superficially consistent.
+        mutation = deepcopy(current)
+        mutation["gadgets"][0]["terminator"] = "unknown"
+        semantic_cases.append(("ret-terminator-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(current)
+        mutation["gadgets"][0]["controls"] = ["rdi"]
+        mutation["primitive_coverage"]["registers"] = ["rdi"]
+        semantic_cases.append(("ret-controls-disagree", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(current)
+        mutation["gadgets"][0]["stack_delta"] = 24
+        semantic_cases.append(("ret-stack-delta-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_stack_adjust)
+        mutation["gadgets"][0]["stack_delta"] = 24
+        semantic_cases.append(("stack-adjust-delta-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_stack_adjust)
+        mutation["gadgets"][0]["bytes"] = "4883c407c3"
+        semantic_cases.append(("stack-adjust-immediate-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
+        mutation = deepcopy(sprint10_stack_adjust)
+        mutation["gadgets"][0]["side_effects"] = []
+        semantic_cases.append(("stack-adjust-effect-missing", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer",)))
+
         for name, document, extra_args in semantic_cases:
             require_formal_accept(current_schema, name, document)
             path = write_document(directory, f"{name}.json", document)
@@ -370,7 +430,7 @@ def main() -> int:
 
     print(
         "schema-compat-smoke: ok "
-        "legacy=0.1.0 patch040=0.2.0 patch046=0.2.0 current=0.2.0 transfer=0.2.0 "
+        "legacy=0.1.0 patch040=0.2.0 patch046=0.2.0 current=0.2.0 transfer=0.2.0 stack_adjust=0.2.0 "
         f"formal_rejections={formal_rejections} "
         f"semantic_rejections={semantic_rejections}"
     )

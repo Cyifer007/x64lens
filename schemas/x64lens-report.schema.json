@@ -489,7 +489,9 @@
                 "stack_pivot",
                 "syscall",
                 "ret_imm16",
-                "register_write"
+                "register_write",
+                "stack_adjust",
+                "flags_write"
               ]
             },
             "uniqueItems": true,

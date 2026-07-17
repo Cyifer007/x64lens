@@ -58,11 +58,12 @@ ALLOWED_EVIDENCE_VALIDATORS = {
     "x64lens-exact-suffix",
     "x64lens-decoder",
 }
-ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write"}
+ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write", "stack_adjust", "flags_write"}
 CURRENT_EFFECT_FIELDS = {"stack_pop_order", "clobbers", "side_effects"}
 CURRENT_TRANSFER_FIELDS = {"register_transfer"}
 MULTI_POP_PATTERN = "pop reg; pop reg; ret"
 REGISTER_TRANSFER_PATTERN = "mov reg, reg; ret"
+STACK_ADJUST_PATTERN = "add rsp, imm8; ret"
 ARG_CONTROL_REGS = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"}
 X86_REG_BY_ENCODING = (
     "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi",
@@ -114,6 +115,7 @@ PATTERN_SUFFIX_LENGTHS = {
     "leave; ret": 2,
     "syscall; ret": 3,
     REGISTER_TRANSFER_PATTERN: 4,
+    STACK_ADJUST_PATTERN: 5,
 }
 COVERAGE_CLASS_MAP = {
     "arg_control": "arg_control",
@@ -248,6 +250,20 @@ def decode_register_transfer_suffix(gadget: dict[str, Any], prefix: str) -> tupl
     require(source != destination, f"{prefix}.register-transfer source and destination must differ")
     require(source != "rsp" and destination != "rsp", f"{prefix}.register-transfer cannot involve rsp")
     return source, destination
+
+
+def decode_stack_adjust_suffix(gadget: dict[str, Any], prefix: str) -> int:
+    """Return the supported positive aligned imm8 from add rsp,imm8;ret."""
+    observed = gadget["bytes"].lower()
+    require(len(observed) >= 10, f"{prefix}.stack-adjust bytes are too short")
+    suffix = bytes.fromhex(observed[-10:])
+    rex, opcode, modrm, immediate, terminator = suffix
+    require(rex == 0x48, f"{prefix}.stack-adjust suffix requires REX.W 0x48")
+    require(opcode == 0x83 and modrm == 0xC4, f"{prefix}.stack-adjust opcode must be add rsp,imm8")
+    require(terminator == 0xC3, f"{prefix}.stack-adjust suffix must end in ret")
+    require(0 < immediate < 0x80, f"{prefix}.stack-adjust immediate must be positive")
+    require(immediate % 8 == 0, f"{prefix}.stack-adjust immediate must be eight-byte aligned")
+    return immediate
 
 
 def load_report(path: Path) -> dict[str, Any]:
@@ -476,6 +492,14 @@ def validate_common(
         )
         semantic_classes_seen.add(gadget["semantic_class"])
 
+        # Exact pattern labels and terminator facts are one candidate-level
+        # relationship. A report must not claim a recognized ret-terminated
+        # suffix while rendering an unknown or incompatible terminator.
+        if gadget["pattern"] == "ret imm16":
+            require(gadget["terminator"] == "ret imm16", f"{prefix}.ret-imm16 pattern requires ret imm16 terminator")
+        elif gadget["pattern"] != "unknown":
+            require(gadget["terminator"] == "ret", f"{prefix}.exact pattern requires ret terminator")
+
         if require_sprint10_effects:
             missing_effect_fields = CURRENT_EFFECT_FIELDS - set(gadget)
             require(
@@ -685,6 +709,35 @@ def validate_common(
                 require(known is False and gadget["stack_delta"] is None, f"{prefix}.unsupported single-pop stack state must remain unknown")
                 require(gadget["score"] is None, f"{prefix}.unsupported single-pop must remain unscored")
 
+        if gadget["pattern"] == "ret":
+            require(gadget["bytes"].lower().endswith("c3"), f"{prefix}.ret pattern must end in c3")
+            require(gadget["semantic_class"] == "alignment", f"{prefix}.ret semantic class mismatch")
+            require(gadget["controls"] == [], f"{prefix}.ret controls must be empty")
+            require(order in (None, []), f"{prefix}.ret stack_pop_order must be empty")
+            require(clobbers in (None, []), f"{prefix}.ret clobbers must be empty")
+            require(known is True and gadget["stack_delta"] == 8, f"{prefix}.ret stack delta must be 8")
+            require(gadget["score"] == 45, f"{prefix}.ret score mismatch")
+
+        if gadget["pattern"] == "ret imm16":
+            observed = gadget["bytes"].lower()
+            require(len(observed) >= 6 and observed[-6:-4] == "c2", f"{prefix}.ret-imm16 suffix bytes are invalid")
+            immediate = int.from_bytes(bytes.fromhex(observed[-4:]), "little")
+            require(gadget["semantic_class"] == "alignment", f"{prefix}.ret-imm16 semantic class mismatch")
+            require(gadget["controls"] == [], f"{prefix}.ret-imm16 controls must be empty")
+            require(order in (None, []), f"{prefix}.ret-imm16 stack_pop_order must be empty")
+            require(clobbers in (None, []), f"{prefix}.ret-imm16 clobbers must be empty")
+            require(known is True and gadget["stack_delta"] == immediate + 8, f"{prefix}.ret-imm16 stack delta mismatch")
+            require(gadget["score"] == 40, f"{prefix}.ret-imm16 score mismatch")
+
+        if gadget["pattern"] == STACK_ADJUST_PATTERN:
+            immediate = decode_stack_adjust_suffix(gadget, prefix)
+            require(gadget["semantic_class"] == "alignment", f"{prefix}.stack-adjust semantic class mismatch")
+            require(gadget["controls"] == [], f"{prefix}.stack-adjust controls must be empty")
+            require(order in (None, []), f"{prefix}.stack-adjust stack_pop_order must be empty")
+            require(clobbers in (None, []), f"{prefix}.stack-adjust clobbers must be empty")
+            require(known is True and gadget["stack_delta"] == immediate + 8, f"{prefix}.stack-adjust stack delta mismatch")
+            require(gadget["score"] is None, f"{prefix}.stack-adjust remains unscored")
+
         if gadget["pattern"] == REGISTER_TRANSFER_PATTERN:
             source, destination = decode_register_transfer_suffix(gadget, prefix)
             require(transfer == {"source": source, "destination": destination}, f"{prefix}.register_transfer disagrees with exact suffix bytes")
@@ -718,6 +771,9 @@ def validate_common(
                 expected_effects.add("ret_imm16")
             if gadget["semantic_class"] == "reg_transfer":
                 expected_effects.add("register_write")
+            if gadget["pattern"] == STACK_ADJUST_PATTERN:
+                expected_effects.add("stack_adjust")
+                expected_effects.add("flags_write")
             require(set(side_effects) == expected_effects, f"{prefix}.side_effects disagrees with represented semantic effects")
 
         score = gadget["score"]
@@ -953,10 +1009,54 @@ def validate_sprint10_transfer_fixture(doc: dict[str, Any]) -> None:
     require(analysis["complete"] is True and analysis["candidate_count"] == 10, "Sprint 10 transfer fixture analysis summary mismatch")
 
 
+def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
+    counts = doc["counts"]
+    expected_counts = {
+        "raw_candidate_count": 7,
+        "ret_count": 7,
+        "ret_imm16_count": 0,
+        "exact_pattern_count": 7,
+        "semantic_candidate_count": 7,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 5,
+    }
+    for key, value in expected_counts.items():
+        require(counts[key] == value, f"Sprint 10 stack-adjust fixture {key} expected {value}, got {counts[key]}")
+
+    gadgets = doc["gadgets"]
+    adjustments = [g for g in gadgets if g["pattern"] == STACK_ADJUST_PATTERN]
+    require(len(adjustments) == 2, f"Sprint 10 stack-adjust fixture expected 2 promoted candidates, got {len(adjustments)}")
+    require([g["stack_delta"] for g in adjustments] == [16, 40], "Sprint 10 stack-adjust deltas mismatch")
+    for gadget in adjustments:
+        require(gadget["semantic_class"] == "alignment", "Sprint 10 stack-adjust semantic mismatch")
+        require(gadget["controls"] == [], "Sprint 10 stack-adjust controls must be empty")
+        require(gadget["stack_pop_order"] == [], "Sprint 10 stack-adjust pop order must be empty")
+        require(gadget["register_transfer"] is None, "Sprint 10 stack-adjust transfer relation must be null")
+        require(gadget["clobbers"] == [], "Sprint 10 stack-adjust clobbers must be empty")
+        require(gadget["side_effects"] == ["stack_adjust", "flags_write"], "Sprint 10 stack-adjust side effects mismatch")
+        require(gadget["score"] is None, "Sprint 10 stack-adjust candidates remain unscored")
+
+    fallback = [g for g in gadgets if g["pattern"] == "ret"]
+    require(len(fallback) == 5, f"Sprint 10 stack-adjust fixture expected 5 ret fallbacks, got {len(fallback)}")
+    for gadget in fallback:
+        require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
+        require(gadget["controls"] == [], "Sprint 10 fallback controls must be empty")
+        require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 fallback stack delta mismatch")
+        require(gadget["side_effects"] == [], "Sprint 10 fallback side effects must be empty")
+        require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
+
+    coverage = doc["primitive_coverage"]
+    require(coverage["alignment"] is True, "Sprint 10 stack-adjust fixture must expose alignment coverage")
+    require(coverage.get("reg_transfer") is False, "Sprint 10 stack-adjust fixture must not expose transfer coverage")
+    require(coverage["registers"] == [], "Sprint 10 stack-adjust fixture must not expose controlled registers")
+    analysis = doc["analysis"]
+    require(analysis["complete"] is True and analysis["candidate_count"] == 7, "Sprint 10 stack-adjust analysis summary mismatch")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
-    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "system"], default="generic")
+    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "sprint10-stack-adjust-fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     parser.add_argument(
@@ -992,6 +1092,8 @@ def main(argv: list[str]) -> int:
             validate_sprint10_fixture(doc)
         elif args.mode == "sprint10-transfer-fixture":
             validate_sprint10_transfer_fixture(doc)
+        elif args.mode == "sprint10-stack-adjust-fixture":
+            validate_sprint10_stack_adjust_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1

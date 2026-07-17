@@ -2,7 +2,8 @@
 
 ## Status
 
-Sprint 10 entry candidate; authoritative native and Docker acceptance required.
+Accepted Sprint 10 entry foundation. Patch 047 is the current implementation
+candidate.
 
 ## Purpose
 
@@ -156,12 +157,12 @@ an environment-only failure does not establish Patch acceptance.
 - Malformed ELF inputs retain their documented nonzero status and no-partial-
   output behavior.
 
-## Acceptance decision
+## Acceptance record
 
-Patch 046 is accepted only after the authoritative worktree passes the native,
+Patch 046 was accepted as the Sprint 10 entry foundation under the native,
 strict ShellCheck, focused Sprint 10, capacity, malformed-input, parity, and
-qualified Docker gates. A failure in the new family receives the smallest
-corrective patch before additional Sprint 10 primitive families are added.
+qualified Docker gates recorded above. Later primitive families retain their
+own acceptance gates.
 
 ## Follow-on validation
 

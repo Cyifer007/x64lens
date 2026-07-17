@@ -12,7 +12,7 @@ The taxonomy defines when a byte-level candidate can be promoted into an exploit
 | `syscall_num_control` | Controls `rax` for Linux syscall-number setup. | Implemented for `pop rax; ret`. |
 | `syscall_trigger` | Provides a `syscall; ret` suffix. | Implemented. |
 | `stack_pivot` | Makes `rsp` input-dependent or derives it through a pivot sequence. | Implemented for `pop rsp; ret` and `leave; ret`. |
-| `alignment` | Return or stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret` and `ret imm16`. |
+| `alignment` | Return or exact bounded stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret`, `ret imm16`, and the Patch 048 positive aligned `add rsp, imm8; ret` family. |
 | `memory_write` | Writes data to memory with known operand roles. | Planned. |
 | `memory_read` | Reads memory into a register with known operand roles. | Planned. |
 | `reg_transfer` | Transfers a value between known registers with explicit source and destination roles. | Implemented for the Patch 047 exact register-direct 64-bit move family. |
@@ -72,6 +72,7 @@ Otherwise preserve `unknown_candidate`.
 ## Stack-delta rules
 
 - `ret`: known delta `8`.
+- supported `add rsp, imm8; ret`: known delta `imm8 + 8` for positive aligned immediates.
 - `ret imm16`: known delta `8 + imm16` only when the terminator bytes are the intended suffix evidence.
 - `pop reg; ret`: known suffix delta `16` for supported non-pivot registers.
 - `pop rsp; ret` and `leave; ret`: input-dependent, represented as unknown.
@@ -167,3 +168,20 @@ score: unscored
 Memory forms, 32-bit moves, self moves, and `rsp` participation are not promoted.
 This is conservative semantic-exact evidence, not decoder validation of an
 arbitrary backward window.
+
+## Sprint 10 Patch 048 stack-adjust rule
+
+The `alignment` class now includes the exact positive aligned stack-adjust suffix `48 83 c4 imm8 c3`. Promotion requires `imm8` to be nonzero, positive under sign extension, and divisible by eight.
+
+Reported facts:
+
+```text
+semantic class: alignment
+controlled registers: none
+clobbered general-purpose registers: none
+stack delta: imm8 + 8 bytes
+side effects: stack_adjust, flags_write
+score: unscored
+```
+
+Zero, negative, unaligned, wrong-register, subtraction, and memory forms are not promoted. Arithmetic flags are recorded as an effect rather than silently omitted. Exact-suffix evidence does not prove the complete backward window decodes from its earliest byte.

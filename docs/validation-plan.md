@@ -1182,3 +1182,27 @@ legacy/REX multi-pop order. It must reject per-candidate contradictions even
 when aggregate register coverage still appears valid.
 
 See [`sprints/sprint-10-patch-047-validation.md`](sprints/sprint-10-patch-047-validation.md).
+
+## Sprint 10 Patch 048 stack-adjust and public-content validation
+
+Required focused commands:
+
+```bash
+make sprint10-register-transfer-smoke
+make sprint10-stack-adjust-smoke
+make json-effect-consistency-smoke
+make schema-compat-smoke
+make public-artifact-content-smoke
+BUNDLE=/path/to/public-overlay.zip make patch-bundle-hygiene
+PUBLIC_BUNDLE=/path/to/public-overlay.zip make public-bundle-content-check
+```
+
+Expected stack-adjust result:
+
+```text
+sprint10-stack-adjust-smoke: ok candidates=7 stack_adjust=2 fallback=5 scored=5
+```
+
+The two promoted records use exact `48 83 c4 08 c3` and `48 83 c4 20 c3` suffixes, known total stack deltas 16 and 40, and `stack_adjust, flags_write` effects. Five unsupported forms remain scored bare-return fallbacks. Matching bytes in a non-executable data segment must not be scanned.
+
+The common validator must also reject exact-pattern/terminator contradictions, bare `ret` controls, arbitrary bare-return stack deltas, unsupported stack-adjust immediates, wrong total deltas, and missing effect facts. The metadata-only ZIP policy and bounded textual-content policy are both required for a public overlay.

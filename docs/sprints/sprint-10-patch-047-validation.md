@@ -19,7 +19,15 @@ Sprint 10 family:
   `register_write` side-effect facts;
 - preserve the 112-byte candidate record, 655,360-byte arena, 4,096-candidate
   capacity, tool version `0.1.0-dev`, and schema version `0.2.0`;
-- reconcile public documentation and artifact-supply findings from Patch 046.
+- reconcile public documentation with the Patch 046 effect and validation
+  contracts.
+
+Related documentation: [ADR 0033](../adr/0033-exact-register-transfer-effects.md),
+the [Primitive Effect Model](../design/primitive-effect-model.md), the
+[Semantic Taxonomy](../semantic-taxonomy.md), the
+[Architecture](../architecture.md), the [JSON Schema Contract](../json-schema.md),
+the [Sprint 10 Plan](sprint-10-plan.md), and the
+[canonical roadmap](../roadmap-18-sprints.md).
 
 ## Controlled register-transfer fixture
 

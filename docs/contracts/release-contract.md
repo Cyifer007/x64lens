@@ -208,3 +208,14 @@ Before a sprint closeout artifact is accepted:
 - optional decoder or parallel profiles must not replace the dependency-free reference artifact.
 
 Exact diagnostic wording from development validators is stable only when a contract or fixture explicitly version-controls it. Allow/reject outcomes remain the primary archive-policy compatibility surface.
+
+## Public textual-content gate
+
+A publishable source or patch archive must pass both:
+
+```bash
+BUNDLE=/path/to/public.zip make patch-bundle-hygiene
+PUBLIC_BUNDLE=/path/to/public.zip make public-bundle-content-check
+```
+
+The first gate validates ZIP metadata without extraction. The second reads bounded eligible text members in memory and rejects prohibited host paths, attachment-history identifiers, workflow narration, and unsafe deleted or added lines in `.patch` and `.diff` members. A local application package that contains private context is not a public release archive.

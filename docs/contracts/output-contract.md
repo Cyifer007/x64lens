@@ -195,3 +195,13 @@ justifies control; the exact family currently records the destination in
 Earlier schema `0.2.0` reports without the optional relation remain consumable.
 Current producer validation requires the relation field and rejects
 source/destination, control, clobber, stack, or side-effect contradictions.
+
+## Sprint 10 stack-adjust output
+
+Patch 048 adds exact pattern `add rsp, imm8; ret` for positive nonzero eight-byte-aligned immediates. A promoted candidate reports semantic class `alignment`, empty controls/order/clobbers, total known stack delta `imm8 + 8`, side effects `stack_adjust` and `flags_write`, and `score:null`.
+
+`flags_write` is an explicit condition-code effect; condition flags are not part of the general-purpose-register clobber bitmap. Unsupported forms remain the existing bare-return fallback. Full-sequence validity remains unknown under semantic-exact evidence.
+
+## Public artifact content rule
+
+Public ZIP acceptance requires both metadata safety and bounded textual-content review. The content gate scans eligible source, documentation, configuration, patch, and diff members in memory without extracting them. A final source tree that is clean does not make a unified diff safe when deleted or added lines preserve prohibited private workflow or host-specific material.

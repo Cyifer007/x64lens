@@ -43,7 +43,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -59,13 +59,16 @@ help:
 	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
 	@echo "  make patch-bundle-hygiene-smoke  Reconcile local/central ZIP metadata and private paths"
 	@echo "  make public-docs-hygiene-smoke  Reject private transfer names and host paths"
+	@echo "  make public-artifact-content-smoke  Reject private text recoverable from distributed patches"
+	@echo "  PUBLIC_BUNDLE=/path/to/public.zip make public-bundle-content-check"
 	@echo "  make decoder-gap-hardening-smoke  Test parser, child cleanup, snapshots, and rollback"
 	@echo "  make decoder-gap-smoke  Validate controlled external decoder reconciliation"
 	@echo "  make decoder-gap-campaign  Measure controlled and selected-system decoder gaps"
 	@echo "  make schema-compat-smoke  Validate schema 0.1.0 compatibility and 0.2.0 invariants"
 	@echo "  make sprint10-primitive-smoke  Validate ordered two-pop primitive facts and fallback"
 	@echo "  make sprint10-register-transfer-smoke  Validate exact register-transfer facts and fallback"
-	@echo "  make json-effect-consistency-smoke  Validate all single-pop and mixed-pop effect relations"
+	@echo "  make sprint10-stack-adjust-smoke  Validate exact positive aligned stack-adjust facts and fallback"
+	@echo "  make json-effect-consistency-smoke  Validate pop, return, transfer, and stack-adjust effect relations"
 	@echo "  make shellcheck-smoke  Run shellcheck when installed"
 	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
 	@echo "  make analysis-tools-check  Inventory optional analysis/comparison tools"
@@ -160,6 +163,7 @@ samples: sample-tools-check
 	cp tests/toy-src/gadgets tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_sprint10 tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_sprint10_transfer tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/gadgets_sprint10_stack_adjust tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity_exact tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity tests/bin/ 2>/dev/null || true
 
@@ -240,6 +244,25 @@ sprint10-register-transfer-smoke: dev-tools-check all samples
 # Validator-only regression for all sixteen exact single-pop metadata entries and
 # mixed legacy/REX two-pop order. This catches per-candidate contradictions
 # that aggregate primitive coverage can conceal.
+# Sprint 10 Patch 048 stack-adjust gate. Positive aligned add-rsp forms are
+# promoted to alignment semantics with an explicit stack_adjust effect. Zero,
+# negative, unaligned, wrong-register, and subtraction forms remain bare-ret
+# fallbacks. The historical and earlier Sprint 10 fixtures remain unchanged.
+sprint10-stack-adjust-smoke: dev-tools-check all samples
+	@tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-stack-adjust.XXXXXX")"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	objdump -d -w -Mintel ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/stack-adjust.objdump.txt"; \
+	python3 tools/validate-sprint10-stack-adjust-disassembly.py ./tests/bin/gadgets_sprint10_stack_adjust "$$tmp/stack-adjust.objdump.txt" >/dev/null; \
+	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/gadgets.json"; \
+	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/analyze.json"; \
+	python3 tools/validate-json-report.py --mode sprint10-stack-adjust-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer "$$tmp/gadgets.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode sprint10-stack-adjust-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer "$$tmp/analyze.json" >/dev/null; \
+	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
+	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/gadgets.txt"; \
+	grep -q "pattern: add rsp, imm8; ret" "$$tmp/gadgets.txt"; \
+	grep -q "side effects: stack_adjust, flags_write" "$$tmp/gadgets.txt"; \
+	echo "sprint10-stack-adjust-smoke: ok candidates=7 stack_adjust=2 fallback=5 scored=5"
+
 json-effect-consistency-smoke:
 	@python3 tools/json-effect-consistency-smoke.py
 
@@ -346,6 +369,13 @@ patch-bundle-hygiene-smoke:
 public-docs-hygiene-smoke:
 	bash tools/public-docs-hygiene-smoke.sh
 
+public-artifact-content-smoke:
+	python3 tools/public-artifact-content-smoke.py
+
+public-bundle-content-check:
+	@test -n "$(PUBLIC_BUNDLE)" || { echo "error: set PUBLIC_BUNDLE=/path/to/public.zip"; exit 2; }
+	python3 tools/check-public-content.py --zip "$(PUBLIC_BUNDLE)"
+
 decoder-gap-hardening-smoke:
 	python3 tools/decoder-gap-hardening-smoke.py
 
@@ -394,7 +424,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -499,6 +529,7 @@ script-perms-check:
 	@test -x tools/validate-json-report.py
 	@test -x tools/validate-sprint10-disassembly.py
 	@test -x tools/validate-sprint10-transfer-disassembly.py
+	@test -x tools/validate-sprint10-stack-adjust-disassembly.py
 	@test -x tools/json-effect-consistency-smoke.py
 	@test -x tools/validate-report-parity.py
 	@test -x tools/schema-compat-smoke.py
@@ -508,7 +539,9 @@ script-perms-check:
 	@test -x tools/install-ropr-user.sh
 	@test -x tools/demo-checkpoint.sh
 	@test -x tools/check-public-docs.sh
+	@test -x tools/check-public-content.py
 	@test -x tools/public-docs-hygiene-smoke.sh
+	@test -x tools/public-artifact-content-smoke.py
 	@test -x tools/check-planning-docs.sh
 	@test -x tools/malformed-elf-smoke.py
 	@test -x tools/fuzz-mutated-elf-smoke.sh
@@ -573,12 +606,15 @@ scaffold-check: script-perms-check
 	@test -f tests/expected/x64lens-report-0.1.0.json
 	@test -f tests/expected/x64lens-report-0.2.0.json
 	@test -f tests/expected/x64lens-report-0.2.0-p040.json
+	@test -f tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json
 	@test -f tools/validate-report-parity.py
 	@test -f tools/patch-bundle-hygiene-smoke.py
 	@test -f tools/check-patch-bundle-hygiene.py
 	@test -f tools/decoder-gap-smoke.py
 	@test -f tools/decoder-gap-hardening-smoke.py
 	@test -f tools/public-docs-hygiene-smoke.sh
+	@test -f tools/check-public-content.py
+	@test -f tools/public-artifact-content-smoke.py
 	@test -f tests/expected/decoder-gap-controlled.json
 	@test -f docs/design/decoder-gap-decision-gate.md
 	@test -f docs/sprints/sprint-09-patch-042-validation.md

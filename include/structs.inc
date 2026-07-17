@@ -215,6 +215,7 @@
 %define PATTERN_SYSCALL_RET           20
 %define PATTERN_MULTI_POP_RET          21
 %define PATTERN_MOV_REG_REG_RET        22
+%define PATTERN_ADD_RSP_IMM8_RET       23
 
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
@@ -333,5 +334,7 @@
 %define SIDE_EFFECT_SYSCALL         (1 << 2)
 %define SIDE_EFFECT_RET_IMM16       (1 << 3)
 %define SIDE_EFFECT_REGISTER_WRITE   (1 << 4)
+%define SIDE_EFFECT_STACK_ADJUST     (1 << 5)
+%define SIDE_EFFECT_FLAGS_WRITE      (1 << 6)
 
 %endif

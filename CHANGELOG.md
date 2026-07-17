@@ -8,6 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 048 exact `add rsp, positive-aligned-imm8; ret` recognition with known total stack delta, explicit `stack_adjust` and `flags_write` effects, conservative fallback, and no score assignment.
+- A seven-candidate stack-adjust/fallback fixture, `make sprint10-stack-adjust-smoke`, and an objdump-backed stack-adjust disassembly oracle.
+- Bounded public textual-content validation for repository files and public ZIP members, including `.patch` and `.diff` payloads, as a separate gate from metadata-only ZIP safety.
+- ADR 0034 and the Patch 048 validation record.
+
 - Sprint 10 Patch 047 exact register-direct `mov r64,r64; ret` recognition with explicit source/destination, destination clobber, `register_write`, and known return stack-delta facts.
 - A ten-candidate transfer/fallback fixture, `make sprint10-register-transfer-smoke`, and an objdump-backed transfer disassembly oracle.
 - `make json-effect-consistency-smoke`, covering all 16 single-pop metadata relations and mixed legacy/REX two-pop order with contradiction rejection.
@@ -118,6 +123,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance Sprint 10 through the Patch 048 candidate while preserving the 112-byte candidate record, 655,360-byte arena, 4,096-candidate capacity, decoder-free one-worker runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
+- Require current-producer validation to reconcile exact terminators, bare-return controls and stack facts, stack-adjust immediates, side effects, and known deltas.
+- Distinguish public ZIP metadata safety from bounded public textual-content review; final-file public overlays may pass both gates while local application packages remain outside the public release boundary.
+
 - Advance Sprint 10 through Patch 047 while preserving the 112-byte candidate record, 655,360-byte arena, 4,096-candidate capacity, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Require current-producer validation to reconcile single-pop pattern, exact order, semantic controls, and score facts per candidate.
 - Keep register-transfer candidates unscored and preserve `controls` as independent control evidence rather than treating every value transfer as external control.
@@ -211,6 +220,11 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Define the compact JSON object delimiters required by register-transfer rendering.
+- Reject exact-pattern/terminator contradictions, bare `ret` records with controls or arbitrary stack deltas, and inconsistent stack-adjust records in common current-producer validation.
+- Allow the Sprint 10 transfer disassembly oracle to consume a retained objdump transcript as documented by the validation interface.
+- Prevent public source archives from passing content review when textual patch or diff members retain prohibited deleted or added workflow narration.
 
 - Rewrite the UNC-path public-document regex so strict ShellCheck no longer
   reports `SC1003` while the functional rejection remains enforced.

@@ -194,3 +194,9 @@ resource use, and explicit provenance.
 Sprint 9 supports claims about explicit report identity, bounded analysis completeness, candidate provenance, and a reproducible external decoder-gap method. It does not support claims of complete decoded gadget coverage, universal false-positive elimination, superiority over baseline tools, or anti-analysis invisibility.
 
 The paper should evaluate the dependency-free scanner as the reference profile and may later compare candidate-scoped decoder validation and deterministic parallel profiles as ablations. Runtime, CPU, max RSS, coverage, and output-definition differences must remain separate results.
+
+## Sprint 10 Patch 048 publication note
+
+The paper may describe Patch 048 as a compatible semantic-exact extension for positive aligned stack adjustment with explicit stack and condition-flag effects. It may not describe the family as full decoded validity, universal stack-adjust coverage, or evidence that x64lens is faster or lower-RSS than baseline tools.
+
+Public replication archives must be evaluated as distributed bytes. Metadata-safe archives can still preserve prohibited text inside patch or diff members, so both archive metadata and bounded public-content gates are required.

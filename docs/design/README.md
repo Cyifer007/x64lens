@@ -48,9 +48,14 @@ validation.
 
 ## Sprint 10 reading path
 
-1. [`../adr/0032-ordered-multi-pop-foundation.md`](../adr/0032-ordered-multi-pop-foundation.md)
-2. [`../adr/0033-exact-register-transfer-effects.md`](../adr/0033-exact-register-transfer-effects.md)
-3. [`primitive-effect-model.md`](primitive-effect-model.md)
-4. [`../sprints/sprint-10-plan.md`](../sprints/sprint-10-plan.md)
-5. [`../sprints/sprint-10-patch-047-validation.md`](../sprints/sprint-10-patch-047-validation.md)
-6. [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)
+1. [`../architecture.md`](../architecture.md)
+2. [`../adr/0032-ordered-multi-pop-foundation.md`](../adr/0032-ordered-multi-pop-foundation.md)
+3. [`../adr/0033-exact-register-transfer-effects.md`](../adr/0033-exact-register-transfer-effects.md)
+4. [`../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md`](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md)
+5. [`primitive-effect-model.md`](primitive-effect-model.md)
+6. [`../semantic-taxonomy.md`](../semantic-taxonomy.md)
+7. [`../json-schema.md`](../json-schema.md)
+8. [`../sprints/sprint-10-plan.md`](../sprints/sprint-10-plan.md)
+9. [`../sprints/sprint-10-patch-047-validation.md`](../sprints/sprint-10-patch-047-validation.md)
+10. [`../sprints/sprint-10-patch-048-validation.md`](../sprints/sprint-10-patch-048-validation.md)
+11. [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)

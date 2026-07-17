@@ -71,8 +71,8 @@ width, dereference direction, fault exposure, and clobber facts.
 
 ### Grow every candidate record
 
-Rejected. The existing bounded metadata tail is sufficient, and record growth
-would increase arena RSS or reduce capacity.
+Rejected. The existing bounded metadata tail is sufficient; record growth would
+enlarge the fixed arena or reduce candidate capacity.
 
 ### Score the family immediately
 
@@ -101,3 +101,6 @@ remain command-only parity matches.
 - [`../sprints/sprint-10-plan.md`](../sprints/sprint-10-plan.md)
 - [`../sprints/sprint-10-patch-047-validation.md`](../sprints/sprint-10-patch-047-validation.md)
 - [`../design/evidence-provenance-model.md`](../design/evidence-provenance-model.md)
+- [`../architecture.md`](../architecture.md)
+- [`../json-schema.md`](../json-schema.md)
+- [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)

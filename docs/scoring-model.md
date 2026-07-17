@@ -125,3 +125,9 @@ source value, destination role, chain context, clobber cost, and future decoder
 confidence. Patch 047 adds those structural facts without assigning an
 unsupported utility value. Any later score requires a documented table entry or
 factor rule plus fixture updates.
+
+## Sprint 10 Patch 048 score decision
+
+The first positive aligned `add rsp, imm8; ret` family remains unscored. Utility depends on adjustment size, chain layout, alignment needs, condition-flag effects, surrounding candidate validity, and future bad-byte or decoder evidence. Patch 048 records the exact immediate-derived stack delta and explicit `stack_adjust`/`flags_write` effects but does not infer a utility rank.
+
+Any later score requires an explicit rule and fixture update. Existing `ret` and `ret imm16` scores are not reused because the new family performs additional arithmetic and has a different chain effect.

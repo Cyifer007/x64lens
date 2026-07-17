@@ -96,3 +96,7 @@ Documentation must be repository-facing, written from the project maintainer per
 ## Automated public-documentation gate
 
 `make public-docs-check` enforces a narrow set of repository-facing hygiene rules, including rejection of private local paths and coordination-dependent wording. The check supplements human review; it does not replace technical or editorial review.
+
+## Public artifact review rule
+
+Public documentation review applies to the bytes distributed in an archive, not only to the final checked-out tree. Source ZIPs containing textual patch or diff members must be inspected for prohibited deleted and added lines. Repository-facing final-file overlays are preferred when a raw diff would preserve removed private narration.

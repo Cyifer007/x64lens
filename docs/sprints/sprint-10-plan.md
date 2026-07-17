@@ -2,12 +2,13 @@
 
 ## Status
 
-Active. Patch 046 establishes ordered multi-pop effects; Patch 047 adds exact register-transfer effects and closes the common single-pop validation gap.
+Active. Patch 046 establishes ordered multi-pop effects, Patch 047 adds exact register-transfer effects, and Patch 048 corrects the transfer/reporting validation foundation while adding one exact positive aligned stack-adjust family.
 
 Related documentation: [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md),
 [ADR 0033](../adr/0033-exact-register-transfer-effects.md), the
 [Primitive Effect Model](../design/primitive-effect-model.md), the
-[Patch 047 Validation Plan](sprint-10-patch-047-validation.md), and the
+[Patch 047 Validation Plan](sprint-10-patch-047-validation.md), the
+[Patch 048 Validation Plan](sprint-10-patch-048-validation.md), and the
 [canonical roadmap](../roadmap-18-sprints.md).
 
 ## Sprint goal
@@ -27,7 +28,8 @@ validity, side effects, score meaning, or the defensive deployment profile.
   ordered controls; Patch 047 populates the overwritten transfer destination
   as a clobber. Memory-family clobbers remain open.
 - [ ] Complete side-effect modeling. Patch 046 exposes stack-read, pivot,
-  syscall, and `ret imm16` facts; Patch 047 adds `register_write`; memory
+  syscall, and `ret imm16` facts; Patch 047 adds `register_write`; Patch 048
+  adds `stack_adjust` and `flags_write`; memory
   dereference facts remain open.
 - [x] Add known/unknown stack-delta representation for the first expanded
   family.
@@ -62,9 +64,16 @@ transfers, decoder validation, parallel execution, or a new score rule.
 1. Patch 046: ordered two-pop foundation and effect-field contract.
 2. Patch 047: add the first exact register-transfer family and harden all
    single-pop effect relations.
-3. Add narrowly justified memory-read/write families and dereference facts.
-4. Review scoring only after each semantic family and its effects pass fixtures.
-5. Close Sprint 10 with corpus-facing fixture coverage and Sprint 11 handoff.
+3. Patch 048: correct transfer/reporting and public-artifact gates, add the
+   first exact positive aligned stack-adjust family, and harden bare-return and
+   terminator relationships.
+4. Add another bounded register/stack family only when its effects fit the
+   current records, or define the complete operand model before memory work.
+5. Introduce narrow memory effects only after the record can express operand
+   role, base/index/scale/displacement, width, direction, clobbers, and
+   uncertainty without near-term schema replacement.
+6. Review scoring only after each semantic family and its effects pass fixtures.
+7. Close Sprint 10 with corpus-facing fixture coverage and Sprint 11 handoff.
 
 ## Entry criteria from Sprint 9
 
@@ -119,3 +128,9 @@ fallback.
 The patch also adds common-validator regression coverage for all 16 single-pop
 patterns and mixed legacy/REX multi-pop order so per-candidate contradictions
 cannot hide behind aggregate coverage.
+
+## Patch 048 boundary
+
+Patch 048 recognizes only `48 83 c4 imm8 c3` with a positive nonzero eight-byte-aligned immediate. It records alignment semantics, total stack delta, `stack_adjust`, and `flags_write`, while leaving the family unscored. Unsupported arithmetic forms remain bare-return fallbacks.
+
+The same patch corrects the missing JSON object delimiters, strengthens common exact-pattern and return-effect validation, supports retained objdump transcripts in the transfer oracle, and adds bounded textual-content inspection for public source ZIPs. It does not add memory semantics, a decoder, a worker runtime, or per-candidate storage.

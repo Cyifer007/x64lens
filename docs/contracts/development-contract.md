@@ -260,3 +260,11 @@ Every new family requires:
 4. provenance and schema validation;
 5. explicit score inclusion or deliberate unscored status;
 6. unchanged fail-closed capacity and malformed-input behavior.
+
+## Public artifact textual-content rule
+
+Metadata-only archive validation and public textual-content validation are separate mandatory gates. Public source overlays must pass both. Textual patch and diff members are scanned as distributed content, including deleted lines. Local application packages may contain private context or local patch material only when they are clearly separated from public release artifacts.
+
+## Exact stack-adjust family rule
+
+An exact arithmetic stack family must validate opcode, operand, immediate domain, terminator, and candidate bounds before semantic promotion. Arithmetic flag modification must remain visible as an effect. Unsupported forms fall back to the strongest existing fact rather than receiving a broader semantic claim.

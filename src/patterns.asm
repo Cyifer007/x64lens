@@ -12,7 +12,8 @@
 ; Sprint 10 scope:
 ;   Patch 046 adds one conservative two-pop argument-control family. Patch 047
 ;   adds one exact register-direct `mov r64, r64; ret` family for opcode 89/8b
-;   with REX.W and ModRM.mod=3. Ordered pattern register IDs remain in the
+;   with REX.W and ModRM.mod=3. Patch 048 adds a bounded positive aligned
+;   `add rsp, imm8; ret` family. Ordered pattern register IDs remain in the
 ;   reserved gadget_record tail, so record size, arena size, and capacity do not
 ;   grow. Unsupported, duplicate, stack-pointer, memory, or 32-bit forms fall
 ;   back to the strongest previously supported suffix ending at the same return.
@@ -158,12 +159,36 @@ x64lens_patterns_match_exact:
     mov     rax, rsi
     sub     rax, rbx
     cmp     rax, 2
-    jb      .check_reg_transfer
+    jb      .check_stack_adjust
     cmp     byte [r14 + rsi - 2], 0x0f
-    jne     .check_reg_transfer
+    jne     .check_stack_adjust
     cmp     byte [r14 + rsi - 1], 0x05
-    jne     .check_reg_transfer
+    jne     .check_stack_adjust
     SET_PATTERN PATTERN_SYSCALL_RET
+
+.check_stack_adjust:
+    ; Exact supported form: 48 83 c4 imm8 c3 (add rsp, imm8; ret).
+    ; The sign-extended immediate must be positive, nonzero, and divisible
+    ; by eight. Negative, no-op, and byte-granular adjustments remain bare-ret
+    ; fallbacks rather than receiving alignment semantics.
+    mov     rax, rsi
+    sub     rax, rbx
+    cmp     rax, 4
+    jb      .check_reg_transfer
+    cmp     byte [r14 + rsi - 4], 0x48
+    jne     .check_reg_transfer
+    cmp     byte [r14 + rsi - 3], 0x83
+    jne     .check_reg_transfer
+    cmp     byte [r14 + rsi - 2], 0xc4
+    jne     .check_reg_transfer
+    movzx   eax, byte [r14 + rsi - 1]
+    test    eax, eax
+    jz      .check_reg_transfer
+    test    eax, 0x80
+    jnz     .check_reg_transfer
+    test    eax, 0x07
+    jnz     .check_reg_transfer
+    SET_PATTERN PATTERN_ADD_RSP_IMM8_RET
 
 .check_reg_transfer:
     ; Exact supported form:

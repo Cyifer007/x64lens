@@ -230,3 +230,7 @@ The CLI syntax and exit codes are unchanged. `gadgets` and `analyze` may now
 report exact `mov r64,r64; ret` register-transfer candidates with explicit
 source/destination, clobber, stack, and side-effect facts. Unsupported transfer
 forms retain the strongest existing suffix interpretation.
+
+## Sprint 10 Patch 048 stack-adjust behavior
+
+`gadgets` and `analyze` may report exact `add rsp, imm8; ret` suffixes when the immediate is positive, nonzero, and eight-byte aligned. These candidates remain semantic-exact alignment facts with known total stack delta, `stack_adjust` and `flags_write` effects, and no score. Unsupported arithmetic forms remain bare-return fallbacks. CLI syntax, exit codes, capacity behavior, and schema version remain unchanged.

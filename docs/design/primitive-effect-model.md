@@ -101,6 +101,8 @@ Current represented side-effect identifiers are:
 | `syscall` | The suffix executes the `syscall` instruction. |
 | `ret_imm16` | The return applies the encoded immediate stack adjustment. |
 | `register_write` | The suffix writes a represented destination register. |
+| `stack_adjust` | The suffix changes the stack pointer by a represented constant amount. |
+| `flags_write` | The suffix modifies condition-code flags; flags are outside the general-purpose-register clobber bitmap. |
 
 These are modeled facts, not an exhaustive microarchitectural description.
 Unknown or unmodeled effects must not be inferred by reporters.
@@ -169,3 +171,21 @@ The empty `controls` array is deliberate. A register transfer relates two
 register values but does not establish who controls the source at runtime.
 Self moves, `rsp` participation, memory operands, and 32-bit moves remain
 conservative `ret` fallbacks.
+
+## Patch 048 stack-adjust family
+
+Patch 048 recognizes the exact suffix:
+
+```text
+48 83 c4 imm8 c3    add rsp, imm8; ret
+```
+
+Promotion is limited to positive, nonzero, eight-byte-aligned immediates. The candidate reports no controlled or general-purpose-register clobber facts, a known total stack delta of `imm8 + 8`, and these side effects:
+
+```json
+"side_effects": ["stack_adjust", "flags_write"]
+```
+
+`stack_adjust` records the explicit stack-pointer movement. `flags_write` records that integer addition modifies condition flags. Condition flags are not members of the current general-purpose-register clobber bitmap, so the separate effect prevents a false implication that the suffix has no other represented architectural effects.
+
+The family remains unscored. Zero, negative, unaligned, wrong-register, subtraction, and memory forms retain the strongest existing fallback. Full-sequence validity remains unknown until decoder-backed evidence exists.

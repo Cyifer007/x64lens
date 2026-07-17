@@ -899,3 +899,30 @@ tail. The candidate arena remains 655,360 bytes with capacity 4,096.
 Reporters do not infer operand roles from text or pattern names. They render the
 recorded source/destination relation. Full instruction-sequence validity remains
 unknown because no decoder is introduced.
+
+See [ADR 0033](adr/0033-exact-register-transfer-effects.md), the
+[Primitive Effect Model](design/primitive-effect-model.md), the
+[Semantic Taxonomy](semantic-taxonomy.md), the
+[JSON Schema Contract](json-schema.md), the
+[Sprint 10 Plan](sprints/sprint-10-plan.md), the
+[Patch 047 Validation Plan](sprints/sprint-10-patch-047-validation.md), and the
+[canonical roadmap](roadmap-18-sprints.md).
+
+## Sprint 10 Patch 048 exact stack-adjust seam
+
+Patch 048 adds one exact matcher/classifier path without changing scanner authority or record allocation:
+
+```text
+scanner raw candidate
+  -> patterns.asm recognizes 48 83 c4 imm8 c3
+  -> classifier.asm validates positive aligned imm8 and records total stack delta
+  -> candidate_evidence.asm records five-byte semantic-exact suffix provenance
+  -> scoring.asm leaves the family unscored
+  -> text/JSON reporters render record-backed stack_adjust and flags_write effects
+```
+
+Promotion requires a nonzero positive immediate below `0x80` and divisible by eight. Zero, negative, unaligned, wrong-register, and subtraction forms retain the existing bare-return fallback. Arithmetic flag modification is represented as `flags_write`; the current clobber bitmap remains a general-purpose-register fact and does not model condition flags.
+
+The family reuses the existing 112-byte `gadget_record`. Candidate capacity remains 4096 and the combined analysis arena remains 655360 bytes. Full-sequence validity remains unknown because exact suffix evidence is not decoded validity.
+
+Public artifact validation now has two independent layers: metadata-only ZIP safety and bounded textual-content inspection. The latter reads eligible public text members in memory without extracting them. See [ADR 0034](adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md) and the [Patch 048 validation plan](sprints/sprint-10-patch-048-validation.md).

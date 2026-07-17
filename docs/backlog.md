@@ -364,4 +364,14 @@ Deferred with explicit classification:
 - [x] Reject single-pop `controls` values that disagree with exact pattern and `stack_pop_order` facts.
 - [x] Exercise all 16 single-pop metadata entries and mixed legacy/REX two-pop order.
 - [x] Remove unmeasured resource language from the decoder-ablation roadmap.
-- [x] Regenerate a complete, self-authenticating application and evidence package.
+
+### Patch 048 validation and stack-adjust update
+
+- [x] Define the missing JSON object delimiters required by register-transfer output.
+- [x] Reject exact-pattern/terminator, bare-return control, and bare-return stack contradictions in common validation.
+- [x] Add exact positive aligned `add rsp, imm8; ret` recognition with known total stack delta.
+- [x] Record `stack_adjust` and arithmetic `flags_write` effects without growing the candidate record or arena.
+- [x] Add controlled positive and fallback fixtures plus an independent objdump oracle.
+- [x] Add bounded public ZIP textual-content validation separate from metadata-only archive safety.
+- [ ] Define a complete memory-operand fact record before promoting memory read/write families.
+- [ ] Decide whether another bounded stack/register family is preferable to memory effects for the next Sprint 10 patch.

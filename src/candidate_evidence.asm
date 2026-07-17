@@ -38,6 +38,7 @@ pattern_suffix_lengths:
     db 3                      ; syscall; ret
     db 0                      ; multi-pop length is derived from ordered metadata
     db 4                      ; REX.W + mov r64,r64 + ret
+    db 5                      ; add rsp, imm8; ret
 
 ; Indexed by PATTERN_* ID. Values are canonical register IDs for the single-pop
 ; family and 0xff for patterns that do not carry one ordered pop register.
@@ -47,7 +48,7 @@ pattern_single_pop_regs:
     db REG_RSP_BIT, REG_RBP_BIT, REG_RSI_BIT, REG_RDI_BIT
     db REG_R8_BIT, REG_R9_BIT, REG_R10_BIT, REG_R11_BIT
     db REG_R12_BIT, REG_R13_BIT, REG_R14_BIT, REG_R15_BIT
-    db 0xff, 0xff, 0xff, 0xff
+    db 0xff, 0xff, 0xff, 0xff, 0xff
 
 section .text
 global x64lens_candidate_evidence_from_exact
@@ -126,7 +127,7 @@ x64lens_candidate_evidence_from_exact:
     mov     eax, [r12 + GADGET_PATTERN_ID]
     test    eax, eax
     jz      .require_unknown_semantic
-    cmp     eax, PATTERN_MOV_REG_REG_RET
+    cmp     eax, PATTERN_ADD_RSP_IMM8_RET
     ja      .bounds_error
     cmp     eax, PATTERN_MULTI_POP_RET
     je      .multi_pop_suffix_length

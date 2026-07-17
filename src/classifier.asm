@@ -12,9 +12,9 @@
 ;
 ; Current scope:
 ;   Map supported exact suffix patterns into conservative semantic classes.
-;   Sprint 10 Patch 046 adds a two-pop argument-control family whose ordered
-;   register facts are provided by patterns.asm. This is still not full
-;   instruction decoding; semantic promotion describes exact suffix evidence.
+;   Sprint 10 adds ordered two-pop, exact register-transfer, and bounded
+;   positive stack-adjust families. This is still not full instruction
+;   decoding; semantic promotion describes exact suffix evidence.
 ;
 ; Safety model:
 ;   Candidate records and exact pattern IDs are produced only after parser,
@@ -146,6 +146,8 @@ x64lens_classifier_apply_exact:
     je      .class_multi_pop_arg
     cmp     eax, PATTERN_MOV_REG_REG_RET
     je      .class_reg_transfer
+    cmp     eax, PATTERN_ADD_RSP_IMM8_RET
+    je      .class_add_rsp_imm8
 
     ; Conservative default: known exact patterns that are not yet mapped to a
     ; semantic primitive remain unknown_candidate for Sprint 4 metrics.
@@ -257,6 +259,48 @@ x64lens_classifier_apply_exact:
     mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_REGISTER_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_REG_TRANSFER_COUNT]
+    jmp     .next_candidate
+
+.class_add_rsp_imm8:
+    ; patterns.asm accepts only 48 83 c4 imm8 c3 with a positive, nonzero,
+    ; eight-byte-aligned immediate. Recheck the complete exact suffix and the
+    ; empty compact-register metadata before promoting it into a known total
+    ; stack delta. This keeps contradictory internal state fail-closed.
+    cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 0
+    jne     .bounds_error
+    cmp     dword [r15 + GADGET_PATTERN_REG_ORDER], 0
+    jne     .bounds_error
+    cmp     qword [r15 + GADGET_BYTE_LEN], 5
+    jb      .bounds_error
+    mov     rbx, [r15 + GADGET_FILE_OFFSET]
+    mov     rcx, [r15 + GADGET_BYTE_START]
+    cmp     rbx, rcx
+    jb      .bounds_error
+    mov     rax, rbx
+    sub     rax, rcx
+    cmp     rax, 4
+    jb      .bounds_error
+    cmp     byte [r14 + rbx - 4], 0x48
+    jne     .bounds_error
+    cmp     byte [r14 + rbx - 3], 0x83
+    jne     .bounds_error
+    cmp     byte [r14 + rbx - 2], 0xc4
+    jne     .bounds_error
+    cmp     byte [r14 + rbx], 0xc3
+    jne     .bounds_error
+    movzx   eax, byte [r14 + rbx - 1]
+    test    eax, eax
+    jz      .bounds_error
+    test    eax, 0x80
+    jnz     .bounds_error
+    test    eax, 0x07
+    jnz     .bounds_error
+    add     rax, STACK_DELTA_RET
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
+    mov     qword [r15 + GADGET_STACK_DELTA], rax
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
     jmp     .next_candidate
 
 .class_pop_rax_syscall_num:

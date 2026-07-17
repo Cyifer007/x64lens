@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 047 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 and 047 establish ordered multi-pop and exact register-transfer foundations. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 048 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 048 establish ordered multi-pop, exact register-transfer, and exact positive aligned stack-adjust foundations while hardening per-candidate and public-artifact validation. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -247,7 +247,10 @@ This preserves independent scanner timing and RSS while allowing a later fixed-c
 Patch 046 demonstrates the first evidence-aware semantic expansion after the
 Sprint 9 provenance gate. Patch 047 adds the first exact register-transfer
 family and strengthens common effect validation without increasing the fixed
-arena or adding a runtime dependency. Memory families remain open and must
+arena or adding a runtime dependency. Patch 048 adds a bounded exact stack-
+adjust family, explicit arithmetic flag effects, and public-artifact content
+validation while preserving the same record, arena, capacity, and dependency
+profile. Memory families remain open and must
 follow the same
 fixture, provenance, and scoring boundaries.
 
@@ -257,3 +260,9 @@ Patch 047 adds a bounded semantic-exact register-transfer family without changin
 the 112-byte candidate record, 4,096-candidate capacity, or dependency-free
 runtime profile. The family records operand roles and destination clobber facts
 but remains unscored. Memory primitives remain the next evidence-model challenge.
+
+## Sprint 10 Patch 048 checkpoint
+
+Patch 048 adds one semantic-exact stack-adjust family without changing scanner authority, record size, candidate capacity, schema version, or runtime dependencies. The family records a known immediate-derived stack delta and explicit stack/flag effects but remains unscored and decoder-unvalidated.
+
+This increases represented primitive breadth while retaining the dependency-free reference profile. It does not establish a runtime, RSS, coverage, or defensive-utility advantage; those remain fixed-corpus research questions for later sprints.

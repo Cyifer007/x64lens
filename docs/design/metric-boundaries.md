@@ -265,3 +265,9 @@ Patch 047 does not add an aggregate transfer count to the public `counts`
 object. Per-candidate relations plus `primitive_coverage.reg_transfer` are
 compatible schema additions. Raw, exact, semantic, unknown, and scored counts
 retain their established meanings.
+
+## Patch 048 stack-adjust metric boundary
+
+The exact stack-adjust family is classified as `alignment`. It does not introduce a new aggregate count. It may increase `exact_pattern_count` and `semantic_candidate_count`; it does not increase `scored_candidate_count` because Patch 048 assigns no score.
+
+`stack_adjust` and `flags_write` are per-candidate effect facts, not candidate populations. A five-byte exact suffix with those effects remains semantic-exact evidence and does not become decoder-validated evidence. The known stack delta describes the represented suffix only.

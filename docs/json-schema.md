@@ -306,3 +306,9 @@ current-producer validation requires it through `--require-sprint10-transfer`.
 The common validator also enforces every single-pop pattern/order/control
 relationship. Aggregate register coverage is not accepted as a substitute for
 per-candidate consistency.
+
+## Sprint 10 Patch 048 stack-adjust effects
+
+Patch 048 keeps schema version `0.2.0`. The formal side-effect enumeration adds `stack_adjust` and `flags_write`. A promoted candidate uses pattern `add rsp, imm8; ret`, semantic class `alignment`, empty controls/order/clobbers, a known total stack delta of immediate plus eight, and `score:null`.
+
+The current semantic validator derives the immediate from the exact five-byte suffix and rejects unsupported immediates, wrong deltas, missing effects, contradictory terminator labels, and nonempty bare-return controls. The fields are compatible additions: retained Patch 040, Patch 046, and Patch 047 reports remain consumable under their documented producer requirements.

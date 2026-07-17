@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Validate the exact instruction sequence for the Sprint 10 transfer fixture.
+"""Validate the exact instruction sequence for the Sprint 10 stack-adjust fixture.
 
-GNU objdump is an independent development oracle. It confirms that the source
-fixture contains the intended register-direct, RSP, memory, and 32-bit forms;
-it does not feed x64lens runtime facts.
+GNU objdump is an independent development oracle. It confirms source-fixture
+shape only and does not feed x64lens runtime facts.
 """
 from __future__ import annotations
 
@@ -19,16 +18,13 @@ ROW = re.compile(
 )
 
 EXPECTED = [
-    ("mov", "rdi,rax"), ("ret", ""),
-    ("mov", "r8,r9"), ("ret", ""),
-    ("mov", "r13,rdx"), ("ret", ""),
-    ("mov", "rbx,r14"), ("ret", ""),
-    ("mov", "rdi,rdi"), ("ret", ""),
-    ("mov", "rsp,rax"), ("ret", ""),
-    ("mov", "rdi,rsp"), ("ret", ""),
-    ("mov", "qwordptr[rax],rdi"), ("ret", ""),
-    ("mov", "edi,eax"), ("ret", ""),
-    ("mov", "rdi,qwordptr[rax]"), ("ret", ""),
+    ("add", "rsp,0x8"), ("ret", ""),
+    ("add", "rsp,0x20"), ("ret", ""),
+    ("add", "rsp,0x0"), ("ret", ""),
+    ("add", "rsp,0xfffffffffffffff8"), ("ret", ""),
+    ("add", "rsp,0x7"), ("ret", ""),
+    ("add", "rax,0x8"), ("ret", ""),
+    ("sub", "rsp,0x8"), ("ret", ""),
 ]
 
 
@@ -47,8 +43,12 @@ def main() -> int:
     )
     args = parser.parse_args()
     if not args.fixture.is_file():
-        print(f"validate-sprint10-transfer-disassembly: error: missing fixture: {args.fixture}", file=sys.stderr)
+        print(
+            f"validate-sprint10-stack-adjust-disassembly: error: missing fixture: {args.fixture}",
+            file=sys.stderr,
+        )
         return 1
+
     if args.objdump_output is None:
         try:
             result = subprocess.run(
@@ -58,7 +58,10 @@ def main() -> int:
                 text=True,
             )
         except FileNotFoundError:
-            print("validate-sprint10-transfer-disassembly: error: objdump is required", file=sys.stderr)
+            print(
+                "validate-sprint10-stack-adjust-disassembly: error: objdump is required",
+                file=sys.stderr,
+            )
             return 127
         if result.returncode != 0:
             print(result.stderr, file=sys.stderr, end="")
@@ -67,7 +70,7 @@ def main() -> int:
     else:
         if not args.objdump_output.is_file():
             print(
-                "validate-sprint10-transfer-disassembly: error: "
+                "validate-sprint10-stack-adjust-disassembly: error: "
                 f"missing transcript: {args.objdump_output}",
                 file=sys.stderr,
             )
@@ -85,12 +88,17 @@ def main() -> int:
         observed.append((mnemonic, normalize_operand(match.group(2) or "")))
         if len(observed) == len(EXPECTED):
             break
+
     if observed != EXPECTED:
-        print("validate-sprint10-transfer-disassembly: error: fixture instruction sequence drifted", file=sys.stderr)
+        print(
+            "validate-sprint10-stack-adjust-disassembly: error: fixture instruction sequence drifted",
+            file=sys.stderr,
+        )
         print(f"expected={EXPECTED!r}", file=sys.stderr)
         print(f"observed={observed!r}", file=sys.stderr)
         return 1
-    print(f"validate-sprint10-transfer-disassembly: ok instructions={len(observed)}")
+
+    print(f"validate-sprint10-stack-adjust-disassembly: ok instructions={len(observed)}")
     return 0
 
 

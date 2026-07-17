@@ -177,6 +177,7 @@ pattern_leave_ret:     db "leave; ret", 0
 pattern_syscall_ret:   db "syscall; ret", 0
 pattern_multi_pop_ret: db "pop reg; pop reg; ret", 0
 pattern_mov_reg_reg_ret: db "mov reg, reg; ret", 0
+pattern_add_rsp_imm8_ret: db "add rsp, imm8; ret", 0
 semantic_unknown:      db "unknown_candidate", 0
 semantic_arg_control:  db "arg_control", 0
 semantic_syscall_num:  db "syscall_num_control", 0
@@ -195,6 +196,8 @@ side_effect_stack_pivot: db "stack_pivot", 0
 side_effect_syscall:     db "syscall", 0
 side_effect_ret_imm16:   db "ret_imm16", 0
 side_effect_register_write: db "register_write", 0
+side_effect_stack_adjust: db "stack_adjust", 0
+side_effect_flags_write: db "flags_write", 0
 reg_rax:               db "rax", 0
 reg_rbx:               db "rbx", 0
 reg_rcx:               db "rcx", 0
@@ -1065,6 +1068,8 @@ report_text_print_pattern:
     je      .pattern_multi_pop_ret
     cmp     edi, PATTERN_MOV_REG_REG_RET
     je      .pattern_mov_reg_reg_ret
+    cmp     edi, PATTERN_ADD_RSP_IMM8_RET
+    je      .pattern_add_rsp_imm8_ret
     lea     rdi, [pattern_unknown]
     jmp     print_cstr
 .pattern_ret:
@@ -1132,6 +1137,9 @@ report_text_print_pattern:
     jmp     print_cstr
 .pattern_mov_reg_reg_ret:
     lea     rdi, [pattern_mov_reg_reg_ret]
+    jmp     print_cstr
+.pattern_add_rsp_imm8_ret:
+    lea     rdi, [pattern_add_rsp_imm8_ret]
     jmp     print_cstr
 
 
@@ -1419,6 +1427,8 @@ report_text_print_side_effects:
     PRINT_EFFECT_IF_SET SIDE_EFFECT_SYSCALL, side_effect_syscall
     PRINT_EFFECT_IF_SET SIDE_EFFECT_RET_IMM16, side_effect_ret_imm16
     PRINT_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_STACK_ADJUST, side_effect_stack_adjust
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write
     test    r12, r12
     jne     .side_effects_done
     lea     rdi, [regs_none]

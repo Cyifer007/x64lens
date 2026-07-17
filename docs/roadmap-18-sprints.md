@@ -13,14 +13,16 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 047 candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 048 candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
 
 The Sprint 10 decisions, effect contract, active boundary, and acceptance
 gates are documented in [ADR 0032](adr/0032-ordered-multi-pop-foundation.md),
 [ADR 0033](adr/0033-exact-register-transfer-effects.md), the
 [Primitive Effect Model](design/primitive-effect-model.md), the
 [Sprint 10 Plan](sprints/sprint-10-plan.md), and the
-[Patch 047 Validation Plan](sprints/sprint-10-patch-047-validation.md).
+[Patch 047 Validation Plan](sprints/sprint-10-patch-047-validation.md),
+[ADR 0034](adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md),
+and the [Patch 048 Validation Plan](sprints/sprint-10-patch-048-validation.md).
 
 The implemented pipeline is:
 
@@ -36,7 +38,7 @@ ELF64 validation
   -> smoke validation and baseline benchmark plumbing
 ```
 
-The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. The Patch 046 entry candidate is later pre-release development state, not the first research release. Sprint 8 closed the mitigation-depth tranche with bounded dynamic-table evidence, RELRO refinement, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, evidence-hygiene gates, automated `readelf` comparison, and optional `checksec` / `rabin2 -I` comparison helpers.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patch 046 is the accepted Sprint 10 entry foundation, Patch 047 establishes exact register transfer, and Patch 048 is the current stack-adjust/validation-hardening candidate; all three are later pre-release development state, not the first research release. Sprint 8 closed the mitigation-depth tranche with bounded dynamic-table evidence, RELRO refinement, canary and stripped indicators, section-label annotations, hostile metadata hardening, byte-safe JSON rendering, evidence-hygiene gates, automated `readelf` comparison, and optional `checksec` / `rabin2 -I` comparison helpers.
 
 ## Sprint 7 closeout checkpoint
 
@@ -69,7 +71,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
 | 9 | Candidate provenance and decoder-gap measurement | Complete through Patch 045: identity, completeness, provenance, schema `0.2.0`, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions. |
-| 10 | Primitive expansion | Active: Patch 046 establishes ordered two-pop effects and Patch 047 adds exact register-transfer effects; narrowly justified memory primitives remain. |
+| 10 | Primitive expansion | Active: Patch 046 establishes ordered two-pop effects, Patch 047 adds exact register-transfer effects, and Patch 048 adds exact positive aligned stack adjustment plus validation hardening; narrowly justified memory primitives remain. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
 | 13 | Comparative benchmark campaign | Publication-grade repeated trials, coverage reconciliation, output-normalization analysis, and raw-result freeze. |
