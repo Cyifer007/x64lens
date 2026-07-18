@@ -41,7 +41,7 @@
     "exact_pattern_count": 10,
     "semantic_candidate_count": 10,
     "unknown_candidate_count": 0,
-    "scored_candidate_count": 6
+    "scored_candidate_count": 4
   },
   "primitive_coverage": {
     "arg_control": false,
@@ -51,8 +51,8 @@
     "alignment": true,
     "reg_transfer": true,
     "registers": [],
-    "memory_write": false,
-    "memory_read": false
+    "memory_write": true,
+    "memory_read": true
   },
   "gadgets": [
     {
@@ -73,6 +73,7 @@
         "rdi"
       ],
       "side_effects": [
+        "stack_read",
         "register_write"
       ],
       "stack_delta": 8,
@@ -108,6 +109,7 @@
         "r8"
       ],
       "side_effects": [
+        "stack_read",
         "register_write"
       ],
       "stack_delta": 8,
@@ -143,6 +145,7 @@
         "r13"
       ],
       "side_effects": [
+        "stack_read",
         "register_write"
       ],
       "stack_delta": 8,
@@ -178,6 +181,7 @@
         "rbx"
       ],
       "side_effects": [
+        "stack_read",
         "register_write"
       ],
       "stack_delta": 8,
@@ -207,7 +211,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -235,7 +241,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -263,7 +271,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -285,13 +295,16 @@
       "section": ".text",
       "bytes": "c3488938c3",
       "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read",
+        "memory_write"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -300,12 +313,22 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": null,
+      "memory_access": {
+        "direction": "write",
+        "base": "rax",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rdi",
+        "dereference": true
+      }
     },
     {
       "va": "0x0000000000401022",
@@ -319,7 +342,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -341,13 +366,19 @@
       "section": ".text",
       "bytes": "c3488b38c3",
       "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
-      "clobbers": [],
-      "side_effects": [],
+      "clobbers": [
+        "rdi"
+      ],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "memory_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -356,12 +387,22 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 1,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": null,
+      "memory_access": {
+        "direction": "read",
+        "base": "rax",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rdi",
+        "dereference": true
+      }
     }
   ],
   "limitations": [

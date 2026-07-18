@@ -129,3 +129,8 @@ PUBLIC_BUNDLE=/path/to/public-overlay.zip make public-bundle-content-check
 ```
 
 The complete native and Docker aggregates remain required before acceptance.
+
+
+## Patch 050 current-effect note
+
+Patch 050 adds the implicit final return `stack_read` to the current stack-adjust effect set. The exact stack-adjust decision and unscored policy are unchanged.

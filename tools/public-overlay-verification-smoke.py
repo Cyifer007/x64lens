@@ -58,7 +58,7 @@ def manifest_for(files: dict[str, tuple[bytes, int]]) -> dict[str, object]:
     }
 
 
-def run(bundle: Path, expected_hash: str, expected_exit: int) -> None:
+def run(bundle: Path, expected_hash: str, expected_exit: int, *, require_error: str | None = None) -> None:
     result = subprocess.run(
         [sys.executable, str(VERIFIER), "--bundle", str(bundle), "--expected-sha256", expected_hash],
         check=False,
@@ -68,6 +68,11 @@ def run(bundle: Path, expected_hash: str, expected_exit: int) -> None:
     if result.returncode != expected_exit:
         raise RuntimeError(
             f"{bundle.name}: expected exit {expected_exit}, got {result.returncode}: "
+            f"{result.stdout}{result.stderr}"
+        )
+    if require_error is not None and require_error not in result.stderr:
+        raise RuntimeError(
+            f"{bundle.name}: expected diagnostic containing {require_error!r}, got: "
             f"{result.stdout}{result.stderr}"
         )
 
@@ -95,10 +100,19 @@ def main() -> int:
         write_zip(stale_hash, tampered_files, manifest_payload=clean_manifest)
         run(stale_hash, clean_hash, 1)
 
-        stale_manifest = root / "tampered-stale-manifest.zip"
-        write_zip(stale_manifest, tampered_files, manifest_payload=clean_manifest)
+        # Isolate internal-manifest reconciliation from the public-content
+        # policy. Change a benign README payload, authenticate the resulting
+        # archive externally, and retain the old clean manifest. The verifier
+        # must reach the manifest layer and reject the stale digest there.
+        stale_manifest = root / "benign-stale-manifest.zip"
+        benign_changed_files = dict(clean_files)
+        benign_changed_files["changed-files/README.md"] = (
+            b"Repository-facing validation evidencf.\n",
+            0o644,
+        )
+        write_zip(stale_manifest, benign_changed_files, manifest_payload=clean_manifest)
         stale_manifest_hash = digest(stale_manifest.read_bytes())
-        run(stale_manifest, stale_manifest_hash, 1)
+        run(stale_manifest, stale_manifest_hash, 1, require_error="SHA-256 mismatch for README.md")
 
         content_rejected = root / "tampered-authenticated.zip"
         write_zip(content_rejected, tampered_files, manifest_payload=manifest_for(tampered_files))

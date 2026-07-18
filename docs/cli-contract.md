@@ -238,3 +238,8 @@ forms retain the strongest existing suffix interpretation.
 ## Sprint 10 Patch 049 memory-effect reporting
 
 The CLI syntax and exit codes do not change. Current `gadgets` and `analyze` reports may include structured `memory_access` facts for the restricted exact qword base-plus-zero memory families. The field does not imply decoded full-window validity or external control of the address or memory contents.
+
+
+## Sprint 10 Patch 050 effect-completion note
+
+Current `gadgets` and `analyze` reports record `stack_read` for every supported semantic candidate ending in `ret` or `ret imm16`. `syscall; ret` records `rcx` and `r11` clobbers, `leave; ret` records an `rbp` clobber, and transfer/memory-read candidates retain destination clobbers. This changes represented effect detail, not CLI syntax, exit codes, candidate counts, or schema version.

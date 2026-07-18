@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 049 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 048 establish ordered multi-pop, exact register-transfer, and exact positive aligned stack-adjust foundations. Patch 049 adds the first bounded structured memory effects and authenticated public final-file overlay verification. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 050 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes current-family effects, cross-family fixture expectations, fail-fast specialty gates, and the maintained family/false-positive coverage table. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,7 +20,7 @@ Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 049 cand
 - benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
-The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 and 047 are later pre-release work, not a research release or evidence of universal performance superiority.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 through 050 are later pre-release work, not a research release or evidence of universal performance or coverage superiority. Patch 051 performs the pre-corpus architecture/capability reassessment; Patch 052 is reserved for Sprint 10 closeout or its smallest required correction.
 
 ## Sprint 7 evidence checkpoint
 
@@ -272,3 +272,10 @@ This increases represented primitive breadth while retaining the dependency-free
 Patch 049 adds semantic-exact memory facts for six controlled qword base-plus-zero examples while preserving conservative fallback for SIB, displacement, `rsp`, and 32-bit forms. This improves the representational foundation for later corpus and coverage work, but it does not establish general memory-gadget coverage, decoded validity, lower RSS, or faster execution.
 
 The fixed arena grows by 64 KiB while candidate capacity remains unchanged. Sprint 12/13 measurement must determine any runtime or RSS effect under the frozen methodology.
+
+
+## Patch 050 research posture
+
+Patch 050 improves semantic evidence quality rather than primitive count. Current return-ending families now record the implicit return stack read, `syscall; ret` records architectural `rcx`/`r11` overwrites, and `leave; ret` records the `rbp` overwrite while retaining unknown stack delta. The family coverage table makes fixtures, fallbacks, false-positive boundaries, and score disposition reviewable as one contract.
+
+The new Sprint 10 families remain unscored. Patch 051 must evaluate score policy together with the capability snapshot and reviewer-risk items before Sprint 11 freezes a corpus. It also reviews PIE-versus-DSO reporting, CET/IBT/SHSTK property evidence, and overlapping executable-segment count semantics so those facts are not frozen ambiguously into the corpus manifest.

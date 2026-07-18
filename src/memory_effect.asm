@@ -92,7 +92,7 @@ x64lens_memory_effect_from_exact:
     jne     .bounds_error
     cmp     qword [r12 + GADGET_STACK_DELTA], STACK_DELTA_RET
     jne     .bounds_error
-    cmp     qword [r12 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_WRITE
+    cmp     qword [r12 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_WRITE
     jne     .bounds_error
     mov     r9, MEMORY_EFFECT_FLAG_PRESENT | MEMORY_EFFECT_FLAG_WRITE | MEMORY_EFFECT_FLAG_DEREFERENCE | MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN
     inc     r10
@@ -105,7 +105,7 @@ x64lens_memory_effect_from_exact:
     jne     .bounds_error
     cmp     qword [r12 + GADGET_STACK_DELTA], STACK_DELTA_RET
     jne     .bounds_error
-    cmp     qword [r12 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
+    cmp     qword [r12 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
     jne     .bounds_error
     mov     r9, MEMORY_EFFECT_FLAG_PRESENT | MEMORY_EFFECT_FLAG_READ | MEMORY_EFFECT_FLAG_DEREFERENCE | MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN
     inc     r11

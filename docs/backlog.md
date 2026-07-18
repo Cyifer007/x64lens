@@ -105,10 +105,12 @@ later sprints rather than Patch 037:
 - [x] First conservative register-transfer family with explicit source,
   destination, destination clobber, stack, and `register_write` facts. Patch 047.
 - [ ] Additional register-transfer forms only when operand roles remain exact.
-- [ ] Narrow memory-read and memory-write patterns.
-- [ ] Memory-dereference facts and additional clobbers where justified.
-- [ ] Controlled fixture for every new semantic rule.
-- [ ] Score entries only after independent semantic and effect validation.
+- [x] First narrow qword base-plus-zero memory-read and memory-write patterns.
+- [x] Memory-dereference facts and destination clobbers for the represented domain.
+- [x] Controlled fixture for every implemented Sprint 10 semantic rule.
+- [x] Complete current-family effect and clobber facts, including implicit return stack reads, syscall `rcx`/`r11` clobbers, and the `leave`-driven `rbp` overwrite.
+- [x] Machine-readable fixture coverage table and per-family false-positive boundaries.
+- [ ] Score entries only after the Patch 051 architecture/capability review validates the utility policy independently from classification.
 
 ### Sprint 11: reproducible corpus
 
@@ -373,9 +375,25 @@ Deferred with explicit classification:
 - [x] Record `stack_adjust` and arithmetic `flags_write` effects without growing the candidate record or arena.
 - [x] Add controlled positive and fallback fixtures plus an independent objdump oracle.
 - [x] Add bounded public ZIP textual-content validation separate from metadata-only archive safety.
-- [ ] Define a complete memory-operand fact record before promoting memory read/write families.
-- [ ] Decide whether another bounded stack/register family is preferable to memory effects for the next Sprint 10 patch.
+- [x] Define the bounded memory-effect record before promoting memory read/write families.
+- [x] Select bounded memory effects for Patch 049 rather than another register-only family.
 
 ## Sprint 10 Patch 049 backlog update
 
 Patch 049 establishes the first structured memory-effect side-car and bounded qword base-plus-zero read/write families. Remaining Sprint 10 work is not generic pattern-count expansion. It is a closeout review of fixture coverage, false-positive boundaries, schema compatibility, score deferral, and Sprint 11 corpus requirements. Displacement, SIB/index, RIP-relative, and broader memory families remain deferred until exact operand semantics and fixtures are ready.
+
+
+## Sprint 10 Patch 050 backlog update
+
+Patch 050 completes current-family side-effect and clobber facts, reconciles the transfer fixture with Patch 049 cross-family memory promotion, makes multi-command fixture recipes fail fast, isolates stale internal-manifest verification, and adds the maintained family coverage/false-positive table. It adds no primitive family and no score.
+
+Before Sprint 11 begins, Patch 051 must perform the planned architecture and capability reassessment. Required review items include:
+
+- [ ] distinguish PIE executables from shared objects without overstating `ET_DYN`;
+- [ ] add or explicitly defer bounded GNU property evidence for CET/IBT/SHSTK;
+- [ ] define count semantics for overlapping executable `PT_LOAD` ranges;
+- [ ] review all current-family score candidates using completed effect facts;
+- [ ] reconcile the capability snapshot with the pre-`v0.1.0` release scope;
+- [ ] identify which capability gaps must precede the Sprint 11 corpus freeze and which remain post-release.
+
+Patch 052 is reserved for Sprint 10 closeout or the smallest implementation correction that Patch 051 proves necessary. Broader displacement, SIB/index, RIP-relative, decoder, JOP/COP/SROP, and default parallel work remains deferred unless the evidence-based roadmap review changes scope.

@@ -46,8 +46,10 @@ required=(
     docs/adr/0033-exact-register-transfer-effects.md
     docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md
     docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md
+    docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/primitive-effect-model.md
+    docs/design/sprint10-family-coverage.md
     docs/design/defensive-deployment-profile.md
     docs/design/mitigation-fixture-matrix.md
     docs/sprints/sprint-06-patch-024-validation.md
@@ -76,6 +78,7 @@ required=(
     docs/sprints/sprint-10-patch-047-validation.md
     docs/sprints/sprint-10-patch-048-validation.md
     docs/sprints/sprint-10-patch-049-validation.md
+    docs/sprints/sprint-10-patch-050-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -97,6 +100,7 @@ required=(
     tools/schema-compat-smoke.py
     tools/validate-report-parity.py
     tools/json-effect-consistency-smoke.py
+    tools/sprint10-family-coverage-smoke.py
     tools/validate-sprint10-transfer-disassembly.py
     tools/validate-sprint10-stack-adjust-disassembly.py
     tools/validate-sprint10-memory-disassembly.py
@@ -113,6 +117,7 @@ required=(
     tests/expected/x64lens-report-sprint10-transfer-0.2.0.json
     tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json
     tests/expected/x64lens-report-sprint10-memory-0.2.0.json
+    tests/expected/sprint10-family-coverage.json
     tests/expected/decoder-gap-controlled.json
     tests/toy-src/gadgets_sprint10.S
     tests/toy-src/gadgets_sprint10_transfer.S
@@ -174,6 +179,12 @@ grep -q 'Patch 049' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 049 memory-effect boundary'
 grep -qi 'memory-effect' docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md \
     || fail 'ADR 0035 does not record the bounded memory-effect decision'
+grep -q 'Patch 050' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not record the Patch 050 effect-completion boundary'
+grep -qi 'fail-fast' docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md \
+    || fail 'ADR 0036 does not record fail-fast fixture-gate hardening'
+grep -q 'sprint10-family-coverage-smoke' docs/sprints/sprint-10-patch-050-validation.md \
+    || fail 'Patch 050 validation does not name the family coverage gate'
 grep -qi 'ordered multi-pop' docs/adr/0032-ordered-multi-pop-foundation.md \
     || fail 'ADR 0032 does not record the ordered multi-pop decision'
 grep -qi 'register-transfer' docs/adr/0033-exact-register-transfer-effects.md \
@@ -303,6 +314,8 @@ grep -q '^sprint10-stack-adjust-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-stack-adjust-smoke'
 grep -q '^sprint10-memory-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-memory-smoke'
+grep -q '^sprint10-family-coverage-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-family-coverage-smoke'
 grep -q '^public-overlay-verify:' Makefile \
     || fail 'Makefile does not define public-overlay-verify'
 grep -q '^public-overlay-verification-smoke:' Makefile \
@@ -316,7 +329,7 @@ grep -q '^json-effect-consistency-smoke:' Makefile \
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
 validation_line="$(grep '^validation-smoke:' Makefile || true)"
-for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
     [[ "$validation_line" == *"$target"* ]] \
         || fail "validation-smoke does not include required target: $target"
 done

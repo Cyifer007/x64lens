@@ -277,3 +277,12 @@ The exact stack-adjust family is classified as `alignment`. It does not introduc
 `primitive_coverage.memory_read` and `primitive_coverage.memory_write` report presence of implemented semantic-exact memory families. They do not count bytes read or written, prove address controllability, or establish vulnerability or exploitability.
 
 Patch 049 may increase raw, exact, and semantic counts. It does not increase scored count for promoted memory candidates because no memory score policy exists. The fixed arena increase is an implementation-capacity fact, not a measured RSS result.
+
+
+## Sprint 10 Patch 050 effect-completion boundary
+
+Patch 050 changes no aggregate candidate count and introduces no new population. It strengthens per-candidate facts only. A candidate may therefore keep the same raw, exact, semantic, unknown, and scored membership while gaining a more complete `side_effects` or `clobbers` relation.
+
+The transfer fixture demonstrates why cross-family expectations are not additive counts: its ten raw candidates partition into four transfers, one memory write, one memory read, and four return fallbacks. The memory candidates are not also transfer candidates.
+
+The family coverage table is a validation artifact, not a new runtime metric. Fixed record and arena sizes are implementation-capacity facts, not measured RSS.

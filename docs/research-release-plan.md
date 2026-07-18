@@ -206,3 +206,8 @@ The default release profile remains dependency-free and decoder-free. Any option
 Patch 049 adds a release-gate requirement for authenticated final-file public overlays. The outer SHA-256, ZIP metadata, bounded text policy, internal manifest, declared deletions, and exact member set must agree. Generated fixture executables must remain untracked and excluded from public source archives.
 
 Memory-effect reports remain schema `0.2.0` semantic-exact output with decoder validity unknown and no score assignment.
+
+
+## Sprint 10 Patch 050 release-gate update
+
+The preview path now requires fail-fast specialty recipes plus the maintained family coverage and effect-consistency gates. The Patch 051 architecture/capability review must resolve or explicitly defer PIE-versus-DSO semantics, CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics, and score policy before Sprint 11 freezes the preview corpus.

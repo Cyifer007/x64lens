@@ -17,6 +17,7 @@ x64lens CLI
   -> pattern matcher and ordered structural facts
   -> semantic primitive classifier and explicit effects
   -> candidate evidence side-car materializer
+  -> memory-effect side-car materializer
   -> scoring engine
   -> mitigation-aware interpretation
   -> text and JSON reporters
@@ -957,3 +958,20 @@ raw scan
 `memory_effect.asm` reconciles already-established exact and semantic facts. It cannot scan target bytes, classify a candidate, assign a score, or format output. Reporters receive the memory side-car explicitly.
 
 The first families represent only qword base-plus-zero `mov` loads and stores without SIB, displacement, RIP-relative addressing, or `rsp` participation. This bounded scope establishes the durable operand record before broader memory families.
+
+
+## Sprint 10 Patch 050 effect-completion boundary
+
+Patch 050 adds no module and no primitive family. It completes facts written by `classifier.asm` for already-supported exact patterns:
+
+```text
+all supported return-ending semantics -> stack_read
+syscall; ret                         -> rcx/r11 clobbers + register_write
+leave; ret                           -> rbp clobber + register_write
+```
+
+The classifier remains the only module that assigns these semantic and effect facts. Pattern matching still identifies exact suffixes; reporters still render records without inferring effects. `memory_effect.asm` remains responsible only for structured memory operands after exact matching and classification.
+
+The candidate record remains 112 bytes, the evidence record 48 bytes, the memory-effect record 16 bytes, candidate capacity 4,096, and the command arena 720,896 bytes. Patch 050 therefore changes semantic completeness and test correctness without changing the fixed allocation profile.
+
+Fixture gates are also part of the architecture around the analyzer. Sprint 10 multi-command recipes now execute with fail-fast shell semantics so a failed semantic validator cannot be hidden by a later successful command. The cross-family coverage table is maintained in [`design/sprint10-family-coverage.md`](design/sprint10-family-coverage.md).

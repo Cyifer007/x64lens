@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "candidate_capacity": 4096,
+    "gadget_record_bytes": 112,
+    "candidate_evidence_record_bytes": 48,
+    "memory_effect_record_bytes": 16,
+    "analysis_arena_bytes": 720896,
+    "mandatory_decoder": false,
+    "mandatory_threads": false
+  },
+  "families": [
+    {
+      "id": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "effects": ["stack_read"],
+      "clobber_policy": "none",
+      "score_policy": "scored:45",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make validate-gadget-fixture",
+      "false_positive_boundary": "Exact return-byte suffix evidence does not establish that the full retained backward window decodes from its first byte."
+    },
+    {
+      "id": "ret_imm16",
+      "pattern": "ret imm16",
+      "semantic_class": "alignment",
+      "effects": ["stack_read", "ret_imm16", "stack_adjust"],
+      "clobber_policy": "none",
+      "score_policy": "scored:40",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make validate-gadget-fixture",
+      "false_positive_boundary": "The immediate and stack delta are exact suffix facts; unaligned raw terminators remain possible without decoder evidence."
+    },
+    {
+      "id": "single_pop",
+      "pattern": "pop <gpr>; ret",
+      "semantic_class": "register-specific",
+      "effects": ["stack_read"],
+      "clobber_policy": "none",
+      "score_policy": "family-specific existing scores",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make json-effect-consistency-smoke",
+      "false_positive_boundary": "Only the exact pop suffix controls the named register; the preceding retained bytes are not promoted."
+    },
+    {
+      "id": "syscall_ret",
+      "pattern": "syscall; ret",
+      "semantic_class": "syscall_trigger",
+      "effects": ["stack_read", "syscall", "register_write"],
+      "clobber_policy": "rcx,r11",
+      "score_policy": "scored:85",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make json-effect-consistency-smoke",
+      "false_positive_boundary": "The suffix records a syscall transition and architectural RCX/R11 overwrite; it does not establish a controlled syscall number or safe return path."
+    },
+    {
+      "id": "leave_ret",
+      "pattern": "leave; ret",
+      "semantic_class": "stack_pivot",
+      "effects": ["stack_read", "stack_pivot", "register_write"],
+      "clobber_policy": "rbp",
+      "score_policy": "scored:75",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make json-effect-consistency-smoke",
+      "false_positive_boundary": "The suffix records an input-dependent stack transition and RBP overwrite; its resulting stack delta remains unknown."
+    },
+    {
+      "id": "pop_rsp_ret",
+      "pattern": "pop rsp; ret",
+      "semantic_class": "stack_pivot",
+      "effects": ["stack_read", "stack_pivot"],
+      "clobber_policy": "none",
+      "score_policy": "scored:70",
+      "fixture": "tests/toy-src/gadgets.S",
+      "validation_target": "make json-effect-consistency-smoke",
+      "false_positive_boundary": "The exact suffix establishes an input-dependent RSP value but not a known numeric stack delta."
+    },
+    {
+      "id": "ordered_multi_pop",
+      "pattern": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "effects": ["stack_read"],
+      "clobber_policy": "none",
+      "score_policy": "unscored",
+      "fixture": "tests/toy-src/gadgets_sprint10.S",
+      "validation_target": "make sprint10-primitive-smoke",
+      "false_positive_boundary": "Only distinct ordered pairs drawn from the supported System V argument-register set are promoted; duplicate or unsupported pairs fall back to the strongest single-pop suffix."
+    },
+    {
+      "id": "register_transfer",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "effects": ["stack_read", "register_write"],
+      "clobber_policy": "destination",
+      "score_policy": "unscored",
+      "fixture": "tests/toy-src/gadgets_sprint10_transfer.S",
+      "validation_target": "make sprint10-register-transfer-smoke",
+      "false_positive_boundary": "Only exact 64-bit register-direct moves between distinct non-RSP registers are promoted; self, RSP, memory, and 32-bit forms follow their own family or fallback."
+    },
+    {
+      "id": "stack_adjust",
+      "pattern": "add rsp, imm8; ret",
+      "semantic_class": "alignment",
+      "effects": ["stack_read", "stack_adjust", "flags_write"],
+      "clobber_policy": "none",
+      "score_policy": "unscored",
+      "fixture": "tests/toy-src/gadgets_sprint10_stack_adjust.S",
+      "validation_target": "make sprint10-stack-adjust-smoke",
+      "false_positive_boundary": "Only positive nonzero eight-byte-aligned imm8 additions to RSP are promoted; zero, negative, unaligned, wrong-register, subtraction, and wider-immediate forms fall back."
+    },
+    {
+      "id": "memory_write",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
+      "effects": ["stack_read", "memory_write"],
+      "clobber_policy": "none",
+      "score_policy": "unscored",
+      "fixture": "tests/toy-src/gadgets_sprint10_memory.S",
+      "validation_target": "make sprint10-memory-smoke",
+      "false_positive_boundary": "Only qword ModRM mod=00 base-plus-zero stores without SIB, displacement, RIP-relative addressing, or RSP participation are promoted. Address and value control are not inferred."
+    },
+    {
+      "id": "memory_read",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
+      "effects": ["stack_read", "register_write", "memory_read"],
+      "clobber_policy": "destination",
+      "score_policy": "unscored",
+      "fixture": "tests/toy-src/gadgets_sprint10_memory.S",
+      "validation_target": "make sprint10-memory-smoke",
+      "false_positive_boundary": "Only qword ModRM mod=00 base-plus-zero loads without SIB, displacement, RIP-relative addressing, or RSP participation are promoted. Memory-content control is not inferred."
+    }
+  ],
+  "fixture_expectations": [
+    {
+      "id": "ordered_multi_pop",
+      "report": "tests/expected/x64lens-report-sprint10-0.2.0.json",
+      "raw_candidates": 5,
+      "scored_candidates": 2,
+      "patterns": {
+        "pop reg; pop reg; ret": 3,
+        "pop rdi; ret": 2
+      }
+    },
+    {
+      "id": "register_transfer_cross_family",
+      "report": "tests/expected/x64lens-report-sprint10-transfer-0.2.0.json",
+      "raw_candidates": 10,
+      "scored_candidates": 4,
+      "patterns": {
+        "mov reg, reg; ret": 4,
+        "mov [base], value; ret": 1,
+        "mov value, [base]; ret": 1,
+        "ret": 4
+      }
+    },
+    {
+      "id": "stack_adjust",
+      "report": "tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json",
+      "raw_candidates": 7,
+      "scored_candidates": 5,
+      "patterns": {
+        "add rsp, imm8; ret": 2,
+        "ret": 5
+      }
+    },
+    {
+      "id": "memory",
+      "report": "tests/expected/x64lens-report-sprint10-memory-0.2.0.json",
+      "raw_candidates": 12,
+      "scored_candidates": 6,
+      "patterns": {
+        "mov [base], value; ret": 3,
+        "mov value, [base]; ret": 3,
+        "ret": 6
+      }
+    }
+  ]
+}

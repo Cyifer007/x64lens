@@ -8,6 +8,18 @@ Planned.
 
 Create a reproducible corpus and manifest that can support fixed research experiments rather than host-dependent smoke checks.
 
+## Entry gate from Sprint 10 capability review
+
+Sprint 11 corpus membership must not freeze ambiguous analyzer facts. Before corpus generation begins, Patch 051/052 must resolve or explicitly defer:
+
+- PIE executable versus shared-object interpretation for `ET_DYN`;
+- bounded GNU property evidence for CET/IBT/SHSTK;
+- overlapping executable `PT_LOAD` region/count semantics;
+- score policy for the new Sprint 10 families;
+- capability-snapshot items classified as pre-release requirements.
+
+The result must identify which expected corpus facts are machine-checkable and which remain explicit unknowns or limitations.
+
 ## Planned deliverables
 
 - [ ] Build controlled binaries across GCC and Clang when available.

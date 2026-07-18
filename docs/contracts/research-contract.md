@@ -111,3 +111,8 @@ Claims about low observability are limited to dependency, import, helper-process
 Memory coverage claims must identify exact supported addressing forms and distinguish access direction, operand roles, address representation, clobbers, score state, and decoder validity. A base-plus-zero semantic-exact family does not establish general memory-gadget coverage or address controllability.
 
 The fixed 720,896-byte analysis arena is an implementation-capacity fact. Runtime, RSS, throughput, and comparative claims still require the frozen benchmark methodology and raw evidence.
+
+
+## Primitive-family coverage evidence rule
+
+A pre-release primitive-family claim must identify the exact suffix domain, controlled fixture, effect and clobber facts, conservative fallback boundary, evidence tier, and score disposition. Cross-family fixtures must report a disjoint semantic partition instead of preserving stale family-specific counts. The Sprint 10 family coverage table is development evidence; it does not replace fixed-corpus comparison or decoder reconciliation.

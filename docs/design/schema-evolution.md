@@ -197,3 +197,14 @@ This is patch-compatible because existing field meanings and count meanings do n
 Patch 049 keeps schema version `0.2.0`. It adds optional `memory_access`, memory coverage booleans and `memory_read` / `memory_write` side-effect vocabulary compatibly. Earlier `0.2.0` reports remain formally consumable; current-producer validation requires internally consistent memory facts when the new patterns appear.
 
 The change is compatible because no historical field is removed or redefined, the new candidate object may be `null`, and aggregate count meanings remain unchanged.
+
+
+## Patch 050 same-schema relation hardening
+
+Patch 050 keeps schema `0.2.0` because it adds no field and changes no count meaning. It strengthens current-producer cross-field validation for already-represented effects and clobbers. The compatibility boundary is explicit:
+
+- formal `0.2.0` consumers may continue to read retained Patch 040 and Patch 046 reports;
+- current Patch 050 producer conformance requires the completed effect and clobber relationships;
+- fixtures are not rewritten in place to pretend earlier producers emitted later facts.
+
+This is a patch-compatible validator strengthening under the existing evolution policy, not a schema-minor transition.

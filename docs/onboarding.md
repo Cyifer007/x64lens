@@ -90,6 +90,12 @@ make semantic-smoke
 make json-smoke
 make analyze-smoke
 make system-smoke
+make sprint10-primitive-smoke
+make sprint10-register-transfer-smoke
+make sprint10-stack-adjust-smoke
+make sprint10-memory-smoke
+make sprint10-family-coverage-smoke
+make json-effect-consistency-smoke
 make capacity-smoke
 make malformed-smoke
 make validation-smoke
@@ -140,6 +146,12 @@ The table below lists the public Make targets. A new development environment sho
 | `make arena-smoke` | Validate arena-backed candidate storage invariants. |
 | `make semantic-smoke` | Validate semantic and scoring facts for the controlled fixture. |
 | `make schema-compat-smoke` | Validate the retained representative schema `0.1.0` fixture and current schema `0.2.0` invariants. |
+| `make sprint10-primitive-smoke` | Validate ordered two-pop semantics and conservative fallback. |
+| `make sprint10-register-transfer-smoke` | Validate transfer facts plus current cross-family memory promotion and fallback counts. |
+| `make sprint10-stack-adjust-smoke` | Validate bounded stack-adjust facts and fallback. |
+| `make sprint10-memory-smoke` | Validate bounded memory read/write side-car facts and fallback. |
+| `make sprint10-family-coverage-smoke` | Reconcile all implemented family fixtures, effects, false-positive notes, and score disposition. |
+| `make json-effect-consistency-smoke` | Reject per-candidate effect and clobber contradictions across current families. |
 | `make json-smoke` | Validate JSON output for the controlled fixture. |
 | `make analyze-smoke` | Validate integrated text and JSON analysis output. |
 | `make system-smoke` | Validate installed system ELF64 binaries. |
@@ -148,7 +160,7 @@ The table below lists the public Make targets. A new development environment sho
 | `make mitigation-matrix-smoke` | Run the deterministic loader and mitigation evidence oracle. |
 | `make section-label-smoke` | Validate bounded section-label annotation and escaping rules. |
 | `make fuzz-mutated-elf-smoke` | Compatibility alias for `malformed-smoke`. |
-| `make validation-smoke` | Run the local pre-commit validation bundle, including malformed, capacity, bundle-policy, schema, and controlled decoder-gap gates. |
+| `make validation-smoke` | Run the local pre-commit validation bundle, including malformed, capacity, Sprint 10 family/effect, bundle-policy, schema, and controlled decoder-gap gates. |
 | `make sprint-closeout-smoke` | Require strict ShellCheck, then run the complete native validation aggregate. |
 | `make bench-scanner-smoke` | Run development-level x64lens scanner smoke benchmarking. |
 | `make bench-smoke` | Compatibility alias for `bench-scanner-smoke`. |

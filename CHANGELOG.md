@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 050 completed side-effect and clobber facts for every currently supported return-ending semantic family, including implicit return stack reads, `syscall` clobbers for `rcx`/`r11`, and the `leave`-driven `rbp` overwrite.
+- `make sprint10-family-coverage-smoke`, a machine-readable 11-family fixture/effect/fallback/score-disposition table, and per-family false-positive documentation.
+- ADR 0036 and the Patch 050 validation record.
+
 - Sprint 10 Patch 049 exact qword base-plus-zero memory-write and memory-read recognition with structured candidate-index memory effects, conservative fallback, and no score assignment.
 - A 12-candidate memory/fallback fixture, `make sprint10-memory-smoke`, and an objdump-backed memory disassembly oracle.
 - Authenticated public final-file overlay verification that binds the outer SHA-256, ZIP metadata policy, textual-content policy, and exact internal path/hash/size/mode manifest.
@@ -128,6 +132,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance Sprint 10 through the Patch 050 candidate while preserving the 112-byte candidate record, 48-byte evidence record, 16-byte memory-effect record, 4,096-candidate capacity, 720,896-byte fixed arena, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
+- Treat the transfer fixture as a cross-family fixture: four transfers, one memory write, one memory read, and four true return fallbacks.
+- Keep Patch 046 compatibility separate from the stronger Patch 050 current-producer effect contract.
+- Reserve Patch 051 for the pre-corpus architecture/capability reassessment and Patch 052 for Sprint 10 closeout or its smallest required correction.
+
 - Advance Sprint 10 through the Patch 049 candidate while preserving the 112-byte candidate record, 4,096-candidate capacity, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Add a 16-byte dense memory-effect side-car and increase the fixed command arena from 655,360 to 720,896 bytes without changing candidate capacity.
 - Require the public textual-content checker to inspect its own source and require authenticated final-file overlays to reconcile every distributed member.
@@ -230,6 +239,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Prevent Sprint 10 multi-command Make recipes from masking an intermediate validator failure by enabling fail-fast shell semantics.
+- Reconcile the transfer fixture and direct validator with Patch 049 memory promotion and corrected scored/fallback counts.
+- Isolate authenticated-overlay stale-manifest rejection with a benign same-size payload mutation so the regression reaches the internal manifest layer instead of failing earlier content policy.
 
 - Remove two tracked generated Sprint 10 ELF fixtures and ignore generated multi-pop, transfer, stack-adjust, and memory fixture binaries.
 - Close the public-content checker self-exclusion that allowed a tampered checker member to evade the content gate.

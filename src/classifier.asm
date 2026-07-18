@@ -19,9 +19,9 @@
 ;
 ; Safety model:
 ;   Candidate records and exact pattern IDs are produced only after parser,
-;   executable-region, scanner, and pattern bounds checks. The only direct file
-;   read performed here is the imm16 value for an already validated ret imm16
-;   terminator.
+;   executable-region, scanner, and pattern bounds checks. Direct target-byte
+;   reads are limited to the validated ret-imm16 immediate and the fixed
+;   five-byte stack-adjust suffix that is rechecked before promotion.
 
 bits 64
 default rel
@@ -161,7 +161,7 @@ x64lens_classifier_apply_exact:
     MARK_UNKNOWN
 
 .class_ret:
-    CLASSIFY_NO_REG SEM_ALIGNMENT, STACK_DELTA_RET, SIDE_EFFECT_NONE, GADGET_SUMMARY_ALIGNMENT_COUNT
+    CLASSIFY_NO_REG SEM_ALIGNMENT, STACK_DELTA_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ALIGNMENT_COUNT
 
 .class_ret_imm16:
     ; ret imm16 stack effect is pop return address plus immediate stack adjust.
@@ -172,7 +172,7 @@ x64lens_classifier_apply_exact:
     add     rax, STACK_DELTA_RET
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
     mov     qword [r15 + GADGET_STACK_DELTA], rax
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_RET_IMM16
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_RET_IMM16
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
     jmp     .next_candidate
@@ -263,7 +263,7 @@ x64lens_classifier_apply_exact:
     bts     rax, rcx
     mov     [r15 + GADGET_REGS_CLOBBERED], rax
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_REG_TRANSFER_COUNT]
     jmp     .next_candidate
@@ -305,7 +305,7 @@ x64lens_classifier_apply_exact:
     add     rax, STACK_DELTA_RET
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
     mov     qword [r15 + GADGET_STACK_DELTA], rax
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
     jmp     .next_candidate
@@ -340,7 +340,7 @@ x64lens_classifier_apply_exact:
     je      .bounds_error
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_MEMORY_WRITE
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_MEMORY_WRITE_COUNT]
     jmp     .next_candidate
@@ -378,7 +378,7 @@ x64lens_classifier_apply_exact:
     bts     rax, rdx
     mov     [r15 + GADGET_REGS_CLOBBERED], rax
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_MEMORY_READ_COUNT]
     jmp     .next_candidate
@@ -387,12 +387,30 @@ x64lens_classifier_apply_exact:
     CLASSIFY_REG SEM_SYSCALL_NUM_CONTROL, REG_RAX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_SYSCALL_NUM_COUNT
 
 .class_syscall_trigger:
-    CLASSIFY_NO_REG SEM_SYSCALL_TRIGGER, STACK_DELTA_RET, SIDE_EFFECT_SYSCALL, GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT
+    ; syscall writes RCX and R11 architecturally before the retained return.
+    ; Record those writes as clobbers instead of implying that either value is
+    ; controlled. The final ret consumes one stack value.
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_SYSCALL_TRIGGER
+    mov     qword [r15 + GADGET_REGS_CLOBBERED], (1 << REG_RCX_BIT) | (1 << REG_R11_BIT)
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_SYSCALL | SIDE_EFFECT_REGISTER_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT]
+    jmp     .next_candidate
 
 .class_leave_pivot:
-    ; leave; ret derives the stack pointer from RBP and then returns through the
-    ; pivoted stack. The exact delta is input-dependent, so stack_delta stays 0.
-    CLASSIFY_REG SEM_STACK_PIVOT, REG_RSP_BIT, STACK_DELTA_UNKNOWN, SIDE_EFFECT_STACK_PIVOT, GADGET_SUMMARY_STACK_PIVOT_COUNT
+    ; leave; ret derives RSP from RBP, pops a replacement RBP, and then returns
+    ; through the pivoted stack. RSP is the controlled pivot relation; RBP is
+    ; an overwritten, non-controlled register and is therefore a clobber.
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_STACK_PIVOT
+    mov     qword [r15 + GADGET_REGS_CONTROLLED], (1 << REG_RSP_BIT)
+    or      qword [r13 + GADGET_SUMMARY_REGS_CONTROLLED], (1 << REG_RSP_BIT)
+    mov     qword [r15 + GADGET_REGS_CLOBBERED], (1 << REG_RBP_BIT)
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_UNKNOWN
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_PIVOT | SIDE_EFFECT_REGISTER_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_STACK_PIVOT_COUNT]
+    jmp     .next_candidate
 
 .class_pop_rsp_pivot:
     ; pop rsp; ret overwrites RSP and makes the following ret target depend on

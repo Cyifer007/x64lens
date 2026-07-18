@@ -233,3 +233,8 @@ make public-overlay-verify
 The gate verifies the outer digest, portable ZIP metadata, bounded textual content, internal file hashes/sizes/modes, declared deletions, and exact member membership. Local unified diffs may be distributed for application or review, but they are not the release-safe public artifact when deleted lines contain material absent from the final tree.
 
 Generated Sprint 10 fixture executables must remain ignored and absent from tracked source and public source archives.
+
+
+## Sprint 10 Patch 050 release-gate update
+
+Release-preview validation must include the current Sprint 10 family coverage and effect-consistency gates. A public artifact is not acceptable when a specialty validator fails even if a later recipe command succeeds. Authenticated-overlay regression must independently prove outer digest rejection, internal-manifest rejection, textual-content rejection, and deletion-path validation.

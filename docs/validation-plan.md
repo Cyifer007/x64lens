@@ -1225,3 +1225,40 @@ The controlled memory fixture must report 12 raw/exact/semantic candidates, thre
 The public overlay verifier must reject a stale outer hash, stale internal manifest, authenticated textual-content tamper, and non-canonical declared deletion. It must accept the clean fixture only when every path, digest, size, mode, and declared deletion matches.
 
 Generated Sprint 10 fixture binaries must not be tracked. Candidate capacity remains 4,096 and the 4,097th candidate must still fail before output.
+
+## Sprint 10 Patch 050 effect-completion and fixture-gate validation
+
+Patch 050 adds no primitive family. It completes current effect and clobber facts,
+corrects cross-family fixture expectations, makes Sprint 10 specialty recipes
+fail fast, and adds the family coverage table.
+
+Required focused commands:
+
+```bash
+make sprint10-family-coverage-smoke
+make json-effect-consistency-smoke
+make public-overlay-verification-smoke
+make sprint10-register-transfer-smoke
+make schema-compat-smoke
+```
+
+Expected transfer partition:
+
+```text
+10 raw candidates
+4 register transfers
+1 memory write
+1 memory read
+4 bare-return fallbacks
+4 scored candidates
+```
+
+Current producers must record `stack_read` for every supported return-ending
+semantic candidate. The syscall trigger must clobber `rcx` and `r11`; the
+`leave; ret` pivot must clobber `rbp`; memory-read and register-transfer records
+must clobber their destinations. Historical Patch 046 compatibility remains a
+separate validator mode and does not require Patch 050 effects.
+
+The full native aggregate, exact 4,096/4,097 capacity behavior, malformed-input
+no-partial-output gates, strict ShellCheck, and qualified Docker validation
+remain mandatory.

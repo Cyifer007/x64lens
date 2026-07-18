@@ -68,6 +68,7 @@
       "register_transfer": null,
       "clobbers": [],
       "side_effects": [
+        "stack_read",
         "stack_adjust",
         "flags_write"
       ],
@@ -99,6 +100,7 @@
       "register_transfer": null,
       "clobbers": [],
       "side_effects": [
+        "stack_read",
         "stack_adjust",
         "flags_write"
       ],
@@ -129,7 +131,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -157,7 +161,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -185,7 +191,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -213,7 +221,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -241,7 +251,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {

@@ -4,8 +4,10 @@
  * Purpose:
  *   Controlled Sprint 10 fixture for exact register-direct transfer facts.
  *   Four distinct 64-bit register transfers must receive the generic
- *   register-transfer pattern. Self moves, RSP participation, memory forms,
- *   and a 32-bit move must conservatively fall back to the existing ret suffix.
+ *   register-transfer pattern. Self moves, RSP participation, and a 32-bit
+ *   move conservatively fall back to the existing ret suffix. The two memory
+ *   forms intentionally exercise Patch 049 cross-family promotion so this
+ *   fixture also detects stale transfer-only expectations.
  *
  * Safety:
  *   The fixture is analyzed and disassembled but never executed by validation.
@@ -40,7 +42,8 @@ _start:
     mov %rsp, %rdi
     ret
 
-    /* Memory and 32-bit forms remain outside this exact family. */
+    /* Memory forms are outside transfer semantics but inside the separate
+     * bounded memory family. The 32-bit form remains a bare-ret fallback. */
     mov %rdi, (%rax)
     ret
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation candidate. Native and qualified Docker acceptance is required before the patch is accepted.
+Historical validation record. Patch 049 implementation passed native and qualified Docker validation; delivery authentication and fixture-oracle corrections continue in Patch 050.
 
 ## Source base
 

@@ -254,3 +254,19 @@ memory_effect_record[]       structured address and access effects
 ```
 
 A future decoder may confirm or reject a selected full instruction sequence, but it must preserve the raw candidate, exact suffix, semantic-exact memory relation, and any disagreement.
+
+
+## Sprint 10 Patch 050 effect evidence
+
+Patch 050 does not add a new provenance tier. The completed clobber and side-effect facts remain `semantic_exact` because they are derived from the implemented exact suffix rules. `full_sequence_valid` remains `null`.
+
+The stronger effect model is additive to the existing evidence record:
+
+```text
+raw candidate
+  -> exact suffix
+  -> semantic-exact class
+  -> represented clobber/stack/register/flag/memory effects
+```
+
+A future decoder may validate or refine these facts through separate side-car evidence, but it must not erase the Patch 050 exact-suffix history.

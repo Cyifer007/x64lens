@@ -165,6 +165,10 @@ def main() -> int:
         "--require-sprint10-memory",
         expect_success=True,
     )
+    # Patch 046 remains a same-schema compatibility fixture. It predates the
+    # Patch 050 current-producer effect-completeness contract, so validate its
+    # historical provenance and command identity without retroactively imposing
+    # stronger current side-effect requirements.
     run_custom(
         PATCH046_REPORT_PATH,
         "--require-schema",
@@ -172,7 +176,6 @@ def main() -> int:
         "--expected-command",
         "gadgets",
         "--require-provenance",
-        "--require-sprint10-effects",
         expect_success=True,
     )
     run_custom(

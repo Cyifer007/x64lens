@@ -2,15 +2,23 @@
 
 ## Status
 
-Active. Patches 046 through 048 establish ordered multi-pop, exact register-transfer, and exact positive aligned stack-adjust effects. Patch 049 adds the first bounded qword memory read/write families through a fixed candidate-index side-car and hardens authenticated public final-file distribution.
+Active through Patch 050. Patches 046 through 049 established ordered multi-pop,
+exact register-transfer, exact positive aligned stack-adjust, and bounded qword
+base-plus-zero memory families. Patch 050 completes current-family effect facts,
+corrects cross-family fixture expectations, makes fixture recipes fail fast, and
+adds the machine-readable family/false-positive coverage table.
 
-Related documentation: [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md),
-[ADR 0033](../adr/0033-exact-register-transfer-effects.md), the
-[Primitive Effect Model](../design/primitive-effect-model.md), the
-[Patch 047 Validation Plan](sprint-10-patch-047-validation.md), the
-[Patch 048 Validation Plan](sprint-10-patch-048-validation.md), the
-[Patch 049 Validation Plan](sprint-10-patch-049-validation.md),
-[ADR 0035](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md), and the [canonical roadmap](../roadmap-18-sprints.md).
+Related documentation:
+
+- [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md)
+- [ADR 0033](../adr/0033-exact-register-transfer-effects.md)
+- [ADR 0034](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md)
+- [ADR 0035](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md)
+- [ADR 0036](../adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md)
+- [Primitive Effect Model](../design/primitive-effect-model.md)
+- [Family Coverage Table](../design/sprint10-family-coverage.md)
+- [Patch 050 Validation Plan](sprint-10-patch-050-validation.md)
+- [Canonical Roadmap](../roadmap-18-sprints.md)
 
 ## Sprint goal
 
@@ -19,52 +27,46 @@ validity, side effects, score meaning, or the defensive deployment profile.
 
 ## Planned deliverables
 
-- [x] Add the first selected multi-pop family with ordered controlled-register facts. Patch 046 recognizes two distinct System V argument-register pops before `ret`.
-- [x] Add the first conservative register-transfer family with unambiguous
-  source and destination roles. Patch 047 recognizes distinct non-`rsp`
-  register-direct 64-bit moves before `ret`.
-- [x] Add the first narrowly scoped memory-read and memory-write patterns. Patch 049 recognizes only qword base-plus-zero, no-index `mov` forms with explicit direction, base, value register, width, dereference, and known zero displacement.
-- [x] Complete controlled and clobbered register modeling for implemented Sprint 10 families. Patch 049 memory writes clobber no GPR; memory reads clobber the destination register; neither infers external control.
-- [ ] Complete side-effect modeling. Patch 046 exposes stack-read, pivot,
-  syscall, and `ret imm16` facts; Patch 047 adds `register_write`; Patch 048
-  adds `stack_adjust` and `flags_write`; Patch 049 adds explicit `memory_read`, `memory_write`, and dereference facts.
-- [x] Add known/unknown stack-delta representation for the first expanded
+- [x] Add selected ordered multi-pop patterns with controlled-register facts.
+- [x] Add a conservative register-transfer family with explicit source,
+  destination, and destination clobber.
+- [x] Add narrowly scoped memory-read and memory-write patterns with structured
+  base, value, width, displacement, dereference, and direction facts.
+- [x] Populate controlled and clobbered register facts for all implemented
+  families.
+- [x] Complete current-family side-effect modeling. Patch 050 records the return
+  stack read for every supported return-ending semantic candidate, syscall
+  clobbers for `rcx`/`r11`, and the `rbp` overwrite caused by `leave`.
+- [x] Preserve known/unknown stack-delta representation.
+- [x] Add controlled source fixtures and disassembly oracles for every Sprint 10
   family.
-- [x] Add a separate controlled source fixture and expected disassembly for the
-  first new family, including an objdump-backed instruction-order oracle.
-- [ ] Complete the fixture coverage table and per-family false-positive notes.
-  Patch 046 documents conservative fallback; later families remain open.
-- [ ] Add score entries only after semantic and side-effect facts are validated.
-  Multi-pop remains deliberately unscored in Patch 046.
-- [x] Preserve candidate-index provenance and schema `0.2.x` compatibility for the Patch 046 and Patch 047 additions.
+- [x] Add a machine-readable fixture coverage table and per-family
+  false-positive boundaries.
+- [ ] Add score entries only after semantic/effect validation and the Patch 051
+  architecture/capability review establish a defensible utility policy.
+- [x] Preserve candidate-index provenance and schema `0.2.x` compatibility.
 
-## Patch 046 entry boundary
+## Patch sequence
 
-Patch 046 adds one conservative exact family:
+1. **Patch 046:** ordered two-pop foundation and compatible effect fields.
+2. **Patch 047:** exact register-direct transfers and stronger relational
+   validation.
+3. **Patch 048:** exact positive aligned stack adjustment plus JSON/public
+   artifact corrections.
+4. **Patch 049:** fixed memory-effect side-car and bounded qword base-plus-zero
+   memory reads/writes.
+5. **Patch 050:** current-family effect completion, cross-family fixture
+   reconciliation, fail-fast recipe hardening, fixture coverage table, and
+   explicit score deferral.
+6. **Patch 051:** architecture and capability reassessment before corpus freeze,
+   including PIE-versus-DSO semantics, CET/IBT/SHSTK evidence, overlapping
+   executable-segment count semantics, and pre-release capability priorities.
+7. **Patch 052:** Sprint 10 closeout if Patch 051 produces no release-blocking
+   implementation correction; otherwise Patch 052 contains the smallest
+   corrective tranche before closeout.
 
-```text
-pop <arg-register>; pop <arg-register>; ret
-```
-
-The two registers must be distinct members of `rdi`, `rsi`, `rdx`, `rcx`,
-`r8`, and `r9`. Unsupported or duplicate pairs fall back to the strongest
-existing single-pop suffix. The implementation reuses reserved bytes in the
-112-byte `gadget_record`, so candidate capacity and the fixed analysis arena do
-not grow.
-
-Patch 046 also adds compatible candidate fields for exact pop order, clobbers,
-and represented side effects. It does not add memory primitives, register
-transfers, decoder validation, parallel execution, or a new score rule.
-
-## Recommended patch sequence
-
-1. Patch 046: ordered two-pop foundation and effect-field contract.
-2. Patch 047: add the first exact register-transfer family and harden all
-   single-pop effect relations.
-3. Patch 048: correct transfer/reporting and public-artifact gates, add the first exact positive aligned stack-adjust family, and harden bare-return and terminator relationships.
-4. Patch 049: add a fixed memory-effect side-car, promote only base-plus-zero qword moves, remove generated tracked fixtures, and authenticate the final-file public overlay.
-5. Review scoring only after each semantic family and its effects pass fixtures.
-6. Close Sprint 10 with corpus-facing fixture coverage, broader per-family false-positive notes, and Sprint 11 handoff.
+This sequence prevents the capability audit from being hidden inside a nominal
+closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
 
 ## Entry criteria from Sprint 9
 
@@ -72,64 +74,91 @@ transfers, decoder validation, parallel execution, or a new score rule.
 - `gadgets` and `analyze` remain command-only parity matches.
 - Capacity and malformed-input paths remain fail-closed with no partial output.
 - The decoder-free one-worker core remains the reference profile.
-- External disassembly is comparator evidence, not runtime authority.
+- External disassembly remains comparator evidence, not runtime authority.
 
 ## Acceptance criteria
 
-- [ ] Every semantic mapping has a controlled fixture.
-- [ ] Ambiguous patterns remain `unknown_candidate`.
-- [ ] Exact suffix recognition and semantic promotion remain separate.
-- [ ] Controlled, clobbered, stack, and memory effects are visible in records,
-  text, and JSON when implemented.
-- [ ] Score changes are documented and tested independently from classification.
-- [ ] New metrics preserve provenance and schema `0.2.x` compatibility.
-- [ ] No new mandatory runtime dependency is introduced.
-- [ ] One-worker output remains deterministic and bounded.
+- [x] Every implemented semantic family has a controlled fixture or explicit
+  base-fixture coverage.
+- [x] Ambiguous forms retain a conservative fallback rather than unsupported
+  promotion.
+- [x] Exact suffix recognition and semantic promotion remain separate.
+- [x] Controlled, clobbered, stack, register, flag, syscall, and memory effects
+  are visible in records, text, and JSON for implemented families.
+- [ ] Score changes are documented and tested independently from
+  classification; current Sprint 10 families remain intentionally unscored.
+- [x] New metrics preserve provenance and schema `0.2.x` compatibility.
+- [x] No new mandatory runtime dependency is introduced.
+- [x] One-worker output remains deterministic and bounded.
+
+## Reference storage profile
+
+```text
+gadget_record:                    112 bytes
+candidate_evidence_record:         48 bytes
+memory_effect_record:              16 bytes
+candidate capacity:              4096
+combined analysis arena:       720896 bytes
+```
+
+These are fixed allocation and capacity facts, not measured comparative RSS or
+performance results.
 
 ## Decoder and parallelism boundary
 
-Sprint 10 may mark which retained windows are eligible for future candidate-
-scoped validation, but it does not make a decoder mandatory. It may add no
-parallel default. New families must first be correct and deterministic in the
-core profile.
+Sprint 10 does not make a decoder mandatory and does not add a parallel default.
+A future decoder should validate retained candidate starts and write additive
+side-car evidence. Target-level concurrency and candidate-validation workers
+remain measured profiles for Sprints 12 and 13. No acceleration profile may
+change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Out of scope
 
 - JOP, COP, or SROP coverage.
-- Symbolic execution.
-- Exploit-chain generation.
+- Symbolic execution or exploit-chain generation.
 - Unbounded pattern enumeration.
 - Whole-image decoder integration.
 - Default in-process multithreading.
+- Displacement/SIB/RIP-relative memory coverage before the operand model and
+  fixtures justify it.
 
 ## Handoff
 
-Sprint 11 builds a reproducible compiler and hardening corpus that exercises the
-expanded semantic and mitigation model. Sprints 12 and 13 measure optional
-candidate-validation and worker profiles.
+Patch 051 reassesses architecture and pre-release capability priorities before
+Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode
+ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen
+manifest.
+
+## Patch 046 boundary
+
+Patch 046 recognizes two distinct System V argument-register pops before `ret`.
+Unsupported or duplicate pairs fall back to the strongest existing single-pop
+suffix. Ordered metadata reuses reserved bytes in the 112-byte candidate record.
 
 ## Patch 047 boundary
 
-Patch 047 recognizes exact `mov r64,r64; ret` register-direct suffixes with
-explicit source, destination, destination-clobber, `register_write`, and known
-return stack-delta facts. The family remains unscored. It excludes self moves,
-`rsp`, memory operands, and 32-bit forms and preserves their strongest existing
-fallback.
-
-The patch also adds common-validator regression coverage for all 16 single-pop
-patterns and mixed legacy/REX multi-pop order so per-candidate contradictions
-cannot hide behind aggregate coverage.
+Patch 047 recognizes distinct non-`rsp` 64-bit register-direct moves ending in
+`ret`. It records source, destination, destination clobber, known return delta,
+and register-write effects without inferring source control.
 
 ## Patch 048 boundary
 
-Patch 048 recognizes only `48 83 c4 imm8 c3` with a positive nonzero eight-byte-aligned immediate. It records alignment semantics, total stack delta, `stack_adjust`, and `flags_write`, while leaving the family unscored. Unsupported arithmetic forms remain bare-return fallbacks.
-
-The same patch corrects the missing JSON object delimiters, strengthens common exact-pattern and return-effect validation, supports retained objdump transcripts in the transfer oracle, and adds bounded textual-content inspection for public source ZIPs. It does not add memory semantics, a decoder, a worker runtime, or per-candidate storage.
+Patch 048 recognizes only `48 83 c4 imm8 c3` with a positive nonzero
+8-byte-aligned immediate. It records total stack delta, stack adjustment, and
+flag writes while leaving the family unscored.
 
 ## Patch 049 boundary
 
-Patch 049 recognizes only exact `REX.W + 89/8b + ModRM.mod=00 + ret` forms whose memory operand uses one non-special base register, no SIB, no index, no displacement, and qword width. It excludes RIP-relative, `rsp`/`r12` SIB, `rbp`/`r13` displacement-required, displacement-bearing, `rsp`-valued, and 32-bit forms.
+Patch 049 recognizes only exact qword `REX.W + 89/8b + ModRM.mod=00 + ret`
+forms with one represented non-special base, no SIB/index, no displacement, and
+no `rsp` value role. A 16-byte candidate-index memory side-car records direction,
+base, value register, width, dereference, and known zero displacement.
 
-Memory facts are materialized after exact matching and classification into a 16-byte dense side-car keyed by candidate index. The raw candidate record and evidence record remain unchanged. The fixed arena grows by 64 KiB at maximum capacity; candidate capacity remains 4,096. The family remains unscored and decoder-unvalidated.
+## Patch 050 boundary
 
-Patch 049 also establishes authenticated public final-file overlays as the release-safe patch distribution form. Local unified diffs remain valid application artifacts but are not the public release surface because deleted lines may retain text absent from the final tree.
+Patch 050 adds no primitive family. It completes implicit and architectural
+effects already present in supported suffixes, fixes transfer-fixture
+cross-family promotion counts, prevents Make recipes from masking failed
+validators, isolates stale-manifest verification, and establishes the maintained
+family coverage/false-positive table. New-family score calibration remains
+open for the Patch 051 review.

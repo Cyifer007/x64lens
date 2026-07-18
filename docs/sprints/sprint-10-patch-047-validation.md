@@ -2,8 +2,7 @@
 
 ## Status
 
-Rejected as delivered. Patch 048 is the current corrective implementation
-candidate.
+Historical validation record. Patch 047 was rejected as delivered; Patch 048 corrected its build and validation defects, and current validation follows Patch 050.
 
 ## Scope
 
@@ -97,7 +96,7 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 Expected focused banners:
 
 ```text
-sprint10-register-transfer-smoke: ok candidates=10 transfers=4 fallback=6 scored=6
+sprint10-register-transfer-smoke: ok candidates=10 transfers=4 memory_write=1 memory_read=1 fallback=4 scored=4
 json-effect-consistency-smoke: ok single_pop=16 single_pop_rejections=16 mixed_multi_pop=4 mixed_rejections=4
 ```
 
@@ -163,3 +162,8 @@ configuration.
 - Candidate records, arena size, capacity, CLI, versions, and runtime dependency
   surface remain unchanged.
 - Native, strict ShellCheck, and qualified Docker aggregates pass.
+
+
+## Patch 050 current-target note
+
+The current `sprint10-register-transfer-smoke` target reflects Patch 049 cross-family memory promotion and Patch 050 effect completion. Two memory forms in the original transfer fixture are now one memory write and one memory read, leaving four true `ret` fallbacks and four scored candidates. Historical Patch 047 source behavior remains documented by the patch history; current validation follows the strongest implemented family.

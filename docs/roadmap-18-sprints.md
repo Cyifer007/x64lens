@@ -13,16 +13,18 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 049 candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 050 candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
 
 The Sprint 10 decisions, effect contract, active boundary, and acceptance
 gates are documented in [ADR 0032](adr/0032-ordered-multi-pop-foundation.md),
-[ADR 0033](adr/0033-exact-register-transfer-effects.md), the
-[Primitive Effect Model](design/primitive-effect-model.md), the
-[Sprint 10 Plan](sprints/sprint-10-plan.md), and the
-[Patch 047 Validation Plan](sprints/sprint-10-patch-047-validation.md),
+[ADR 0033](adr/0033-exact-register-transfer-effects.md),
 [ADR 0034](adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md),
-the [Patch 048 Validation Plan](sprints/sprint-10-patch-048-validation.md), and the [Patch 049 Validation Plan](sprints/sprint-10-patch-049-validation.md).
+[ADR 0035](adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md),
+[ADR 0036](adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md),
+the [Primitive Effect Model](design/primitive-effect-model.md), the
+[Family Coverage Table](design/sprint10-family-coverage.md), the
+[Sprint 10 Plan](sprints/sprint-10-plan.md), and the
+[Patch 050 Validation Plan](sprints/sprint-10-patch-050-validation.md).
 
 The implemented pipeline is:
 
@@ -39,10 +41,12 @@ ELF64 validation
 ```
 
 The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint.
-Patch 046 is the accepted Sprint 10 entry foundation. Patch 047 introduced exact
-register transfer but was rejected as delivered. Patch 048 is the current
-corrective stack-adjust/validation-hardening candidate and retains the transfer
-foundation; all three are later pre-release development state, not the first
+Patches 046 through 049 add ordered multi-pop, exact register-transfer,
+stack-adjust, and bounded memory-effect foundations. Patch 050 completes the
+current effect contract and fixture/false-positive coverage without adding a new
+family. Patch 051 performs the pre-corpus architecture and capability review;
+Patch 052 is reserved for Sprint 10 closeout or the smallest correction that
+review requires. All remain pre-release development state, not the first
 research release. Sprint 8 closed the mitigation-depth tranche with bounded
 dynamic-table evidence, RELRO refinement, canary and stripped indicators,
 section-label annotations, hostile metadata hardening, byte-safe JSON rendering,
@@ -80,7 +84,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
 | 9 | Candidate provenance and decoder-gap measurement | Complete through Patch 045: identity, completeness, provenance, schema `0.2.0`, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions. |
-| 10 | Primitive expansion | Active: Patches 046-048 establish ordered two-pop, register-transfer, and stack-adjust effects; Patch 049 adds the first bounded qword base-plus-zero memory read/write family and authenticated public-overlay validation. |
+| 10 | Primitive expansion | Active through Patch 050: ordered two-pop, register-transfer, stack-adjust, bounded qword memory effects, completed current-family effects, fail-fast fixture gates, and maintained false-positive coverage; Patch 051 reassesses pre-release capability scope before closeout. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
 | 13 | Comparative benchmark campaign | Publication-grade repeated trials, coverage reconciliation, output-normalization analysis, and raw-result freeze. |
@@ -324,3 +328,10 @@ Sprint 10 may expand primitive families only through the established evidence, s
 Patch 049 implements the first memory-effect seam without changing the raw candidate stride, candidate capacity, schema version, decoder boundary, or one-worker reference profile. A 16-byte side-car represents only exact qword base-plus-zero read/write facts. Broader addressing forms remain future work.
 
 The likely next step is Sprint 10 closeout: review implemented-family coverage and false-positive boundaries, preserve score deferral, and hand the complete primitive fixture set to Sprint 11 corpus construction.
+
+
+## Sprint 10 Patch 050 roadmap update
+
+Patch 050 completes the currently implemented family-effect contract rather than adding another pattern catalog entry. It records implicit return stack reads, syscall `rcx`/`r11` clobbers, the `leave`-driven `rbp` overwrite, cross-family transfer-fixture memory promotions, fail-fast specialty recipes, and a machine-readable family/false-positive table.
+
+Patch 051 is the architecture and capability reassessment before Sprint 11 corpus freeze. It must review PIE-versus-DSO reporting, GNU property evidence for CET/IBT/SHSTK, overlapping executable-segment count semantics, score policy for the new Sprint 10 families, and any release-critical capability gap identified by the snapshot. Patch 052 closes Sprint 10 after that review or carries the smallest necessary correction.

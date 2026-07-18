@@ -850,8 +850,20 @@ def validate_common(
         else:
             if "register_transfer" in gadget:
                 require(transfer is None, f"{prefix}.non-transfer pattern must use register_transfer null")
-            if require_sprint10_effects and not is_memory_pattern:
-                require(clobbers == [], f"{prefix}.non-transfer clobbers must remain empty")
+
+        if require_sprint10_effects:
+            expected_clobbers: list[str] = []
+            if gadget["pattern"] == REGISTER_TRANSFER_PATTERN:
+                assert transfer is not None
+                expected_clobbers = [transfer["destination"]]
+            elif gadget["pattern"] == MEMORY_READ_PATTERN:
+                assert memory_access is not None
+                expected_clobbers = [memory_access["value_register"]]
+            elif gadget["semantic_class"] == "syscall_trigger":
+                expected_clobbers = ["rcx", "r11"]
+            elif gadget["pattern"] == "leave; ret":
+                expected_clobbers = ["rbp"]
+            require(clobbers == expected_clobbers, f"{prefix}.clobbers disagree with represented register writes")
 
         if gadget["pattern"] == MULTI_POP_PATTERN:
             require(gadget["semantic_class"] == "arg_control", f"{prefix}.multi-pop semantic class must be arg_control")
@@ -859,16 +871,20 @@ def validate_common(
             require(known is True and gadget["stack_delta"] == 24, f"{prefix}.multi-pop stack delta must be 24")
             require(gadget["score"] is None, f"{prefix}.multi-pop remains unscored in Patch 046")
 
-        if side_effects is not None:
+        if side_effects is not None and require_sprint10_effects:
             expected_effects: set[str] = set()
-            if gadget["semantic_class"] != "unknown_candidate" and gadget.get("stack_pop_order"):
+            if gadget["semantic_class"] != "unknown_candidate" and gadget["terminator"] in {"ret", "ret imm16"}:
                 expected_effects.add("stack_read")
             if gadget["semantic_class"] == "stack_pivot":
                 expected_effects.add("stack_pivot")
+                if gadget["pattern"] == "leave; ret":
+                    expected_effects.add("register_write")
             if gadget["semantic_class"] == "syscall_trigger":
                 expected_effects.add("syscall")
+                expected_effects.add("register_write")
             if gadget["terminator"] == "ret imm16":
                 expected_effects.add("ret_imm16")
+                expected_effects.add("stack_adjust")
             if gadget["semantic_class"] == "reg_transfer":
                 expected_effects.add("register_write")
             if gadget["pattern"] == STACK_ADJUST_PATTERN:
@@ -1074,7 +1090,7 @@ def validate_sprint10_transfer_fixture(doc: dict[str, Any]) -> None:
         "exact_pattern_count": 10,
         "semantic_candidate_count": 10,
         "unknown_candidate_count": 0,
-        "scored_candidate_count": 6,
+        "scored_candidate_count": 4,
     }
     for key, value in expected_counts.items():
         require(counts[key] == value, f"Sprint 10 transfer fixture {key} expected {value}, got {counts[key]}")
@@ -1096,19 +1112,30 @@ def validate_sprint10_transfer_fixture(doc: dict[str, Any]) -> None:
         require(gadget["clobbers"] == [destination], "Sprint 10 transfer clobber mismatch")
         require(gadget["stack_pop_order"] == [], "Sprint 10 transfer pop order must be empty")
         require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 transfer stack delta mismatch")
-        require(gadget["side_effects"] == ["register_write"], "Sprint 10 transfer side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "register_write"], "Sprint 10 transfer side effects mismatch")
         require(gadget["score"] is None, "Sprint 10 transfer candidates must remain unscored")
 
     fallback = [g for g in gadgets if g["pattern"] == "ret"]
-    require(len(fallback) == 6, f"Sprint 10 transfer fixture expected 6 conservative ret fallbacks, got {len(fallback)}")
+    require(len(fallback) == 4, f"Sprint 10 transfer fixture expected 4 conservative ret fallbacks, got {len(fallback)}")
     for gadget in fallback:
         require(gadget["register_transfer"] is None, "Sprint 10 fallback transfer relation must be null")
         require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
+        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 fallback side effects mismatch")
         require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
+
+    memory_writes = [g for g in gadgets if g["pattern"] == MEMORY_WRITE_PATTERN]
+    memory_reads = [g for g in gadgets if g["pattern"] == MEMORY_READ_PATTERN]
+    require(len(memory_writes) == 1, f"Sprint 10 transfer fixture expected 1 cross-family memory write, got {len(memory_writes)}")
+    require(len(memory_reads) == 1, f"Sprint 10 transfer fixture expected 1 cross-family memory read, got {len(memory_reads)}")
+    require(memory_writes[0]["memory_access"]["base"] == "rax", "Sprint 10 transfer fixture memory-write base mismatch")
+    require(memory_writes[0]["memory_access"]["value_register"] == "rdi", "Sprint 10 transfer fixture memory-write value mismatch")
+    require(memory_reads[0]["memory_access"]["base"] == "rax", "Sprint 10 transfer fixture memory-read base mismatch")
+    require(memory_reads[0]["memory_access"]["value_register"] == "rdi", "Sprint 10 transfer fixture memory-read value mismatch")
 
     coverage = doc["primitive_coverage"]
     require(coverage["reg_transfer"] is True, "Sprint 10 transfer fixture must expose reg_transfer coverage")
     require(coverage["arg_control"] is False, "Sprint 10 transfer fixture must not assert argument control")
+    require(coverage["memory_write"] is True and coverage["memory_read"] is True, "Sprint 10 transfer fixture must expose cross-family memory coverage")
     require(coverage["registers"] == [], "Sprint 10 transfer fixture controlled-register coverage must be empty")
     analysis = doc["analysis"]
     require(analysis["complete"] is True and analysis["candidate_count"] == 10, "Sprint 10 transfer fixture analysis summary mismatch")
@@ -1138,7 +1165,7 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
         require(gadget["stack_pop_order"] == [], "Sprint 10 stack-adjust pop order must be empty")
         require(gadget["register_transfer"] is None, "Sprint 10 stack-adjust transfer relation must be null")
         require(gadget["clobbers"] == [], "Sprint 10 stack-adjust clobbers must be empty")
-        require(gadget["side_effects"] == ["stack_adjust", "flags_write"], "Sprint 10 stack-adjust side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "stack_adjust", "flags_write"], "Sprint 10 stack-adjust side effects mismatch")
         require(gadget["score"] is None, "Sprint 10 stack-adjust candidates remain unscored")
 
     fallback = [g for g in gadgets if g["pattern"] == "ret"]
@@ -1147,7 +1174,7 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
         require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
         require(gadget["controls"] == [], "Sprint 10 fallback controls must be empty")
         require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 fallback stack delta mismatch")
-        require(gadget["side_effects"] == [], "Sprint 10 fallback side effects must be empty")
+        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 fallback side effects must contain stack_read")
         require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
 
     coverage = doc["primitive_coverage"]
@@ -1210,12 +1237,12 @@ def validate_sprint10_memory_fixture(doc: dict[str, Any]) -> None:
     for gadget in writes:
         require(gadget["semantic_class"] == "memory_write", "Sprint 10 memory-write semantic mismatch")
         require(gadget["clobbers"] == [], "Sprint 10 memory-write clobbers must be empty")
-        require(gadget["side_effects"] == ["memory_write"], "Sprint 10 memory-write side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "memory_write"], "Sprint 10 memory-write side effects mismatch")
     for gadget in reads:
         value = gadget["memory_access"]["value_register"]
         require(gadget["semantic_class"] == "memory_read", "Sprint 10 memory-read semantic mismatch")
         require(gadget["clobbers"] == [value], "Sprint 10 memory-read clobber mismatch")
-        require(gadget["side_effects"] == ["register_write", "memory_read"], "Sprint 10 memory-read side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "register_write", "memory_read"], "Sprint 10 memory-read side effects mismatch")
     for gadget in fallback:
         require(gadget["memory_access"] is None, "Sprint 10 fallback memory_access must be null")
         require(gadget["semantic_class"] == "alignment" and gadget["score"] == 45, "Sprint 10 memory fallback mismatch")

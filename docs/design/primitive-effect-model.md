@@ -110,6 +110,19 @@ Current represented side-effect identifiers are:
 These are modeled facts, not an exhaustive microarchitectural description.
 Unknown or unmodeled effects must not be inferred by reporters.
 
+Patch 050 completes the current return-ending effect baseline:
+
+- every supported semantic `ret` or `ret imm16` candidate includes
+  `stack_read` for the consumed return address;
+- `syscall; ret` includes `syscall`, `register_write`, and `stack_read`, with
+  `rcx` and `r11` recorded as architectural clobbers;
+- `leave; ret` includes `stack_pivot`, `register_write`, and `stack_read`, with
+  `rbp` recorded as a clobber and unknown stack delta;
+- memory and transfer effects remain additive to the final return stack read.
+
+A historical same-schema report may lack these strengthened effects and remain
+consumable. Current producer validation requires the completed relationships.
+
 ## Stack delta
 
 Known stack deltas are expressed in bytes. Patch 046 adds:
@@ -165,7 +178,7 @@ The compact pattern metadata stores destination then source. JSON emits:
 },
 "controls": [],
 "clobbers": ["rdi"],
-"side_effects": ["register_write"],
+"side_effects": ["stack_read", "register_write"],
 "stack_delta": 8,
 "score": null
 ```
@@ -186,7 +199,7 @@ Patch 048 recognizes the exact suffix:
 Promotion is limited to positive, nonzero, eight-byte-aligned immediates. The candidate reports no controlled or general-purpose-register clobber facts, a known total stack delta of `imm8 + 8`, and these side effects:
 
 ```json
-"side_effects": ["stack_adjust", "flags_write"]
+"side_effects": ["stack_read", "stack_adjust", "flags_write"]
 ```
 
 `stack_adjust` records the explicit stack-pointer movement. `flags_write` records that integer addition modifies condition flags. Condition flags are not members of the current general-purpose-register clobber bitmap, so the separate effect prevents a false implication that the suffix has no other represented architectural effects.
@@ -209,3 +222,29 @@ For a memory write, `controls` and GPR `clobbers` remain empty, stack delta is 8
 SIB, RIP-relative, displacement-bearing, `rsp`-valued, `rsp`-destination, and 32-bit forms remain conservative fallbacks. Future displacement or indexed families must reuse the same side-car fields and add exact fixtures rather than infer missing address facts in reporters.
 
 Memory candidates remain unscored. A score requires reviewed dereference, address-control, clobber, and uncertainty factors.
+
+
+## Patch 050 cross-family and score boundary
+
+The transfer fixture now deliberately spans three semantic families:
+
+```text
+4 register transfers
+1 bounded memory write
+1 bounded memory read
+4 bare-return fallbacks
+```
+
+This is a fixture-quality rule rather than a new runtime feature. A candidate is
+validated according to its strongest implemented exact family, even when the
+fixture was originally introduced for a narrower family.
+
+All new Sprint 10 families remain unscored. The completed effect model supplies
+the facts needed for a later score review, but it does not itself establish
+relative utility. The Patch 051 architecture/capability review must decide
+whether stack cost, clobbers, dereference risk, flag writes, and evidence
+uncertainty justify score entries before Sprint 10 closes.
+
+The authoritative human-readable family matrix is
+[`sprint10-family-coverage.md`](sprint10-family-coverage.md); the corresponding
+machine-readable gate is `tests/expected/sprint10-family-coverage.json`.

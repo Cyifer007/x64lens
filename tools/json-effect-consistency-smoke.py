@@ -3,10 +3,10 @@
 
 This validator-only smoke closes the Patch 046 review gap by proving that all
 16 exact single-pop patterns have canonical per-candidate controls/order facts.
-It also covers mixed legacy/REX ordered two-pop forms, bare-ret relational
-invariants found during Patch 047 review, and the bounded Patch 048 stack-adjust
-family, and the bounded Patch 049 memory-effect family so aggregate coverage
-cannot conceal contradictory candidate facts.
+It also covers mixed legacy/REX ordered two-pop forms, current return, syscall,
+and pivot side-effect completion, the bounded Patch 048 stack-adjust family,
+and the bounded Patch 049 memory-effect family so aggregate coverage cannot
+conceal contradictory candidate facts.
 """
 
 from __future__ import annotations
@@ -204,7 +204,7 @@ def stack_adjust_document(base: dict[str, Any], immediate: int) -> dict[str, Any
             "register_transfer": None,
             "memory_access": None,
             "clobbers": [],
-            "side_effects": ["stack_adjust", "flags_write"],
+            "side_effects": ["stack_read", "stack_adjust", "flags_write"],
             "stack_delta": immediate + 8,
             "stack_delta_known": True,
             "score": None,
@@ -245,7 +245,7 @@ def memory_document(base: dict[str, Any], *, direction: str, base_reg: str, valu
     semantic = "memory_write" if direction == "write" else "memory_read"
     pattern = "mov [base], value; ret" if direction == "write" else "mov value, [base]; ret"
     clobbers = [] if direction == "write" else [value_reg]
-    effects = ["memory_write"] if direction == "write" else ["register_write", "memory_read"]
+    effects = ["stack_read", "memory_write"] if direction == "write" else ["stack_read", "register_write", "memory_read"]
     gadget.update(
         {
             "bytes": bytes_hex,
@@ -287,6 +287,76 @@ def memory_document(base: dict[str, Any], *, direction: str, base_reg: str, valu
     doc["target"]["path"] = f"validator-memory-{direction}-{base_reg}-{value_reg}"
     doc["target"]["file_size"] = 4
     return doc
+
+def current_family_document(base: dict[str, Any], family: str) -> dict[str, Any]:
+    doc = copy.deepcopy(base)
+    gadget = doc["gadgets"][0]
+    if family == "ret-imm16":
+        gadget.update({
+            "bytes": "c21000",
+            "terminator": "ret imm16",
+            "pattern": "ret imm16",
+            "semantic_class": "alignment",
+            "controls": [],
+            "stack_pop_order": [],
+            "register_transfer": None,
+            "memory_access": None,
+            "clobbers": [],
+            "side_effects": ["stack_read", "ret_imm16", "stack_adjust"],
+            "stack_delta": 24,
+            "stack_delta_known": True,
+            "score": 40,
+        })
+        gadget["evidence"].update({"matched_suffix_offset": 0, "matched_suffix_length": 3})
+        doc["counts"]["ret_count"] = 0
+        doc["counts"]["ret_imm16_count"] = 1
+        doc["primitive_coverage"] = coverage_for("alignment", [])
+        doc["primitive_coverage"]["alignment"] = True
+        size = 3
+    elif family == "syscall":
+        gadget.update({
+            "bytes": "0f05c3",
+            "pattern": "syscall; ret",
+            "semantic_class": "syscall_trigger",
+            "controls": [],
+            "stack_pop_order": [],
+            "register_transfer": None,
+            "memory_access": None,
+            "clobbers": ["rcx", "r11"],
+            "side_effects": ["stack_read", "syscall", "register_write"],
+            "stack_delta": 8,
+            "stack_delta_known": True,
+            "score": 85,
+        })
+        gadget["evidence"].update({"matched_suffix_offset": 0, "matched_suffix_length": 3})
+        doc["primitive_coverage"] = coverage_for("syscall_trigger", [])
+        doc["primitive_coverage"]["syscall_trigger"] = True
+        size = 3
+    elif family == "leave":
+        gadget.update({
+            "bytes": "c9c3",
+            "pattern": "leave; ret",
+            "semantic_class": "stack_pivot",
+            "controls": ["rsp"],
+            "stack_pop_order": [],
+            "register_transfer": None,
+            "memory_access": None,
+            "clobbers": ["rbp"],
+            "side_effects": ["stack_read", "stack_pivot", "register_write"],
+            "stack_delta": None,
+            "stack_delta_known": False,
+            "score": 75,
+        })
+        gadget["evidence"].update({"matched_suffix_offset": 0, "matched_suffix_length": 2})
+        doc["primitive_coverage"] = coverage_for("stack_pivot", ["rsp"])
+        size = 2
+    else:
+        raise ValueError(f"unsupported family: {family}")
+    set_one_candidate_counts(doc, semantic=True, scored=True)
+    doc["target"]["path"] = f"validator-current-family-{family}"
+    doc["target"]["file_size"] = size
+    return doc
+
 
 def load_validator_module() -> Any:
     spec = importlib.util.spec_from_file_location("x64lens_validate_json_report", VALIDATOR)
@@ -334,6 +404,8 @@ def main() -> int:
     mixed_positive = 0
     mixed_negative = 0
     bare_ret_negative = 0
+    current_family_positive = 0
+    current_family_negative = 0
     stack_adjust_positive = 0
     stack_adjust_negative = 0
     memory_positive = 0
@@ -389,10 +461,35 @@ def main() -> int:
         mutation["gadgets"][0]["stack_delta"] = 24
         bare_mutations.append(("bare-ret-stack-delta", mutation))
 
+        mutation = copy.deepcopy(bare_ret)
+        mutation["gadgets"][0]["side_effects"] = []
+        bare_mutations.append(("bare-ret-missing-stack-read", mutation))
+
         for name, mutation in bare_mutations:
             path = write_case(directory, name, mutation)
             run_validator(validator, path, expect_success=False)
             bare_ret_negative += 1
+
+        for family in ("ret-imm16", "syscall", "leave"):
+            document = current_family_document(base, family)
+            path = write_case(directory, f"current-family-{family}-positive", document)
+            run_validator(validator, path, expect_success=True)
+            current_family_positive += 1
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["side_effects"] = [
+                effect for effect in mutation["gadgets"][0]["side_effects"] if effect != "stack_read"
+            ]
+            negative = write_case(directory, f"current-family-{family}-missing-stack-read", mutation)
+            run_validator(validator, negative, expect_success=False)
+            current_family_negative += 1
+
+            if family in {"syscall", "leave"}:
+                mutation = copy.deepcopy(document)
+                mutation["gadgets"][0]["clobbers"] = []
+                negative = write_case(directory, f"current-family-{family}-missing-clobber", mutation)
+                run_validator(validator, negative, expect_success=False)
+                current_family_negative += 1
 
         for immediate in (8, 32):
             document = stack_adjust_document(base, immediate)
@@ -461,6 +558,8 @@ def main() -> int:
         f"mixed_multi_pop={mixed_positive} "
         f"mixed_rejections={mixed_negative} "
         f"bare_ret_rejections={bare_ret_negative} "
+        f"current_families={current_family_positive} "
+        f"current_family_rejections={current_family_negative} "
         f"stack_adjust={stack_adjust_positive} "
         f"stack_adjust_rejections={stack_adjust_negative} "
         f"memory={memory_positive} "

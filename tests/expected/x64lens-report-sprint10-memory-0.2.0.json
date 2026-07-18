@@ -79,6 +79,7 @@
       },
       "clobbers": [],
       "side_effects": [
+        "stack_read",
         "memory_write"
       ],
       "stack_delta": 8,
@@ -119,6 +120,7 @@
       },
       "clobbers": [],
       "side_effects": [
+        "stack_read",
         "memory_write"
       ],
       "stack_delta": 8,
@@ -159,6 +161,7 @@
       },
       "clobbers": [],
       "side_effects": [
+        "stack_read",
         "memory_write"
       ],
       "stack_delta": 8,
@@ -201,6 +204,7 @@
         "rax"
       ],
       "side_effects": [
+        "stack_read",
         "register_write",
         "memory_read"
       ],
@@ -244,6 +248,7 @@
         "r9"
       ],
       "side_effects": [
+        "stack_read",
         "register_write",
         "memory_read"
       ],
@@ -287,6 +292,7 @@
         "rdx"
       ],
       "side_effects": [
+        "stack_read",
         "register_write",
         "memory_read"
       ],
@@ -317,7 +323,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -345,7 +353,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -373,7 +383,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -401,7 +413,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -429,7 +443,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -457,7 +473,9 @@
       "register_transfer": null,
       "memory_access": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {

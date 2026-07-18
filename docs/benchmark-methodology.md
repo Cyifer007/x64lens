@@ -549,3 +549,10 @@ remain deferred to the fixed corpus and high-resolution runner.
 ## Patch 049 fixed-arena interpretation
 
 Patch 049 increases the fixed command arena from 655,360 to 720,896 bytes by adding one 16-byte memory-effect record for each of 4,096 candidate slots. This is a design allocation, not max RSS. Future benchmark rows must measure process max RSS separately and must not substitute arena arithmetic for resource evidence.
+
+
+## Sprint 10 Patch 050 measurement boundary
+
+Patch 050 changes semantic effect completeness and validation gates without adding a primitive family or changing the fixed 720,896-byte analysis arena. That allocation size is not a max-RSS measurement. Any claim that the completed effect model is faster, lower-memory, more deployable, or more useful requires the normal fixed-corpus and repeated-trial methodology.
+
+The Patch 051 capability review may define future score and capability ablations, but those conditions must remain separate benchmark profiles. Historical smoke rows must not be reinterpreted as evidence for the strengthened Patch 050 effect contract.

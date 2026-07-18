@@ -67,7 +67,9 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "stack_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {

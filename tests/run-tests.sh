@@ -262,6 +262,9 @@ grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, scor
 grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, score: 75" "$GADGETS_OUT"
 grep -q "semantic: syscall_trigger, regs: none, stack delta: 0x0000000000000008, score: 85" "$GADGETS_OUT"
 grep -q "semantic: alignment, regs: none, stack delta: 0x0000000000000018, score: 40" "$GADGETS_OUT"
+grep -q "pattern: syscall; ret,.*clobbers: rcx|r11, side effects: stack_read, syscall, register_write" "$GADGETS_OUT"
+grep -q "pattern: leave; ret,.*clobbers: rbp, side effects: stack_read, stack_pivot, register_write" "$GADGETS_OUT"
+grep -q "pattern: ret imm16,.*side effects: stack_read, ret_imm16, stack_adjust" "$GADGETS_OUT"
 grep -q "bytes: 5f c3" "$GADGETS_OUT"
 grep -q "c2 10 00" "$GADGETS_OUT"
 

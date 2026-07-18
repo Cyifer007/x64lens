@@ -131,3 +131,19 @@ factor rule plus fixture updates.
 The first positive aligned `add rsp, imm8; ret` family remains unscored. Utility depends on adjustment size, chain layout, alignment needs, condition-flag effects, surrounding candidate validity, and future bad-byte or decoder evidence. Patch 048 records the exact immediate-derived stack delta and explicit `stack_adjust`/`flags_write` effects but does not infer a utility rank.
 
 Any later score requires an explicit rule and fixture update. Existing `ret` and `ret imm16` scores are not reused because the new family performs additional arithmetic and has a different chain effect.
+
+
+## Sprint 10 Patch 050 score decision
+
+Patch 050 assigns no new score. Multi-pop, register-transfer, stack-adjust, memory-read, and memory-write candidates remain semantic-exact but unscored. The completed effect model now records stack consumption, destination clobbers, syscall clobbers, pivot overwrites, flag writes, and bounded dereference direction, but those facts do not yet establish a calibrated utility ordering.
+
+Patch 051 must review score policy together with the capability and architecture reassessment. Any proposed score must define and test at least:
+
+- stack-cost and ordering effects;
+- GPR and flag clobbers;
+- memory dereference and address-control uncertainty;
+- evidence source and future decoder confidence;
+- task-specific defensive utility;
+- versioning or migration behavior for existing score values.
+
+Until that review is accepted, `score: null` is the correct current representation for the new Sprint 10 families.

@@ -127,3 +127,14 @@ Disagreements should be investigated by evidence source rather than resolved by 
 ## Sprint 8 Patch 034 section labels
 
 Section labels are optional annotations emitted after loader-derived executable regions and scanner-derived candidates already exist. They improve readability for analyst triage but do not change PIE, NX, RELRO, canary, stripped, RWX, executable-region, candidate, semantic, or score conclusions.
+
+
+## Patch 051 pre-corpus review items
+
+The pre-corpus architecture review must refine or explicitly defer three mitigation/mapping questions before expected corpus facts are frozen:
+
+1. `ET_DYN` alone is not sufficient to distinguish a PIE executable from a shared object; any refined field requires bounded evidence and controlled fixtures.
+2. CET/IBT/SHSTK reporting requires bounded GNU property-note parsing and must remain evidence-qualified rather than inferred from one instruction or tool label.
+3. Overlapping executable `PT_LOAD` ranges require defined region and count semantics so scanner work, completeness, and benchmark denominators are not ambiguous.
+
+Until those rules are implemented, current fields retain their documented indicator scope and limitations.

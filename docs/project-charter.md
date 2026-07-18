@@ -137,3 +137,10 @@ Future decoding should prefer validation of retained candidate windows over mand
 ## Sprint 10 memory-effect constraint
 
 Memory semantics expand only through bounded exact families and explicit internal facts. Patch 049 adds no runtime dependency and preserves the decoder-free one-worker reference profile. Broader address forms, score changes, and performance claims remain evidence-gated.
+
+
+## Pre-corpus architecture review
+
+Before Sprint 11 freezes the reproducible corpus, the project reviews current capability breadth and ambiguous binary-level facts. The review includes PIE-versus-DSO interpretation, CET/IBT/SHSTK property evidence, overlapping executable-segment semantics, and score policy for the Sprint 10 families. This gate protects later benchmark and case-study claims from being built on unstable definitions.
+
+The review does not make full decoding, JOP/COP/SROP, exploit generation, or default multithreading hidden requirements for the first release. Those remain evidence-gated scope decisions.

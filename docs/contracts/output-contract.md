@@ -215,3 +215,10 @@ The object records represented operand facts only. It does not prove external co
 ## Authenticated public-overlay rule
 
 A public final-file overlay must be verified as one complete archive. Outer SHA-256 identity, ZIP metadata policy, textual-content policy, internal manifest path/hash/size/mode records, deletion records, and the exact member set must agree. Passing source-tree checks alone is insufficient.
+
+
+## Sprint 10 Patch 050 effect consistency rule
+
+Current schema `0.2.0` producers must render completed effect facts from internal records. Every supported semantic candidate ending in `ret` or `ret imm16` includes `stack_read`. `syscall; ret` includes `rcx`/`r11` clobbers; `leave; ret` includes an `rbp` clobber; memory reads clobber their destination; transfers clobber their destination. Report adapters must not infer or omit these relations.
+
+Retained same-schema compatibility fixtures may predate the completed effect contract. Compatibility and current-producer conformance remain separate validation modes.

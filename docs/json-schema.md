@@ -299,7 +299,7 @@ Current producer candidates include:
 
 Non-transfer candidates use `null`. Transfer candidates use semantic class
 `reg_transfer`, empty `controls`, destination-only `clobbers`,
-`side_effects:["register_write"]`, a known stack delta of eight, and `score:null`.
+`side_effects:["stack_read","register_write"]`, a known stack delta of eight, and `score:null`.
 The formal schema keeps the field optional for earlier schema `0.2.0` reports;
 current-producer validation requires it through `--require-sprint10-transfer`.
 
@@ -332,3 +332,17 @@ Patch 049 keeps schema `0.2.0` and adds optional candidate `memory_access`:
 ```
 
 Non-memory candidates emit `memory_access:null`. Current producer validation reconciles the object with the exact pattern, semantic class, clobber bitmap, side effects, stack delta, score, and coverage booleans. `full_sequence_valid` remains `null` because the family is semantic-exact rather than decoder-validated.
+
+
+## Sprint 10 Patch 050 current-producer effect completion
+
+Patch 050 keeps schema version `0.2.0` and adds no structural field. It strengthens current-producer semantic relationships:
+
+- every supported semantic candidate ending in `ret` or `ret imm16` includes `stack_read`;
+- `ret imm16` additionally includes `ret_imm16` and `stack_adjust`;
+- `syscall; ret` clobbers `rcx` and `r11` and includes `syscall` plus `register_write`;
+- `leave; ret` clobbers `rbp`, controls the pivot relation through `rsp`, and includes `stack_pivot` plus `register_write`;
+- transfer, stack-adjust, memory-read, and memory-write effects include the final return stack read;
+- the transfer fixture includes one memory read and one memory write under their own implemented family.
+
+These are current-producer requirements enforced by the semantic validator. Retained Patch 040 and Patch 046 `0.2.0` reports remain structurally consumable and are not retroactively rewritten.

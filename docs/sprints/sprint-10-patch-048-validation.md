@@ -2,8 +2,7 @@
 
 ## Status
 
-Current implementation candidate; authoritative native and Docker validation
-required.
+Historical validation record. Patch 048 runtime behavior passed after correction; Patch 049 added bounded memory effects, and current validation follows Patch 050.
 
 ## Scope
 
@@ -37,7 +36,7 @@ A clean build must resolve the compact JSON object delimiters. The transfer
 fixture remains:
 
 ```text
-candidates=10 transfers=4 fallback=6 scored=6
+candidates=10 transfers=4 memory_write=1 memory_read=1 fallback=4 scored=4
 ```
 
 ### Stack-adjust fixture
@@ -162,3 +161,8 @@ gates, and the tracked worktree remains clean after validation.
 ## Patch 049 handoff
 
 Patch 049 consumes the accepted Patch 048 runtime foundation, removes generated fixture executables from tracked source, closes the public-content checker self-exclusion, authenticates final-file public overlays, and adds the first fixed memory-effect side-car and bounded qword base-plus-zero memory family.
+
+
+## Patch 050 current-target note
+
+The current `sprint10-register-transfer-smoke` target reflects Patch 049 cross-family memory promotion and Patch 050 effect completion. Two memory forms in the original transfer fixture are now one memory write and one memory read, leaving four true `ret` fallbacks and four scored candidates. Historical Patch 047 source behavior remains documented by the patch history; current validation follows the strongest implemented family.

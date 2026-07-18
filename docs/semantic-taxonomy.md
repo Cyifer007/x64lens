@@ -13,8 +13,8 @@ The taxonomy defines when a byte-level candidate can be promoted into an exploit
 | `syscall_trigger` | Provides a `syscall; ret` suffix. | Implemented. |
 | `stack_pivot` | Makes `rsp` input-dependent or derives it through a pivot sequence. | Implemented for `pop rsp; ret` and `leave; ret`. |
 | `alignment` | Return or exact bounded stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret`, `ret imm16`, and the Patch 048 positive aligned `add rsp, imm8; ret` family. |
-| `memory_write` | Writes a qword register value to a represented base-plus-zero memory address. | Implemented for the Patch 049 exact bounded family. |
-| `memory_read` | Reads a qword from a represented base-plus-zero memory address into a register. | Implemented for the Patch 049 exact bounded family. |
+| `memory_write` | Writes a qword register value to a represented base-plus-zero memory address. | Implemented for the Patch 049 exact bounded family; Patch 050 completes return-stack effects. |
+| `memory_read` | Reads a qword from a represented base-plus-zero memory address into a register. | Implemented for the Patch 049 exact bounded family; Patch 050 completes return-stack effects. |
 | `reg_transfer` | Transfers a value between known registers with explicit source and destination roles. | Implemented for the Patch 047 exact register-direct 64-bit move family. |
 | `clobber_heavy` | Potentially useful sequence with substantial side effects. | Planned as a qualifier or class after side-effect modeling. |
 | `unknown_candidate` | Candidate without a justified semantic mapping. | Implemented and deliberately preserved. |
@@ -97,11 +97,11 @@ Every new family requires:
 8. false-positive notes,
 9. independent score decision.
 
-Planned bounded families:
+Further bounded expansion, if retained after the Patch 051 capability review, may include:
 
-- selected multi-pop sequences,
-- additional unambiguous register transfers beyond the Patch 047 foundation,
-- narrowly defined memory read/write templates.
+- additional multi-pop sequences beyond the current two-argument-register domain,
+- additional unambiguous register-transfer forms,
+- broader memory addressing only after index, scale, displacement, width, role, and uncertainty facts remain explicit.
 
 JOP, COP, SROP, symbolic equivalence, and broad instruction-sequence reasoning remain outside the pre-`v0.1.0` core unless the research scope changes.
 
@@ -165,7 +165,7 @@ source/destination: exact operand roles
 controlled registers: none independently asserted
 clobbered registers: destination
 stack delta: 8 bytes
-side effects: register_write
+side effects: stack_read, register_write
 score: unscored
 ```
 
@@ -184,7 +184,7 @@ semantic class: alignment
 controlled registers: none
 clobbered general-purpose registers: none
 stack delta: imm8 + 8 bytes
-side effects: stack_adjust, flags_write
+side effects: stack_read, stack_adjust, flags_write
 score: unscored
 ```
 
@@ -205,3 +205,17 @@ A memory candidate is promoted only when exact bytes establish:
 - immediate `ret` terminator.
 
 Memory writes have no GPR clobber. Memory reads clobber only the value destination. Neither family infers control of the address or memory contents. Other forms preserve fallback semantics.
+
+
+## Patch 050 effect-completion rule
+
+Every currently supported semantic candidate that ends in `ret` or `ret imm16` records `stack_read` because the suffix consumes a return address. This is independent from whether the preceding operation is a pop, transfer, stack adjustment, syscall, pivot, memory read, or memory write.
+
+Additional current facts:
+
+- `syscall; ret` clobbers `rcx` and `r11` and records `syscall` plus `register_write`;
+- `leave; ret` controls the pivot relationship through `rsp`, clobbers `rbp`, and retains unknown stack delta;
+- a memory read clobbers its destination register; a memory write does not clobber a modeled GPR;
+- exact family promotion follows the strongest implemented rule, so the transfer fixture's memory forms are memory candidates rather than stale transfer fallbacks.
+
+The complete fixture, effect, score-disposition, and false-positive matrix is maintained in [`design/sprint10-family-coverage.md`](design/sprint10-family-coverage.md).
