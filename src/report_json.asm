@@ -126,6 +126,7 @@ f_controls:             db '      "controls":', 0
 f_stack_pop_order:      db '      "stack_pop_order":', 0
 f_register_transfer:    db '      "register_transfer":', 0
 f_memory_access:       db '      "memory_access":', 0
+f_arch_effects:       db '      "architectural_effects":', 0
 f_transfer_source:      db '"source":"', 0
 f_transfer_destination: db ',"destination":"', 0
 f_memory_direction:   db '"direction":"', 0
@@ -137,6 +138,18 @@ f_memory_displacement_known: db ',"displacement_known":', 0
 f_memory_width:       db ',"width_bytes":', 0
 f_memory_value:       db ',"value_register":"', 0
 f_memory_dereference: db ',"dereference":', 0
+f_arch_regs_read:     db '"registers_read":', 0
+f_arch_regs_written:  db ',"registers_written":', 0
+f_arch_flags_read:    db ',"flags_read":', 0
+f_arch_flags_written: db ',"flags_written":', 0
+f_arch_control:       db ',"control_flow":', 0
+f_arch_stack_base:    db ',"stack_base":', 0
+f_arch_stack_reads:   db ',"stack_read_count":', 0
+f_arch_stack_writes:  db ',"stack_write_count":', 0
+f_arch_first_read:    db ',"first_stack_read_offset":', 0
+f_arch_stride:        db ',"stack_read_stride":', 0
+f_arch_offsets_known: db ',"stack_offsets_known":', 0
+f_arch_complete:      db ',"model_complete":', 0
 f_clobbers:             db '      "clobbers":', 0
 f_side_effects:         db '      "side_effects":', 0
 f_stack_delta:          db '      "stack_delta":', 0
@@ -231,6 +244,21 @@ side_effect_stack_adjust_s: db "stack_adjust", 0
 side_effect_flags_write_s: db "flags_write", 0
 side_effect_memory_read_s: db "memory_read", 0
 side_effect_memory_write_s: db "memory_write", 0
+side_effect_control_transfer_s: db "control_transfer", 0
+arch_flag_cf_s:        db "cf", 0
+arch_flag_pf_s:        db "pf", 0
+arch_flag_af_s:        db "af", 0
+arch_flag_zf_s:        db "zf", 0
+arch_flag_sf_s:        db "sf", 0
+arch_flag_tf_s:        db "tf", 0
+arch_flag_if_s:        db "if", 0
+arch_flag_df_s:        db "df", 0
+arch_flag_of_s:        db "of", 0
+arch_control_return_s: db "return", 0
+arch_control_syscall_s: db "syscall", 0
+arch_stack_rsp_s:      db "entry_rsp", 0
+arch_stack_rbp_s:      db "entry_rbp", 0
+arch_stack_dynamic_s:  db "dynamic", 0
 memory_direction_read_s: db "read", 0
 memory_direction_write_s: db "write", 0
 
@@ -244,9 +272,11 @@ json_gadget_records:    resq 1
 json_analysis_summary:  resq 1
 json_candidate_evidence: resq 1
 json_memory_effects:    resq 1
+json_candidate_effects: resq 1
 json_current_record:    resq 1
 json_current_evidence:  resq 1
 json_current_memory:    resq 1
+json_current_effect:    resq 1
 json_char_buf:          resb 3
 
 section .text
@@ -298,7 +328,8 @@ global x64lens_report_json_gadgets
 ;                             phdr_summary=rcx, gadget_summary=r8,
 ;                             gadget_records=r9, analysis_summary=stack_arg_7,
 ;                             candidate_evidence=stack_arg_8,
-;                             memory_effects=stack_arg_9)
+;                             memory_effects=stack_arg_9,
+;                             candidate_effects=stack_arg_10)
 ;
 ; Output:
 ;   Versioned JSON report on STDOUT.
@@ -316,8 +347,8 @@ x64lens_report_json_gadgets:
     mov     [json_phdr_summary], rcx
     mov     [json_gadget_summary], r8
     mov     [json_gadget_records], r9
-    ; Six saved registers move caller stack arguments seven through nine to
-    ; [rsp+56], [rsp+64], and [rsp+72]. Load them before correcting the inherited 8-byte
+    ; Six saved registers move caller stack arguments seven through ten to
+    ; [rsp+56], [rsp+64], [rsp+72], and [rsp+80]. Load them before correcting the inherited 8-byte
     ; entry misalignment. The extra slot keeps RSP 16-byte aligned before every
     ; nested System V call made by this reporter.
     mov     rax, [rsp + 56]
@@ -326,6 +357,8 @@ x64lens_report_json_gadgets:
     mov     [json_candidate_evidence], rax
     mov     rax, [rsp + 72]
     mov     [json_memory_effects], rax
+    mov     rax, [rsp + 80]
+    mov     [json_candidate_effects], rax
     sub     rsp, 8
 
     lea     rdi, [j_open]
@@ -821,6 +854,12 @@ json_print_gadget_array:
     add     rdx, rax
     mov     [json_current_memory], rdx
 
+    mov     rax, rbp
+    imul    rax, rax, CANDIDATE_EFFECT_RECORD_SIZE
+    mov     rdx, [json_candidate_effects]
+    add     rdx, rax
+    mov     [json_current_effect], rdx
+
     call    json_print_one_gadget
 
     inc     rbp
@@ -939,6 +978,12 @@ json_print_one_gadget:
     call    json_print_memory_effect
     JSON_FIELD_COMMA_NL
 
+    lea     rdi, [f_arch_effects]
+    call    print_cstr
+    mov     rdi, [json_current_effect]
+    call    json_print_candidate_effect
+    JSON_FIELD_COMMA_NL
+
     lea     rdi, [f_clobbers]
     call    print_cstr
     mov     rbx, [json_current_record]
@@ -956,10 +1001,12 @@ json_print_one_gadget:
     lea     rdi, [f_stack_delta]
     call    print_cstr
     mov     rbx, [json_current_record]
-    mov     eax, [rbx + GADGET_SEMANTIC_CLASS]
-    cmp     eax, SEM_UNKNOWN_CANDIDATE
+    mov     eax, [rbx + GADGET_PATTERN_ID]
+    cmp     eax, PATTERN_UNKNOWN
     je      .stack_unknown
-    cmp     eax, SEM_STACK_PIVOT
+    cmp     eax, PATTERN_POP_RSP_RET
+    je      .stack_unknown
+    cmp     eax, PATTERN_LEAVE_RET
     je      .stack_unknown
     mov     rdi, [rbx + GADGET_STACK_DELTA]
     call    print_u64_dec
@@ -973,10 +1020,12 @@ json_print_one_gadget:
     lea     rdi, [f_stack_known]
     call    print_cstr
     mov     rbx, [json_current_record]
-    mov     eax, [rbx + GADGET_SEMANTIC_CLASS]
-    cmp     eax, SEM_UNKNOWN_CANDIDATE
+    mov     eax, [rbx + GADGET_PATTERN_ID]
+    cmp     eax, PATTERN_UNKNOWN
     je      .known_false
-    cmp     eax, SEM_STACK_PIVOT
+    cmp     eax, PATTERN_POP_RSP_RET
+    je      .known_false
+    cmp     eax, PATTERN_LEAVE_RET
     je      .known_false
     lea     rdi, [j_true]
     call    print_cstr
@@ -1593,6 +1642,226 @@ json_print_memory_effect:
     pop     rbx
     ret
 
+; json_print_candidate_effect(rdi=candidate_effect_record)
+; Emits null for raw-only candidates or a compact architectural-effect object
+; for every recognized exact suffix.
+json_print_candidate_effect:
+    push    rbx
+    push    r12
+    push    r13
+    mov     r12, rdi
+    mov     rbx, [r12 + CANDIDATE_EFFECT_DESCRIPTOR]
+    test    rbx, CANDIDATE_EFFECT_FLAG_PRESENT
+    jz      .arch_effect_null
+
+    lea     rdi, [j_object_open]
+    call    print_cstr
+
+    lea     rdi, [f_arch_regs_read]
+    call    print_cstr
+    mov     rdi, [r12 + CANDIDATE_EFFECT_REGS_READ]
+    call    json_print_regs_array
+
+    lea     rdi, [f_arch_regs_written]
+    call    print_cstr
+    mov     rdi, [r12 + CANDIDATE_EFFECT_REGS_WRITTEN]
+    call    json_print_regs_array
+
+    lea     rdi, [f_arch_flags_read]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FLAGS_READ_SHIFT
+    and     edi, CANDIDATE_EFFECT_FLAGS_MASK
+    call    json_print_arch_flags_array
+
+    lea     rdi, [f_arch_flags_written]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FLAGS_WRITE_SHIFT
+    and     edi, CANDIDATE_EFFECT_FLAGS_MASK
+    call    json_print_arch_flags_array
+
+    lea     rdi, [f_arch_control]
+    call    print_cstr
+    mov     rdi, rbx
+    call    json_print_arch_control_array
+
+    lea     rdi, [f_arch_stack_base]
+    call    print_cstr
+    mov     rax, rbx
+    shr     rax, CANDIDATE_EFFECT_STACK_BASE_SHIFT
+    and     eax, CANDIDATE_EFFECT_STACK_BASE_MASK
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_ENTRY_RSP
+    je      .arch_stack_rsp
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_ENTRY_RBP
+    je      .arch_stack_rbp
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_DYNAMIC
+    je      .arch_stack_dynamic
+    lea     rdi, [j_null]
+    call    print_cstr
+    jmp     .arch_stack_base_done
+.arch_stack_rsp:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [arch_stack_rsp_s]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    jmp     .arch_stack_base_done
+.arch_stack_rbp:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [arch_stack_rbp_s]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    jmp     .arch_stack_base_done
+.arch_stack_dynamic:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [arch_stack_dynamic_s]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+.arch_stack_base_done:
+
+    lea     rdi, [f_arch_stack_reads]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_STACK_READ_COUNT_SHIFT
+    and     edi, CANDIDATE_EFFECT_STACK_READ_COUNT_MASK
+    call    print_u64_dec
+
+    lea     rdi, [f_arch_stack_writes]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_STACK_WRITE_COUNT_SHIFT
+    and     edi, CANDIDATE_EFFECT_STACK_WRITE_COUNT_MASK
+    call    print_u64_dec
+
+    lea     rdi, [f_arch_first_read]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_first_null
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FIRST_READ_SHIFT
+    and     edi, CANDIDATE_EFFECT_FIRST_READ_MASK
+    call    print_u64_dec
+    jmp     .arch_first_done
+.arch_first_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.arch_first_done:
+
+    lea     rdi, [f_arch_stride]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_stride_null
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_READ_STRIDE_SHIFT
+    and     edi, CANDIDATE_EFFECT_READ_STRIDE_MASK
+    call    print_u64_dec
+    jmp     .arch_stride_done
+.arch_stride_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.arch_stride_done:
+
+    lea     rdi, [f_arch_offsets_known]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_offsets_false
+    lea     rdi, [j_true]
+    call    print_cstr
+    jmp     .arch_offsets_done
+.arch_offsets_false:
+    lea     rdi, [j_false]
+    call    print_cstr
+.arch_offsets_done:
+
+    lea     rdi, [f_arch_complete]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_MODEL_COMPLETE
+    jz      .arch_complete_false
+    lea     rdi, [j_true]
+    call    print_cstr
+    jmp     .arch_complete_done
+.arch_complete_false:
+    lea     rdi, [j_false]
+    call    print_cstr
+.arch_complete_done:
+    lea     rdi, [j_object_close]
+    call    print_cstr
+    jmp     .arch_effect_done
+
+.arch_effect_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.arch_effect_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
+%macro JSON_ARCH_ITEM_IF_SET 2
+    test    rbx, %1
+    jz      %%skip
+    test    r12, r12
+    jz      %%no_comma
+    lea     rdi, [j_comma]
+    call    print_cstr
+%%no_comma:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [%2]
+    call    print_cstr
+    lea     rdi, [j_q]
+    call    print_cstr
+    mov     r12, 1
+%%skip:
+%endmacro
+
+json_print_arch_flags_array:
+    push    rbx
+    push    r12
+    sub     rsp, 8
+    mov     rbx, rdi
+    xor     r12d, r12d
+    lea     rdi, [j_array_open]
+    call    print_cstr
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_CF, arch_flag_cf_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_PF, arch_flag_pf_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_AF, arch_flag_af_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_ZF, arch_flag_zf_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_SF, arch_flag_sf_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_TF, arch_flag_tf_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_IF, arch_flag_if_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_DF, arch_flag_df_s
+    JSON_ARCH_ITEM_IF_SET ARCH_FLAG_OF, arch_flag_of_s
+    lea     rdi, [j_array_close]
+    call    print_cstr
+    add     rsp, 8
+    pop     r12
+    pop     rbx
+    ret
+
+json_print_arch_control_array:
+    push    rbx
+    push    r12
+    sub     rsp, 8
+    mov     rbx, rdi
+    xor     r12d, r12d
+    lea     rdi, [j_array_open]
+    call    print_cstr
+    JSON_ARCH_ITEM_IF_SET CANDIDATE_EFFECT_CONTROL_RETURN, arch_control_return_s
+    JSON_ARCH_ITEM_IF_SET CANDIDATE_EFFECT_CONTROL_SYSCALL, arch_control_syscall_s
+    lea     rdi, [j_array_close]
+    call    print_cstr
+    add     rsp, 8
+    pop     r12
+    pop     rbx
+    ret
+
 ; json_print_side_effects_array(rdi=side-effect bitmap)
 json_print_side_effects_array:
     push    rbx
@@ -1611,6 +1880,7 @@ json_print_side_effects_array:
     JSON_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_MEMORY_READ, side_effect_memory_read_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_MEMORY_WRITE, side_effect_memory_write_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_CONTROL_TRANSFER, side_effect_control_transfer_s
     lea     rdi, [j_array_close]
     call    print_cstr
     add     rsp, 8

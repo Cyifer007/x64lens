@@ -238,3 +238,11 @@ Generated Sprint 10 fixture executables must remain ignored and absent from trac
 ## Sprint 10 Patch 050 release-gate update
 
 Release-preview validation must include the current Sprint 10 family coverage and effect-consistency gates. A public artifact is not acceptable when a specialty validator fails even if a later recipe command succeeds. Authenticated-overlay regression must independently prove outer digest rejection, internal-manifest rejection, textual-content rejection, and deletion-path validation.
+
+## Sprint 10 Patch 051 release-gate update
+
+Release-preview validation must include the eleven semantic-family contract,
+twenty-five exact-pattern catalog, five fixture-suite groups, their reconciliation
+gate, and the one-per-pattern architectural-effect fixture. Public JSON must
+preserve earlier schema `0.2.0` readability while current-producer validation
+requires internally consistent architectural effects.

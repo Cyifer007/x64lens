@@ -61,10 +61,26 @@ ALLOWED_EVIDENCE_VALIDATORS = {
 ALLOWED_SIDE_EFFECTS = {
     "stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write",
     "stack_adjust", "flags_write", "memory_read", "memory_write",
+    "control_transfer",
 }
+REGISTER_OUTPUT_ORDER = (
+    "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rbp", "rsp",
+    "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
+)
+ARCH_FLAG_OUTPUT_ORDER = ("cf", "pf", "af", "zf", "sf", "tf", "if", "df", "of")
+ALLOWED_ARCH_FLAGS = set(ARCH_FLAG_OUTPUT_ORDER)
+ALLOWED_ARCH_CONTROL = {"return", "syscall"}
+ALLOWED_ARCH_STACK_BASES = {"entry_rsp", "entry_rbp", "dynamic"}
 CURRENT_EFFECT_FIELDS = {"stack_pop_order", "clobbers", "side_effects"}
 CURRENT_TRANSFER_FIELDS = {"register_transfer"}
 CURRENT_MEMORY_FIELDS = {"memory_access"}
+CURRENT_ARCH_EFFECT_FIELDS = {"architectural_effects"}
+ARCH_EFFECT_OBJECT_FIELDS = {
+    "registers_read", "registers_written", "flags_read", "flags_written",
+    "control_flow", "stack_base", "stack_read_count", "stack_write_count",
+    "first_stack_read_offset", "stack_read_stride", "stack_offsets_known",
+    "model_complete",
+}
 MULTI_POP_PATTERN = "pop reg; pop reg; ret"
 REGISTER_TRANSFER_PATTERN = "mov reg, reg; ret"
 STACK_ADJUST_PATTERN = "add rsp, imm8; ret"
@@ -99,6 +115,16 @@ SINGLE_POP_REG_BY_PATTERN = {
     "pop r14; ret": "r14",
     "pop r15; ret": "r15",
 }
+ALL_EXACT_PATTERNS = (
+    "ret", "ret imm16",
+    "pop rax; ret", "pop rcx; ret", "pop rdx; ret", "pop rbx; ret",
+    "pop rsp; ret", "pop rbp; ret", "pop rsi; ret", "pop rdi; ret",
+    "pop r8; ret", "pop r9; ret", "pop r10; ret", "pop r11; ret",
+    "pop r12; ret", "pop r13; ret", "pop r14; ret", "pop r15; ret",
+    "leave; ret", "syscall; ret", MULTI_POP_PATTERN,
+    REGISTER_TRANSFER_PATTERN, STACK_ADJUST_PATTERN,
+    MEMORY_WRITE_PATTERN, MEMORY_READ_PATTERN,
+)
 PATTERN_SUFFIX_LENGTHS = {
     "ret": 1,
     "ret imm16": 3,
@@ -301,6 +327,134 @@ def decode_memory_suffix(
     return direction, base, value
 
 
+def ordered_registers(values: set[str]) -> list[str]:
+    """Return register names in the JSON reporter's stable bitmap order."""
+    return [reg for reg in REGISTER_OUTPUT_ORDER if reg in values]
+
+
+def expected_architectural_effects(
+    gadget: dict[str, Any],
+    *,
+    prefix: str,
+    single_pop_reg: str | None,
+    transfer: dict[str, str] | None,
+    memory_access: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Build the exact architectural-effect object implied by current records."""
+    pattern = gadget["pattern"]
+    if pattern == "unknown":
+        return None
+
+    reads: set[str] = {"rsp"}
+    writes: set[str] = {"rsp"}
+    flags_read: list[str] = []
+    flags_written: list[str] = []
+    control = ["return"]
+    stack_base: str | None = "entry_rsp"
+    stack_read_count = 1
+    stack_write_count = 0
+    first_offset: int | None = 0
+    stride: int | None = 0
+    offsets_known = True
+    model_complete = True
+
+    if single_pop_reg is not None:
+        writes.add(single_pop_reg)
+        stack_read_count = 2
+        stride = 8
+        if single_pop_reg == "rsp":
+            stack_base = "dynamic"
+            first_offset = None
+            stride = None
+            offsets_known = False
+            model_complete = False
+    elif pattern == MULTI_POP_PATTERN:
+        order = gadget.get("stack_pop_order")
+        require(isinstance(order, list) and len(order) == 2, f"{prefix}.multi-pop order missing for architectural effects")
+        writes.update(order)
+        stack_read_count = 3
+        stride = 8
+    elif pattern == "leave; ret":
+        reads = {"rbp"}
+        writes = {"rbp", "rsp"}
+        stack_base = "entry_rbp"
+        stack_read_count = 2
+        stride = 8
+    elif pattern == "syscall; ret":
+        reads = {"rax", "rdi", "rsi", "rdx", "r10", "r8", "r9", "rsp"}
+        writes = {"rax", "rcx", "r11", "rsp"}
+        flags_read = list(ARCH_FLAG_OUTPUT_ORDER)
+        control = ["return", "syscall"]
+        model_complete = False
+    elif pattern == REGISTER_TRANSFER_PATTERN:
+        require(transfer is not None, f"{prefix}.register-transfer metadata missing for architectural effects")
+        reads.add(transfer["source"])
+        writes.add(transfer["destination"])
+    elif pattern == STACK_ADJUST_PATTERN:
+        immediate = decode_stack_adjust_suffix(gadget, prefix)
+        flags_written = ["cf", "pf", "af", "zf", "sf", "of"]
+        first_offset = immediate
+    elif pattern in {MEMORY_WRITE_PATTERN, MEMORY_READ_PATTERN}:
+        require(memory_access is not None, f"{prefix}.memory metadata missing for architectural effects")
+        reads.add(memory_access["base"])
+        if pattern == MEMORY_WRITE_PATTERN:
+            reads.add(memory_access["value_register"])
+        else:
+            writes.add(memory_access["value_register"])
+
+    return {
+        "registers_read": ordered_registers(reads),
+        "registers_written": ordered_registers(writes),
+        "flags_read": flags_read,
+        "flags_written": flags_written,
+        "control_flow": control,
+        "stack_base": stack_base,
+        "stack_read_count": stack_read_count,
+        "stack_write_count": stack_write_count,
+        "first_stack_read_offset": first_offset,
+        "stack_read_stride": stride,
+        "stack_offsets_known": offsets_known,
+        "model_complete": model_complete,
+    }
+
+
+def validate_architectural_effect_object(value: Any, prefix: str) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    require(isinstance(value, dict), f"{prefix}.architectural_effects must be an object or null")
+    require(set(value) == ARCH_EFFECT_OBJECT_FIELDS, f"{prefix}.architectural_effects fields are invalid")
+    for key in ("registers_read", "registers_written"):
+        regs = value[key]
+        require(isinstance(regs, list), f"{prefix}.architectural_effects.{key} must be an array")
+        require(len(regs) == len(set(regs)), f"{prefix}.architectural_effects.{key} must not contain duplicates")
+        require(all(isinstance(reg, str) and reg in ALLOWED_REGS for reg in regs), f"{prefix}.architectural_effects.{key} contains an unsupported register")
+        require(regs == ordered_registers(set(regs)), f"{prefix}.architectural_effects.{key} is not in stable register order")
+    for key in ("flags_read", "flags_written"):
+        flags = value[key]
+        require(isinstance(flags, list), f"{prefix}.architectural_effects.{key} must be an array")
+        require(len(flags) == len(set(flags)), f"{prefix}.architectural_effects.{key} must not contain duplicates")
+        require(all(isinstance(flag, str) and flag in ALLOWED_ARCH_FLAGS for flag in flags), f"{prefix}.architectural_effects.{key} contains an unsupported flag")
+        require(flags == [flag for flag in ARCH_FLAG_OUTPUT_ORDER if flag in set(flags)], f"{prefix}.architectural_effects.{key} is not in stable flag order")
+    control = value["control_flow"]
+    require(isinstance(control, list), f"{prefix}.architectural_effects.control_flow must be an array")
+    require(len(control) == len(set(control)), f"{prefix}.architectural_effects.control_flow must not contain duplicates")
+    require(all(isinstance(item, str) and item in ALLOWED_ARCH_CONTROL for item in control), f"{prefix}.architectural_effects.control_flow contains an unsupported value")
+    require(control == [item for item in ("return", "syscall") if item in set(control)], f"{prefix}.architectural_effects.control_flow is not in stable order")
+    stack_base = value["stack_base"]
+    require(stack_base is None or stack_base in ALLOWED_ARCH_STACK_BASES, f"{prefix}.architectural_effects.stack_base is invalid")
+    require_int(value["stack_read_count"], f"{prefix}.architectural_effects.stack_read_count")
+    require_int(value["stack_write_count"], f"{prefix}.architectural_effects.stack_write_count")
+    require_bool(value["stack_offsets_known"], f"{prefix}.architectural_effects.stack_offsets_known")
+    require_bool(value["model_complete"], f"{prefix}.architectural_effects.model_complete")
+    if value["stack_offsets_known"]:
+        require_int(value["first_stack_read_offset"], f"{prefix}.architectural_effects.first_stack_read_offset")
+        require_int(value["stack_read_stride"], f"{prefix}.architectural_effects.stack_read_stride")
+    else:
+        require(value["first_stack_read_offset"] is None, f"{prefix}.architectural_effects.first_stack_read_offset must be null when unknown")
+        require(value["stack_read_stride"] is None, f"{prefix}.architectural_effects.stack_read_stride must be null when unknown")
+    return value
+
+
 def load_report(path: Path) -> dict[str, Any]:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -320,6 +474,7 @@ def validate_common(
     require_sprint10_effects: bool = False,
     require_sprint10_transfer: bool = False,
     require_sprint10_memory: bool = False,
+    require_sprint10_architectural_effects: bool = False,
 ) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
@@ -348,6 +503,7 @@ def validate_common(
         require(not require_sprint10_effects, "Sprint 10 effect fields require schema 0.2.0")
         require(not require_sprint10_transfer, "Sprint 10 register-transfer fields require schema 0.2.0")
         require(not require_sprint10_memory, "Sprint 10 memory-effect fields require schema 0.2.0")
+        require(not require_sprint10_architectural_effects, "Sprint 10 architectural-effect fields require schema 0.2.0")
 
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
@@ -561,6 +717,12 @@ def validate_common(
                 not missing_memory_fields,
                 f"{prefix} missing current Sprint 10 memory-effect fields: {sorted(missing_memory_fields)}",
             )
+        if require_sprint10_architectural_effects:
+            missing_arch_fields = CURRENT_ARCH_EFFECT_FIELDS - set(gadget)
+            require(
+                not missing_arch_fields,
+                f"{prefix} missing current Sprint 10 architectural-effect fields: {sorted(missing_arch_fields)}",
+            )
 
         if "stack_pop_order" in gadget:
             order = gadget["stack_pop_order"]
@@ -600,6 +762,10 @@ def validate_common(
             require_bool(memory_access["dereference"], f"{prefix}.memory_access.dereference")
         elif "memory_access" in gadget:
             require(memory_access is None, f"{prefix}.memory_access must be an object or null")
+
+        architectural_effects = None
+        if "architectural_effects" in gadget:
+            architectural_effects = validate_architectural_effect_object(gadget["architectural_effects"], prefix)
 
         if "clobbers" in gadget:
             clobbers = gadget["clobbers"]
@@ -776,7 +942,7 @@ def validate_common(
             else:
                 require(gadget["semantic_class"] == "unknown_candidate", f"{prefix}.unsupported single-pop must remain unknown")
                 require(gadget["controls"] == [], f"{prefix}.unsupported single-pop controls must be empty")
-                require(known is False and gadget["stack_delta"] is None, f"{prefix}.unsupported single-pop stack state must remain unknown")
+                require(known is True and gadget["stack_delta"] == 16, f"{prefix}.unsupported single-pop exact stack delta mismatch")
                 require(gadget["score"] is None, f"{prefix}.unsupported single-pop must remain unscored")
 
         if gadget["pattern"] == "ret":
@@ -806,7 +972,8 @@ def validate_common(
             require(order in (None, []), f"{prefix}.stack-adjust stack_pop_order must be empty")
             require(clobbers in (None, []), f"{prefix}.stack-adjust clobbers must be empty")
             require(known is True and gadget["stack_delta"] == immediate + 8, f"{prefix}.stack-adjust stack delta mismatch")
-            require(gadget["score"] is None, f"{prefix}.stack-adjust remains unscored")
+            if require_sprint10_effects:
+                require(gadget["score"] == 35, f"{prefix}.stack-adjust score mismatch")
 
         is_memory_pattern = gadget["pattern"] in {MEMORY_WRITE_PATTERN, MEMORY_READ_PATTERN}
         if is_memory_pattern:
@@ -863,39 +1030,46 @@ def validate_common(
                 expected_clobbers = ["rcx", "r11"]
             elif gadget["pattern"] == "leave; ret":
                 expected_clobbers = ["rbp"]
-            require(clobbers == expected_clobbers, f"{prefix}.clobbers disagree with represented register writes")
+            require(clobbers == expected_clobbers, f"{prefix}.clobbers disagree with represented semantic effects")
 
         if gadget["pattern"] == MULTI_POP_PATTERN:
             require(gadget["semantic_class"] == "arg_control", f"{prefix}.multi-pop semantic class must be arg_control")
             require(set(gadget["controls"]) == set(gadget.get("stack_pop_order", [])), f"{prefix}.multi-pop controls must cover the ordered pop registers")
             require(known is True and gadget["stack_delta"] == 24, f"{prefix}.multi-pop stack delta must be 24")
-            require(gadget["score"] is None, f"{prefix}.multi-pop remains unscored in Patch 046")
+            if require_sprint10_effects:
+                require(gadget["score"] == 95, f"{prefix}.multi-pop score mismatch")
 
         if side_effects is not None and require_sprint10_effects:
             expected_effects: set[str] = set()
-            if gadget["semantic_class"] != "unknown_candidate" and gadget["terminator"] in {"ret", "ret imm16"}:
-                expected_effects.add("stack_read")
-            if gadget["semantic_class"] == "stack_pivot":
-                expected_effects.add("stack_pivot")
-                if gadget["pattern"] == "leave; ret":
-                    expected_effects.add("register_write")
-            if gadget["semantic_class"] == "syscall_trigger":
-                expected_effects.add("syscall")
+            if gadget["pattern"] != "unknown":
+                expected_effects.update({"stack_read", "control_transfer"})
+            if single_pop_reg is not None or gadget["pattern"] == MULTI_POP_PATTERN:
                 expected_effects.add("register_write")
+            if gadget["semantic_class"] == "stack_pivot":
+                expected_effects.update({"stack_pivot", "register_write"})
+            if gadget["semantic_class"] == "syscall_trigger":
+                expected_effects.update({"syscall", "register_write"})
             if gadget["terminator"] == "ret imm16":
-                expected_effects.add("ret_imm16")
-                expected_effects.add("stack_adjust")
+                expected_effects.update({"ret_imm16", "stack_adjust"})
             if gadget["semantic_class"] == "reg_transfer":
                 expected_effects.add("register_write")
             if gadget["pattern"] == STACK_ADJUST_PATTERN:
-                expected_effects.add("stack_adjust")
-                expected_effects.add("flags_write")
+                expected_effects.update({"stack_adjust", "flags_write"})
             if gadget["pattern"] == MEMORY_WRITE_PATTERN:
                 expected_effects.add("memory_write")
             if gadget["pattern"] == MEMORY_READ_PATTERN:
-                expected_effects.add("memory_read")
-                expected_effects.add("register_write")
+                expected_effects.update({"memory_read", "register_write"})
             require(set(side_effects) == expected_effects, f"{prefix}.side_effects disagrees with represented semantic effects")
+
+        if architectural_effects is not None or require_sprint10_architectural_effects:
+            expected_arch = expected_architectural_effects(
+                gadget,
+                prefix=prefix,
+                single_pop_reg=single_pop_reg,
+                transfer=transfer,
+                memory_access=memory_access,
+            )
+            require(architectural_effects == expected_arch, f"{prefix}.architectural_effects disagrees with exact pattern facts")
 
         score = gadget["score"]
         if score is not None:
@@ -1049,7 +1223,7 @@ def validate_sprint10_fixture(doc: dict[str, Any]) -> None:
         "exact_pattern_count": 5,
         "semantic_candidate_count": 5,
         "unknown_candidate_count": 0,
-        "scored_candidate_count": 2,
+        "scored_candidate_count": 5,
     }
     for key, value in expected_counts.items():
         require(counts[key] == value, f"Sprint 10 fixture {key} expected {value}, got {counts[key]}")
@@ -1063,9 +1237,9 @@ def validate_sprint10_fixture(doc: dict[str, Any]) -> None:
         require(gadget["semantic_class"] == "arg_control", "Sprint 10 multi-pop semantic mismatch")
         require(set(gadget["controls"]) == set(gadget["stack_pop_order"]), "Sprint 10 multi-pop controls/order mismatch")
         require(gadget["stack_delta"] == 24 and gadget["stack_delta_known"] is True, "Sprint 10 multi-pop stack delta mismatch")
-        require(gadget["score"] is None, "Sprint 10 multi-pop must remain unscored")
+        require(gadget["score"] == 95, "Sprint 10 multi-pop score mismatch")
         require(gadget["clobbers"] == [], "Sprint 10 multi-pop clobbers must be empty")
-        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 multi-pop side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "register_write", "control_transfer"], "Sprint 10 multi-pop side effects mismatch")
 
     fallback = [g for g in gadgets if g["pattern"] == "pop rdi; ret"]
     require(len(fallback) == 2, f"Sprint 10 fixture expected 2 conservative single-pop fallbacks, got {len(fallback)}")
@@ -1112,30 +1286,22 @@ def validate_sprint10_transfer_fixture(doc: dict[str, Any]) -> None:
         require(gadget["clobbers"] == [destination], "Sprint 10 transfer clobber mismatch")
         require(gadget["stack_pop_order"] == [], "Sprint 10 transfer pop order must be empty")
         require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 transfer stack delta mismatch")
-        require(gadget["side_effects"] == ["stack_read", "register_write"], "Sprint 10 transfer side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "register_write", "control_transfer"], "Sprint 10 transfer side effects mismatch")
         require(gadget["score"] is None, "Sprint 10 transfer candidates must remain unscored")
+
+    memory = [g for g in gadgets if g["pattern"] in {MEMORY_WRITE_PATTERN, MEMORY_READ_PATTERN}]
+    require(len(memory) == 2, f"Sprint 10 transfer fixture expected 2 memory candidates, got {len(memory)}")
 
     fallback = [g for g in gadgets if g["pattern"] == "ret"]
     require(len(fallback) == 4, f"Sprint 10 transfer fixture expected 4 conservative ret fallbacks, got {len(fallback)}")
     for gadget in fallback:
         require(gadget["register_transfer"] is None, "Sprint 10 fallback transfer relation must be null")
         require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
-        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 fallback side effects mismatch")
         require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
-
-    memory_writes = [g for g in gadgets if g["pattern"] == MEMORY_WRITE_PATTERN]
-    memory_reads = [g for g in gadgets if g["pattern"] == MEMORY_READ_PATTERN]
-    require(len(memory_writes) == 1, f"Sprint 10 transfer fixture expected 1 cross-family memory write, got {len(memory_writes)}")
-    require(len(memory_reads) == 1, f"Sprint 10 transfer fixture expected 1 cross-family memory read, got {len(memory_reads)}")
-    require(memory_writes[0]["memory_access"]["base"] == "rax", "Sprint 10 transfer fixture memory-write base mismatch")
-    require(memory_writes[0]["memory_access"]["value_register"] == "rdi", "Sprint 10 transfer fixture memory-write value mismatch")
-    require(memory_reads[0]["memory_access"]["base"] == "rax", "Sprint 10 transfer fixture memory-read base mismatch")
-    require(memory_reads[0]["memory_access"]["value_register"] == "rdi", "Sprint 10 transfer fixture memory-read value mismatch")
 
     coverage = doc["primitive_coverage"]
     require(coverage["reg_transfer"] is True, "Sprint 10 transfer fixture must expose reg_transfer coverage")
     require(coverage["arg_control"] is False, "Sprint 10 transfer fixture must not assert argument control")
-    require(coverage["memory_write"] is True and coverage["memory_read"] is True, "Sprint 10 transfer fixture must expose cross-family memory coverage")
     require(coverage["registers"] == [], "Sprint 10 transfer fixture controlled-register coverage must be empty")
     analysis = doc["analysis"]
     require(analysis["complete"] is True and analysis["candidate_count"] == 10, "Sprint 10 transfer fixture analysis summary mismatch")
@@ -1150,7 +1316,7 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
         "exact_pattern_count": 7,
         "semantic_candidate_count": 7,
         "unknown_candidate_count": 0,
-        "scored_candidate_count": 5,
+        "scored_candidate_count": 7,
     }
     for key, value in expected_counts.items():
         require(counts[key] == value, f"Sprint 10 stack-adjust fixture {key} expected {value}, got {counts[key]}")
@@ -1165,8 +1331,8 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
         require(gadget["stack_pop_order"] == [], "Sprint 10 stack-adjust pop order must be empty")
         require(gadget["register_transfer"] is None, "Sprint 10 stack-adjust transfer relation must be null")
         require(gadget["clobbers"] == [], "Sprint 10 stack-adjust clobbers must be empty")
-        require(gadget["side_effects"] == ["stack_read", "stack_adjust", "flags_write"], "Sprint 10 stack-adjust side effects mismatch")
-        require(gadget["score"] is None, "Sprint 10 stack-adjust candidates remain unscored")
+        require(gadget["side_effects"] == ["stack_read", "stack_adjust", "flags_write", "control_transfer"], "Sprint 10 stack-adjust side effects mismatch")
+        require(gadget["score"] == 35, "Sprint 10 stack-adjust score mismatch")
 
     fallback = [g for g in gadgets if g["pattern"] == "ret"]
     require(len(fallback) == 5, f"Sprint 10 stack-adjust fixture expected 5 ret fallbacks, got {len(fallback)}")
@@ -1174,7 +1340,7 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
         require(gadget["semantic_class"] == "alignment", "Sprint 10 fallback semantic mismatch")
         require(gadget["controls"] == [], "Sprint 10 fallback controls must be empty")
         require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 fallback stack delta mismatch")
-        require(gadget["side_effects"] == ["stack_read"], "Sprint 10 fallback side effects must contain stack_read")
+        require(gadget["side_effects"] == ["stack_read", "control_transfer"], "Sprint 10 fallback side effects mismatch")
         require(gadget["score"] == 45, "Sprint 10 fallback score mismatch")
 
     coverage = doc["primitive_coverage"]
@@ -1237,12 +1403,12 @@ def validate_sprint10_memory_fixture(doc: dict[str, Any]) -> None:
     for gadget in writes:
         require(gadget["semantic_class"] == "memory_write", "Sprint 10 memory-write semantic mismatch")
         require(gadget["clobbers"] == [], "Sprint 10 memory-write clobbers must be empty")
-        require(gadget["side_effects"] == ["stack_read", "memory_write"], "Sprint 10 memory-write side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "memory_write", "control_transfer"], "Sprint 10 memory-write side effects mismatch")
     for gadget in reads:
         value = gadget["memory_access"]["value_register"]
         require(gadget["semantic_class"] == "memory_read", "Sprint 10 memory-read semantic mismatch")
         require(gadget["clobbers"] == [value], "Sprint 10 memory-read clobber mismatch")
-        require(gadget["side_effects"] == ["stack_read", "register_write", "memory_read"], "Sprint 10 memory-read side effects mismatch")
+        require(gadget["side_effects"] == ["stack_read", "register_write", "memory_read", "control_transfer"], "Sprint 10 memory-read side effects mismatch")
     for gadget in fallback:
         require(gadget["memory_access"] is None, "Sprint 10 fallback memory_access must be null")
         require(gadget["semantic_class"] == "alignment" and gadget["score"] == 45, "Sprint 10 memory fallback mismatch")
@@ -1254,10 +1420,44 @@ def validate_sprint10_memory_fixture(doc: dict[str, Any]) -> None:
     require(analysis["complete"] is True and analysis["candidate_count"] == 12, "Sprint 10 memory analysis summary mismatch")
 
 
+def validate_sprint10_effects_fixture(doc: dict[str, Any]) -> None:
+    counts = doc["counts"]
+    expected_counts = {
+        "raw_candidate_count": 25,
+        "ret_count": 24,
+        "ret_imm16_count": 1,
+        "exact_pattern_count": 25,
+        "semantic_candidate_count": 17,
+        "unknown_candidate_count": 8,
+        "scored_candidate_count": 14,
+    }
+    for key, value in expected_counts.items():
+        require(counts[key] == value, f"Sprint 10 effects fixture {key} expected {value}, got {counts[key]}")
+
+    gadgets = doc["gadgets"]
+    require([g["pattern"] for g in gadgets] == list(ALL_EXACT_PATTERNS), "Sprint 10 effects fixture pattern order mismatch")
+    require(sum(g["semantic_class"] == "unknown_candidate" for g in gadgets) == 8, "Sprint 10 effects fixture exact-only count mismatch")
+    require(sum(g["architectural_effects"]["model_complete"] is False for g in gadgets) == 2, "Sprint 10 effects fixture partial-model count mismatch")
+    partial = {g["pattern"] for g in gadgets if g["architectural_effects"]["model_complete"] is False}
+    require(partial == {"pop rsp; ret", "syscall; ret"}, "Sprint 10 effects fixture partial-model families mismatch")
+    require(sum(g["score"] is not None for g in gadgets) == 14, "Sprint 10 effects fixture scored population mismatch")
+    require(all(g["architectural_effects"] is not None for g in gadgets), "Sprint 10 effects fixture requires one effect object per exact pattern")
+
+    coverage = doc["primitive_coverage"]
+    for key in ("arg_control", "syscall_num_control", "syscall_trigger", "stack_pivot", "alignment", "reg_transfer", "memory_write", "memory_read"):
+        require(coverage[key] is True, f"Sprint 10 effects fixture must expose {key} coverage")
+    require(
+        coverage["registers"] == ["rax", "rcx", "rdx", "rsi", "rdi", "rsp", "r8", "r9"],
+        "Sprint 10 effects fixture controlled-register coverage mismatch",
+    )
+    analysis = doc["analysis"]
+    require(analysis["complete"] is True and analysis["candidate_count"] == 25, "Sprint 10 effects fixture analysis summary mismatch")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
-    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "sprint10-stack-adjust-fixture", "sprint10-memory-fixture", "system"], default="generic")
+    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "sprint10-stack-adjust-fixture", "sprint10-memory-fixture", "sprint10-effects-fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     parser.add_argument(
@@ -1280,6 +1480,11 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="require current structured memory-effect relation and coverage fields",
     )
+    parser.add_argument(
+        "--require-sprint10-architectural-effects",
+        action="store_true",
+        help="require the dense current architectural-effect side-car object on every candidate",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -1292,6 +1497,7 @@ def main(argv: list[str]) -> int:
             require_sprint10_effects=args.require_sprint10_effects,
             require_sprint10_transfer=args.require_sprint10_transfer,
             require_sprint10_memory=args.require_sprint10_memory,
+            require_sprint10_architectural_effects=args.require_sprint10_architectural_effects,
         )
         if args.mode == "fixture":
             validate_fixture(doc)
@@ -1303,6 +1509,8 @@ def main(argv: list[str]) -> int:
             validate_sprint10_stack_adjust_fixture(doc)
         elif args.mode == "sprint10-memory-fixture":
             validate_sprint10_memory_fixture(doc)
+        elif args.mode == "sprint10-effects-fixture":
+            validate_sprint10_effects_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1

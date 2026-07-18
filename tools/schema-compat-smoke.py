@@ -41,6 +41,7 @@ SPRINT10_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-0.
 SPRINT10_TRANSFER_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-transfer-0.2.0.json"
 SPRINT10_STACK_ADJUST_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-stack-adjust-0.2.0.json"
 SPRINT10_MEMORY_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-memory-0.2.0.json"
+SPRINT10_EFFECTS_REPORT_PATH = ROOT / "tests" / "expected" / "x64lens-report-sprint10-effects-0.2.0.json"
 
 
 def load_custom_validator() -> Any:
@@ -132,6 +133,7 @@ def main() -> int:
     sprint10_transfer = load_json(SPRINT10_TRANSFER_REPORT_PATH)
     sprint10_stack_adjust = load_json(SPRINT10_STACK_ADJUST_REPORT_PATH)
     sprint10_memory = load_json(SPRINT10_MEMORY_REPORT_PATH)
+    sprint10_effects = load_json(SPRINT10_EFFECTS_REPORT_PATH)
 
     # Historical 0.1.0 reports, Patch 040's initial 0.2.0 shape, and the current
     # provenance-bearing producer shape all remain consumable.
@@ -143,6 +145,7 @@ def main() -> int:
     require_formal_accept(current_schema, "sprint10-transfer-0.2.0", sprint10_transfer)
     require_formal_accept(current_schema, "sprint10-stack-adjust-0.2.0", sprint10_stack_adjust)
     require_formal_accept(current_schema, "sprint10-memory-0.2.0", sprint10_memory)
+    require_formal_accept(current_schema, "sprint10-effects-0.2.0", sprint10_effects)
 
     run_custom(LEGACY_REPORT_PATH, "--require-schema", "0.1.0", expect_success=True)
     run_custom(
@@ -163,6 +166,7 @@ def main() -> int:
         "--require-sprint10-effects",
         "--require-sprint10-transfer",
         "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
         expect_success=True,
     )
     # Patch 046 remains a same-schema compatibility fixture. It predates the
@@ -189,6 +193,7 @@ def main() -> int:
         "--require-provenance",
         "--require-sprint10-effects",
         "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
         expect_success=True,
     )
     run_custom(
@@ -203,6 +208,7 @@ def main() -> int:
         "--require-sprint10-effects",
         "--require-sprint10-transfer",
         "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
         expect_success=True,
     )
     run_custom(
@@ -217,6 +223,7 @@ def main() -> int:
         "--require-sprint10-effects",
         "--require-sprint10-transfer",
         "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
         expect_success=True,
     )
     run_custom(
@@ -231,6 +238,22 @@ def main() -> int:
         "--require-sprint10-effects",
         "--require-sprint10-transfer",
         "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
+        expect_success=True,
+    )
+    run_custom(
+        SPRINT10_EFFECTS_REPORT_PATH,
+        "--mode",
+        "sprint10-effects-fixture",
+        "--require-schema",
+        "0.2.0",
+        "--expected-command",
+        "gadgets",
+        "--require-provenance",
+        "--require-sprint10-effects",
+        "--require-sprint10-transfer",
+        "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
         expect_success=True,
     )
 
@@ -323,44 +346,44 @@ def main() -> int:
 
         mutation = deepcopy(current)
         mutation["analysis"]["candidate_count"] = 0
-        semantic_cases.append(("analysis-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("analysis-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["analysis"]["regions_scanned"] = 2
-        semantic_cases.append(("region-overrun", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("region-overrun", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["primitive_coverage"]["alignment"] = False
-        semantic_cases.append(("coverage-class-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("coverage-class-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["counts"]["exact_pattern_count"] = 0
-        semantic_cases.append(("exact-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("exact-count-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["gadgets"][0]["evidence"]["matched_suffix_offset"] = 1
-        semantic_cases.append(("suffix-range-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("suffix-range-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["stack_pop_order"] = ["rsi", "rdi"]
-        semantic_cases.append(("multi-pop-order-disagrees-with-bytes", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("multi-pop-order-disagrees-with-bytes", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["controls"] = ["rdi"]
-        semantic_cases.append(("multi-pop-controls-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("multi-pop-controls-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["side_effects"] = ["stack_read", "syscall"]
-        semantic_cases.append(("multi-pop-side-effects-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("multi-pop-side-effects-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["score"] = 90
         mutation["counts"]["scored_candidate_count"] = 3
-        semantic_cases.append(("multi-pop-premature-score", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("multi-pop-premature-score", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10)
         mutation["gadgets"][0]["clobbers"] = ["rax"]
-        semantic_cases.append(("unsupported-clobber-fact", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("unsupported-clobber-fact", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         # Patch 046 review regression: controls and coverage cannot be rewritten
         # independently from an exact single-pop pattern and its ordered fact.
@@ -374,79 +397,100 @@ def main() -> int:
         mutation["primitive_coverage"]["registers"] = sorted(
             {reg for gadget in mutation["gadgets"] for reg in gadget["controls"]}
         )
-        semantic_cases.append(("single-pop-controls-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",)))
+        semantic_cases.append(("single-pop-controls-disagree", mutation, ("--mode", "sprint10-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_transfer)
         mutation["gadgets"][0]["register_transfer"] = {"source": "rax", "destination": "rsi"}
-        semantic_cases.append(("transfer-relation-disagrees-with-bytes", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("transfer-relation-disagrees-with-bytes", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_transfer)
         mutation["gadgets"][0]["clobbers"] = ["rsi"]
-        semantic_cases.append(("transfer-clobber-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("transfer-clobber-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_transfer)
         mutation["gadgets"][0]["side_effects"] = []
-        semantic_cases.append(("transfer-side-effect-missing", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("transfer-side-effect-missing", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_transfer)
         mutation["primitive_coverage"]["reg_transfer"] = False
-        semantic_cases.append(("transfer-coverage-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("transfer-coverage-disagrees", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_transfer)
         mutation["gadgets"][4]["register_transfer"] = {"source": "rax", "destination": "rdi"}
-        semantic_cases.append(("non-transfer-carries-transfer-relation", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("non-transfer-carries-transfer-relation", mutation, ("--mode", "sprint10-transfer-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         # Patch 047 review regressions: exact bare-ret facts must agree per
         # candidate even when aggregate counts and register coverage are edited
         # to remain superficially consistent.
         mutation = deepcopy(current)
         mutation["gadgets"][0]["terminator"] = "unknown"
-        semantic_cases.append(("ret-terminator-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("ret-terminator-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["gadgets"][0]["controls"] = ["rdi"]
         mutation["primitive_coverage"]["registers"] = ["rdi"]
-        semantic_cases.append(("ret-controls-disagree", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("ret-controls-disagree", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(current)
         mutation["gadgets"][0]["stack_delta"] = 24
-        semantic_cases.append(("ret-stack-delta-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("ret-stack-delta-disagrees", mutation, ("--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_stack_adjust)
         mutation["gadgets"][0]["stack_delta"] = 24
-        semantic_cases.append(("stack-adjust-delta-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("stack-adjust-delta-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_stack_adjust)
         mutation["gadgets"][0]["bytes"] = "4883c407c3"
-        semantic_cases.append(("stack-adjust-immediate-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("stack-adjust-immediate-disagrees", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_stack_adjust)
         mutation["gadgets"][0]["side_effects"] = []
-        semantic_cases.append(("stack-adjust-effect-missing", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("stack-adjust-effect-missing", mutation, ("--mode", "sprint10-stack-adjust-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["gadgets"][0]["memory_access"]["direction"] = "read"
-        semantic_cases.append(("memory-direction-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("memory-direction-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["gadgets"][0]["memory_access"]["base"] = "rsi"
-        semantic_cases.append(("memory-base-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("memory-base-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["gadgets"][3]["memory_access"]["value_register"] = "rdx"
-        semantic_cases.append(("memory-value-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("memory-value-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["gadgets"][3]["clobbers"] = []
-        semantic_cases.append(("memory-read-clobber-missing", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("memory-read-clobber-missing", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["primitive_coverage"]["memory_write"] = False
-        semantic_cases.append(("memory-coverage-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("memory-coverage-disagrees", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         mutation = deepcopy(sprint10_memory)
         mutation["gadgets"][6]["memory_access"] = deepcopy(sprint10_memory["gadgets"][0]["memory_access"])
-        semantic_cases.append(("non-memory-carries-memory-relation", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",)))
+        semantic_cases.append(("non-memory-carries-memory-relation", mutation, ("--mode", "sprint10-memory-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
+
+
+        mutation = deepcopy(sprint10_effects)
+        del mutation["gadgets"][0]["architectural_effects"]
+        semantic_cases.append(("architectural-effects-absent", mutation, ("--mode", "sprint10-effects-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
+
+        mutation = deepcopy(sprint10_effects)
+        mutation["gadgets"][0]["architectural_effects"]["registers_read"] = ["rbx"]
+        semantic_cases.append(("architectural-effects-registers-disagree", mutation, ("--mode", "sprint10-effects-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
+
+        mutation = deepcopy(sprint10_effects)
+        mutation["gadgets"][0]["architectural_effects"]["first_stack_read_offset"] = 8
+        semantic_cases.append(("architectural-effects-stack-offset-disagrees", mutation, ("--mode", "sprint10-effects-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
+
+        mutation = deepcopy(sprint10_effects)
+        mutation["gadgets"][6]["architectural_effects"]["model_complete"] = True
+        semantic_cases.append(("architectural-effects-completeness-disagrees", mutation, ("--mode", "sprint10-effects-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
+
+        mutation = deepcopy(sprint10_effects)
+        mutation["gadgets"][5]["architectural_effects"] = None
+        semantic_cases.append(("exact-only-architectural-effects-missing", mutation, ("--mode", "sprint10-effects-fixture", "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",)))
 
         for name, document, extra_args in semantic_cases:
             require_formal_accept(current_schema, name, document)
@@ -467,6 +511,7 @@ def main() -> int:
             "--require-schema",
             "0.2.0",
             "--require-provenance", "--require-sprint10-effects", "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
             expect_success=False,
         )
         semantic_rejections += 1
@@ -480,13 +525,14 @@ def main() -> int:
             "--expected-command",
             "analyze",
             "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",
+        "--require-sprint10-architectural-effects",
             expect_success=False,
         )
         semantic_rejections += 1
 
     print(
         "schema-compat-smoke: ok "
-        "legacy=0.1.0 patch040=0.2.0 patch046=0.2.0 current=0.2.0 transfer=0.2.0 stack_adjust=0.2.0 memory=0.2.0 "
+        "legacy=0.1.0 patch040=0.2.0 patch046=0.2.0 current=0.2.0 transfer=0.2.0 stack_adjust=0.2.0 memory=0.2.0 effects=0.2.0 "
         f"formal_rejections={formal_rejections} "
         f"semantic_rejections={semantic_rejections}"
     )

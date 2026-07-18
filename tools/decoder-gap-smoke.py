@@ -569,7 +569,7 @@ def compare_target(
         "0.2.0",
         "--expected-command",
         "gadgets",
-        "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory",
+        "--require-provenance", "--require-sprint10-effects", "--require-sprint10-transfer", "--require-sprint10-memory", "--require-sprint10-architectural-effects",
         report_path.name,
     ]
     validator = subprocess.run(

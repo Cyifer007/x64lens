@@ -156,12 +156,38 @@ x64lens_classifier_apply_exact:
     cmp     eax, PATTERN_MOV_REG_MEM_RET
     je      .class_memory_read
 
-    ; Conservative default: known exact patterns that are not yet mapped to a
-    ; semantic primitive remain unknown_candidate for Sprint 4 metrics.
+    ; The remaining exact single-pop suffixes are not yet promoted to a
+    ; semantic role, but their architectural stack/register effects are known.
+    ; Preserve semantic unknown status while retaining exact stack-delta and
+    ; side-effect facts for the Patch 051 architectural-effect side-car.
+    cmp     eax, PATTERN_POP_RBX_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_RBP_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R10_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R11_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R12_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R13_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R14_RET
+    je      .class_exact_pop_unknown
+    cmp     eax, PATTERN_POP_R15_RET
+    je      .class_exact_pop_unknown
+
+    ; Conservative default: exact patterns without a justified effect/semantic
+    ; contract remain unknown_candidate with no invented facts.
+    MARK_UNKNOWN
+
+.class_exact_pop_unknown:
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_POP_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     MARK_UNKNOWN
 
 .class_ret:
-    CLASSIFY_NO_REG SEM_ALIGNMENT, STACK_DELTA_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ALIGNMENT_COUNT
+    CLASSIFY_NO_REG SEM_ALIGNMENT, STACK_DELTA_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ALIGNMENT_COUNT
 
 .class_ret_imm16:
     ; ret imm16 stack effect is pop return address plus immediate stack adjust.
@@ -172,23 +198,23 @@ x64lens_classifier_apply_exact:
     add     rax, STACK_DELTA_RET
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
     mov     qword [r15 + GADGET_STACK_DELTA], rax
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_RET_IMM16
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_RET_IMM16 | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
     jmp     .next_candidate
 
 .class_pop_rdi_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_RDI_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_RDI_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 .class_pop_rsi_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_RSI_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_RSI_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 .class_pop_rdx_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_RDX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_RDX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 .class_pop_rcx_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_RCX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_RCX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 .class_pop_r8_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_R8_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_R8_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 .class_pop_r9_arg:
-    CLASSIFY_REG SEM_ARG_CONTROL, REG_R9_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_ARG_CONTROL_COUNT
+    CLASSIFY_REG SEM_ARG_CONTROL, REG_R9_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_ARG_CONTROL_COUNT
 
 .class_multi_pop_arg:
     ; Pattern matching owns exact ordered-pop recognition. Recheck the compact
@@ -223,7 +249,7 @@ x64lens_classifier_apply_exact:
     mov     [r15 + GADGET_REGS_CONTROLLED], rax
     or      [r13 + GADGET_SUMMARY_REGS_CONTROLLED], rax
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_TWO_POP_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ARG_CONTROL_COUNT]
     jmp     .next_candidate
@@ -263,7 +289,7 @@ x64lens_classifier_apply_exact:
     bts     rax, rcx
     mov     [r15 + GADGET_REGS_CLOBBERED], rax
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_REG_TRANSFER_COUNT]
     jmp     .next_candidate
@@ -305,7 +331,7 @@ x64lens_classifier_apply_exact:
     add     rax, STACK_DELTA_RET
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
     mov     qword [r15 + GADGET_STACK_DELTA], rax
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
     jmp     .next_candidate
@@ -340,7 +366,7 @@ x64lens_classifier_apply_exact:
     je      .bounds_error
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_MEMORY_WRITE
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_MEMORY_WRITE_COUNT]
     jmp     .next_candidate
@@ -378,13 +404,13 @@ x64lens_classifier_apply_exact:
     bts     rax, rdx
     mov     [r15 + GADGET_REGS_CLOBBERED], rax
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_MEMORY_READ_COUNT]
     jmp     .next_candidate
 
 .class_pop_rax_syscall_num:
-    CLASSIFY_REG SEM_SYSCALL_NUM_CONTROL, REG_RAX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ, GADGET_SUMMARY_SYSCALL_NUM_COUNT
+    CLASSIFY_REG SEM_SYSCALL_NUM_CONTROL, REG_RAX_BIT, STACK_DELTA_POP_RET, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_SYSCALL_NUM_COUNT
 
 .class_syscall_trigger:
     ; syscall writes RCX and R11 architecturally before the retained return.
@@ -393,7 +419,7 @@ x64lens_classifier_apply_exact:
     mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_SYSCALL_TRIGGER
     mov     qword [r15 + GADGET_REGS_CLOBBERED], (1 << REG_RCX_BIT) | (1 << REG_R11_BIT)
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_SYSCALL | SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_SYSCALL | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_SYSCALL_TRIGGER_COUNT]
     jmp     .next_candidate
@@ -407,7 +433,7 @@ x64lens_classifier_apply_exact:
     or      qword [r13 + GADGET_SUMMARY_REGS_CONTROLLED], (1 << REG_RSP_BIT)
     mov     qword [r15 + GADGET_REGS_CLOBBERED], (1 << REG_RBP_BIT)
     mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_UNKNOWN
-    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_PIVOT | SIDE_EFFECT_REGISTER_WRITE
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_PIVOT | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_STACK_PIVOT_COUNT]
     jmp     .next_candidate
@@ -415,7 +441,7 @@ x64lens_classifier_apply_exact:
 .class_pop_rsp_pivot:
     ; pop rsp; ret overwrites RSP and makes the following ret target depend on
     ; the new stack. Treat the stack delta as unknown for Sprint 4.
-    CLASSIFY_REG SEM_STACK_PIVOT, REG_RSP_BIT, STACK_DELTA_UNKNOWN, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_PIVOT, GADGET_SUMMARY_STACK_PIVOT_COUNT
+    CLASSIFY_REG SEM_STACK_PIVOT, REG_RSP_BIT, STACK_DELTA_UNKNOWN, SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_PIVOT | SIDE_EFFECT_REGISTER_WRITE | SIDE_EFFECT_CONTROL_TRANSFER, GADGET_SUMMARY_STACK_PIVOT_COUNT
 
 .next_candidate:
     inc     rbp

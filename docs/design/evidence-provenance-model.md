@@ -270,3 +270,18 @@ raw candidate
 ```
 
 A future decoder may validate or refine these facts through separate side-car evidence, but it must not erase the Patch 050 exact-suffix history.
+
+## Patch 051 architectural-effect evidence boundary
+
+The architectural-effect side-car is downstream of exact and semantic records:
+
+```text
+candidate_evidence_record[]   why a candidate fact is trusted
+memory_effect_record[]        structured memory operands
+candidate_effect_record[]     represented architectural behavior
+```
+
+It does not create a stronger provenance tier. Current records remain
+`semantic_exact` and keep `full_sequence_valid:null`. A future decoder may
+validate or refine effect facts in another side-car, but it must preserve the
+exact-suffix effect history and expose disagreement.

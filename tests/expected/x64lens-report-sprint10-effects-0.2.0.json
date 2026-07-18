@@ -1,0 +1,1516 @@
+{
+  "schema_version": "0.2.0",
+  "tool": "x64lens",
+  "tool_version": "0.1.0-dev",
+  "report_type": "analysis",
+  "command": "gadgets",
+  "analysis": {
+    "complete": true,
+    "max_depth": 4,
+    "candidate_capacity": 4096,
+    "candidate_count": 25,
+    "candidate_truncated": false,
+    "candidate_dropped_count": 0,
+    "candidate_dropped_count_known": true,
+    "regions_scanned": 1,
+    "regions_total": 1
+  },
+  "target": {
+    "path": "./tests/bin/gadgets_sprint10_effects",
+    "format": "ELF64",
+    "arch": "x86_64",
+    "file_size": 8944,
+    "entry": "0x0000000000401000"
+  },
+  "mitigations": {
+    "nx_stack": null,
+    "pie": false,
+    "relro": "none",
+    "canary": "unknown",
+    "stripped": "not_stripped",
+    "rwx_load_segment": false,
+    "dynamic_linking": false,
+    "bind_now": null,
+    "dynamic_entry_count": 0,
+    "dynamic_terminated": null
+  },
+  "counts": {
+    "raw_candidate_count": 25,
+    "ret_count": 24,
+    "ret_imm16_count": 1,
+    "exact_pattern_count": 25,
+    "semantic_candidate_count": 17,
+    "unknown_candidate_count": 8,
+    "scored_candidate_count": 14
+  },
+  "primitive_coverage": {
+    "arg_control": true,
+    "syscall_num_control": true,
+    "syscall_trigger": true,
+    "stack_pivot": true,
+    "alignment": true,
+    "reg_transfer": true,
+    "memory_write": true,
+    "memory_read": true,
+    "registers": [
+      "rax",
+      "rcx",
+      "rdx",
+      "rsi",
+      "rdi",
+      "rsp",
+      "r8",
+      "r9"
+    ]
+  },
+  "gadgets": [
+    {
+      "va": "0x0000000000401000",
+      "file_offset": "0x0000000000001000",
+      "section": ".text",
+      "bytes": "c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "control_transfer"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "score": 45,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401001",
+      "file_offset": "0x0000000000001001",
+      "section": ".text",
+      "bytes": "c21000",
+      "terminator": "ret imm16",
+      "pattern": "ret imm16",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "ret_imm16",
+        "stack_adjust",
+        "control_transfer"
+      ],
+      "stack_delta": 24,
+      "stack_delta_known": true,
+      "score": 40,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401004",
+      "file_offset": "0x0000000000001004",
+      "section": ".text",
+      "bytes": "58c3",
+      "terminator": "ret",
+      "pattern": "pop rax; ret",
+      "semantic_class": "syscall_num_control",
+      "controls": [
+        "rax"
+      ],
+      "stack_pop_order": [
+        "rax"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 85,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rax",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401006",
+      "file_offset": "0x0000000000001006",
+      "section": ".text",
+      "bytes": "59c3",
+      "terminator": "ret",
+      "pattern": "pop rcx; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rcx"
+      ],
+      "stack_pop_order": [
+        "rcx"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rcx",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401008",
+      "file_offset": "0x0000000000001008",
+      "section": ".text",
+      "bytes": "5ac3",
+      "terminator": "ret",
+      "pattern": "pop rdx; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rdx"
+      ],
+      "stack_pop_order": [
+        "rdx"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rdx",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040100a",
+      "file_offset": "0x000000000000100a",
+      "section": ".text",
+      "bytes": "5bc3",
+      "terminator": "ret",
+      "pattern": "pop rbx; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "rbx"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rbx",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040100c",
+      "file_offset": "0x000000000000100c",
+      "section": ".text",
+      "bytes": "5cc3",
+      "terminator": "ret",
+      "pattern": "pop rsp; ret",
+      "semantic_class": "stack_pivot",
+      "controls": [
+        "rsp"
+      ],
+      "stack_pop_order": [
+        "rsp"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "stack_pivot",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": null,
+      "stack_delta_known": false,
+      "score": 70,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "dynamic",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": null,
+        "stack_read_stride": null,
+        "stack_offsets_known": false,
+        "model_complete": false
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040100e",
+      "file_offset": "0x000000000000100e",
+      "section": ".text",
+      "bytes": "5dc3",
+      "terminator": "ret",
+      "pattern": "pop rbp; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "rbp"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rbp",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401010",
+      "file_offset": "0x0000000000001010",
+      "section": ".text",
+      "bytes": "5ec3",
+      "terminator": "ret",
+      "pattern": "pop rsi; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rsi"
+      ],
+      "stack_pop_order": [
+        "rsi"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401012",
+      "file_offset": "0x0000000000001012",
+      "section": ".text",
+      "bytes": "5fc3",
+      "terminator": "ret",
+      "pattern": "pop rdi; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rdi"
+      ],
+      "stack_pop_order": [
+        "rdi"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401014",
+      "file_offset": "0x0000000000001014",
+      "section": ".text",
+      "bytes": "4158c3",
+      "terminator": "ret",
+      "pattern": "pop r8; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "r8"
+      ],
+      "stack_pop_order": [
+        "r8"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r8"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401017",
+      "file_offset": "0x0000000000001017",
+      "section": ".text",
+      "bytes": "4159c3",
+      "terminator": "ret",
+      "pattern": "pop r9; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "r9"
+      ],
+      "stack_pop_order": [
+        "r9"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 90,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r9"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040101a",
+      "file_offset": "0x000000000000101a",
+      "section": ".text",
+      "bytes": "415ac3",
+      "terminator": "ret",
+      "pattern": "pop r10; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r10"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r10"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040101d",
+      "file_offset": "0x000000000000101d",
+      "section": ".text",
+      "bytes": "415bc3",
+      "terminator": "ret",
+      "pattern": "pop r11; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r11"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r11"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401020",
+      "file_offset": "0x0000000000001020",
+      "section": ".text",
+      "bytes": "415cc3",
+      "terminator": "ret",
+      "pattern": "pop r12; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r12"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r12"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401023",
+      "file_offset": "0x0000000000001023",
+      "section": ".text",
+      "bytes": "415dc3",
+      "terminator": "ret",
+      "pattern": "pop r13; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r13"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r13"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401026",
+      "file_offset": "0x0000000000001026",
+      "section": ".text",
+      "bytes": "415ec3",
+      "terminator": "ret",
+      "pattern": "pop r14; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r14"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r14"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401029",
+      "file_offset": "0x0000000000001029",
+      "section": ".text",
+      "bytes": "415fc3",
+      "terminator": "ret",
+      "pattern": "pop r15; ret",
+      "semantic_class": "unknown_candidate",
+      "controls": [],
+      "stack_pop_order": [
+        "r15"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r15"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "exact_suffix",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": null,
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040102c",
+      "file_offset": "0x000000000000102c",
+      "section": ".text",
+      "bytes": "c9c3",
+      "terminator": "ret",
+      "pattern": "leave; ret",
+      "semantic_class": "stack_pivot",
+      "controls": [
+        "rsp"
+      ],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [
+        "rbp"
+      ],
+      "side_effects": [
+        "stack_read",
+        "stack_pivot",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": null,
+      "stack_delta_known": false,
+      "score": 75,
+      "architectural_effects": {
+        "registers_read": [
+          "rbp"
+        ],
+        "registers_written": [
+          "rbp",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rbp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 2,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040102e",
+      "file_offset": "0x000000000000102e",
+      "section": ".text",
+      "bytes": "0f05c3",
+      "terminator": "ret",
+      "pattern": "syscall; ret",
+      "semantic_class": "syscall_trigger",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [
+        "rcx",
+        "r11"
+      ],
+      "side_effects": [
+        "stack_read",
+        "syscall",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "score": 85,
+      "architectural_effects": {
+        "registers_read": [
+          "rax",
+          "rdx",
+          "rsi",
+          "rdi",
+          "rsp",
+          "r8",
+          "r9",
+          "r10"
+        ],
+        "registers_written": [
+          "rax",
+          "rcx",
+          "rsp",
+          "r11"
+        ],
+        "flags_read": [
+          "cf",
+          "pf",
+          "af",
+          "zf",
+          "sf",
+          "tf",
+          "if",
+          "df",
+          "of"
+        ],
+        "flags_written": [],
+        "control_flow": [
+          "return",
+          "syscall"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": false
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401031",
+      "file_offset": "0x0000000000001031",
+      "section": ".text",
+      "bytes": "5f5ec3",
+      "terminator": "ret",
+      "pattern": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "controls": [
+        "rsi",
+        "rdi"
+      ],
+      "stack_pop_order": [
+        "rdi",
+        "rsi"
+      ],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 24,
+      "stack_delta_known": true,
+      "score": 95,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsi",
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 3,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 3,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401034",
+      "file_offset": "0x0000000000001034",
+      "section": ".text",
+      "bytes": "4889c7c3",
+      "terminator": "ret",
+      "pattern": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": {
+        "source": "rax",
+        "destination": "rdi"
+      },
+      "memory_access": null,
+      "clobbers": [
+        "rdi"
+      ],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rax",
+          "rsp"
+        ],
+        "registers_written": [
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401038",
+      "file_offset": "0x0000000000001038",
+      "section": ".text",
+      "bytes": "4883c408c3",
+      "terminator": "ret",
+      "pattern": "add rsp, imm8; ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "stack_adjust",
+        "flags_write",
+        "control_transfer"
+      ],
+      "stack_delta": 16,
+      "stack_delta_known": true,
+      "score": 35,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [
+          "cf",
+          "pf",
+          "af",
+          "zf",
+          "sf",
+          "of"
+        ],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 8,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 5,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x000000000040103d",
+      "file_offset": "0x000000000000103d",
+      "section": ".text",
+      "bytes": "488907c3",
+      "terminator": "ret",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": {
+        "direction": "write",
+        "base": "rdi",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rax",
+        "dereference": true
+      },
+      "clobbers": [],
+      "side_effects": [
+        "stack_read",
+        "memory_write",
+        "control_transfer"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rax",
+          "rdi",
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      }
+    },
+    {
+      "va": "0x0000000000401041",
+      "file_offset": "0x0000000000001041",
+      "section": ".text",
+      "bytes": "488b07c3",
+      "terminator": "ret",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": {
+        "direction": "read",
+        "base": "rdi",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rax",
+        "dereference": true
+      },
+      "clobbers": [
+        "rax"
+      ],
+      "side_effects": [
+        "stack_read",
+        "register_write",
+        "memory_read",
+        "control_transfer"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "score": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rdi",
+          "rsp"
+        ],
+        "registers_written": [
+          "rax",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      }
+    }
+  ],
+  "limitations": [
+    "Sprint 10 one-per-pattern fixture; exact suffix and architectural effects do not imply decoder-validated full sequences."
+  ]
+}

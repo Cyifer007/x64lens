@@ -34,6 +34,7 @@ extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_candidate_evidence_from_exact
 extern x64lens_memory_effect_from_exact
+extern x64lens_candidate_effect_from_exact
 extern x64lens_scoring_apply
 extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_gadgets
@@ -84,7 +85,7 @@ x64lens_command_gadgets_with_format:
     push    r13
     push    r14
     push    r15
-    sub     rsp, 8              ; six pushes preserve entry misalignment
+    sub     rsp, 24             ; local effect pointer plus call alignment
 
     mov     r12, rdi            ; preserve target path for reporting
     mov     r14, rsi            ; max depth from CLI or default
@@ -92,6 +93,7 @@ x64lens_command_gadgets_with_format:
     xor     r15, r15            ; arena-backed gadget_record[] pointer
     xor     r13, r13            ; candidate_evidence_record[] pointer
     xor     rbp, rbp            ; memory_effect_record[] pointer
+    mov     qword [rsp], 0       ; candidate_effect_record[] pointer
 
     ; Map target file read-only. The scanner treats the mapped bytes as data,
     ; never as executable code.
@@ -161,6 +163,14 @@ x64lens_command_gadgets_with_format:
     jz      .arena_alloc_failed
     mov     rbp, rax            ; dense memory_effect_record[] side-car
 
+    lea     rdi, [gad_candidate_arena]
+    mov     rsi, CANDIDATE_EFFECT_ARENA_BYTES
+    mov     rdx, CANDIDATE_EFFECT_RECORD_ALIGN
+    call    x64lens_arena_alloc
+    test    rax, rax
+    jz      .arena_alloc_failed
+    mov     [rsp], rax            ; dense candidate_effect_record[] side-car
+
     ; Scan executable regions and populate raw candidate records. The scanner
     ; owns candidate discovery but does not print or classify. Store the
     ; bounded scanner depth and candidate capacity in the summary record before
@@ -216,10 +226,20 @@ x64lens_command_gadgets_with_format:
     test    rax, rax
     jne     .error
 
-    ; Score classified candidates after semantic facts exist. Unknown
-    ; candidates remain unscored and are excluded from scored_candidate_count.
+    ; Materialize architectural register, represented flag, stack-source, and
+    ; control-flow effects before scoring. The scorer consumes these validated
+    ; facts and never reconstructs instruction semantics from pattern names.
     lea     rdi, [gad_summary]
     mov     rsi, r15
+    mov     rdx, rbp
+    mov     rcx, [rsp]
+    call    x64lens_candidate_effect_from_exact
+    test    rax, rax
+    jne     .error
+
+    lea     rdi, [gad_summary]
+    mov     rsi, r15
+    mov     rdx, [rsp]
     call    x64lens_scoring_apply
     test    rax, rax
     jne     .error
@@ -257,7 +277,11 @@ x64lens_command_gadgets_with_format:
     mov     rcx, [gad_mapped_file + FILEMAP_ADDR]
     lea     r8, [gad_analysis_summary]
     mov     r9, rbp
+    mov     rax, [rsp]
+    sub     rsp, 16
+    mov     [rsp], rax
     call    x64lens_report_text_gadgets
+    add     rsp, 16
     jmp     .emit_done
 
 .emit_json:
@@ -267,13 +291,15 @@ x64lens_command_gadgets_with_format:
     lea     rcx, [gad_phdr_summary]
     lea     r8, [gad_summary]
     mov     r9, r15
-    ; System V passes arguments seven through nine on the stack. Reserve a
+    ; System V passes arguments seven through ten on the stack. Reserve a
     ; fourth slot so the call site remains 16-byte aligned.
+    mov     r10, [rsp]
     sub     rsp, 32
     lea     rax, [gad_analysis_summary]
     mov     [rsp], rax
     mov     [rsp + 8], r13
     mov     [rsp + 16], rbp
+    mov     [rsp + 24], r10
     call    x64lens_report_json_gadgets
     add     rsp, 32
 
@@ -300,7 +326,7 @@ x64lens_command_gadgets_with_format:
     mov     rax, r13
 
 .done:
-    add     rsp, 8
+    add     rsp, 24
     pop     r15
     pop     r14
     pop     r13

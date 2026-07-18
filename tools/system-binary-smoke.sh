@@ -73,7 +73,7 @@ for target in "${TARGETS[@]}"; do
   grep -q "Scored candidate count:" "$gadgets_out"
 
   "$TOOL" gadgets --format json --max-depth "$MAX_DEPTH" "$target" >"$json_out"
-  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$json_out" >/dev/null
+  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$json_out" >/dev/null
 
   "$TOOL" analyze --max-depth "$MAX_DEPTH" "$target" >"$analyze_out"
   grep -q "Format:" "$analyze_out"
@@ -84,7 +84,7 @@ for target in "${TARGETS[@]}"; do
   grep -q "Raw gadget candidates:" "$analyze_out"
 
   "$TOOL" analyze --format json --max-depth "$MAX_DEPTH" "$target" >"$analyze_json_out"
-  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$analyze_json_out" >/dev/null
+  python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$analyze_json_out" >/dev/null
   python3 "$ROOT/tools/validate-report-parity.py" "$json_out" "$analyze_json_out" >/dev/null
 
   tested=$((tested + 1))

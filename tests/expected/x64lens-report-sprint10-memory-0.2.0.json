@@ -77,10 +77,33 @@
         "value_register": "rax",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rax",
+          "rdi",
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
         "stack_read",
-        "memory_write"
+        "memory_write",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -118,10 +141,33 @@
         "value_register": "r9",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rsp",
+          "r8",
+          "r9"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
         "stack_read",
-        "memory_write"
+        "memory_write",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -159,10 +205,33 @@
         "value_register": "rdx",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rdx",
+          "rsp",
+          "r14"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
         "stack_read",
-        "memory_write"
+        "memory_write",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -200,13 +269,36 @@
         "value_register": "rax",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rdi",
+          "rsp"
+        ],
+        "registers_written": [
+          "rax",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [
         "rax"
       ],
       "side_effects": [
         "stack_read",
         "register_write",
-        "memory_read"
+        "memory_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -244,13 +336,36 @@
         "value_register": "r9",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rsp",
+          "r8"
+        ],
+        "registers_written": [
+          "rsp",
+          "r9"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [
         "r9"
       ],
       "side_effects": [
         "stack_read",
         "register_write",
-        "memory_read"
+        "memory_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -288,13 +403,36 @@
         "value_register": "rdx",
         "dereference": true
       },
+      "architectural_effects": {
+        "registers_read": [
+          "rsp",
+          "r14"
+        ],
+        "registers_written": [
+          "rdx",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [
         "rdx"
       ],
       "side_effects": [
         "stack_read",
         "register_write",
-        "memory_read"
+        "memory_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -322,9 +460,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -352,9 +511,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -382,9 +562,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -412,9 +613,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -442,9 +664,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -472,9 +715,30 @@
       "stack_pop_order": [],
       "register_transfer": null,
       "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 1,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 0,
+        "stack_offsets_known": true,
+        "model_complete": true
+      },
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "control_transfer"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,

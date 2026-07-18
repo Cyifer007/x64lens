@@ -47,6 +47,8 @@ required=(
     docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md
     docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md
     docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md
+    docs/adr/0037-architectural-effects-and-contract-reconciliation.md
+    docs/design/sprint10-exact-pattern-catalog.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/primitive-effect-model.md
     docs/design/sprint10-family-coverage.md
@@ -79,6 +81,7 @@ required=(
     docs/sprints/sprint-10-patch-048-validation.md
     docs/sprints/sprint-10-patch-049-validation.md
     docs/sprints/sprint-10-patch-050-validation.md
+    docs/sprints/sprint-10-patch-051-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -205,6 +208,13 @@ grep -q 'public-artifact-content-smoke' docs/sprints/sprint-10-patch-048-validat
     || fail 'Patch 048 validation does not name the public artifact content gate'
 grep -q 'sprint10-memory-smoke' docs/sprints/sprint-10-patch-049-validation.md \
     || fail 'Patch 049 validation does not name the memory fixture gate'
+
+grep -qi 'architectural-effect' docs/adr/0037-architectural-effects-and-contract-reconciliation.md \
+    || fail 'ADR 0037 does not record the architectural-effect reconciliation'
+grep -q 'sprint10-architectural-effects-smoke' docs/sprints/sprint-10-patch-051-validation.md \
+    || fail 'Patch 051 validation does not name the architectural-effect gate'
+grep -q 'exact pattern IDs:                 25' docs/design/sprint10-exact-pattern-catalog.md \
+    || fail 'Sprint 10 exact-pattern catalog does not record all 25 patterns'
 grep -q 'public-overlay-verification-smoke' docs/sprints/sprint-10-patch-049-validation.md \
     || fail 'Patch 049 validation does not name authenticated public-overlay regression'
 grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
@@ -316,6 +326,12 @@ grep -q '^sprint10-memory-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-memory-smoke'
 grep -q '^sprint10-family-coverage-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-family-coverage-smoke'
+grep -q '^sprint10-contract-reconciliation-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-contract-reconciliation-smoke'
+grep -q '^sprint10-fixture-gate-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-fixture-gate-smoke'
+grep -q '^sprint10-architectural-effects-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-architectural-effects-smoke'
 grep -q '^public-overlay-verify:' Makefile \
     || fail 'Makefile does not define public-overlay-verify'
 grep -q '^public-overlay-verification-smoke:' Makefile \
@@ -329,7 +345,7 @@ grep -q '^json-effect-consistency-smoke:' Makefile \
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
 validation_line="$(grep '^validation-smoke:' Makefile || true)"
-for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
     [[ "$validation_line" == *"$target"* ]] \
         || fail "validation-smoke does not include required target: $target"
 done

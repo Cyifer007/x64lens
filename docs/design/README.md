@@ -9,7 +9,8 @@ This directory records future-facing architecture seams that should be understoo
 - [`decoder-roadmap.md`](decoder-roadmap.md): optional decoder integration without replacing the raw scanner.
 - [`defensive-deployment-profile.md`](defensive-deployment-profile.md): reference runtime constraints for dependency-free, air-gapped, low-resource defensive deployment.
 - [`primitive-effect-model.md`](primitive-effect-model.md): ordered pop, register-transfer, stack-adjust, and bounded memory relations; clobber, stack, side-effect, side-car, and scoring boundaries for Sprint 10 primitive expansion.
-- [`sprint10-family-coverage.md`](sprint10-family-coverage.md): implemented-family fixtures, completed effects, conservative fallback domains, false-positive notes, and score disposition.
+- [`sprint10-family-coverage.md`](sprint10-family-coverage.md): implemented semantic-family fixtures, effects, conservative fallback domains, false-positive notes, and score disposition.
+- [`sprint10-exact-pattern-catalog.md`](sprint10-exact-pattern-catalog.md): all 25 exact patterns, architectural-effect completeness, and exact-only unknown boundaries.
 - [`evidence-provenance-model.md`](evidence-provenance-model.md): raw, suffix, semantic, decoder, completeness, and truncation evidence layers.
 - [`metric-boundaries.md`](metric-boundaries.md): required separation between discovery, recognition, validation, semantic, score, and triage metrics.
 - [`schema-evolution.md`](schema-evolution.md): current schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and future `0.2.x` evolution rules.
@@ -55,7 +56,9 @@ validation.
 4. [`../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md`](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md)
 5. [`../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md`](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md)
 6. [`../adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md`](../adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md)
-7. [`primitive-effect-model.md`](primitive-effect-model.md)
+7. [`../adr/0037-architectural-effects-and-contract-reconciliation.md`](../adr/0037-architectural-effects-and-contract-reconciliation.md)
+8. [`primitive-effect-model.md`](primitive-effect-model.md)
+9. [`sprint10-exact-pattern-catalog.md`](sprint10-exact-pattern-catalog.md)
 8. [`sprint10-family-coverage.md`](sprint10-family-coverage.md)
 9. [`../semantic-taxonomy.md`](../semantic-taxonomy.md)
 10. [`../json-schema.md`](../json-schema.md)

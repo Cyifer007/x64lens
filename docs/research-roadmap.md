@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 050 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes current-family effects, cross-family fixture expectations, fail-fast specialty gates, and the maintained family/false-positive coverage table. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 051 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes coarse current-family effects and fixture-gate hardening. Patch 051 adds candidate-index architectural effects, one-per-pattern coverage, centralized fixture orchestration, contract reconciliation, and selective scores. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,7 +20,7 @@ Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 050 cand
 - benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
-The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 through 050 are later pre-release work, not a research release or evidence of universal performance or coverage superiority. Patch 051 performs the pre-corpus architecture/capability reassessment; Patch 052 is reserved for Sprint 10 closeout or its smallest required correction.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 through 051 are later pre-release work, not a research release or evidence of universal performance or coverage superiority. Patch 052 resolves Patch 051 findings, Patch 053 performs the pre-corpus architecture/capability reassessment, and Patch 054 closes Sprint 10.
 
 ## Sprint 7 evidence checkpoint
 

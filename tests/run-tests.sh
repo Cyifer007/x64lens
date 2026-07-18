@@ -262,9 +262,11 @@ grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, scor
 grep -q "semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, score: 75" "$GADGETS_OUT"
 grep -q "semantic: syscall_trigger, regs: none, stack delta: 0x0000000000000008, score: 85" "$GADGETS_OUT"
 grep -q "semantic: alignment, regs: none, stack delta: 0x0000000000000018, score: 40" "$GADGETS_OUT"
-grep -q "pattern: syscall; ret,.*clobbers: rcx|r11, side effects: stack_read, syscall, register_write" "$GADGETS_OUT"
-grep -q "pattern: leave; ret,.*clobbers: rbp, side effects: stack_read, stack_pivot, register_write" "$GADGETS_OUT"
-grep -q "pattern: ret imm16,.*side effects: stack_read, ret_imm16, stack_adjust" "$GADGETS_OUT"
+grep -q "pattern: syscall; ret,.*clobbers: rcx|r11, side effects: stack_read, syscall, register_write, control_transfer" "$GADGETS_OUT"
+grep -q "pattern: leave; ret,.*clobbers: rbp, side effects: stack_read, stack_pivot, register_write, control_transfer" "$GADGETS_OUT"
+grep -q "pattern: ret imm16,.*side effects: stack_read, ret_imm16, stack_adjust, control_transfer" "$GADGETS_OUT"
+grep -q "pattern: pop rdi; ret,.*side effects: stack_read, register_write, control_transfer, architectural effects: reads=rsp writes=rdi|rsp flags_read=none flags_write=none control=return stack_base=entry_rsp stack_reads=2 stack_writes=0 first_read=0 stride=8 offsets_known=yes complete=yes" "$GADGETS_OUT"
+grep -q "pattern: syscall; ret,.*architectural effects: reads=rax|rdx|rsi|rdi|rsp|r8|r9|r10 writes=rax|rcx|rsp|r11 flags_read=cf|pf|af|zf|sf|tf|if|df|of flags_write=none control=return|syscall stack_base=entry_rsp stack_reads=1 stack_writes=0 first_read=0 stride=0 offsets_known=yes complete=no" "$GADGETS_OUT"
 grep -q "bytes: 5f c3" "$GADGETS_OUT"
 grep -q "c2 10 00" "$GADGETS_OUT"
 
@@ -284,7 +286,7 @@ echo "[test] gadget JSON output"
 GADGETS_JSON="$TMPDIR/x64lens-gadgets.json"
 "$BIN" gadgets --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$GADGETS_JSON"
 python3 -m json.tool "$GADGETS_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$GADGETS_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$GADGETS_JSON" >/dev/null
 python3 - "$GADGETS_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
@@ -299,7 +301,7 @@ assert sections == {".text"}, sections
 PY
 
 "$BIN" gadgets --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-gadgets-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$TMPDIR/x64lens-gadgets-json-order2.json" >/dev/null
 
 
 echo "[test] analyze integrated text output"
@@ -331,7 +333,7 @@ echo "[test] analyze JSON output"
 ANALYZE_JSON="$TMPDIR/x64lens-analyze.json"
 "$BIN" analyze --format json --max-depth 4 "$ROOT/tests/bin/gadgets" >"$ANALYZE_JSON"
 python3 -m json.tool "$ANALYZE_JSON" >/dev/null
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$ANALYZE_JSON" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$ANALYZE_JSON" >/dev/null
 python3 - "$ANALYZE_JSON" <<'PY'
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as f:
@@ -346,7 +348,7 @@ assert sections == {".text"}, sections
 PY
 
 "$BIN" analyze --max-depth 4 --format json "$ROOT/tests/bin/gadgets" >"$TMPDIR/x64lens-analyze-json-order2.json"
-python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
+python3 "$ROOT/tools/validate-json-report.py" --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$TMPDIR/x64lens-analyze-json-order2.json" >/dev/null
 python3 "$ROOT/tools/validate-report-parity.py" "$GADGETS_JSON" "$ANALYZE_JSON" >/dev/null
 
 echo "[test] candidate capacity rejection"

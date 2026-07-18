@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 050 candidate. Patches 046 through 049 establish ordered multi-pop, register-transfer, stack-adjust, and bounded qword memory families. Patch 050 completes current-family side-effect and clobber facts, reconciles cross-family fixtures, makes specialty gates fail fast, and adds the maintained family/false-positive coverage table without adding a runtime dependency.
+> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 051 candidate. Patches 046 through 049 establish ordered multi-pop, register-transfer, stack-adjust, and bounded qword memory families. Patch 050 closes coarse family effects and fixture-gate defects. Patch 051 reconciles that committed foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and two evidence-backed score entries without adding a runtime dependency.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -35,6 +35,7 @@ read-only file mapping
   -> conservative semantic classes and explicit effects
   -> candidate-indexed raw, exact-suffix, and semantic-exact evidence
   -> candidate-indexed structured memory effects
+  -> candidate-indexed architectural register, flag, control-flow, and stack-source effects
   -> heuristic scores
   -> command-owned report identity and complete-analysis summary
   -> text or JSON reporting
@@ -81,7 +82,7 @@ The current line does not implement exploit generation, payload generation, remo
 - Per-candidate `evidence` identifies raw, exact-suffix, and semantic-exact provenance; `full_sequence_valid` remains `null` until decoder evidence exists.
 - A future **decoder-validated candidate** is one whose selected start decodes as a complete instruction sequence ending at the terminator; that evidence does not erase its raw or exact-suffix facts.
 - A future **semantic-decoded candidate** is classified from decoded instruction and operand facts and remains distinct from a semantic-exact candidate.
-- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, represented `side_effects`, optional `register_transfer`, and optional structured `memory_access` facts. Patch 050 records the implicit return stack read for every supported return-ending semantic candidate, `syscall` clobbers for `rcx`/`r11`, and the `rbp` overwrite caused by `leave`. Multi-pop, register-transfer, stack-adjust, and memory candidates remain unscored until their utility policy is reviewed independently. Memory facts identify direction, base, value register, width, dereference state, and known zero displacement without claiming decoded full-sequence validity.
+- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, coarse `side_effects`, optional `register_transfer`, optional structured `memory_access`, and optional `architectural_effects`. The architectural side-car records represented GPR reads/writes, condition flags, return/syscall control flow, stack-source facts, and whether the exact-suffix model is complete. Ordered multi-pop candidates score 95 and positive aligned stack adjustments score 35 only after their semantic and architectural facts validate. Register-transfer and memory candidates remain unscored because source-value and address/content controllability are not represented. These remain semantic-exact facts; `full_sequence_valid` stays `null`.
 - Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoder-validated instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
@@ -124,6 +125,9 @@ make sprint10-register-transfer-smoke
 make sprint10-stack-adjust-smoke
 make sprint10-memory-smoke
 make sprint10-family-coverage-smoke
+make sprint10-architectural-effects-smoke
+make sprint10-fixture-gate-smoke
+make sprint10-contract-reconciliation-smoke
 make json-effect-consistency-smoke
 make public-overlay-verification-smoke
 make decoder-gap-hardening-smoke
@@ -179,7 +183,8 @@ Generate and validate JSON:
 python3 -m json.tool /tmp/x64lens-analysis.json >/dev/null
 python3 tools/validate-json-report.py \
   --mode fixture --require-schema 0.2.0 --expected-command analyze \
-  --require-provenance --require-sprint10-effects /tmp/x64lens-analysis.json
+  --require-provenance --require-sprint10-effects \
+  --require-sprint10-architectural-effects /tmp/x64lens-analysis.json
 ```
 
 The same flags are accepted in either documented order:
@@ -302,7 +307,7 @@ The canonical eighteen-sprint roadmap defines:
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 evidence-aware primitive expansion, active through Patch 050 with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, bounded base-plus-zero qword memory effects, completed current-family effects, and maintained fixture/false-positive coverage,
+- Sprint 10 evidence-aware primitive expansion, active through Patch 051 with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, bounded base-plus-zero qword memory effects, coarse and architectural effects, one-per-pattern coverage, fail-fast fixture orchestration, and selective score calibration,
 - Sprint 11 reproducible corpus,
 - Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
 - Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.

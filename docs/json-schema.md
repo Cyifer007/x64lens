@@ -346,3 +346,32 @@ Patch 050 keeps schema version `0.2.0` and adds no structural field. It strength
 - the transfer fixture includes one memory read and one memory write under their own implemented family.
 
 These are current-producer requirements enforced by the semantic validator. Retained Patch 040 and Patch 046 `0.2.0` reports remain structurally consumable and are not retroactively rewritten.
+
+## Sprint 10 Patch 051 architectural effects
+
+Current producers may emit `architectural_effects` for each candidate:
+
+```json
+{
+  "registers_read": ["rsp"],
+  "registers_written": ["rsp", "rdi"],
+  "flags_read": [],
+  "flags_written": [],
+  "control_flow": ["return"],
+  "stack_base": "entry_rsp",
+  "stack_reads": 2,
+  "stack_writes": 0,
+  "first_stack_read_offset": 0,
+  "stack_read_stride": 8,
+  "stack_offsets_known": true,
+  "model_complete": true
+}
+```
+
+The formal schema keeps the object optional so earlier schema `0.2.0` reports
+remain consumable. Current-producer validation requires it through
+`--require-sprint10-architectural-effects` and reconciles it with exact pattern,
+semantic class, memory operands, stack facts, coarse side effects, and score.
+
+`model_complete:false` exposes a known representational boundary; it is not a
+raw-scan truncation flag and does not alter `analysis.complete`.

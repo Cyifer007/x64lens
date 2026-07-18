@@ -250,7 +250,7 @@ candidate populations:
 exact fact. Neither field is a count, and neither changes raw, exact, semantic,
 unknown, decoder-backed, or scored metrics.
 
-The first multi-pop family increases semantic coverage but remains unscored, so
+The first multi-pop family increased semantic coverage before Patch 051 score calibration, so
 `semantic_candidate_count` may increase without the same increase in
 `scored_candidate_count`.
 
@@ -286,3 +286,18 @@ Patch 050 changes no aggregate candidate count and introduces no new population.
 The transfer fixture demonstrates why cross-family expectations are not additive counts: its ten raw candidates partition into four transfers, one memory write, one memory read, and four return fallbacks. The memory candidates are not also transfer candidates.
 
 The family coverage table is a validation artifact, not a new runtime metric. Fixed record and arena sizes are implementation-capacity facts, not measured RSS.
+
+## Patch 051 architectural-effect boundary
+
+`architectural_effects` is a per-candidate fact record, not a new candidate
+population. Adding GPR, flag, control-flow, stack-source, or model-completeness
+facts must not change raw, exact, semantic, unknown, or scored counts unless a
+separate semantic or scoring decision changes.
+
+`model_complete` answers whether the compact exact-suffix effect record captures
+all represented facts for that suffix. It does not mean decoder validation,
+analysis completion, complete gadget coverage, or exploitability.
+
+Patch 051 changes `scored_candidate_count` only for the ordered multi-pop and
+positive aligned stack-adjust fixtures because those two families gain explicit
+reviewed scores. Transfer and memory populations remain unscored.

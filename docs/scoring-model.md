@@ -135,9 +135,9 @@ Any later score requires an explicit rule and fixture update. Existing `ret` and
 
 ## Sprint 10 Patch 050 score decision
 
-Patch 050 assigns no new score. Multi-pop, register-transfer, stack-adjust, memory-read, and memory-write candidates remain semantic-exact but unscored. The completed effect model now records stack consumption, destination clobbers, syscall clobbers, pivot overwrites, flag writes, and bounded dereference direction, but those facts do not yet establish a calibrated utility ordering.
+Patch 050 assigns no new score. Patch 051 adds two reviewed entries after architectural-effect validation: ordered multi-pop argument control scores 95 and positive aligned stack adjustment scores 35. Register-transfer, memory-read, and memory-write candidates remain semantic-exact but unscored.
 
-Patch 051 must review score policy together with the capability and architecture reassessment. Any proposed score must define and test at least:
+Any future score must continue to define and test at least:
 
 - stack-cost and ordering effects;
 - GPR and flag clobbers;
@@ -147,3 +147,23 @@ Patch 051 must review score policy together with the capability and architecture
 - versioning or migration behavior for existing score values.
 
 Until that review is accepted, `score: null` is the correct current representation for the new Sprint 10 families.
+
+## Sprint 10 Patch 051 calibrated entries
+
+Patch 051 adds two explicit score entries after semantic and architectural-effect
+validation:
+
+| Pattern family | Semantic class | Score |
+|---|---|---:|
+| ordered two-pop argument control | `arg_control` | 95 |
+| positive aligned `add rsp, imm8; ret` | `alignment` | 35 |
+
+The scorer validates pattern identity, semantic class, controls, clobbers,
+ordered metadata, stack delta, coarse effects, and the architectural-effect
+record before assigning either value. An inconsistent record fails closed with
+an internal bounds error rather than receiving a score.
+
+Register-transfer and memory read/write families remain unscored because the
+current model does not represent source-value control, address control, or
+memory-content control. The values remain relative utility hypotheses and are
+not exploitability probabilities or binary-level risk scores.

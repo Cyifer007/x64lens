@@ -105,9 +105,11 @@ require_line 'pattern: pop rsp; ret, semantic: stack_pivot, regs: rsp, stack del
 require_line 'pattern: leave; ret, semantic: stack_pivot, regs: rsp, stack delta: 0x0000000000000000, score: 75' "$DEFAULT_OUT" 'leave; ret semantic classification and score'
 require_line 'pattern: syscall; ret, semantic: syscall_trigger, regs: none, stack delta: 0x0000000000000008, score: 85, bytes: .*0f 05 c3' "$DEFAULT_OUT" 'syscall; ret semantic classification and score'
 require_line 'pattern: ret imm16, semantic: alignment, regs: none, stack delta: 0x0000000000000018, score: 40, bytes: .*c2 10 00' "$DEFAULT_OUT" 'ret imm16 semantic classification and score'
-require_line 'pattern: syscall; ret,.*clobbers: rcx\|r11, side effects: stack_read, syscall, register_write' "$DEFAULT_OUT" 'syscall architectural clobbers and effects'
-require_line 'pattern: leave; ret,.*clobbers: rbp, side effects: stack_read, stack_pivot, register_write' "$DEFAULT_OUT" 'leave pivot clobber and effects'
-require_line 'pattern: ret imm16,.*clobbers: none, side effects: stack_read, ret_imm16, stack_adjust' "$DEFAULT_OUT" 'ret imm16 completed effects'
+require_line 'pattern: syscall; ret,.*clobbers: rcx\|r11, side effects: stack_read, syscall, register_write, control_transfer' "$DEFAULT_OUT" 'syscall architectural clobbers and effects'
+require_line 'pattern: leave; ret,.*clobbers: rbp, side effects: stack_read, stack_pivot, register_write, control_transfer' "$DEFAULT_OUT" 'leave pivot clobber and effects'
+require_line 'pattern: ret imm16,.*clobbers: none, side effects: stack_read, ret_imm16, stack_adjust, control_transfer' "$DEFAULT_OUT" 'ret imm16 completed effects'
+require_line 'pattern: pop rdi; ret,.*side effects: stack_read, register_write, control_transfer, architectural effects: reads=rsp writes=rdi\|rsp flags_read=none flags_write=none control=return stack_base=entry_rsp stack_reads=2 stack_writes=0 first_read=0 stride=8 offsets_known=yes complete=yes' "$DEFAULT_OUT" 'pop rdi architectural effects'
+require_line 'pattern: syscall; ret,.*architectural effects: reads=rax\|rdx\|rsi\|rdi\|rsp\|r8\|r9\|r10 writes=rax\|rcx\|rsp\|r11 flags_read=cf\|pf\|af\|zf\|sf\|tf\|if\|df\|of flags_write=none control=return\|syscall stack_base=entry_rsp stack_reads=1 stack_writes=0 first_read=0 stride=0 offsets_known=yes complete=no' "$DEFAULT_OUT" 'syscall architectural-effect model'
 
 # Validate custom-depth summary. A max depth of 4 means up to four bytes before
 # the terminator, so the total byte-window length may be max-depth + terminator

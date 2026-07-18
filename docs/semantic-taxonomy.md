@@ -219,3 +219,17 @@ Additional current facts:
 - exact family promotion follows the strongest implemented rule, so the transfer fixture's memory forms are memory candidates rather than stale transfer fallbacks.
 
 The complete fixture, effect, score-disposition, and false-positive matrix is maintained in [`design/sprint10-family-coverage.md`](design/sprint10-family-coverage.md).
+
+## Patch 051 architectural-effect and score rule
+
+Every current exact pattern now has a candidate-index architectural-effect
+record. Exact-only pops outside the supported semantic-role catalog remain
+`unknown_candidate` but retain deterministic GPR and stack effects. The new
+record does not create a semantic class and does not upgrade exact-suffix
+provenance to decoder validity.
+
+Ordered two-pop argument control is scored 95 after its exact order, controls,
+stack cost, register writes, return control flow, and model-complete state
+validate. Positive aligned stack adjustment is scored 35 after its immediate,
+stack delta, condition-flag writes, return control flow, and complete effect
+model validate. Register transfer and memory access remain unscored.

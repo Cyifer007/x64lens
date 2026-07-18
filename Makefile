@@ -45,7 +45,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -73,7 +73,10 @@ help:
 	@echo "  make sprint10-register-transfer-smoke  Validate exact register-transfer facts and fallback"
 	@echo "  make sprint10-stack-adjust-smoke  Validate exact positive aligned stack-adjust facts and fallback"
 	@echo "  make sprint10-memory-smoke  Validate bounded qword memory read/write facts and fallback"
-	@echo "  make sprint10-family-coverage-smoke  Reconcile Sprint 10 fixtures, effects, fallbacks, and score policy"
+	@echo "  make sprint10-family-coverage-smoke  Validate the 11 semantic-family contracts"
+	@echo "  make sprint10-architectural-effects-smoke  Validate one candidate for all 25 exact patterns"
+	@echo "  make sprint10-fixture-gate-smoke  Prove fixture validation stops before later steps"
+	@echo "  make sprint10-contract-reconciliation-smoke  Reconcile family, pattern, and fixture contracts"
 	@echo "  make json-effect-consistency-smoke  Validate pop, return, transfer, stack, and memory effect relations"
 	@echo "  make shellcheck-smoke  Run shellcheck when installed"
 	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
@@ -171,6 +174,7 @@ samples: sample-tools-check
 	cp tests/toy-src/gadgets_sprint10_transfer tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_sprint10_stack_adjust tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_sprint10_memory tests/bin/ 2>/dev/null || true
+	cp tests/toy-src/gadgets_sprint10_effects tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity_exact tests/bin/ 2>/dev/null || true
 	cp tests/toy-src/gadgets_capacity tests/bin/ 2>/dev/null || true
 
@@ -203,9 +207,9 @@ json-smoke: dev-tools-check all samples
 	trap 'rm -rf "$$tmp"' EXIT; \
 	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke.json"; \
 	python3 -m json.tool "$$tmp/x64lens-json-smoke.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/x64lens-json-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$$tmp/x64lens-json-smoke.json" >/dev/null; \
 	./$(TARGET) gadgets --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-json-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$$tmp/x64lens-json-smoke-order2.json" >/dev/null; \
 	echo "json-smoke: ok"
 
 
@@ -214,91 +218,33 @@ json-smoke: dev-tools-check all samples
 # this separate source proves ordered two-pop facts, conservative fallback,
 # current-producer JSON effects, and gadgets/analyze command-only parity.
 sprint10-primitive-smoke: dev-tools-check all samples
-	@set -eu; tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-primitive.XXXXXX")"; \
-	trap 'rm -rf "$$tmp"' EXIT; \
-	python3 tools/validate-sprint10-disassembly.py ./tests/bin/gadgets_sprint10 >/dev/null; \
-	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/gadgets.json"; \
-	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/analyze.json"; \
-	python3 tools/validate-json-report.py --mode sprint10-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/gadgets.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode sprint10-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/analyze.json" >/dev/null; \
-	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
-	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10 > "$$tmp/gadgets.txt"; \
-	grep -q 'pattern: pop reg; pop reg; ret' "$$tmp/gadgets.txt"; \
-	grep -q 'stack pop order: rdi->rsi' "$$tmp/gadgets.txt"; \
-	grep -q 'stack pop order: r8->r9' "$$tmp/gadgets.txt"; \
-	grep -q 'side effects: stack_read' "$$tmp/gadgets.txt"; \
-	echo "sprint10-primitive-smoke: ok candidates=5 multi_pop=3 fallback=2 scored=2"
+	@set -eu; python3 tools/sprint10-fixture-smoke.py --binary ./$(TARGET) --family ordered_multi_pop
 
-# Sprint 10 Patch 047 register-transfer gate. Four exact register-direct moves
-# receive additive source/destination and clobber facts. Patch 049 promotes two
-# memory forms through the separate memory family; self, RSP, and 32-bit forms
-# remain conservative ret-only fallbacks. Every command in this recipe is
-# fail-fast so a specialty validator cannot be masked by a later successful grep.
+# Sprint 10 register-transfer and cross-family memory gate.
 sprint10-register-transfer-smoke: dev-tools-check all samples
-	@set -eu; tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-transfer.XXXXXX")"; \
-	trap 'rm -rf "$$tmp"' EXIT; \
-	python3 tools/validate-sprint10-transfer-disassembly.py ./tests/bin/gadgets_sprint10_transfer >/dev/null; \
-	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10_transfer > "$$tmp/gadgets.json"; \
-	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10_transfer > "$$tmp/analyze.json"; \
-	python3 tools/validate-json-report.py --mode sprint10-transfer-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/gadgets.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode sprint10-transfer-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/analyze.json" >/dev/null; \
-	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
-	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10_transfer > "$$tmp/gadgets.txt"; \
-	grep -q 'pattern: mov reg, reg; ret' "$$tmp/gadgets.txt"; \
-	grep -q 'register transfer: rax->rdi' "$$tmp/gadgets.txt"; \
-	grep -q 'register transfer: r9->r8' "$$tmp/gadgets.txt"; \
-	grep -q 'side effects: stack_read, register_write' "$$tmp/gadgets.txt"; \
-	grep -q 'memory access: write base=rax value=rdi index=none scale=1 displacement=0x0000000000000000 width=8 dereference=yes' "$$tmp/gadgets.txt"; \
-	grep -q 'memory access: read base=rax value=rdi index=none scale=1 displacement=0x0000000000000000 width=8 dereference=yes' "$$tmp/gadgets.txt"; \
-	echo "sprint10-register-transfer-smoke: ok candidates=10 transfers=4 memory_write=1 memory_read=1 fallback=4 scored=4"
+	@set -eu; python3 tools/sprint10-fixture-smoke.py --binary ./$(TARGET) --family register_transfer
 
-# Validator-only regression for all sixteen exact single-pop metadata entries and
-# mixed legacy/REX two-pop order. This catches per-candidate contradictions
-# that aggregate primitive coverage can conceal.
-# Sprint 10 Patch 048 stack-adjust gate. Positive aligned add-rsp forms are
-# promoted to alignment semantics with an explicit stack_adjust effect. Zero,
-# negative, unaligned, wrong-register, and subtraction forms remain bare-ret
-# fallbacks. The historical and earlier Sprint 10 fixtures remain unchanged.
+# Sprint 10 positive aligned stack-adjust gate.
 sprint10-stack-adjust-smoke: dev-tools-check all samples
-	@set -eu; tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-stack-adjust.XXXXXX")"; \
-	trap 'rm -rf "$$tmp"' EXIT; \
-	objdump -d -w -Mintel ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/stack-adjust.objdump.txt"; \
-	python3 tools/validate-sprint10-stack-adjust-disassembly.py ./tests/bin/gadgets_sprint10_stack_adjust "$$tmp/stack-adjust.objdump.txt" >/dev/null; \
-	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/gadgets.json"; \
-	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/analyze.json"; \
-	python3 tools/validate-json-report.py --mode sprint10-stack-adjust-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/gadgets.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode sprint10-stack-adjust-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/analyze.json" >/dev/null; \
-	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
-	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10_stack_adjust > "$$tmp/gadgets.txt"; \
-	grep -q "pattern: add rsp, imm8; ret" "$$tmp/gadgets.txt"; \
-	grep -q "side effects: stack_read, stack_adjust, flags_write" "$$tmp/gadgets.txt"; \
-	echo "sprint10-stack-adjust-smoke: ok candidates=7 stack_adjust=2 fallback=5 scored=5"
+	@set -eu; python3 tools/sprint10-fixture-smoke.py --binary ./$(TARGET) --family stack_adjust
 
-# Sprint 10 Patch 049 bounded memory-effect gate. Six exact qword base-plus-zero
-# register/memory moves receive structured side-car facts. SIB, displacement,
-# RSP-valued, and 32-bit forms remain bare-ret fallbacks.
+# Sprint 10 bounded qword memory-effect gate.
 sprint10-memory-smoke: dev-tools-check all samples
-	@set -eu; tmp="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-sprint10-memory.XXXXXX")"; \
-	trap 'rm -rf "$$tmp"' EXIT; \
-	objdump -d -w -Mintel ./tests/bin/gadgets_sprint10_memory > "$$tmp/memory.objdump.txt"; \
-	python3 tools/validate-sprint10-memory-disassembly.py ./tests/bin/gadgets_sprint10_memory "$$tmp/memory.objdump.txt" >/dev/null; \
-	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets_sprint10_memory > "$$tmp/gadgets.json"; \
-	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets_sprint10_memory > "$$tmp/analyze.json"; \
-	python3 tools/validate-json-report.py --mode sprint10-memory-fixture --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/gadgets.json" >/dev/null; \
-	python3 tools/validate-json-report.py --mode sprint10-memory-fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/analyze.json" >/dev/null; \
-	python3 tools/validate-report-parity.py "$$tmp/gadgets.json" "$$tmp/analyze.json" >/dev/null; \
-	./$(TARGET) gadgets --max-depth 4 ./tests/bin/gadgets_sprint10_memory > "$$tmp/gadgets.txt"; \
-	grep -q "pattern: mov \[base\], value; ret" "$$tmp/gadgets.txt"; \
-	grep -q "pattern: mov value, \[base\]; ret" "$$tmp/gadgets.txt"; \
-	grep -q "memory access: write base=rdi value=rax index=none scale=1 displacement=0x0000000000000000 width=8 dereference=yes" "$$tmp/gadgets.txt"; \
-	grep -q "memory access: read base=r8 value=r9 index=none scale=1 displacement=0x0000000000000000 width=8 dereference=yes" "$$tmp/gadgets.txt"; \
-	grep -q "side effects: stack_read, memory_write" "$$tmp/gadgets.txt"; \
-	grep -q "side effects: stack_read, register_write, memory_read" "$$tmp/gadgets.txt"; \
-	echo "sprint10-memory-smoke: ok candidates=12 memory_write=3 memory_read=3 fallback=6 scored=6"
+	@set -eu; python3 tools/sprint10-fixture-smoke.py --binary ./$(TARGET) --family memory
 
-# Sprint 10 Patch 050 cross-family closeout gate. The machine-readable table
-# proves that every implemented family has a fixture, effect contract,
-# conservative fallback boundary, and explicit score disposition.
+# One-per-pattern architectural-effect gate.
+sprint10-architectural-effects-smoke: dev-tools-check all samples
+	@set -eu; python3 tools/sprint10-fixture-smoke.py --binary ./$(TARGET) --family exact_pattern_effects
+
+# Negative orchestration proof: a failing specialty validator must prevent all later steps.
+sprint10-fixture-gate-smoke:
+	@python3 tools/sprint10-fixture-gate-smoke.py
+
+# Semantic-family, exact-pattern, and fixture-suite reconciliation.
+sprint10-contract-reconciliation-smoke:
+	@python3 tools/sprint10-contract-reconciliation-smoke.py
+
+# Eleven semantic-family contracts remain independently reviewable.
 sprint10-family-coverage-smoke:
 	@python3 tools/sprint10-family-coverage-smoke.py
 
@@ -328,9 +274,9 @@ analyze-smoke: dev-tools-check all samples
 	grep -q "Candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	grep -q "Scored candidate count: 0x000000000000000b" "$$tmp/x64lens-analyze-smoke.txt"; \
 	./$(TARGET) analyze --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	./$(TARGET) analyze --max-depth 4 --format json ./tests/bin/gadgets > "$$tmp/x64lens-analyze-smoke-order2.json"; \
-	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
+	python3 tools/validate-json-report.py --mode fixture --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory --require-sprint10-architectural-effects "$$tmp/x64lens-analyze-smoke-order2.json" >/dev/null; \
 	./$(TARGET) gadgets --format json --max-depth 4 ./tests/bin/gadgets > "$$tmp/x64lens-gadgets-parity.json"; \
 	python3 tools/validate-report-parity.py "$$tmp/x64lens-gadgets-parity.json" "$$tmp/x64lens-analyze-smoke.json" >/dev/null; \
 	echo "analyze-smoke: ok"
@@ -471,7 +417,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -578,6 +524,10 @@ script-perms-check:
 	@test -x tools/validate-sprint10-transfer-disassembly.py
 	@test -x tools/validate-sprint10-stack-adjust-disassembly.py
 	@test -x tools/validate-sprint10-memory-disassembly.py
+	@test -x tools/validate-sprint10-effects-disassembly.py
+	@test -x tools/sprint10-fixture-smoke.py
+	@test -x tools/sprint10-fixture-gate-smoke.py
+	@test -x tools/sprint10-contract-reconciliation-smoke.py
 	@test -x tools/json-effect-consistency-smoke.py
 	@test -x tools/sprint10-family-coverage-smoke.py
 	@test -x tools/validate-report-parity.py
@@ -609,6 +559,7 @@ scaffold-check: script-perms-check
 	@test -f src/analysis_summary.asm
 	@test -f src/candidate_evidence.asm
 	@test -f src/memory_effect.asm
+	@test -f src/candidate_effect.asm
 	@test -f include/constants.inc
 	@test -f docs/project-charter.md
 	@test -f docs/contracts/development-contract.md
@@ -661,7 +612,11 @@ scaffold-check: script-perms-check
 	@test -f tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json
 	@test -f tests/expected/x64lens-report-sprint10-memory-0.2.0.json
 	@test -f tests/toy-src/gadgets_sprint10_memory.S
+	@test -f tests/toy-src/gadgets_sprint10_effects.S
 	@test -f tests/expected/sprint10-family-coverage.json
+	@test -f tests/expected/sprint10-exact-pattern-catalog.json
+	@test -f tests/expected/sprint10-fixture-suite.json
+	@test -f tests/expected/x64lens-report-sprint10-effects-0.2.0.json
 	@test -f tools/validate-report-parity.py
 	@test -f tools/patch-bundle-hygiene-smoke.py
 	@test -f tools/check-patch-bundle-hygiene.py
@@ -681,6 +636,9 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0030-campaign-integrity-and-bounded-acceleration-gates.md
 	@test -f docs/adr/0031-sprint9-closeout-and-defensive-deployment-profile.md
 	@test -f docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md
+	@test -f docs/adr/0037-architectural-effects-and-contract-reconciliation.md
+	@test -f docs/design/sprint10-exact-pattern-catalog.md
+	@test -f docs/sprints/sprint-10-patch-051-validation.md
 	@test -f docs/design/candidate-scoped-decoder-and-parallelism.md
 	@test -f docs/design/defensive-deployment-profile.md
 	@test -f docs/sprints/sprint-09-patch-044-validation.md

@@ -2,11 +2,7 @@
 
 ## Status
 
-Active through Patch 050. Patches 046 through 049 established ordered multi-pop,
-exact register-transfer, exact positive aligned stack-adjust, and bounded qword
-base-plus-zero memory families. Patch 050 completes current-family effect facts,
-corrects cross-family fixture expectations, makes fixture recipes fail fast, and
-adds the machine-readable family/false-positive coverage table.
+Active through Patch 051. Patches 046 through 049 established ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded qword base-plus-zero memory families. Patch 050 completed coarse current-family effects and fixture-gate hardening. Patch 051 reconciles all retained Patch 050 design work through a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and selective score calibration.
 
 Related documentation:
 
@@ -42,8 +38,7 @@ validity, side effects, score meaning, or the defensive deployment profile.
   family.
 - [x] Add a machine-readable fixture coverage table and per-family
   false-positive boundaries.
-- [ ] Add score entries only after semantic/effect validation and the Patch 051
-  architecture/capability review establish a defensible utility policy.
+- [x] Add score entries only after semantic/effect validation. Patch 051 adds reviewed scores for ordered two-pop argument control and positive aligned stack adjustment; transfer and memory families remain explicitly unscored.
 - [x] Preserve candidate-index provenance and schema `0.2.x` compatibility.
 
 ## Patch sequence
@@ -58,12 +53,10 @@ validity, side effects, score meaning, or the defensive deployment profile.
 5. **Patch 050:** current-family effect completion, cross-family fixture
    reconciliation, fail-fast recipe hardening, fixture coverage table, and
    explicit score deferral.
-6. **Patch 051:** architecture and capability reassessment before corpus freeze,
-   including PIE-versus-DSO semantics, CET/IBT/SHSTK evidence, overlapping
-   executable-segment count semantics, and pre-release capability priorities.
-7. **Patch 052:** Sprint 10 closeout if Patch 051 produces no release-blocking
-   implementation correction; otherwise Patch 052 contains the smallest
-   corrective tranche before closeout.
+6. **Patch 051:** reconcile the three Patch 050 implementation explorations into one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
+7. **Patch 052:** resolve any Patch 051 local or editorial findings.
+8. **Patch 053:** architecture and capability reassessment before corpus freeze, including PIE-versus-DSO semantics, CET/IBT/SHSTK evidence, overlapping executable-segment count semantics, and pre-release capability priorities.
+9. **Patch 054:** Sprint 10 closeout or the smallest correction proved necessary by Patch 053.
 
 This sequence prevents the capability audit from being hidden inside a nominal
 closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
@@ -85,8 +78,7 @@ closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
 - [x] Exact suffix recognition and semantic promotion remain separate.
 - [x] Controlled, clobbered, stack, register, flag, syscall, and memory effects
   are visible in records, text, and JSON for implemented families.
-- [ ] Score changes are documented and tested independently from
-  classification; current Sprint 10 families remain intentionally unscored.
+- [x] Score changes are documented and tested independently from classification. Ordered two-pop and stack-adjust scores require validated architectural effects; transfer and memory remain unscored.
 - [x] New metrics preserve provenance and schema `0.2.x` compatibility.
 - [x] No new mandatory runtime dependency is introduced.
 - [x] One-worker output remains deterministic and bounded.
@@ -97,8 +89,9 @@ closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
 gadget_record:                    112 bytes
 candidate_evidence_record:         48 bytes
 memory_effect_record:              16 bytes
+candidate_effect_record:           24 bytes
 candidate capacity:              4096
-combined analysis arena:       720896 bytes
+combined analysis arena:       819200 bytes
 ```
 
 These are fixed allocation and capacity facts, not measured comparative RSS or
@@ -124,10 +117,7 @@ change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Handoff
 
-Patch 051 reassesses architecture and pre-release capability priorities before
-Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode
-ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen
-manifest.
+Patch 052 reviews and corrects the merged Patch 051 contract. Patch 053 then reassesses architecture and pre-release capability priorities before Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen manifest.
 
 ## Patch 046 boundary
 
@@ -162,3 +152,22 @@ cross-family promotion counts, prevents Make recipes from masking failed
 validators, isolates stale-manifest verification, and establishes the maintained
 family coverage/false-positive table. New-family score calibration remains
 open for the Patch 051 review.
+
+## Patch 051 boundary
+
+Patch 051 adds no primitive family. It merges the completed coarse family model,
+a dense 24-byte architectural-effect side-car, centralized fail-fast fixture
+orchestration, one-per-pattern coverage, and selective score calibration into
+one contract against the committed Patch 050 base.
+
+The three maintained views are complementary:
+
+```text
+11 semantic-family contracts
+25 exact-pattern contracts
+5 fixture-suite groups
+```
+
+A reconciliation gate requires them to agree. Patch 052 is reserved for findings
+from local implementation and editorial review; Patch 053 performs the broader
+capability reassessment; Patch 054 closes Sprint 10.

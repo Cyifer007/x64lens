@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "purpose": "One-per-pattern exact catalog and architectural-effect contract",
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "pattern_count": 25,
+    "gadget_record_bytes": 112,
+    "candidate_evidence_record_bytes": 48,
+    "memory_effect_record_bytes": 16,
+    "candidate_effect_record_bytes": 24,
+    "candidate_capacity": 4096,
+    "analysis_arena_bytes": 819200
+  },
+  "patterns": [
+    {
+      "pattern_id": 1,
+      "label": "ret",
+      "semantic_class": "alignment",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 45,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 2,
+      "label": "ret imm16",
+      "semantic_class": "alignment",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 40,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 3,
+      "label": "pop rax; ret",
+      "semantic_class": "syscall_num_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 85,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 4,
+      "label": "pop rcx; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 5,
+      "label": "pop rdx; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 6,
+      "label": "pop rbx; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 7,
+      "label": "pop rsp; ret",
+      "semantic_class": "stack_pivot",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": false,
+      "score": 70,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 8,
+      "label": "pop rbp; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 9,
+      "label": "pop rsi; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 10,
+      "label": "pop rdi; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 11,
+      "label": "pop r8; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 12,
+      "label": "pop r9; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 90,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 13,
+      "label": "pop r10; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 14,
+      "label": "pop r11; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 15,
+      "label": "pop r12; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 16,
+      "label": "pop r13; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 17,
+      "label": "pop r14; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 18,
+      "label": "pop r15; ret",
+      "semantic_class": "unknown_candidate",
+      "evidence_kind": "exact_suffix",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 19,
+      "label": "leave; ret",
+      "semantic_class": "stack_pivot",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 75,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 20,
+      "label": "syscall; ret",
+      "semantic_class": "syscall_trigger",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": false,
+      "score": 85,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 21,
+      "label": "pop reg; pop reg; ret",
+      "semantic_class": "arg_control",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 95,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 22,
+      "label": "mov reg, reg; ret",
+      "semantic_class": "reg_transfer",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 23,
+      "label": "add rsp, imm8; ret",
+      "semantic_class": "alignment",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": 35,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Exact suffix evidence does not establish full-window decode validity."
+    },
+    {
+      "pattern_id": 24,
+      "label": "mov [base], value; ret",
+      "semantic_class": "memory_write",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Only the bounded base-plus-zero qword encoding is represented; broader addressing remains outside the family."
+    },
+    {
+      "pattern_id": 25,
+      "label": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
+      "evidence_kind": "semantic_exact",
+      "effect_model_complete": true,
+      "score": null,
+      "fixture": "tests/toy-src/gadgets_sprint10_effects.S",
+      "validation_target": "make sprint10-architectural-effects-smoke",
+      "false_positive_boundary": "Only the bounded base-plus-zero qword encoding is represented; broader addressing remains outside the family."
+    }
+  ]
+}

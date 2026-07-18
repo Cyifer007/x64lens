@@ -1262,3 +1262,22 @@ separate validator mode and does not require Patch 050 effects.
 The full native aggregate, exact 4,096/4,097 capacity behavior, malformed-input
 no-partial-output gates, strict ShellCheck, and qualified Docker validation
 remain mandatory.
+
+## Sprint 10 Patch 051 architectural-effect reconciliation validation
+
+Required focused gates:
+
+```bash
+make sprint10-architectural-effects-smoke
+make sprint10-fixture-gate-smoke
+make sprint10-family-coverage-smoke
+make sprint10-contract-reconciliation-smoke
+make json-effect-consistency-smoke
+make schema-compat-smoke
+```
+
+The one-per-pattern fixture reports 25 raw/exact candidates, 17 semantic, eight
+exact-only unknown, 14 scored, 23 complete effect models, and two partial effect
+models. Candidate capacity remains 4,096; candidate 4,097 still fails before
+stdout. Native and Docker reports must agree without normalizing semantic,
+effect, or score facts.

@@ -283,3 +283,14 @@ A final-file public patch archive must authenticate the complete object. Validat
 A controlled fixture may exercise more than one implemented family. Validation must classify each candidate according to the strongest implemented exact rule rather than preserve stale expectations from the fixture's original patch. Multi-command Make recipes must use fail-fast shell semantics so an intermediate validator failure cannot be masked by a later successful command.
 
 Every implemented family must identify its fixture, effect contract, fallback boundary, and score disposition in the maintained Sprint 10 family coverage table.
+
+## Architectural-effect side-car rule
+
+Architectural register, flag, control-flow, and stack-source facts belong in a
+dense candidate-index side-car materialized after classification and structured
+memory effects. The materializer may reconcile existing records but must not
+scan target bytes, classify, score, or format output.
+
+Scoring may consume the side-car only to validate facts required by a reviewed
+score rule. A score mismatch must fail closed rather than causing the scorer to
+infer or repair semantic state.

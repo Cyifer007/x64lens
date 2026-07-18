@@ -556,3 +556,7 @@ Patch 049 increases the fixed command arena from 655,360 to 720,896 bytes by add
 Patch 050 changes semantic effect completeness and validation gates without adding a primitive family or changing the fixed 720,896-byte analysis arena. That allocation size is not a max-RSS measurement. Any claim that the completed effect model is faster, lower-memory, more deployable, or more useful requires the normal fixed-corpus and repeated-trial methodology.
 
 The Patch 051 capability review may define future score and capability ablations, but those conditions must remain separate benchmark profiles. Historical smoke rows must not be reinterpreted as evidence for the strengthened Patch 050 effect contract.
+
+## Patch 051 fixed-allocation and score-measurement note
+
+Patch 051 increases the fixed command arena from 720,896 to 819,200 bytes by adding one 24-byte architectural-effect record for each candidate slot. This is design arithmetic, not measured maximum RSS. The new multi-pop and stack-adjust scores also change score-count fixtures; benchmark rows must preserve commit, schema, score policy, and exact family definitions rather than mixing pre- and post-Patch-051 output.

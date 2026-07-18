@@ -27,7 +27,8 @@ flowchart TD
     PT --> CL[Semantic primitive classifier]
     CL --> EV[Candidate evidence side-car]
     EV --> ME[Memory-effect side-car]
-    ME --> SCORE[Scoring engine]
+    ME --> AE[Architectural-effect side-car]
+    AE --> SCORE[Scoring engine]
     SCORE --> GS
 
     GS --> GTR[Text gadget report]
@@ -37,6 +38,8 @@ flowchart TD
     EV --> JSON
     ME --> GTR
     ME --> JSON
+    AE --> GTR
+    AE --> JSON
     MR --> JSON
     ELF --> JSON
 

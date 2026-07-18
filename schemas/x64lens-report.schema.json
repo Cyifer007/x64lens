@@ -499,7 +499,8 @@
                 "stack_adjust",
                 "flags_write",
                 "memory_read",
-                "memory_write"
+                "memory_write",
+                "control_transfer"
               ]
             },
             "uniqueItems": true,
@@ -883,6 +884,205 @@
               "dereference"
             ],
             "additionalProperties": false
+          },
+          "architectural_effects": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Exact architectural register, represented flag, control-flow, and bounded stack-source facts from the candidate-index effect side-car; null when no exact pattern is represented.",
+            "properties": {
+              "registers_read": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "rax",
+                    "rbx",
+                    "rcx",
+                    "rdx",
+                    "rsi",
+                    "rdi",
+                    "rbp",
+                    "rsp",
+                    "r8",
+                    "r9",
+                    "r10",
+                    "r11",
+                    "r12",
+                    "r13",
+                    "r14",
+                    "r15"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "registers_written": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "rax",
+                    "rbx",
+                    "rcx",
+                    "rdx",
+                    "rsi",
+                    "rdi",
+                    "rbp",
+                    "rsp",
+                    "r8",
+                    "r9",
+                    "r10",
+                    "r11",
+                    "r12",
+                    "r13",
+                    "r14",
+                    "r15"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "flags_read": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "cf",
+                    "pf",
+                    "af",
+                    "zf",
+                    "sf",
+                    "tf",
+                    "if",
+                    "df",
+                    "of"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "flags_written": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "cf",
+                    "pf",
+                    "af",
+                    "zf",
+                    "sf",
+                    "tf",
+                    "if",
+                    "df",
+                    "of"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "control_flow": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "return",
+                    "syscall"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "stack_base": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  null,
+                  "entry_rsp",
+                  "entry_rbp",
+                  "dynamic"
+                ]
+              },
+              "stack_read_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "stack_write_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "first_stack_read_offset": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "stack_read_stride": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "stack_offsets_known": {
+                "type": "boolean"
+              },
+              "model_complete": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "registers_read",
+              "registers_written",
+              "flags_read",
+              "flags_written",
+              "control_flow",
+              "stack_base",
+              "stack_read_count",
+              "stack_write_count",
+              "first_stack_read_offset",
+              "stack_read_stride",
+              "stack_offsets_known",
+              "model_complete"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "stack_offsets_known": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "stack_offsets_known"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "first_stack_read_offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "stack_read_stride": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "first_stack_read_offset": {
+                      "type": "null"
+                    },
+                    "stack_read_stride": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         "additionalProperties": true,

@@ -18,6 +18,7 @@ x64lens CLI
   -> semantic primitive classifier and explicit effects
   -> candidate evidence side-car materializer
   -> memory-effect side-car materializer
+  -> architectural-effect side-car materializer
   -> scoring engine
   -> mitigation-aware interpretation
   -> text and JSON reporters
@@ -45,6 +46,7 @@ x64lens CLI
 | `classifier.asm` | Semantic primitive classification plus controlled, clobbered, stack, and represented side-effect facts | Raw file I/O or score policy |
 | `candidate_evidence.asm` | Dense per-candidate raw/exact-suffix/semantic-exact provenance side-car | Scan bytes, decode instructions, score, or report |
 | `memory_effect.asm` | Dense per-candidate structured memory-access side-car | Parse ELF, scan candidates, decide scores, or format output |
+| `candidate_effect.asm` | Dense per-candidate architectural GPR, flag, control-flow, stack-source, and model-completeness facts | Parse ELF, scan bytes, classify, score, or format output |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
@@ -975,3 +977,34 @@ The classifier remains the only module that assigns these semantic and effect fa
 The candidate record remains 112 bytes, the evidence record 48 bytes, the memory-effect record 16 bytes, candidate capacity 4,096, and the command arena 720,896 bytes. Patch 050 therefore changes semantic completeness and test correctness without changing the fixed allocation profile.
 
 Fixture gates are also part of the architecture around the analyzer. Sprint 10 multi-command recipes now execute with fail-fast shell semantics so a failed semantic validator cannot be hidden by a later successful command. The cross-family coverage table is maintained in [`design/sprint10-family-coverage.md`](design/sprint10-family-coverage.md).
+
+## Sprint 10 Patch 051 architectural-effect reconciliation
+
+Patch 051 adds a fourth dense candidate-index record family after raw candidates,
+provenance, and structured memory effects:
+
+```text
+gadget_record[4096]               112 bytes each
+candidate_evidence_record[4096]    48 bytes each
+memory_effect_record[4096]          16 bytes each
+candidate_effect_record[4096]       24 bytes each
+combined command arena          819200 bytes
+```
+
+`candidate_effect.asm` materializes represented GPR reads/writes, condition-flag
+reads/writes, return/syscall control flow, stack source/count/offset facts, and
+model-completeness state from already established exact, semantic, and memory
+records. It cannot scan bytes, select executable regions, classify candidates,
+assign scores, or emit output.
+
+The stage order is:
+
+```text
+scanner -> exact matcher -> classifier -> provenance -> memory effects
+        -> architectural effects -> scoring -> reporting
+```
+
+This order is deliberate: scoring validates and consumes represented effects
+rather than becoming a second classifier. The 112-byte scanner record and the
+4,096-candidate boundary remain unchanged. The fixed arena grows by 98,304
+bytes; this is allocation arithmetic, not measured maximum RSS.

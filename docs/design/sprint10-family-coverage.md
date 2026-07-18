@@ -19,7 +19,8 @@ candidate capacity:              4096
 gadget_record:                   112 bytes
 candidate_evidence_record:        48 bytes
 memory_effect_record:             16 bytes
-combined analysis arena:      720896 bytes
+candidate_effect_record:          24 bytes
+combined analysis arena:      819200 bytes
 mandatory runtime decoder:       no
 mandatory runtime threads:       no
 ```
@@ -30,17 +31,17 @@ The arena size is a fixed allocation fact, not a measured maximum-RSS result.
 
 | Family | Fixture/gate | Effects | Clobbers | Score policy | Conservative boundary |
 |---|---|---|---|---|---|
-| `ret` | `tests/toy-src/gadgets.S`; `make validate-gadget-fixture` | `stack_read` | none | 45 | Exact return-byte suffix only; the retained backward window is not decoder-validated. |
-| `ret imm16` | base gadget fixture | `stack_read`, `ret_imm16`, `stack_adjust` | none | 40 | Immediate-derived delta is exact suffix evidence; unaligned raw candidates remain possible. |
-| single `pop` | base gadget fixture; `make json-effect-consistency-smoke` | `stack_read` | none | existing family-specific values | Only the exact final pop controls the named register. |
-| `syscall; ret` | base gadget fixture | `stack_read`, `syscall`, `register_write` | `rcx`, `r11` | 85 | Does not imply a controlled syscall number, arguments, or safe return state. |
-| `leave; ret` | base gadget fixture | `stack_read`, `stack_pivot`, `register_write` | `rbp` | 75 | Resulting stack delta is input-dependent and remains unknown. |
-| `pop rsp; ret` | base gadget fixture | `stack_read`, `stack_pivot` | none | 70 | Exact suffix establishes a pivot relation, not a known numeric delta. |
-| ordered two-pop | `gadgets_sprint10.S`; `make sprint10-primitive-smoke` | `stack_read` | none | unscored | Only distinct ordered pairs from `rdi/rsi/rdx/rcx/r8/r9`; unsupported pairs fall back. |
-| register transfer | `gadgets_sprint10_transfer.S`; `make sprint10-register-transfer-smoke` | `stack_read`, `register_write` | destination | unscored | Only distinct 64-bit register-direct non-`rsp` moves; memory forms use the memory family. |
-| stack adjustment | `gadgets_sprint10_stack_adjust.S`; `make sprint10-stack-adjust-smoke` | `stack_read`, `stack_adjust`, `flags_write` | none | unscored | Only positive, nonzero, eight-byte-aligned `imm8` additions to `rsp`. |
-| memory write | `gadgets_sprint10_memory.S`; `make sprint10-memory-smoke` | `stack_read`, `memory_write` | none | unscored | Only qword base-plus-zero, no-index, no-displacement exact stores; address/value control is not inferred. |
-| memory read | memory fixture | `stack_read`, `register_write`, `memory_read` | destination | unscored | Same bounded address domain; memory-content control is not inferred. |
+| `ret` | `tests/toy-src/gadgets.S`; `make validate-gadget-fixture` | `stack_read`, `control_transfer` | none | 45 | Exact return-byte suffix only; the retained backward window is not decoder-validated. |
+| `ret imm16` | base gadget fixture | `stack_read`, `ret_imm16`, `stack_adjust`, `control_transfer` | none | 40 | Immediate-derived delta is exact suffix evidence; unaligned raw candidates remain possible. |
+| single `pop` | base gadget fixture; `make json-effect-consistency-smoke` | `stack_read`, `register_write`, `control_transfer` | none | existing semantic-family values; exact-only pops remain null | Only the exact final pop controls the named register. |
+| `syscall; ret` | base gadget fixture | `stack_read`, `syscall`, `register_write`, `control_transfer` | `rcx`, `r11` | 85 | Does not imply a controlled syscall number, arguments, or safe return state. |
+| `leave; ret` | base gadget fixture | `stack_read`, `stack_pivot`, `register_write`, `control_transfer` | `rbp` | 75 | Resulting stack delta is input-dependent and remains unknown. |
+| `pop rsp; ret` | base gadget fixture | `stack_read`, `stack_pivot`, `register_write`, `control_transfer` | none | 70 | Exact suffix establishes a pivot relation, not a known numeric delta. |
+| ordered two-pop | `gadgets_sprint10.S`; `make sprint10-primitive-smoke` | `stack_read`, `register_write`, `control_transfer` | none | 95 | Only distinct ordered pairs from `rdi/rsi/rdx/rcx/r8/r9`; unsupported pairs fall back. |
+| register transfer | `gadgets_sprint10_transfer.S`; `make sprint10-register-transfer-smoke` | `stack_read`, `register_write`, `control_transfer` | destination | unscored | Only distinct 64-bit register-direct non-`rsp` moves; memory forms use the memory family. |
+| stack adjustment | `gadgets_sprint10_stack_adjust.S`; `make sprint10-stack-adjust-smoke` | `stack_read`, `stack_adjust`, `flags_write`, `control_transfer` | none | 35 | Only positive, nonzero, eight-byte-aligned `imm8` additions to `rsp`. |
+| memory write | `gadgets_sprint10_memory.S`; `make sprint10-memory-smoke` | `stack_read`, `memory_write`, `control_transfer` | none | unscored | Only qword base-plus-zero, no-index, no-displacement exact stores; address/value control is not inferred. |
+| memory read | memory fixture | `stack_read`, `register_write`, `memory_read`, `control_transfer` | destination | unscored | Same bounded address domain; memory-content control is not inferred. |
 
 ## Cross-family fixture rule
 
@@ -54,7 +55,7 @@ stale test oracle.
 
 ## Score boundary
 
-The new Sprint 10 families remain unscored until a reviewed policy can account
+Register-transfer and memory families remain unscored until a reviewed policy can account
 for:
 
 - stack consumption and ordering;
@@ -64,12 +65,14 @@ for:
 - evidence kind and future decoder confidence;
 - corpus-observed defensive utility.
 
-`score: null` is therefore an intentional current fact, not missing output.
+Ordered two-pop argument control scores 95 and positive aligned stack adjustment scores 35 only after their represented effects validate. `score: null` for transfer and memory families is therefore an intentional current fact, not missing output.
 
 ## Validation
 
 ```bash
 make sprint10-family-coverage-smoke
+make sprint10-architectural-effects-smoke
+make sprint10-contract-reconciliation-smoke
 make json-effect-consistency-smoke
 make sprint10-primitive-smoke
 make sprint10-register-transfer-smoke

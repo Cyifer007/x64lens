@@ -7,16 +7,20 @@
     "gadget_record_bytes": 112,
     "candidate_evidence_record_bytes": 48,
     "memory_effect_record_bytes": 16,
-    "analysis_arena_bytes": 720896,
+    "analysis_arena_bytes": 819200,
     "mandatory_decoder": false,
-    "mandatory_threads": false
+    "mandatory_threads": false,
+    "candidate_effect_record_bytes": 24
   },
   "families": [
     {
       "id": "ret",
       "pattern": "ret",
       "semantic_class": "alignment",
-      "effects": ["stack_read"],
+      "effects": [
+        "stack_read",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
       "score_policy": "scored:45",
       "fixture": "tests/toy-src/gadgets.S",
@@ -27,7 +31,12 @@
       "id": "ret_imm16",
       "pattern": "ret imm16",
       "semantic_class": "alignment",
-      "effects": ["stack_read", "ret_imm16", "stack_adjust"],
+      "effects": [
+        "stack_read",
+        "ret_imm16",
+        "stack_adjust",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
       "score_policy": "scored:40",
       "fixture": "tests/toy-src/gadgets.S",
@@ -38,7 +47,11 @@
       "id": "single_pop",
       "pattern": "pop <gpr>; ret",
       "semantic_class": "register-specific",
-      "effects": ["stack_read"],
+      "effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
       "score_policy": "family-specific existing scores",
       "fixture": "tests/toy-src/gadgets.S",
@@ -49,7 +62,12 @@
       "id": "syscall_ret",
       "pattern": "syscall; ret",
       "semantic_class": "syscall_trigger",
-      "effects": ["stack_read", "syscall", "register_write"],
+      "effects": [
+        "stack_read",
+        "syscall",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "rcx,r11",
       "score_policy": "scored:85",
       "fixture": "tests/toy-src/gadgets.S",
@@ -60,7 +78,12 @@
       "id": "leave_ret",
       "pattern": "leave; ret",
       "semantic_class": "stack_pivot",
-      "effects": ["stack_read", "stack_pivot", "register_write"],
+      "effects": [
+        "stack_read",
+        "stack_pivot",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "rbp",
       "score_policy": "scored:75",
       "fixture": "tests/toy-src/gadgets.S",
@@ -71,7 +94,12 @@
       "id": "pop_rsp_ret",
       "pattern": "pop rsp; ret",
       "semantic_class": "stack_pivot",
-      "effects": ["stack_read", "stack_pivot"],
+      "effects": [
+        "stack_read",
+        "stack_pivot",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
       "score_policy": "scored:70",
       "fixture": "tests/toy-src/gadgets.S",
@@ -82,9 +110,13 @@
       "id": "ordered_multi_pop",
       "pattern": "pop reg; pop reg; ret",
       "semantic_class": "arg_control",
-      "effects": ["stack_read"],
+      "effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
-      "score_policy": "unscored",
+      "score_policy": "scored:95",
       "fixture": "tests/toy-src/gadgets_sprint10.S",
       "validation_target": "make sprint10-primitive-smoke",
       "false_positive_boundary": "Only distinct ordered pairs drawn from the supported System V argument-register set are promoted; duplicate or unsupported pairs fall back to the strongest single-pop suffix."
@@ -93,7 +125,11 @@
       "id": "register_transfer",
       "pattern": "mov reg, reg; ret",
       "semantic_class": "reg_transfer",
-      "effects": ["stack_read", "register_write"],
+      "effects": [
+        "stack_read",
+        "register_write",
+        "control_transfer"
+      ],
       "clobber_policy": "destination",
       "score_policy": "unscored",
       "fixture": "tests/toy-src/gadgets_sprint10_transfer.S",
@@ -104,9 +140,14 @@
       "id": "stack_adjust",
       "pattern": "add rsp, imm8; ret",
       "semantic_class": "alignment",
-      "effects": ["stack_read", "stack_adjust", "flags_write"],
+      "effects": [
+        "stack_read",
+        "stack_adjust",
+        "flags_write",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
-      "score_policy": "unscored",
+      "score_policy": "scored:35",
       "fixture": "tests/toy-src/gadgets_sprint10_stack_adjust.S",
       "validation_target": "make sprint10-stack-adjust-smoke",
       "false_positive_boundary": "Only positive nonzero eight-byte-aligned imm8 additions to RSP are promoted; zero, negative, unaligned, wrong-register, subtraction, and wider-immediate forms fall back."
@@ -115,7 +156,11 @@
       "id": "memory_write",
       "pattern": "mov [base], value; ret",
       "semantic_class": "memory_write",
-      "effects": ["stack_read", "memory_write"],
+      "effects": [
+        "stack_read",
+        "memory_write",
+        "control_transfer"
+      ],
       "clobber_policy": "none",
       "score_policy": "unscored",
       "fixture": "tests/toy-src/gadgets_sprint10_memory.S",
@@ -126,7 +171,12 @@
       "id": "memory_read",
       "pattern": "mov value, [base]; ret",
       "semantic_class": "memory_read",
-      "effects": ["stack_read", "register_write", "memory_read"],
+      "effects": [
+        "stack_read",
+        "register_write",
+        "memory_read",
+        "control_transfer"
+      ],
       "clobber_policy": "destination",
       "score_policy": "unscored",
       "fixture": "tests/toy-src/gadgets_sprint10_memory.S",
@@ -139,7 +189,7 @@
       "id": "ordered_multi_pop",
       "report": "tests/expected/x64lens-report-sprint10-0.2.0.json",
       "raw_candidates": 5,
-      "scored_candidates": 2,
+      "scored_candidates": 5,
       "patterns": {
         "pop reg; pop reg; ret": 3,
         "pop rdi; ret": 2
@@ -161,7 +211,7 @@
       "id": "stack_adjust",
       "report": "tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json",
       "raw_candidates": 7,
-      "scored_candidates": 5,
+      "scored_candidates": 7,
       "patterns": {
         "add rsp, imm8; ret": 2,
         "ret": 5

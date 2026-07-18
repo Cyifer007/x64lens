@@ -205,7 +205,7 @@ Public replication archives must be evaluated as distributed bytes. Metadata-saf
 
 The paper may describe Patch 049 as the first structured semantic-exact memory-effect family: qword base-plus-zero loads and stores with explicit direction, base, value register, width, dereference, clobber, and score state. It may not generalize this family to arbitrary memory operands, claim decoder validity, or infer address controllability.
 
-The 720,896-byte arena is a fixed implementation allocation. It is not evidence of process RSS, speed, or superiority until measured under the publication methodology.
+Patch 051 increases the fixed command arena to 819,200 bytes by adding one 24-byte architectural-effect record for each of 4,096 candidate slots. This allocation arithmetic is not evidence of process RSS, speed, or superiority until measured under the publication methodology.
 
 
 ## Sprint 10 Patch 050 publication note

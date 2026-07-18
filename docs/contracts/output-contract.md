@@ -222,3 +222,15 @@ A public final-file overlay must be verified as one complete archive. Outer SHA-
 Current schema `0.2.0` producers must render completed effect facts from internal records. Every supported semantic candidate ending in `ret` or `ret imm16` includes `stack_read`. `syscall; ret` includes `rcx`/`r11` clobbers; `leave; ret` includes an `rbp` clobber; memory reads clobber their destination; transfers clobber their destination. Report adapters must not infer or omit these relations.
 
 Retained same-schema compatibility fixtures may predate the completed effect contract. Compatibility and current-producer conformance remain separate validation modes.
+
+## Sprint 10 Patch 051 architectural-effect output rule
+
+Current producers render `architectural_effects` from the dense side-car after
+successful materialization. Reporters must not infer GPR, flag, control-flow, or
+stack-source facts from labels. Exact-only pops may have architectural effects
+while remaining semantic unknowns and unscored.
+
+The side-car's `model_complete` field is independent from command-level
+`analysis.complete` and candidate-level `full_sequence_valid`. Current transfer
+and memory families remain unscored; ordered two-pop and positive aligned stack
+adjustment use their reviewed scores only when all required effect facts agree.

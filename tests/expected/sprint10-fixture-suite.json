@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Central fail-fast Sprint 10 fixture-suite contract",
+  "families": {
+    "ordered_multi_pop": {
+      "fixture": "tests/bin/gadgets_sprint10",
+      "disassembly_validator": "tools/validate-sprint10-disassembly.py",
+      "json_mode": "sprint10-fixture",
+      "expected_counts": {
+        "raw_candidate_count": 5,
+        "exact_pattern_count": 5,
+        "semantic_candidate_count": 5,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 5
+      },
+      "pattern_counts": {
+        "pop reg; pop reg; ret": 3,
+        "pop rdi; ret": 2
+      },
+      "text_contains": [
+        "pattern: pop reg; pop reg; ret",
+        "stack pop order: rdi->rsi",
+        "architectural effects:"
+      ],
+      "false_positive_boundaries": [
+        "Only distinct ordered pairs from the supported argument-register subset are promoted.",
+        "Duplicate or unsupported leading pops retain the strongest supported suffix rather than a multi-pop semantic claim."
+      ],
+      "score_policy": "Ordered two-pop argument control is scored 95 after ordered controls, stack cost, clobbers, and effects validate."
+    },
+    "register_transfer": {
+      "fixture": "tests/bin/gadgets_sprint10_transfer",
+      "disassembly_validator": "tools/validate-sprint10-transfer-disassembly.py",
+      "json_mode": "sprint10-transfer-fixture",
+      "expected_counts": {
+        "raw_candidate_count": 10,
+        "exact_pattern_count": 10,
+        "semantic_candidate_count": 10,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 4
+      },
+      "pattern_counts": {
+        "mov reg, reg; ret": 4,
+        "mov [base], value; ret": 1,
+        "mov value, [base]; ret": 1,
+        "ret": 4
+      },
+      "text_contains": [
+        "pattern: mov reg, reg; ret",
+        "register transfer: rax->rdi",
+        "architectural effects:"
+      ],
+      "false_positive_boundaries": [
+        "Only exact 64-bit register-direct moves between distinct non-RSP registers are promoted.",
+        "Memory forms are reconciled through the memory family; self, RSP, and 32-bit forms remain fallbacks."
+      ],
+      "score_policy": "Register transfers remain unscored until source-value controllability is modeled."
+    },
+    "stack_adjust": {
+      "fixture": "tests/bin/gadgets_sprint10_stack_adjust",
+      "disassembly_validator": "tools/validate-sprint10-stack-adjust-disassembly.py",
+      "json_mode": "sprint10-stack-adjust-fixture",
+      "expected_counts": {
+        "raw_candidate_count": 7,
+        "exact_pattern_count": 7,
+        "semantic_candidate_count": 7,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 7
+      },
+      "pattern_counts": {
+        "add rsp, imm8; ret": 2,
+        "ret": 5
+      },
+      "text_contains": [
+        "pattern: add rsp, imm8; ret",
+        "side effects: stack_read, stack_adjust, flags_write, control_transfer",
+        "architectural effects:"
+      ],
+      "false_positive_boundaries": [
+        "Only positive nonzero eight-byte-aligned imm8 additions to RSP are promoted.",
+        "Zero, negative, unaligned, wrong-register, subtraction, and wider-immediate forms remain fallbacks."
+      ],
+      "score_policy": "Positive aligned stack adjustments are scored 35 after exact immediate, flags, and stack facts validate."
+    },
+    "memory": {
+      "fixture": "tests/bin/gadgets_sprint10_memory",
+      "disassembly_validator": "tools/validate-sprint10-memory-disassembly.py",
+      "json_mode": "sprint10-memory-fixture",
+      "expected_counts": {
+        "raw_candidate_count": 12,
+        "exact_pattern_count": 12,
+        "semantic_candidate_count": 12,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 6
+      },
+      "pattern_counts": {
+        "mov [base], value; ret": 3,
+        "mov value, [base]; ret": 3,
+        "ret": 6
+      },
+      "text_contains": [
+        "pattern: mov [base], value; ret",
+        "pattern: mov value, [base]; ret",
+        "architectural effects:"
+      ],
+      "false_positive_boundaries": [
+        "Only exact qword base-plus-zero forms without SIB, displacement, RIP-relative addressing, or RSP participation are promoted.",
+        "Address, value, and memory-content controllability are not inferred."
+      ],
+      "score_policy": "Memory families remain unscored until address/value control and dereference risk are represented."
+    },
+    "exact_pattern_effects": {
+      "fixture": "tests/bin/gadgets_sprint10_effects",
+      "disassembly_validator": "tools/validate-sprint10-effects-disassembly.py",
+      "json_mode": "sprint10-effects-fixture",
+      "expected_counts": {
+        "raw_candidate_count": 25,
+        "exact_pattern_count": 25,
+        "semantic_candidate_count": 17,
+        "unknown_candidate_count": 8,
+        "scored_candidate_count": 14
+      },
+      "pattern_counts": {
+        "ret": 1,
+        "ret imm16": 1,
+        "pop rax; ret": 1,
+        "pop rcx; ret": 1,
+        "pop rdx; ret": 1,
+        "pop rbx; ret": 1,
+        "pop rsp; ret": 1,
+        "pop rbp; ret": 1,
+        "pop rsi; ret": 1,
+        "pop rdi; ret": 1,
+        "pop r8; ret": 1,
+        "pop r9; ret": 1,
+        "pop r10; ret": 1,
+        "pop r11; ret": 1,
+        "pop r12; ret": 1,
+        "pop r13; ret": 1,
+        "pop r14; ret": 1,
+        "pop r15; ret": 1,
+        "leave; ret": 1,
+        "syscall; ret": 1,
+        "pop reg; pop reg; ret": 1,
+        "mov reg, reg; ret": 1,
+        "add rsp, imm8; ret": 1,
+        "mov [base], value; ret": 1,
+        "mov value, [base]; ret": 1
+      },
+      "text_contains": [
+        "pattern: pop r15; ret",
+        "pattern: syscall; ret",
+        "architectural effects:"
+      ],
+      "false_positive_boundaries": [
+        "Exact effects describe the retained exact suffix and do not prove the full backward window decodes from its first byte.",
+        "Eight exact single-pop forms preserve unknown semantics while retaining deterministic stack and register effects."
+      ],
+      "score_policy": "The catalog preserves existing scores plus reviewed multi-pop and stack-adjust scores; transfer and memory families remain null."
+    }
+  }
+}

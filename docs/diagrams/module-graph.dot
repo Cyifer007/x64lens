@@ -27,6 +27,7 @@ digraph x64lens_modules {
   gadgets -> classifier;
   gadgets -> candidate_evidence;
   gadgets -> memory_effect;
+  gadgets -> candidate_effect;
   gadgets -> scoring;
   gadgets -> report_text;
   gadgets -> report_json;
@@ -41,6 +42,7 @@ digraph x64lens_modules {
   analyze -> classifier;
   analyze -> candidate_evidence;
   analyze -> memory_effect;
+  analyze -> candidate_effect;
   analyze -> scoring;
   analyze -> report_text;
   analyze -> report_json;
@@ -54,7 +56,9 @@ digraph x64lens_modules {
   classifier -> patterns;
   candidate_evidence -> classifier;
   memory_effect -> classifier;
-  scoring -> classifier;
+  candidate_effect -> classifier;
+  candidate_effect -> memory_effect;
+  scoring -> candidate_effect;
 
   filemap -> syscalls;
   arena -> syscalls;

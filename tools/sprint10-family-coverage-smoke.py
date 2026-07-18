@@ -70,7 +70,8 @@ def main() -> int:
         "gadget_record_bytes": 112,
         "candidate_evidence_record_bytes": 48,
         "memory_effect_record_bytes": 16,
-        "analysis_arena_bytes": 720896,
+        "candidate_effect_record_bytes": 24,
+        "analysis_arena_bytes": 819200,
         "mandatory_decoder": False,
         "mandatory_threads": False,
     }

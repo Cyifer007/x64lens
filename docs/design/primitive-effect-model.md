@@ -248,3 +248,29 @@ uncertainty justify score entries before Sprint 10 closes.
 The authoritative human-readable family matrix is
 [`sprint10-family-coverage.md`](sprint10-family-coverage.md); the corresponding
 machine-readable gate is `tests/expected/sprint10-family-coverage.json`.
+
+## Patch 051 architectural-effect side-car
+
+Patch 051 adds a dense 24-byte `candidate_effect_record[]` keyed by candidate
+index. The record contains represented GPR reads/writes plus a packed descriptor
+for condition flags, control-flow effects, stack source, bounded stack reads and
+writes, known offsets/stride, and model-completeness state.
+
+The architectural side-car complements rather than replaces:
+
+```text
+candidate_evidence_record[]   provenance and validator identity
+memory_effect_record[]        structured memory address/value operands
+candidate_effect_record[]     architectural reads/writes and stack/control facts
+```
+
+Every current exact pattern receives an effect record. Exact-only pops outside
+the supported semantic-role catalog remain `unknown_candidate` but retain their
+deterministic register and stack effects. `pop rsp; ret` and `syscall; ret`
+report partial models because the compact record cannot represent every dynamic
+or kernel-mediated effect.
+
+Patch 051 calibrates ordered two-pop argument control to 95 and positive aligned
+stack adjustment to 35 only after scoring validates the exact semantic and
+architectural-effect records. Register-transfer and memory candidates remain
+unscored.

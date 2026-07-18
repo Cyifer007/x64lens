@@ -154,6 +154,7 @@ candidate_transfer:    db ", register transfer: ", 0
 candidate_memory:      db ", memory access: ", 0
 candidate_clobbers:    db ", clobbers: ", 0
 candidate_effects:     db ", side effects: ", 0
+candidate_arch_effects: db ", architectural effects: ", 0
 term_ret:              db "ret", 0
 term_ret_imm16:        db "ret imm16", 0
 term_unknown:          db "unknown", 0
@@ -205,6 +206,7 @@ side_effect_stack_adjust: db "stack_adjust", 0
 side_effect_flags_write: db "flags_write", 0
 side_effect_memory_read: db "memory_read", 0
 side_effect_memory_write: db "memory_write", 0
+side_effect_control_transfer: db "control_transfer", 0
 memory_read_s:         db "read", 0
 memory_write_s:        db "write", 0
 memory_base_s:         db " base=", 0
@@ -214,6 +216,36 @@ memory_scale_one_s:    db " scale=1", 0
 memory_disp_s:         db " displacement=", 0
 memory_width_s:        db " width=", 0
 memory_deref_s:        db " dereference=yes", 0
+arch_reads_s:          db "reads=", 0
+arch_writes_s:         db " writes=", 0
+arch_flags_read_s:     db " flags_read=", 0
+arch_flags_write_s:    db " flags_write=", 0
+arch_control_s:        db " control=", 0
+arch_control_return_s: db "return", 0
+arch_control_syscall_s: db "syscall", 0
+arch_stack_base_s:     db " stack_base=", 0
+arch_stack_none_s:     db "none", 0
+arch_stack_rsp_s:      db "entry_rsp", 0
+arch_stack_rbp_s:      db "entry_rbp", 0
+arch_stack_dynamic_s:  db "dynamic", 0
+arch_stack_reads_s:    db " stack_reads=", 0
+arch_stack_writes_s:   db " stack_writes=", 0
+arch_first_read_s:     db " first_read=", 0
+arch_stride_s:         db " stride=", 0
+arch_offsets_known_s:  db " offsets_known=", 0
+arch_complete_s:       db " complete=", 0
+state_yes_inline:      db "yes", 0
+state_no_inline:       db "no", 0
+unknown_inline:        db "unknown", 0
+flag_cf_s:             db "cf", 0
+flag_pf_s:             db "pf", 0
+flag_af_s:             db "af", 0
+flag_zf_s:             db "zf", 0
+flag_sf_s:             db "sf", 0
+flag_tf_s:             db "tf", 0
+flag_if_s:             db "if", 0
+flag_df_s:             db "df", 0
+flag_of_s:             db "of", 0
 reg_rax:               db "rax", 0
 reg_rbx:               db "rbx", 0
 reg_rcx:               db "rcx", 0
@@ -676,7 +708,7 @@ report_text_print_perms:
     jmp     print_cstr
 
 
-; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx, analysis_summary=r8, memory_effects=r9)
+; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx, analysis_summary=r8, memory_effects=r9, candidate_effects=stack_arg_7)
 ;
 ; Inputs:
 ;   RDI = target path C string
@@ -693,6 +725,7 @@ report_text_print_perms:
 ;   semantic classifier facts, and Sprint 5 scoring facts. It does not decode
 ;   full instruction streams or infer exploitability.
 x64lens_report_text_gadgets:
+    mov     rax, [rsp + 8]      ; incoming candidate_effect_record[] pointer
     push    rbp
     push    rbx
     push    r12
@@ -701,7 +734,7 @@ x64lens_report_text_gadgets:
     push    r15
     push    r8                  ; analysis_summary pointer
     push    r9                  ; memory_effect_record[] pointer
-    sub     rsp, 8              ; preserve nested-call alignment
+    push    rax                 ; candidate_effect_record[] pointer and alignment
 
     mov     rbx, rdi            ; target path
     mov     r12, rsi            ; gadget_summary
@@ -1023,6 +1056,14 @@ x64lens_report_text_gadgets:
     call    print_cstr
     mov     rdi, [r15 + GADGET_SIDE_EFFECT_FLAGS]
     call    report_text_print_side_effects
+
+    lea     rdi, [candidate_arch_effects]
+    call    print_cstr
+    mov     rax, rbp
+    imul    rax, rax, CANDIDATE_EFFECT_RECORD_SIZE
+    mov     rdi, [rsp]
+    add     rdi, rax
+    call    report_text_print_candidate_effect
     call    print_nl
 
     inc     rbp
@@ -1506,6 +1547,206 @@ report_text_print_memory_effect:
     pop     rbx
     ret
 
+; report_text_print_candidate_effect(rdi=candidate_effect_record)
+; Renders exact architectural register/flag/control/stack facts. The structured
+; memory operand remains in the separate memory-access field.
+report_text_print_candidate_effect:
+    push    rbx
+    push    r12
+    push    r13
+    mov     r12, rdi
+    mov     rbx, [r12 + CANDIDATE_EFFECT_DESCRIPTOR]
+    test    rbx, CANDIDATE_EFFECT_FLAG_PRESENT
+    jnz     .arch_present
+    lea     rdi, [regs_none]
+    call    print_cstr
+    jmp     .arch_done
+
+.arch_present:
+    lea     rdi, [arch_reads_s]
+    call    print_cstr
+    mov     rdi, [r12 + CANDIDATE_EFFECT_REGS_READ]
+    call    report_text_print_regs_bitmap
+
+    lea     rdi, [arch_writes_s]
+    call    print_cstr
+    mov     rdi, [r12 + CANDIDATE_EFFECT_REGS_WRITTEN]
+    call    report_text_print_regs_bitmap
+
+    lea     rdi, [arch_flags_read_s]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FLAGS_READ_SHIFT
+    and     edi, CANDIDATE_EFFECT_FLAGS_MASK
+    call    report_text_print_flags_bitmap
+
+    lea     rdi, [arch_flags_write_s]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FLAGS_WRITE_SHIFT
+    and     edi, CANDIDATE_EFFECT_FLAGS_MASK
+    call    report_text_print_flags_bitmap
+
+    lea     rdi, [arch_control_s]
+    call    print_cstr
+    xor     r13d, r13d
+    test    rbx, CANDIDATE_EFFECT_CONTROL_RETURN
+    jz      .arch_control_no_return
+    lea     rdi, [arch_control_return_s]
+    call    print_cstr
+    mov     r13d, 1
+.arch_control_no_return:
+    test    rbx, CANDIDATE_EFFECT_CONTROL_SYSCALL
+    jz      .arch_control_done
+    test    r13d, r13d
+    jz      .arch_control_no_sep
+    lea     rdi, [reg_sep]
+    call    print_cstr
+.arch_control_no_sep:
+    lea     rdi, [arch_control_syscall_s]
+    call    print_cstr
+    mov     r13d, 1
+.arch_control_done:
+    test    r13d, r13d
+    jnz     .arch_control_nonempty
+    lea     rdi, [regs_none]
+    call    print_cstr
+.arch_control_nonempty:
+
+    lea     rdi, [arch_stack_base_s]
+    call    print_cstr
+    mov     rax, rbx
+    shr     rax, CANDIDATE_EFFECT_STACK_BASE_SHIFT
+    and     eax, CANDIDATE_EFFECT_STACK_BASE_MASK
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_ENTRY_RSP
+    je      .arch_base_rsp
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_ENTRY_RBP
+    je      .arch_base_rbp
+    cmp     eax, CANDIDATE_EFFECT_STACK_BASE_DYNAMIC
+    je      .arch_base_dynamic
+    lea     rdi, [arch_stack_none_s]
+    jmp     .arch_base_print
+.arch_base_rsp:
+    lea     rdi, [arch_stack_rsp_s]
+    jmp     .arch_base_print
+.arch_base_rbp:
+    lea     rdi, [arch_stack_rbp_s]
+    jmp     .arch_base_print
+.arch_base_dynamic:
+    lea     rdi, [arch_stack_dynamic_s]
+.arch_base_print:
+    call    print_cstr
+
+    lea     rdi, [arch_stack_reads_s]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_STACK_READ_COUNT_SHIFT
+    and     edi, CANDIDATE_EFFECT_STACK_READ_COUNT_MASK
+    call    print_u64_dec
+
+    lea     rdi, [arch_stack_writes_s]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_STACK_WRITE_COUNT_SHIFT
+    and     edi, CANDIDATE_EFFECT_STACK_WRITE_COUNT_MASK
+    call    print_u64_dec
+
+    lea     rdi, [arch_first_read_s]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_first_unknown
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_FIRST_READ_SHIFT
+    and     edi, CANDIDATE_EFFECT_FIRST_READ_MASK
+    call    print_u64_dec
+    jmp     .arch_first_done
+.arch_first_unknown:
+    lea     rdi, [unknown_inline]
+    call    print_cstr
+.arch_first_done:
+
+    lea     rdi, [arch_stride_s]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_stride_unknown
+    mov     rdi, rbx
+    shr     rdi, CANDIDATE_EFFECT_READ_STRIDE_SHIFT
+    and     edi, CANDIDATE_EFFECT_READ_STRIDE_MASK
+    call    print_u64_dec
+    jmp     .arch_stride_done
+.arch_stride_unknown:
+    lea     rdi, [unknown_inline]
+    call    print_cstr
+.arch_stride_done:
+
+    lea     rdi, [arch_offsets_known_s]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN
+    jz      .arch_offsets_no
+    lea     rdi, [state_yes_inline]
+    call    print_cstr
+    jmp     .arch_offsets_done
+.arch_offsets_no:
+    lea     rdi, [state_no_inline]
+    call    print_cstr
+.arch_offsets_done:
+
+    lea     rdi, [arch_complete_s]
+    call    print_cstr
+    test    rbx, CANDIDATE_EFFECT_FLAG_MODEL_COMPLETE
+    jz      .arch_complete_no
+    lea     rdi, [state_yes_inline]
+    call    print_cstr
+    jmp     .arch_done
+.arch_complete_no:
+    lea     rdi, [state_no_inline]
+    call    print_cstr
+.arch_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
+%macro PRINT_FLAG_IF_SET 2
+    test    rbx, %1
+    jz      %%skip
+    test    r12, r12
+    jz      %%no_sep
+    lea     rdi, [reg_sep]
+    call    print_cstr
+%%no_sep:
+    lea     rdi, [%2]
+    call    print_cstr
+    mov     r12, 1
+%%skip:
+%endmacro
+
+; report_text_print_flags_bitmap(rdi=represented flag bitmap)
+report_text_print_flags_bitmap:
+    push    rbx
+    push    r12
+    sub     rsp, 8
+    mov     rbx, rdi
+    xor     r12d, r12d
+    PRINT_FLAG_IF_SET ARCH_FLAG_CF, flag_cf_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_PF, flag_pf_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_AF, flag_af_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_ZF, flag_zf_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_SF, flag_sf_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_TF, flag_tf_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_IF, flag_if_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_DF, flag_df_s
+    PRINT_FLAG_IF_SET ARCH_FLAG_OF, flag_of_s
+    test    r12d, r12d
+    jnz     .flags_done
+    lea     rdi, [regs_none]
+    call    print_cstr
+.flags_done:
+    add     rsp, 8
+    pop     r12
+    pop     rbx
+    ret
+
 %macro PRINT_EFFECT_IF_SET 2
     test    rbx, %1
     jz      %%skip
@@ -1536,6 +1777,7 @@ report_text_print_side_effects:
     PRINT_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write
     PRINT_EFFECT_IF_SET SIDE_EFFECT_MEMORY_READ, side_effect_memory_read
     PRINT_EFFECT_IF_SET SIDE_EFFECT_MEMORY_WRITE, side_effect_memory_write
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_CONTROL_TRANSFER, side_effect_control_transfer
     test    r12, r12
     jne     .side_effects_done
     lea     rdi, [regs_none]

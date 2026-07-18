@@ -56,8 +56,12 @@ x64lens_report_text_mitigations_body:
     ret
 
 x64lens_report_text_gadgets_body:
+    ; Preserve incoming stack argument seven (candidate_effect_record[]) while
+    ; forwarding the register arguments unchanged to the focused reporter.
+    mov     rax, [rsp + 8]
     mov     byte [rel report_body_only_flag], 1
     sub     rsp, 8
+    mov     [rsp], rax
     call    x64lens_report_text_gadgets
     add     rsp, 8
     mov     byte [rel report_body_only_flag], 0

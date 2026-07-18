@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 051 candidate-index architectural-effect side-car, one-per-pattern fixture, exact-pattern catalog, centralized fixture suite, fail-fast gate, and three-contract reconciliation.
+- Machine-readable GPR, flag, control-flow, stack-source, and effect-model-completeness facts for all 25 exact patterns.
+
 - Sprint 10 Patch 050 completed side-effect and clobber facts for every currently supported return-ending semantic family, including implicit return stack reads, `syscall` clobbers for `rcx`/`r11`, and the `leave`-driven `rbp` overwrite.
 - `make sprint10-family-coverage-smoke`, a machine-readable 11-family fixture/effect/fallback/score-disposition table, and per-family false-positive documentation.
 - ADR 0036 and the Patch 050 validation record.
@@ -132,6 +135,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance Sprint 10 through Patch 051 while preserving the 112-byte raw candidate record, 4,096-candidate capacity, dependency-free one-worker runtime, tool version `0.1.0-dev`, and schema `0.2.0`.
+- Increase the fixed command arena from 720,896 to 819,200 bytes for a 24-byte-per-candidate architectural-effect side-car; this is allocation arithmetic, not measured maximum RSS.
+- Score ordered two-pop argument control at 95 and positive aligned stack adjustment at 35 only after validating semantic and architectural facts; transfer and memory remain unscored.
+
 - Advance Sprint 10 through the Patch 050 candidate while preserving the 112-byte candidate record, 48-byte evidence record, 16-byte memory-effect record, 4,096-candidate capacity, 720,896-byte fixed arena, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Treat the transfer fixture as a cross-family fixture: four transfers, one memory write, one memory read, and four true return fallbacks.
 - Keep Patch 046 compatibility separate from the stronger Patch 050 current-producer effect contract.
@@ -239,6 +246,9 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Reconcile competing Patch 050 effect, fixture, and score implementations against the committed Patch 050 base instead of applying overlapping patches sequentially.
+- Prevent fixture, exact-pattern, and semantic-family contracts from drifting through a dedicated reconciliation gate.
 
 - Prevent Sprint 10 multi-command Make recipes from masking an intermediate validator failure by enabling fail-fast shell semantics.
 - Reconcile the transfer fixture and direct validator with Patch 049 memory promotion and corrected scored/fallback counts.

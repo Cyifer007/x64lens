@@ -41,7 +41,7 @@
     "exact_pattern_count": 5,
     "semantic_candidate_count": 5,
     "unknown_candidate_count": 0,
-    "scored_candidate_count": 2
+    "scored_candidate_count": 5
   },
   "primitive_coverage": {
     "arg_control": true,
@@ -80,7 +80,9 @@
       ],
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "register_write",
+        "control_transfer"
       ],
       "stack_delta": 24,
       "stack_delta_known": true,
@@ -94,9 +96,31 @@
         "matched_suffix_length": 3,
         "full_sequence_valid": null
       },
-      "score": null,
+      "score": 95,
       "register_transfer": null,
-      "memory_access": null
+      "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsi",
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 3,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      }
     },
     {
       "va": "0x0000000000000007",
@@ -116,7 +140,9 @@
       ],
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "register_write",
+        "control_transfer"
       ],
       "stack_delta": 24,
       "stack_delta_known": true,
@@ -130,9 +156,31 @@
         "matched_suffix_length": 5,
         "full_sequence_valid": null
       },
-      "score": null,
+      "score": 95,
       "register_transfer": null,
-      "memory_access": null
+      "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rsp",
+          "r8",
+          "r9"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 3,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      }
     },
     {
       "va": "0x000000000000000a",
@@ -152,7 +200,9 @@
       ],
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "register_write",
+        "control_transfer"
       ],
       "stack_delta": 24,
       "stack_delta_known": true,
@@ -166,9 +216,31 @@
         "matched_suffix_length": 3,
         "full_sequence_valid": null
       },
-      "score": null,
+      "score": 95,
       "register_transfer": null,
-      "memory_access": null
+      "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rcx",
+          "rdx",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 3,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      }
     },
     {
       "va": "0x000000000000000d",
@@ -186,7 +258,9 @@
       ],
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "register_write",
+        "control_transfer"
       ],
       "stack_delta": 16,
       "stack_delta_known": true,
@@ -202,7 +276,28 @@
       },
       "score": 90,
       "register_transfer": null,
-      "memory_access": null
+      "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      }
     },
     {
       "va": "0x0000000000000010",
@@ -220,7 +315,9 @@
       ],
       "clobbers": [],
       "side_effects": [
-        "stack_read"
+        "stack_read",
+        "register_write",
+        "control_transfer"
       ],
       "stack_delta": 16,
       "stack_delta_known": true,
@@ -236,7 +333,28 @@
       },
       "score": 90,
       "register_transfer": null,
-      "memory_access": null
+      "memory_access": null,
+      "architectural_effects": {
+        "registers_read": [
+          "rsp"
+        ],
+        "registers_written": [
+          "rdi",
+          "rsp"
+        ],
+        "flags_read": [],
+        "flags_written": [],
+        "control_flow": [
+          "return"
+        ],
+        "stack_base": "entry_rsp",
+        "stack_read_count": 2,
+        "stack_write_count": 0,
+        "first_stack_read_offset": 0,
+        "stack_read_stride": 8,
+        "stack_offsets_known": true,
+        "model_complete": true
+      }
     }
   ],
   "limitations": [

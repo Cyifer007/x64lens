@@ -332,3 +332,15 @@ the resolved analyzer and target before running comparisons.
 ## JSON Schema development dependency
 
 `python3-jsonschema` is required by `make schema-compat-smoke` to apply the Draft 2020-12 schemas. It is a validation dependency only; the x64lens runtime does not import Python or JSON Schema libraries.
+
+## Sprint 10 Patch 051 focused gates
+
+```bash
+make sprint10-architectural-effects-smoke
+make sprint10-fixture-gate-smoke
+make sprint10-contract-reconciliation-smoke
+```
+
+These gates validate all exact-pattern effects, prove specialty validation is
+fail-fast, and reconcile semantic-family, exact-pattern, and fixture-suite
+contracts.

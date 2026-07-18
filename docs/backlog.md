@@ -110,7 +110,7 @@ later sprints rather than Patch 037:
 - [x] Controlled fixture for every implemented Sprint 10 semantic rule.
 - [x] Complete current-family effect and clobber facts, including implicit return stack reads, syscall `rcx`/`r11` clobbers, and the `leave`-driven `rbp` overwrite.
 - [x] Machine-readable fixture coverage table and per-family false-positive boundaries.
-- [ ] Score entries only after the Patch 051 architecture/capability review validates the utility policy independently from classification.
+- [x] First reviewed score entries after effect validation: ordered two-pop 95 and positive aligned stack adjustment 35. Register transfer and memory remain unscored pending controllability facts.
 
 ### Sprint 11: reproducible corpus
 
@@ -387,7 +387,7 @@ Patch 049 establishes the first structured memory-effect side-car and bounded qw
 
 Patch 050 completes current-family side-effect and clobber facts, reconciles the transfer fixture with Patch 049 cross-family memory promotion, makes multi-command fixture recipes fail fast, isolates stale internal-manifest verification, and adds the maintained family coverage/false-positive table. It adds no primitive family and no score.
 
-Before Sprint 11 begins, Patch 051 must perform the planned architecture and capability reassessment. Required review items include:
+Before Sprint 11 begins, Patch 053 must perform the planned architecture and capability reassessment. Required review items include:
 
 - [ ] distinguish PIE executables from shared objects without overstating `ET_DYN`;
 - [ ] add or explicitly defer bounded GNU property evidence for CET/IBT/SHSTK;
@@ -396,4 +396,18 @@ Before Sprint 11 begins, Patch 051 must perform the planned architecture and cap
 - [ ] reconcile the capability snapshot with the pre-`v0.1.0` release scope;
 - [ ] identify which capability gaps must precede the Sprint 11 corpus freeze and which remain post-release.
 
-Patch 052 is reserved for Sprint 10 closeout or the smallest implementation correction that Patch 051 proves necessary. Broader displacement, SIB/index, RIP-relative, decoder, JOP/COP/SROP, and default parallel work remains deferred unless the evidence-based roadmap review changes scope.
+Patch 052 is reserved for Patch 051 review corrections; Patch 054 closes Sprint 10 after the Patch 053 capability reassessment or carries its smallest required correction. Broader displacement, SIB/index, RIP-relative, decoder, JOP/COP/SROP, and default parallel work remains deferred unless the evidence-based roadmap review changes scope.
+
+## Sprint 10 Patch 051 backlog update
+
+Patch 051 reconciles the committed Patch 050 foundation with the architectural-
+effect side-car, one-per-pattern coverage, centralized fixture runner, and
+selective scores. Remaining Sprint 10 sequence:
+
+- Patch 052: resolve Patch 051 local/editorial findings;
+- Patch 053: architecture and capability reassessment;
+- Patch 054: Sprint 10 closeout.
+
+The reassessment still owns PIE-versus-DSO evidence, CET/IBT/SHSTK property
+evidence, overlapping executable-segment semantics, and pre-release capability
+priorities.

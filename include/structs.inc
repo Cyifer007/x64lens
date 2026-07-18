@@ -187,7 +187,15 @@
 ; packed 16-byte layout adds at most 64 KiB at the 4096-candidate boundary.
 %define MEMORY_EFFECT_ARENA_BYTES        (MEMORY_EFFECT_RECORD_SIZE * GADGET_RECORD_MAX)
 %define MEMORY_EFFECT_RECORD_ALIGN       16
-%define ANALYSIS_RECORD_ARENA_BYTES      (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES + MEMORY_EFFECT_ARENA_BYTES)
+
+; Sprint 10 Patch 051 architectural-effect side-car. This fixed-size dense
+; record carries register, represented flag, stack-source, and control-flow
+; facts that do not belong in the scanner-owned gadget_record. The side-car is
+; materialized after exact classification and structured memory effects, then
+; consumed by scoring and reporters. It adds exactly 96 KiB at capacity.
+%define CANDIDATE_EFFECT_ARENA_BYTES     (CANDIDATE_EFFECT_RECORD_SIZE * GADGET_RECORD_MAX)
+%define CANDIDATE_EFFECT_RECORD_ALIGN    16
+%define ANALYSIS_RECORD_ARENA_BYTES      (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES + MEMORY_EFFECT_ARENA_BYTES + CANDIDATE_EFFECT_ARENA_BYTES)
 
 ; raw scanner terminator types
 %define GADGET_TERM_RET               1
@@ -300,6 +308,56 @@
 %define MEMORY_EFFECT_SCALE_8                    3
 %define MEMORY_EFFECT_WIDTH_QWORD                8
 
+; candidate_effect_record offsets
+;
+; Patch 051 adds exact architectural effects without growing gadget_record.
+; Array position is the candidate key. The descriptor is intentionally compact:
+; current exact families need represented flags, control flow, and bounded stack
+; source facts, while detailed memory operands remain in memory_effect_record.
+%define CANDIDATE_EFFECT_REGS_READ                0
+%define CANDIDATE_EFFECT_REGS_WRITTEN             8
+%define CANDIDATE_EFFECT_DESCRIPTOR               16
+%define CANDIDATE_EFFECT_RECORD_SIZE              24
+
+%define CANDIDATE_EFFECT_FLAG_PRESENT             (1 << 0)
+%define CANDIDATE_EFFECT_FLAG_MODEL_COMPLETE      (1 << 1)
+%define CANDIDATE_EFFECT_FLAG_STACK_OFFSETS_KNOWN (1 << 2)
+%define CANDIDATE_EFFECT_STACK_BASE_SHIFT         3
+%define CANDIDATE_EFFECT_STACK_BASE_MASK          0x03
+%define CANDIDATE_EFFECT_STACK_BASE_NONE          0
+%define CANDIDATE_EFFECT_STACK_BASE_ENTRY_RSP     1
+%define CANDIDATE_EFFECT_STACK_BASE_ENTRY_RBP     2
+%define CANDIDATE_EFFECT_STACK_BASE_DYNAMIC       3
+%define CANDIDATE_EFFECT_CONTROL_RETURN           (1 << 5)
+%define CANDIDATE_EFFECT_CONTROL_SYSCALL          (1 << 6)
+%define CANDIDATE_EFFECT_STACK_READ_COUNT_SHIFT   8
+%define CANDIDATE_EFFECT_STACK_READ_COUNT_MASK    0x0f
+%define CANDIDATE_EFFECT_STACK_WRITE_COUNT_SHIFT  12
+%define CANDIDATE_EFFECT_STACK_WRITE_COUNT_MASK   0x0f
+%define CANDIDATE_EFFECT_FIRST_READ_SHIFT         16
+%define CANDIDATE_EFFECT_FIRST_READ_MASK          0xff
+%define CANDIDATE_EFFECT_READ_STRIDE_SHIFT        24
+%define CANDIDATE_EFFECT_READ_STRIDE_MASK         0xff
+%define CANDIDATE_EFFECT_FLAGS_READ_SHIFT         32
+%define CANDIDATE_EFFECT_FLAGS_WRITE_SHIFT        48
+%define CANDIDATE_EFFECT_FLAGS_MASK               0xffff
+
+; Represented architectural flag bits. The current stack-adjustment family
+; writes the arithmetic-status subset. SYSCALL reads/saves the represented
+; RFLAGS subset into R11 but remains model-incomplete because kernel-mediated
+; behavior is outside static suffix analysis.
+%define ARCH_FLAG_CF                              (1 << 0)
+%define ARCH_FLAG_PF                              (1 << 1)
+%define ARCH_FLAG_AF                              (1 << 2)
+%define ARCH_FLAG_ZF                              (1 << 3)
+%define ARCH_FLAG_SF                              (1 << 4)
+%define ARCH_FLAG_TF                              (1 << 5)
+%define ARCH_FLAG_IF                              (1 << 6)
+%define ARCH_FLAG_DF                              (1 << 7)
+%define ARCH_FLAG_OF                              (1 << 8)
+%define ARCH_FLAG_ARITHMETIC_WRITE_MASK           (ARCH_FLAG_CF | ARCH_FLAG_PF | ARCH_FLAG_AF | ARCH_FLAG_ZF | ARCH_FLAG_SF | ARCH_FLAG_OF)
+%define ARCH_FLAG_SYSCALL_READ_MASK               (ARCH_FLAG_CF | ARCH_FLAG_PF | ARCH_FLAG_AF | ARCH_FLAG_ZF | ARCH_FLAG_SF | ARCH_FLAG_TF | ARCH_FLAG_IF | ARCH_FLAG_DF | ARCH_FLAG_OF)
+
 ; Additive evidence flags. Future decoder validation must add facts without
 ; erasing raw or exact observations.
 %define EVIDENCE_FLAG_RAW_CANDIDATE              (1 << 0)
@@ -380,5 +438,6 @@
 %define SIDE_EFFECT_FLAGS_WRITE      (1 << 6)
 %define SIDE_EFFECT_MEMORY_READ      (1 << 7)
 %define SIDE_EFFECT_MEMORY_WRITE     (1 << 8)
+%define SIDE_EFFECT_CONTROL_TRANSFER  (1 << 9)
 
 %endif
