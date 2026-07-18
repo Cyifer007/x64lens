@@ -150,7 +150,9 @@
       "text_contains": [
         "pattern: pop r15; ret",
         "pattern: syscall; ret",
-        "architectural effects:"
+        "architectural effects:",
+        "bytes: c2 00 00",
+        "side effects: stack_read, ret_imm16, stack_adjust, control_transfer"
       ],
       "false_positive_boundaries": [
         "Exact effects describe the retained exact suffix and do not prove the full backward window decodes from its first byte.",

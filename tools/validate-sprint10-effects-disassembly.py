@@ -18,7 +18,7 @@ ROW = re.compile(
 )
 
 EXPECTED = [
-    ("ret", ""), ("ret", "0x10"),
+    ("ret", ""), ("ret", "0x0"),
     ("pop", "rax"), ("ret", ""),
     ("pop", "rcx"), ("ret", ""),
     ("pop", "rdx"), ("ret", ""),

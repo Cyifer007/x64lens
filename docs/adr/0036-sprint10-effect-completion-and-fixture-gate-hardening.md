@@ -42,9 +42,11 @@ new primitive family.
 - The authenticated-overlay smoke isolates stale internal-manifest rejection
   from textual-content rejection.
 
-The current Sprint 10 families remain unscored. Score calibration is deferred
-until the planned architecture/capability review can evaluate stack cost,
-clobbers, dereference risk, flag effects, and evidence uncertainty together.
+At the Patch 050 boundary, the current Sprint 10 families remained unscored.
+Patch 051 later calibrates ordered two-pop argument control to 95 and positive
+aligned stack adjustment to 35 after evaluating stack cost, clobbers,
+dereference risk, flag effects, and evidence uncertainty. Transfer and memory
+families remain unscored.
 
 ## Consequences
 

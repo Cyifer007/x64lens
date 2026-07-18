@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 051 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes coarse current-family effects and fixture-gate hardening. Patch 051 adds candidate-index architectural effects, one-per-pattern coverage, centralized fixture orchestration, contract reconciliation, and selective scores. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corrective candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes coarse current-family effects and fixture-gate hardening. Patch 051 adds candidate-index architectural effects, one-per-pattern coverage, centralized fixture orchestration, contract reconciliation, and selective scores. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -278,4 +278,19 @@ The fixed arena grows by 64 KiB while candidate capacity remains unchanged. Spri
 
 Patch 050 improves semantic evidence quality rather than primitive count. Current return-ending families now record the implicit return stack read, `syscall; ret` records architectural `rcx`/`r11` overwrites, and `leave; ret` records the `rbp` overwrite while retaining unknown stack delta. The family coverage table makes fixtures, fallbacks, false-positive boundaries, and score disposition reviewable as one contract.
 
-The new Sprint 10 families remain unscored. Patch 051 must evaluate score policy together with the capability snapshot and reviewer-risk items before Sprint 11 freezes a corpus. It also reviews PIE-versus-DSO reporting, CET/IBT/SHSTK property evidence, and overlapping executable-segment count semantics so those facts are not frozen ambiguously into the corpus manifest.
+At the Patch 050 boundary, the new Sprint 10 families remained unscored. Patch
+051 subsequently calibrates ordered two-pop argument control to 95 and positive
+aligned stack adjustment to 35; transfer and memory remain unscored. Patch 053
+owns the broader capability reassessment, including PIE-versus-DSO reporting,
+CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics,
+and remaining score-policy questions before Sprint 11 freezes a corpus.
+
+
+## Sprint 10 Patch 052 corrective update
+
+Patch 052 corrects the Patch 051 effect and gate findings without expanding the
+primitive catalog. Full-width syscall descriptors, the zero-immediate return
+boundary, contracted text separators, canonical memory side-car reconciliation,
+numeric score-policy mutations, and strict-lint availability are permanent
+validation surfaces. Patch 053 remains the architecture/capability reassessment;
+Patch 054 remains Sprint 10 closeout.

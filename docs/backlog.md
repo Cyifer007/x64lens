@@ -404,10 +404,20 @@ Patch 051 reconciles the committed Patch 050 foundation with the architectural-
 effect side-car, one-per-pattern coverage, centralized fixture runner, and
 selective scores. Remaining Sprint 10 sequence:
 
-- Patch 052: resolve Patch 051 local/editorial findings;
+- Patch 052: resolve Patch 051 findings;
 - Patch 053: architecture and capability reassessment;
 - Patch 054: Sprint 10 closeout.
 
 The reassessment still owns PIE-versus-DSO evidence, CET/IBT/SHSTK property
 evidence, overlapping executable-segment semantics, and pre-release capability
 priorities.
+
+
+## Sprint 10 Patch 052 corrective update
+
+Patch 052 corrects the Patch 051 effect and gate findings without expanding the
+primitive catalog. Full-width syscall descriptors, the zero-immediate return
+boundary, contracted text separators, canonical memory side-car reconciliation,
+numeric score-policy mutations, and strict-lint availability are permanent
+validation surfaces. Patch 053 remains the architecture/capability reassessment;
+Patch 054 remains Sprint 10 closeout.

@@ -107,7 +107,8 @@ valid public archive. Content inspection is a separate bounded release gate.
 - Common positive aligned stack-adjust suffixes become machine-readable.
 - Historical, multi-pop, and register-transfer fixtures remain unchanged.
 - Stack-adjust candidates remain unscored until utility and side-effect policy
-  are reviewed independently.
+  are reviewed independently. Patch 051 later satisfies that gate and
+  calibrates the current score to 35.
 - The default analyzer remains freestanding, decoder-free, single-worker, and
   bounded.
 - Public source overlays can be validated without distributing a textual patch
@@ -133,4 +134,6 @@ The complete native and Docker aggregates remain required before acceptance.
 
 ## Patch 050 current-effect note
 
-Patch 050 adds the implicit final return `stack_read` to the current stack-adjust effect set. The exact stack-adjust decision and unscored policy are unchanged.
+Patch 050 adds the implicit final return `stack_read` to the stack-adjust effect
+set. At that boundary, the exact stack-adjust decision and unscored policy were
+unchanged; Patch 051 later calibrates the current score to 35.

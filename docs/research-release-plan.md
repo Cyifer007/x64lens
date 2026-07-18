@@ -210,4 +210,14 @@ Memory-effect reports remain schema `0.2.0` semantic-exact output with decoder v
 
 ## Sprint 10 Patch 050 release-gate update
 
-The preview path now requires fail-fast specialty recipes plus the maintained family coverage and effect-consistency gates. The Patch 051 architecture/capability review must resolve or explicitly defer PIE-versus-DSO semantics, CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics, and score policy before Sprint 11 freezes the preview corpus.
+The preview path now requires fail-fast specialty recipes plus the maintained family coverage and effect-consistency gates. Patch 051 calibrates two score entries; Patch 053 must resolve or explicitly defer PIE-versus-DSO semantics, CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics, and remaining score-policy questions before Sprint 11 freezes the preview corpus.
+
+
+## Sprint 10 Patch 052 corrective update
+
+Patch 052 corrects the Patch 051 effect and gate findings without expanding the
+primitive catalog. Full-width syscall descriptors, the zero-immediate return
+boundary, contracted text separators, canonical memory side-car reconciliation,
+numeric score-policy mutations, and strict-lint availability are permanent
+validation surfaces. Patch 053 remains the architecture/capability reassessment;
+Patch 054 remains Sprint 10 closeout.

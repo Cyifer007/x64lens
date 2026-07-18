@@ -4,22 +4,31 @@
 
 Accepted for Sprint 10 Patch 051 validation.
 
+Related documentation:
+
+- [Architecture](../architecture.md)
+- [Primitive Effect Model](../design/primitive-effect-model.md)
+- [Family Coverage Table](../design/sprint10-family-coverage.md)
+- [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
+- [Scoring Model](../scoring-model.md)
+- [Output Contract](../contracts/output-contract.md)
+- [Patch 051 Validation](../sprints/sprint-10-patch-051-validation.md)
+
 ## Context
 
 Patch 050 closed the coarse semantic-family effects and fixture-gate defects,
 but the current exact catalog still needed one consistent representation for
-architectural register, flag, control-flow, and stack-source effects. Separate
-implementation explorations also produced three complementary ideas that could
-not safely be applied as independent patches to the same base:
+architectural register, flag, control-flow, and stack-source effects. Patch 051
+therefore reconciles three complementary contract surfaces:
 
 1. coarse semantic-family effects and cross-family fixture reconciliation;
 2. a dense candidate-index architectural-effect side-car and one-per-pattern
    fixture; and
 3. centralized fail-fast fixture orchestration plus selective score calibration.
 
-Stacking those patches mechanically would duplicate or conflict in classifier,
-reporter, schema, fixture, and documentation paths. The repository instead
-requires one reconciled internal contract.
+These surfaces share classifier, reporter, schema, fixture, and documentation
+paths. One reconciled internal contract prevents their definitions from
+diverging.
 
 ## Decision
 
@@ -100,11 +109,11 @@ schema `0.2.0` reports remain structurally consumable.
 
 ## Rejected alternatives
 
-### Apply the three Patch 050 implementations sequentially
+### Maintain separate effect, fixture, and score contracts
 
-Rejected because they edit the same classifier, scorer, reporters, fixtures,
-and documentation from the same base. Patch order would decide behavior rather
-than one reviewed architecture.
+Rejected because independent definitions across the classifier, scorer,
+reporters, fixtures, and documentation would permit contract drift. One
+reconciliation gate keeps the reviewed architecture authoritative.
 
 ### Grow `gadget_record`
 

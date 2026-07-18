@@ -8,6 +8,17 @@ This document accompanies
 exact pattern ID without confusing exact suffix recognition with complete
 instruction decoding.
 
+Related documentation:
+
+- [ADR 0037](../adr/0037-architectural-effects-and-contract-reconciliation.md)
+- [Architecture](../architecture.md)
+- [Primitive Effect Model](primitive-effect-model.md)
+- [Family Coverage Table](sprint10-family-coverage.md)
+- [Semantic Taxonomy](../semantic-taxonomy.md)
+- [Scoring Model](../scoring-model.md)
+- [Patch 051 Validation](../sprints/sprint-10-patch-051-validation.md)
+- [Patch 052 Validation](../sprints/sprint-10-patch-052-validation.md)
+
 ## Reference profile
 
 ```text
@@ -75,3 +86,11 @@ make schema-compat-smoke
 
 The disassembly fixture is an independent development oracle. GNU objdump does
 not become runtime mapping, classification, or reporting authority.
+
+
+## Patch 052 gate refinement
+
+Patch 052 makes numeric score values part of both maintained contract gates and
+adds negative mutations for ordered multi-pop and stack adjustment. The exact
+pattern fixture also covers `ret imm16 0`; transfer and memory families remain
+unscored.

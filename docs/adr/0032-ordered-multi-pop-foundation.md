@@ -70,6 +70,7 @@ was not required.
 6. Multi-pop candidates remain unscored in Patch 046. A score is added only
    after an independent review defines how added register control, stack cost,
    order, clobbers, and memory effects interact.
+   Patch 051 later satisfies that gate and calibrates the current score to 95.
 
 7. The historical 11-candidate fixture remains unchanged. A separate Sprint 10
    fixture proves the new family and conservative fallback behavior.

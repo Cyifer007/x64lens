@@ -136,7 +136,8 @@ Input-dependent pivots continue to use the existing unknown representation.
 ## Scoring boundary
 
 The scoring engine consumes evidence-qualified semantic facts but remains an
-independent module. The first multi-pop family intentionally has `score: null`. A later
+independent module. At the Patch 046 boundary, the first multi-pop family had
+`score: null`. Patch 051 later calibrates its current score to 95. Any future
 score rule must consider at least:
 
 - number and role of controlled registers;
@@ -204,7 +205,10 @@ Promotion is limited to positive, nonzero, eight-byte-aligned immediates. The ca
 
 `stack_adjust` records the explicit stack-pointer movement. `flags_write` records that integer addition modifies condition flags. Condition flags are not members of the current general-purpose-register clobber bitmap, so the separate effect prevents a false implication that the suffix has no other represented architectural effects.
 
-The family remains unscored. Zero, negative, unaligned, wrong-register, subtraction, and memory forms retain the strongest existing fallback. Full-sequence validity remains unknown until decoder-backed evidence exists.
+At the Patch 048 boundary, the family remained unscored; Patch 051 later
+calibrates its current score to 35. Zero, negative, unaligned, wrong-register,
+subtraction, and memory forms retain the strongest existing fallback. Full-
+sequence validity remains unknown until decoder-backed evidence exists.
 
 ## Patch 049 bounded memory-effect family
 
@@ -239,11 +243,12 @@ This is a fixture-quality rule rather than a new runtime feature. A candidate is
 validated according to its strongest implemented exact family, even when the
 fixture was originally introduced for a narrower family.
 
-All new Sprint 10 families remain unscored. The completed effect model supplies
-the facts needed for a later score review, but it does not itself establish
-relative utility. The Patch 051 architecture/capability review must decide
-whether stack cost, clobbers, dereference risk, flag writes, and evidence
-uncertainty justify score entries before Sprint 10 closes.
+At the Patch 050 boundary, all new Sprint 10 families remained unscored. The
+completed effect model supplied facts for later score review but did not itself
+establish relative utility. Patch 051 subsequently calibrates ordered two-pop
+argument control to 95 and positive aligned stack adjustment to 35. Transfer
+and memory families remain unscored; Patch 053 owns broader score-policy and
+capability reassessment.
 
 The authoritative human-readable family matrix is
 [`sprint10-family-coverage.md`](sprint10-family-coverage.md); the corresponding
@@ -274,3 +279,19 @@ Patch 051 calibrates ordered two-pop argument control to 95 and positive aligned
 stack adjustment to 35 only after scoring validates the exact semantic and
 architectural-effect records. Register-transfer and memory candidates remain
 unscored.
+
+
+## Patch 052 corrections
+
+Patch 052 preserves the 24-byte architectural-effect record and 819,200-byte
+fixed arena. It corrects four effect-contract edges:
+
+- syscall descriptors retain the complete represented flag-read bitmap;
+- `ret imm16 0` is valid and has total stack delta 8;
+- text side-effect lists use comma-space separators; and
+- current memory descriptors must exactly match direction, base, value, width,
+  scale, dereference, displacement, and reserved-bit expectations for the
+  candidate at the same index.
+
+The standalone memory reconciliation harness exercises canonical read/write
+records and five contradictory states without changing the production runtime.

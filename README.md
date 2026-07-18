@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 051 candidate. Patches 046 through 049 establish ordered multi-pop, register-transfer, stack-adjust, and bounded qword memory families. Patch 050 closes coarse family effects and fixture-gate defects. Patch 051 reconciles that committed foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and two evidence-backed score entries without adding a runtime dependency.
+> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corrective candidate. Patches 046 through 049 establish ordered multi-pop, register-transfer, stack-adjust, and bounded qword memory families. Patch 050 is the committed first-pass foundation for completed coarse family effects and fixture-gate hardening. Patch 051 reconciles that foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and two evidence-backed score entries. Patch 052 corrects the effect-encoding, minimum return-delta, text-format, memory-reconciliation, score-policy, and strict-lint findings without adding a runtime dependency.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -300,6 +300,14 @@ Future decoder facts, mitigation evidence, and output adapters must be added thr
 
 See [`docs/design/primitive-effect-model.md`](docs/design/primitive-effect-model.md), [`docs/adr/0032-ordered-multi-pop-foundation.md`](docs/adr/0032-ordered-multi-pop-foundation.md), [`docs/adr/0033-exact-register-transfer-effects.md`](docs/adr/0033-exact-register-transfer-effects.md), [`docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md`](docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md), [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
+The current Sprint 10 authority chain continues through
+[ADR 0037](docs/adr/0037-architectural-effects-and-contract-reconciliation.md),
+the [family coverage table](docs/design/sprint10-family-coverage.md), the
+[exact-pattern catalog](docs/design/sprint10-exact-pattern-catalog.md), the
+[scoring model](docs/scoring-model.md), the
+[output contract](docs/contracts/output-contract.md), and the
+[Patch 052 validation record](docs/sprints/sprint-10-patch-052-validation.md).
+
 ## Roadmap and release gates
 
 The canonical eighteen-sprint roadmap defines:
@@ -307,7 +315,7 @@ The canonical eighteen-sprint roadmap defines:
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 evidence-aware primitive expansion, active through Patch 051 with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, bounded base-plus-zero qword memory effects, coarse and architectural effects, one-per-pattern coverage, fail-fast fixture orchestration, and selective score calibration,
+- Sprint 10 evidence-aware primitive expansion, active through Patch 052 with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, bounded base-plus-zero qword memory effects, coarse and architectural effects, one-per-pattern coverage, fail-fast fixture orchestration, and selective score calibration,
 - Sprint 11 reproducible corpus,
 - Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
 - Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.
@@ -327,7 +335,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add optional ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory facts without redefining historical counts. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Earlier `0.2.0` reports remain consumable without being retroactively required to satisfy the stronger current-producer effect contract. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add optional ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory facts without redefining historical counts. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

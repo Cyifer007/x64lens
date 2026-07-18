@@ -145,3 +145,12 @@ and optional-profile ablations.
 ## Patch 049 fixed memory-effect allocation
 
 Patch 049 adds 65,536 bytes to the fixed command arena for a dense memory-effect side-car while preserving 4,096 candidate slots and adding no mandatory runtime dependency or helper process. This is a bounded implementation property. Operational RSS and latency effects remain measurement questions for the fixed corpus and benchmark stages.
+
+## Patch 051 fixed architectural-effect allocation
+
+Patch 051 adds a 24-byte architectural-effect record for each of 4,096
+candidate slots, increasing the fixed command arena to 819,200 bytes. It adds no
+decoder, shared-library import, helper process, worker thread, or user-space
+runtime dependency. These are fixed-allocation, dependency, import, and helper-
+process surface facts; they are not measured RSS or speed results and do not
+imply invisibility or guaranteed anti-analysis evasion.

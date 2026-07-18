@@ -8,6 +8,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 052 internal memory-sidecar reconciliation, numeric score-policy mutation, strict ShellCheck availability, and zero-immediate return regressions.
+- ADR 0038 and the Patch 052 validation record.
+
 - Sprint 10 Patch 051 candidate-index architectural-effect side-car, one-per-pattern fixture, exact-pattern catalog, centralized fixture suite, fail-fast gate, and three-contract reconciliation.
 - Machine-readable GPR, flag, control-flow, stack-source, and effect-model-completeness facts for all 25 exact patterns.
 
@@ -135,6 +138,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Advance Sprint 10 through the Patch 052 corrective candidate while preserving the 112-byte raw record, 24-byte architectural-effect side-car, 4,096-candidate capacity, 819,200-byte fixed arena, dependency-free runtime, tool version `0.1.0-dev`, and schema `0.2.0`.
+- Treat NASM number-overflow warnings as build failures and make strict ShellCheck mode reject a missing executable.
+
 - Advance Sprint 10 through Patch 051 while preserving the 112-byte raw candidate record, 4,096-candidate capacity, dependency-free one-worker runtime, tool version `0.1.0-dev`, and schema `0.2.0`.
 - Increase the fixed command arena from 720,896 to 819,200 bytes for a 24-byte-per-candidate architectural-effect side-car; this is allocation arithmetic, not measured maximum RSS.
 - Score ordered two-pop argument control at 95 and positive aligned stack adjustment at 35 only after validating semantic and architectural facts; transfer and memory remain unscored.
@@ -142,7 +148,7 @@ The project follows semantic versioning once the first public release is cut.
 - Advance Sprint 10 through the Patch 050 candidate while preserving the 112-byte candidate record, 48-byte evidence record, 16-byte memory-effect record, 4,096-candidate capacity, 720,896-byte fixed arena, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Treat the transfer fixture as a cross-family fixture: four transfers, one memory write, one memory read, and four true return fallbacks.
 - Keep Patch 046 compatibility separate from the stronger Patch 050 current-producer effect contract.
-- Reserve Patch 051 for the pre-corpus architecture/capability reassessment and Patch 052 for Sprint 10 closeout or its smallest required correction.
+- Establish Patch 050 as the committed first-pass foundation for Patch 051 reconciliation; reserve Patch 052 for Patch 051 findings, Patch 053 for architecture/capability reassessment, and Patch 054 for Sprint 10 closeout.
 
 - Advance Sprint 10 through the Patch 049 candidate while preserving the 112-byte candidate record, 4,096-candidate capacity, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Add a 16-byte dense memory-effect side-car and increase the fixed command arena from 655,360 to 720,896 bytes without changing candidate capacity.
@@ -247,7 +253,13 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Reconcile competing Patch 050 effect, fixture, and score implementations against the committed Patch 050 base instead of applying overlapping patches sequentially.
+- Preserve the full 64-bit syscall architectural-effect descriptor during stores and scoring comparisons.
+- Accept valid `ret imm16 0` candidates with total stack delta 8.
+- Render text side-effect lists with comma-space separators.
+- Reject contradictory, reserved-bit, displacement-bearing, base-mismatched, and wrong-index memory side-car records.
+- Require maintained score values to agree across semantic-family and exact-pattern contracts.
+
+- Reconcile the Patch 050 family-effect, exact-pattern, fixture, and score contracts in one Patch 051 architecture.
 - Prevent fixture, exact-pattern, and semantic-family contracts from drifting through a dedicated reconciliation gate.
 
 - Prevent Sprint 10 multi-command Make recipes from masking an intermediate validator failure by enabling fail-fast shell semantics.

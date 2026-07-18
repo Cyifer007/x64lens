@@ -13,7 +13,7 @@ The roadmap separates four kinds of work that must not be collapsed into one spr
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 051 candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corrective candidate. Sprint 9 established report and command identity, schema `0.2.0`, bounded complete-analysis state, per-candidate provenance, external decoder-gap evidence, immutable campaign inputs, signal-safe publication, portable ZIP metadata policy, and the evidence-based decision to retain a decoder-free one-worker reference profile while measuring candidate-scoped validation and parallel profiles separately.
 
 The Sprint 10 decisions, effect contract, active boundary, and acceptance
 gates are documented in [ADR 0032](adr/0032-ordered-multi-pop-foundation.md),
@@ -21,10 +21,12 @@ gates are documented in [ADR 0032](adr/0032-ordered-multi-pop-foundation.md),
 [ADR 0034](adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md),
 [ADR 0035](adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md),
 [ADR 0036](adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md),
+and [ADR 0037](adr/0037-architectural-effects-and-contract-reconciliation.md),
 the [Primitive Effect Model](design/primitive-effect-model.md), the
 [Family Coverage Table](design/sprint10-family-coverage.md), the
+[Exact-Pattern Catalog](design/sprint10-exact-pattern-catalog.md), the
 [Sprint 10 Plan](sprints/sprint-10-plan.md), and the
-[Patch 050 Validation Plan](sprints/sprint-10-patch-050-validation.md).
+[Patch 052 Validation Plan](sprints/sprint-10-patch-052-validation.md).
 
 The implemented pipeline is:
 
@@ -85,7 +87,7 @@ A release gate is evidence-based. Calendar progress alone does not satisfy it.
 | 7 | Hostile-input hardening | Patch 025 establishes deterministic mutation and capacity gates; checked table arithmetic and regression promotion complete the sprint. |
 | 8 | Mitigation and metadata depth | Complete: full versus partial RELRO, canary indicators, section labels, stripped indicators, external comparison checks, and closeout hardening. |
 | 9 | Candidate provenance and decoder-gap measurement | Complete through Patch 045: identity, completeness, provenance, schema `0.2.0`, hardened comparison evidence, portable release policy, and bounded decoder/parallelism decisions. |
-| 10 | Primitive expansion | Active through Patch 051: ordered two-pop, register-transfer, stack-adjust, bounded qword memory effects, completed coarse and architectural effects, fail-fast fixture gates, maintained false-positive coverage, and selective score calibration; Patch 052 reviews the merge, Patch 053 reassesses capability scope, and Patch 054 closes the sprint. |
+| 10 | Primitive expansion | Active through Patch 052: ordered two-pop, register-transfer, stack-adjust, bounded qword memory effects, completed coarse and architectural effects, fail-fast fixture gates, maintained false-positive coverage, and selective score calibration; Patch 052 resolves Patch 051 findings, Patch 053 reassesses capability scope, and Patch 054 closes the sprint. |
 | 11 | Reproducible corpus | Compiler, optimization, hardening, linkage, and target-manifest matrix with hashes and regeneration commands. |
 | 12 | High-resolution benchmark infrastructure and preview | Nanosecond-resolution runner, per-child resource capture, pilot campaign, and `v0.1.0-rc1` research preview candidate. |
 | 13 | Comparative benchmark campaign | Publication-grade repeated trials, coverage reconciliation, output-normalization analysis, and raw-result freeze. |
@@ -335,16 +337,25 @@ The likely next step is Sprint 10 closeout: review implemented-family coverage a
 
 Patch 050 completes the currently implemented family-effect contract rather than adding another pattern catalog entry. It records implicit return stack reads, syscall `rcx`/`r11` clobbers, the `leave`-driven `rbp` overwrite, cross-family transfer-fixture memory promotions, fail-fast specialty recipes, and a machine-readable family/false-positive table.
 
-Patch 051 reconciles the Patch 050 implementation explorations. Patch 052 resolves its local/editorial findings. Patch 053 performs the architecture and capability reassessment before Sprint 11 corpus freeze, including PIE-versus-DSO reporting, GNU property evidence for CET/IBT/SHSTK, overlapping executable-segment count semantics, and release-critical capability gaps. Patch 054 closes Sprint 10 or carries the smallest necessary correction.
+Patch 051 reconciles the committed Patch 050 family-effect foundation with architectural-effect, exact-pattern, fixture-suite, and score contracts. Patch 052 resolves Patch 051 findings. Patch 053 performs the architecture and capability reassessment before Sprint 11 corpus freeze, including PIE-versus-DSO reporting, GNU property evidence for CET/IBT/SHSTK, overlapping executable-segment count semantics, and release-critical capability gaps. Patch 054 closes Sprint 10 or carries the smallest necessary correction.
 
 ## Sprint 10 Patch 051 roadmap update
 
-Patch 051 reconciles three compatible but overlapping effect-completion designs
-against the committed Patch 050 base. The result adds a dense architectural-
-effect side-car, one-per-pattern fixture, centralized fail-fast fixture runner,
-contract reconciliation, and reviewed scores for ordered two-pop and stack-
-adjustment families. It changes no primitive catalog entry.
+Patch 051 extends the committed Patch 050 first-pass foundation with a dense
+architectural-effect side-car, one-per-pattern fixture, centralized fail-fast
+fixture runner, contract reconciliation, and reviewed scores for ordered
+two-pop and stack-adjustment families. It changes no primitive catalog entry.
 
-The remaining sequence is fixed: Patch 052 resolves validation/editorial
-findings, Patch 053 performs the capability and architecture reassessment, and
-Patch 054 closes Sprint 10 before Sprint 11 corpus work begins.
+The remaining sequence is fixed: Patch 052 resolves Patch 051 findings, Patch
+053 performs the capability and architecture reassessment, and Patch 054 closes
+Sprint 10 before Sprint 11 corpus work begins.
+
+
+## Sprint 10 Patch 052 corrective update
+
+Patch 052 corrects the Patch 051 effect and gate findings without expanding the
+primitive catalog. Full-width syscall descriptors, the zero-immediate return
+boundary, contracted text separators, canonical memory side-car reconciliation,
+numeric score-policy mutations, and strict-lint availability are permanent
+validation surfaces. Patch 053 remains the architecture/capability reassessment;
+Patch 054 remains Sprint 10 closeout.

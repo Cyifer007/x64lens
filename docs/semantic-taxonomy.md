@@ -97,7 +97,8 @@ Every new family requires:
 8. false-positive notes,
 9. independent score decision.
 
-Further bounded expansion, if retained after the Patch 051 capability review, may include:
+Further bounded expansion, if retained after the Patch 053 capability
+reassessment, may include:
 
 - additional multi-pop sequences beyond the current two-argument-register domain,
 - additional unambiguous register-transfer forms,
@@ -142,7 +143,8 @@ stack pop order: exact execution order
 stack delta: 24 bytes
 side effects: stack_read
 clobbers: none represented
-score: unscored
+score at Patch 046 boundary: unscored
+current score after Patch 051: 95
 ```
 
 Duplicate pairs and pairs with either pop outside the supported argument-
@@ -185,7 +187,8 @@ controlled registers: none
 clobbered general-purpose registers: none
 stack delta: imm8 + 8 bytes
 side effects: stack_read, stack_adjust, flags_write
-score: unscored
+score at Patch 048 boundary: unscored
+current score after Patch 051: 35
 ```
 
 Zero, negative, unaligned, wrong-register, subtraction, and memory forms are not promoted. Arithmetic flags are recorded as an effect rather than silently omitted. Exact-suffix evidence does not prove the complete backward window decodes from its earliest byte.

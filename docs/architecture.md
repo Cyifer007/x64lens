@@ -874,7 +874,8 @@ The first consumer is the exact `pop reg; pop reg; ret` family for two distinct
 System V argument registers. Pattern recognition stores exact order;
 classification validates it and emits an unordered controlled-register bitmap,
 24-byte stack delta, and `stack_read` side effect. Reporters only render those
-facts. Multi-pop remains unscored until scoring policy is reviewed separately.
+facts. At the Patch 046 boundary, multi-pop remained unscored; Patch 051 later
+calibrates the current score to 95 after architectural-effect validation.
 
 See [ADR 0032](adr/0032-ordered-multi-pop-foundation.md), the
 [Primitive Effect Model](design/primitive-effect-model.md), the
@@ -921,11 +922,14 @@ scanner raw candidate
   -> patterns.asm recognizes 48 83 c4 imm8 c3
   -> classifier.asm validates positive aligned imm8 and records total stack delta
   -> candidate_evidence.asm records five-byte semantic-exact suffix provenance
-  -> scoring.asm leaves the family unscored
+  -> scoring.asm leaves the family unscored at the Patch 048 boundary
   -> text/JSON reporters render record-backed stack_adjust and flags_write effects
 ```
 
 Promotion requires a nonzero positive immediate below `0x80` and divisible by eight. Zero, negative, unaligned, wrong-register, and subtraction forms retain the existing bare-return fallback. Arithmetic flag modification is represented as `flags_write`; the current clobber bitmap remains a general-purpose-register fact and does not model condition flags.
+
+Patch 051 later calibrates the current stack-adjust score to 35 after
+architectural-effect validation.
 
 The family reuses the existing 112-byte `gadget_record`. Candidate capacity remains 4096 and the combined analysis arena remains 655360 bytes. Full-sequence validity remains unknown because exact suffix evidence is not decoded validity.
 
@@ -980,6 +984,11 @@ Fixture gates are also part of the architecture around the analyzer. Sprint 10 m
 
 ## Sprint 10 Patch 051 architectural-effect reconciliation
 
+The governing decision and validation surfaces are
+[ADR 0037](adr/0037-architectural-effects-and-contract-reconciliation.md), the
+[exact-pattern catalog](design/sprint10-exact-pattern-catalog.md), and the
+[Patch 051 validation record](sprints/sprint-10-patch-051-validation.md).
+
 Patch 051 adds a fourth dense candidate-index record family after raw candidates,
 provenance, and structured memory effects:
 
@@ -1008,3 +1017,19 @@ This order is deliberate: scoring validates and consumes represented effects
 rather than becoming a second classifier. The 112-byte scanner record and the
 4,096-candidate boundary remain unchanged. The fixed arena grows by 98,304
 bytes; this is allocation arithmetic, not measured maximum RSS.
+
+
+## Sprint 10 Patch 052 corrective architecture
+
+Patch 052 preserves the Patch 051 side-car pipeline and adds no record or arena
+growth. The candidate-effect materializer reconstructs the complete current
+memory descriptor from exact candidate metadata and requires exact agreement
+with the dense memory side-car. This prevents direction conflicts, reserved
+bits, displacement drift, and wrong-index records from entering reports or
+scores.
+
+Full-width effect descriptors are materialized in registers before qword stores
+or comparisons. NASM number-overflow warnings are fatal so an immediate cannot
+silently narrow a 64-bit contract. Validation adds a standalone internal
+assembly harness; it is linked only for tests and is not part of the runtime
+binary.

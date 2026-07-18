@@ -6,7 +6,7 @@ Complete. Patch 008 Phase A, Patch 009 Phase B, Patch 010 Phase C, and Patch 011
 
 ## Sprint goal
 
-Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
+Create the bounded byte-scanning core and introduce internal storage for raw gadget candidates.
 
 Sprint 3 was completed in four intentionally narrow phases:
 

@@ -9,6 +9,19 @@ orchestration, one-per-pattern coverage, and selective score calibration.
 It does not add another primitive family, decoder, worker mode, dynamic runtime
 dependency, or schema-version transition.
 
+Related documentation:
+
+- [ADR 0037](../adr/0037-architectural-effects-and-contract-reconciliation.md)
+- [Architecture](../architecture.md)
+- [Primitive Effect Model](../design/primitive-effect-model.md)
+- [Family Coverage Table](../design/sprint10-family-coverage.md)
+- [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
+- [Scoring Model](../scoring-model.md)
+- [Output Contract](../contracts/output-contract.md)
+- [JSON Schema Guide](../json-schema.md)
+- [Sprint 10 Plan](sprint-10-plan.md)
+- [Validation Plan](../validation-plan.md)
+
 ## Source base
 
 Patch generation uses committed Patch 050 commit:
@@ -47,6 +60,10 @@ sprint10-contract-reconciliation-smoke: ok semantic_families=11 exact_patterns=2
 
 sprint10-fixture-gate-smoke: ok failed_validator=7 later_steps=0
 ```
+
+The family-coverage banner counts four family-specific Sprint 10 fixture
+expectations. The centralized suite adds the one-per-pattern architectural-
+effect fixture as its fifth group.
 
 The one-per-pattern fixture must report:
 
@@ -106,3 +123,13 @@ from product behavior, then run the complete qualified aggregate when required.
 - Malformed inputs produce no partial report.
 - Native and Docker JSON facts agree without semantic normalization.
 - No new runtime dependency or worker default is introduced.
+
+
+## Validation result and Patch 052 handoff
+
+Patch 051 native and qualified Docker validation exposed four corrective
+defects: truncated syscall flag descriptors, rejection of `ret imm16 0`, the
+wrong text effect separator, and permissive memory side-car reconciliation. It
+also showed that numeric score values were not cross-checked by both maintained
+contract gates. Patch 052 owns those corrections and the corresponding
+regressions.

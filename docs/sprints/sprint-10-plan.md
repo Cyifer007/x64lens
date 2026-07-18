@@ -2,7 +2,7 @@
 
 ## Status
 
-Active through Patch 051. Patches 046 through 049 established ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded qword base-plus-zero memory families. Patch 050 completed coarse current-family effects and fixture-gate hardening. Patch 051 reconciles all retained Patch 050 design work through a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and selective score calibration.
+Active through Patch 051. Patches 046 through 049 established ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded qword base-plus-zero memory families. Patch 050 is the committed first-pass foundation for completed coarse current-family effects and fixture-gate hardening. Patch 051 reconciles that foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and selective score calibration.
 
 Related documentation:
 
@@ -11,9 +11,13 @@ Related documentation:
 - [ADR 0034](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md)
 - [ADR 0035](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md)
 - [ADR 0036](../adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md)
+- [ADR 0037](../adr/0037-architectural-effects-and-contract-reconciliation.md)
 - [Primitive Effect Model](../design/primitive-effect-model.md)
 - [Family Coverage Table](../design/sprint10-family-coverage.md)
-- [Patch 050 Validation Plan](sprint-10-patch-050-validation.md)
+- [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
+- [Scoring Model](../scoring-model.md)
+- [Output Contract](../contracts/output-contract.md)
+- [Patch 051 Validation Plan](sprint-10-patch-051-validation.md)
 - [Canonical Roadmap](../roadmap-18-sprints.md)
 
 ## Sprint goal
@@ -53,8 +57,8 @@ validity, side effects, score meaning, or the defensive deployment profile.
 5. **Patch 050:** current-family effect completion, cross-family fixture
    reconciliation, fail-fast recipe hardening, fixture coverage table, and
    explicit score deferral.
-6. **Patch 051:** reconcile the three Patch 050 implementation explorations into one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
-7. **Patch 052:** resolve any Patch 051 local or editorial findings.
+6. **Patch 051:** reconcile the committed Patch 050 foundation through one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
+7. **Patch 052:** resolve Patch 051 findings.
 8. **Patch 053:** architecture and capability reassessment before corpus freeze, including PIE-versus-DSO semantics, CET/IBT/SHSTK evidence, overlapping executable-segment count semantics, and pre-release capability priorities.
 9. **Patch 054:** Sprint 10 closeout or the smallest correction proved necessary by Patch 053.
 
@@ -117,7 +121,7 @@ change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Handoff
 
-Patch 052 reviews and corrects the merged Patch 051 contract. Patch 053 then reassesses architecture and pre-release capability priorities before Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen manifest.
+Patch 052 corrects the Patch 051 effect encoding, ret-imm16 lower boundary, text separator, memory-sidecar reconciliation, score-policy gate, and strict-lint availability findings. Patch 053 then reassesses architecture and pre-release capability priorities before Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen manifest.
 
 ## Patch 046 boundary
 
@@ -150,12 +154,12 @@ Patch 050 adds no primitive family. It completes implicit and architectural
 effects already present in supported suffixes, fixes transfer-fixture
 cross-family promotion counts, prevents Make recipes from masking failed
 validators, isolates stale-manifest verification, and establishes the maintained
-family coverage/false-positive table. New-family score calibration remains
-open for the Patch 051 review.
+family coverage/false-positive table. New-family score calibration remained
+open for the subsequent Patch 051 decision.
 
 ## Patch 051 boundary
 
-Patch 051 adds no primitive family. It merges the completed coarse family model,
+Patch 051 adds no primitive family. It reconciles the completed coarse family model,
 a dense 24-byte architectural-effect side-car, centralized fail-fast fixture
 orchestration, one-per-pattern coverage, and selective score calibration into
 one contract against the committed Patch 050 base.
@@ -168,6 +172,16 @@ The three maintained views are complementary:
 5 fixture-suite groups
 ```
 
-A reconciliation gate requires them to agree. Patch 052 is reserved for findings
-from local implementation and editorial review; Patch 053 performs the broader
-capability reassessment; Patch 054 closes Sprint 10.
+A reconciliation gate requires them to agree. Patch 052 resolves Patch 051
+findings; Patch 053 performs the broader capability reassessment; Patch 054
+closes Sprint 10.
+
+
+## Patch 052 boundary
+
+Patch 052 adds no primitive family. It corrects full-width syscall effect
+encoding, accepts the valid zero-immediate return boundary, restores contracted
+text separators, requires exact memory side-car reconciliation, and promotes
+score and strict-lint availability into permanent negative gates. Patch 053
+performs the planned architecture/capability reassessment; Patch 054 closes the
+sprint.

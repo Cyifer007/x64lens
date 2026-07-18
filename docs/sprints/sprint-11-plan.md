@@ -10,12 +10,14 @@ Create a reproducible corpus and manifest that can support fixed research experi
 
 ## Entry gate from Sprint 10 capability review
 
-Sprint 11 corpus membership must not freeze ambiguous analyzer facts. Before corpus generation begins, Patch 051/052 must resolve or explicitly defer:
+Sprint 11 corpus membership must not freeze ambiguous analyzer facts. Before
+corpus generation begins, Patch 053 and any smallest required Patch 054 closeout
+correction must resolve or explicitly defer:
 
 - PIE executable versus shared-object interpretation for `ET_DYN`;
 - bounded GNU property evidence for CET/IBT/SHSTK;
 - overlapping executable `PT_LOAD` region/count semantics;
-- score policy for the new Sprint 10 families;
+- remaining score-policy questions after Patch 051 calibration;
 - capability-snapshot items classified as pre-release requirements.
 
 The result must identify which expected corpus facts are machine-checkable and which remain explicit unknowns or limitations.

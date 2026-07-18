@@ -32,12 +32,15 @@ BENCHMARK_INTEGRITY_RESULTS_DIR ?= ./tests/results/benchmark-integrity
 DECODER_GAP_RESULTS_DIR ?= ./tests/results/decoder-gap
 PUBLIC_BUNDLE ?=
 PUBLIC_BUNDLE_SHA256 ?=
+INTERNAL_TEST_BUILD_DIR := $(BUILD_DIR)/tests
+MEMORY_EFFECT_RECONCILIATION_OBJ := $(INTERNAL_TEST_BUILD_DIR)/memory-effect-reconciliation.o
+MEMORY_EFFECT_RECONCILIATION_BIN := $(INTERNAL_TEST_BUILD_DIR)/memory-effect-reconciliation
 
 NASM         ?= nasm
 LD           ?= ld
 CC           ?= gcc
 
-ASMFLAGS     := -f elf64 -g -F dwarf -I$(INC_DIR)/
+ASMFLAGS     := -f elf64 -g -F dwarf -Werror=number-overflow -I$(INC_DIR)/
 LDFLAGS      :=
 
 ASM_SRCS     := $(wildcard $(SRC_DIR)/*.asm)
@@ -45,7 +48,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -77,9 +80,13 @@ help:
 	@echo "  make sprint10-architectural-effects-smoke  Validate one candidate for all 25 exact patterns"
 	@echo "  make sprint10-fixture-gate-smoke  Prove fixture validation stops before later steps"
 	@echo "  make sprint10-contract-reconciliation-smoke  Reconcile family, pattern, and fixture contracts"
+	@echo "  make sprint10-score-policy-smoke  Reject numeric score-policy drift across both contract gates"
+	@echo "  make memory-effect-reconciliation-smoke  Reject contradictory dense memory side-car records"
+	@echo "  make shellcheck-contract-smoke  Validate strict/advisory missing-ShellCheck behavior"
 	@echo "  make json-effect-consistency-smoke  Validate pop, return, transfer, stack, and memory effect relations"
 	@echo "  make shellcheck-smoke  Run shellcheck when installed"
 	@echo "  make docker-context-hygiene-smoke  Verify .env files stay out of Docker images"
+	@echo "  make native-docker-json-parity-smoke  Compare 12 controlled native/container JSON reports byte-for-byte"
 	@echo "  make analysis-tools-check  Inventory optional analysis/comparison tools"
 	@echo "  make malformed-smoke     Run deterministic malformed-input smoke"
 	@echo "  make fuzz-mutated-elf-smoke  Compatibility alias for malformed smoke"
@@ -163,6 +170,15 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
+$(INTERNAL_TEST_BUILD_DIR):
+	mkdir -p $(INTERNAL_TEST_BUILD_DIR)
+
+$(MEMORY_EFFECT_RECONCILIATION_OBJ): tests/internal/memory-effect-reconciliation.asm | $(INTERNAL_TEST_BUILD_DIR)
+	$(NASM) $(ASMFLAGS) $< -o $@
+
+$(MEMORY_EFFECT_RECONCILIATION_BIN): $(MEMORY_EFFECT_RECONCILIATION_OBJ) $(BUILD_DIR)/candidate_effect.o
+	$(LD) $(LDFLAGS) -o $@ $^
+
 samples: sample-tools-check
 	$(MAKE) -C tests/toy-src
 	mkdir -p tests/bin
@@ -243,6 +259,18 @@ sprint10-fixture-gate-smoke:
 # Semantic-family, exact-pattern, and fixture-suite reconciliation.
 sprint10-contract-reconciliation-smoke:
 	@python3 tools/sprint10-contract-reconciliation-smoke.py
+
+# Score-policy authority must agree across semantic-family and exact-pattern gates.
+sprint10-score-policy-smoke:
+	@python3 tools/sprint10-score-policy-smoke.py
+
+# Internal record-level regression for dense memory side-car reconciliation.
+memory-effect-reconciliation-smoke: build-tools-check $(MEMORY_EFFECT_RECONCILIATION_BIN)
+	@$(MEMORY_EFFECT_RECONCILIATION_BIN)
+
+# Missing ShellCheck is advisory normally but a hard failure in strict mode.
+shellcheck-contract-smoke:
+	@python3 tools/shellcheck-contract-smoke.py
 
 # Eleven semantic-family contracts remain independently reviewable.
 sprint10-family-coverage-smoke:
@@ -390,25 +418,30 @@ decoder-gap-campaign: dev-tools-check all samples
 		--max-depth 4 \
 		--results-dir "$(DECODER_GAP_RESULTS_DIR)"
 
+SHELLCHECK ?= shellcheck
+
 shellcheck-smoke:
-	@if command -v shellcheck >/dev/null 2>&1; then \
-		if shellcheck tests/run-tests.sh tools/*.sh benchmarks/scripts/*.sh; then \
+	@if command -v "$(SHELLCHECK)" >/dev/null 2>&1; then \
+		if "$(SHELLCHECK)" tests/run-tests.sh tools/*.sh benchmarks/scripts/*.sh; then \
 			echo "shellcheck-smoke: ok"; \
 		elif [ "$${SHELLCHECK_STRICT:-0}" = "1" ]; then \
 			exit 1; \
 		else \
 			echo "shellcheck-smoke: advisory findings present (set SHELLCHECK_STRICT=1 to fail)"; \
 		fi; \
+	elif [ "$${SHELLCHECK_STRICT:-0}" = "1" ]; then \
+		echo "error: SHELLCHECK_STRICT=1 requires $(SHELLCHECK)" >&2; \
+		exit 127; \
 	else \
-		echo "shellcheck-smoke: skipped (shellcheck not installed)"; \
+		echo "shellcheck-smoke: skipped ($(SHELLCHECK) not installed)"; \
 	fi
 
 # Sprint closeout gate. Normal development keeps ShellCheck optional, but a
 # sprint cannot close unless strict lint is available and the complete native
 # aggregate passes. Docker remains a separate reproducibility gate.
 sprint-closeout-smoke:
-	@command -v shellcheck >/dev/null 2>&1 || { \
-		echo "error: sprint-closeout-smoke requires shellcheck" >&2; \
+	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
+		echo "error: sprint-closeout-smoke requires $(SHELLCHECK)" >&2; \
 		exit 127; \
 	}
 	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
@@ -417,7 +450,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -515,6 +548,7 @@ script-perms-check:
 	@test -x tools/compare-readelf.sh
 	@test -x tools/compare-ropgadget.sh
 	@test -x tools/docker-context-hygiene-smoke.sh
+	@test -x tools/native-docker-json-parity-smoke.sh
 	@test -x tools/make-release-artifacts.sh
 	@test -x tools/optional-mitigation-comparison-smoke.py
 	@test -x tools/readelf-comparison-smoke.py
@@ -528,6 +562,9 @@ script-perms-check:
 	@test -x tools/sprint10-fixture-smoke.py
 	@test -x tools/sprint10-fixture-gate-smoke.py
 	@test -x tools/sprint10-contract-reconciliation-smoke.py
+	@test -x tools/sprint10-score-policy-smoke.py
+	@test -x tools/shellcheck-contract-smoke.py
+	@test -f tests/internal/memory-effect-reconciliation.asm
 	@test -x tools/json-effect-consistency-smoke.py
 	@test -x tools/sprint10-family-coverage-smoke.py
 	@test -x tools/validate-report-parity.py
@@ -686,6 +723,9 @@ docker-shell: docker-available-check
 # repeat runs fast once the image is current.
 docker-test: docker-build
 	docker run --rm --user "$$(id -u):$$(id -g)" -e HOME=/tmp -v "$(PWD)":/work -w /work $(DOCKER_IMAGE) bash -lc 'make clean && make && make test'
+
+native-docker-json-parity-smoke: docker-build all samples
+	bash tools/native-docker-json-parity-smoke.sh "$(DOCKER_IMAGE)" ./$(TARGET)
 
 docker-context-hygiene-smoke: docker-available-check
 	bash tools/docker-context-hygiene-smoke.sh "$(DOCKER_IMAGE)-context-hygiene"

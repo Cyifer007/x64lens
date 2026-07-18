@@ -191,7 +191,7 @@ x64lens_candidate_effect_from_exact:
     cmp     dword [rbx + GADGET_SEMANTIC_CLASS], SEM_ALIGNMENT
     jne     .bounds_error
     cmp     qword [rbx + GADGET_STACK_DELTA], STACK_DELTA_RET
-    jbe     .bounds_error
+    jb      .bounds_error
     cmp     qword [rbx + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_RET_IMM16 | SIDE_EFFECT_CONTROL_TRANSFER
     jne     .bounds_error
     cmp     qword [rbx + GADGET_REGS_CONTROLLED], 0
@@ -311,7 +311,8 @@ x64lens_candidate_effect_from_exact:
     jne     .bounds_error
     mov     qword [r10 + CANDIDATE_EFFECT_REGS_READ], (1 << REG_RAX_BIT) | (1 << REG_RDI_BIT) | (1 << REG_RSI_BIT) | (1 << REG_RDX_BIT) | (1 << REG_R10_BIT) | (1 << REG_R8_BIT) | (1 << REG_R9_BIT) | (1 << REG_RSP_BIT)
     mov     qword [r10 + CANDIDATE_EFFECT_REGS_WRITTEN], (1 << REG_RAX_BIT) | (1 << REG_RCX_BIT) | (1 << REG_R11_BIT) | (1 << REG_RSP_BIT)
-    mov     qword [r10 + CANDIDATE_EFFECT_DESCRIPTOR], EFFECT_DESC_SYSCALL_PARTIAL
+    mov     rax, EFFECT_DESC_SYSCALL_PARTIAL
+    mov     [r10 + CANDIDATE_EFFECT_DESCRIPTOR], rax
     jmp     .next
 
 .effect_multi_pop:
@@ -488,48 +489,76 @@ x64lens_candidate_effect_from_exact:
 ; Returns descriptor in RAX, base register ID in RCX, value register ID in RDX.
 .load_memory_operands:
     push    rsi
+
+    ; Resolve the side-car record at the same candidate index.
     mov     rax, rbp
     imul    rax, rax, MEMORY_EFFECT_RECORD_SIZE
     lea     rsi, [r14 + rax]
-    mov     rax, [rsi + MEMORY_EFFECT_DESCRIPTOR]
-    test    rax, MEMORY_EFFECT_FLAG_PRESENT
-    jz      .memory_operand_error
-    test    rax, MEMORY_EFFECT_FLAG_DEREFERENCE
-    jz      .memory_operand_error
-    test    rax, MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN
-    jz      .memory_operand_error
-    test    rax, MEMORY_EFFECT_FLAG_INDEX_PRESENT
-    jnz     .memory_operand_error
     cmp     qword [rsi + MEMORY_EFFECT_DISPLACEMENT], 0
     jne     .memory_operand_error
-    mov     rcx, rax
-    shr     rcx, MEMORY_EFFECT_BASE_SHIFT
-    and     ecx, MEMORY_EFFECT_REG_MASK
-    mov     rdx, rax
-    shr     rdx, MEMORY_EFFECT_VALUE_SHIFT
-    and     edx, MEMORY_EFFECT_REG_MASK
+    mov     r8, [rsi + MEMORY_EFFECT_DESCRIPTOR]
+
+    ; Reconstruct the canonical descriptor from the current candidate rather
+    ; than accepting a permissive subset of a stale or wrong-index record.
+    cmp     dword [rbx + GADGET_PATTERN_REG_COUNT], 2
+    jne     .memory_operand_error
+    mov     eax, [rbx + GADGET_PATTERN_REG_ORDER]
+    test    eax, 0xffffff00
+    jne     .memory_operand_error
+    mov     ecx, eax
+    and     ecx, 0x0f           ; base
+    shr     eax, 4
+    and     eax, 0x0f
+    mov     edx, eax            ; value source/destination
     cmp     ecx, REG_R15_BIT
     ja      .memory_operand_error
     cmp     edx, REG_R15_BIT
     ja      .memory_operand_error
-    push    rax
-    mov     rax, [rsi + MEMORY_EFFECT_DESCRIPTOR]
-    mov     rsi, rax
-    shr     rsi, MEMORY_EFFECT_SCALE_SHIFT
-    and     esi, MEMORY_EFFECT_SCALE_MASK
-    cmp     esi, MEMORY_EFFECT_SCALE_1
-    jne     .memory_operand_error_pop
-    mov     rsi, rax
-    shr     rsi, MEMORY_EFFECT_WIDTH_SHIFT
-    and     esi, MEMORY_EFFECT_WIDTH_MASK
-    cmp     esi, MEMORY_EFFECT_WIDTH_QWORD
-    jne     .memory_operand_error_pop
-    pop     rax
+    cmp     ecx, REG_RSP_BIT
+    je      .memory_operand_error
+    cmp     ecx, REG_RBP_BIT
+    je      .memory_operand_error
+    cmp     ecx, REG_R12_BIT
+    je      .memory_operand_error
+    cmp     ecx, REG_R13_BIT
+    je      .memory_operand_error
+    cmp     edx, REG_RSP_BIT
+    je      .memory_operand_error
+
+    mov     eax, [rbx + GADGET_PATTERN_ID]
+    cmp     eax, PATTERN_MOV_MEM_REG_RET
+    je      .memory_expected_write
+    cmp     eax, PATTERN_MOV_REG_MEM_RET
+    je      .memory_expected_read
+    jmp     .memory_operand_error
+
+.memory_expected_write:
+    mov     r9, MEMORY_EFFECT_FLAG_PRESENT | MEMORY_EFFECT_FLAG_WRITE | MEMORY_EFFECT_FLAG_DEREFERENCE | MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN
+    jmp     .memory_expected_common
+.memory_expected_read:
+    mov     r9, MEMORY_EFFECT_FLAG_PRESENT | MEMORY_EFFECT_FLAG_READ | MEMORY_EFFECT_FLAG_DEREFERENCE | MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN
+
+.memory_expected_common:
+    mov     eax, ecx
+    shl     rax, MEMORY_EFFECT_BASE_SHIFT
+    or      r9, rax
+    mov     eax, edx
+    shl     rax, MEMORY_EFFECT_VALUE_SHIFT
+    or      r9, rax
+    mov     rax, MEMORY_EFFECT_SCALE_1
+    shl     rax, MEMORY_EFFECT_SCALE_SHIFT
+    or      r9, rax
+    mov     rax, MEMORY_EFFECT_WIDTH_QWORD
+    shl     rax, MEMORY_EFFECT_WIDTH_SHIFT
+    or      r9, rax
+
+    cmp     r8, r9
+    jne     .memory_operand_error
+    mov     rax, r8
     pop     rsi
     clc
     ret
-.memory_operand_error_pop:
-    pop     rax
+
 .memory_operand_error:
     pop     rsi
     stc

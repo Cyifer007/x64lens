@@ -44,7 +44,8 @@ properties are defined in the [Defensive Deployment Profile](../design/defensive
   self-contained default analyzer.
 - Decoder-backed validity can improve confidence without forcing whole-image
   decoding or mandatory dependencies.
-- Parallelism cannot silently trade low RSS or deterministic output for speed.
+- Parallelism cannot silently trade increased RSS or nondeterministic output for
+  wall-time improvement.
 - Sprint 10 receives a clean evidence-aware primitive-expansion boundary.
 - Publication claims remain deferred until the fixed corpus and benchmark
   methodology support them.

@@ -180,9 +180,10 @@ these additive fields.
 - A semantic candidate may remain unscored when the scoring model has no
   reviewed entry.
 
-The generic Patch 046 multi-pop family must report two ordered distinct argument
-registers, a matching controlled-register set, stack delta 24, `stack_read`, an
-empty clobber set, and `score: null`.
+At the Patch 046 boundary, the generic multi-pop family reported two ordered
+distinct argument registers, a matching controlled-register set, stack delta
+24, `stack_read`, an empty clobber set, and `score: null`. Patch 051 preserves
+those semantic and effect facts while calibrating the current score to 95.
 
 ## Sprint 10 register-transfer output
 
@@ -198,7 +199,7 @@ source/destination, control, clobber, stack, or side-effect contradictions.
 
 ## Sprint 10 stack-adjust output
 
-Patch 048 adds exact pattern `add rsp, imm8; ret` for positive nonzero eight-byte-aligned immediates. A promoted candidate reports semantic class `alignment`, empty controls/order/clobbers, total known stack delta `imm8 + 8`, side effects `stack_adjust` and `flags_write`, and `score:null`.
+Patch 048 adds exact pattern `add rsp, imm8; ret` for positive nonzero eight-byte-aligned immediates. At the Patch 048 boundary, a promoted candidate reported semantic class `alignment`, empty controls/order/clobbers, total known stack delta `imm8 + 8`, side effects `stack_adjust` and `flags_write`, and `score:null`. Patch 051 preserves those facts while calibrating the current score to 35.
 
 `flags_write` is an explicit condition-code effect; condition flags are not part of the general-purpose-register clobber bitmap. Unsupported forms remain the existing bare-return fallback. Full-sequence validity remains unknown under semantic-exact evidence.
 
@@ -232,5 +233,14 @@ while remaining semantic unknowns and unscored.
 
 The side-car's `model_complete` field is independent from command-level
 `analysis.complete` and candidate-level `full_sequence_valid`. Current transfer
-and memory families remain unscored; ordered two-pop and positive aligned stack
-adjustment use their reviewed scores only when all required effect facts agree.
+and memory families remain unscored; ordered two-pop uses score 95 and positive
+aligned stack adjustment uses score 35 only when all required effect facts
+agree. See the [scoring model](../scoring-model.md).
+
+
+## Sprint 10 Patch 052 text-effect separator rule
+
+Human-readable side-effect names are separated by comma and one space. Register
+sets retain the pipe separator. The distinction is contractual because scripts
+and review fixtures compare stable effect text independently from register-set
+formatting.

@@ -11,7 +11,7 @@ End: 2026-06-07
 
 ## Sprint goal
 
-Create the fast byte scanning core and introduce internal storage for raw gadget candidates.
+Create the bounded byte-scanning core and introduce internal storage for raw gadget candidates.
 
 ## Summary
 

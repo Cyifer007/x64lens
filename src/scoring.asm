@@ -80,7 +80,8 @@ global x64lens_scoring_apply
     jne     .bounds_error
     cmp     qword [r14 + CANDIDATE_EFFECT_REGS_WRITTEN], %2
     jne     .bounds_error
-    cmp     qword [r14 + CANDIDATE_EFFECT_DESCRIPTOR], %3
+    mov     rax, %3
+    cmp     qword [r14 + CANDIDATE_EFFECT_DESCRIPTOR], rax
     jne     .bounds_error
 %endmacro
 
@@ -277,7 +278,7 @@ x64lens_scoring_apply:
     cmp     qword [r15 + GADGET_REGS_CLOBBERED], 0
     jne     .bounds_error
     cmp     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
-    jbe     .bounds_error
+    jb      .bounds_error
     cmp     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_READ | SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_RET_IMM16 | SIDE_EFFECT_CONTROL_TRANSFER
     jne     .bounds_error
     CHECK_EFFECT (1 << REG_RSP_BIT), (1 << REG_RSP_BIT), SCORE_DESC_RET_COMPLETE

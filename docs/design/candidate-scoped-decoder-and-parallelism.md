@@ -2,14 +2,14 @@
 
 ## Goal
 
-Preserve the fast, low-RSS, dependency-free x64lens core while defining a
+Preserve the bounded, dependency-free one-worker x64lens core while defining a
 credible route toward decoder-backed validity and scalable throughput.
 
 ## Bounded hybrid pipeline
 
 ```text
 loader-authoritative PT_LOAD + PF_X regions
-  -> fast byte terminator scan
+  -> byte-oriented terminator scan
   -> bounded candidate windows
   -> exact suffix recognition
   -> semantic-exact classification
@@ -109,6 +109,6 @@ experimental profile, not the default runtime.
 
 ## Sprint 9 closeout decision
 
-The reference profile is one worker with no decoder. Candidate-scoped validation is the preferred optional correctness profile because it bounds decoder work to evidence already retained by the fast scanner. Parallelism is not forced into the core before measurement.
+The reference profile is one worker with no decoder. Candidate-scoped validation is the preferred optional correctness profile because it bounds decoder work to evidence already retained by the scanner. Parallelism is not forced into the core before measurement.
 
 The first throughput ablation should compare target-level concurrency, candidate-validation concurrency, and region-level concurrency. Any in-process mode must produce the same ordered facts, global capacity outcome, exit status, and JSON bytes as the one-worker reference while reporting additional CPU, RSS, startup, and synchronization cost.

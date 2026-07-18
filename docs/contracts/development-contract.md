@@ -294,3 +294,12 @@ scan target bytes, classify, score, or format output.
 Scoring may consume the side-car only to validate facts required by a reviewed
 score rule. A score mismatch must fail closed rather than causing the scorer to
 infer or repair semantic state.
+
+
+## Patch 052 narrowing and internal-record validation rule
+
+Qword architectural constants must not rely on NASM imm32 sign-extension when
+the represented value exceeds that domain. Build flags treat number-overflow
+warnings as errors. Dense side-car materializers must validate exact canonical
+records keyed to the current candidate, and permanent internal mutation harnesses
+should cover contradictions that public JSON cannot express directly.

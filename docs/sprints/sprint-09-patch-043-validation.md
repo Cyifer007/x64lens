@@ -25,7 +25,7 @@ Patch 043 validates and corrects:
 6. common ZIP-container suffixes such as JAR and wheel files;
 7. prefixed-return and control-flow-barrier parsing in objdump evidence;
 8. campaign identity and retained parse diagnostics;
-9. timestamped private attachment-name leakage in public docs; and
+9. synthetic timestamped transfer-identifier policy violations in public docs; and
 10. the embedded-decoder decision and development-versus-publication evidence
     boundary.
 
@@ -135,12 +135,12 @@ unchanged.
 
 ## Post-validation disposition
 
-Authoritative local validation passed the analyzer, native aggregate, qualified
-Docker aggregate, immutable snapshot binding, and decoder-free runtime boundary.
+Patch 043 validation passed the analyzer, native aggregate, qualified Docker
+aggregate, immutable snapshot binding, and decoder-free runtime boundary.
 Patch 043 was not accepted as the final campaign-hardening state because focused
 review found a post-rename signal window, measured-child process leakage,
 incomplete objdump prefix/return normalization, local/central ZIP metadata and
-ZIP64 gaps, and real transfer basenames in a public negative fixture.
+ZIP64 gaps, and non-synthetic transfer identifiers in a public negative fixture.
 
 Patch 044 is the required corrective patch. Its validation record supersedes
 the focused case counts and transaction/parser acceptance claims above while

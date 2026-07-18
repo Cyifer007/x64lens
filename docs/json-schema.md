@@ -282,9 +282,10 @@ The formal schema keeps the fields optional so Patch 040 and Patch 041 schema
 three fields and checks their relationships to pattern bytes, semantic class,
 controls, stack delta, evidence range, and score.
 
-The first generic multi-pop family uses pattern text
-`pop reg; pop reg; ret`, stores the exact registers in `stack_pop_order`, has a
-known stack delta of 24, and remains unscored.
+At the Patch 046 boundary, the first generic multi-pop family used pattern text
+`pop reg; pop reg; ret`, stored the exact registers in `stack_pop_order`, had a
+known stack delta of 24, and remained unscored. Patch 051 preserves those facts
+while calibrating the current score to 95.
 
 ## Sprint 10 Patch 047 register-transfer fields
 
@@ -309,7 +310,7 @@ per-candidate consistency.
 
 ## Sprint 10 Patch 048 stack-adjust effects
 
-Patch 048 keeps schema version `0.2.0`. The formal side-effect enumeration adds `stack_adjust` and `flags_write`. A promoted candidate uses pattern `add rsp, imm8; ret`, semantic class `alignment`, empty controls/order/clobbers, a known total stack delta of immediate plus eight, and `score:null`.
+Patch 048 keeps schema version `0.2.0`. The formal side-effect enumeration adds `stack_adjust` and `flags_write`. At the Patch 048 boundary, a promoted candidate used pattern `add rsp, imm8; ret`, semantic class `alignment`, empty controls/order/clobbers, a known total stack delta of immediate plus eight, and `score:null`. Patch 051 preserves those facts while calibrating the current score to 35.
 
 The current semantic validator derives the immediate from the exact five-byte suffix and rejects unsupported immediates, wrong deltas, missing effects, contradictory terminator labels, and nonempty bare-return controls. The fields are compatible additions: retained Patch 040, Patch 046, and Patch 047 reports remain consumable under their documented producer requirements.
 
@@ -349,18 +350,18 @@ These are current-producer requirements enforced by the semantic validator. Reta
 
 ## Sprint 10 Patch 051 architectural effects
 
-Current producers may emit `architectural_effects` for each candidate:
+Current producer reports require `architectural_effects` for each candidate; the formal schema keeps the object optional only so retained earlier `0.2.0` reports remain consumable:
 
 ```json
 {
   "registers_read": ["rsp"],
-  "registers_written": ["rsp", "rdi"],
+  "registers_written": ["rdi", "rsp"],
   "flags_read": [],
   "flags_written": [],
   "control_flow": ["return"],
   "stack_base": "entry_rsp",
-  "stack_reads": 2,
-  "stack_writes": 0,
+  "stack_read_count": 2,
+  "stack_write_count": 0,
   "first_stack_read_offset": 0,
   "stack_read_stride": 8,
   "stack_offsets_known": true,
@@ -375,3 +376,23 @@ semantic class, memory operands, stack facts, coarse side effects, and score.
 
 `model_complete:false` exposes a known representational boundary; it is not a
 raw-scan truncation flag and does not alter `analysis.complete`.
+
+Current ordered two-pop candidates use score 95 and positive aligned stack-
+adjustment candidates use score 35 only when their architectural effects agree
+with semantic facts. Register-transfer and memory candidates remain unscored.
+See the [scoring model](scoring-model.md).
+
+
+## Sprint 10 Patch 052 corrective relationships
+
+Patch 052 keeps schema `0.2.0` and changes no field shape. Current-producer
+validation additionally requires:
+
+- full-width syscall flag masks;
+- valid `ret imm16 0` with total stack delta 8;
+- exact canonical memory descriptors keyed to the current candidate; and
+- score values that agree with the maintained family and exact-pattern
+  authorities.
+
+These are correctness constraints on current reports, not a structural schema
+transition.

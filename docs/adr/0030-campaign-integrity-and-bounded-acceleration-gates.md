@@ -7,14 +7,13 @@ Accepted for Sprint 9 Patch 044.
 ## Context
 
 Sprint 9 established report identity, complete-analysis state, candidate
-provenance, and an external decoder-gap campaign. Local review of Patch 043
-found no analyzer defect, but it did find acceptance-blocking defects in the
-research harness and release boundary: a signal window could hide the only
-recognized campaign tree, interrupted measurements could leave child process
-groups alive, prefixed objdump mnemonics could corrupt sequence evidence, ZIP
-local headers could contradict clean central metadata, malformed ZIP64 fields
-could be accepted, and a public smoke fixture reconstructed private transfer
-artifact names.
+provenance, and an external decoder-gap campaign. Patch 043 validation found no
+analyzer defect, but it did find acceptance-blocking defects in the research
+harness and release boundary: a signal window could hide the only recognized
+campaign tree, interrupted measurements could leave child process groups alive,
+prefixed objdump mnemonics could corrupt sequence evidence, ZIP local headers
+could contradict clean central metadata, malformed ZIP64 fields could be
+accepted, and a synthetic public-boundary fixture violated identifier policy.
 
 The same review also showed an important product direction. The byte scanner
 found every reviewed canonical return terminator, while many raw candidates
@@ -25,8 +24,7 @@ rather than replacing the core with whole-binary decoding.
 ## Decision
 
 1. Patch 044 is a corrective hardening patch. Sprint 9 closeout moves to Patch
-   045 so configuration, context, environment, Docker, and roadmap review do
-   not dilute the acceptance evidence for these safety fixes.
+   045 so these safety fixes retain a focused acceptance gate.
 2. Campaign publication recovers from observable filesystem state and blocks
    handled signals while rollback or process-group reaping is in progress.
 3. Every measured child runs in a separate process session and is killed and
@@ -39,7 +37,7 @@ rather than replacing the core with whole-binary decoding.
    fields, including ZIP64.
 6. The default analyzer remains single-threaded, freestanding, and
    dependency-free.
-7. A future decoder, if approved, is candidate-scoped: the fast scanner first
+7. A future decoder, if approved, is candidate-scoped: the byte-oriented scanner first
    finds bounded terminator windows, then an optional adapter validates only
    possible starts inside retained windows. Decoder facts remain side-cars.
 8. Parallel execution is evidence-gated and optional. A future profile may
@@ -50,11 +48,11 @@ rather than replacing the core with whole-binary decoding.
 ## Why not decode the entire executable image
 
 Whole-image decoding would duplicate loader and scanning work, increase the
-binary/dependency surface, and make the low-RSS default pay for assurance that
-many defensive invocations may not request. Candidate-scoped validation keeps
-raw discovery fast and independently measurable while allowing full-sequence
-validity, operand, clobber, and memory-effect facts to be added where they are
-most valuable.
+binary/dependency surface, and make the reference profile incur costs for
+assurance that many defensive invocations may not request. Candidate-scoped
+validation keeps raw discovery independently measurable while allowing full-
+sequence validity, operand, clobber, and memory-effect facts to be added where
+they are most valuable.
 
 ## Why not force multithreading now
 

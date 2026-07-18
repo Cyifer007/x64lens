@@ -119,7 +119,7 @@
       "va": "0x0000000000401001",
       "file_offset": "0x0000000000001001",
       "section": ".text",
-      "bytes": "c21000",
+      "bytes": "c20000",
       "terminator": "ret imm16",
       "pattern": "ret imm16",
       "semantic_class": "alignment",
@@ -134,7 +134,7 @@
         "stack_adjust",
         "control_transfer"
       ],
-      "stack_delta": 24,
+      "stack_delta": 8,
       "stack_delta_known": true,
       "score": 40,
       "architectural_effects": {

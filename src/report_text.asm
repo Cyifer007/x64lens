@@ -196,6 +196,7 @@ semantic_alignment:    db "alignment", 0
 semantic_clobber:      db "clobber_heavy", 0
 regs_none:             db "none", 0
 reg_sep:               db "|", 0
+effect_sep:            db ", ", 0
 reg_order_sep:         db "->", 0
 side_effect_stack_read:  db "stack_read", 0
 side_effect_stack_pivot: db "stack_pivot", 0
@@ -1752,7 +1753,7 @@ report_text_print_flags_bitmap:
     jz      %%skip
     test    r12, r12
     jz      %%no_sep
-    lea     rdi, [reg_sep]
+    lea     rdi, [effect_sep]
     call    print_cstr
 %%no_sep:
     lea     rdi, [%2]

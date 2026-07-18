@@ -2,16 +2,18 @@
 """Reconcile Sprint 10 semantic families, exact patterns, and fixture suites."""
 from __future__ import annotations
 
+import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SEMANTIC = ROOT / "tests" / "expected" / "sprint10-family-coverage.json"
-EXACT = ROOT / "tests" / "expected" / "sprint10-exact-pattern-catalog.json"
-SUITE = ROOT / "tests" / "expected" / "sprint10-fixture-suite.json"
-REPORT = ROOT / "tests" / "expected" / "x64lens-report-sprint10-effects-0.2.0.json"
+DEFAULT_SEMANTIC = ROOT / "tests" / "expected" / "sprint10-family-coverage.json"
+DEFAULT_EXACT = ROOT / "tests" / "expected" / "sprint10-exact-pattern-catalog.json"
+DEFAULT_SUITE = ROOT / "tests" / "expected" / "sprint10-fixture-suite.json"
+DEFAULT_REPORT = ROOT / "tests" / "expected" / "x64lens-report-sprint10-effects-0.2.0.json"
 
 
 def fail(message: str) -> "NoReturn":
@@ -29,11 +31,65 @@ def load(path: Path) -> dict[str, Any]:
     return value
 
 
+SINGLE_POP_LABELS = {
+    "pop rax; ret", "pop rcx; ret", "pop rdx; ret", "pop rbx; ret",
+    "pop rsp; ret", "pop rbp; ret", "pop rsi; ret", "pop rdi; ret",
+    "pop r8; ret", "pop r9; ret", "pop r10; ret", "pop r11; ret",
+    "pop r12; ret", "pop r13; ret", "pop r14; ret", "pop r15; ret",
+}
+
+LABEL_TO_FAMILY = {
+    "ret": "ret",
+    "ret imm16": "ret_imm16",
+    "syscall; ret": "syscall_ret",
+    "leave; ret": "leave_ret",
+    "pop rsp; ret": "pop_rsp_ret",
+    "pop reg; pop reg; ret": "ordered_multi_pop",
+    "mov reg, reg; ret": "register_transfer",
+    "add rsp, imm8; ret": "stack_adjust",
+    "mov [base], value; ret": "memory_write",
+    "mov value, [base]; ret": "memory_read",
+}
+
+
+def parse_score_policy(policy: Any, family_id: str) -> int | None | str:
+    if policy == "unscored":
+        return None
+    if policy == "family-specific existing scores":
+        if family_id != "single_pop":
+            fail(f"family {family_id}: family-specific score policy is invalid")
+        return "family-specific"
+    if not isinstance(policy, str):
+        fail(f"family {family_id}: score policy must be a string")
+    match = re.fullmatch(r"scored:(0|[1-9][0-9]*)", policy)
+    if match is None:
+        fail(f"family {family_id}: invalid score policy {policy!r}")
+    value = int(match.group(1))
+    if not 0 <= value <= 100:
+        fail(f"family {family_id}: score policy is outside 0..100")
+    return value
+
+
+def family_for_label(label: str) -> str:
+    if label in SINGLE_POP_LABELS:
+        return "single_pop"
+    family_id = LABEL_TO_FAMILY.get(label)
+    if family_id is None:
+        fail(f"no semantic family maps exact pattern {label!r}")
+    return family_id
+
+
 def main() -> int:
-    semantic = load(SEMANTIC)
-    exact = load(EXACT)
-    suite = load(SUITE)
-    report = load(REPORT)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--semantic", type=Path, default=DEFAULT_SEMANTIC)
+    parser.add_argument("--exact", type=Path, default=DEFAULT_EXACT)
+    parser.add_argument("--suite", type=Path, default=DEFAULT_SUITE)
+    parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    args = parser.parse_args()
+    semantic = load(args.semantic.resolve())
+    exact = load(args.exact.resolve())
+    suite = load(args.suite.resolve())
+    report = load(args.report.resolve())
 
     families = semantic.get("families")
     patterns = exact.get("patterns")
@@ -80,6 +136,18 @@ def main() -> int:
     if labels != report_labels:
         fail("exact catalog labels disagree with one-per-pattern report order")
 
+    family_entries = {entry.get("id"): entry for entry in families if isinstance(entry, dict)}
+    if set(family_entries) != {
+        "ret", "ret_imm16", "single_pop", "syscall_ret", "leave_ret",
+        "pop_rsp_ret", "ordered_multi_pop", "register_transfer",
+        "stack_adjust", "memory_write", "memory_read",
+    }:
+        fail("semantic family identifiers are incomplete or duplicated")
+    parsed_policies = {
+        family_id: parse_score_policy(entry.get("score_policy"), family_id)
+        for family_id, entry in family_entries.items()
+    }
+
     exact_only = 0
     partial = 0
     scored = 0
@@ -106,6 +174,13 @@ def main() -> int:
             partial += 1
         if entry["score"] is not None:
             scored += 1
+        family_id = family_for_label(str(entry["label"]))
+        score_policy = parsed_policies[family_id]
+        if score_policy != "family-specific" and entry["score"] != score_policy:
+            fail(
+                f"pattern {entry['pattern_id']} score {entry['score']!r} "
+                f"disagrees with family {family_id} policy {score_policy!r}"
+            )
         for path_key in ("fixture",):
             if not (ROOT / entry[path_key]).is_file():
                 fail(f"pattern {entry['pattern_id']} missing fixture {entry[path_key]}")

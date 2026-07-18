@@ -555,7 +555,11 @@ Patch 049 increases the fixed command arena from 655,360 to 720,896 bytes by add
 
 Patch 050 changes semantic effect completeness and validation gates without adding a primitive family or changing the fixed 720,896-byte analysis arena. That allocation size is not a max-RSS measurement. Any claim that the completed effect model is faster, lower-memory, more deployable, or more useful requires the normal fixed-corpus and repeated-trial methodology.
 
-The Patch 051 capability review may define future score and capability ablations, but those conditions must remain separate benchmark profiles. Historical smoke rows must not be reinterpreted as evidence for the strengthened Patch 050 effect contract.
+Patch 051 calibrates ordered two-pop and positive aligned stack-adjust scores.
+Patch 053 owns the broader capability reassessment and any additional score or
+capability ablations; those conditions must remain separate benchmark profiles.
+Historical smoke rows must not be reinterpreted as evidence for the strengthened
+Patch 050 effect contract.
 
 ## Patch 051 fixed-allocation and score-measurement note
 

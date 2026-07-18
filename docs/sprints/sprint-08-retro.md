@@ -33,7 +33,7 @@ loader-authority and parser-safety boundaries established in Sprint 7.
 - Patch 038 hardened direct comparator helper argument validation and aligned
   public Sprint 8 closeout planning.
 - Patch 039 corrected the missing benchmark-integrity RSS fixtures, strict
-  shell lint findings, and stale local context handoff before final Sprint 8
+  shell lint findings, and public closeout-planning drift before final Sprint 8
   acceptance.
 
 ## What became stronger

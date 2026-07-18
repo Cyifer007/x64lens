@@ -21,7 +21,7 @@ Patch 024 completes the planning closeout by replacing the earlier twelve-sprint
 
 The checkpoint continues to separate raw candidates, exact suffix observations, semantic classes, unknown candidates, and scores. It does not describe exact suffix matching as full instruction decoding and does not claim exploitability.
 
-The roadmap now treats decoder validation and provenance as evidence layers rather than as replacements for the fast raw scanner. This preserves performance measurements while allowing later correctness measurements to become explicit.
+The roadmap now treats decoder validation and provenance as evidence layers rather than as replacements for the bounded raw scanner. This preserves performance measurements while allowing later correctness measurements to become explicit.
 
 ## Important findings from the planning review
 

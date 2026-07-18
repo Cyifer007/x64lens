@@ -48,6 +48,7 @@ required=(
     docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md
     docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md
     docs/adr/0037-architectural-effects-and-contract-reconciliation.md
+    docs/adr/0038-patch051-corrective-effect-and-gate-hardening.md
     docs/design/sprint10-exact-pattern-catalog.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/primitive-effect-model.md
@@ -82,6 +83,7 @@ required=(
     docs/sprints/sprint-10-patch-049-validation.md
     docs/sprints/sprint-10-patch-050-validation.md
     docs/sprints/sprint-10-patch-051-validation.md
+    docs/sprints/sprint-10-patch-052-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -104,6 +106,9 @@ required=(
     tools/validate-report-parity.py
     tools/json-effect-consistency-smoke.py
     tools/sprint10-family-coverage-smoke.py
+    tools/sprint10-score-policy-smoke.py
+    tools/shellcheck-contract-smoke.py
+    tests/internal/memory-effect-reconciliation.asm
     tools/validate-sprint10-transfer-disassembly.py
     tools/validate-sprint10-stack-adjust-disassembly.py
     tools/validate-sprint10-memory-disassembly.py
@@ -184,6 +189,10 @@ grep -qi 'memory-effect' docs/adr/0035-bounded-memory-effect-sidecar-and-authent
     || fail 'ADR 0035 does not record the bounded memory-effect decision'
 grep -q 'Patch 050' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 050 effect-completion boundary'
+grep -q 'Patch 052' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not record the Patch 052 corrective boundary'
+grep -q 'memory-effect-reconciliation-smoke' docs/sprints/sprint-10-patch-052-validation.md \
+    || fail 'Patch 052 validation does not name the memory reconciliation gate'
 grep -qi 'fail-fast' docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md \
     || fail 'ADR 0036 does not record fail-fast fixture-gate hardening'
 grep -q 'sprint10-family-coverage-smoke' docs/sprints/sprint-10-patch-050-validation.md \

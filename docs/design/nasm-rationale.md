@@ -11,7 +11,9 @@ The strongest claim is not that assembly is automatically faster than every othe
 The stronger, testable claim is:
 
 ```text
-A dependency-light, assembly-first ELF64 analyzer can produce fast, reproducible, mitigation-aware semantic primitive reports with a small runtime dependency surface.
+A dependency-light, assembly-first ELF64 analyzer can produce reproducible,
+mitigation-aware semantic primitive reports with a small runtime dependency
+surface.
 ```
 
 This keeps the project measurable and avoids unsupported language-superiority claims.

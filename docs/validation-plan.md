@@ -1265,6 +1265,10 @@ remain mandatory.
 
 ## Sprint 10 Patch 051 architectural-effect reconciliation validation
 
+The focused command matrix, expected banners, record invariants, and acceptance
+rules are maintained in the
+[Patch 051 validation record](sprints/sprint-10-patch-051-validation.md).
+
 Required focused gates:
 
 ```bash
@@ -1281,3 +1285,28 @@ exact-only unknown, 14 scored, 23 complete effect models, and two partial effect
 models. Candidate capacity remains 4,096; candidate 4,097 still fails before
 stdout. Native and Docker reports must agree without normalizing semantic,
 effect, or score facts.
+
+
+## Sprint 10 Patch 052 corrective validation
+
+Patch 052 adds no primitive family. It corrects Patch 051 effect encoding and
+validation boundaries. Required focused commands:
+
+```bash
+make memory-effect-reconciliation-smoke
+make sprint10-score-policy-smoke
+make shellcheck-contract-smoke
+make sprint10-architectural-effects-smoke
+make json-effect-consistency-smoke
+make sprint10-contract-reconciliation-smoke
+```
+
+The one-per-pattern fixture uses `c2 00 00` and requires stack delta 8. The
+memory harness accepts two canonical records and rejects direction conflicts, a
+reserved bit, base mismatch, nonzero displacement, and wrong-index records.
+Strict ShellCheck mode must fail clearly when the executable is absent.
+
+Acceptance still requires the complete native and qualified Docker aggregates,
+`make native-docker-json-parity-smoke`,
+4096/4097 capacity behavior, malformed-input no-partial-output behavior, and
+native/Docker fact parity.

@@ -102,7 +102,8 @@ Patch 045 does not recalibrate scores. A candidate-scoped decoder may later add 
 
 ## Sprint 10 Patch 046 multi-pop status
 
-The first two-pop argument-control family is intentionally unscored. It provides
+At the Patch 046 boundary, the first two-pop argument-control family was
+intentionally unscored. It provides
 more controlled registers than a single-pop primitive, but it also consumes more
 stack and introduces order-sensitive effects. Assigning a score before clobber,
 memory, decoder-confidence, and comparative-utility policy is defined would
@@ -115,8 +116,8 @@ semantic_class = arg_control
 score = null
 ```
 
-This is a deliberate model state, not a missing reporter value. A later score
-entry requires separate fixtures and scoring-model validation.
+This was a deliberate model state, not a missing reporter value. Patch 051
+later supplies the required validation and calibrates the current score to 95.
 
 ## Sprint 10 Patch 047 score decision
 
@@ -128,9 +129,16 @@ factor rule plus fixture updates.
 
 ## Sprint 10 Patch 048 score decision
 
-The first positive aligned `add rsp, imm8; ret` family remains unscored. Utility depends on adjustment size, chain layout, alignment needs, condition-flag effects, surrounding candidate validity, and future bad-byte or decoder evidence. Patch 048 records the exact immediate-derived stack delta and explicit `stack_adjust`/`flags_write` effects but does not infer a utility rank.
+At the Patch 048 boundary, the first positive aligned `add rsp, imm8; ret`
+family was unscored. Utility depends on adjustment size, chain layout, alignment
+needs, condition-flag effects, surrounding candidate validity, and future bad-
+byte or decoder evidence. Patch 048 records the exact immediate-derived stack
+delta and explicit `stack_adjust`/`flags_write` effects without inferring a
+utility rank; Patch 051 later calibrates the current score to 35.
 
-Any later score requires an explicit rule and fixture update. Existing `ret` and `ret imm16` scores are not reused because the new family performs additional arithmetic and has a different chain effect.
+That later score required an explicit rule and fixture update. Existing `ret`
+and `ret imm16` scores were not reused because the new family performs
+additional arithmetic and has a different chain effect.
 
 
 ## Sprint 10 Patch 050 score decision
@@ -146,7 +154,9 @@ Any future score must continue to define and test at least:
 - task-specific defensive utility;
 - versioning or migration behavior for existing score values.
 
-Until that review is accepted, `score: null` is the correct current representation for the new Sprint 10 families.
+At the Patch 050 boundary, `score: null` was correct for all new Sprint 10
+families. Patch 051 supersedes that state for ordered two-pop and positive
+aligned stack adjustment; register-transfer and memory families remain null.
 
 ## Sprint 10 Patch 051 calibrated entries
 
@@ -167,3 +177,15 @@ Register-transfer and memory read/write families remain unscored because the
 current model does not represent source-value control, address control, or
 memory-content control. The values remain relative utility hypotheses and are
 not exploitability probabilities or binary-level risk scores.
+
+
+## Sprint 10 Patch 052 score-policy gate
+
+Patch 052 does not recalibrate any score. It makes the existing numeric policy
+machine-checkable across the semantic-family and exact-pattern authorities. A
+mutation from ordered multi-pop 95 to 94 or stack adjustment 35 to 34 must fail
+both reconciliation gates.
+
+The scoring engine also compares full-width architectural descriptors through a
+register, preventing immediate-width truncation from allowing an invalid record
+to retain a score. Register-transfer and memory families remain unscored.

@@ -233,7 +233,7 @@ forms retain the strongest existing suffix interpretation.
 
 ## Sprint 10 Patch 048 stack-adjust behavior
 
-`gadgets` and `analyze` may report exact `add rsp, imm8; ret` suffixes when the immediate is positive, nonzero, and eight-byte aligned. These candidates remain semantic-exact alignment facts with known total stack delta, `stack_adjust` and `flags_write` effects, and no score. Unsupported arithmetic forms remain bare-return fallbacks. CLI syntax, exit codes, capacity behavior, and schema version remain unchanged.
+`gadgets` and `analyze` may report exact `add rsp, imm8; ret` suffixes when the immediate is positive, nonzero, and eight-byte aligned. At the Patch 048 boundary, these candidates were semantic-exact alignment facts with known total stack delta, `stack_adjust` and `flags_write` effects, and no score. Unsupported arithmetic forms remain bare-return fallbacks. CLI syntax, exit codes, capacity behavior, and schema version remain unchanged.
 
 ## Sprint 10 Patch 049 memory-effect reporting
 
@@ -243,3 +243,12 @@ The CLI syntax and exit codes do not change. Current `gadgets` and `analyze` rep
 ## Sprint 10 Patch 050 effect-completion note
 
 Current `gadgets` and `analyze` reports record `stack_read` for every supported semantic candidate ending in `ret` or `ret imm16`. `syscall; ret` records `rcx` and `r11` clobbers, `leave; ret` records an `rbp` clobber, and transfer/memory-read candidates retain destination clobbers. This changes represented effect detail, not CLI syntax, exit codes, candidate counts, or schema version.
+
+## Sprint 10 Patch 051 architectural-effect and score behavior
+
+Current `gadgets` and `analyze` reports include candidate-index architectural
+effects for represented GPR, flag, control-flow, and stack-source facts. Ordered
+two-pop argument control scores 95 and positive aligned stack adjustment scores
+35 only after semantic and architectural facts validate. Register-transfer and
+memory candidates remain unscored. CLI syntax, exit codes, capacity behavior,
+and schema version remain unchanged.

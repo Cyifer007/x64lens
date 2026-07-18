@@ -83,3 +83,11 @@ make sprint10-memory-smoke
 The machine-readable table and all expected reports remain schema `0.2.0`
 fixtures. Historical Patch 046 reports remain compatible, while current
 producer output must satisfy the stronger completed-effect contract.
+
+
+## Patch 052 gate refinement
+
+Patch 052 makes numeric score values part of both maintained contract gates and
+adds negative mutations for ordered multi-pop and stack adjustment. The exact
+pattern fixture also covers `ret imm16 0`; transfer and memory families remain
+unscored.
