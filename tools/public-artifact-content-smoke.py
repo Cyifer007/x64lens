@@ -36,19 +36,17 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="x64lens-public-artifact-content-") as temp:
         root = Path(temp)
         clean = root / "clean.zip"
+        tampered_checker = root / "tampered-checker.zip"
         deleted_workspace = root / "deleted-workspace.zip"
         deleted_sandbox = root / "deleted-sandbox.zip"
         added_package = root / "added-package.zip"
         added_supply = root / "added-supply.zip"
-        checker_policy_literal = "Co" + "dex"
         make_zip(
             clean,
             {
                 "changed-files/README.md": "Repository-facing validation evidence.\n",
-                # The policy implementation necessarily contains its own
-                # prohibited tokens and must remain excluded under any archive
-                # root prefix.
-                "root/changed-files/tools/check-public-content.py": checker_policy_literal + "\n",
+                # The real policy implementation must pass its own scan.
+                "root/changed-files/tools/check-public-content.py": CHECKER.read_text(encoding="utf-8"),
             },
         )
 
@@ -58,17 +56,19 @@ def main() -> int:
         sandbox_phrase = "restricted filesystem " + "sandbox"
         package_phrase = "self-" + "authenticating application and evidence package"
         supply_phrase = "artifact-" + "supply findings"
+        make_zip(tampered_checker, {"changed-files/tools/check-public-content.py": CHECKER.read_text(encoding="utf-8") + "\n# " + ("Co" + "dex") + "\n"})
         make_zip(deleted_workspace, {"change.patch": f"-- Exclude {private_phrase}.\n"})
         make_zip(deleted_sandbox, {"change.patch": f"-- Validation ran outside the {sandbox_phrase}.\n"})
         make_zip(added_package, {"review.diff": f"+- Regenerate a complete, {package_phrase}.\n"})
         make_zip(added_supply, {"review.diff": f"+- Reconcile public documentation and {supply_phrase}.\n"})
 
         run(clean, 0)
+        run(tampered_checker, 1)
         run(deleted_workspace, 1)
         run(deleted_sandbox, 1)
         run(added_package, 1)
         run(added_supply, 1)
-    print("public-artifact-content-smoke: ok cases=5 accepted=1 rejected=4")
+    print("public-artifact-content-smoke: ok cases=6 accepted=1 rejected=5")
     return 0
 
 

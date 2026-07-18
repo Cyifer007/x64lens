@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 048 candidate, which preserves the Patch 046 ordered multi-pop and Patch 047 register-transfer foundations, corrects their validation and reporting gates, and adds one exact positive aligned stack-adjust family without enlarging the candidate arena or adding a runtime dependency.
+> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 049 candidate. Patch 049 preserves the ordered multi-pop, register-transfer, and stack-adjust foundations, adds the first bounded qword memory read/write families through a candidate-index side-car, and hardens authenticated public final-file distribution without adding a runtime dependency.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -34,6 +34,7 @@ read-only file mapping
   -> exact suffix pattern IDs and ordered structural facts
   -> conservative semantic classes and explicit effects
   -> candidate-indexed raw, exact-suffix, and semantic-exact evidence
+  -> candidate-indexed structured memory effects
   -> heuristic scores
   -> command-owned report identity and complete-analysis summary
   -> text or JSON reporting
@@ -80,7 +81,7 @@ The current line does not implement exploit generation, payload generation, remo
 - Per-candidate `evidence` identifies raw, exact-suffix, and semantic-exact provenance; `full_sequence_valid` remains `null` until decoder evidence exists.
 - A future **decoder-validated candidate** is one whose selected start decodes as a complete instruction sequence ending at the terminator; that evidence does not erase its raw or exact-suffix facts.
 - A future **semantic-decoded candidate** is classified from decoded instruction and operand facts and remains distinct from a semantic-exact candidate.
-- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, represented `side_effects`, and an optional `register_transfer` source/destination relation. Patch 046 multi-pop, Patch 047 register-transfer, and Patch 048 stack-adjust candidates remain unscored until their score policies are reviewed independently. The Patch 048 stack-adjust family records both `stack_adjust` and arithmetic `flags_write` effects.
+- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, represented `side_effects`, optional `register_transfer`, and optional structured `memory_access` facts. Patch 046 multi-pop, Patch 047 register-transfer, Patch 048 stack-adjust, and Patch 049 memory candidates remain unscored until their score policies are reviewed independently. Patch 049 memory facts identify direction, base, value register, width, dereference state, and known zero displacement without claiming decoded full-sequence validity.
 - Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoder-validated instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
@@ -121,7 +122,9 @@ make public-artifact-content-smoke
 make sprint10-primitive-smoke
 make sprint10-register-transfer-smoke
 make sprint10-stack-adjust-smoke
+make sprint10-memory-smoke
 make json-effect-consistency-smoke
+make public-overlay-verification-smoke
 make decoder-gap-hardening-smoke
 make decoder-gap-smoke
 ```
@@ -298,7 +301,7 @@ The canonical eighteen-sprint roadmap defines:
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 evidence-aware primitive expansion, active with ordered two-pop, exact register-transfer, and exact positive aligned stack-adjust foundations,
+- Sprint 10 evidence-aware primitive expansion, active with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded base-plus-zero qword memory-effect foundations,
 - Sprint 11 reproducible corpus,
 - Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
 - Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.
@@ -308,7 +311,7 @@ See [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md) and [`docs/resear
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 048 are later pre-release work.
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 049 are later pre-release work.
 
 Planned release sequence:
 
@@ -318,7 +321,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patch 046 adds compatible ordered-pop, clobber, and side-effect fields. Patch 047 adds an optional register-transfer relation and transfer coverage field. Patch 048 adds compatible `stack_adjust` and `flags_write` side-effect values without changing count meaning or required historical fields. Current-producer validation requires the implemented effect relationships while earlier `0.2.0` reports remain consumable. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patch 046 adds compatible ordered-pop, clobber, and side-effect fields. Patch 047 adds an optional register-transfer relation and transfer coverage field. Patch 048 adds compatible `stack_adjust` and `flags_write` side-effect values. Patch 049 adds compatible memory coverage, memory side-effect values, and an optional structured `memory_access` object while preserving historical count meanings and required fields. Current-producer validation requires the implemented effect relationships while earlier `0.2.0` reports remain consumable. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

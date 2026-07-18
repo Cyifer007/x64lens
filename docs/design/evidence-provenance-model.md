@@ -240,3 +240,17 @@ decoder.
 
 For Patch 047 transfers, `controls` is empty and `clobbers` contains the
 destination.
+
+## Sprint 10 Patch 049 memory-effect evidence
+
+Memory effects are structured semantic-exact facts in a separate dense side-car. The side-car does not upgrade `full_sequence_valid`; current memory candidates retain `semantic_exact` evidence with `full_sequence_valid:null`.
+
+The record separation is:
+
+```text
+gadget_record[]              raw/exact/semantic/scoring facts
+candidate_evidence_record[]  evidence source and matched suffix
+memory_effect_record[]       structured address and access effects
+```
+
+A future decoder may confirm or reject a selected full instruction sequence, but it must preserve the raw candidate, exact suffix, semantic-exact memory relation, and any disagreement.

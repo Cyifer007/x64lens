@@ -56,7 +56,10 @@
       "rdi",
       "r8",
       "r9"
-    ]
+    ],
+    "reg_transfer": false,
+    "memory_write": false,
+    "memory_read": false
   },
   "gadgets": [
     {
@@ -91,7 +94,9 @@
         "matched_suffix_length": 3,
         "full_sequence_valid": null
       },
-      "score": null
+      "score": null,
+      "register_transfer": null,
+      "memory_access": null
     },
     {
       "va": "0x0000000000000007",
@@ -125,7 +130,9 @@
         "matched_suffix_length": 5,
         "full_sequence_valid": null
       },
-      "score": null
+      "score": null,
+      "register_transfer": null,
+      "memory_access": null
     },
     {
       "va": "0x000000000000000a",
@@ -159,7 +166,9 @@
         "matched_suffix_length": 3,
         "full_sequence_valid": null
       },
-      "score": null
+      "score": null,
+      "register_transfer": null,
+      "memory_access": null
     },
     {
       "va": "0x000000000000000d",
@@ -191,7 +200,9 @@
         "matched_suffix_length": 2,
         "full_sequence_valid": null
       },
-      "score": 90
+      "score": 90,
+      "register_transfer": null,
+      "memory_access": null
     },
     {
       "va": "0x0000000000000010",
@@ -223,7 +234,9 @@
         "matched_suffix_length": 2,
         "full_sequence_valid": null
       },
-      "score": 90
+      "score": 90,
+      "register_transfer": null,
+      "memory_access": null
     }
   ],
   "limitations": [

@@ -45,6 +45,7 @@ required=(
     docs/adr/0032-ordered-multi-pop-foundation.md
     docs/adr/0033-exact-register-transfer-effects.md
     docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md
+    docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/primitive-effect-model.md
     docs/design/defensive-deployment-profile.md
@@ -74,6 +75,7 @@ required=(
     docs/sprints/sprint-10-patch-046-validation.md
     docs/sprints/sprint-10-patch-047-validation.md
     docs/sprints/sprint-10-patch-048-validation.md
+    docs/sprints/sprint-10-patch-049-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -97,8 +99,11 @@ required=(
     tools/json-effect-consistency-smoke.py
     tools/validate-sprint10-transfer-disassembly.py
     tools/validate-sprint10-stack-adjust-disassembly.py
+    tools/validate-sprint10-memory-disassembly.py
     tools/check-public-content.py
     tools/public-artifact-content-smoke.py
+    tools/verify-public-overlay.py
+    tools/public-overlay-verification-smoke.py
     schemas/x64lens-report-0.1.0.schema.json
     schemas/x64lens-report.schema.json
     tests/expected/x64lens-report-0.1.0.json
@@ -107,10 +112,12 @@ required=(
     tests/expected/x64lens-report-sprint10-0.2.0.json
     tests/expected/x64lens-report-sprint10-transfer-0.2.0.json
     tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json
+    tests/expected/x64lens-report-sprint10-memory-0.2.0.json
     tests/expected/decoder-gap-controlled.json
     tests/toy-src/gadgets_sprint10.S
     tests/toy-src/gadgets_sprint10_transfer.S
     tests/toy-src/gadgets_sprint10_stack_adjust.S
+    tests/toy-src/gadgets_sprint10_memory.S
 )
 
 for path in "${required[@]}"; do
@@ -163,6 +170,10 @@ grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 047 register-transfer boundary'
 grep -q 'Patch 048' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 048 stack-adjust boundary'
+grep -q 'Patch 049' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not record the Patch 049 memory-effect boundary'
+grep -qi 'memory-effect' docs/adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md \
+    || fail 'ADR 0035 does not record the bounded memory-effect decision'
 grep -qi 'ordered multi-pop' docs/adr/0032-ordered-multi-pop-foundation.md \
     || fail 'ADR 0032 does not record the ordered multi-pop decision'
 grep -qi 'register-transfer' docs/adr/0033-exact-register-transfer-effects.md \
@@ -181,6 +192,10 @@ grep -q 'sprint10-stack-adjust-smoke' docs/sprints/sprint-10-patch-048-validatio
     || fail 'Patch 048 validation does not name the stack-adjust fixture gate'
 grep -q 'public-artifact-content-smoke' docs/sprints/sprint-10-patch-048-validation.md \
     || fail 'Patch 048 validation does not name the public artifact content gate'
+grep -q 'sprint10-memory-smoke' docs/sprints/sprint-10-patch-049-validation.md \
+    || fail 'Patch 049 validation does not name the memory fixture gate'
+grep -q 'public-overlay-verification-smoke' docs/sprints/sprint-10-patch-049-validation.md \
+    || fail 'Patch 049 validation does not name authenticated public-overlay regression'
 grep -q 'Patch 040' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 plan does not record the Patch 040 foundation'
 grep -q 'Patch 041' docs/sprints/sprint-09-plan.md \
@@ -286,6 +301,12 @@ grep -q '^sprint10-register-transfer-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-register-transfer-smoke'
 grep -q '^sprint10-stack-adjust-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-stack-adjust-smoke'
+grep -q '^sprint10-memory-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-memory-smoke'
+grep -q '^public-overlay-verify:' Makefile \
+    || fail 'Makefile does not define public-overlay-verify'
+grep -q '^public-overlay-verification-smoke:' Makefile \
+    || fail 'Makefile does not define public-overlay-verification-smoke'
 grep -q '^public-artifact-content-smoke:' Makefile \
     || fail 'Makefile does not define public-artifact-content-smoke'
 grep -q '^public-bundle-content-check:' Makefile \
@@ -294,8 +315,11 @@ grep -q '^json-effect-consistency-smoke:' Makefile \
     || fail 'Makefile does not define json-effect-consistency-smoke'
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
-grep -Eq '^validation-smoke:.*public-docs-hygiene-smoke.*public-artifact-content-smoke.*benchmark-integrity-smoke.*patch-bundle-hygiene-smoke.*schema-compat-smoke.*decoder-gap-hardening-smoke.*decoder-gap-smoke.*sprint10-primitive-smoke.*sprint10-register-transfer-smoke.*sprint10-stack-adjust-smoke.*json-effect-consistency-smoke.*capacity-smoke.*malformed-smoke.*mitigation-matrix-smoke.*section-label-smoke.*readelf-comparison-smoke.*optional-tool-comparison-smoke' Makefile \
-    || fail 'validation-smoke does not include public-document/artifact, benchmark, bundle, schema, decoder hardening, decoder-gap, Sprint 10 primitive/effect, capacity, malformed, mitigation, section-label, readelf, and optional-tool gates'
+validation_line="$(grep '^validation-smoke:' Makefile || true)"
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+    [[ "$validation_line" == *"$target"* ]] \
+        || fail "validation-smoke does not include required target: $target"
+done
 
 printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
     "$plan_count" "$forward_count"

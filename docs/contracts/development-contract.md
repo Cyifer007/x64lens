@@ -268,3 +268,11 @@ Metadata-only archive validation and public textual-content validation are separ
 ## Exact stack-adjust family rule
 
 An exact arithmetic stack family must validate opcode, operand, immediate domain, terminator, and candidate bounds before semantic promotion. Arithmetic flag modification must remain visible as an effect. Unsupported forms fall back to the strongest existing fact rather than receiving a broader semantic claim.
+
+## Memory-effect side-car rule
+
+Structured memory facts belong in a candidate-index side-car rather than in reporter inference or variable-length raw records. The materializer may reconcile exact and semantic facts but must not scan bytes, parse ELF, classify candidates, score them, or emit output. New address forms require controlled fixtures and exact operand semantics before promotion.
+
+## Public overlay authentication rule
+
+A final-file public patch archive must authenticate the complete object. Validation must bind a caller-supplied outer SHA-256 to the archive, apply metadata and textual-content policies, and reconcile every member against an internal manifest. The content policy must scan its own implementation rather than exempting the checker source.

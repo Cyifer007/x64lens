@@ -13,8 +13,8 @@ The taxonomy defines when a byte-level candidate can be promoted into an exploit
 | `syscall_trigger` | Provides a `syscall; ret` suffix. | Implemented. |
 | `stack_pivot` | Makes `rsp` input-dependent or derives it through a pivot sequence. | Implemented for `pop rsp; ret` and `leave; ret`. |
 | `alignment` | Return or exact bounded stack-adjustment suffix with alignment/spacing utility. | Implemented for `ret`, `ret imm16`, and the Patch 048 positive aligned `add rsp, imm8; ret` family. |
-| `memory_write` | Writes data to memory with known operand roles. | Planned. |
-| `memory_read` | Reads memory into a register with known operand roles. | Planned. |
+| `memory_write` | Writes a qword register value to a represented base-plus-zero memory address. | Implemented for the Patch 049 exact bounded family. |
+| `memory_read` | Reads a qword from a represented base-plus-zero memory address into a register. | Implemented for the Patch 049 exact bounded family. |
 | `reg_transfer` | Transfers a value between known registers with explicit source and destination roles. | Implemented for the Patch 047 exact register-direct 64-bit move family. |
 | `clobber_heavy` | Potentially useful sequence with substantial side effects. | Planned as a qualifier or class after side-effect modeling. |
 | `unknown_candidate` | Candidate without a justified semantic mapping. | Implemented and deliberately preserved. |
@@ -29,7 +29,11 @@ The matcher recognizes:
 - `leave; ret`,
 - `syscall; ret`,
 - `pop <arg-register>; pop <arg-register>; ret` for two distinct supported System V argument registers,
-- exact register-direct `mov r64,r64; ret` suffixes under the Patch 047 restrictions.
+- exact register-direct `mov r64,r64; ret` suffixes under the Patch 047
+  restrictions,
+- exact `add rsp, imm8; ret` suffixes with a positive, nonzero,
+  eight-byte-aligned immediate under the Patch 048 restrictions,
+- exact qword base-plus-zero memory reads and writes followed by `ret` under the Patch 049 restrictions.
 
 Only the currently documented subset receives semantic promotion. For example, `pop rbx; ret`, `pop rbp; ret`, and several extended-register patterns remain exact observations but may remain `unknown_candidate` until their semantic role and score policy are defined.
 
@@ -185,3 +189,19 @@ score: unscored
 ```
 
 Zero, negative, unaligned, wrong-register, subtraction, and memory forms are not promoted. Arithmetic flags are recorded as an effect rather than silently omitted. Exact-suffix evidence does not prove the complete backward window decodes from its earliest byte.
+
+## Patch 049 memory promotion rule
+
+A memory candidate is promoted only when exact bytes establish:
+
+- qword width through `REX.W`;
+- opcode `89 /r` or `8b /r`;
+- register/memory direction;
+- `ModRM.mod=00`;
+- one represented base register;
+- no SIB or index;
+- known zero displacement;
+- no `rsp` value or destination;
+- immediate `ret` terminator.
+
+Memory writes have no GPR clobber. Memory reads clobber only the value destination. Neither family infers control of the address or memory contents. Other forms preserve fallback semantics.

@@ -200,3 +200,9 @@ The paper should evaluate the dependency-free scanner as the reference profile a
 The paper may describe Patch 048 as a compatible semantic-exact extension for positive aligned stack adjustment with explicit stack and condition-flag effects. It may not describe the family as full decoded validity, universal stack-adjust coverage, or evidence that x64lens is faster or lower-RSS than baseline tools.
 
 Public replication archives must be evaluated as distributed bytes. Metadata-safe archives can still preserve prohibited text inside patch or diff members, so both archive metadata and bounded public-content gates are required.
+
+## Sprint 10 Patch 049 publication note
+
+The paper may describe Patch 049 as the first structured semantic-exact memory-effect family: qword base-plus-zero loads and stores with explicit direction, base, value register, width, dereference, clobber, and score state. It may not generalize this family to arbitrary memory operands, claim decoder validity, or infer address controllability.
+
+The 720,896-byte arena is a fixed implementation allocation. It is not evidence of process RSS, speed, or superiority until measured under the publication methodology.

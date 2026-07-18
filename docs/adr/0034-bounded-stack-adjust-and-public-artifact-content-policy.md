@@ -8,18 +8,17 @@ Accepted for Sprint 10 Patch 048 validation.
 
 Sprint 10 expands exact semantic coverage while preserving the dependency-free,
 one-worker reference runtime. Patch 046 added ordered two-pop facts and Patch
-047 added exact register-direct transfer facts. Review of the Patch 047
-candidate identified two independent gaps:
+047 added exact register-direct transfer facts. The Patch 047 candidate had two
+independent gaps:
 
 1. the JSON reporter referenced compact object delimiters that were not defined;
 2. repository-tree hygiene did not prevent deleted private-process wording from
    remaining recoverable inside a distributed unified diff.
 
-The same review confirmed that register-transfer classification, capacity,
-mapping, cleanup, and native/Docker fact parity behaved as designed after the
-missing delimiters were supplied. The next forward primitive should therefore
-reuse the existing record model rather than broaden parser, decoder, or worker
-scope.
+Patch 047 was therefore rejected as delivered. Patch 048 corrects these gaps
+while retaining the register-transfer family and existing record model. The
+next forward primitive can reuse that model rather than broaden parser, decoder,
+or worker scope.
 
 ## Decision
 

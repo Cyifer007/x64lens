@@ -50,7 +50,9 @@
     "stack_pivot": false,
     "alignment": true,
     "reg_transfer": false,
-    "registers": []
+    "registers": [],
+    "memory_write": false,
+    "memory_read": false
   },
   "gadgets": [
     {
@@ -81,7 +83,8 @@
         "matched_suffix_length": 5,
         "full_sequence_valid": null
       },
-      "score": null
+      "score": null,
+      "memory_access": null
     },
     {
       "va": "0x0000000000401009",
@@ -111,7 +114,8 @@
         "matched_suffix_length": 5,
         "full_sequence_valid": null
       },
-      "score": null
+      "score": null,
+      "memory_access": null
     },
     {
       "va": "0x000000000040100e",
@@ -138,7 +142,8 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45
+      "score": 45,
+      "memory_access": null
     },
     {
       "va": "0x0000000000401013",
@@ -165,7 +170,8 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45
+      "score": 45,
+      "memory_access": null
     },
     {
       "va": "0x0000000000401018",
@@ -192,7 +198,8 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45
+      "score": 45,
+      "memory_access": null
     },
     {
       "va": "0x000000000040101d",
@@ -219,7 +226,8 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45
+      "score": 45,
+      "memory_access": null
     },
     {
       "va": "0x0000000000401022",
@@ -246,7 +254,8 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45
+      "score": 45,
+      "memory_access": null
     }
   ],
   "limitations": [

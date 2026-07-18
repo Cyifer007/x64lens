@@ -43,6 +43,7 @@ x64lens CLI
 | `patterns.asm` | Exact opcode-template matching, pattern IDs, and bounded ordered structural facts | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification plus controlled, clobbered, stack, and represented side-effect facts | Raw file I/O or score policy |
 | `candidate_evidence.asm` | Dense per-candidate raw/exact-suffix/semantic-exact provenance side-car | Scan bytes, decode instructions, score, or report |
+| `memory_effect.asm` | Dense per-candidate structured memory-access side-car | Parse ELF, scan candidates, decide scores, or format output |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
@@ -926,3 +927,33 @@ Promotion requires a nonzero positive immediate below `0x80` and divisible by ei
 The family reuses the existing 112-byte `gadget_record`. Candidate capacity remains 4096 and the combined analysis arena remains 655360 bytes. Full-sequence validity remains unknown because exact suffix evidence is not decoded validity.
 
 Public artifact validation now has two independent layers: metadata-only ZIP safety and bounded textual-content inspection. The latter reads eligible public text members in memory without extracting them. See [ADR 0034](adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md) and the [Patch 048 validation plan](sprints/sprint-10-patch-048-validation.md).
+
+## Sprint 10 Patch 049 bounded memory-effect seam
+
+Patch 049 adds a third dense command-lifetime record array:
+
+```text
+gadget_record[4096]              112 bytes each
+candidate_evidence_record[4096]   48 bytes each
+memory_effect_record[4096]         16 bytes each
+```
+
+The combined arena is 720,896 bytes. The fixed increase is 65,536 bytes; candidate capacity remains 4,096. The scanner receives only the raw record array and capacity and remains unaware of the side-cars.
+
+The execution order is:
+
+```text
+raw scan
+  -> exact patterns and compact operand facts
+  -> semantic classification
+  -> candidate evidence materialization
+  -> memory-effect materialization
+  -> scoring
+  -> optional annotations
+  -> analysis summary
+  -> text or JSON reporting
+```
+
+`memory_effect.asm` reconciles already-established exact and semantic facts. It cannot scan target bytes, classify a candidate, assign a score, or format output. Reporters receive the memory side-car explicitly.
+
+The first families represent only qword base-plus-zero `mov` loads and stores without SIB, displacement, RIP-relative addressing, or `rsp` participation. This bounded scope establishes the durable operand record before broader memory families.

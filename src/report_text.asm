@@ -11,7 +11,7 @@
 ; Current exports:
 ;   x64lens_report_text_elf64_info(path, mapped_base, file_size)
 ;   x64lens_report_text_mitigations(path, mapped_base, file_size, summary, regions)
-;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base, analysis_summary)
+;   x64lens_report_text_gadgets(path, gadget_summary, gadget_records, mapped_base, analysis_summary, memory_effect_records)
 ;
 ; Integrated-report seam:
 ;   report_context.asm exposes body-only wrappers. The wrappers set a narrow
@@ -131,6 +131,8 @@ label_systrig_count:   db "  syscall_trigger count: ", 0
 label_pivot_count:     db "  stack_pivot count: ", 0
 label_align_count:     db "  alignment count: ", 0
 label_reg_transfer_count: db "  reg_transfer count: ", 0
+label_memory_write_count: db "  memory_write count: ", 0
+label_memory_read_count: db "  memory_read count: ", 0
 label_reg_coverage:    db "  Register coverage: ", 0
 no_candidates:         db "  none discovered in executable regions", 10, 0
 candidate_prefix:      db "  - VA ", 0
@@ -149,6 +151,7 @@ candidate_score:       db ", score: ", 0
 candidate_bytes:       db ", bytes: ", 0
 candidate_pop_order:   db ", stack pop order: ", 0
 candidate_transfer:    db ", register transfer: ", 0
+candidate_memory:      db ", memory access: ", 0
 candidate_clobbers:    db ", clobbers: ", 0
 candidate_effects:     db ", side effects: ", 0
 term_ret:              db "ret", 0
@@ -178,6 +181,8 @@ pattern_syscall_ret:   db "syscall; ret", 0
 pattern_multi_pop_ret: db "pop reg; pop reg; ret", 0
 pattern_mov_reg_reg_ret: db "mov reg, reg; ret", 0
 pattern_add_rsp_imm8_ret: db "add rsp, imm8; ret", 0
+pattern_mov_mem_reg_ret: db "mov [base], value; ret", 0
+pattern_mov_reg_mem_ret: db "mov value, [base]; ret", 0
 semantic_unknown:      db "unknown_candidate", 0
 semantic_arg_control:  db "arg_control", 0
 semantic_syscall_num:  db "syscall_num_control", 0
@@ -198,6 +203,17 @@ side_effect_ret_imm16:   db "ret_imm16", 0
 side_effect_register_write: db "register_write", 0
 side_effect_stack_adjust: db "stack_adjust", 0
 side_effect_flags_write: db "flags_write", 0
+side_effect_memory_read: db "memory_read", 0
+side_effect_memory_write: db "memory_write", 0
+memory_read_s:         db "read", 0
+memory_write_s:        db "write", 0
+memory_base_s:         db " base=", 0
+memory_value_s:        db " value=", 0
+memory_index_none_s:   db " index=none", 0
+memory_scale_one_s:    db " scale=1", 0
+memory_disp_s:         db " displacement=", 0
+memory_width_s:        db " width=", 0
+memory_deref_s:        db " dereference=yes", 0
 reg_rax:               db "rax", 0
 reg_rbx:               db "rbx", 0
 reg_rcx:               db "rcx", 0
@@ -660,7 +676,7 @@ report_text_print_perms:
     jmp     print_cstr
 
 
-; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx, analysis_summary=r8)
+; x64lens_report_text_gadgets(path=rdi, gadget_summary=rsi, gadget_records=rdx, mapped_base=rcx, analysis_summary=r8, memory_effects=r9)
 ;
 ; Inputs:
 ;   RDI = target path C string
@@ -684,6 +700,8 @@ x64lens_report_text_gadgets:
     push    r14
     push    r15
     push    r8                  ; analysis_summary pointer
+    push    r9                  ; memory_effect_record[] pointer
+    sub     rsp, 8              ; preserve nested-call alignment
 
     mov     rbx, rdi            ; target path
     mov     r12, rsi            ; gadget_summary
@@ -704,7 +722,7 @@ x64lens_report_text_gadgets:
 .gadgets_body_start:
     ; Identity and completeness come from a command-owned record constructed
     ; only after the shared analysis pipeline succeeds.
-    mov     r15, [rsp]
+    mov     r15, [rsp + 16]
 
     lea     rdi, [section_analysis]
     call    print_cstr
@@ -881,6 +899,18 @@ x64lens_report_text_gadgets:
     call    print_hex64
     call    print_nl
 
+    lea     rdi, [label_memory_write_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_MEMORY_WRITE_COUNT]
+    call    print_hex64
+    call    print_nl
+
+    lea     rdi, [label_memory_read_count]
+    call    print_cstr
+    mov     rdi, [r12 + GADGET_SUMMARY_MEMORY_READ_COUNT]
+    call    print_hex64
+    call    print_nl
+
     lea     rdi, [label_reg_coverage]
     call    print_cstr
     mov     rdi, [r12 + GADGET_SUMMARY_REGS_CONTROLLED]
@@ -976,6 +1006,14 @@ x64lens_report_text_gadgets:
     mov     rdi, r15
     call    report_text_print_register_transfer
 
+    lea     rdi, [candidate_memory]
+    call    print_cstr
+    mov     rax, rbp
+    imul    rax, rax, MEMORY_EFFECT_RECORD_SIZE
+    mov     rdi, [rsp + 8]
+    add     rdi, rax
+    call    report_text_print_memory_effect
+
     lea     rdi, [candidate_clobbers]
     call    print_cstr
     mov     rdi, [r15 + GADGET_REGS_CLOBBERED]
@@ -991,7 +1029,7 @@ x64lens_report_text_gadgets:
     jmp     .candidate_loop
 
 .gadgets_done:
-    add     rsp, 8              ; discard saved analysis_summary pointer
+    add     rsp, 24             ; discard pad, memory pointer, and analysis pointer
     pop     r15
     pop     r14
     pop     r13
@@ -1070,6 +1108,10 @@ report_text_print_pattern:
     je      .pattern_mov_reg_reg_ret
     cmp     edi, PATTERN_ADD_RSP_IMM8_RET
     je      .pattern_add_rsp_imm8_ret
+    cmp     edi, PATTERN_MOV_MEM_REG_RET
+    je      .pattern_mov_mem_reg_ret
+    cmp     edi, PATTERN_MOV_REG_MEM_RET
+    je      .pattern_mov_reg_mem_ret
     lea     rdi, [pattern_unknown]
     jmp     print_cstr
 .pattern_ret:
@@ -1141,7 +1183,12 @@ report_text_print_pattern:
 .pattern_add_rsp_imm8_ret:
     lea     rdi, [pattern_add_rsp_imm8_ret]
     jmp     print_cstr
-
+.pattern_mov_mem_reg_ret:
+    lea     rdi, [pattern_mov_mem_reg_ret]
+    jmp     print_cstr
+.pattern_mov_reg_mem_ret:
+    lea     rdi, [pattern_mov_reg_mem_ret]
+    jmp     print_cstr
 
 ; report_text_print_semantic(edi=semantic_class)
 ;
@@ -1401,6 +1448,64 @@ report_text_print_register_transfer:
     pop     r12
     ret
 
+; report_text_print_memory_effect(rdi=memory_effect_record)
+report_text_print_memory_effect:
+    push    rbx
+    push    r12
+    push    r13
+    mov     r12, rdi
+    mov     rbx, [r12 + MEMORY_EFFECT_DESCRIPTOR]
+    test    rbx, MEMORY_EFFECT_FLAG_PRESENT
+    jz      .memory_none
+    test    rbx, MEMORY_EFFECT_FLAG_READ
+    jz      .memory_direction_write
+    lea     rdi, [memory_read_s]
+    call    print_cstr
+    jmp     .memory_direction_done
+.memory_direction_write:
+    lea     rdi, [memory_write_s]
+    call    print_cstr
+.memory_direction_done:
+    lea     rdi, [memory_base_s]
+    call    print_cstr
+    mov     r13, rbx
+    shr     r13, MEMORY_EFFECT_BASE_SHIFT
+    and     r13d, MEMORY_EFFECT_REG_MASK
+    mov     edi, r13d
+    call    report_text_print_reg_id
+    lea     rdi, [memory_value_s]
+    call    print_cstr
+    mov     r13, rbx
+    shr     r13, MEMORY_EFFECT_VALUE_SHIFT
+    and     r13d, MEMORY_EFFECT_REG_MASK
+    mov     edi, r13d
+    call    report_text_print_reg_id
+    lea     rdi, [memory_index_none_s]
+    call    print_cstr
+    lea     rdi, [memory_scale_one_s]
+    call    print_cstr
+    lea     rdi, [memory_disp_s]
+    call    print_cstr
+    mov     rdi, [r12 + MEMORY_EFFECT_DISPLACEMENT]
+    call    print_hex64
+    lea     rdi, [memory_width_s]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, MEMORY_EFFECT_WIDTH_SHIFT
+    and     edi, MEMORY_EFFECT_WIDTH_MASK
+    call    print_u64_dec
+    lea     rdi, [memory_deref_s]
+    call    print_cstr
+    jmp     .memory_done
+.memory_none:
+    lea     rdi, [regs_none]
+    call    print_cstr
+.memory_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
 %macro PRINT_EFFECT_IF_SET 2
     test    rbx, %1
     jz      %%skip
@@ -1429,6 +1534,8 @@ report_text_print_side_effects:
     PRINT_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write
     PRINT_EFFECT_IF_SET SIDE_EFFECT_STACK_ADJUST, side_effect_stack_adjust
     PRINT_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_MEMORY_READ, side_effect_memory_read
+    PRINT_EFFECT_IF_SET SIDE_EFFECT_MEMORY_WRITE, side_effect_memory_write
     test    r12, r12
     jne     .side_effects_done
     lea     rdi, [regs_none]

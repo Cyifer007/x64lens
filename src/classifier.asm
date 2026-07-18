@@ -12,9 +12,10 @@
 ;
 ; Current scope:
 ;   Map supported exact suffix patterns into conservative semantic classes.
-;   Sprint 10 adds ordered two-pop, exact register-transfer, and bounded
-;   positive stack-adjust families. This is still not full instruction
-;   decoding; semantic promotion describes exact suffix evidence.
+;   Sprint 10 adds ordered two-pop, exact register-transfer, bounded
+;   positive stack-adjust, and narrowly scoped base-plus-zero qword memory
+;   families. This is still not full instruction decoding; semantic
+;   promotion describes exact suffix evidence.
 ;
 ; Safety model:
 ;   Candidate records and exact pattern IDs are produced only after parser,
@@ -95,6 +96,8 @@ x64lens_classifier_apply_exact:
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_STACK_PIVOT_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_ALIGNMENT_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_REG_TRANSFER_COUNT
+    CLEAR_SUMMARY_QWORD GADGET_SUMMARY_MEMORY_WRITE_COUNT
+    CLEAR_SUMMARY_QWORD GADGET_SUMMARY_MEMORY_READ_COUNT
     CLEAR_SUMMARY_QWORD GADGET_SUMMARY_REGS_CONTROLLED
 
     xor     rbp, rbp            ; candidate index
@@ -148,6 +151,10 @@ x64lens_classifier_apply_exact:
     je      .class_reg_transfer
     cmp     eax, PATTERN_ADD_RSP_IMM8_RET
     je      .class_add_rsp_imm8
+    cmp     eax, PATTERN_MOV_MEM_REG_RET
+    je      .class_memory_write
+    cmp     eax, PATTERN_MOV_REG_MEM_RET
+    je      .class_memory_read
 
     ; Conservative default: known exact patterns that are not yet mapped to a
     ; semantic primitive remain unknown_candidate for Sprint 4 metrics.
@@ -301,6 +308,79 @@ x64lens_classifier_apply_exact:
     mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_STACK_ADJUST | SIDE_EFFECT_FLAGS_WRITE
     inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
     inc     qword [r13 + GADGET_SUMMARY_ALIGNMENT_COUNT]
+    jmp     .next_candidate
+
+.class_memory_write:
+    ; Pattern metadata stores base in the low nibble and the written value
+    ; register in the next nibble. A store does not overwrite a GPR, so clobbers
+    ; remain empty. Address/value controllability is intentionally not inferred.
+    cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     ebx, [r15 + GADGET_PATTERN_REG_ORDER]
+    test    ebx, 0xffffff00
+    jne     .bounds_error
+    mov     ecx, ebx
+    and     ecx, 0x0f           ; base
+    shr     ebx, 4
+    mov     edx, ebx
+    and     edx, 0x0f           ; value source
+    cmp     ecx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_RSP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_RSP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_RBP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_R12_BIT
+    je      .bounds_error
+    cmp     ecx, REG_R13_BIT
+    je      .bounds_error
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_MEMORY_WRITE
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_MEMORY_WRITE_COUNT]
+    jmp     .next_candidate
+
+.class_memory_read:
+    ; The memory-loaded value register is overwritten and therefore clobbered.
+    ; It is not marked controlled because current exact evidence does not prove
+    ; control of the addressed memory contents.
+    cmp     dword [r15 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     ebx, [r15 + GADGET_PATTERN_REG_ORDER]
+    test    ebx, 0xffffff00
+    jne     .bounds_error
+    mov     ecx, ebx
+    and     ecx, 0x0f           ; base
+    shr     ebx, 4
+    mov     edx, ebx
+    and     edx, 0x0f           ; value destination
+    cmp     ecx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edx, REG_RSP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_RSP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_RBP_BIT
+    je      .bounds_error
+    cmp     ecx, REG_R12_BIT
+    je      .bounds_error
+    cmp     ecx, REG_R13_BIT
+    je      .bounds_error
+    mov     dword [r15 + GADGET_SEMANTIC_CLASS], SEM_MEMORY_READ
+    xor     eax, eax
+    bts     rax, rdx
+    mov     [r15 + GADGET_REGS_CLOBBERED], rax
+    mov     qword [r15 + GADGET_STACK_DELTA], STACK_DELTA_RET
+    mov     qword [r15 + GADGET_SIDE_EFFECT_FLAGS], SIDE_EFFECT_MEMORY_READ | SIDE_EFFECT_REGISTER_WRITE
+    inc     qword [r13 + GADGET_SUMMARY_SEMANTIC_COUNT]
+    inc     qword [r13 + GADGET_SUMMARY_MEMORY_READ_COUNT]
     jmp     .next_candidate
 
 .class_pop_rax_syscall_num:

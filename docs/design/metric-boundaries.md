@@ -271,3 +271,9 @@ retain their established meanings.
 The exact stack-adjust family is classified as `alignment`. It does not introduce a new aggregate count. It may increase `exact_pattern_count` and `semantic_candidate_count`; it does not increase `scored_candidate_count` because Patch 048 assigns no score.
 
 `stack_adjust` and `flags_write` are per-candidate effect facts, not candidate populations. A five-byte exact suffix with those effects remains semantic-exact evidence and does not become decoder-validated evidence. The known stack delta describes the represented suffix only.
+
+## Sprint 10 Patch 049 memory-effect boundary
+
+`primitive_coverage.memory_read` and `primitive_coverage.memory_write` report presence of implemented semantic-exact memory families. They do not count bytes read or written, prove address controllability, or establish vulnerability or exploitability.
+
+Patch 049 may increase raw, exact, and semantic counts. It does not increase scored count for promoted memory candidates because no memory score policy exists. The fixed arena increase is an implementation-capacity fact, not a measured RSS result.

@@ -109,6 +109,8 @@ field_cov_systrig:      db '    "syscall_trigger":', 0
 field_cov_pivot:        db '    "stack_pivot":', 0
 field_cov_align:        db '    "alignment":', 0
 field_cov_reg_transfer: db '    "reg_transfer":', 0
+field_cov_memory_write: db '    "memory_write":', 0
+field_cov_memory_read: db '    "memory_read":', 0
 field_cov_registers:    db '    "registers":', 0
 field_gadgets_open:     db '  "gadgets":[', 10, 0
 field_limitations:      db '  "limitations":["Pattern-based scanner, not full x86_64 decoder","Pattern labels describe recognized suffixes, not necessarily complete decoded instruction windows","Analysis completeness covers bounded candidate enumeration, not decoder validation","Exploitability requires an independent vulnerability and runtime context"]', 10, 0
@@ -123,8 +125,18 @@ f_semantic:             db '      "semantic_class":"', 0
 f_controls:             db '      "controls":', 0
 f_stack_pop_order:      db '      "stack_pop_order":', 0
 f_register_transfer:    db '      "register_transfer":', 0
+f_memory_access:       db '      "memory_access":', 0
 f_transfer_source:      db '"source":"', 0
 f_transfer_destination: db ',"destination":"', 0
+f_memory_direction:   db '"direction":"', 0
+f_memory_base:        db ',"base":"', 0
+f_memory_index:       db ',"index":', 0
+f_memory_scale:       db ',"scale":', 0
+f_memory_displacement: db ',"displacement":', 0
+f_memory_displacement_known: db ',"displacement_known":', 0
+f_memory_width:       db ',"width_bytes":', 0
+f_memory_value:       db ',"value_register":"', 0
+f_memory_dereference: db ',"dereference":', 0
 f_clobbers:             db '      "clobbers":', 0
 f_side_effects:         db '      "side_effects":', 0
 f_stack_delta:          db '      "stack_delta":', 0
@@ -182,6 +194,8 @@ pattern_syscall_s:      db "syscall; ret", 0
 pattern_multi_pop_s:    db "pop reg; pop reg; ret", 0
 pattern_mov_reg_reg_s:  db "mov reg, reg; ret", 0
 pattern_add_rsp_imm8_s: db "add rsp, imm8; ret", 0
+pattern_mov_mem_reg_s: db "mov [base], value; ret", 0
+pattern_mov_reg_mem_s: db "mov value, [base]; ret", 0
 semantic_unknown_s:     db "unknown_candidate", 0
 semantic_arg_s:         db "arg_control", 0
 semantic_sysnum_s:      db "syscall_num_control", 0
@@ -215,6 +229,10 @@ side_effect_ret_imm16_s:   db "ret_imm16", 0
 side_effect_register_write_s: db "register_write", 0
 side_effect_stack_adjust_s: db "stack_adjust", 0
 side_effect_flags_write_s: db "flags_write", 0
+side_effect_memory_read_s: db "memory_read", 0
+side_effect_memory_write_s: db "memory_write", 0
+memory_direction_read_s: db "read", 0
+memory_direction_write_s: db "write", 0
 
 section .bss
 json_path_ptr:          resq 1
@@ -225,8 +243,10 @@ json_gadget_summary:    resq 1
 json_gadget_records:    resq 1
 json_analysis_summary:  resq 1
 json_candidate_evidence: resq 1
+json_memory_effects:    resq 1
 json_current_record:    resq 1
 json_current_evidence:  resq 1
+json_current_memory:    resq 1
 json_char_buf:          resb 3
 
 section .text
@@ -277,7 +297,8 @@ global x64lens_report_json_gadgets
 ; x64lens_report_json_gadgets(path=rdi, mapped_base=rsi, file_size=rdx,
 ;                             phdr_summary=rcx, gadget_summary=r8,
 ;                             gadget_records=r9, analysis_summary=stack_arg_7,
-;                             candidate_evidence=stack_arg_8)
+;                             candidate_evidence=stack_arg_8,
+;                             memory_effects=stack_arg_9)
 ;
 ; Output:
 ;   Versioned JSON report on STDOUT.
@@ -295,14 +316,16 @@ x64lens_report_json_gadgets:
     mov     [json_phdr_summary], rcx
     mov     [json_gadget_summary], r8
     mov     [json_gadget_records], r9
-    ; Six saved registers move caller stack arguments seven and eight to
-    ; [rsp+56] and [rsp+64]. Load both before correcting the inherited 8-byte
+    ; Six saved registers move caller stack arguments seven through nine to
+    ; [rsp+56], [rsp+64], and [rsp+72]. Load them before correcting the inherited 8-byte
     ; entry misalignment. The extra slot keeps RSP 16-byte aligned before every
     ; nested System V call made by this reporter.
     mov     rax, [rsp + 56]
     mov     [json_analysis_summary], rax
     mov     rax, [rsp + 64]
     mov     [json_candidate_evidence], rax
+    mov     rax, [rsp + 72]
+    mov     [json_memory_effects], rax
     sub     rsp, 8
 
     lea     rdi, [j_open]
@@ -738,6 +761,18 @@ json_print_coverage:
     call    json_print_bool_nonzero
     JSON_FIELD_COMMA_NL
 
+    lea     rdi, [field_cov_memory_write]
+    call    print_cstr
+    mov     rdi, [rbx + GADGET_SUMMARY_MEMORY_WRITE_COUNT]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [field_cov_memory_read]
+    call    print_cstr
+    mov     rdi, [rbx + GADGET_SUMMARY_MEMORY_READ_COUNT]
+    call    json_print_bool_nonzero
+    JSON_FIELD_COMMA_NL
+
     lea     rdi, [field_cov_registers]
     call    print_cstr
     mov     rdi, [rbx + GADGET_SUMMARY_REGS_CONTROLLED]
@@ -779,6 +814,12 @@ json_print_gadget_array:
     mov     rdx, [json_candidate_evidence]
     add     rdx, rax
     mov     [json_current_evidence], rdx
+
+    mov     rax, rbp
+    imul    rax, rax, MEMORY_EFFECT_RECORD_SIZE
+    mov     rdx, [json_memory_effects]
+    add     rdx, rax
+    mov     [json_current_memory], rdx
 
     call    json_print_one_gadget
 
@@ -890,6 +931,12 @@ json_print_one_gadget:
     call    print_cstr
     mov     rdi, [json_current_record]
     call    json_print_register_transfer
+    JSON_FIELD_COMMA_NL
+
+    lea     rdi, [f_memory_access]
+    call    print_cstr
+    mov     rdi, [json_current_memory]
+    call    json_print_memory_effect
     JSON_FIELD_COMMA_NL
 
     lea     rdi, [f_clobbers]
@@ -1465,6 +1512,87 @@ json_print_register_transfer:
     pop     r12
     ret
 
+; json_print_memory_effect(rdi=memory_effect_record)
+; Emits null or a structured memory-access object from the dense side-car.
+json_print_memory_effect:
+    push    rbx
+    push    r12
+    push    r13
+    mov     r12, rdi
+    mov     rbx, [r12 + MEMORY_EFFECT_DESCRIPTOR]
+    test    rbx, MEMORY_EFFECT_FLAG_PRESENT
+    jz      .memory_null
+    lea     rdi, [j_object_open]
+    call    print_cstr
+    lea     rdi, [f_memory_direction]
+    call    print_cstr
+    test    rbx, MEMORY_EFFECT_FLAG_READ
+    jz      .memory_direction_write
+    lea     rdi, [memory_direction_read_s]
+    call    print_cstr
+    jmp     .memory_direction_done
+.memory_direction_write:
+    lea     rdi, [memory_direction_write_s]
+    call    print_cstr
+.memory_direction_done:
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [f_memory_base]
+    call    print_cstr
+    mov     r13, rbx
+    shr     r13, MEMORY_EFFECT_BASE_SHIFT
+    and     r13d, MEMORY_EFFECT_REG_MASK
+    mov     edi, r13d
+    call    json_print_reg_id
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [f_memory_index]
+    call    print_cstr
+    lea     rdi, [j_null]
+    call    print_cstr
+    lea     rdi, [f_memory_scale]
+    call    print_cstr
+    mov     rdi, 1
+    call    print_u64_dec
+    lea     rdi, [f_memory_displacement]
+    call    print_cstr
+    mov     rdi, [r12 + MEMORY_EFFECT_DISPLACEMENT]
+    call    print_u64_dec
+    lea     rdi, [f_memory_displacement_known]
+    call    print_cstr
+    lea     rdi, [j_true]
+    call    print_cstr
+    lea     rdi, [f_memory_width]
+    call    print_cstr
+    mov     rdi, rbx
+    shr     rdi, MEMORY_EFFECT_WIDTH_SHIFT
+    and     edi, MEMORY_EFFECT_WIDTH_MASK
+    call    print_u64_dec
+    lea     rdi, [f_memory_value]
+    call    print_cstr
+    mov     r13, rbx
+    shr     r13, MEMORY_EFFECT_VALUE_SHIFT
+    and     r13d, MEMORY_EFFECT_REG_MASK
+    mov     edi, r13d
+    call    json_print_reg_id
+    lea     rdi, [j_q]
+    call    print_cstr
+    lea     rdi, [f_memory_dereference]
+    call    print_cstr
+    lea     rdi, [j_true]
+    call    print_cstr
+    lea     rdi, [j_object_close]
+    call    print_cstr
+    jmp     .memory_done
+.memory_null:
+    lea     rdi, [j_null]
+    call    print_cstr
+.memory_done:
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
+
 ; json_print_side_effects_array(rdi=side-effect bitmap)
 json_print_side_effects_array:
     push    rbx
@@ -1481,6 +1609,8 @@ json_print_side_effects_array:
     JSON_EFFECT_IF_SET SIDE_EFFECT_REGISTER_WRITE, side_effect_register_write_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_STACK_ADJUST, side_effect_stack_adjust_s
     JSON_EFFECT_IF_SET SIDE_EFFECT_FLAGS_WRITE, side_effect_flags_write_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_MEMORY_READ, side_effect_memory_read_s
+    JSON_EFFECT_IF_SET SIDE_EFFECT_MEMORY_WRITE, side_effect_memory_write_s
     lea     rdi, [j_array_close]
     call    print_cstr
     add     rsp, 8
@@ -1549,6 +1679,10 @@ json_print_pattern:
     je      .mov_reg_reg
     cmp     edi, PATTERN_ADD_RSP_IMM8_RET
     je      .add_rsp_imm8
+    cmp     edi, PATTERN_MOV_MEM_REG_RET
+    je      .mov_mem_reg
+    cmp     edi, PATTERN_MOV_REG_MEM_RET
+    je      .mov_reg_mem
     lea     rdi, [pattern_unknown_s]
     jmp     print_cstr
 .ret:      lea rdi, [pattern_ret_s]       ; fall through via jmp below
@@ -1596,6 +1730,10 @@ json_print_pattern:
 .mov_reg_reg: lea rdi, [pattern_mov_reg_reg_s]
            jmp print_cstr
 .add_rsp_imm8: lea rdi, [pattern_add_rsp_imm8_s]
+           jmp print_cstr
+.mov_mem_reg: lea rdi, [pattern_mov_mem_reg_s]
+           jmp print_cstr
+.mov_reg_mem: lea rdi, [pattern_mov_reg_mem_s]
            jmp print_cstr
 
 json_print_semantic:

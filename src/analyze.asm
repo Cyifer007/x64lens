@@ -7,8 +7,9 @@
 ;   Produce the first integrated checkpoint report by running the current
 ;   validated pipeline once: file mapping, ELF64 validation, program-header
 ;   mitigation analysis, executable-region discovery, raw gadget candidate
-;   scanning, exact pattern matching, semantic classification, scoring, and
-;   text or JSON reporting.
+;   scanning, exact pattern matching, semantic classification, candidate
+;   evidence and memory-effect materialization, scoring, and text or JSON
+;   reporting.
 ;
 ; Current scope:
 ;   `analyze` intentionally reuses the same internal records as `info`,
@@ -38,6 +39,7 @@ extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_candidate_evidence_from_exact
+extern x64lens_memory_effect_from_exact
 extern x64lens_scoring_apply
 extern x64lens_analysis_summary_mark_complete
 extern x64lens_report_text_elf64_info
@@ -80,17 +82,20 @@ x64lens_command_analyze_json:
 ; Output:
 ;   RAX = stable x64lens exit code
 x64lens_command_analyze_with_format:
+    push    rbp
     push    rbx
     push    r12
     push    r13
     push    r14
     push    r15
+    sub     rsp, 8              ; six pushes preserve entry misalignment
 
     mov     r12, rdi            ; preserve target path for reporting
     mov     r14, rsi            ; max depth from CLI or default
     mov     ebx, edx            ; output format: 0=text, 1=json
     xor     r15, r15            ; arena-backed gadget_record[] pointer
-    xor     r13, r13            ; parallel candidate_evidence_record[] pointer
+    xor     r13, r13            ; candidate_evidence_record[] pointer
+    xor     rbp, rbp            ; memory_effect_record[] pointer
 
     ; Map target file read-only. The analyzer treats target bytes as data and
     ; never executes them.
@@ -162,6 +167,14 @@ x64lens_command_analyze_with_format:
     jz      .arena_alloc_failed
     mov     r13, rax
 
+    lea     rdi, [ana_candidate_arena]
+    mov     rsi, MEMORY_EFFECT_ARENA_BYTES
+    mov     rdx, MEMORY_EFFECT_RECORD_ALIGN
+    call    x64lens_arena_alloc
+    test    rax, rax
+    jz      .arena_alloc_failed
+    mov     rbp, rax
+
     mov     [ana_gadget_summary + GADGET_SUMMARY_MAX_DEPTH], r14
     mov     qword [ana_gadget_summary + GADGET_SUMMARY_CAPACITY], GADGET_RECORD_MAX
 
@@ -195,6 +208,13 @@ x64lens_command_analyze_with_format:
     mov     rsi, r15
     mov     rdx, r13
     call    x64lens_candidate_evidence_from_exact
+    test    rax, rax
+    jne     .error
+
+    lea     rdi, [ana_gadget_summary]
+    mov     rsi, r15
+    mov     rdx, rbp
+    call    x64lens_memory_effect_from_exact
     test    rax, rax
     jne     .error
 
@@ -249,6 +269,7 @@ x64lens_command_analyze_with_format:
     mov     rdx, r15
     mov     rcx, [ana_mapped_file + FILEMAP_ADDR]
     lea     r8, [ana_analysis_summary]
+    mov     r9, rbp
     call    x64lens_report_text_gadgets_body
     jmp     .emit_done
 
@@ -259,15 +280,15 @@ x64lens_command_analyze_with_format:
     lea     rcx, [ana_phdr_summary]
     lea     r8, [ana_gadget_summary]
     mov     r9, r15
-    ; System V passes arguments seven and eight on the stack. The 16-byte
-    ; reservation keeps the call-site aligned while carrying command-owned
-    ; completeness and the dense candidate evidence side-car.
-    sub     rsp, 16
+    ; System V passes arguments seven through nine on the stack. Reserve a
+    ; fourth slot so the call site remains 16-byte aligned.
+    sub     rsp, 32
     lea     rax, [ana_analysis_summary]
     mov     [rsp], rax
     mov     [rsp + 8], r13
+    mov     [rsp + 16], rbp
     call    x64lens_report_json_gadgets
-    add     rsp, 16
+    add     rsp, 32
 
 .emit_done:
     lea     rdi, [ana_candidate_arena]
@@ -291,9 +312,11 @@ x64lens_command_analyze_with_format:
     mov     rax, r13
 
 .done:
+    add     rsp, 8
     pop     r15
     pop     r14
     pop     r13
     pop     r12
     pop     rbx
+    pop     rbp
     ret

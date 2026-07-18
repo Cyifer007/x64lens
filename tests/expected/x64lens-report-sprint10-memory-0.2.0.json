@@ -8,7 +8,7 @@
     "complete": true,
     "max_depth": 4,
     "candidate_capacity": 4096,
-    "candidate_count": 10,
+    "candidate_count": 12,
     "candidate_truncated": false,
     "candidate_dropped_count": 0,
     "candidate_dropped_count_known": true,
@@ -16,10 +16,10 @@
     "regions_total": 1
   },
   "target": {
-    "path": "sprint10-register-transfer-fixture",
+    "path": "./tests/bin/gadgets_sprint10_memory",
     "format": "ELF64",
     "arch": "x86_64",
-    "file_size": 8944,
+    "file_size": 8936,
     "entry": "0x0000000000401000"
   },
   "mitigations": {
@@ -35,11 +35,11 @@
     "dynamic_terminated": null
   },
   "counts": {
-    "raw_candidate_count": 10,
-    "ret_count": 10,
+    "raw_candidate_count": 12,
+    "ret_count": 12,
     "ret_imm16_count": 0,
-    "exact_pattern_count": 10,
-    "semantic_candidate_count": 10,
+    "exact_pattern_count": 12,
+    "semantic_candidate_count": 12,
     "unknown_candidate_count": 0,
     "scored_candidate_count": 6
   },
@@ -49,31 +49,37 @@
     "syscall_trigger": false,
     "stack_pivot": false,
     "alignment": true,
-    "reg_transfer": true,
-    "registers": [],
-    "memory_write": false,
-    "memory_read": false
+    "reg_transfer": false,
+    "memory_write": true,
+    "memory_read": true,
+    "registers": []
   },
   "gadgets": [
     {
       "va": "0x0000000000401003",
       "file_offset": "0x0000000000001003",
       "section": ".text",
-      "bytes": "4889c7c3",
+      "bytes": "488907c3",
       "terminator": "ret",
-      "pattern": "mov reg, reg; ret",
-      "semantic_class": "reg_transfer",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
       "controls": [],
       "stack_pop_order": [],
-      "register_transfer": {
-        "source": "rax",
-        "destination": "rdi"
+      "register_transfer": null,
+      "memory_access": {
+        "direction": "write",
+        "base": "rdi",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rax",
+        "dereference": true
       },
-      "clobbers": [
-        "rdi"
-      ],
+      "clobbers": [],
       "side_effects": [
-        "register_write"
+        "memory_write"
       ],
       "stack_delta": 8,
       "stack_delta_known": true,
@@ -87,127 +93,34 @@
         "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": null,
-      "memory_access": null
+      "score": null
     },
     {
-      "va": "0x0000000000401007",
-      "file_offset": "0x0000000000001007",
+      "va": "0x000000000040100a",
+      "file_offset": "0x000000000000100a",
       "section": ".text",
-      "bytes": "c34d89c8c3",
+      "bytes": "4d8908c3",
       "terminator": "ret",
-      "pattern": "mov reg, reg; ret",
-      "semantic_class": "reg_transfer",
-      "controls": [],
-      "stack_pop_order": [],
-      "register_transfer": {
-        "source": "r9",
-        "destination": "r8"
-      },
-      "clobbers": [
-        "r8"
-      ],
-      "side_effects": [
-        "register_write"
-      ],
-      "stack_delta": 8,
-      "stack_delta_known": true,
-      "evidence": {
-        "kind": "semantic_exact",
-        "raw_candidate": true,
-        "exact_suffix": true,
-        "semantic_source": "exact",
-        "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 1,
-        "matched_suffix_length": 4,
-        "full_sequence_valid": null
-      },
-      "score": null,
-      "memory_access": null
-    },
-    {
-      "va": "0x000000000040100b",
-      "file_offset": "0x000000000000100b",
-      "section": ".text",
-      "bytes": "c34c8beac3",
-      "terminator": "ret",
-      "pattern": "mov reg, reg; ret",
-      "semantic_class": "reg_transfer",
-      "controls": [],
-      "stack_pop_order": [],
-      "register_transfer": {
-        "source": "rdx",
-        "destination": "r13"
-      },
-      "clobbers": [
-        "r13"
-      ],
-      "side_effects": [
-        "register_write"
-      ],
-      "stack_delta": 8,
-      "stack_delta_known": true,
-      "evidence": {
-        "kind": "semantic_exact",
-        "raw_candidate": true,
-        "exact_suffix": true,
-        "semantic_source": "exact",
-        "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 1,
-        "matched_suffix_length": 4,
-        "full_sequence_valid": null
-      },
-      "score": null,
-      "memory_access": null
-    },
-    {
-      "va": "0x000000000040100f",
-      "file_offset": "0x000000000000100f",
-      "section": ".text",
-      "bytes": "c3498bdec3",
-      "terminator": "ret",
-      "pattern": "mov reg, reg; ret",
-      "semantic_class": "reg_transfer",
-      "controls": [],
-      "stack_pop_order": [],
-      "register_transfer": {
-        "source": "r14",
-        "destination": "rbx"
-      },
-      "clobbers": [
-        "rbx"
-      ],
-      "side_effects": [
-        "register_write"
-      ],
-      "stack_delta": 8,
-      "stack_delta_known": true,
-      "evidence": {
-        "kind": "semantic_exact",
-        "raw_candidate": true,
-        "exact_suffix": true,
-        "semantic_source": "exact",
-        "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 1,
-        "matched_suffix_length": 4,
-        "full_sequence_valid": null
-      },
-      "score": null,
-      "memory_access": null
-    },
-    {
-      "va": "0x0000000000401013",
-      "file_offset": "0x0000000000001013",
-      "section": ".text",
-      "bytes": "c34889ffc3",
-      "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
+      "memory_access": {
+        "direction": "write",
+        "base": "r8",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "r9",
+        "dereference": true
+      },
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "memory_write"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -216,26 +129,38 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": null
     },
     {
-      "va": "0x0000000000401017",
-      "file_offset": "0x0000000000001017",
+      "va": "0x0000000000401011",
+      "file_offset": "0x0000000000001011",
       "section": ".text",
-      "bytes": "c34889c4c3",
+      "bytes": "498916c3",
       "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov [base], value; ret",
+      "semantic_class": "memory_write",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
+      "memory_access": {
+        "direction": "write",
+        "base": "r14",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rdx",
+        "dereference": true
+      },
       "clobbers": [],
-      "side_effects": [],
+      "side_effects": [
+        "memory_write"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -244,26 +169,41 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": null
     },
     {
-      "va": "0x000000000040101b",
-      "file_offset": "0x000000000000101b",
+      "va": "0x0000000000401018",
+      "file_offset": "0x0000000000001018",
       "section": ".text",
-      "bytes": "c34889e7c3",
+      "bytes": "488b07c3",
       "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
-      "clobbers": [],
-      "side_effects": [],
+      "memory_access": {
+        "direction": "read",
+        "base": "rdi",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rax",
+        "dereference": true
+      },
+      "clobbers": [
+        "rax"
+      ],
+      "side_effects": [
+        "register_write",
+        "memory_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -272,26 +212,41 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": null
     },
     {
       "va": "0x000000000040101f",
       "file_offset": "0x000000000000101f",
       "section": ".text",
-      "bytes": "c3488938c3",
+      "bytes": "4d8b08c3",
       "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
-      "clobbers": [],
-      "side_effects": [],
+      "memory_access": {
+        "direction": "read",
+        "base": "r8",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "r9",
+        "dereference": true
+      },
+      "clobbers": [
+        "r9"
+      ],
+      "side_effects": [
+        "register_write",
+        "memory_read"
+      ],
       "stack_delta": 8,
       "stack_delta_known": true,
       "evidence": {
@@ -300,52 +255,67 @@
         "exact_suffix": true,
         "semantic_source": "exact",
         "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
-    },
-    {
-      "va": "0x0000000000401022",
-      "file_offset": "0x0000000000001022",
-      "section": ".text",
-      "bytes": "38c389c7c3",
-      "terminator": "ret",
-      "pattern": "ret",
-      "semantic_class": "alignment",
-      "controls": [],
-      "stack_pop_order": [],
-      "register_transfer": null,
-      "clobbers": [],
-      "side_effects": [],
-      "stack_delta": 8,
-      "stack_delta_known": true,
-      "evidence": {
-        "kind": "semantic_exact",
-        "raw_candidate": true,
-        "exact_suffix": true,
-        "semantic_source": "exact",
-        "validator": "x64lens-exact-suffix",
-        "matched_suffix_offset": 4,
-        "matched_suffix_length": 1,
-        "full_sequence_valid": null
-      },
-      "score": 45,
-      "memory_access": null
+      "score": null
     },
     {
       "va": "0x0000000000401026",
       "file_offset": "0x0000000000001026",
       "section": ".text",
-      "bytes": "c3488b38c3",
+      "bytes": "498b16c3",
+      "terminator": "ret",
+      "pattern": "mov value, [base]; ret",
+      "semantic_class": "memory_read",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": {
+        "direction": "read",
+        "base": "r14",
+        "index": null,
+        "scale": 1,
+        "displacement": 0,
+        "displacement_known": true,
+        "width_bytes": 8,
+        "value_register": "rdx",
+        "dereference": true
+      },
+      "clobbers": [
+        "rdx"
+      ],
+      "side_effects": [
+        "register_write",
+        "memory_read"
+      ],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 0,
+        "matched_suffix_length": 4,
+        "full_sequence_valid": null
+      },
+      "score": null
+    },
+    {
+      "va": "0x000000000040102e",
+      "file_offset": "0x000000000000102e",
+      "section": ".text",
+      "bytes": "48890424c3",
       "terminator": "ret",
       "pattern": "ret",
       "semantic_class": "alignment",
       "controls": [],
       "stack_pop_order": [],
       "register_transfer": null,
+      "memory_access": null,
       "clobbers": [],
       "side_effects": [],
       "stack_delta": 8,
@@ -360,11 +330,150 @@
         "matched_suffix_length": 1,
         "full_sequence_valid": null
       },
-      "score": 45,
-      "memory_access": null
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401036",
+      "file_offset": "0x0000000000001036",
+      "section": ".text",
+      "bytes": "48894708c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x000000000040103e",
+      "file_offset": "0x000000000000103e",
+      "section": ".text",
+      "bytes": "488b4708c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 4,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401045",
+      "file_offset": "0x0000000000001045",
+      "section": ".text",
+      "bytes": "488927c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 3,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x000000000040104c",
+      "file_offset": "0x000000000000104c",
+      "section": ".text",
+      "bytes": "488b27c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 3,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
+    },
+    {
+      "va": "0x0000000000401052",
+      "file_offset": "0x0000000000001052",
+      "section": ".text",
+      "bytes": "8b07c3",
+      "terminator": "ret",
+      "pattern": "ret",
+      "semantic_class": "alignment",
+      "controls": [],
+      "stack_pop_order": [],
+      "register_transfer": null,
+      "memory_access": null,
+      "clobbers": [],
+      "side_effects": [],
+      "stack_delta": 8,
+      "stack_delta_known": true,
+      "evidence": {
+        "kind": "semantic_exact",
+        "raw_candidate": true,
+        "exact_suffix": true,
+        "semantic_source": "exact",
+        "validator": "x64lens-exact-suffix",
+        "matched_suffix_offset": 2,
+        "matched_suffix_length": 1,
+        "full_sequence_valid": null
+      },
+      "score": 45
     }
   ],
   "limitations": [
-    "Sprint 10 exact register-transfer fixture; full instruction-sequence validity remains unknown."
+    "Sprint 10 exact stack-adjust fixture; full instruction-sequence validity remains unknown."
   ]
 }

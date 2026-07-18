@@ -9,7 +9,7 @@ CC ?= gcc
 
 .PHONY: all clean
 
-all: minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_sprint10 gadgets_sprint10_transfer gadgets_sprint10_stack_adjust gadgets_capacity_exact gadgets_capacity
+all: minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_sprint10 gadgets_sprint10_transfer gadgets_sprint10_stack_adjust gadgets_sprint10_memory gadgets_capacity_exact gadgets_capacity
 
 minimal_nopie: minimal.c
 	$(CC) -no-pie -fno-stack-protector -z noexecstack -o $@ $<
@@ -32,6 +32,9 @@ gadgets_sprint10_transfer: gadgets_sprint10_transfer.S
 gadgets_sprint10_stack_adjust: gadgets_sprint10_stack_adjust.S
 	$(CC) -nostdlib -static -no-pie -o $@ $<
 
+gadgets_sprint10_memory: gadgets_sprint10_memory.S
+	$(CC) -nostdlib -static -no-pie -o $@ $<
+
 gadgets_capacity_exact: gadgets_capacity_exact.S
 	$(CC) -nostdlib -static -no-pie -o $@ $<
 
@@ -39,4 +42,4 @@ gadgets_capacity: gadgets_capacity.S
 	$(CC) -nostdlib -static -no-pie -o $@ $<
 
 clean:
-	rm -f minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_sprint10 gadgets_sprint10_transfer gadgets_sprint10_stack_adjust gadgets_capacity_exact gadgets_capacity
+	rm -f minimal_nopie minimal_pie_canary minimal_execstack gadgets gadgets_sprint10 gadgets_sprint10_transfer gadgets_sprint10_stack_adjust gadgets_sprint10_memory gadgets_capacity_exact gadgets_capacity

@@ -45,7 +45,7 @@ FIXTURE_CANON=$(readlink -f "$ROOT_DIR/tests/bin/gadgets")
 if [[ "$TARGET_CANON" == "$FIXTURE_CANON" ]]; then
     MODE=fixture
 fi
-python3 "$ROOT_DIR/tools/validate-json-report.py" --mode "$MODE" --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer "$TMP_JSON"
+python3 "$ROOT_DIR/tools/validate-json-report.py" --mode "$MODE" --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$TMP_JSON"
 python3 - "$TMP_JSON" <<'PYJSON'
 import json
 import sys

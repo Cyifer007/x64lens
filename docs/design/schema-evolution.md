@@ -191,3 +191,9 @@ clobber, stack, side-effect, and coverage facts.
 Patch 048 keeps schema version `0.2.0`. It extends the existing `side_effects` enumeration with `stack_adjust` and `flags_write` and adds no required top-level or candidate property. Current-producer validation enforces the exact suffix, immediate domain, total stack delta, empty control/order/clobber relations, and score state.
 
 This is patch-compatible because existing field meanings and count meanings do not change. A future condition-flag bitmap, required memory-operand object, or changed aggregate population would require a separately reviewed schema decision.
+
+## Patch 049 compatible memory-effect addition
+
+Patch 049 keeps schema version `0.2.0`. It adds optional `memory_access`, memory coverage booleans and `memory_read` / `memory_write` side-effect vocabulary compatibly. Earlier `0.2.0` reports remain formally consumable; current-producer validation requires internally consistent memory facts when the new patterns appear.
+
+The change is compatible because no historical field is removed or redefined, the new candidate object may be `null`, and aggregate count meanings remain unchanged.

@@ -30,10 +30,7 @@ TEXT_SUFFIXES = {
     ".tex", ".bib", ".patch", ".diff", ".txt", ".tsv",
 }
 TEXT_BASENAMES = {"Makefile", "Dockerfile"}
-SELF_EXCLUSIONS = {
-    "tools/check-public-content.py",
-    "tools/check-public-docs.sh",
-}
+SELF_EXCLUSIONS: frozenset[str] = frozenset()
 PATH_EXCLUSIONS = (
     "tests/bin/", "tests/results/", "tests/invalid/", "benchmarks/results/",
     ".local/", ".codex/", ".codex-log/", ".agents/",
@@ -42,16 +39,16 @@ PATH_EXCLUSIONS = (
 CASE_SENSITIVE = tuple(
     re.compile(pattern)
     for pattern in (
-        r"/mnt/data/",
+        r"/mnt/" + r"data/",
         r"^\s*[A-Za-z0-9._-]+@[A-Za-z0-9._-]+:([~/]|[A-Za-z]:)",
         r"DESKTOP-[A-Z0-9-]+",
         r"x64lens_patch_[0-9]+",
-        r"user-created whole-repository zip snapshots",
+        r"user-created whole-repository " + r"zip snapshots",
         r"in our (chat|conversation)",
         r"the file you (uploaded|attached)",
         r"as discussed in (chat|the conversation)",
-        r"Codex",
-        r"CODEX_LOCAL_MISSION",
+        r"Co" + r"dex",
+        r"CODEX_LOCAL_" + r"MISSION",
     )
 )
 CASE_INSENSITIVE = tuple(
@@ -59,14 +56,14 @@ CASE_INSENSITIVE = tuple(
     for pattern in (
         r"x64lens[_ -]*(HEAD|source)[_ -]*[0-9]{8}[_ -]*[0-9]{6}([_ (.-]*(copy|[0-9]+)[) ]*)?[.]zip",
         r"x64lens[_ -]*(codex[_ -]*evidence|evidence)[_ -]*[0-9]{8}[_ -]*[0-9]{6}([_ (.-]*(copy|[0-9]+)[) ]*)?[.]tar[.]gz",
-        r"[.]local/codex/reports/",
-        # These phrases were removed from public source but remained recoverable
-        # from a distributed unified diff. They describe private execution
-        # context rather than repository behavior.
-        r"^--.*private local agent workspaces",
-        r"^--.*restricted filesystem sandbox",
-        r"self[- ]authenticating application and evidence package",
-        r"artifact[- ]supply findings",
+        r"[.]local/" + r"codex" + r"/reports/",
+        # These split patterns detect private execution-context prose in both
+        # current files and distributed diff history without exempting this
+        # policy implementation from its own scan.
+        r"^--.*private local " + r"agent workspaces",
+        r"^--.*restricted filesystem " + r"sandbox",
+        r"self[- ]authenticating application and " + r"evidence package",
+        r"artifact[- ]supply " + r"findings",
     )
 )
 HOME_PATHS = tuple(

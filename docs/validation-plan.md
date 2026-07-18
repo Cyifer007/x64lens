@@ -1206,3 +1206,22 @@ sprint10-stack-adjust-smoke: ok candidates=7 stack_adjust=2 fallback=5 scored=5
 The two promoted records use exact `48 83 c4 08 c3` and `48 83 c4 20 c3` suffixes, known total stack deltas 16 and 40, and `stack_adjust, flags_write` effects. Five unsupported forms remain scored bare-return fallbacks. Matching bytes in a non-executable data segment must not be scanned.
 
 The common validator must also reject exact-pattern/terminator contradictions, bare `ret` controls, arbitrary bare-return stack deltas, unsupported stack-adjust immediates, wrong total deltas, and missing effect facts. The metadata-only ZIP policy and bounded textual-content policy are both required for a public overlay.
+
+## Sprint 10 Patch 049 memory-effect and public-overlay validation
+
+Patch 049 requires:
+
+```bash
+make sprint10-memory-smoke
+make json-effect-consistency-smoke
+make schema-compat-smoke
+make public-artifact-content-smoke
+make public-overlay-verification-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+```
+
+The controlled memory fixture must report 12 raw/exact/semantic candidates, three memory writes, three memory reads, six conservative fallbacks, zero unknowns, and six scored fallbacks. Promoted memory candidates remain unscored and decoder-unvalidated.
+
+The public overlay verifier must reject a stale outer hash, stale internal manifest, authenticated textual-content tamper, and non-canonical declared deletion. It must accept the clean fixture only when every path, digest, size, mode, and declared deletion matches.
+
+Generated Sprint 10 fixture binaries must not be tracked. Candidate capacity remains 4,096 and the 4,097th candidate must still fail before output.

@@ -26,7 +26,8 @@ flowchart TD
     GR --> PT[Exact suffix pattern matcher]
     PT --> CL[Semantic primitive classifier]
     CL --> EV[Candidate evidence side-car]
-    EV --> SCORE[Scoring engine]
+    EV --> ME[Memory-effect side-car]
+    ME --> SCORE[Scoring engine]
     SCORE --> GS
 
     GS --> GTR[Text gadget report]
@@ -34,6 +35,8 @@ flowchart TD
     GS --> JSON[JSON report]
     GR --> JSON
     EV --> JSON
+    ME --> GTR
+    ME --> JSON
     MR --> JSON
     ELF --> JSON
 

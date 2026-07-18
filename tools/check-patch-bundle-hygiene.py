@@ -60,6 +60,7 @@ NESTED_ARCHIVE_SUFFIXES = {
 GENERATED_TOY_BASENAMES = {
     "minimal_nopie", "minimal_pie_canary", "minimal_execstack", "gadgets",
     "gadgets_sprint10", "gadgets_sprint10_transfer",
+    "gadgets_sprint10_stack_adjust", "gadgets_sprint10_memory",
     "gadgets_capacity_exact", "gadgets_capacity",
 }
 

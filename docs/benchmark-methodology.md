@@ -545,3 +545,7 @@ When comparing the new family with baseline tools, record the exact ordered
 sequence, maximum-depth policy, duplicate policy, and whether the baseline
 reports every canonical start or one terminator-centered record. Resource claims
 remain deferred to the fixed corpus and high-resolution runner.
+
+## Patch 049 fixed-arena interpretation
+
+Patch 049 increases the fixed command arena from 655,360 to 720,896 bytes by adding one 16-byte memory-effect record for each of 4,096 candidate slots. This is a design allocation, not max RSS. Future benchmark rows must measure process max RSS separately and must not substitute arena arithmetic for resource evidence.

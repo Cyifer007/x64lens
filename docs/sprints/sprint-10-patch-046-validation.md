@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted Sprint 10 entry foundation. Patch 047 is the current implementation
-candidate.
+Accepted Sprint 10 entry foundation. Patch 047 was rejected as delivered; Patch
+048 is the current corrective implementation candidate.
 
 ## Purpose
 
@@ -166,6 +166,8 @@ own acceptance gates.
 
 ## Follow-on validation
 
-Patch 047 strengthens common single-pop relation checks and adds a separate
-register-transfer fixture. Patch 046 remains the historical ordered multi-pop
-foundation; current acceptance should also run the Patch 047 gates.
+Patch 047 added common single-pop relation checks and a separate
+register-transfer fixture but was rejected as delivered. Patch 048 carries that
+family forward after correcting its reporter and validation defects. Patch 046
+remains the historical ordered multi-pop foundation; current acceptance runs the
+Patch 048 gates.

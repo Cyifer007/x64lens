@@ -219,3 +219,17 @@ PUBLIC_BUNDLE=/path/to/public.zip make public-bundle-content-check
 ```
 
 The first gate validates ZIP metadata without extraction. The second reads bounded eligible text members in memory and rejects prohibited host paths, attachment-history identifiers, workflow narration, and unsafe deleted or added lines in `.patch` and `.diff` members. A local application package that contains private context is not a public release archive.
+
+## Patch 049 public-overlay gate
+
+Public final-file overlays require:
+
+```bash
+PUBLIC_BUNDLE=/path/to/public-overlay.zip \
+PUBLIC_BUNDLE_SHA256=<sha256> \
+make public-overlay-verify
+```
+
+The gate verifies the outer digest, portable ZIP metadata, bounded textual content, internal file hashes/sizes/modes, declared deletions, and exact member membership. Local unified diffs may be distributed for application or review, but they are not the release-safe public artifact when deleted lines contain material absent from the final tree.
+
+Generated Sprint 10 fixture executables must remain ignored and absent from tracked source and public source archives.

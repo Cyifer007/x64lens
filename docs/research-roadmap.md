@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 048 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 048 establish ordered multi-pop, exact register-transfer, and exact positive aligned stack-adjust foundations while hardening per-candidate and public-artifact validation. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 049 candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 048 establish ordered multi-pop, exact register-transfer, and exact positive aligned stack-adjust foundations. Patch 049 adds the first bounded structured memory effects and authenticated public final-file overlay verification. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -266,3 +266,9 @@ but remains unscored. Memory primitives remain the next evidence-model challenge
 Patch 048 adds one semantic-exact stack-adjust family without changing scanner authority, record size, candidate capacity, schema version, or runtime dependencies. The family records a known immediate-derived stack delta and explicit stack/flag effects but remains unscored and decoder-unvalidated.
 
 This increases represented primitive breadth while retaining the dependency-free reference profile. It does not establish a runtime, RSS, coverage, or defensive-utility advantage; those remain fixed-corpus research questions for later sprints.
+
+## Sprint 10 Patch 049 research posture
+
+Patch 049 adds semantic-exact memory facts for six controlled qword base-plus-zero examples while preserving conservative fallback for SIB, displacement, `rsp`, and 32-bit forms. This improves the representational foundation for later corpus and coverage work, but it does not establish general memory-gadget coverage, decoded validity, lower RSS, or faster execution.
+
+The fixed arena grows by 64 KiB while candidate capacity remains unchanged. Sprint 12/13 measurement must determine any runtime or RSS effect under the frozen methodology.

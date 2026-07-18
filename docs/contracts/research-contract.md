@@ -105,3 +105,9 @@ speedup cannot hide changed work or changed semantics.
 A decoder or parallel profile is a separate experimental condition. Its identity, dependencies, worker count, commands, binary hash, target hash, raw rows, CPU, RSS, and output-definition effects must be recorded. Candidate-scoped decoder validation must preserve raw and exact evidence and may not erase disagreement.
 
 Claims about low observability are limited to dependency, import, helper-process, and resource surface. The project must not claim invisibility or guaranteed evasion of anti-analysis controls without separate evidence.
+
+## Memory-effect evidence rule
+
+Memory coverage claims must identify exact supported addressing forms and distinguish access direction, operand roles, address representation, clobbers, score state, and decoder validity. A base-plus-zero semantic-exact family does not establish general memory-gadget coverage or address controllability.
+
+The fixed 720,896-byte analysis arena is an implementation-capacity fact. Runtime, RSS, throughput, and comparative claims still require the frozen benchmark methodology and raw evidence.

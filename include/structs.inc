@@ -125,7 +125,9 @@
 %define GADGET_SUMMARY_REGS_CONTROLLED    104
 %define GADGET_SUMMARY_SCORED_COUNT       112
 %define GADGET_SUMMARY_REG_TRANSFER_COUNT 120
-%define GADGET_SUMMARY_RECORD_SIZE        128
+%define GADGET_SUMMARY_MEMORY_WRITE_COUNT 128
+%define GADGET_SUMMARY_MEMORY_READ_COUNT  136
+%define GADGET_SUMMARY_RECORD_SIZE        144
 
 ; analysis_summary record offsets
 ;
@@ -179,7 +181,13 @@
 ; command-lifetime arena without changing the scanner-owned gadget record stride.
 %define CANDIDATE_EVIDENCE_ARENA_BYTES     (CANDIDATE_EVIDENCE_RECORD_SIZE * GADGET_RECORD_MAX)
 %define CANDIDATE_EVIDENCE_RECORD_ALIGN 16
-%define ANALYSIS_RECORD_ARENA_BYTES     (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES)
+
+; Sprint 10 memory-effect side-car. The dense record is keyed by candidate index
+; and remains separate from scanner-owned candidate facts and provenance. The
+; packed 16-byte layout adds at most 64 KiB at the 4096-candidate boundary.
+%define MEMORY_EFFECT_ARENA_BYTES        (MEMORY_EFFECT_RECORD_SIZE * GADGET_RECORD_MAX)
+%define MEMORY_EFFECT_RECORD_ALIGN       16
+%define ANALYSIS_RECORD_ARENA_BYTES      (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES + MEMORY_EFFECT_ARENA_BYTES)
 
 ; raw scanner terminator types
 %define GADGET_TERM_RET               1
@@ -216,6 +224,8 @@
 %define PATTERN_MULTI_POP_RET          21
 %define PATTERN_MOV_REG_REG_RET        22
 %define PATTERN_ADD_RSP_IMM8_RET       23
+%define PATTERN_MOV_MEM_REG_RET        24
+%define PATTERN_MOV_REG_MEM_RET        25
 
 ; gadget_record offsets
 %define GADGET_FILE_OFFSET          0
@@ -236,8 +246,9 @@
 ; Sprint 10 reuses the reserved final eight bytes of the existing 112-byte
 ; record for bounded exact-pattern register operands. Pop patterns store
 ; execution order, least-significant nibble first. Register-transfer patterns
-; store destination then source. The explicit count makes register ID zero
-; (RAX) unambiguous and keeps the arena footprint unchanged.
+; store destination then source. Memory patterns store base then value register;
+; the pattern ID establishes read or write direction. The explicit count makes
+; register ID zero (RAX) unambiguous and keeps the raw-record footprint stable.
 %define GADGET_PATTERN_REG_COUNT    104
 %define GADGET_PATTERN_REG_ORDER    108
 %define GADGET_RECORD_SIZE          112
@@ -257,6 +268,37 @@
 %define CANDIDATE_EVIDENCE_SUFFIX_OFFSET        32
 %define CANDIDATE_EVIDENCE_SUFFIX_LENGTH        40
 %define CANDIDATE_EVIDENCE_RECORD_SIZE          48
+
+; memory_effect_record offsets
+;
+; Sprint 10 keeps structured memory facts in a separate dense side-car keyed by
+; candidate index. DESCRIPTOR packs presence/direction, operand register IDs,
+; scale, and width. DISPLACEMENT is signed and meaningful only when the
+; displacement-known flag is set. The current family uses base+0 addressing,
+; no index, scale 1, and width 8.
+%define MEMORY_EFFECT_DESCRIPTOR                 0
+%define MEMORY_EFFECT_DISPLACEMENT               8
+%define MEMORY_EFFECT_RECORD_SIZE               16
+
+%define MEMORY_EFFECT_FLAG_PRESENT              (1 << 0)
+%define MEMORY_EFFECT_FLAG_READ                 (1 << 1)
+%define MEMORY_EFFECT_FLAG_WRITE                (1 << 2)
+%define MEMORY_EFFECT_FLAG_DEREFERENCE          (1 << 3)
+%define MEMORY_EFFECT_FLAG_DISPLACEMENT_KNOWN   (1 << 4)
+%define MEMORY_EFFECT_FLAG_INDEX_PRESENT        (1 << 5)
+%define MEMORY_EFFECT_BASE_SHIFT                 8
+%define MEMORY_EFFECT_INDEX_SHIFT               12
+%define MEMORY_EFFECT_VALUE_SHIFT               16
+%define MEMORY_EFFECT_SCALE_SHIFT               20
+%define MEMORY_EFFECT_WIDTH_SHIFT               24
+%define MEMORY_EFFECT_REG_MASK                   0x0f
+%define MEMORY_EFFECT_SCALE_MASK                 0x03
+%define MEMORY_EFFECT_WIDTH_MASK                 0xff
+%define MEMORY_EFFECT_SCALE_1                    0
+%define MEMORY_EFFECT_SCALE_2                    1
+%define MEMORY_EFFECT_SCALE_4                    2
+%define MEMORY_EFFECT_SCALE_8                    3
+%define MEMORY_EFFECT_WIDTH_QWORD                8
 
 ; Additive evidence flags. Future decoder validation must add facts without
 ; erasing raw or exact observations.
@@ -336,5 +378,7 @@
 %define SIDE_EFFECT_REGISTER_WRITE   (1 << 4)
 %define SIDE_EFFECT_STACK_ADJUST     (1 << 5)
 %define SIDE_EFFECT_FLAGS_WRITE      (1 << 6)
+%define SIDE_EFFECT_MEMORY_READ      (1 << 7)
+%define SIDE_EFFECT_MEMORY_WRITE     (1 << 8)
 
 %endif

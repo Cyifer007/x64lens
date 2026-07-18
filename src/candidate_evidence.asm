@@ -39,6 +39,8 @@ pattern_suffix_lengths:
     db 0                      ; multi-pop length is derived from ordered metadata
     db 4                      ; REX.W + mov r64,r64 + ret
     db 5                      ; add rsp, imm8; ret
+    db 4                      ; REX.W + mov [base],value + ret
+    db 4                      ; REX.W + mov value,[base] + ret
 
 ; Indexed by PATTERN_* ID. Values are canonical register IDs for the single-pop
 ; family and 0xff for patterns that do not carry one ordered pop register.
@@ -48,7 +50,7 @@ pattern_single_pop_regs:
     db REG_RSP_BIT, REG_RBP_BIT, REG_RSI_BIT, REG_RDI_BIT
     db REG_R8_BIT, REG_R9_BIT, REG_R10_BIT, REG_R11_BIT
     db REG_R12_BIT, REG_R13_BIT, REG_R14_BIT, REG_R15_BIT
-    db 0xff, 0xff, 0xff, 0xff, 0xff
+    db 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 
 section .text
 global x64lens_candidate_evidence_from_exact
@@ -127,12 +129,16 @@ x64lens_candidate_evidence_from_exact:
     mov     eax, [r12 + GADGET_PATTERN_ID]
     test    eax, eax
     jz      .require_unknown_semantic
-    cmp     eax, PATTERN_ADD_RSP_IMM8_RET
+    cmp     eax, PATTERN_MOV_REG_MEM_RET
     ja      .bounds_error
     cmp     eax, PATTERN_MULTI_POP_RET
     je      .multi_pop_suffix_length
     cmp     eax, PATTERN_MOV_REG_REG_RET
     je      .register_transfer_suffix_length
+    cmp     eax, PATTERN_MOV_MEM_REG_RET
+    je      .memory_suffix_length
+    cmp     eax, PATTERN_MOV_REG_MEM_RET
+    je      .memory_suffix_length
 
     cmp     eax, PATTERN_POP_RAX_RET
     jb      .require_no_pop_metadata
@@ -215,6 +221,33 @@ x64lens_candidate_evidence_from_exact:
     cmp     eax, REG_RSP_BIT
     je      .bounds_error
     cmp     edi, REG_RSP_BIT
+    je      .bounds_error
+    mov     ecx, 4
+    jmp     .suffix_length_ready
+
+.memory_suffix_length:
+    cmp     dword [r12 + GADGET_PATTERN_REG_COUNT], 2
+    jne     .bounds_error
+    mov     edi, [r12 + GADGET_PATTERN_REG_ORDER]
+    test    edi, 0xffffff00
+    jne     .bounds_error
+    mov     eax, edi
+    and     eax, 0x0f           ; base
+    shr     edi, 4
+    and     edi, 0x0f           ; value
+    cmp     eax, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edi, REG_R15_BIT
+    ja      .bounds_error
+    cmp     edi, REG_RSP_BIT
+    je      .bounds_error
+    cmp     eax, REG_RSP_BIT
+    je      .bounds_error
+    cmp     eax, REG_RBP_BIT
+    je      .bounds_error
+    cmp     eax, REG_R12_BIT
+    je      .bounds_error
+    cmp     eax, REG_R13_BIT
     je      .bounds_error
     mov     ecx, 4
     jmp     .suffix_length_ready

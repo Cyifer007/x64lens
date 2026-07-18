@@ -26,10 +26,10 @@ exact_analyze_json="$WORK_DIR/exact-capacity-analyze.json"
 "$X64LENS" gadgets --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_gadgets_json"
 "$X64LENS" analyze --format json --max-depth 4 "$EXACT_FIXTURE" >"$exact_analyze_json"
 python3 "$(dirname "$0")/validate-json-report.py" \
-    --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer \
+    --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory \
     "$exact_gadgets_json" >/dev/null
 python3 "$(dirname "$0")/validate-json-report.py" \
-    --mode system --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer \
+    --mode system --require-schema 0.2.0 --expected-command analyze --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory \
     "$exact_analyze_json" >/dev/null
 python3 "$(dirname "$0")/validate-report-parity.py" \
     "$exact_gadgets_json" "$exact_analyze_json" >/dev/null

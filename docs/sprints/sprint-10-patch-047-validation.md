@@ -2,8 +2,8 @@
 
 ## Status
 
-Implementation candidate; authoritative native and Docker acceptance remains
-required.
+Rejected as delivered. Patch 048 is the current corrective implementation
+candidate.
 
 ## Scope
 

@@ -205,3 +205,13 @@ Patch 048 adds exact pattern `add rsp, imm8; ret` for positive nonzero eight-byt
 ## Public artifact content rule
 
 Public ZIP acceptance requires both metadata safety and bounded textual-content review. The content gate scans eligible source, documentation, configuration, patch, and diff members in memory without extracting them. A final source tree that is clean does not make a unified diff safe when deleted or added lines preserve prohibited private workflow or host-specific material.
+
+## Sprint 10 memory-access output
+
+Patch 049 adds exact patterns `mov [base], value; ret` and `mov value, [base]; ret` for the restricted qword base-plus-zero family. Promoted candidates emit structured `memory_access` facts. Memory writes use semantic class `memory_write` and effect `memory_write`; memory reads use class `memory_read`, clobber the destination register, and emit `memory_read` plus `register_write`.
+
+The object records represented operand facts only. It does not prove external control of the base, the stored value, or the loaded memory contents, and it does not upgrade exact suffix evidence into decoder validity.
+
+## Authenticated public-overlay rule
+
+A public final-file overlay must be verified as one complete archive. Outer SHA-256 identity, ZIP metadata policy, textual-content policy, internal manifest path/hash/size/mode records, deletion records, and the exact member set must agree. Passing source-tree checks alone is insufficient.

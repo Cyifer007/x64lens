@@ -8,7 +8,7 @@ This directory records future-facing architecture seams that should be understoo
 - [`mitigation-fixture-matrix.md`](mitigation-fixture-matrix.md): compiler-independent valid and malformed program-header layouts used by the mitigation oracle, including Patch 030 dynamic-table evidence, Patch 031 RELRO refinement, and Patch 032 canary indicators.
 - [`decoder-roadmap.md`](decoder-roadmap.md): optional decoder integration without replacing the raw scanner.
 - [`defensive-deployment-profile.md`](defensive-deployment-profile.md): reference runtime constraints for dependency-free, air-gapped, low-resource defensive deployment.
-- [`primitive-effect-model.md`](primitive-effect-model.md): ordered pop and register-transfer relations, clobber, stack, side-effect, and scoring boundaries for Sprint 10 primitive expansion.
+- [`primitive-effect-model.md`](primitive-effect-model.md): ordered pop, register-transfer, stack-adjust, and bounded memory relations; clobber, stack, side-effect, side-car, and scoring boundaries for Sprint 10 primitive expansion.
 - [`evidence-provenance-model.md`](evidence-provenance-model.md): raw, suffix, semantic, decoder, completeness, and truncation evidence layers.
 - [`metric-boundaries.md`](metric-boundaries.md): required separation between discovery, recognition, validation, semantic, score, and triage metrics.
 - [`schema-evolution.md`](schema-evolution.md): current schema `0.2.0`, retained representative final-shape `0.1.0` compatibility, and future `0.2.x` evolution rules.
@@ -52,10 +52,12 @@ validation.
 2. [`../adr/0032-ordered-multi-pop-foundation.md`](../adr/0032-ordered-multi-pop-foundation.md)
 3. [`../adr/0033-exact-register-transfer-effects.md`](../adr/0033-exact-register-transfer-effects.md)
 4. [`../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md`](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md)
-5. [`primitive-effect-model.md`](primitive-effect-model.md)
-6. [`../semantic-taxonomy.md`](../semantic-taxonomy.md)
-7. [`../json-schema.md`](../json-schema.md)
-8. [`../sprints/sprint-10-plan.md`](../sprints/sprint-10-plan.md)
-9. [`../sprints/sprint-10-patch-047-validation.md`](../sprints/sprint-10-patch-047-validation.md)
-10. [`../sprints/sprint-10-patch-048-validation.md`](../sprints/sprint-10-patch-048-validation.md)
-11. [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)
+5. [`../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md`](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md)
+6. [`primitive-effect-model.md`](primitive-effect-model.md)
+7. [`../semantic-taxonomy.md`](../semantic-taxonomy.md)
+8. [`../json-schema.md`](../json-schema.md)
+9. [`../sprints/sprint-10-plan.md`](../sprints/sprint-10-plan.md)
+10. [`../sprints/sprint-10-patch-047-validation.md`](../sprints/sprint-10-patch-047-validation.md)
+11. [`../sprints/sprint-10-patch-048-validation.md`](../sprints/sprint-10-patch-048-validation.md)
+12. [`../sprints/sprint-10-patch-049-validation.md`](../sprints/sprint-10-patch-049-validation.md)
+13. [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)

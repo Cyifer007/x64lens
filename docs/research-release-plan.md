@@ -200,3 +200,9 @@ license record, malformed-input gate, and runtime/RSS benchmark stratum.
 The provenance and schema portions of the preview gate are complete. Sprint 9 does not satisfy the full `v0.1.0-rc1` gate by itself: the fixed preview corpus, higher-resolution benchmark runner, pilot baseline campaign, preview artifact rehearsal, and release-tag decision remain later work.
 
 The default release profile remains dependency-free and decoder-free. Any optional decoder-enabled or parallel profile must have a distinct build/runtime identity, independent benchmark rows, explicit dependency and licensing records, and equivalent malformed-input, capacity, completeness, and output-contract validation.
+
+## Sprint 10 Patch 049 release-gate update
+
+Patch 049 adds a release-gate requirement for authenticated final-file public overlays. The outer SHA-256, ZIP metadata, bounded text policy, internal manifest, declared deletions, and exact member set must agree. Generated fixture executables must remain untracked and excluded from public source archives.
+
+Memory-effect reports remain schema `0.2.0` semantic-exact output with decoder validity unknown and no score assignment.

@@ -8,9 +8,12 @@ register, clobber, stack, and side-effect facts that pattern, classifier,
 scoring, and reporting modules share.
 
 Related documentation: [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md),
-[ADR 0033](../adr/0033-exact-register-transfer-effects.md), the
+[ADR 0033](../adr/0033-exact-register-transfer-effects.md),
+[ADR 0034](../adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md),
+the
 [Sprint 10 Plan](../sprints/sprint-10-plan.md), the
-[Patch 047 Validation Plan](../sprints/sprint-10-patch-047-validation.md), and
+[Patch 047 Validation Plan](../sprints/sprint-10-patch-047-validation.md), the
+[Patch 048 Validation Plan](../sprints/sprint-10-patch-048-validation.md), and
 the [canonical roadmap](../roadmap-18-sprints.md).
 
 ## Fact layers
@@ -189,3 +192,20 @@ Promotion is limited to positive, nonzero, eight-byte-aligned immediates. The ca
 `stack_adjust` records the explicit stack-pointer movement. `flags_write` records that integer addition modifies condition flags. Condition flags are not members of the current general-purpose-register clobber bitmap, so the separate effect prevents a false implication that the suffix has no other represented architectural effects.
 
 The family remains unscored. Zero, negative, unaligned, wrong-register, subtraction, and memory forms retain the strongest existing fallback. Full-sequence validity remains unknown until decoder-backed evidence exists.
+
+## Patch 049 bounded memory-effect family
+
+Patch 049 adds a dense 16-byte `memory_effect_record[]` keyed by candidate index. The side-car records direction, base, optional index, scale, signed displacement, displacement-known state, value register, width, and dereference state without changing the 112-byte raw candidate record.
+
+The first exact families are restricted to qword, base-plus-zero, no-index moves:
+
+```text
+mov [base], value; ret
+mov value, [base]; ret
+```
+
+For a memory write, `controls` and GPR `clobbers` remain empty, stack delta is 8, and the side effect is `memory_write`. For a memory read, `controls` remains empty, the destination register is a clobber, stack delta is 8, and side effects are `memory_read` plus `register_write`. Neither relation proves that the address or memory contents are externally controlled.
+
+SIB, RIP-relative, displacement-bearing, `rsp`-valued, `rsp`-destination, and 32-bit forms remain conservative fallbacks. Future displacement or indexed families must reuse the same side-car fields and add exact fixtures rather than infer missing address facts in reporters.
+
+Memory candidates remain unscored. A score requires reviewed dereference, address-control, clobber, and uncertainty factors.

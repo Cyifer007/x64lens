@@ -141,3 +141,7 @@ library is added.
 This is an architectural preservation result, not a measured performance claim.
 Sprint 12 and Sprint 13 remain responsible for wall-time, CPU, RSS, binary-size,
 and optional-profile ablations.
+
+## Patch 049 fixed memory-effect allocation
+
+Patch 049 adds 65,536 bytes to the fixed command arena for a dense memory-effect side-car while preserving 4,096 candidate slots and adding no mandatory runtime dependency or helper process. This is a bounded implementation property. Operational RSS and latency effects remain measurement questions for the fixed corpus and benchmark stages.

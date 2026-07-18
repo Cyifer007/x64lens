@@ -312,3 +312,23 @@ per-candidate consistency.
 Patch 048 keeps schema version `0.2.0`. The formal side-effect enumeration adds `stack_adjust` and `flags_write`. A promoted candidate uses pattern `add rsp, imm8; ret`, semantic class `alignment`, empty controls/order/clobbers, a known total stack delta of immediate plus eight, and `score:null`.
 
 The current semantic validator derives the immediate from the exact five-byte suffix and rejects unsupported immediates, wrong deltas, missing effects, contradictory terminator labels, and nonempty bare-return controls. The fields are compatible additions: retained Patch 040, Patch 046, and Patch 047 reports remain consumable under their documented producer requirements.
+
+## Sprint 10 Patch 049 memory-access fields
+
+Patch 049 keeps schema `0.2.0` and adds optional candidate `memory_access`:
+
+```json
+{
+  "direction": "read",
+  "base": "rdi",
+  "index": null,
+  "scale": 1,
+  "displacement": 0,
+  "displacement_known": true,
+  "width_bytes": 8,
+  "value_register": "rax",
+  "dereference": true
+}
+```
+
+Non-memory candidates emit `memory_access:null`. Current producer validation reconciles the object with the exact pattern, semantic class, clobber bitmap, side effects, stack delta, score, and coverage booleans. `full_sequence_valid` remains `null` because the family is semantic-exact rather than decoder-validated.

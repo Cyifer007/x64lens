@@ -58,12 +58,18 @@ ALLOWED_EVIDENCE_VALIDATORS = {
     "x64lens-exact-suffix",
     "x64lens-decoder",
 }
-ALLOWED_SIDE_EFFECTS = {"stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write", "stack_adjust", "flags_write"}
+ALLOWED_SIDE_EFFECTS = {
+    "stack_read", "stack_pivot", "syscall", "ret_imm16", "register_write",
+    "stack_adjust", "flags_write", "memory_read", "memory_write",
+}
 CURRENT_EFFECT_FIELDS = {"stack_pop_order", "clobbers", "side_effects"}
 CURRENT_TRANSFER_FIELDS = {"register_transfer"}
+CURRENT_MEMORY_FIELDS = {"memory_access"}
 MULTI_POP_PATTERN = "pop reg; pop reg; ret"
 REGISTER_TRANSFER_PATTERN = "mov reg, reg; ret"
 STACK_ADJUST_PATTERN = "add rsp, imm8; ret"
+MEMORY_WRITE_PATTERN = "mov [base], value; ret"
+MEMORY_READ_PATTERN = "mov value, [base]; ret"
 ARG_CONTROL_REGS = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"}
 X86_REG_BY_ENCODING = (
     "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi",
@@ -116,6 +122,8 @@ PATTERN_SUFFIX_LENGTHS = {
     "syscall; ret": 3,
     REGISTER_TRANSFER_PATTERN: 4,
     STACK_ADJUST_PATTERN: 5,
+    MEMORY_WRITE_PATTERN: 4,
+    MEMORY_READ_PATTERN: 4,
 }
 COVERAGE_CLASS_MAP = {
     "arg_control": "arg_control",
@@ -124,6 +132,8 @@ COVERAGE_CLASS_MAP = {
     "stack_pivot": "stack_pivot",
     "alignment": "alignment",
     "reg_transfer": "reg_transfer",
+    "memory_write": "memory_write",
+    "memory_read": "memory_read",
 }
 REQUIRED_TOP = {
     "schema_version",
@@ -266,6 +276,31 @@ def decode_stack_adjust_suffix(gadget: dict[str, Any], prefix: str) -> int:
     return immediate
 
 
+def decode_memory_suffix(
+    gadget: dict[str, Any], prefix: str
+) -> tuple[str, str, str]:
+    """Return (direction, base, value_register) for the bounded memory family."""
+    observed = gadget["bytes"].lower()
+    require(len(observed) >= 8, f"{prefix}.memory suffix bytes are too short")
+    rex, opcode, modrm, terminator = bytes.fromhex(observed[-8:])
+    require(0x48 <= rex <= 0x4F and (rex & 0x08), f"{prefix}.memory suffix requires REX.W")
+    require((rex & 0x02) == 0, f"{prefix}.memory suffix does not permit REX.X")
+    require(opcode in {0x89, 0x8B}, f"{prefix}.memory opcode is unsupported")
+    require((modrm & 0xC0) == 0, f"{prefix}.memory suffix must use ModRM.mod=00")
+    raw_rm = modrm & 0x07
+    require(raw_rm not in {4, 5}, f"{prefix}.memory suffix excludes SIB and RIP-relative forms")
+    require(terminator == 0xC3, f"{prefix}.memory suffix must end in ret")
+
+    base_id = raw_rm + (8 if rex & 0x01 else 0)
+    value_id = ((modrm >> 3) & 0x07) + (8 if rex & 0x04 else 0)
+    base = X86_REG_BY_ENCODING[base_id]
+    value = X86_REG_BY_ENCODING[value_id]
+    require(base not in {"rsp", "rbp", "r12", "r13"}, f"{prefix}.memory base is outside the bounded family")
+    require(value != "rsp", f"{prefix}.memory value register cannot be rsp")
+    direction = "write" if opcode == 0x89 else "read"
+    return direction, base, value
+
+
 def load_report(path: Path) -> dict[str, Any]:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -284,6 +319,7 @@ def validate_common(
     require_provenance: bool = False,
     require_sprint10_effects: bool = False,
     require_sprint10_transfer: bool = False,
+    require_sprint10_memory: bool = False,
 ) -> None:
     missing = REQUIRED_TOP - set(doc)
     require(not missing, f"missing top-level fields: {sorted(missing)}")
@@ -311,6 +347,7 @@ def validate_common(
         require(not require_provenance, "candidate provenance requires schema 0.2.0")
         require(not require_sprint10_effects, "Sprint 10 effect fields require schema 0.2.0")
         require(not require_sprint10_transfer, "Sprint 10 register-transfer fields require schema 0.2.0")
+        require(not require_sprint10_memory, "Sprint 10 memory-effect fields require schema 0.2.0")
 
     require(doc["tool"] == "x64lens", "unexpected tool value")
     require(isinstance(doc["tool_version"], str) and doc["tool_version"], "tool_version must be a non-empty string")
@@ -447,6 +484,12 @@ def validate_common(
         require("reg_transfer" in coverage, "primitive_coverage.reg_transfer is required for the current producer")
     if "reg_transfer" in coverage:
         require(isinstance(coverage["reg_transfer"], bool), "primitive_coverage.reg_transfer must be a boolean")
+    if require_sprint10_memory:
+        for key in ["memory_write", "memory_read"]:
+            require(key in coverage, f"primitive_coverage.{key} is required for the current producer")
+    for key in ["memory_write", "memory_read"]:
+        if key in coverage:
+            require(isinstance(coverage[key], bool), f"primitive_coverage.{key} must be a boolean")
     registers = coverage.get("registers")
     require(isinstance(registers, list), "primitive_coverage.registers must be an array")
     for reg in registers:
@@ -512,6 +555,12 @@ def validate_common(
                 not missing_transfer_fields,
                 f"{prefix} missing current Sprint 10 register-transfer fields: {sorted(missing_transfer_fields)}",
             )
+        if require_sprint10_memory:
+            missing_memory_fields = CURRENT_MEMORY_FIELDS - set(gadget)
+            require(
+                not missing_memory_fields,
+                f"{prefix} missing current Sprint 10 memory-effect fields: {sorted(missing_memory_fields)}",
+            )
 
         if "stack_pop_order" in gadget:
             order = gadget["stack_pop_order"]
@@ -530,6 +579,27 @@ def validate_common(
             require(transfer["destination"] in ALLOWED_REGS, f"{prefix}.register_transfer.destination is invalid")
         elif "register_transfer" in gadget:
             require(transfer is None, f"{prefix}.register_transfer must be an object or null")
+
+        memory_access = gadget.get("memory_access")
+        if memory_access is not None:
+            require(isinstance(memory_access, dict), f"{prefix}.memory_access must be an object or null")
+            required_memory = {
+                "direction", "base", "index", "scale", "displacement",
+                "displacement_known", "width_bytes", "value_register", "dereference",
+            }
+            require(set(memory_access) == required_memory, f"{prefix}.memory_access fields are invalid")
+            require(memory_access["direction"] in {"read", "write"}, f"{prefix}.memory_access.direction is invalid")
+            require(memory_access["base"] in ALLOWED_REGS, f"{prefix}.memory_access.base is invalid")
+            require(memory_access["index"] is None or memory_access["index"] in ALLOWED_REGS, f"{prefix}.memory_access.index is invalid")
+            require_int(memory_access["scale"], f"{prefix}.memory_access.scale", min_value=1)
+            require(memory_access["scale"] in {1, 2, 4, 8}, f"{prefix}.memory_access.scale is invalid")
+            require(isinstance(memory_access["displacement"], int) and not isinstance(memory_access["displacement"], bool), f"{prefix}.memory_access.displacement must be an integer")
+            require_bool(memory_access["displacement_known"], f"{prefix}.memory_access.displacement_known")
+            require_int(memory_access["width_bytes"], f"{prefix}.memory_access.width_bytes", min_value=1)
+            require(memory_access["value_register"] in ALLOWED_REGS, f"{prefix}.memory_access.value_register is invalid")
+            require_bool(memory_access["dereference"], f"{prefix}.memory_access.dereference")
+        elif "memory_access" in gadget:
+            require(memory_access is None, f"{prefix}.memory_access must be an object or null")
 
         if "clobbers" in gadget:
             clobbers = gadget["clobbers"]
@@ -738,6 +808,36 @@ def validate_common(
             require(known is True and gadget["stack_delta"] == immediate + 8, f"{prefix}.stack-adjust stack delta mismatch")
             require(gadget["score"] is None, f"{prefix}.stack-adjust remains unscored")
 
+        is_memory_pattern = gadget["pattern"] in {MEMORY_WRITE_PATTERN, MEMORY_READ_PATTERN}
+        if is_memory_pattern:
+            direction, base, value = decode_memory_suffix(gadget, prefix)
+            expected_pattern = MEMORY_WRITE_PATTERN if direction == "write" else MEMORY_READ_PATTERN
+            require(gadget["pattern"] == expected_pattern, f"{prefix}.memory pattern disagrees with exact opcode direction")
+            expected_memory = {
+                "direction": direction,
+                "base": base,
+                "index": None,
+                "scale": 1,
+                "displacement": 0,
+                "displacement_known": True,
+                "width_bytes": 8,
+                "value_register": value,
+                "dereference": True,
+            }
+            require(memory_access == expected_memory, f"{prefix}.memory_access disagrees with exact suffix bytes")
+            require(gadget["semantic_class"] == f"memory_{direction}", f"{prefix}.memory semantic class mismatch")
+            require(gadget["controls"] == [], f"{prefix}.memory candidate must not infer independent control")
+            require(order == [], f"{prefix}.memory candidate must not populate stack_pop_order")
+            require(known is True and gadget["stack_delta"] == 8, f"{prefix}.memory candidate stack delta must be 8")
+            require(gadget["score"] is None, f"{prefix}.memory candidate remains unscored")
+            if direction == "read":
+                require(clobbers == [value], f"{prefix}.memory-read clobber must equal destination value register")
+            else:
+                require(clobbers == [], f"{prefix}.memory-write must not clobber a GPR")
+        else:
+            if "memory_access" in gadget:
+                require(memory_access is None, f"{prefix}.non-memory pattern must use memory_access null")
+
         if gadget["pattern"] == REGISTER_TRANSFER_PATTERN:
             source, destination = decode_register_transfer_suffix(gadget, prefix)
             require(transfer == {"source": source, "destination": destination}, f"{prefix}.register_transfer disagrees with exact suffix bytes")
@@ -750,7 +850,7 @@ def validate_common(
         else:
             if "register_transfer" in gadget:
                 require(transfer is None, f"{prefix}.non-transfer pattern must use register_transfer null")
-            if require_sprint10_effects:
+            if require_sprint10_effects and not is_memory_pattern:
                 require(clobbers == [], f"{prefix}.non-transfer clobbers must remain empty")
 
         if gadget["pattern"] == MULTI_POP_PATTERN:
@@ -774,6 +874,11 @@ def validate_common(
             if gadget["pattern"] == STACK_ADJUST_PATTERN:
                 expected_effects.add("stack_adjust")
                 expected_effects.add("flags_write")
+            if gadget["pattern"] == MEMORY_WRITE_PATTERN:
+                expected_effects.add("memory_write")
+            if gadget["pattern"] == MEMORY_READ_PATTERN:
+                expected_effects.add("memory_read")
+                expected_effects.add("register_write")
             require(set(side_effects) == expected_effects, f"{prefix}.side_effects disagrees with represented semantic effects")
 
         score = gadget["score"]
@@ -1053,10 +1158,79 @@ def validate_sprint10_stack_adjust_fixture(doc: dict[str, Any]) -> None:
     require(analysis["complete"] is True and analysis["candidate_count"] == 7, "Sprint 10 stack-adjust analysis summary mismatch")
 
 
+def validate_sprint10_memory_fixture(doc: dict[str, Any]) -> None:
+    counts = doc["counts"]
+    expected_counts = {
+        "raw_candidate_count": 12,
+        "ret_count": 12,
+        "ret_imm16_count": 0,
+        "exact_pattern_count": 12,
+        "semantic_candidate_count": 12,
+        "unknown_candidate_count": 0,
+        "scored_candidate_count": 6,
+    }
+    for key, value in expected_counts.items():
+        require(counts[key] == value, f"Sprint 10 memory fixture {key} expected {value}, got {counts[key]}")
+
+    gadgets = doc["gadgets"]
+    writes = [g for g in gadgets if g["pattern"] == MEMORY_WRITE_PATTERN]
+    reads = [g for g in gadgets if g["pattern"] == MEMORY_READ_PATTERN]
+    fallback = [g for g in gadgets if g["pattern"] == "ret"]
+    require(len(writes) == 3, f"Sprint 10 memory fixture expected 3 writes, got {len(writes)}")
+    require(len(reads) == 3, f"Sprint 10 memory fixture expected 3 reads, got {len(reads)}")
+    require(len(fallback) == 6, f"Sprint 10 memory fixture expected 6 ret fallbacks, got {len(fallback)}")
+
+    expected_writes = [
+        {"direction": "write", "base": "rdi", "value_register": "rax"},
+        {"direction": "write", "base": "r8", "value_register": "r9"},
+        {"direction": "write", "base": "r14", "value_register": "rdx"},
+    ]
+    expected_reads = [
+        {"direction": "read", "base": "rdi", "value_register": "rax"},
+        {"direction": "read", "base": "r8", "value_register": "r9"},
+        {"direction": "read", "base": "r14", "value_register": "rdx"},
+    ]
+    require(
+        [{k: g["memory_access"][k] for k in ("direction", "base", "value_register")} for g in writes] == expected_writes,
+        "Sprint 10 memory-write relation order mismatch",
+    )
+    require(
+        [{k: g["memory_access"][k] for k in ("direction", "base", "value_register")} for g in reads] == expected_reads,
+        "Sprint 10 memory-read relation order mismatch",
+    )
+
+    for gadget in writes + reads:
+        access = gadget["memory_access"]
+        require(access["index"] is None and access["scale"] == 1, "Sprint 10 memory index/scale mismatch")
+        require(access["displacement"] == 0 and access["displacement_known"] is True, "Sprint 10 memory displacement mismatch")
+        require(access["width_bytes"] == 8 and access["dereference"] is True, "Sprint 10 memory width/dereference mismatch")
+        require(gadget["controls"] == [], "Sprint 10 memory candidates must not infer controls")
+        require(gadget["stack_delta"] == 8 and gadget["stack_delta_known"] is True, "Sprint 10 memory stack delta mismatch")
+        require(gadget["score"] is None, "Sprint 10 memory candidates remain unscored")
+    for gadget in writes:
+        require(gadget["semantic_class"] == "memory_write", "Sprint 10 memory-write semantic mismatch")
+        require(gadget["clobbers"] == [], "Sprint 10 memory-write clobbers must be empty")
+        require(gadget["side_effects"] == ["memory_write"], "Sprint 10 memory-write side effects mismatch")
+    for gadget in reads:
+        value = gadget["memory_access"]["value_register"]
+        require(gadget["semantic_class"] == "memory_read", "Sprint 10 memory-read semantic mismatch")
+        require(gadget["clobbers"] == [value], "Sprint 10 memory-read clobber mismatch")
+        require(gadget["side_effects"] == ["register_write", "memory_read"], "Sprint 10 memory-read side effects mismatch")
+    for gadget in fallback:
+        require(gadget["memory_access"] is None, "Sprint 10 fallback memory_access must be null")
+        require(gadget["semantic_class"] == "alignment" and gadget["score"] == 45, "Sprint 10 memory fallback mismatch")
+
+    coverage = doc["primitive_coverage"]
+    require(coverage["memory_write"] is True and coverage["memory_read"] is True, "Sprint 10 memory coverage mismatch")
+    require(coverage["registers"] == [], "Sprint 10 memory fixture must not expose controlled registers")
+    analysis = doc["analysis"]
+    require(analysis["complete"] is True and analysis["candidate_count"] == 12, "Sprint 10 memory analysis summary mismatch")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate x64lens JSON report shape and invariants.")
     parser.add_argument("json_report", type=Path)
-    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "sprint10-stack-adjust-fixture", "system"], default="generic")
+    parser.add_argument("--mode", choices=["generic", "fixture", "sprint10-fixture", "sprint10-transfer-fixture", "sprint10-stack-adjust-fixture", "sprint10-memory-fixture", "system"], default="generic")
     parser.add_argument("--require-schema", choices=sorted(SUPPORTED_SCHEMAS))
     parser.add_argument("--expected-command", choices=sorted(ALLOWED_COMMANDS))
     parser.add_argument(
@@ -1074,6 +1248,11 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="require current register-transfer relation and coverage fields",
     )
+    parser.add_argument(
+        "--require-sprint10-memory",
+        action="store_true",
+        help="require current structured memory-effect relation and coverage fields",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -1085,6 +1264,7 @@ def main(argv: list[str]) -> int:
             require_provenance=args.require_provenance,
             require_sprint10_effects=args.require_sprint10_effects,
             require_sprint10_transfer=args.require_sprint10_transfer,
+            require_sprint10_memory=args.require_sprint10_memory,
         )
         if args.mode == "fixture":
             validate_fixture(doc)
@@ -1094,6 +1274,8 @@ def main(argv: list[str]) -> int:
             validate_sprint10_transfer_fixture(doc)
         elif args.mode == "sprint10-stack-adjust-fixture":
             validate_sprint10_stack_adjust_fixture(doc)
+        elif args.mode == "sprint10-memory-fixture":
+            validate_sprint10_memory_fixture(doc)
     except ValidationError as exc:
         print(f"validate-json-report: error: {exc}", file=sys.stderr)
         return 1

@@ -2,7 +2,8 @@
 
 ## Status
 
-Implementation candidate; authoritative native and Docker validation required.
+Current implementation candidate; authoritative native and Docker validation
+required.
 
 ## Scope
 
@@ -18,8 +19,8 @@ reintroduce private process narration that is absent from the final source tree.
 
 ## Source and compatibility requirements
 
-- Apply to the exact committed Patch 047 source identity recorded in the
-  delivery manifest.
+- Apply to committed Patch 047 source
+  `d4aa9dd8981ec50d41b74090b062327688ab7f02`.
 - Preserve tool version `0.1.0-dev` and schema `0.2.0`.
 - Preserve the `v0.1.0-dev` checkpoint target.
 - Preserve `gadget_record=112`, `candidate_evidence_record=48`,
@@ -155,5 +156,9 @@ and the complete validation aggregate.
 ## Acceptance
 
 Patch 048 is accepted only when native and qualified Docker aggregates pass,
-all delivered artifacts verify, the public overlay passes both public gates,
-and the tracked worktree remains clean after validation.
+the authenticated public overlay passes its file-manifest check and both public
+gates, and the tracked worktree remains clean after validation.
+
+## Patch 049 handoff
+
+Patch 049 consumes the accepted Patch 048 runtime foundation, removes generated fixture executables from tracked source, closes the public-content checker self-exclusion, authenticates final-file public overlays, and adds the first fixed memory-effect side-car and bounded qword base-plus-zero memory family.

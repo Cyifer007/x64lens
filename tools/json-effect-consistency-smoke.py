@@ -5,7 +5,8 @@ This validator-only smoke closes the Patch 046 review gap by proving that all
 16 exact single-pop patterns have canonical per-candidate controls/order facts.
 It also covers mixed legacy/REX ordered two-pop forms, bare-ret relational
 invariants found during Patch 047 review, and the bounded Patch 048 stack-adjust
-family so aggregate coverage cannot conceal contradictory candidate facts.
+family, and the bounded Patch 049 memory-effect family so aggregate coverage
+cannot conceal contradictory candidate facts.
 """
 
 from __future__ import annotations
@@ -74,6 +75,8 @@ def coverage_for(semantic: str, controls: list[str]) -> dict[str, Any]:
         "stack_pivot": semantic == "stack_pivot",
         "alignment": False,
         "reg_transfer": False,
+        "memory_write": semantic == "memory_write",
+        "memory_read": semantic == "memory_read",
         "registers": [reg for reg in REG_ORDER if reg in controls],
     }
 
@@ -123,6 +126,7 @@ def single_pop_document(base: dict[str, Any], reg: str) -> dict[str, Any]:
             "controls": controls,
             "stack_pop_order": [reg],
             "register_transfer": None,
+            "memory_access": None,
             "clobbers": [],
             "side_effects": effects,
             "stack_delta": stack_delta,
@@ -161,6 +165,7 @@ def mixed_multi_pop_document(base: dict[str, Any], first: str, second: str) -> d
             "controls": controls,
             "stack_pop_order": [first, second],
             "register_transfer": None,
+            "memory_access": None,
             "clobbers": [],
             "side_effects": ["stack_read"],
             "stack_delta": 24,
@@ -197,6 +202,7 @@ def stack_adjust_document(base: dict[str, Any], immediate: int) -> dict[str, Any
             "controls": [],
             "stack_pop_order": [],
             "register_transfer": None,
+            "memory_access": None,
             "clobbers": [],
             "side_effects": ["stack_adjust", "flags_write"],
             "stack_delta": immediate + 8,
@@ -222,6 +228,66 @@ def stack_adjust_document(base: dict[str, Any], immediate: int) -> dict[str, Any
     return doc
 
 
+
+def memory_document(base: dict[str, Any], *, direction: str, base_reg: str, value_reg: str) -> dict[str, Any]:
+    doc = copy.deepcopy(base)
+    gadget = doc["gadgets"][0]
+    reg_encoding = {name: index for index, name in enumerate((
+        "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi",
+        "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
+    ))}
+    base_id = reg_encoding[base_reg]
+    value_id = reg_encoding[value_reg]
+    rex = 0x48 | (0x01 if base_id >= 8 else 0) | (0x04 if value_id >= 8 else 0)
+    modrm = ((value_id & 7) << 3) | (base_id & 7)
+    opcode = 0x89 if direction == "write" else 0x8B
+    bytes_hex = bytes((rex, opcode, modrm, 0xC3)).hex()
+    semantic = "memory_write" if direction == "write" else "memory_read"
+    pattern = "mov [base], value; ret" if direction == "write" else "mov value, [base]; ret"
+    clobbers = [] if direction == "write" else [value_reg]
+    effects = ["memory_write"] if direction == "write" else ["register_write", "memory_read"]
+    gadget.update(
+        {
+            "bytes": bytes_hex,
+            "pattern": pattern,
+            "semantic_class": semantic,
+            "controls": [],
+            "stack_pop_order": [],
+            "register_transfer": None,
+            "memory_access": {
+                "direction": direction,
+                "base": base_reg,
+                "index": None,
+                "scale": 1,
+                "displacement": 0,
+                "displacement_known": True,
+                "width_bytes": 8,
+                "value_register": value_reg,
+                "dereference": True,
+            },
+            "clobbers": clobbers,
+            "side_effects": effects,
+            "stack_delta": 8,
+            "stack_delta_known": True,
+            "score": None,
+            "evidence": {
+                "kind": "semantic_exact",
+                "raw_candidate": True,
+                "exact_suffix": True,
+                "semantic_source": "exact",
+                "validator": "x64lens-exact-suffix",
+                "matched_suffix_offset": 0,
+                "matched_suffix_length": 4,
+                "full_sequence_valid": None,
+            },
+        }
+    )
+    set_one_candidate_counts(doc, semantic=True, scored=False)
+    doc["primitive_coverage"] = coverage_for(semantic, [])
+    doc["target"]["path"] = f"validator-memory-{direction}-{base_reg}-{value_reg}"
+    doc["target"]["file_size"] = 4
+    return doc
+
 def load_validator_module() -> Any:
     spec = importlib.util.spec_from_file_location("x64lens_validate_json_report", VALIDATOR)
     if spec is None or spec.loader is None:
@@ -241,6 +307,7 @@ def run_validator(module: Any, path: Path, *, expect_success: bool) -> None:
             require_provenance=True,
             require_sprint10_effects=True,
             require_sprint10_transfer=True,
+            require_sprint10_memory=True,
         )
     except module.ValidationError as exc:
         if expect_success:
@@ -269,6 +336,8 @@ def main() -> int:
     bare_ret_negative = 0
     stack_adjust_positive = 0
     stack_adjust_negative = 0
+    memory_positive = 0
+    memory_negative = 0
 
     with tempfile.TemporaryDirectory(prefix="x64lens-json-effect-") as temp:
         directory = Path(temp)
@@ -349,6 +418,42 @@ def main() -> int:
         run_validator(validator, negative, expect_success=False)
         stack_adjust_negative += 1
 
+        for direction, base_reg, value_reg in (("write", "rdi", "rax"), ("read", "r8", "r9")):
+            document = memory_document(base, direction=direction, base_reg=base_reg, value_reg=value_reg)
+            path = write_case(directory, f"memory-{direction}-positive", document)
+            run_validator(validator, path, expect_success=True)
+            memory_positive += 1
+
+            mutations = []
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["memory_access"]["direction"] = "read" if direction == "write" else "write"
+            mutations.append(("direction", mutation))
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["memory_access"]["base"] = "rsi"
+            mutations.append(("base", mutation))
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["memory_access"]["value_register"] = "rdx"
+            mutations.append(("value", mutation))
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["memory_access"]["displacement"] = 8
+            mutations.append(("displacement", mutation))
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["memory_access"] = None
+            mutations.append(("missing", mutation))
+
+            mutation = copy.deepcopy(document)
+            mutation["gadgets"][0]["side_effects"] = []
+            mutations.append(("effects", mutation))
+
+            for suffix, mutation in mutations:
+                negative = write_case(directory, f"memory-{direction}-{suffix}-mismatch", mutation)
+                run_validator(validator, negative, expect_success=False)
+                memory_negative += 1
+
     print(
         "json-effect-consistency-smoke: ok "
         f"single_pop={single_positive} "
@@ -357,7 +462,9 @@ def main() -> int:
         f"mixed_rejections={mixed_negative} "
         f"bare_ret_rejections={bare_ret_negative} "
         f"stack_adjust={stack_adjust_positive} "
-        f"stack_adjust_rejections={stack_adjust_negative}"
+        f"stack_adjust_rejections={stack_adjust_negative} "
+        f"memory={memory_positive} "
+        f"memory_rejections={memory_negative}"
     )
     return 0
 

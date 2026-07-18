@@ -234,3 +234,7 @@ forms retain the strongest existing suffix interpretation.
 ## Sprint 10 Patch 048 stack-adjust behavior
 
 `gadgets` and `analyze` may report exact `add rsp, imm8; ret` suffixes when the immediate is positive, nonzero, and eight-byte aligned. These candidates remain semantic-exact alignment facts with known total stack delta, `stack_adjust` and `flags_write` effects, and no score. Unsupported arithmetic forms remain bare-return fallbacks. CLI syntax, exit codes, capacity behavior, and schema version remain unchanged.
+
+## Sprint 10 Patch 049 memory-effect reporting
+
+The CLI syntax and exit codes do not change. Current `gadgets` and `analyze` reports may include structured `memory_access` facts for the restricted exact qword base-plus-zero memory families. The field does not imply decoded full-window validity or external control of the address or memory contents.

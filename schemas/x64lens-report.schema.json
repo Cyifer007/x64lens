@@ -279,6 +279,12 @@
             ]
           },
           "uniqueItems": true
+        },
+        "memory_write": {
+          "type": "boolean"
+        },
+        "memory_read": {
+          "type": "boolean"
         }
       },
       "additionalProperties": true,
@@ -491,7 +497,9 @@
                 "ret_imm16",
                 "register_write",
                 "stack_adjust",
-                "flags_write"
+                "flags_write",
+                "memory_read",
+                "memory_write"
               ]
             },
             "uniqueItems": true,
@@ -758,6 +766,123 @@
                 }
               }
             ]
+          },
+          "memory_access": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Structured facts for a supported bounded memory-read or memory-write suffix; null for other candidates.",
+            "properties": {
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "read",
+                  "write"
+                ]
+              },
+              "base": {
+                "type": "string",
+                "enum": [
+                  "rax",
+                  "rbx",
+                  "rcx",
+                  "rdx",
+                  "rsi",
+                  "rdi",
+                  "rbp",
+                  "rsp",
+                  "r8",
+                  "r9",
+                  "r10",
+                  "r11",
+                  "r12",
+                  "r13",
+                  "r14",
+                  "r15"
+                ]
+              },
+              "index": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  null,
+                  "rax",
+                  "rbx",
+                  "rcx",
+                  "rdx",
+                  "rsi",
+                  "rdi",
+                  "rbp",
+                  "rsp",
+                  "r8",
+                  "r9",
+                  "r10",
+                  "r11",
+                  "r12",
+                  "r13",
+                  "r14",
+                  "r15"
+                ]
+              },
+              "scale": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  4,
+                  8
+                ]
+              },
+              "displacement": {
+                "type": "integer"
+              },
+              "displacement_known": {
+                "type": "boolean"
+              },
+              "width_bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "value_register": {
+                "type": "string",
+                "enum": [
+                  "rax",
+                  "rbx",
+                  "rcx",
+                  "rdx",
+                  "rsi",
+                  "rdi",
+                  "rbp",
+                  "rsp",
+                  "r8",
+                  "r9",
+                  "r10",
+                  "r11",
+                  "r12",
+                  "r13",
+                  "r14",
+                  "r15"
+                ]
+              },
+              "dereference": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "direction",
+              "base",
+              "index",
+              "scale",
+              "displacement",
+              "displacement_known",
+              "width_bytes",
+              "value_register",
+              "dereference"
+            ],
+            "additionalProperties": false
           }
         },
         "additionalProperties": true,

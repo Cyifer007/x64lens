@@ -375,3 +375,7 @@ Deferred with explicit classification:
 - [x] Add bounded public ZIP textual-content validation separate from metadata-only archive safety.
 - [ ] Define a complete memory-operand fact record before promoting memory read/write families.
 - [ ] Decide whether another bounded stack/register family is preferable to memory effects for the next Sprint 10 patch.
+
+## Sprint 10 Patch 049 backlog update
+
+Patch 049 establishes the first structured memory-effect side-car and bounded qword base-plus-zero read/write families. Remaining Sprint 10 work is not generic pattern-count expansion. It is a closeout review of fixture coverage, false-positive boundaries, schema compatibility, score deferral, and Sprint 11 corpus requirements. Displacement, SIB/index, RIP-relative, and broader memory families remain deferred until exact operand semantics and fixtures are ready.

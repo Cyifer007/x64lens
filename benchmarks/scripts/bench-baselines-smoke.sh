@@ -204,7 +204,7 @@ run_timed() {
     if ! python3 -m json.tool "$out" >/dev/null; then
       note="invalid_json"
       status=1
-    elif ! python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer "$out" >/dev/null; then
+    elif ! python3 "$ROOT/tools/validate-json-report.py" --mode system --require-schema 0.2.0 --expected-command gadgets --require-provenance --require-sprint10-effects --require-sprint10-transfer --require-sprint10-memory "$out" >/dev/null; then
       note="json_validator_failed"
       status=1
     else

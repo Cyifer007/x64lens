@@ -8,6 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 049 exact qword base-plus-zero memory-write and memory-read recognition with structured candidate-index memory effects, conservative fallback, and no score assignment.
+- A 12-candidate memory/fallback fixture, `make sprint10-memory-smoke`, and an objdump-backed memory disassembly oracle.
+- Authenticated public final-file overlay verification that binds the outer SHA-256, ZIP metadata policy, textual-content policy, and exact internal path/hash/size/mode manifest.
+- ADR 0035 and the Patch 049 validation record.
+
 - Sprint 10 Patch 048 exact `add rsp, positive-aligned-imm8; ret` recognition with known total stack delta, explicit `stack_adjust` and `flags_write` effects, conservative fallback, and no score assignment.
 - A seven-candidate stack-adjust/fallback fixture, `make sprint10-stack-adjust-smoke`, and an objdump-backed stack-adjust disassembly oracle.
 - Bounded public textual-content validation for repository files and public ZIP members, including `.patch` and `.diff` payloads, as a separate gate from metadata-only ZIP safety.
@@ -123,7 +128,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
-- Advance Sprint 10 through the Patch 048 candidate while preserving the 112-byte candidate record, 655,360-byte arena, 4,096-candidate capacity, decoder-free one-worker runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
+- Advance Sprint 10 through the Patch 049 candidate while preserving the 112-byte candidate record, 4,096-candidate capacity, dependency-free runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
+- Add a 16-byte dense memory-effect side-car and increase the fixed command arena from 655,360 to 720,896 bytes without changing candidate capacity.
+- Require the public textual-content checker to inspect its own source and require authenticated final-file overlays to reconcile every distributed member.
+- Treat local unified diffs as application artifacts and public final-file overlays as the release-safe distribution surface.
+
+- Advance Sprint 10 through the Patch 048 candidate while preserving the 112-byte candidate record, then-current 655,360-byte arena, 4,096-candidate capacity, decoder-free one-worker runtime, tool version `0.1.0-dev`, and schema version `0.2.0`.
 - Require current-producer validation to reconcile exact terminators, bare-return controls and stack facts, stack-adjust immediates, side effects, and known deltas.
 - Distinguish public ZIP metadata safety from bounded public textual-content review; final-file public overlays may pass both gates while local application packages remain outside the public release boundary.
 
@@ -220,6 +230,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Remove two tracked generated Sprint 10 ELF fixtures and ignore generated multi-pop, transfer, stack-adjust, and memory fixture binaries.
+- Close the public-content checker self-exclusion that allowed a tampered checker member to evade the content gate.
+- Reconcile Patch 046 through Patch 049 chronology, taxonomy navigation, and fixed-arena wording in public documentation.
 
 - Define the compact JSON object delimiters required by register-transfer rendering.
 - Reject exact-pattern/terminator contradictions, bare `ret` records with controls or arbitrary stack deltas, and inconsistent stack-adjust records in common current-producer validation.
