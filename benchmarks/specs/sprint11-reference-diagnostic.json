@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "campaign_id": "s11-p055-reference-diagnostic",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "warmup_runs": 1,
+  "measured_runs": 3,
+  "timeout_seconds": 10,
+  "order_policy": "alternating",
+  "cache_policy": "warm",
+  "fail_campaign_on_error": true,
+  "environment": {
+    "X64LENS_DIAGNOSTIC_PROFILE": "core-1w"
+  },
+  "timer_floor": {
+    "probe": "/bin/true",
+    "runs": 9,
+    "threshold_multiplier": 5
+  },
+  "tools": [
+    {
+      "id": "x64lens",
+      "path": "../../build/x64lens",
+      "version": "0.1.0-dev",
+      "version_argv": [
+        "{tool}",
+        "version"
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "id": "controlled-gadgets",
+      "path": "../../tests/bin/gadgets",
+      "license": "Apache-2.0 project-controlled fixture"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "x64lens-gadget-json",
+      "task_scope": "gadget_report",
+      "profile_id": "core-1w",
+      "worker_count": 1,
+      "tool": "x64lens",
+      "target": "controlled-gadgets",
+      "argv": [
+        "{tool}",
+        "gadgets",
+        "--format",
+        "json",
+        "--max-depth",
+        "4",
+        "{target}"
+      ],
+      "extractor": "x64lens_json_0_2",
+      "expected_report_command": "gadgets",
+      "output_scope": "schema 0.2.0 analysis report produced through the gadgets command"
+    },
+    {
+      "id": "x64lens-analysis-json",
+      "task_scope": "integrated_analysis",
+      "profile_id": "core-1w",
+      "worker_count": 1,
+      "tool": "x64lens",
+      "target": "controlled-gadgets",
+      "argv": [
+        "{tool}",
+        "analyze",
+        "--format",
+        "json",
+        "--max-depth",
+        "4",
+        "{target}"
+      ],
+      "extractor": "x64lens_json_0_2",
+      "expected_report_command": "analyze",
+      "output_scope": "schema 0.2.0 analysis report produced through the analyze command"
+    }
+  ]
+}

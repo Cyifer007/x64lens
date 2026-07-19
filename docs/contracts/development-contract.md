@@ -314,3 +314,48 @@ No development-smoke or diagnostic result may be promoted into a preview or publ
 ## Sprint closeout chronology rule
 
 A sprint closes only when its plan, retrospective, active roadmap, release milestones, validation plan, machine-readable authorities, and next-sprint status agree. Structural file presence alone is insufficient; active prose must pass the maintained roadmap-consistency gate.
+
+
+## Diagnostic runner evidence rule
+
+A high-resolution diagnostic campaign must retain the exact specification and
+runner source, execute immutable snapshots of the tool and target, preserve
+source and snapshot hashes, retain the exact
+campaign-relative command, and record every warmup, measured, failed, signaled,
+timed-out, or extractor-failed row. Tool output must be captured before
+post-process extraction so parsing work does not contaminate child timing.
+
+Each condition runs in its own process group. Timeout and interruption handling
+must terminate and reap same-group helpers and descendants adopted by the Linux
+subreaper even when they escape into another session. `wait4` CPU and RSS fields
+describe the direct measured child; descendant resources are not aggregate facts. Result publication must be transactional
+and must not replace an existing campaign identity.
+
+Measured children use fixed locale, timezone, and executable-path settings plus
+per-command private home, temporary, cache, configuration, and data roots. A
+campaign cannot override these reserved environment keys.
+
+Diagnostic evidence is explicitly mutable, unfrozen, and not publication
+eligible. It cannot be promoted into a frozen campaign by renaming files or
+changing a manifest label.
+
+## Benchmark task-truth rule
+
+A benchmark mode exists only when the implementation performs a separately
+defined workload. Report-producing commands must not be relabeled as isolated
+scanner cost. Commands that share the same analysis body may be measured for
+orchestration parity but cannot be described as distinct narrow and broad tasks
+without implementation evidence.
+
+An unavailable task remains explicit until a reviewed instrumentation or API
+seam exists. Baseline rows require tool-specific task, candidate, depth,
+alignment, duplicate, canonicalization, and output definitions before cross-tool
+interpretation.
+
+## Independent closeout-authority rule
+
+Closeout summaries must be reconciled against independent source and fixture
+authorities. A checker must not rely only on machine files that can be mutated in
+lockstep, and its success output must render observed values rather than fixed
+expected prose. Every reproduced false negative receives a permanent negative
+regression.

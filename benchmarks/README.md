@@ -59,3 +59,37 @@ python3 benchmarks/scripts/summarize.py benchmarks/results/baseline-smoke-*.tsv
 The harness always runs x64lens and optionally runs ROPgadget, Ropper, and ropr when those tools are installed. Missing optional baseline tools are recorded in the metadata sidecar and skipped by default. Set `REQUIRE_BASELINES=1` only in environments where at least one optional baseline tool is expected.
 
 The baseline smoke TSV records tool path, tool version, exact command, target size, target SHA256, run number, wall-clock time, max RSS, exit code, output size, and x64lens JSON-derived raw/exact/semantic/unknown/scored counts. It is not a publication benchmark by itself.
+
+
+## Sprint 11 Patch 055 diagnostic runner
+
+Validate the high-resolution measurement and task-definition contracts with:
+
+```bash
+make diagnostic-tools-check
+make diagnostic-runner-smoke
+make diagnostic-task-definitions-smoke
+make sprint11-diagnostic-reference-smoke
+```
+
+Run the controlled x64lens reference conditions after building the analyzer and
+fixtures:
+
+```bash
+make bench-diagnostic-smoke
+```
+
+Set `DIAGNOSTIC_CAMPAIGN_ID` to choose a stable local result identity. Campaigns
+are written under `benchmarks/results/diagnostic/` and remain ignored until a
+later evidence-promotion decision.
+
+Each campaign retains the runner and exact specification, immutable tool and target snapshots, isolated per-command environment roots, observed tool version
+output, timer-floor samples, warmup and measured rows, direct-child process resource data,
+stdout/stderr artifacts, and a manifest. Failed rows are preserved. Campaigns
+are explicitly diagnostic, mutable, and not publication eligible.
+
+The initial reference specification contains gadget JSON and analyze JSON
+command conditions. It deliberately contains no scanner-only condition because
+the current CLI has no report-suppressed scanner path. The two JSON commands
+share the current analysis body and remain a command-identity parity pair rather
+than independent work scopes.

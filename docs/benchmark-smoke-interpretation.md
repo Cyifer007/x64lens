@@ -48,7 +48,7 @@ The publication campaign must use a frozen corpus manifest, pinned tool versions
 When retained, smoke rows verify harness execution and can expose timing
 resolution that is too coarse for small-target conditions. They do not establish
 a speed or memory superiority claim. Sprint 11 replaces this path for diagnostic
-research evidence with monotonic nanosecond timing, per-child resource capture,
+research evidence with monotonic nanosecond timing, direct-child resource capture,
 target hashes, explicit cache and warmup policy, and a provisional corpus.
 Sprint 15 freezes the confirmatory corpus and method. See
 `docs/benchmark-methodology.md`,
@@ -66,3 +66,17 @@ Benchmark smoke summaries reject non-finite timing values (`nan`, `inf`, and
 `-inf`) and malformed rows. If a smoke artifact fails the summarizer, treat the
 artifact as invalid measurement evidence and rerun after preserving the raw log
 needed for diagnosis. Do not manually edit rows into a passing state.
+
+
+## Patch 055 diagnostic transition
+
+Patch 055 adds `make diagnostic-runner-smoke` and the controlled
+`make bench-diagnostic-smoke` campaign. The new runner improves timer and
+resource capture, immutable input identity, failure retention, and artifact
+publication. It does not make the controlled campaign a comparative result.
+
+The current reference specification measures gadget JSON and analyze JSON as a
+command-identity parity pair. It does not contain a scanner-only row because no
+truthful report-suppressed scanner path exists. Baseline adapters, provisional
+corpus construction, and the engineering gap register remain later Sprint 11
+work.

@@ -30,6 +30,9 @@ READELF_COMPARISON_RESULTS_DIR ?= ./tests/results/readelf-comparison
 OPTIONAL_TOOL_COMPARISON_RESULTS_DIR ?= ./tests/results/optional-tool-comparison
 BENCHMARK_INTEGRITY_RESULTS_DIR ?= ./tests/results/benchmark-integrity
 DECODER_GAP_RESULTS_DIR ?= ./tests/results/decoder-gap
+DIAGNOSTIC_RESULTS_DIR ?= ./benchmarks/results/diagnostic
+DIAGNOSTIC_SPEC ?= ./benchmarks/specs/sprint11-reference-diagnostic.json
+DIAGNOSTIC_CAMPAIGN_ID ?=
 PUBLIC_BUNDLE ?=
 PUBLIC_BUNDLE_SHA256 ?=
 INTERNAL_TEST_BUILD_DIR := $(BUILD_DIR)/tests
@@ -48,7 +51,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-task-definitions-smoke sprint11-diagnostic-reference-smoke checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -62,6 +65,11 @@ help:
 	@echo "  make readelf-comparison-smoke  Compare metadata and loader facts against readelf"
 	@echo "  make optional-tool-comparison-smoke  Run optional checksec/rabin2 comparison helpers"
 	@echo "  make benchmark-integrity-smoke  Validate benchmark TSV input hygiene"
+	@echo "  make diagnostic-tools-check  Validate only build, sample, and standard-library runner tools"
+	@echo "  make diagnostic-runner-smoke  Validate high-resolution runner provenance, timing, and failure retention"
+	@echo "  make diagnostic-task-definitions-smoke  Validate truthful Sprint 11 task scopes"
+	@echo "  make sprint11-diagnostic-reference-smoke  Validate controlled diagnostic rows and command parity"
+	@echo "  make patch054-corrective-regression-smoke  Reject Patch 054 checker false negatives"
 	@echo "  make patch-bundle-hygiene-smoke  Reconcile local/central ZIP metadata and private paths"
 	@echo "  make public-docs-hygiene-smoke  Reject private transfer names and host paths"
 	@echo "  make public-artifact-content-smoke  Reject private text recoverable from distributed patches"
@@ -96,6 +104,7 @@ help:
 	@echo "  make checkpoint-demo     Run the integrated checkpoint demonstration"
 	@echo "  make bench-scanner-smoke Run scanner benchmark smoke measurements"
 	@echo "  make bench-baselines-smoke  Compare optional baseline tools"
+	@echo "  make bench-diagnostic-smoke  Run the provisional Sprint 11 x64lens diagnostic conditions"
 	@echo "  make bench-summary-latest  Summarize newest non-empty benchmark artifact"
 	@echo "  make bench-summary     Summarize one benchmark artifact by default"
 	@echo "  make docker-build        Build the development image"
@@ -120,6 +129,9 @@ sample-tools-check:
 
 dev-tools-check:
 	bash tools/check-dev-tools.sh --dev
+
+diagnostic-tools-check:
+	bash tools/check-dev-tools.sh --diagnostic
 
 baseline-tools-check:
 	bash tools/check-dev-tools.sh --baselines
@@ -452,7 +464,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-task-definitions-smoke sprint11-diagnostic-reference-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -482,6 +494,17 @@ bench-smoke: bench-scanner-smoke
 # one of ROPgadget, ropper, or ropr. Results are development evidence only.
 bench-baselines-smoke: dev-tools-check baseline-tools-check all samples
 	bash benchmarks/scripts/bench-baselines-smoke.sh ./$(TARGET)
+
+# Sprint 11 diagnostic reference campaign. This target writes ignored mutable
+# development evidence and deliberately excludes the unavailable scanner-only
+# condition. Set DIAGNOSTIC_CAMPAIGN_ID to choose a stable local identity.
+bench-diagnostic-smoke: diagnostic-tools-check all samples
+	@set -eu; campaign="$(DIAGNOSTIC_CAMPAIGN_ID)"; \
+	if [ -z "$$campaign" ]; then campaign="s11-p055-reference-$$(date -u +%Y%m%dT%H%M%S%NZ)"; fi; \
+	python3 benchmarks/scripts/diagnostic-runner.py \
+		--spec "$(DIAGNOSTIC_SPEC)" \
+		--output-root "$(DIAGNOSTIC_RESULTS_DIR)" \
+		--campaign-id "$$campaign"
 
 checkpoint-demo: dev-tools-check all samples
 	bash tools/demo-checkpoint.sh ./$(TARGET) "$(DEMO_TARGET)"
@@ -524,6 +547,18 @@ research-roadmap-consistency-smoke:
 sprint10-closeout-smoke:
 	python3 tools/sprint10-closeout-smoke.py
 
+patch054-corrective-regression-smoke:
+	python3 tools/patch054-corrective-regression-smoke.py
+
+diagnostic-runner-smoke:
+	python3 tools/diagnostic-runner-smoke.py
+
+diagnostic-task-definitions-smoke:
+	python3 tools/diagnostic-task-definitions-smoke.py
+
+sprint11-diagnostic-reference-smoke: diagnostic-tools-check all samples
+	python3 tools/sprint11-diagnostic-reference-smoke.py
+
 checksum-manifest-path-smoke:
 	python3 tools/checksum-manifest-path-smoke.py
 
@@ -550,6 +585,7 @@ script-perms-check:
 	@test -x benchmarks/scripts/bench-scanner-smoke.sh
 	@test -x benchmarks/scripts/bench-baselines-smoke.sh
 	@test -x benchmarks/scripts/summarize.py
+	@test -x benchmarks/scripts/diagnostic-runner.py
 	@test -x benchmarks/scripts/bench-x64lens.sh
 	@test -x tools/benchmark-integrity-smoke.py
 	@test -x tools/patch-bundle-hygiene-smoke.py
@@ -597,6 +633,10 @@ script-perms-check:
 	@test -x tools/research-stage-gates-smoke.py
 	@test -x tools/research-roadmap-consistency-smoke.py
 	@test -x tools/sprint10-closeout-smoke.py
+	@test -x tools/patch054-corrective-regression-smoke.py
+	@test -x tools/diagnostic-runner-smoke.py
+	@test -x tools/diagnostic-task-definitions-smoke.py
+	@test -x tools/sprint11-diagnostic-reference-smoke.py
 	@test -x tools/verify-checksum-manifest.py
 	@test -x tools/checksum-manifest-path-smoke.py
 	@test -x tools/check-planning-docs.sh
@@ -664,6 +704,11 @@ scaffold-check: script-perms-check
 	@test -f docs/sprints/sprint-10-retro.md
 	@test -f tests/expected/research-stage-gates.json
 	@test -f tests/expected/sprint10-closeout.json
+	@test -f benchmarks/specs/sprint11-reference-diagnostic.json
+	@test -f benchmarks/task-definitions/sprint11-diagnostic-tasks.json
+	@test -f docs/design/diagnostic-benchmark-task-definitions.md
+	@test -f docs/adr/0041-sprint11-diagnostic-runner-foundation.md
+	@test -f docs/sprints/sprint-11-patch-055-validation.md
 	@test -f docs/research-release-plan.md
 	@test -f docs/design/evidence-provenance-model.md
 	@test -f docs/design/schema-evolution.md
@@ -778,6 +823,9 @@ print-vars:
 	@echo OPTIONAL_TOOL_COMPARISON_RESULTS_DIR=$(OPTIONAL_TOOL_COMPARISON_RESULTS_DIR)
 	@echo BENCHMARK_INTEGRITY_RESULTS_DIR=$(BENCHMARK_INTEGRITY_RESULTS_DIR)
 	@echo DECODER_GAP_RESULTS_DIR=$(DECODER_GAP_RESULTS_DIR)
+	@echo DIAGNOSTIC_RESULTS_DIR=$(DIAGNOSTIC_RESULTS_DIR)
+	@echo DIAGNOSTIC_SPEC=$(DIAGNOSTIC_SPEC)
+	@echo DIAGNOSTIC_CAMPAIGN_ID=$(DIAGNOSTIC_CAMPAIGN_ID)
 	@echo PUBLIC_BUNDLE=$(PUBLIC_BUNDLE)
 	@echo PUBLIC_BUNDLE_SHA256=$(PUBLIC_BUNDLE_SHA256)
 

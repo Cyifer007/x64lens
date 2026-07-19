@@ -277,6 +277,17 @@ availability gates. NASM number-overflow warnings are build failures.
 
 Patch 053 does not freeze a benchmark or add an analyzer capability. It corrects the Patch 052 harness and planning defects, makes checksum verification manifest-relative, and establishes the diagnostic/hardening/freeze/preview/campaign sequence. The research preview cannot be tagged before the Sprint 15 freeze and Sprint 16 pilot. The first release cannot be tagged before the Sprint 22 evidence gate.
 
-## Complete-package manifest rule
+## Co-located package-manifest rule
 
-A delivery checksum inventory may reference only artifacts supplied beside it. When a complete application package has an internal manifest, the same authenticated manifest must also be supplied as a sibling delivery artifact so independent verification does not depend on unpacking the package first.
+A release checksum inventory may reference only co-located artifacts. If an
+application package's internal manifest is listed, that manifest must also be
+present and authenticated beside the inventory so verification does not require
+unpacking the package.
+
+## Sprint 11 diagnostic artifact boundary
+
+Patch 055 diagnostic campaign trees are ignored development evidence. They are
+not source-release members, preview artifacts, publication datasets, or release
+checksums unless a later explicit promotion process validates and packages a
+frozen campaign. A campaign manifest that says `evidence_class: diagnostic`,
+`frozen: false`, or `publication_eligible: false` cannot satisfy a release gate.

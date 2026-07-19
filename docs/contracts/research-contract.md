@@ -137,3 +137,18 @@ Confirmatory measurement begins only after the Sprint 15 campaign freeze. Method
 ## Diagnostic-before-freeze rule
 
 Diagnostic measurement may begin before corpus and method freeze when its purpose is to discover bottlenecks, task mismatches, or capability gaps. Diagnostic rows retain complete provenance but remain development evidence. They cannot be merged into the Sprint 15-frozen confirmatory campaign after a material tool, corpus, schema, task, or method change.
+
+
+## Sprint 11 diagnostic-row integrity rule
+
+Each diagnostic process execution retains immutable tool and target identity,
+exact command, task/profile identity, phase, order, timer-floor classification,
+wall/user/system time, direct-child maximum RSS, output size and hashes, exit or signal state,
+and extraction outcome. Warmups and failures remain in the raw dataset even
+when they are excluded from a primary measured summary. Descendant resource use
+is not aggregated into the direct-child row and must remain an explicit limitation.
+
+A timer-floor threshold is an interpretation warning, not a value to subtract
+from measured time. Rows below the floor require a larger target or a separately
+reviewed batch method. A command label is not evidence that two commands perform
+different work.

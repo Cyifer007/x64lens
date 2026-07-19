@@ -315,11 +315,21 @@ Patch 019 and Patch 020 rows preserve raw timing and memory evidence, but they d
 ROPgadget and Ropper are Python CLI baselines and are normally installed through `pipx`. ropr is a Rust CLI baseline and may require a newer Cargo than the Ubuntu 24.04 apt package provides. Benchmark metadata must record which optional baselines were present and the version strings reported by each tool. Missing optional baselines are acceptable for development smoke tests but must be disclosed in any benchmark interpretation.
 
 
-## Analyze command benchmarking boundary
+## Gadget and analyze command benchmarking boundary
 
-Sprint 6 Patch 022 adds `analyze` as an integrated checkpoint command. The baseline gadget-discovery smoke harness should continue using `gadgets --format json` for apples-to-apples comparison against ROPgadget, Ropper, and ropr because those tools primarily enumerate gadgets.
+The current schema `0.2.0` JSON adapter is shared by `gadgets` and `analyze`.
+For the same target and options, the maintained parity contract requires their
+analysis body to match after removing only command identity. Both commands run
+the current metadata, mitigation, scanner, semantic, effect, score, summary, and
+JSON path.
 
-`analyze` should be benchmarked separately when the question is end-to-end defensive triage cost. That benchmark should make clear that x64lens is producing target metadata, mitigation facts, primitive coverage, scored candidate facts, and limitations in one command, while the baseline tools may be doing a narrower or different task.
+Patch 055 therefore retains both as command-path diagnostic conditions but does
+not describe `gadgets --format json` as raw scanner cost or `analyze --format
+json` as an independently broader workload. Baseline comparison may use the
+gadget command label because it is the closest user-facing intent, but task
+scope and output work must still be qualified. A distinct integrated-triage
+benchmark becomes meaningful only when the command performs or emits a reviewed
+additional analysis layer.
 
 ## Sprint 6 smoke interpretation
 
@@ -332,10 +342,10 @@ The final campaign must not aggregate historical artifacts from different hosts 
 
 The Sprint 5 and Sprint 6 smoke harnesses use GNU `time` and correctly validate command execution, max RSS capture, version metadata, target coverage, and result summarization. They are not sufficient for final small-binary timing because elapsed output can round to `0.00` seconds.
 
-Patch 053 moves this work to Sprint 11: introduce a standard-library Python
-runner that uses a monotonic nanosecond clock and per-child resource information.
-On Linux, the preferred implementation is a spawn/wait path that obtains the
-child's `rusage` instead of using cumulative parent-process measurements.
+Patch 053 moves this work to Sprint 11. Patch 055 implements the first
+standard-library Python runner using a monotonic nanosecond clock and Linux
+per-child `wait4` resource information instead of cumulative parent-process
+measurements.
 
 Required runner behavior:
 
@@ -360,17 +370,21 @@ Before a campaign, measure the runner's practical timing floor. When a target co
 
 Do not convert `0.00` smoke values into performance claims.
 
-### Benchmark modes
+### Diagnostic task modes
 
-Use separate modes because task scope differs:
+Use separate task identities only when the implementation performs a separately
+defined workload:
 
-| Mode | x64lens command | Research purpose |
-|---|---|---|
-| Raw discovery | future quiet/raw scanner path if implemented | Isolate scanner engine cost. |
-| Gadget report | `gadgets --format json` | Closest comparison with ROPgadget, Ropper, and ropr. |
-| Integrated triage | `analyze --format json` | Measure end-to-end metadata, mitigation, semantic, score, and reporting cost. |
+| Mode | Current status | x64lens command | Research interpretation |
+|---|---|---|---|
+| Core scanner | Unavailable | none | No report-suppressed path exists. Report timing cannot be substituted for isolated scanner cost. |
+| Gadget JSON | Implemented | `gadgets --format json` | Complete current analysis and JSON report under gadget command identity; closest user-facing baseline intent, with work-scope caveats. |
+| Integrated-analysis JSON | Implemented parity condition | `analyze --format json` | Same current report body and facts under analyze command identity; useful for orchestration parity, not proof of broader work. |
 
-A baseline row belongs in a comparison only when the compared task and output scope are stated.
+A baseline row belongs in a comparison only when the compared task, output
+scope, candidate definitions, and duplicate policy are stated. The maintained
+machine authority is
+[`benchmarks/task-definitions/sprint11-diagnostic-tasks.json`](../benchmarks/task-definitions/sprint11-diagnostic-tasks.json).
 
 ### Campaign freeze
 
@@ -590,3 +604,38 @@ Patch 051 increases the fixed command arena from 720,896 to 819,200 bytes by add
 ## Patch 053 benchmark sequencing decision
 
 The project will not freeze the final benchmark suite at the Sprint 10 boundary. Sprint 11 builds and exercises the runner with provisional targets so measured evidence can direct loader, mitigation, semantic, decoder, and concurrency decisions in Sprints 12 through 14. Diagnostic rows remain separate from preview and publication rows. See [`design/benchmark-and-capability-stage-gates.md`](design/benchmark-and-capability-stage-gates.md).
+
+
+## Sprint 11 Patch 055 diagnostic runner implementation
+
+Patch 055 implements the first higher-resolution runner at
+`benchmarks/scripts/diagnostic-runner.py`. Its maintained behavior is:
+
+- diagnostic-only campaign specifications with `frozen:false` and
+  `publication_eligible:false`;
+- immutable runner, campaign-specification, tool, target, and timer-probe
+  snapshots bound by SHA-256;
+- declared version reconciliation against retained version-command output;
+- monotonic nanosecond wall timing and Linux direct-child user, system, maximum
+  RSS, fault, and context-switch measurements; descendant resource use is not
+  aggregated and remains a separately identified limitation;
+- retained stdout/stderr bytes and SHA-256 values;
+- distinct warmup and measured rows with listed or alternating order;
+- explicit warm or uncontrolled cache policy;
+- fixed C/UTC/path settings plus private per-command home, temporary, cache,
+  configuration, and data roots;
+- timer-floor samples and below-floor row labels;
+- timeout, signal, nonzero-exit, same-group or escaped-descendant cleanup, and
+  extractor outcomes;
+- failed-row retention;
+- complete result-tree flush followed by atomic no-replace publication.
+
+The reference specification uses one controlled target and the two truthful
+current JSON command identities. It validates the runner and report extractor;
+it is not the provisional corpus campaign, baseline comparison, or publication
+evidence.
+
+The timer-floor threshold is a diagnostic warning boundary, not a correction
+factor. Patch 055 does not divide or subtract the floor from measured rows. A
+below-floor condition requires a larger target or a future reviewed batching
+method with explicit batch metadata.

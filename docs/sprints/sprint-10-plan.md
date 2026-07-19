@@ -7,8 +7,8 @@ multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded
 qword base-plus-zero memory families, current-family effects, architectural
 effects, score policy, and fail-closed validation. Patch 053 established the
 benchmark-informed twenty-two-sprint roadmap. Patch 054 reconciles the remaining
-delivery and public-planning findings, records the retrospective, and activates
-Sprint 11 diagnostic measurement.
+checksum-manifest and public-planning contracts, records the retrospective, and
+activates Sprint 11 diagnostic measurement.
 
 Related documentation:
 
@@ -72,7 +72,9 @@ validity, side effects, score meaning, or the defensive deployment profile.
 6. **Patch 051:** reconcile the committed Patch 050 foundation through one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
 7. **Patch 052:** resolve Patch 051 findings.
 8. **Patch 053:** correct the Patch 052 harness/planning findings and establish the benchmark-informed capability roadmap, diagnostic/frozen evidence split, release gates, and twenty-two-sprint sequence.
-9. **Patch 054:** reconcile Patch 053 delivery and public-planning findings, add durable chronology and closeout gates, record the retrospective, close Sprint 10, and activate Sprint 11.
+9. **Patch 054:** reconcile checksum-manifest and public-planning contracts, add
+   durable chronology and closeout gates, record the retrospective, close
+   Sprint 10, and activate Sprint 11.
 
 This sequence prevents the capability audit from being hidden inside a nominal
 closeout patch and keeps Sprint 11 diagnostic corpus work separate from the
@@ -215,5 +217,5 @@ The research decision is to measure early but freeze late: Sprint 11 diagnostic 
 
 Patch 054 adds no primitive, score, record, schema field, decoder, or worker
 behavior. It closes Sprint 10 by reconciling public roadmap chronology, public
-repository voice, delivery-manifest completeness, machine-readable closeout
-state, retrospective evidence, and Sprint 11 entry criteria.
+repository voice, checksum-manifest co-location, machine-readable closeout state,
+retrospective evidence, and Sprint 11 entry criteria.

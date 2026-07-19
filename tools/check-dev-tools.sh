@@ -11,6 +11,7 @@
 #   --build       Required to assemble and link x64lens.
 #   --samples     Required to build the controlled toy corpus.
 #   --dev         Required for the normal local validation suite.
+#   --diagnostic  Required for the Sprint 11 reference diagnostic runner.
 #   --baselines   Optional baseline gadget tools; warnings by default.
 #   --analysis    Optional review/comparison tools; warnings by default.
 #   --all         Dev tools plus optional baseline and analysis tools.
@@ -160,6 +161,12 @@ check_samples() {
   check_cmd make "build orchestration"
 }
 
+check_diagnostic() {
+  check_build
+  check_samples
+  check_cmd python3 "standard-library diagnostic runner"
+}
+
 check_dev() {
   check_build
   check_samples
@@ -200,6 +207,9 @@ case "$MODE" in
   --dev)
     check_dev
     ;;
+  --diagnostic)
+    check_diagnostic
+    ;;
   --baselines)
     check_baselines
     ;;
@@ -235,7 +245,7 @@ case "$MODE" in
     fi
     ;;
   *)
-    echo "usage: $0 [--build|--samples|--dev|--baselines|--analysis|--all|--doctor]" >&2
+    echo "usage: $0 [--build|--samples|--dev|--diagnostic|--baselines|--analysis|--all|--doctor]" >&2
     exit 2
     ;;
 esac

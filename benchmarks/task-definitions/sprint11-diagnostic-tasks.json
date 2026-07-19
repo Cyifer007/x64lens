@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "authority_id": "sprint11-diagnostic-task-definitions-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "reference_profile": "core-1w",
+  "campaign_freeze_sprint": 15,
+  "tasks": [
+    {
+      "id": "core_scanner",
+      "status": "unavailable",
+      "task_scope": "core_scanner",
+      "reason": "The public CLI has no report-suppressed scanner-only path. Text or JSON report timing is not a truthful substitute for isolated scanner cost.",
+      "substitution_allowed": false,
+      "decision_owner": "diagnostic evidence and a reviewed instrumentation seam"
+    },
+    {
+      "id": "x64lens_gadget_json",
+      "status": "implemented",
+      "task_scope": "gadget_report",
+      "condition_id": "x64lens-gadget-json",
+      "command_template": [
+        "x64lens",
+        "gadgets",
+        "--format",
+        "json",
+        "--max-depth",
+        "4",
+        "<target>"
+      ],
+      "extractor": "x64lens_json_0_2",
+      "parity_group": "x64lens-schema-0.2-command-identity",
+      "work_scope_note": "Runs the complete current analysis pipeline and JSON adapter."
+    },
+    {
+      "id": "x64lens_integrated_analysis_json",
+      "status": "implemented",
+      "task_scope": "integrated_analysis",
+      "condition_id": "x64lens-analysis-json",
+      "command_template": [
+        "x64lens",
+        "analyze",
+        "--format",
+        "json",
+        "--max-depth",
+        "4",
+        "<target>"
+      ],
+      "extractor": "x64lens_json_0_2",
+      "parity_group": "x64lens-schema-0.2-command-identity",
+      "work_scope_note": "Current JSON output shares the same report body and analysis facts as gadgets; the command identity differs, so this is not yet an independently broader workload."
+    }
+  ],
+  "baselines": [
+    {
+      "id": "ropgadget",
+      "status": "planned",
+      "task_scope": "baseline_gadget_report",
+      "normalization_required": true
+    },
+    {
+      "id": "ropper",
+      "status": "planned",
+      "task_scope": "baseline_gadget_report",
+      "normalization_required": true
+    },
+    {
+      "id": "ropr",
+      "status": "planned",
+      "task_scope": "baseline_gadget_report",
+      "normalization_required": true
+    }
+  ],
+  "claim_boundaries": [
+    "Diagnostic rows are development evidence only.",
+    "A command label does not prove a distinct amount of analysis work.",
+    "No generic gadget_count is comparable before candidate-definition reconciliation.",
+    "Core scanner timing remains unavailable until a real report-suppressed instrumentation seam exists."
+  ]
+}

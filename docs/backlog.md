@@ -114,12 +114,21 @@ later sprints rather than Patch 037:
 
 ### Sprint 11: diagnostic benchmark foundation
 
-- [ ] High-resolution monotonic runner with per-child CPU and max RSS.
+- [x] High-resolution standard-library runner with monotonic nanosecond timing,
+  Linux direct-child CPU/max-RSS capture, retained runner/spec identity, immutable tool/target snapshots, failed-row
+  retention, process-group cleanup, and transactional result publication.
 - [ ] Provisional reproducible corpus with hashes, build commands, and licenses.
-- [ ] Timer-floor, batching, warmup, ordering, and cache policy.
-- [ ] Separate core, gadget-report, and integrated-analysis modes.
-- [ ] Baseline task-definition matrix and development gap register.
-- [ ] Diagnostic rows isolated from future frozen campaigns.
+- [x] Timer-floor samples, below-floor labels, warmup retention, alternating
+  order, and explicit warm/uncontrolled cache policy.
+- [x] Truthful initial task authority: gadget JSON and analyze JSON are current
+  command-identity parity conditions; scanner-only cost is explicitly
+  unavailable rather than inferred from report timing.
+- [ ] Add a scanner-only condition only through a reviewed instrumentation seam
+  when diagnostic evidence justifies it.
+- [x] Initial planned baseline task records for ROPgadget, Ropper, and ropr.
+- [ ] Baseline adapters, normalized task definitions, and version locks.
+- [ ] Provisional corpus diagnostic campaign and development gap register.
+- [x] Diagnostic rows isolated from future frozen campaigns.
 
 ### Sprint 12: loader and mitigation precision
 
@@ -474,3 +483,22 @@ Deferred capability work remains evidence-gated:
 - candidate-scoped decoder validation;
 - deterministic concurrency profiles;
 - JOP, COP, SROP, symbolic execution, chain generation, other formats, and other architectures.
+
+
+## Sprint 11 Patch 055 update
+
+Patch 055 establishes the diagnostic runner and task-scope foundation without
+changing the analyzer runtime. Every campaign is explicitly mutable diagnostic
+evidence, snapshots the bytes it executes and analyzes, retains failed rows,
+measures a timer floor, and publishes complete result trees without replacing an
+existing identity.
+
+The patch also closes two Patch 054 validation false negatives. Roadmap
+chronology now includes seven path-specific stale-phrase regressions. Sprint 10
+closeout counts are reconciled against the independent one-per-pattern report,
+and record sizes, capacity, arena size, tool/schema versions, and optional-
+profile defaults are read from maintained source authorities. Success output is
+derived from observed values.
+
+Remaining Sprint 11 priorities are corpus generation, baseline adapters,
+development summaries, and the Sprint 12-14 engineering gap register.

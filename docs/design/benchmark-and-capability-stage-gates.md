@@ -181,3 +181,23 @@ make research-stage-gates-smoke
 ## Current stage after Sprint 10
 
 Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement. The reference analyzer and current semantic contracts are stable enough to measure, but the corpus and method remain provisional until Sprint 15. Sprints 12 through 14 may change capabilities or experimental profiles in response to diagnostic evidence; such changes require new diagnostic identities and do not contaminate the later frozen campaign.
+
+## Sprint 11 Patch 055 foundation status
+
+Patch 055 implements the first diagnostic runner and task-definition tranche:
+
+- standard-library monotonic timing and Linux direct-child resource capture, with descendant resources explicitly non-aggregate;
+- retained runner/specification identity plus immutable tool, target, and
+  timer-probe snapshots;
+- retained warmup, measured, failed, signaled, timed-out, and extraction rows;
+- explicit timer-floor and cache/order policy;
+- process-group containment plus subreaper cleanup of escaped descendants;
+- transactional no-replace result publication;
+- truthful gadget/analyze JSON command conditions;
+- an explicit unavailable state for scanner-only timing;
+- planned, not yet implemented, baseline task records.
+
+This satisfies runner plumbing and initial task identity. It does not complete
+the Sprint 11 provisional corpus, baseline adapters, development summary, or
+gap register. The diagnostic stage remains mutable and the campaign-freeze gate
+remains Sprint 15.

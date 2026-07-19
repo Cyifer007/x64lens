@@ -30,7 +30,7 @@ dependency-free defensive deployment profile.
 - Patch 053 corrected the remaining harness issue and established diagnostic
   measurement before confirmatory campaign freeze.
 - Patch 054 reconciled roadmap chronology, public repository voice, closeout
-  contracts, and complete delivery authentication.
+  contracts, and checksum-manifest co-location rules.
 
 ## Architecture review
 
@@ -126,8 +126,8 @@ anti-analysis evasion.
 - Side-car materializers require exact same-index reconciliation, including
   reserved bits and inapplicable fields.
 - Public final-file overlays and local Git patches serve different purposes.
-- Delivery manifests and checksum inventories are part of acceptance, not an
-  afterthought.
+- Checksum inventories require explicit co-location and path-resolution
+  contracts.
 - Machine-readable stage gates need cross-document narrative checks because file
   presence alone cannot detect contradictory schedules.
 
@@ -153,7 +153,7 @@ test the final hypotheses.
 - Generic semantic roles for all exact single-pop GPR forms remain a Sprint 13
   decision.
 
-## Sprint 11 handoff
+## Sprint 11 entry
 
 Sprint 11 begins with these rules:
 

@@ -152,3 +152,6 @@ PROJECT_STATE.md
 # Keep deliberately malformed fixtures that are part of the public test suite.
 !/tests/invalid/*.bin
 !/tests/malformed/regressions/*.bin
+
+# Sprint 11 transactional diagnostic campaign trees
+/benchmarks/results/diagnostic/

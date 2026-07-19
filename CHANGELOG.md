@@ -8,9 +8,15 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 11 Patch 055 standard-library high-resolution diagnostic runner with immutable tool/target snapshots, monotonic nanosecond timing, Linux direct-child resource capture, timer-floor evidence, subreaper cleanup for same-group and escaped descendants, failed-row retention, and transactional no-replace publication.
+- Machine-readable Sprint 11 task definitions and a controlled reference specification that measure truthful gadget/analyze JSON command conditions while marking scanner-only cost unavailable.
+- `make diagnostic-runner-smoke`, `make diagnostic-task-definitions-smoke`, `make sprint11-diagnostic-reference-smoke`, `make bench-diagnostic-smoke`, ADR 0041, and the Patch 055 validation record.
+- `make patch054-corrective-regression-smoke`, path-specific stale-roadmap checks, source-linked Sprint 10 reference-profile validation, independent canonical-report count reconciliation, and data-driven closeout success output.
+
 - Sprint 10 Patch 054 closeout contract, retrospective, ADR 0040, and validation record.
 - `make research-roadmap-consistency-smoke` and `make sprint10-closeout-smoke` for machine-checked roadmap chronology, completed Sprint 10 state, and Sprint 11 diagnostic entry.
-- Public-content regressions for execution-handoff wording and a delivered complete-package manifest that is authenticated as a sibling artifact.
+- Public-content regressions for execution-handoff wording and a co-located
+  package-manifest release rule.
 
 - Sprint 10 Patch 053 benchmark-informed diagnostic, capability-hardening, campaign-freeze, preview, publication, operational, and release stage gates.
 - A canonical twenty-two-sprint roadmap, Sprint 19 through Sprint 22 plans, machine-readable research-stage authority, and manifest-relative checksum verification.
@@ -270,7 +276,9 @@ The project follows semantic versioning once the first public release is cut.
 
 - Correct contradictory Sprint 11 through Sprint 13 ownership left in active public prose after the Patch 053 roadmap transition.
 - Reject private execution-handoff narration in public repository content while retaining generic platform and reproducibility guidance.
-- Require every checksum-listed complete-package manifest to be supplied and verified beside the delivery inventory.
+- Require every checksum-listed complete-package manifest to be present beside
+  its release inventory and verifiable independently of the caller's working
+  directory.
 
 - Correct the Patch 052 memory-effect reconciliation harness to use `GADGET_SUMMARY_RECORD_SIZE` at both allocation sites.
 - Make delivery checksum verification resolve sibling-relative entries from the manifest directory rather than the caller current directory.

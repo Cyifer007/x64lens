@@ -14,8 +14,10 @@ versions, commands, and task definitions are frozen.
 ## Current checkpoint
 
 Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
-diagnostic benchmark foundation. The diagnostic corpus and runner remain
-provisional; Sprint 15 freezes the confirmatory campaign.
+diagnostic benchmark foundation. Patch 055 implements the first high-resolution
+runner and task-definition tranche; the provisional corpus, baseline adapters,
+summary layer, and gap register remain active work. Sprint 15 freezes the
+confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must

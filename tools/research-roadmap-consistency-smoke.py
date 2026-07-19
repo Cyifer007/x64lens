@@ -109,6 +109,31 @@ FORBIDDEN_ACTIVE_CLAIMS = tuple(
 )
 
 
+# Patch 055 preserves path-specific stale wording that previously escaped the
+# broad chronology patterns. These literals are intentionally maintained as
+# regression authorities: a future editorial rewrite may replace a literal only
+# when the corresponding negative case is updated in the corrective smoke.
+FORBIDDEN_PATH_CLAIMS = {
+    "docs/backlog.md": (
+        "Sprint 13 coverage",
+        "Sprint 11 corpus freeze",
+    ),
+    "docs/benchmark-methodology.md": (
+        "Sprint 12 should introduce",
+        "Before Sprint 13 repeated trials",
+    ),
+    "docs/benchmark-smoke-interpretation.md": (
+        "Sprint 12 replaces this path",
+    ),
+    "docs/design/decoder-roadmap.md": (
+        "Sprint 12 and Sprint 13 own the measurement",
+    ),
+    "docs/sprints/sprint-19-plan.md": (
+        "Freeze release-facing schema",
+    ),
+}
+
+
 def main() -> int:
     try:
         spec = json.loads(STAGE_SPEC.read_text(encoding="utf-8"))
@@ -124,12 +149,16 @@ def main() -> int:
         require(spec.get("active_sprint") == 11, "active_sprint must be 11")
 
         scanned = 0
+        path_claims_checked = 0
         for path in ACTIVE_AUTHORITY_PATHS:
             text = read(path)
             scanned += 1
             for expression in FORBIDDEN_ACTIVE_CLAIMS:
                 match = expression.search(text)
                 require(match is None, f"{path}: stale active chronology: {match.group(0)!r}" if match else "")
+            for literal in FORBIDDEN_PATH_CLAIMS.get(path, ()):
+                path_claims_checked += 1
+                require(literal.casefold() not in text.casefold(), f"{path}: stale path-specific chronology: {literal!r}")
 
         for path, needles in REQUIRED_TEXT.items():
             text = read(path)
@@ -143,7 +172,7 @@ def main() -> int:
     print(
         "research-roadmap-consistency-smoke: ok "
         f"documents={scanned} milestones=5 forbidden_patterns={len(FORBIDDEN_ACTIVE_CLAIMS)} "
-        "completed_sprints=10 active_sprint=11"
+        f"path_claims={path_claims_checked} completed_sprints=10 active_sprint=11"
     )
     return 0
 

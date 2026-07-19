@@ -270,18 +270,30 @@ make decoder-gap-campaign
 
 The controlled smoke reconciles x64lens candidate provenance with GNU objdump on the hand-authored fixture. The broader campaign adds selected installed system binaries. Patches 043 and 044 snapshot each target before measurement so x64lens and objdump analyze identical immutable bytes, reap interrupted child process groups, normalize reviewed objdump prefix/return spellings, and publish result trees transactionally across failures and signals. Objdump remains external comparison evidence; it does not change loader authority, candidate records, semantic classes, or scores. The default runtime remains decoder-free and single-worker. A future decoder is candidate-scoped and optional, and any parallel profile must pass deterministic-output, global-capacity, cleanup, wall-time, aggregate CPU, peak-RSS, startup-cost, and binary-size gates before default use.
 
-## Benchmark smoke workflow
+## Benchmark workflow
 
-Development smoke comparison:
+Legacy development smoke comparison:
 
 ```bash
 RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 make bench-summary-latest
 ```
 
-These results verify measurement plumbing. They are not publication results. Patch 036 rejects non-positive run counts, invalid max-depth values, nonnumeric or negative timing/RSS fields, and mixed benchmark summaries by default. Small x64lens runs can still fall below GNU `time` display resolution. Sprint 11 introduces a high-resolution diagnostic runner and provisional corpus. Sprint 15 freezes the final method, Sprint 16 runs the preview pilot, and Sprint 17 owns the publication-grade campaign.
+Sprint 11 high-resolution runner validation and controlled diagnostic run:
 
-See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
+```bash
+make diagnostic-tools-check
+make diagnostic-runner-smoke
+make sprint11-diagnostic-reference-smoke
+make diagnostic-task-definitions-smoke
+make bench-diagnostic-smoke
+```
+
+The diagnostic runner retains and hashes its source and exact specification, snapshots and hashes the tool and target, records monotonic nanosecond wall time plus direct-child CPU and maximum RSS, preserves stdout/stderr and failed rows, measures a timer floor, counterbalances condition order, cleans same-group and escaped descendants, and publishes one complete ignored campaign tree. These rows remain mutable development evidence and are not publication results.
+
+The current CLI has no report-suppressed scanner-only condition. Schema `0.2.0` JSON from `gadgets` and `analyze` also shares the same analysis body and differs by command identity. Patch 055 records those boundaries instead of relabeling report cost as scanner cost or claiming the two JSON commands perform independent workloads. Sprint 15 freezes the final method, Sprint 16 runs the preview pilot, and Sprint 17 owns the publication-grade campaign.
+
+See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md), [`docs/design/diagnostic-benchmark-task-definitions.md`](docs/design/diagnostic-benchmark-task-definitions.md), and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
 
 ## Architecture
 
@@ -315,7 +327,9 @@ the [family coverage table](docs/design/sprint10-family-coverage.md), the
 [Patch 053 validation record](docs/sprints/sprint-10-patch-053-validation.md),
 [ADR 0040](docs/adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md),
 the [Patch 054 validation record](docs/sprints/sprint-10-patch-054-validation.md),
-and the [Sprint 10 retrospective](docs/sprints/sprint-10-retro.md).
+the [Sprint 10 retrospective](docs/sprints/sprint-10-retro.md),
+[ADR 0041](docs/adr/0041-sprint11-diagnostic-runner-foundation.md), and the
+[Patch 055 validation record](docs/sprints/sprint-11-patch-055-validation.md).
 
 ## Roadmap and release gates
 
@@ -349,7 +363,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, reconciles public chronology and delivery authentication, and activates Sprint 11 without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, reconciles public chronology and checksum-manifest rules, and activates Sprint 11 without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

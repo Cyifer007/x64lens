@@ -13,9 +13,8 @@ effects, cross-family fixtures, explicit false-positive boundaries, and
 validated score policy.
 
 Patch 053 established a twenty-two-sprint research sequence in which diagnostic
-measurement begins before capability freeze. Validation confirmed that the
-analyzer runtime and qualified container results remained stable, while the
-remaining findings were delivery completeness and public roadmap consistency.
+measurement begins before capability freeze. Patch 054 adds closeout and
+roadmap-consistency gates without changing analyzer behavior.
 
 ## Decision
 
@@ -38,9 +37,9 @@ remaining findings were delivery completeness and public roadmap consistency.
    schedules.
 8. Public content checks reject private execution-handoff wording while allowing
    generic platform and reproducibility documentation.
-9. A delivery checksum inventory may name only supplied sibling artifacts. A
-   complete-package manifest referenced by the inventory must be delivered as a
-   sibling and included in final cross-artifact verification.
+9. A release checksum inventory may name only co-located artifacts. A package
+   manifest referenced by the inventory must be present beside it and included
+   in final cross-artifact verification.
 
 ## Consequences
 

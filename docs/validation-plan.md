@@ -1352,7 +1352,9 @@ unchanged checkpoint tag.
 
 ## Sprint 10 Patch 054 closeout validation
 
-Patch 054 adds no analyzer behavior. It closes Sprint 10 by reconciling planning chronology, public repository voice, closeout authorities, and delivery completeness.
+Patch 054 adds no analyzer behavior. It closes Sprint 10 by reconciling planning
+chronology, public repository voice, closeout authorities, and checksum-manifest
+co-location.
 
 Focused commands:
 
@@ -1369,7 +1371,8 @@ Expected results:
 
 ```text
 research-stage-gates-smoke: ok stages=7 capability_gates=9 conditional_profiles=3 release_sprint=22 completed_sprints=10 active_sprint=11
-research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 completed_sprints=10 active_sprint=11
+sprint11-diagnostic-reference-smoke: ok rows=8 warmup=2 measured=6 parity_pairs=4
+research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 path_claims=7 completed_sprints=10 active_sprint=11
 sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 semantic=17 exact_only=8 scored=14 model_complete=23 model_partial=2 fixture_groups=5 next_sprint=11
 public-docs-hygiene-smoke: ok cases=16 accepted=1 rejected=15
 checksum-manifest-path-smoke: ok cases=4 accepted=1 rejected=3
@@ -1377,3 +1380,57 @@ planning-docs-check: ok plans=22 forward_plans=14 closed_sprints=10 active_sprin
 ```
 
 The normal strict ShellCheck, native aggregate, capacity, malformed-input, public-overlay, qualified container, and native/container parity gates remain mandatory for empirical closeout acceptance.
+
+## Sprint 11 Patch 055 diagnostic runner and corrective validation
+
+Patch 055 adds no analyzer behavior. It introduces external diagnostic
+measurement infrastructure and strengthens two Patch 054 validation gates.
+
+Focused commands:
+
+```bash
+make diagnostic-tools-check
+make patch054-corrective-regression-smoke
+make diagnostic-task-definitions-smoke
+make diagnostic-runner-smoke
+make sprint11-diagnostic-reference-smoke
+make research-roadmap-consistency-smoke
+make sprint10-closeout-smoke
+```
+
+Expected results:
+
+```text
+patch054-corrective-regression-smoke: ok roadmap_cases=7 closeout_cases=3
+diagnostic-task-definitions-smoke: ok tasks=3 implemented=2 unavailable=1 baselines=3 frozen=false
+diagnostic-runner-smoke: ok success_rows=6 failure_rows=2 overwrite_rejected=1 descendants_cleaned=1 invalid_specs_rejected=2 source_mutations_rejected=1 unsafe_artifacts_rejected=1
+sprint11-diagnostic-reference-smoke: ok rows=8 warmup=2 measured=6 parity_pairs=4
+research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 path_claims=7 completed_sprints=10 active_sprint=11
+sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 semantic=17 exact_only=8 scored=14 model_complete=23 model_partial=2 fixture_groups=5 next_sprint=11
+```
+
+The runner smoke uses generated tools and targets in a temporary directory. It
+proves retained runner/spec/tool/target snapshots, declared-version reconciliation, monotonic and
+`wait4` direct-child metrics, timer-floor preservation, warmup/measured row separation,
+alternating order, output hashes, post-timing JSON extraction, nonzero and
+timeout retention, escaped-descendant cleanup, invalid diagnostic-spec rejection, no-replace publication, and staging
+cleanup.
+
+The controlled repository campaign is:
+
+```bash
+make clean
+make
+make samples
+DIAGNOSTIC_CAMPAIGN_ID=s11-p055-reference-001 \
+  make bench-diagnostic-smoke
+```
+
+Its rows are ignored diagnostic evidence. The reference specification contains
+only gadget JSON and analyze JSON command-identity conditions. Scanner-only cost
+remains unavailable until a real report-suppressed path is reviewed.
+
+Patch acceptance still requires strict ShellCheck, the complete native
+aggregate, capacity and malformed-input no-partial-output behavior, qualified
+container validation, and native/container report parity. The diagnostic runner
+must not change those runtime facts.

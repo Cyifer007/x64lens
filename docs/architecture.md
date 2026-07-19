@@ -1084,3 +1084,45 @@ and the [twenty-two-sprint roadmap](roadmap-22-sprints.md).
 Patch 054 closes Sprint 10 without changing analyzer code or record layouts. The current command-lifetime arena contains dense candidate, provenance, memory-effect, and architectural-effect slices while preserving the 4096-candidate fail-closed limit. Program headers and file-backed `PT_LOAD + PF_X` ranges remain executable authority. Exact patterns, semantic roles, side-car effects, scores, and reporters remain separate responsibilities.
 
 Sprint 11 measures this reference profile diagnostically. Candidate-scoped decoder and concurrency profiles remain optional, separately identified experiments and cannot replace the dependency-free one-worker reference without evidence and an explicit architecture decision.
+
+
+## Sprint 11 Patch 055 diagnostic-measurement architecture
+
+Patch 055 changes no analyzer module or runtime record. It adds an external
+standard-library measurement adapter around the existing binary:
+
+```text
+diagnostic specification
+  -> retained specification and runner source
+  -> immutable tool and target snapshots
+  -> version and timer-floor probes
+  -> one isolated process group per condition
+  -> monotonic wall time plus direct-child wait4 resource facts
+  -> retained output and failure artifacts
+  -> complete diagnostic manifest
+  -> atomic no-replace publication
+```
+
+The adapter executes only snapshotted bytes, isolates each child from user home
+and XDG configuration state, and records campaign-relative
+commands so retained commands remain resolvable after the staging directory is
+renamed. It enables Linux child-subreaper behavior and reaps same-group or escaped
+descendants on timeout or unexpected helper persistence. Direct-child CPU and
+RSS fields do not aggregate descendant resources. These are measurement-integrity
+controls; they do not become analyzer facts or a runtime dependency.
+
+The first task authority intentionally exposes an unavailable architecture
+seam. No public scanner-only command exists, so the diagnostic runner cannot
+isolate scanner cost without changing or instrumenting the product. JSON from
+`gadgets` and `analyze` currently shares one analysis body. The two commands are
+therefore measured as parity conditions, not as proof of narrow-versus-broad
+work. A future report-suppressed engine profile requires a separate ADR and
+profile identity before it can enter a campaign.
+
+Patch 055 also strengthens closeout architecture validation. Fixed record and
+arena values are evaluated from `include/structs.inc`; tool/schema identity is
+reconciled between `include/constants.inc` and the Makefile; optional decoder
+and concurrency defaults come from the stage authority; and semantic/score/
+effect counts are cross-checked against the independent one-per-pattern JSON
+fixture. Summary files can no longer certify coordinated drift by changing only
+each other.

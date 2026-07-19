@@ -28,7 +28,7 @@ public-release boundary hardening. Patches 046 through 049 establish ordered
 multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
 050 completes their coarse effects, Patch 051 adds architectural effects and two
 reviewed scores, and Patch 052 corrects the resulting effect and validation
-findings. Diagnostic corpus and high-resolution runner work begin in Sprint 11. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
+findings. Patch 055 implements the first Sprint 11 high-resolution runner and task-definition tranche. Provisional corpus, baseline, summary, and gap-register work remains diagnostic. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -258,4 +258,19 @@ Diagnostic results may invalidate or narrow the project hypotheses, but they are
 
 ## Sprint 10 Patch 054 release-gate update
 
-Sprint 10 is closed after Patch 054. Sprint 11 diagnostic artifacts remain mutable development evidence and cannot satisfy the preview or publication campaign gates. The release path remains Sprint 15 freeze, Sprint 16 preview, Sprint 17 publication campaign, and Sprint 22 first research release. A delivery inventory is acceptable only when every listed sibling artifact, including its complete-package manifest, is present and verifies from a caller-independent path.
+Sprint 10 is closed after Patch 054. Sprint 11 diagnostic artifacts remain
+mutable development evidence and cannot satisfy the preview or publication
+campaign gates. The release path remains Sprint 15 freeze, Sprint 16 preview,
+Sprint 17 publication campaign, and Sprint 22 first research release. A release
+checksum inventory is valid only when every listed co-located artifact,
+including any package manifest, is present and verifies independently of the
+caller's working directory.
+
+
+## Sprint 11 Patch 055 release-boundary update
+
+Patch 055 diagnostic campaign trees are development evidence only. Immutable
+snapshots, precise timing, failure retention, and transactional publication
+improve evidence integrity but do not satisfy the preview corpus, baseline,
+freeze, or repeated-trial gates. The first controlled reference campaign cannot
+be relabeled as preview or publication evidence.

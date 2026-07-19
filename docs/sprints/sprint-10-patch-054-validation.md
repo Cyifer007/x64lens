@@ -2,15 +2,14 @@
 
 ## Status
 
-Sprint 10 closeout candidate.
+Sprint 10 is closed by Patch 054. Sprint 11 is active as the diagnostic
+benchmark stage.
 
 ## Purpose
 
-Patch 054 closes Sprint 10 after correcting the remaining Patch 053 delivery and
-public-planning findings. It reconciles the twenty-two-sprint chronology,
-strengthens public workflow-provenance checks, adds a machine-readable Sprint 10
-closeout contract, records the retrospective, and advances Sprint 11 to the
-active diagnostic benchmark stage.
+Patch 054 closes Sprint 10 by reconciling the public roadmap, adding maintained
+closeout and checksum-manifest gates, recording the retrospective, and
+activating Sprint 11 diagnostic measurement.
 
 Patch 054 changes documentation and development/release validation only. It does
 not change analyzer assembly, public record layouts, CLI behavior, schema
@@ -34,12 +33,11 @@ policy, or worker policy.
 
 ## Corrective findings
 
-### Delivery completeness
+### Checksum-manifest co-location
 
-The Patch 053 checksum inventory named a complete-package manifest that was not
-supplied beside the inventory. Patch 054 delivery acceptance requires every
-listed sibling, including the complete-package manifest, to be present and to
-verify from an unrelated working directory.
+Release checksum inventories may reference only co-located artifacts. If a
+package manifest is listed, it must be present and authenticated beside the
+inventory; verification must also succeed from an unrelated working directory.
 
 ### Roadmap chronology
 
@@ -78,13 +76,13 @@ Expected focused results:
 ```text
 public-docs-hygiene-smoke: ok cases=16 accepted=1 rejected=15
 research-stage-gates-smoke: ok stages=7 capability_gates=9 conditional_profiles=3 release_sprint=22 completed_sprints=10 active_sprint=11
-research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 completed_sprints=10 active_sprint=11
+research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 path_claims=7 completed_sprints=10 active_sprint=11
 sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 semantic=17 exact_only=8 scored=14 model_complete=23 model_partial=2 fixture_groups=5 next_sprint=11
 planning-docs-check: ok plans=22 forward_plans=14 closed_sprints=10 active_sprint=11
 checksum-manifest-path-smoke: ok cases=4 accepted=1 rejected=3
 ```
 
-## Full acceptance matrix
+## Full validation matrix
 
 ```bash
 make normalize-perms
@@ -119,25 +117,44 @@ MALFORMED_TIMEOUT=2 make docker-validation-smoke
 make native-docker-json-parity-smoke
 ```
 
-A default container-tool metadata failure is recorded separately from product
-behavior. A qualified rerun is valid only when it changes the metadata location
-without changing source, build commands, tests, or analyzer facts.
-
-## Acceptance criteria
+## Validation criteria
 
 - Every focused and aggregate gate exits 0.
 - Strict ShellCheck is available and clean.
 - Native and qualified container reports remain byte-identical for the controlled
   parity matrix.
-- The actual public overlay passes metadata, content, outer-hash, and internal-
+- A public overlay passes metadata, content, outer-hash, and internal-
   manifest verification.
-- The complete package includes its package manifest as a supplied sibling.
-- The checksum inventory verifies from its own directory and an unrelated
+- Every checksum-listed package manifest is present beside the inventory.
+- The checksum inventory verifies from its own directory and from an unrelated
   working directory.
 - The checkpoint tag remains pinned to its original Sprint 6 commit.
 - The final tracked worktree is clean.
 
-## Handoff
+## Sprint 11 entry
 
-After acceptance, Sprint 11 begins diagnostic measurement with a provisional
-corpus. No publication corpus or method is frozen during Patch 054.
+With Sprint 10 closed, Sprint 11 is active with diagnostic measurement over a
+provisional corpus. The confirmatory corpus and method remain unfrozen until the
+Sprint 15 campaign freeze.
+
+
+## Patch 055 corrective supersession
+
+Patch 055 preserves the Patch 054 closeout state and adds permanent regressions
+for two post-closeout checker weaknesses. Seven exact stale chronology phrases
+are now rejected by path-specific rules. The closeout checker now reads version,
+record-size, capacity, arena, and optional-profile facts from maintained source
+authorities and reconciles catalog counts against the independent one-per-
+pattern JSON fixture. Its success banner renders observed counts.
+
+Run:
+
+```bash
+make patch054-corrective-regression-smoke
+```
+
+Expected:
+
+```text
+patch054-corrective-regression-smoke: ok roadmap_cases=7 closeout_cases=3
+```
