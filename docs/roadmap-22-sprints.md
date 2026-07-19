@@ -13,9 +13,9 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 053
-architecture and capability reassessment candidate. Patch 054 is the planned
-Sprint 10 closeout.
+Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
+diagnostic benchmark foundation. The diagnostic corpus and runner remain
+provisional; Sprint 15 freezes the confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must
@@ -86,7 +86,10 @@ campaign.
 - bounded PHDR alignment, congruence, virtual-range, and entrypoint behavior;
 - generic exact-pop and Linux syscall-register semantic decision;
 - task-equivalent baseline definitions;
-- stable raw, exact, semantic, validated, unknown, and scored metrics;
+- stable current aggregate metrics: `raw_candidate_count`,
+  `exact_pattern_count`, `semantic_candidate_count`,
+  `unknown_candidate_count`, and `scored_candidate_count`, with separately
+  defined decoder-backed metrics if an optional profile is admitted;
 - no-partial-output, capacity, and malformed-input gates.
 
 ## Required capability gates before Sprint 16

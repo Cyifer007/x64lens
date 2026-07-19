@@ -1,6 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "canonical_roadmap": "docs/roadmap-22-sprints.md",
+  "completed_sprints": 10,
+  "active_sprint": 11,
   "diagnostic_sprint": 11,
   "campaign_freeze_sprint": 15,
   "preview_sprint": 16,

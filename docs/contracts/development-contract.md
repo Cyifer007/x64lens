@@ -310,3 +310,7 @@ should cover contradictions that public JSON cannot express directly.
 Benchmark infrastructure may run before feature freeze to guide development, but diagnostic rows and confirmatory rows are separate evidence classes. Sprint 11 diagnostic results may change code, corpus, task definitions, and methodology. Sprint 15 freezes corpus, schema/extractor, runner, baselines, commands, task definitions, and environment strata. Any affected change after freeze requires a new campaign identifier or complete rerun.
 
 No development-smoke or diagnostic result may be promoted into a preview or publication claim by relabeling it.
+
+## Sprint closeout chronology rule
+
+A sprint closes only when its plan, retrospective, active roadmap, release milestones, validation plan, machine-readable authorities, and next-sprint status agree. Structural file presence alone is insufficient; active prose must pass the maintained roadmap-consistency gate.

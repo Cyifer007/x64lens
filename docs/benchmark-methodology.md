@@ -332,7 +332,10 @@ The final campaign must not aggregate historical artifacts from different hosts 
 
 The Sprint 5 and Sprint 6 smoke harnesses use GNU `time` and correctly validate command execution, max RSS capture, version metadata, target coverage, and result summarization. They are not sufficient for final small-binary timing because elapsed output can round to `0.00` seconds.
 
-Sprint 12 should introduce a standard-library Python runner that uses a monotonic nanosecond clock and per-child resource information. On Linux, the preferred implementation is a spawn/wait path that obtains the child's `rusage` instead of using cumulative parent-process measurements.
+Patch 053 moves this work to Sprint 11: introduce a standard-library Python
+runner that uses a monotonic nanosecond clock and per-child resource information.
+On Linux, the preferred implementation is a spawn/wait path that obtains the
+child's `rusage` instead of using cumulative parent-process measurements.
 
 Required runner behavior:
 
@@ -371,7 +374,7 @@ A baseline row belongs in a comparison only when the compared task and output sc
 
 ### Campaign freeze
 
-Before Sprint 13 repeated trials:
+In Sprint 15, before the Sprint 16 preview and Sprint 17 repeated trials:
 
 - freeze corpus manifest and hashes,
 - freeze baseline versions and commands,
@@ -408,7 +411,10 @@ Patch 036 keeps scanner and baseline benchmark targets in the development-smoke 
 - `make bench-summary-latest` selects the newest nonempty TSV artifact.
 - `make bench-summary` refuses to aggregate multiple TSV files unless `ALLOW_MIXED_BENCH_SUMMARY=1` is set. Mixed summaries remain exploratory and must not be used for publication evidence without matching metadata.
 
-These checks do not make smoke timing publication-grade. Sprint 12 still owns the high-resolution runner, environment metadata, corpus IDs, raw artifact retention, warmup/cache policy, and statistical method.
+These checks do not make smoke timing publication-grade. Sprint 11 owns the
+high-resolution diagnostic runner, environment metadata, provisional corpus
+IDs, raw artifact retention, warmup/cache policy, and development statistical
+method; Sprint 15 freezes the release-facing method.
 
 
 ## Patch 037 benchmark-integrity gate
@@ -426,9 +432,9 @@ make benchmark-integrity-smoke
 ```
 
 This gate is still development evidence hygiene, not publication-grade timing.
-Publication benchmarking still requires the Sprint 12/13 high-resolution runner,
-frozen corpus, comparator version pinning or inventory, and normalized coverage
-definitions.
+Publication benchmarking still requires the Sprint 11 high-resolution
+diagnostic foundation, a Sprint 15-frozen corpus and comparator inventory, and
+normalized coverage definitions for the Sprint 17 campaign.
 
 ## Sprint 8 closeout benchmark-integrity rule
 
@@ -462,8 +468,9 @@ identity remain labeled `unknown` and must not be mixed into release evidence
 without explicit normalization.
 
 This correction protects research provenance but does not upgrade smoke timing
-to publication-grade evidence. Sprint 12 still owns high-resolution timing and
-Sprint 17 owns the fixed comparative campaign after the Sprint 15 freeze and Sprint 16 pilot.
+to publication-grade evidence. Sprint 11 owns high-resolution diagnostic
+timing; Sprint 17 owns the fixed comparative campaign after the Sprint 15
+freeze and Sprint 16 pilot.
 
 ## Sprint 9 Patch 042 decoder-gap campaign
 
@@ -525,10 +532,10 @@ Rows must preserve profile identity, worker count, decoder identity/version,
 binary size, wall/user/system time, peak RSS, output size, applicable
 raw-candidate, exact-suffix, semantic-exact, decoder-validated,
 semantic-decoded, unknown-candidate, and scored counts, and the
-deterministic-output hash. Forced multithreading is not a
-valid optimization conclusion: small targets may regress because worker
-creation, stacks, arenas, overlap, and merge dominate useful work. Sprint 12
-provides high-resolution measurement and Sprint 13 provides the fixed-corpus
+deterministic-output hash. Forced multithreading is not a valid optimization
+conclusion: small targets may regress because worker creation, stacks, arenas,
+overlap, and merge dominate useful work. Sprint 11 provides high-resolution
+diagnostic measurement, and Sprint 14 owns the pre-freeze optional-profile
 ablation decision.
 
 ## Sprint 9 profile-ablation requirement

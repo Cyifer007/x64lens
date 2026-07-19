@@ -51,6 +51,7 @@ required=(
     docs/adr/0037-architectural-effects-and-contract-reconciliation.md
     docs/adr/0038-patch051-corrective-effect-and-gate-hardening.md
     docs/adr/0039-benchmark-informed-capability-roadmap.md
+    docs/adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md
     docs/design/benchmark-and-capability-stage-gates.md
     docs/design/sprint10-exact-pattern-catalog.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
@@ -88,6 +89,8 @@ required=(
     docs/sprints/sprint-10-patch-051-validation.md
     docs/sprints/sprint-10-patch-052-validation.md
     docs/sprints/sprint-10-patch-053-validation.md
+    docs/sprints/sprint-10-patch-054-validation.md
+    docs/sprints/sprint-10-retro.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -113,6 +116,8 @@ required=(
     tools/sprint10-score-policy-smoke.py
     tools/shellcheck-contract-smoke.py
     tools/research-stage-gates-smoke.py
+    tools/research-roadmap-consistency-smoke.py
+    tools/sprint10-closeout-smoke.py
     tools/verify-checksum-manifest.py
     tools/checksum-manifest-path-smoke.py
     tests/internal/memory-effect-reconciliation.asm
@@ -134,6 +139,7 @@ required=(
     tests/expected/x64lens-report-sprint10-memory-0.2.0.json
     tests/expected/sprint10-family-coverage.json
     tests/expected/research-stage-gates.json
+    tests/expected/sprint10-closeout.json
     tests/expected/decoder-gap-controlled.json
     tests/toy-src/gadgets_sprint10.S
     tests/toy-src/gadgets_sprint10_transfer.S
@@ -185,8 +191,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-08-plan.md \
     || fail 'Sprint 8 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-09-plan.md \
     || fail 'Sprint 9 is not marked closed or complete'
-grep -Eq '^(Next|Active)' docs/sprints/sprint-10-plan.md \
-    || fail 'Sprint 10 is not marked as the next or active implementation tranche'
+grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 is not marked closed or complete'
+grep -Eq '^(Next|Active)' docs/sprints/sprint-11-plan.md \
+    || fail 'Sprint 11 is not marked as the next or active diagnostic sprint'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -204,7 +212,13 @@ grep -q 'Patch 052' docs/sprints/sprint-10-plan.md \
 grep -q 'Patch 053' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 053 reassessment boundary'
 grep -q 'Patch 054' docs/sprints/sprint-10-plan.md \
-    || fail 'Sprint 10 plan does not preserve the Patch 054 closeout boundary'
+    || fail 'Sprint 10 plan does not record the Patch 054 closeout boundary'
+grep -q 'ADR 0040' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not link the closeout ADR'
+grep -q 'sprint-10-patch-054-validation.md' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not link Patch 054 validation'
+grep -q 'sprint-10-retro.md' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not link the retrospective'
 grep -q 'ADR 0039' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not link the benchmark-informed roadmap decision'
 grep -q 'sprint-10-patch-053-validation.md' docs/sprints/sprint-10-plan.md \
@@ -381,11 +395,18 @@ grep -q '^json-effect-consistency-smoke:' Makefile \
     || fail 'Makefile does not define json-effect-consistency-smoke'
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
+grep -q '^research-roadmap-consistency-smoke:' Makefile \
+    || fail 'Makefile does not define research-roadmap-consistency-smoke'
+grep -q '^sprint10-closeout-smoke:' Makefile \
+    || fail 'Makefile does not define sprint10-closeout-smoke'
 validation_line="$(grep '^validation-smoke:' Makefile || true)"
-for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke research-stage-gates-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
     [[ "$validation_line" == *"$target"* ]] \
         || fail "validation-smoke does not include required target: $target"
 done
 
-printf 'planning-docs-check: ok plans=%d forward_plans=%d\n' \
+python3 tools/research-roadmap-consistency-smoke.py >/dev/null
+python3 tools/sprint10-closeout-smoke.py >/dev/null
+
+printf 'planning-docs-check: ok plans=%d forward_plans=%d closed_sprints=10 active_sprint=11\n' \
     "$plan_count" "$forward_count"

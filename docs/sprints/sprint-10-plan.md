@@ -2,7 +2,13 @@
 
 ## Status
 
-Active through the Patch 053 architecture and capability reassessment candidate. Patches 046 through 052 established and hardened ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded qword base-plus-zero memory families, current-family effects, architectural effects, score policy, and fail-closed validation. Patch 053 corrects the remaining Patch 052 harness and planning defects, separates diagnostic measurement from the frozen campaign, and expands the canonical roadmap to twenty-two sprints. Patch 054 remains the Sprint 10 closeout.
+Closed by Patch 054. Patches 046 through 052 established and hardened ordered
+multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded
+qword base-plus-zero memory families, current-family effects, architectural
+effects, score policy, and fail-closed validation. Patch 053 established the
+benchmark-informed twenty-two-sprint roadmap. Patch 054 reconciles the remaining
+delivery and public-planning findings, records the retrospective, and activates
+Sprint 11 diagnostic measurement.
 
 Related documentation:
 
@@ -14,15 +20,16 @@ Related documentation:
 - [ADR 0037](../adr/0037-architectural-effects-and-contract-reconciliation.md)
 - [ADR 0038](../adr/0038-patch051-corrective-effect-and-gate-hardening.md)
 - [ADR 0039](../adr/0039-benchmark-informed-capability-roadmap.md)
+- [ADR 0040](../adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md)
 - [Benchmark and Capability Stage Gates](../design/benchmark-and-capability-stage-gates.md)
 - [Primitive Effect Model](../design/primitive-effect-model.md)
 - [Family Coverage Table](../design/sprint10-family-coverage.md)
 - [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
 - [Scoring Model](../scoring-model.md)
 - [Output Contract](../contracts/output-contract.md)
-- [Patch 051 Validation Plan](sprint-10-patch-051-validation.md)
-- [Patch 052 Validation Plan](sprint-10-patch-052-validation.md)
 - [Patch 053 Validation Plan](sprint-10-patch-053-validation.md)
+- [Patch 054 Validation Plan](sprint-10-patch-054-validation.md)
+- [Sprint 10 Retrospective](sprint-10-retro.md)
 - [Canonical Roadmap](../roadmap-22-sprints.md)
 
 ## Sprint goal
@@ -65,10 +72,11 @@ validity, side effects, score meaning, or the defensive deployment profile.
 6. **Patch 051:** reconcile the committed Patch 050 foundation through one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
 7. **Patch 052:** resolve Patch 051 findings.
 8. **Patch 053:** correct the Patch 052 harness/planning findings and establish the benchmark-informed capability roadmap, diagnostic/frozen evidence split, release gates, and twenty-two-sprint sequence.
-9. **Patch 054:** Sprint 10 closeout or the smallest correction proved necessary by Patch 053 validation.
+9. **Patch 054:** reconcile Patch 053 delivery and public-planning findings, add durable chronology and closeout gates, record the retrospective, close Sprint 10, and activate Sprint 11.
 
 This sequence prevents the capability audit from being hidden inside a nominal
-closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
+closeout patch and keeps Sprint 11 diagnostic corpus work separate from the
+Sprint 15 campaign freeze.
 
 ## Entry criteria from Sprint 9
 
@@ -125,7 +133,10 @@ change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Handoff
 
-Patch 052 corrects the Patch 051 effect encoding, ret-imm16 lower boundary, text separator, memory-sidecar reconciliation, score-policy gate, and strict-lint availability findings. Patch 053 corrects the remaining internal-harness and planning defects and records the expanded roadmap. Sprint 11 begins diagnostic measurement with a provisional corpus; Sprint 15—not Sprint 11—freezes the release campaign after loader, mitigation, semantic, decoder, and concurrency decisions are complete.
+Sprint 11 begins diagnostic measurement with a provisional corpus and high-
+resolution runner. Diagnostic rows may redirect Sprints 12 through 14 and are
+never merged into the Sprint 15-frozen campaign. The reference analyzer remains
+dependency-free, decoder-free, one-worker, bounded, and deterministic.
 
 ## Patch 046 boundary
 
@@ -191,6 +202,18 @@ score and strict-lint availability into permanent negative gates. Patch 053 perf
 
 ## Patch 053 boundary
 
-Patch 053 adds no primitive, record, schema, capacity, decoder, or worker change. It corrects the Patch 052 memory-harness size symbol, applies the accepted public documentation corrections, adds manifest-relative checksum verification, introduces machine-readable research stage gates, and replaces the canonical eighteen-sprint plan with a twenty-two-sprint roadmap.
+Patch 053 adds no primitive, record, schema, capacity, decoder, or worker change.
+It corrects the Patch 052 memory-harness size symbol, reconciles public
+documentation with the Patch 052 contracts, adds manifest-relative checksum
+verification, introduces machine-readable research stage gates, and replaces
+the canonical eighteen-sprint plan with a twenty-two-sprint roadmap.
 
 The research decision is to measure early but freeze late: Sprint 11 diagnostic evidence may redirect development; Sprints 12 through 14 close capability questions; Sprint 15 freezes the confirmatory campaign; Sprint 16 runs the preview pilot; Sprint 17 runs publication-grade comparisons.
+
+
+## Patch 054 boundary
+
+Patch 054 adds no primitive, score, record, schema field, decoder, or worker
+behavior. It closes Sprint 10 by reconciling public roadmap chronology, public
+repository voice, delivery-manifest completeness, machine-readable closeout
+state, retrospective evidence, and Sprint 11 entry criteria.

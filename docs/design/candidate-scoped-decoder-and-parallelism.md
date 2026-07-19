@@ -103,9 +103,10 @@ Do not ship or default-enable acceleration until fixed-corpus evidence shows:
 6. single-worker mode remains independently available;
 7. the dependency-free default remains viable for air-gapped deployment.
 
-Sprint 12 builds the measurement infrastructure. Sprint 13 performs the fixed
-comparative and ablation campaign. Any implementation before those gates is an
-experimental profile, not the default runtime.
+Sprint 11 builds the diagnostic measurement infrastructure. Sprint 14 performs
+the pre-freeze optional-profile ablation. Accepted profiles are frozen in Sprint
+15 and measured separately in Sprints 16 and 17. Any implementation before those
+gates is an experimental profile, not the default runtime.
 
 ## Sprint 9 closeout decision
 

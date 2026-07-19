@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "sprint": 10,
+  "status": "closed",
+  "closeout_patch": 54,
+  "completed_patches": [46, 47, 48, 49, 50, 51, 52, 53, 54],
+  "next_sprint": 11,
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "gadget_record_bytes": 112,
+    "candidate_evidence_record_bytes": 48,
+    "memory_effect_record_bytes": 16,
+    "candidate_effect_record_bytes": 24,
+    "candidate_capacity": 4096,
+    "analysis_arena_bytes": 819200,
+    "mandatory_decoder": false,
+    "mandatory_threads": false
+  },
+  "contract_counts": {
+    "semantic_family_contracts": 11,
+    "exact_patterns": 25,
+    "semantic_patterns": 17,
+    "exact_only_patterns": 8,
+    "scored_patterns": 14,
+    "complete_effect_models": 23,
+    "partial_effect_models": 2,
+    "fixture_groups": 5
+  },
+  "research_transition": {
+    "diagnostic_sprint": 11,
+    "campaign_freeze_sprint": 15,
+    "preview_sprint": 16,
+    "publication_campaign_sprint": 17,
+    "release_sprint": 22
+  },
+  "required_closeout_documents": [
+    "docs/adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md",
+    "docs/sprints/sprint-10-patch-054-validation.md",
+    "docs/sprints/sprint-10-retro.md"
+  ]
+}

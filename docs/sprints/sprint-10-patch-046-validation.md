@@ -3,8 +3,8 @@
 ## Status
 
 Accepted Sprint 10 entry foundation. Patch 047 was rejected as delivered and
-Patch 048 corrected it. Current validation follows the Patch 052 corrective
-candidate.
+Patch 048 corrected it. Current Sprint 10 status and validation authority are
+maintained in the [Sprint 10 Plan](sprint-10-plan.md).
 
 ## Purpose
 

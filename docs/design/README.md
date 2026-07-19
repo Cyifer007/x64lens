@@ -79,3 +79,13 @@ validation.
 - [Patch 052 Validation](../sprints/sprint-10-patch-052-validation.md)
 - [ADR 0039: Benchmark-Informed Capability Roadmap](../adr/0039-benchmark-informed-capability-roadmap.md)
 - [Patch 053 Validation](../sprints/sprint-10-patch-053-validation.md)
+
+## Sprint 10 closeout reading path
+
+1. [`../adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md`](../adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md)
+2. [`benchmark-and-capability-stage-gates.md`](benchmark-and-capability-stage-gates.md)
+3. [`sprint10-family-coverage.md`](sprint10-family-coverage.md)
+4. [`sprint10-exact-pattern-catalog.md`](sprint10-exact-pattern-catalog.md)
+5. [`../sprints/sprint-10-patch-054-validation.md`](../sprints/sprint-10-patch-054-validation.md)
+6. [`../sprints/sprint-10-retro.md`](../sprints/sprint-10-retro.md)
+7. [`../sprints/sprint-11-plan.md`](../sprints/sprint-11-plan.md)

@@ -29,6 +29,23 @@ printf 'path: \\\\wsl.localhost\\%s\\home\\%s\\repo\\report.md\n' "$host_token" 
 printf 'path: /Users/%s/repo/report.md\n' "$user_token" > "$tmp/macos-home.md"
 printf 'path: /home/%s/repo/report.md\n' "$user_token" > "$tmp/linux-home.md"
 printf '%s@%s:~/repo$ make test\n' "$user_token" "$host_token" > "$tmp/shell-prompt.md"
+cloud_word=cloud
+environment_word=environment
+authoritative_word=authoritative
+local_word=local
+acceptance_word=acceptance
+mandatory_word=mandatory
+platform_word=WSL2
+private_word=private
+handoff_word=handoff
+verb_a=Attach
+noun_r=report
+direction_b=back
+printf '%s %s may not provide the required compiler.\n' "$cloud_word" "$environment_word" > "$tmp/cloud-environment.md"
+printf 'An %s %s %s decision is required.\n' "$authoritative_word" "$local_word" "$acceptance_word" > "$tmp/authoritative-local.md"
+printf 'These checks remain %s in %s.\n' "$mandatory_word" "$platform_word" > "$tmp/wsl-follow-up.md"
+printf 'This %s %s context governs the next patch.\n' "$private_word" "$handoff_word" > "$tmp/private-handoff.md"
+printf '%s the %s %s to the review system.\n' "$verb_a" "$noun_r" "$direction_b" > "$tmp/report-handoff.md"
 
 bash "$CHECKER" "$tmp/clean.md" >/dev/null
 
@@ -43,7 +60,12 @@ for fixture in \
   wsl-home.md \
   macos-home.md \
   linux-home.md \
-  shell-prompt.md; do
+  shell-prompt.md \
+  cloud-environment.md \
+  authoritative-local.md \
+  wsl-follow-up.md \
+  private-handoff.md \
+  report-handoff.md; do
   if bash "$CHECKER" "$tmp/$fixture" >/dev/null 2>&1; then
     echo "public-docs-hygiene-smoke: prohibited fixture escaped policy: $fixture" >&2
     exit 1
@@ -51,4 +73,4 @@ for fixture in \
   rejected=$((rejected + 1))
 done
 
-echo "public-docs-hygiene-smoke: ok cases=11 accepted=1 rejected=$rejected"
+echo "public-docs-hygiene-smoke: ok cases=16 accepted=1 rejected=$rejected"

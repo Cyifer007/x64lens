@@ -276,3 +276,7 @@ availability gates. NASM number-overflow warnings are build failures.
 ## Sprint 10 Patch 053 release-gate update
 
 Patch 053 does not freeze a benchmark or add an analyzer capability. It corrects the Patch 052 harness and planning defects, makes checksum verification manifest-relative, and establishes the diagnostic/hardening/freeze/preview/campaign sequence. The research preview cannot be tagged before the Sprint 15 freeze and Sprint 16 pilot. The first release cannot be tagged before the Sprint 22 evidence gate.
+
+## Complete-package manifest rule
+
+A delivery checksum inventory may reference only artifacts supplied beside it. When a complete application package has an internal manifest, the same authenticated manifest must also be supplied as a sibling delivery artifact so independent verification does not depend on unpacking the package first.

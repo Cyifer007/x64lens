@@ -21,8 +21,8 @@ would freeze several material uncertainties too early:
 - task-equivalent coverage definitions across baseline tools are not frozen.
 
 Waiting until every capability is complete before measuring would create a
-different risk: development would proceed without evidence about where x64lens
-is already competitive, where output scope differs, and which implementation
+different risk: development would proceed without evidence about whether and
+where x64lens is competitive, how output scope differs, and which implementation
 costs dominate. Running the final campaign now would also be unsound because
 capability and measurement definitions would still change afterward.
 

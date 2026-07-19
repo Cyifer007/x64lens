@@ -1349,3 +1349,31 @@ later frozen dataset after a material change.
 Patch acceptance still requires the complete native and qualified Docker
 aggregates, strict ShellCheck, capacity and malformed-input contracts, and an
 unchanged checkpoint tag.
+
+## Sprint 10 Patch 054 closeout validation
+
+Patch 054 adds no analyzer behavior. It closes Sprint 10 by reconciling planning chronology, public repository voice, closeout authorities, and delivery completeness.
+
+Focused commands:
+
+```bash
+make research-stage-gates-smoke
+make research-roadmap-consistency-smoke
+make sprint10-closeout-smoke
+make public-docs-hygiene-smoke
+make checksum-manifest-path-smoke
+make planning-docs-check
+```
+
+Expected results:
+
+```text
+research-stage-gates-smoke: ok stages=7 capability_gates=9 conditional_profiles=3 release_sprint=22 completed_sprints=10 active_sprint=11
+research-roadmap-consistency-smoke: ok documents=28 milestones=5 forbidden_patterns=9 completed_sprints=10 active_sprint=11
+sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 semantic=17 exact_only=8 scored=14 model_complete=23 model_partial=2 fixture_groups=5 next_sprint=11
+public-docs-hygiene-smoke: ok cases=16 accepted=1 rejected=15
+checksum-manifest-path-smoke: ok cases=4 accepted=1 rejected=3
+planning-docs-check: ok plans=22 forward_plans=14 closed_sprints=10 active_sprint=11
+```
+
+The normal strict ShellCheck, native aggregate, capacity, malformed-input, public-overlay, qualified container, and native/container parity gates remain mandatory for empirical closeout acceptance.

@@ -2,13 +2,13 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 053 architecture and capability reassessment candidate. Patches 046 through 052 establish and harden ordered multi-pop, register-transfer, stack-adjust, bounded qword memory, coarse side-effect, architectural-effect, scoring, and validation contracts. Patch 053 corrects the remaining Patch 052 harness and planning defects, begins diagnostic benchmark design before feature freeze, expands the canonical roadmap to twenty-two sprints, and reserves Patch 054 for Sprint 10 closeout.
+> Status: Sprints 1 through 10 are complete after Patch 054. Sprint 10 delivered ordered multi-pop, register-transfer, stack-adjust, bounded qword memory, coarse and architectural effects, selective scoring, fixture reconciliation, and the benchmark-informed twenty-two-sprint roadmap. Sprint 11 is active as the diagnostic benchmark foundation; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
 > Tool version: `0.1.0-dev`
 >
 > JSON schema version: `0.2.0`
 >
-> Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md)
+> Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
 ## Why this project exists
 
@@ -116,6 +116,7 @@ make
 make samples
 make test
 make validation-smoke
+make sprint10-closeout-smoke
 make sprint-closeout-smoke
 make patch-bundle-hygiene-smoke
 make public-docs-hygiene-smoke
@@ -302,7 +303,7 @@ Future decoder facts, mitigation evidence, and output adapters must be added thr
 
 See [`docs/design/primitive-effect-model.md`](docs/design/primitive-effect-model.md), [`docs/adr/0032-ordered-multi-pop-foundation.md`](docs/adr/0032-ordered-multi-pop-foundation.md), [`docs/adr/0033-exact-register-transfer-effects.md`](docs/adr/0033-exact-register-transfer-effects.md), [`docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md`](docs/adr/0034-bounded-stack-adjust-and-public-artifact-content-policy.md), [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), [`docs/design/candidate-scoped-decoder-and-parallelism.md`](docs/design/candidate-scoped-decoder-and-parallelism.md), [`docs/architecture.md`](docs/architecture.md), [`docs/design/decoder-roadmap.md`](docs/design/decoder-roadmap.md), [`docs/adr/0012-roadmap-expansion-and-research-release-gates.md`](docs/adr/0012-roadmap-expansion-and-research-release-gates.md), [`docs/adr/0013-deterministic-hostile-input-regression-harness.md`](docs/adr/0013-deterministic-hostile-input-regression-harness.md), [`docs/adr/0016-bounded-dynamic-table-view.md`](docs/adr/0016-bounded-dynamic-table-view.md), and [`docs/adr/0022-historical-findings-hardening.md`](docs/adr/0022-historical-findings-hardening.md).
 
-The current Sprint 10 authority chain continues through
+The completed Sprint 10 authority chain continues through
 [ADR 0037](docs/adr/0037-architectural-effects-and-contract-reconciliation.md),
 [ADR 0038](docs/adr/0038-patch051-corrective-effect-and-gate-hardening.md),
 the [family coverage table](docs/design/sprint10-family-coverage.md), the
@@ -311,7 +312,10 @@ the [family coverage table](docs/design/sprint10-family-coverage.md), the
 [output contract](docs/contracts/output-contract.md), and the
 [Patch 052 validation record](docs/sprints/sprint-10-patch-052-validation.md),
 [ADR 0039](docs/adr/0039-benchmark-informed-capability-roadmap.md), and the
-[Patch 053 validation record](docs/sprints/sprint-10-patch-053-validation.md).
+[Patch 053 validation record](docs/sprints/sprint-10-patch-053-validation.md),
+[ADR 0040](docs/adr/0040-sprint10-closeout-and-diagnostic-benchmark-entry.md),
+the [Patch 054 validation record](docs/sprints/sprint-10-patch-054-validation.md),
+and the [Sprint 10 retrospective](docs/sprints/sprint-10-retro.md).
 
 ## Roadmap and release gates
 
@@ -320,7 +324,7 @@ The canonical twenty-two-sprint roadmap defines:
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 evidence-aware primitive expansion and contract closure through Patch 054,
+- Sprint 10 evidence-aware primitive expansion and contract closure, complete through Patch 054,
 - Sprint 11 diagnostic benchmark infrastructure and a provisional reproducible corpus,
 - Sprints 12 through 14 loader/mitigation precision, semantic capability completion, and optional decoder/concurrency ablations,
 - Sprint 15 corpus, schema, baseline, command, task-definition, and methodology freeze,
@@ -333,7 +337,9 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 049 are later pre-release work.
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 053 are later
+pre-release work. Patch 054 closes Sprint 10 without moving a release tag.
+Sprint 11 begins diagnostic measurement and a provisional corpus.
 
 Planned release sequence:
 
@@ -343,7 +349,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, reconciles public chronology and delivery authentication, and activates Sprint 11 without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

@@ -39,27 +39,27 @@ or method changes.
 
 ## Capability reassessment result
 
-The current release candidate is not a general-purpose gadget suite. It is a
+The current pre-release analyzer is not a general-purpose gadget suite. It is a
 bounded evidence pipeline with these implemented strengths:
 
 | Surface | Current bounded capability | Release treatment |
 |---|---|---|
 | ELF and loader | ELF64 x86-64 identity, checked tables, file-backed executable `PT_LOAD` regions | Preserve and tighten loader-conformance facts before freeze |
-| Mitigations | NX, RWX, dynamic linking, no/partial/full RELRO, bind-now, canary and stripped indicators | Add PIE/DSO and bounded IBT/SHSTK evidence before preview |
+| Mitigations | NX, RWX, dynamic linking, coarse `ET_DYN`-based PIE, no/partial/full RELRO, bind-now, canary, and stripped indicators | Refine PIE/DSO and add bounded IBT/SHSTK evidence before preview |
 | Single-pop | Exact recognition for all 16 GPRs; selected semantic roles | Decide generic pop roles and `r10` syscall-argument treatment in Sprint 13 |
 | Ordered multi-pop | 30 ordered pairs over `rdi/rsi/rdx/rcx/r8/r9` | Keep; broaden only for a measured task gap |
 | Register transfer | 210 distinct non-`rsp` qword register-direct moves | Keep unscored until source-value control is represented |
 | Stack adjustment | 15 positive aligned imm8 adjustments | Keep current exact domain and reviewed score policy |
 | Memory | Exact qword base-plus-zero, no-index loads and stores | Keep; broader addressing is conditional on measured need and complete operand facts |
-| Provenance | Raw, exact-suffix, semantic-exact, unknown, score, completeness, and side-car effects | Preserve as the comparison and automation foundation |
+| Evidence layers | Candidate provenance kinds `raw_only`, `exact_suffix`, and `semantic_exact`; `unknown_candidate` classification; nullable scores; analysis completeness; and candidate-indexed side-car effects | Preserve as the comparison and automation foundation |
 | Validity | External decoder-gap artifacts; no runtime decoder-valid facts | Optional candidate-scoped profile only after ablation |
 
-Before the first release, the project requires competitive evidence for the
-explicitly bounded return-oriented task. It does not require feature parity with
-every mode of ROPgadget, Ropper, ropr, radare2, or full disassembly frameworks.
-A missing capability becomes pre-release work only when diagnostic evidence
-shows that it changes a stated research hypothesis, a defensive task, or the
-fairness of a baseline comparison.
+Before the first release, the project requires comparative evidence for the
+explicitly bounded return-oriented task. It does not require a favorable result
+or feature parity with every mode of ROPgadget, Ropper, ropr, radare2, or full
+disassembly frameworks. A missing capability becomes pre-release work only when
+diagnostic evidence shows that it would make a stated research hypothesis,
+defensive task, or baseline comparison materially misleading.
 
 ## Diagnostic benchmark questions
 
@@ -112,10 +112,13 @@ Before `v0.1.0-rc1`:
 
 ### Candidate-scoped decoder
 
-A decoder profile is admitted only when diagnostic or Sprint 17 coverage
-reconciliation shows that exact-suffix validity materially affects a research
-claim or user task. It validates retained candidate starts and writes additive
-side-car evidence. It does not replace raw scanning.
+A decoder profile may enter the frozen pre-release campaign only when Sprint 11
+diagnostic evidence identifies a material validity or task gap and the Sprint
+14 ablation demonstrates a justified benefit at acceptable dependency, latency,
+binary-size, RSS, and hostile-input cost. It validates retained candidate starts
+and writes additive side-car evidence; it does not replace raw scanning. A gap
+first identified during Sprint 17 is follow-up work unless the project assigns a
+new campaign identifier or completely reruns every affected condition.
 
 ### Deterministic concurrency
 
@@ -156,7 +159,10 @@ startup cost
 wall, user, and system time
 maximum RSS
 output hash
-raw/exact/semantic/validated/scored counts
+current aggregate counts:
+  raw_candidate_count, exact_pattern_count, semantic_candidate_count,
+  unknown_candidate_count, scored_candidate_count
+decoder-backed counts, when defined by the optional profile
 failure and cleanup behavior
 ```
 
@@ -171,3 +177,7 @@ capability authority. Validate it with:
 ```bash
 make research-stage-gates-smoke
 ```
+
+## Current stage after Sprint 10
+
+Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement. The reference analyzer and current semantic contracts are stable enough to measure, but the corpus and method remain provisional until Sprint 15. Sprints 12 through 14 may change capabilities or experimental profiles in response to diagnostic evidence; such changes require new diagnostic identities and do not contaminate the later frozen campaign.

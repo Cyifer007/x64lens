@@ -3,8 +3,9 @@
 ## Status
 
 Historical validation record. Patch 047 was rejected as delivered; Patch 048
-corrected its build and validation defects, and current validation follows the
-Patch 052 corrective candidate.
+corrected its build and validation defects. Current Sprint 10 status and
+validation authority are maintained in the
+[Sprint 10 Plan](sprint-10-plan.md).
 
 ## Scope
 

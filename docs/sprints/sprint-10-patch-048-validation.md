@@ -3,8 +3,9 @@
 ## Status
 
 Historical validation record. Patch 048 runtime behavior passed after
-correction; Patch 049 added bounded memory effects, and current validation
-follows the Patch 052 corrective candidate.
+correction, and Patch 049 added bounded memory effects. Current Sprint 10 status
+and validation authority are maintained in the
+[Sprint 10 Plan](sprint-10-plan.md).
 
 ## Scope
 

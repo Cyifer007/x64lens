@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned diagnostic measurement sprint.
+Active diagnostic measurement sprint after Sprint 10 Patch 054 closeout.
 
 ## Sprint goal
 

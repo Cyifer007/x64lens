@@ -11,7 +11,8 @@ enrichment, and release compatibility.
 
 ## Planned deliverables
 
-- [ ] Freeze release-facing schema `0.2.x` fields and compatibility guarantees.
+- [ ] Finalize release-facing `0.2.x` compatibility guarantees without changing
+  the Sprint 15-frozen schema/extractor pair.
 - [ ] Add migration and representative state tests.
 - [ ] Define optional CI policy modes with distinct policy exit semantics.
 - [ ] Evaluate SARIF as a report adapter without duplicating analysis logic.

@@ -118,10 +118,11 @@ merge rules before implementation.
 ## Measurement schedule
 
 Sprint 10 expands exact and semantic coverage in the core profile. Sprint 11
-freezes a reproducible corpus. Sprint 12 builds the high-resolution runner and
-pilot ablations. Sprint 13 performs fixed comparative and profile-level
-measurement. No decoder or worker profile becomes the default before those
-gates produce reproducible evidence.
+builds the diagnostic runner and provisional corpus. Sprints 12 through 14
+resolve capability questions and test optional profiles. Sprint 15 freezes the
+campaign, and Sprints 16 and 17 run the preview and publication measurements.
+No decoder or worker profile becomes the default before those gates produce
+reproducible evidence.
 
 ## Claim boundary
 
@@ -139,8 +140,9 @@ arena. No decoder, worker library, helper process, or user-space runtime
 library is added.
 
 This is an architectural preservation result, not a measured performance claim.
-Sprint 12 and Sprint 13 remain responsible for wall-time, CPU, RSS, binary-size,
-and optional-profile ablations.
+Sprint 11 diagnostic measurement and Sprint 14 optional-profile ablations
+characterize wall time, CPU, RSS, binary size, and profile costs; frozen release
+claims require the Sprint 16 and Sprint 17 campaigns.
 
 ## Patch 049 fixed memory-effect allocation
 

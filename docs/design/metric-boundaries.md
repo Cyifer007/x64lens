@@ -319,5 +319,7 @@ confirmatory measurement
 ```
 
 Rows from the two classes must not be aggregated. Optional decoder and worker
-profiles remain separate metric strata and must preserve reference raw, exact,
-semantic, unknown, scored, and output-hash facts.
+profiles remain separate metric strata and must preserve the reference
+profile's `raw_candidate_count`, `exact_pattern_count`,
+`semantic_candidate_count`, `unknown_candidate_count`,
+`scored_candidate_count`, and output hash.

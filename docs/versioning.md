@@ -115,3 +115,14 @@ Sprint 22  v0.1.0 research release
 
 Diagnostic evidence from Sprint 11 remains development data. It does not carry
 the release authority of a frozen Sprint 15 campaign.
+
+
+## Sprint 10 closeout version state
+
+Patch 054 retains tool version `0.1.0-dev` and schema `0.2.0`. No release tag
+moves. Sprint 10 is complete, Sprint 11 is the active diagnostic benchmark
+stage, and diagnostic rows have no release authority until the Sprint 15
+campaign freeze. Optional decoder or worker profiles require distinct build and
+benchmark identity even when they remain schema-compatible.
+
+Patch 054 closes Sprint 10 without advancing the tool or schema version. Sprint 11 diagnostic artifacts retain `0.1.0-dev` and schema `0.2.0` provenance. Neither `v0.1.0-rc1` nor `v0.1.0` is created during diagnostic work; those remain evidence-gated milestones at Sprints 16 and 22.

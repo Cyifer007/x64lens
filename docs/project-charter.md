@@ -47,7 +47,9 @@ The project is designed to eventually support:
 
 ### RQ1
 
-Can a bounded assembly-first ELF64 x86_64 analysis profile reduce runtime and memory cost relative to established gadget tools while retaining competitive, explicitly defined return-oriented coverage and making residual coverage gaps measurable?
+How do runtime, memory cost, and explicitly defined return-oriented coverage
+compare between a bounded assembly-first ELF64 x86_64 analysis profile and
+established gadget tools, and what residual coverage gaps remain?
 
 ### RQ2
 
@@ -139,9 +141,13 @@ Future decoding should prefer validation of retained candidate windows over mand
 Memory semantics expand only through bounded exact families and explicit internal facts. Patch 049 adds no runtime dependency and preserves the decoder-free one-worker reference profile. Broader address forms, score changes, and performance claims remain evidence-gated.
 
 
-## Pre-corpus architecture review
+## Pre-freeze architecture review
 
-Before Sprint 11 freezes the reproducible corpus, the project reviews current capability breadth and ambiguous binary-level facts. The review includes PIE-versus-DSO interpretation, CET/IBT/SHSTK property evidence, overlapping executable-segment semantics, and score policy for the Sprint 10 families. This gate protects later benchmark and case-study claims from being built on unstable definitions.
+Before Sprint 15 freezes the reproducible campaign, Sprints 12 and 13 resolve
+or explicitly defer the PIE-versus-DSO interpretation, CET/IBT/SHSTK property
+evidence, overlapping executable-segment semantics, and release-facing score
+policy identified by the Patch 053 review. Sprint 11 diagnostic evidence may
+reprioritize this work; it does not freeze the corpus.
 
 The review does not make full decoding, JOP/COP/SROP, exploit generation, or default multithreading hidden requirements for the first release. Those remain evidence-gated scope decisions.
 
@@ -149,3 +155,7 @@ The review does not make full decoding, JOP/COP/SROP, exploit generation, or def
 ## Benchmark-informed release sequencing
 
 Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-scope, and coverage evidence can redirect development. Those provisional rows are development evidence only. Corpus, schema, runner, tools, commands, and task definitions freeze in Sprint 15; the preview and publication campaigns follow in Sprints 16 and 17. The first research release is scheduled for Sprint 22 after triage, automation, case-study, and replication gates.
+
+## Current implementation stage
+
+Sprints 1 through 10 are complete after Patch 054. Sprint 11 begins diagnostic measurement with a provisional corpus and mutable method so performance, resource, coverage, and task-definition evidence can redirect the implementation before campaign freeze. Sprint 15 freezes the confirmatory method; Sprint 16 produces the preview campaign, Sprint 17 runs publication-grade comparative trials, and Sprint 22 is the first research-release gate.

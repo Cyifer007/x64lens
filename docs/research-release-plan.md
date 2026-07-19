@@ -136,7 +136,12 @@ Patch 034 adds section-label annotations while preserving schema `0.1.0`. Releas
 
 ## Patch 036 historical-review hardening note
 
-Patch 036 closes several review-found blockers for trustworthy evidence: byte-safe JSON rendering, `.env` Docker context exclusion, benchmark smoke sanity validation, JSON coverage-register consistency, and temporary-file isolation. These fixes improve release hygiene, but they do not replace the Sprint 9 schema/provenance transition or the Sprint 12/13 publication benchmark campaign.
+Patch 036 closes several review-found blockers for trustworthy evidence:
+byte-safe JSON rendering, `.env` Docker context exclusion, benchmark smoke
+sanity validation, JSON coverage-register consistency, and temporary-file
+isolation. These fixes improve release hygiene, but they do not replace the
+Sprint 9 schema/provenance transition or, under the current roadmap, the Sprint
+11 diagnostic foundation and Sprint 15-17 confirmatory gates.
 
 
 ## Patch 037 comparator milestone
@@ -153,8 +158,11 @@ Sprint 8 is complete after Patch 039. Patch 040 adds report and command identity
 complete-analysis state, and schema `0.2.0`; Patch 041 adds current per-candidate
 provenance; Patch 042 adds portable bundle enforcement and external decoder-gap
 evidence with target/tool hashes. The research preview is still not ready.
-Patch 043 records the reviewed decoder decision; Patch 045 subsequently verified
-that decision and its supporting evidence. Sprint 11 and Sprint 12 still own corpus and benchmark freeze work.
+Patch 043 records the reviewed decoder decision; Patch 045 subsequently
+verified that decision and its supporting evidence. At the Sprint 8 closeout
+boundary, the then-current roadmap assigned corpus and benchmark-freeze work to
+Sprints 11 and 12; the current roadmap assigns diagnostic work to Sprint 11 and
+campaign freeze to Sprint 15.
 
 
 ## Sprint 9 Patch 040 release-gate update
@@ -224,7 +232,12 @@ Memory-effect reports remain schema `0.2.0` semantic-exact output with decoder v
 
 ## Sprint 10 Patch 050 release-gate update
 
-The preview path now requires fail-fast specialty recipes plus the maintained family coverage and effect-consistency gates. Patch 051 calibrates two score entries; Patch 053 must resolve or explicitly defer PIE-versus-DSO semantics, CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics, and remaining score-policy questions before Sprint 11 freezes the preview corpus.
+The preview path now requires fail-fast specialty recipes plus the maintained
+family coverage and effect-consistency gates. Patch 051 calibrates two score
+entries; Patch 053 assigns PIE-versus-DSO semantics, CET/IBT/SHSTK property
+evidence, overlapping executable-segment count semantics, and remaining
+score-policy questions to explicit pre-freeze gates before Sprint 15 freezes the
+confirmatory campaign.
 
 
 ## Sprint 10 Patch 052 corrective update
@@ -242,3 +255,7 @@ Patch 054 remains Sprint 10 closeout.
 Patch 053 separates diagnostic measurement from confirmatory measurement and expands the canonical roadmap to twenty-two sprints. Sprint 11 builds a provisional corpus and high-resolution runner so evidence can redirect development. Sprints 12 through 14 resolve loader/mitigation precision, semantic capability, and optional decoder/concurrency decisions. Sprint 15 freezes the campaign; Sprints 16 and 17 run the preview and publication campaigns; Sprints 18 through 22 complete triage, automation, case study, replication, and release.
 
 Diagnostic results may invalidate or narrow the project hypotheses, but they are not merged into the frozen campaign. The release-facing benchmark and capability gates are maintained in [`design/benchmark-and-capability-stage-gates.md`](design/benchmark-and-capability-stage-gates.md).
+
+## Sprint 10 Patch 054 release-gate update
+
+Sprint 10 is closed after Patch 054. Sprint 11 diagnostic artifacts remain mutable development evidence and cannot satisfy the preview or publication campaign gates. The release path remains Sprint 15 freeze, Sprint 16 preview, Sprint 17 publication campaign, and Sprint 22 first research release. A delivery inventory is acceptable only when every listed sibling artifact, including its complete-package manifest, is present and verifies from a caller-independent path.

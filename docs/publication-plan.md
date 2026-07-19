@@ -96,7 +96,9 @@ The paper should address:
 - parser safety without language-level memory safety,
 - exact suffix versus decoded validity,
 - evidence provenance,
-- raw/exact/semantic/validated/scored metric separation,
+- current `raw_only`, `exact_suffix`, and `semantic_exact` provenance separated
+  from `unknown_candidate_count` and `scored_candidate_count`, with
+  decoder-backed kinds treated as conditional,
 - candidate truncation and completeness,
 - baseline task and output differences,
 - timing resolution and cache policy,
@@ -228,3 +230,7 @@ rows may redirect the implementation, but they are not publication results.
 The publication dataset begins only after the Sprint 15 freeze. Preview and
 publication claims use the frozen Sprint 16 and Sprint 17 campaigns, not earlier
 smoke or diagnostic rows.
+
+## Sprint 10 Patch 054 publication note
+
+Patch 054 closes Sprint 10 and begins the diagnostic measurement stage. The paper may describe Sprint 10 as completing the current bounded primitive, effect, provenance, fixture, false-positive, and score-policy foundations. It must not treat Sprint 11 diagnostic rows as publication evidence or imply that the corpus and method are frozen before Sprint 15.

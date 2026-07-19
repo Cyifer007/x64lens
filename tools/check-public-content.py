@@ -64,6 +64,13 @@ CASE_INSENSITIVE = tuple(
         r"^--.*restricted filesystem " + r"sandbox",
         r"self[- ]authenticating application and " + r"evidence package",
         r"artifact[- ]supply " + r"findings",
+        r"cloud " + r"environment may not provide",
+        r"authoritative local " + r"acceptance",
+        r"local acceptance " + r"decision",
+        r"remain mandatory in " + r"WSL2",
+        r"mandatory WSL2 " + r"(follow-up|validation)",
+        r"private handoff " + r"context",
+        r"(?:at" + r"tach|pa" + r"ste).*" + r"(?:re" + r"port|mis" + r"sion).*" + r"(?:ba" + r"ck|to)",
     )
 )
 HOME_PATHS = tuple(

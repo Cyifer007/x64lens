@@ -133,3 +133,7 @@ claim requires the frozen benchmark methodology and raw measurements.
 Early measurement is encouraged when it can falsify assumptions or guide implementation priorities. Diagnostic campaigns must preserve versions, hashes, commands, raw rows, failures, and environment metadata, but their method and corpus may remain provisional. They cannot support final comparative claims and cannot be merged into a frozen campaign.
 
 Confirmatory measurement begins only after the Sprint 15 campaign freeze. Method, corpus, schema/extractor, tool, task-definition, or capability changes after that point create a new campaign or require rerunning affected conditions.
+
+## Diagnostic-before-freeze rule
+
+Diagnostic measurement may begin before corpus and method freeze when its purpose is to discover bottlenecks, task mismatches, or capability gaps. Diagnostic rows retain complete provenance but remain development evidence. They cannot be merged into the Sprint 15-frozen confirmatory campaign after a material tool, corpus, schema, task, or method change.

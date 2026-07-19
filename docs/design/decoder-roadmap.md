@@ -201,8 +201,9 @@ classification. Raw discovery remains independently runnable and measurable.
 Parallelism is a separate decision. Candidate-index validation is the lowest-
 risk first seam; executable-region and chunk scanning require deterministic
 ordering, overlap and deduplication rules, a global capacity contract, and
-bounded per-worker memory. Sprint 12 and Sprint 13 own the measurement and
-ablation gates before any default-runtime change.
+bounded per-worker memory. At the Patch 044 boundary, the then-current roadmap
+assigned the measurement and ablation gates to Sprints 12 and 13 before any
+default-runtime change.
 
 ## Patch 053 benchmark-informed decoder timeline
 

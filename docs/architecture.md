@@ -1078,3 +1078,9 @@ cleanup, and output-definition costs.
 The governing records are [ADR 0039](adr/0039-benchmark-informed-capability-roadmap.md),
 [benchmark and capability stage gates](design/benchmark-and-capability-stage-gates.md),
 and the [twenty-two-sprint roadmap](roadmap-22-sprints.md).
+
+## Sprint 10 closeout architecture state
+
+Patch 054 closes Sprint 10 without changing analyzer code or record layouts. The current command-lifetime arena contains dense candidate, provenance, memory-effect, and architectural-effect slices while preserving the 4096-candidate fail-closed limit. Program headers and file-backed `PT_LOAD + PF_X` ranges remain executable authority. Exact patterns, semantic roles, side-car effects, scores, and reporters remain separate responsibilities.
+
+Sprint 11 measures this reference profile diagnostically. Candidate-scoped decoder and concurrency profiles remain optional, separately identified experiments and cannot replace the dependency-free one-worker reference without evidence and an explicit architecture decision.

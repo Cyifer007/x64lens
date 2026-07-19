@@ -64,8 +64,9 @@ The historical review also produced items that remain intentionally deferred to
 later sprints rather than Patch 037:
 
 - Sprint 9 completed current candidate provenance and external decoder-gap
-  reconciliation. Decoder-backed runtime validity and the Sprint 13 coverage
-  reconciliation remain future work.
+  reconciliation. Under the current roadmap, decoder-backed runtime validity is
+  conditional Sprint 14 ablation work, and frozen coverage reconciliation
+  belongs to Sprint 17.
 - Schema `0.2.0`, report identity, command identity, and
   completeness/truncation fields are implemented in Patch 040. Campaign and
   benchmark artifacts retain target digests externally; Patch 041 completes
@@ -93,7 +94,7 @@ later sprints rather than Patch 037:
 - [x] Sprint 9 architecture, contract, public-boundary, release, roadmap, and validation closeout.
 - Deferred beyond Sprint 9: a target digest inside the runtime report remains optional if later required by the final provenance contract; campaign and benchmark artifacts already retain target hashes externally.
 
-### Sprint 10: primitive expansion — active
+### Sprint 10: primitive expansion — complete
 
 - [x] First ordered multi-pop argument-control family with conservative fallback.
 - [x] Exact `stack_pop_order` plus machine-readable `clobbers` and
@@ -103,7 +104,7 @@ later sprints rather than Patch 037:
   unambiguous.
 - [x] First conservative register-transfer family with explicit source,
   destination, destination clobber, stack, and `register_write` facts. Patch 047.
-- [ ] Additional register-transfer forms only when operand roles remain exact.
+- [ ] Additional register-transfer forms remain evidence-gated follow-up work; they are not required for Sprint 10 closure.
 - [x] First narrow qword base-plus-zero memory-read and memory-write patterns.
 - [x] Memory-dereference facts and destination clobbers for the represented domain.
 - [x] Controlled fixture for every implemented Sprint 10 semantic rule.
@@ -374,9 +375,10 @@ Completed in Patch 044:
 Deferred with explicit classification:
 
 - Docker-environment qualification guidance: Patch 045 closeout;
-- optional decoder and concurrency implementation: measurement gate in Sprints 12/13;
+- optional decoder and concurrency implementation: then-current Sprints 12/13
+  measurement gate;
 - primitive-family expansion: Sprint 10;
-- publication-grade claims: Sprints 12 and 13.
+- publication-grade claims: then-current Sprints 12 and 13 plan.
 
 ## Sprint 9 closeout decisions
 
@@ -420,7 +422,8 @@ Before Sprint 11 begins, Patch 053 must perform the planned architecture and cap
 - [ ] define count semantics for overlapping executable `PT_LOAD` ranges;
 - [ ] review all current-family score candidates using completed effect facts;
 - [ ] reconcile the capability snapshot with the pre-`v0.1.0` release scope;
-- [ ] identify which capability gaps must precede the Sprint 11 corpus freeze and which remain post-release.
+- [x] identify which capability gaps must precede the Sprint 15 campaign freeze
+  and which remain post-release.
 
 Patch 052 is reserved for Patch 051 review corrections; Patch 054 closes Sprint 10 after the Patch 053 capability reassessment or carries its smallest required correction. Broader displacement, SIB/index, RIP-relative, decoder, JOP/COP/SROP, and default parallel work remains deferred unless the evidence-based roadmap review changes scope.
 
@@ -451,4 +454,23 @@ Patch 054 remains Sprint 10 closeout.
 
 ## Sprint 10 Patch 053 roadmap reassessment update
 
-Patch 053 corrects the Patch 052 internal-harness symbol, applies the accepted documentation corrections, adds manifest-relative delivery checksum verification, and establishes the twenty-two-sprint benchmark-informed roadmap. Sprint 11 begins diagnostic measurement without freezing the publication corpus. Sprints 12 through 14 close loader, mitigation, semantic, and optional-profile decisions; Sprint 15 freezes the campaign. Patch 054 remains Sprint 10 closeout.
+Patch 053 corrects the Patch 052 internal-harness symbol, reconciles public
+documentation with the Patch 052 contracts, adds manifest-relative checksum
+verification, and establishes the twenty-two-sprint benchmark-informed roadmap.
+Sprint 11 begins diagnostic measurement without freezing the publication
+corpus. Sprints 12 through 14 close loader, mitigation, semantic, and
+optional-profile decisions; Sprint 15 freezes the campaign. Patch 054 remains
+Sprint 10 closeout.
+
+## Sprint 10 Patch 054 closeout update
+
+Patch 054 closes Sprint 10 without adding another primitive family. The sprint now has maintained semantic-family, exact-pattern, fixture-suite, effect-completeness, false-positive, and score-policy authorities. The default analyzer remains bounded, dependency-free, decoder-free, and one-worker.
+
+Sprint 11 is the active diagnostic benchmark foundation. Its provisional corpus and measurement method may redirect implementation. The confirmatory campaign freezes in Sprint 15; preview, publication, operational, replication, and release work follows through Sprint 22.
+
+Deferred capability work remains evidence-gated:
+
+- broader register-transfer and memory-address forms;
+- candidate-scoped decoder validation;
+- deterministic concurrency profiles;
+- JOP, COP, SROP, symbolic execution, chain generation, other formats, and other architectures.

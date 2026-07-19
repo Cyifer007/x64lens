@@ -65,14 +65,15 @@ planning-docs-check: ok plans=22 forward_plans=14
 - No public documentation may claim measured speed, RSS superiority,
   invisibility, or anti-analysis evasion without evidence.
 
-## Deferred validation
+## Environment-dependent validation
 
-The cloud environment may not provide NASM, ShellCheck, Docker, GDB, or strace.
-Those checks remain mandatory in WSL2 and must be classified separately from
-source defects.
+If a required tool or Docker service is unavailable, classify the affected
+check as environment-blocked rather than as a source defect. Patch acceptance
+still requires the complete validation matrix to pass in a supported
+environment.
 
 ## Handoff
 
-Patch 054 closes Sprint 10 after Patch 053 receives an authoritative local
-acceptance decision. Sprint 11 then begins diagnostic measurement rather than a
-publication corpus freeze.
+Patch 054 closes Sprint 10 after Patch 053 passes the required validation
+matrix. Sprint 11 then begins diagnostic measurement rather than a publication
+corpus freeze.

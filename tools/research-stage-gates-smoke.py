@@ -32,7 +32,9 @@ def load_spec() -> dict:
 def main() -> int:
     try:
         spec = load_spec()
-        require(spec.get("version") == 1, "unsupported specification version")
+        require(spec.get("version") == 2, "unsupported specification version")
+        require(spec.get("completed_sprints") == 10, "completed_sprints must be 10")
+        require(spec.get("active_sprint") == 11, "active_sprint must be 11")
         require(spec.get("canonical_roadmap") == "docs/roadmap-22-sprints.md", "canonical roadmap mismatch")
 
         diagnostic = spec.get("diagnostic_sprint")
@@ -118,7 +120,8 @@ def main() -> int:
     print(
         "research-stage-gates-smoke: ok "
         f"stages={len(stages)} capability_gates={len(gates)} "
-        f"conditional_profiles={len(profiles)} release_sprint={release}"
+        f"conditional_profiles={len(profiles)} release_sprint={release} "
+        "completed_sprints=10 active_sprint=11"
     )
     return 0
 

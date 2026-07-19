@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 10 Patch 054 closeout contract, retrospective, ADR 0040, and validation record.
+- `make research-roadmap-consistency-smoke` and `make sprint10-closeout-smoke` for machine-checked roadmap chronology, completed Sprint 10 state, and Sprint 11 diagnostic entry.
+- Public-content regressions for execution-handoff wording and a delivered complete-package manifest that is authenticated as a sibling artifact.
+
 - Sprint 10 Patch 053 benchmark-informed diagnostic, capability-hardening, campaign-freeze, preview, publication, operational, and release stage gates.
 - A canonical twenty-two-sprint roadmap, Sprint 19 through Sprint 22 plans, machine-readable research-stage authority, and manifest-relative checksum verification.
 - ADR 0039, the benchmark/capability stage-gate design, and the Patch 053 validation record.
@@ -142,6 +146,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Close Sprint 10 and activate Sprint 11 as the diagnostic benchmark foundation while retaining Sprint 15 as the campaign-freeze boundary.
+- Reconcile the canonical twenty-two-sprint roadmap, release milestones, publication plan, versioning, and active sprint plans with the machine-readable stage authority.
+
 - Separate diagnostic benchmark evidence from the frozen preview and publication campaigns; Sprint 11 measures early, Sprint 15 freezes the campaign, and Sprints 16-17 run confirmatory work.
 - Expand the canonical roadmap from eighteen to twenty-two sprints so loader/mitigation precision, semantic completion, and optional decoder/concurrency ablations occur before campaign freeze.
 - Keep the dependency-free decoder-free one-worker analyzer as the reference profile while treating broader families and acceleration as measured conditional profiles.
@@ -260,6 +267,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Correct contradictory Sprint 11 through Sprint 13 ownership left in active public prose after the Patch 053 roadmap transition.
+- Reject private execution-handoff narration in public repository content while retaining generic platform and reproducibility guidance.
+- Require every checksum-listed complete-package manifest to be supplied and verified beside the delivery inventory.
 
 - Correct the Patch 052 memory-effect reconciliation harness to use `GADGET_SUMMARY_RECORD_SIZE` at both allocation sites.
 - Make delivery checksum verification resolve sibling-relative entries from the manifest directory rather than the caller current directory.
