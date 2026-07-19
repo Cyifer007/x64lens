@@ -2,7 +2,7 @@
 
 ## Status
 
-This file is retained for link compatibility and historical context. The canonical roadmap is now [`roadmap-18-sprints.md`](roadmap-18-sprints.md).
+This file is retained for link compatibility and historical context. The canonical roadmap is now [`roadmap-22-sprints.md`](roadmap-22-sprints.md).
 
 ## Why the roadmap expanded
 
@@ -42,4 +42,4 @@ Sprints 13 through 18 continue through the comparative campaign, triage model, a
 
 ## Compatibility rule
 
-New planning changes should update `docs/roadmap-18-sprints.md`. This compatibility file should change only when the relationship between the historical twelve-sprint view and the canonical roadmap changes.
+New planning changes should update `docs/roadmap-22-sprints.md`. This compatibility file should change only when the relationship between the historical twelve-sprint view and the canonical roadmap changes.

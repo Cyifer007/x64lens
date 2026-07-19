@@ -2,42 +2,33 @@
 
 ## Status
 
-Planned research preview gate.
+Planned loader and mitigation precision sprint.
 
 ## Sprint goal
 
-Replace smoke-level timing with higher-resolution measurement, run a pilot comparison campaign, and prepare the `v0.1.0-rc1` research preview candidate.
+Resolve loader-identity, executable-region, and mitigation-evidence ambiguities
+that would otherwise corrupt corpus labels or defensive triage.
 
 ## Planned deliverables
 
-- [ ] Add a benchmark runner using monotonic nanosecond timing and per-child resource usage.
-- [ ] Avoid zero-valued measurements through batching or larger targets when single-run duration is below the timer floor.
-- [ ] Capture wall time, user CPU, system CPU, max RSS, output bytes, exit status, and target/tool hashes.
-- [ ] Record warmup policy, randomized tool order, cache condition, and host metadata.
-- [ ] Separate raw scanner, gadget JSON, and end-to-end `analyze` benchmark modes.
-- [ ] Generate summaries from raw rows only.
-- [ ] Run a pilot campaign across the frozen preview corpus and all available baselines.
-- [ ] Rehearse source, binary, checksum, reproduction, and benchmark-smoke artifacts.
-- [ ] Tag `v0.1.0-rc1` only if every preview gate passes.
+- [ ] Distinguish PIE executables from `ET_DYN` shared objects through bounded evidence.
+- [ ] Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
+- [ ] Define overlapping executable `PT_LOAD` scan, deduplication, and count semantics.
+- [ ] Validate or explicitly reject unsupported `p_align`, offset/virtual congruence, virtual ranges, and executable-entrypoint states.
+- [ ] Detect ELF extended-numbering cases and provide bounded support or stable unsupported outcomes.
+- [ ] Extend deterministic mitigation and malformed-input fixtures for every new parser path.
+- [ ] Re-run the diagnostic suite and record changed facts separately from Sprint 11 rows.
 
 ## Acceptance criteria
 
-- [ ] Small-target measurements are above the documented resolution floor or are reported as batched measurements.
-- [ ] Per-run resource data is preserved.
-- [ ] Tool order and environment metadata are recorded.
-- [ ] Historical rows from different hosts are not merged silently.
-- [ ] Parser safety, mitigation, provenance, schema, corpus, and release-preview gates pass.
-- [ ] Preview documentation states remaining semantic and decoder limitations.
+- [ ] Program headers remain executable authority.
+- [ ] No new table is read without bounded range and count validation.
+- [ ] PIE, DSO, IBT, and SHSTK facts have controlled positive, negative, contradictory, truncated, and duplicate cases where applicable.
+- [ ] Overlapping segments cannot silently duplicate counts under the chosen policy.
+- [ ] Native and Docker facts agree.
+- [ ] Diagnostic measurements are versioned separately after behavior changes.
 
 ## Handoff
 
-Sprint 13 runs the publication-grade comparative campaign using the frozen methodology, schema, corpus, and baseline versions.
-
-## Patch 044 acceleration measurement refinement
-
-The pilot infrastructure should include bounded ablations for core one-worker
-analysis, candidate-scoped external or prototype decoder validation, and
-candidate-validation worker counts where an experimental profile exists.
-Record binary size, startup cost, peak RSS, wall/user/system time, deterministic
-output hash, and candidate/evidence counts. Region/chunk parallelism is measured
-only after overlap, deduplication, and global capacity rules are implemented.
+Sprint 13 completes the release-facing semantic surface using the corrected
+loader and mitigation facts.

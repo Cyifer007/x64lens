@@ -574,7 +574,7 @@ v0.1.0-rc1  hardened preview with corpus and high-resolution benchmark tooling
 v0.1.0      fixed research campaign, case study, replication package, and paper-ready evidence
 ```
 
-See `docs/roadmap-18-sprints.md`, `docs/design/evidence-provenance-model.md`, `docs/design/schema-evolution.md`, and `docs/research-release-plan.md`.
+See `docs/roadmap-22-sprints.md`, `docs/design/evidence-provenance-model.md`, `docs/design/schema-evolution.md`, and `docs/research-release-plan.md`.
 
 ## Sprint 7 hostile-input validation layer
 
@@ -881,7 +881,7 @@ See [ADR 0032](adr/0032-ordered-multi-pop-foundation.md), the
 [Primitive Effect Model](design/primitive-effect-model.md), the
 [Sprint 10 Plan](sprints/sprint-10-plan.md), the
 [Patch 046 Validation Plan](sprints/sprint-10-patch-046-validation.md), and the
-[canonical roadmap](roadmap-18-sprints.md).
+[canonical roadmap](roadmap-22-sprints.md).
 
 ## Sprint 10 Patch 047 exact register-transfer seam
 
@@ -911,7 +911,7 @@ See [ADR 0033](adr/0033-exact-register-transfer-effects.md), the
 [JSON Schema Contract](json-schema.md), the
 [Sprint 10 Plan](sprints/sprint-10-plan.md), the
 [Patch 047 Validation Plan](sprints/sprint-10-patch-047-validation.md), and the
-[canonical roadmap](roadmap-18-sprints.md).
+[canonical roadmap](roadmap-22-sprints.md).
 
 ## Sprint 10 Patch 048 exact stack-adjust seam
 
@@ -1021,6 +1021,10 @@ bytes; this is allocation arithmetic, not measured maximum RSS.
 
 ## Sprint 10 Patch 052 corrective architecture
 
+The governing correction and acceptance surfaces are
+[ADR 0038](adr/0038-patch051-corrective-effect-and-gate-hardening.md) and the
+[Patch 052 validation record](sprints/sprint-10-patch-052-validation.md).
+
 Patch 052 preserves the Patch 051 side-car pipeline and adds no record or arena
 growth. The candidate-effect materializer reconstructs the complete current
 memory descriptor from exact candidate metadata and requires exact agreement
@@ -1033,3 +1037,44 @@ or comparisons. NASM number-overflow warnings are fatal so an immediate cannot
 silently narrow a 64-bit contract. Validation adds a standalone internal
 assembly harness; it is linked only for tests and is not part of the runtime
 binary.
+
+## Sprint 10 Patch 053 benchmark-informed architecture
+
+Patch 053 changes no analyzer module, record layout, report field, score,
+capacity, decoder policy, or worker policy. It corrects the Patch 052 internal
+harness symbol and records the evidence sequence that governs the next research
+tranche.
+
+The project now separates measurement into two phases:
+
+```text
+Sprint 11 diagnostic measurement
+  provisional corpus and mutable method
+  measures timer floor, task scope, runtime/RSS, output cost, and coverage gaps
+  may redirect loader, mitigation, semantic, decoder, or concurrency work
+
+Sprints 12-14 capability hardening
+  resolves release-facing ambiguities under new diagnostic campaign IDs
+
+Sprint 15 campaign freeze
+  freezes corpus, schema/extractor, runner, baselines, commands, task definitions,
+  cache policy, and environment strata
+
+Sprints 16-17 confirmatory measurement
+  preview pilot followed by publication-grade repeated trials
+```
+
+Diagnostic evidence is deliberately excluded from the frozen preview and
+publication datasets after a capability, schema, task, corpus, or method change.
+This allows benchmarking to falsify weak design assumptions early without
+turning mutable development rows into final claims.
+
+The dependency-free, decoder-free, one-worker analyzer remains the reference
+profile. Candidate-scoped decoding, deterministic concurrency, and any broader
+ROP family are separate conditional profiles. They are admitted only when a
+measured task gap justifies their binary-size, dependency, latency, CPU, RSS,
+cleanup, and output-definition costs.
+
+The governing records are [ADR 0039](adr/0039-benchmark-informed-capability-roadmap.md),
+[benchmark and capability stage gates](design/benchmark-and-capability-stage-gates.md),
+and the [twenty-two-sprint roadmap](roadmap-22-sprints.md).

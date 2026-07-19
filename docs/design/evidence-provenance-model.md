@@ -285,3 +285,15 @@ It does not create a stronger provenance tier. Current records remain
 `semantic_exact` and keep `full_sequence_valid:null`. A future decoder may
 validate or refine effect facts in another side-car, but it must preserve the
 exact-suffix effect history and expose disagreement.
+
+## Sprint 10 Patch 053 diagnostic and confirmatory provenance
+
+Diagnostic benchmark artifacts and confirmatory campaign artifacts are distinct
+provenance classes. Both retain tool, target, command, schema, runner, and
+environment identity, but diagnostic evidence may be superseded by later
+capability or method changes and is never merged into the frozen dataset.
+
+Sprint 15 establishes the campaign authority. Sprint 16 preview and Sprint 17
+publication rows must reference that frozen authority. Candidate-scoped decoder
+or worker-profile evidence remains additive and receives a separate profile
+identity rather than changing the reference report silently.

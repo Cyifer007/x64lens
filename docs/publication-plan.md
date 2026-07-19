@@ -70,12 +70,19 @@ Examples:
 | 7 | Deterministic hostile-input results, minimized parser regressions, explicit capacity behavior, and checked table-arithmetic foundation. |
 | 8 | Mitigation accuracy fixtures and comparison evidence. |
 | 9 | Complete: provenance model, schema `0.2.0`, completeness, decoder-gap evidence, and deployment-profile decision. |
-| 11 | Reproducible corpus and manifest freeze candidate. |
-| 12 | High-resolution pilot results and `v0.1.0-rc1` preview package. |
-| 13 | Publication-grade comparative campaign and raw-result freeze. |
-| 16 | Infrastructure case study and analyst-utility evidence. |
-| 17 | Paper, figures, claim matrix, and replication freeze. |
-| 18 | `v0.1.0` release and submission package. |
+| 11 | Diagnostic high-resolution runner, provisional corpus, task map, and engineering gap register. |
+| 12-14 | Loader/mitigation precision, semantic capability completion, and optional profile ablations guided by diagnostic evidence. |
+| 15 | Corpus, schema, runner, baseline, command, task-definition, and environment-stratum freeze. |
+| 16 | Frozen pilot results and `v0.1.0-rc1` preview package. |
+| 17 | Publication-grade comparative campaign and raw-result freeze. |
+| 18-20 | Defensive triage, automation interfaces, and infrastructure case-study evidence. |
+| 21 | Paper, figures, claim matrix, and independent replication freeze. |
+| 22 | `v0.1.0` release and submission package. |
+
+
+## Diagnostic versus confirmatory evaluation
+
+Sprint 11 measurements are allowed to change the implementation and the eventual experimental design. They can identify bottlenecks, task mismatches, and material coverage gaps, but they are not final paper results. Sprint 15 freezes the confirmatory design. Only Sprint 16 and Sprint 17 rows may support preview and publication performance or coverage claims.
 
 ## Current robustness evidence
 
@@ -113,7 +120,7 @@ Do not combine these into a single superiority claim.
 
 `v0.1.0-rc1` is a research preview suitable for faculty and external feedback. `v0.1.0` is the first research release intended to accompany the final replication and submission package.
 
-See [`research-release-plan.md`](research-release-plan.md) and [`roadmap-18-sprints.md`](roadmap-18-sprints.md).
+See [`research-release-plan.md`](research-release-plan.md) and [`roadmap-22-sprints.md`](roadmap-22-sprints.md).
 
 ## Mitigation-oracle evidence
 
@@ -211,3 +218,13 @@ Patch 051 increases the fixed command arena to 819,200 bytes by adding one 24-by
 ## Sprint 10 Patch 050 publication note
 
 Patch 050 supports a bounded claim that every implemented Sprint 10 family has a maintained controlled-fixture, effect, fallback, false-positive, and score-disposition record. It does not support a claim of complete gadget-family coverage, decoder validity, or comparative superiority. Fixed arena size is an implementation fact; runtime and RSS claims still require the frozen benchmark methodology.
+
+## Sprint 10 Patch 053 publication sequencing note
+
+The benchmark system is designed and exercised before feature freeze because an
+early null or negative result is useful engineering evidence. Those diagnostic
+rows may redirect the implementation, but they are not publication results.
+
+The publication dataset begins only after the Sprint 15 freeze. Preview and
+publication claims use the frozen Sprint 16 and Sprint 17 campaigns, not earlier
+smoke or diagnostic rows.

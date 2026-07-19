@@ -31,6 +31,23 @@ Before any publishable tag:
 - [ ] security, ethics, limitations, and threats-to-validity docs are current,
 - [ ] release artifacts and SHA-256 checksums verify.
 
+
+## Benchmark-informed milestone timing
+
+- Sprint 11 produces diagnostic development evidence, not release evidence.
+- Sprint 15 freezes the release campaign.
+- Sprint 16 owns the `v0.1.0-rc1` preview gate.
+- Sprint 17 owns the publication comparative campaign.
+- Sprint 22 owns the `v0.1.0` release gate.
+
+The manifest-relative checksum verifier is:
+
+```bash
+python3 tools/verify-checksum-manifest.py /path/to/SHA256SUMS.txt
+```
+
+It resolves every entry relative to the manifest directory and rejects unsafe, duplicate, missing, or mismatched paths. Release instructions must not depend on the caller's current directory.
+
 ## Research preview gate
 
 Before `v0.1.0-rc1`:
@@ -241,18 +258,21 @@ Release-preview validation must include the current Sprint 10 family coverage an
 
 ## Sprint 10 Patch 051 release-gate update
 
-Release-preview validation must include the eleven semantic-family contract,
-twenty-five exact-pattern catalog, five fixture-suite groups, their reconciliation
-gate, and the one-per-pattern architectural-effect fixture. Public JSON must
-preserve earlier schema `0.2.0` readability while current-producer validation
-requires internally consistent architectural effects.
+Release-preview validation must include the eleven semantic-family contracts,
+twenty-five exact-pattern contracts, and five fixture-suite groups: four
+family-specialty groups plus the one-per-pattern architectural-effect group.
+Their reconciliation gate must also pass. Public JSON must preserve earlier
+schema `0.2.0` readability while current-producer validation requires
+internally consistent architectural effects.
 
 
 ## Sprint 10 Patch 052 release-gate update
 
 Preview and release validation must include the memory-effect reconciliation,
-native/container byte-parity,
-score-policy mutation, and strict ShellCheck availability gates. NASM number-
-overflow warnings are build failures. Final delivery sets must include the
-advertised final-verification record and a checksum inventory that verifies from
-the documented directory layout.
+native/container byte-parity, score-policy mutation, and strict ShellCheck
+availability gates. NASM number-overflow warnings are build failures.
+
+
+## Sprint 10 Patch 053 release-gate update
+
+Patch 053 does not freeze a benchmark or add an analyzer capability. It corrects the Patch 052 harness and planning defects, makes checksum verification manifest-relative, and establishes the diagnostic/hardening/freeze/preview/campaign sequence. The research preview cannot be tagged before the Sprint 15 freeze and Sprint 16 pilot. The first release cannot be tagged before the Sprint 22 evidence gate.

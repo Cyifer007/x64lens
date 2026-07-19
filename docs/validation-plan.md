@@ -607,7 +607,7 @@ BUNDLE=/path/to/024_x64lens_sprint6_roadmap_architecture_review_patch.zip \
   make patch-bundle-hygiene
 ```
 
-The planning check confirms that the canonical roadmap, evidence gates, schema transition, and Sprint 7 through Sprint 18 plans are present and internally connected. It does not replace editorial review or runtime testing.
+The planning check confirms that the canonical roadmap, evidence gates, schema transition, and Sprint 7 through Sprint 22 plans are present and internally connected. It does not replace editorial review or runtime testing.
 
 The Patch 024 runtime acceptance rule is no regression from the validated Sprint 6 checkpoint. Fixture counts, JSON schema `0.1.0`, single-banner `analyze` text output, and system-binary smoke behavior remain unchanged.
 
@@ -643,7 +643,7 @@ Generated mutations remain temporary by default. A stable crash, timeout, unsafe
 
 ## Higher-resolution benchmark validation direction
 
-The publication runner planned for Sprint 12 must validate its own measurement contract:
+The diagnostic runner planned for Sprint 11 must validate its own measurement contract:
 
 - monotonic nanosecond wall-clock timestamps,
 - per-child user CPU, system CPU, and maximum RSS,
@@ -1289,6 +1289,10 @@ effect, or score facts.
 
 ## Sprint 10 Patch 052 corrective validation
 
+The focused command matrix, expected banners, and acceptance rules are
+maintained in the
+[Patch 052 validation record](sprints/sprint-10-patch-052-validation.md).
+
 Patch 052 adds no primitive family. It corrects Patch 051 effect encoding and
 validation boundaries. Required focused commands:
 
@@ -1310,3 +1314,38 @@ Acceptance still requires the complete native and qualified Docker aggregates,
 `make native-docker-json-parity-smoke`,
 4096/4097 capacity behavior, malformed-input no-partial-output behavior, and
 native/Docker fact parity.
+
+## Sprint 10 Patch 053 architecture and research-stage validation
+
+Patch 053 adds no analyzer behavior. It corrects the internal memory-effect
+harness symbol, makes checksum-manifest verification independent of the caller's
+current directory, and establishes the diagnostic-versus-confirmatory research
+sequence.
+
+Focused commands:
+
+```bash
+make checksum-manifest-path-smoke
+make research-stage-gates-smoke
+make planning-docs-check
+make memory-effect-reconciliation-smoke
+```
+
+Expected focused results:
+
+```text
+checksum-manifest-path-smoke: ok cases=4 accepted=1 rejected=3
+research-stage-gates-smoke: ok stages=7 capability_gates=9 conditional_profiles=3 release_sprint=22
+planning-docs-check: ok plans=22 forward_plans=14
+memory-effect-reconciliation-smoke: ok cases=7 accepted=2 rejected=5
+```
+
+The stage-gate specification requires diagnostic measurement in Sprint 11,
+capability hardening in Sprints 12 through 14, campaign freeze in Sprint 15,
+preview measurement in Sprint 16, publication measurement in Sprint 17, and the
+first research release in Sprint 22. Diagnostic rows cannot be merged into a
+later frozen dataset after a material change.
+
+Patch acceptance still requires the complete native and qualified Docker
+aggregates, strict ShellCheck, capacity and malformed-input contracts, and an
+unchanged checkpoint tag.

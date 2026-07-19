@@ -2,7 +2,9 @@
 
 ## Status
 
-Historical validation record. Patch 048 runtime behavior passed after correction; Patch 049 added bounded memory effects, and current validation follows Patch 050.
+Historical validation record. Patch 048 runtime behavior passed after
+correction; Patch 049 added bounded memory effects, and current validation
+follows the Patch 052 corrective candidate.
 
 ## Scope
 

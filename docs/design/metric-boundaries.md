@@ -301,3 +301,23 @@ analysis completion, complete gadget coverage, or exploitability.
 Patch 051 changes `scored_candidate_count` only for the ordered multi-pop and
 positive aligned stack-adjust fixtures because those two families gain explicit
 reviewed scores. Transfer and memory populations remain unscored.
+
+## Sprint 10 Patch 053 benchmark-stage boundary
+
+Diagnostic and confirmatory measurements answer different questions:
+
+```text
+diagnostic measurement
+  identifies bottlenecks, task mismatch, and capability gaps
+  may use provisional targets and mutable methods
+  cannot support final comparative claims
+
+confirmatory measurement
+  uses the frozen Sprint 15 corpus, method, schema, baselines, commands, and
+  environment strata
+  supports preview and publication claims
+```
+
+Rows from the two classes must not be aggregated. Optional decoder and worker
+profiles remain separate metric strata and must preserve reference raw, exact,
+semantic, unknown, scored, and output-hash facts.

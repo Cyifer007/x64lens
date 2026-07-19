@@ -18,6 +18,20 @@ Semantic primitive classification may provide more actionable defensive triage e
 
 A dependency-light analyzer may reduce operational friction relative to heavyweight reverse engineering frameworks.
 
+## Diagnostic and confirmatory benchmark phases
+
+Benchmark design begins before capability freeze, but evidence is split into two classes.
+
+### Diagnostic phase
+
+Sprint 11 introduces the high-resolution runner and a provisional reproducible corpus. Diagnostic measurements use development run counts and may change the code, task definitions, corpus, or method. They are intended to reveal bottlenecks, coverage gaps, output-scope differences, and weak hypotheses. They must retain full identity and raw rows, but they are not merged into the publication campaign.
+
+### Confirmatory phase
+
+Sprint 15 freezes corpus membership, schema/extractor, runner, baseline versions, commands, output modes, maximum depth, cache policy, and environment strata. Sprint 16 runs the frozen preview pilot and Sprint 17 runs publication-grade repeated trials. Any affected change after freeze creates a new campaign identifier or requires a complete rerun.
+
+This sequencing allows measurement to guide implementation without pretending that a mutable development checkpoint has already tested the final research hypotheses.
+
 ## Baseline tools
 
 Initial comparison candidates:
@@ -449,7 +463,7 @@ without explicit normalization.
 
 This correction protects research provenance but does not upgrade smoke timing
 to publication-grade evidence. Sprint 12 still owns high-resolution timing and
-Sprint 13 still owns the fixed comparative campaign.
+Sprint 17 owns the fixed comparative campaign after the Sprint 15 freeze and Sprint 16 pilot.
 
 ## Sprint 9 Patch 042 decoder-gap campaign
 
@@ -478,7 +492,7 @@ The campaign measures x64lens and GNU objdump independently and records:
 - canonical sequences outside the current exact pattern catalog.
 
 These timings are smoke-level cost observations. They are not publication-grade
-results and must not be combined with the Sprint 12/13 benchmark campaign. The
+results and must not be combined with the frozen Sprint 16/17 preview or publication campaigns. The
 comparison also does not establish objdump as ground truth for loader-mapped
 bytes: section coverage and canonical start selection are recorded threats to
 validity.
@@ -564,3 +578,8 @@ Patch 050 effect contract.
 ## Patch 051 fixed-allocation and score-measurement note
 
 Patch 051 increases the fixed command arena from 720,896 to 819,200 bytes by adding one 24-byte architectural-effect record for each candidate slot. This is design arithmetic, not measured maximum RSS. The new multi-pop and stack-adjust scores also change score-count fixtures; benchmark rows must preserve commit, schema, score policy, and exact family definitions rather than mixing pre- and post-Patch-051 output.
+
+
+## Patch 053 benchmark sequencing decision
+
+The project will not freeze the final benchmark suite at the Sprint 10 boundary. Sprint 11 builds and exercises the runner with provisional targets so measured evidence can direct loader, mitigation, semantic, decoder, and concurrency decisions in Sprints 12 through 14. Diagnostic rows remain separate from preview and publication rows. See [`design/benchmark-and-capability-stage-gates.md`](design/benchmark-and-capability-stage-gates.md).

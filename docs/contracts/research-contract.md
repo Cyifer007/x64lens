@@ -126,3 +126,10 @@ side-effect-accuracy claim without decoder-backed reconciliation.
 
 The 819,200-byte command arena is a fixed allocation fact. Any runtime or RSS
 claim requires the frozen benchmark methodology and raw measurements.
+
+
+## Diagnostic measurement rule
+
+Early measurement is encouraged when it can falsify assumptions or guide implementation priorities. Diagnostic campaigns must preserve versions, hashes, commands, raw rows, failures, and environment metadata, but their method and corpus may remain provisional. They cannot support final comparative claims and cannot be merged into a frozen campaign.
+
+Confirmatory measurement begins only after the Sprint 15 campaign freeze. Method, corpus, schema/extractor, tool, task-definition, or capability changes after that point create a new campaign or require rerunning affected conditions.

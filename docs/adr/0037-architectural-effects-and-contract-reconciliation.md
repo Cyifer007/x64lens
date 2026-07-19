@@ -101,8 +101,8 @@ schema `0.2.0` reports remain structurally consumable.
 ### Tradeoffs
 
 - The fixed command arena grows by 98,304 bytes.
-- Current-producer JSON gains a larger optional object per recognized exact
-  candidate.
+- The formal schema retains an optional object for earlier `0.2.0`
+  compatibility; current producers emit it for every candidate.
 - Three complementary fixture contracts must remain synchronized.
 - The richer model is still exact-suffix evidence, not decoded full-sequence
   validity.

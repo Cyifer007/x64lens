@@ -6,15 +6,29 @@ This plan defines the evidence and artifact gates for moving from the current `v
 
 ## Release sequence
 
-| Milestone | Planned version | Evidence level |
-|---|---|---|
-| Integrated development checkpoint | `v0.1.0-dev` | Functional pipeline, controlled fixture validation, system smoke testing, and development benchmark plumbing. |
-| Research preview candidate | `v0.1.0-rc1` | Hardened parser and mitigation paths, provenance-aware output, reproducible corpus, high-resolution benchmark runner, and pilot results. |
-| First research release | `v0.1.0` | Fixed comparative campaign, case study, replication package, claim audit, checksummed artifacts, and publication-ready documentation. |
+| Milestone | Planned version | Target sprint | Evidence level |
+|---|---|---:|---|
+| Integrated development checkpoint | `v0.1.0-dev` | 6, complete | Functional pipeline, controlled fixtures, system smoke, and development benchmark plumbing. |
+| Diagnostic measurement checkpoint | none | 11 | Provisional corpus, high-resolution runner, task definitions, and an engineering gap register; development evidence only. |
+| Campaign freeze | none | 15 | Frozen corpus, schema/extractor, runner, baselines, commands, task definitions, and environment strata. |
+| Research preview candidate | `v0.1.0-rc1` | 16 | Frozen pilot campaign, reproducible preview artifacts, and explicit remaining limitations. |
+| Publication campaign | none | 17 | Repeated trials, coverage reconciliation, raw-row freeze, and generated summaries. |
+| First research release | `v0.1.0` | 22 | Triage, automation, case study, replication rehearsal, claim audit, checksummed artifacts, and publication-ready documentation. |
 
 ## Current gate progress
 
-Patch 025 established deterministic hostile-input and candidate-capacity evidence, Patch 028 added shared checked table arithmetic, and Patch 029 closed Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and evidence-hygiene gates. Patches 040 through 045 complete Sprint 9 with schema `0.2.0`, report and command identity, complete-analysis state, per-candidate provenance, compatibility fixtures, portable decoder-gap evidence, immutable and transaction-safe campaign artifacts, a decoder-free reference runtime, and public-release boundary hardening. Patch 046 begins Sprint 10 with ordered two-pop semantic evidence and explicit effect fields. Reproducible corpus work and high-resolution benchmarking remain open in Sprints 11 and 12.
+Patch 025 established deterministic hostile-input and candidate-capacity
+evidence, Patch 028 added shared checked table arithmetic, and Patch 029 closed
+Sprint 7. Patches 030 through 039 completed Sprint 8 mitigation depth and
+evidence-hygiene gates. Patches 040 through 045 complete Sprint 9 with schema
+`0.2.0`, report and command identity, complete-analysis state, per-candidate
+provenance, compatibility fixtures, portable decoder-gap evidence, immutable
+and transaction-safe campaign artifacts, a decoder-free reference runtime, and
+public-release boundary hardening. Patches 046 through 049 establish ordered
+multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
+050 completes their coarse effects, Patch 051 adds architectural effects and two
+reviewed scores, and Patch 052 corrects the resulting effect and validation
+findings. Diagnostic corpus and high-resolution runner work begin in Sprint 11. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -84,9 +98,9 @@ Publication artifacts remain under `paper/` and benchmark evidence remains under
 
 ## Freeze rules
 
-- Corpus membership freezes before the publication benchmark campaign.
-- Baseline tool versions freeze before repeated trials.
-- Schema shape freezes before the final campaign unless a correctness defect requires a documented restart.
+- Diagnostic corpus membership and method may change through Sprint 14, but every diagnostic run keeps a distinct identity.
+- Corpus membership, baseline versions, commands, schema/extractor, task definitions, and runner freeze in Sprint 15.
+- A correctness or method change after Sprint 15 creates a new campaign identifier or requires a complete rerun of affected conditions.
 - Generated tables and figures must come from preserved raw results.
 - Manual edits to benchmark summaries are not release evidence.
 - Release tags point to clean, validated commits.
@@ -94,8 +108,8 @@ Publication artifacts remain under `paper/` and benchmark evidence remains under
 ## Tag policy
 
 - `v0.1.0-dev` identifies the Sprint 6 integrated checkpoint.
-- `v0.1.0-rc1` is the first publishable preview tag after the Sprint 12 gate.
-- `v0.1.0` is the first research release after the Sprint 18 gate.
+- `v0.1.0-rc1` is the first publishable preview tag after the Sprint 16 gate.
+- `v0.1.0` is the first research release after the Sprint 22 gate.
 
 A normal branch push does not publish tags. Release tags should be pushed explicitly only after the release checklist passes.
 
@@ -218,6 +232,13 @@ The preview path now requires fail-fast specialty recipes plus the maintained fa
 Patch 052 corrects the Patch 051 effect and gate findings without expanding the
 primitive catalog. Full-width syscall descriptors, the zero-immediate return
 boundary, contracted text separators, canonical memory side-car reconciliation,
-numeric score-policy mutations, and strict-lint availability are permanent
+numeric score-policy mutation gates, and strict-lint availability are permanent
 validation surfaces. Patch 053 remains the architecture/capability reassessment;
 Patch 054 remains Sprint 10 closeout.
+
+
+## Sprint 10 Patch 053 roadmap update
+
+Patch 053 separates diagnostic measurement from confirmatory measurement and expands the canonical roadmap to twenty-two sprints. Sprint 11 builds a provisional corpus and high-resolution runner so evidence can redirect development. Sprints 12 through 14 resolve loader/mitigation precision, semantic capability, and optional decoder/concurrency decisions. Sprint 15 freezes the campaign; Sprints 16 and 17 run the preview and publication campaigns; Sprints 18 through 22 complete triage, automation, case study, replication, and release.
+
+Diagnostic results may invalidate or narrow the project hypotheses, but they are not merged into the frozen campaign. The release-facing benchmark and capability gates are maintained in [`design/benchmark-and-capability-stage-gates.md`](design/benchmark-and-capability-stage-gates.md).

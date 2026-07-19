@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT indicator | validated GNU property notes and supported instruction evidence | Planned after core Sprint 8 work if bounded parsing and fixtures are ready. |
+| CET/IBT/SHSTK indicators | validated GNU property-note evidence with bounded parsing and controlled fixtures | Planned for Sprint 12 before the research preview. |
 
 ## Evidence and confidence
 
@@ -139,3 +139,17 @@ before expected corpus facts are frozen:
 3. Overlapping executable `PT_LOAD` ranges require defined region and count semantics so scanner work, completeness, and benchmark denominators are not ambiguous.
 
 Until those rules are implemented, current fields retain their documented indicator scope and limitations.
+
+## Patch 053 mitigation gate ownership
+
+Sprint 12 owns the release-facing mitigation precision work identified by the
+capability review:
+
+- distinguish PIE executables from shared objects using bounded evidence;
+- add bounded GNU property-note indicators for x86 IBT and SHSTK;
+- define overlapping executable-segment scan and count semantics;
+- validate or explicitly reject unsupported program-header alignment,
+  congruence, virtual-range, entrypoint, and extended-numbering states.
+
+These additions remain indicators and loader facts. They do not prove complete
+control-flow integrity, runtime ASLR, safety, or exploitability.

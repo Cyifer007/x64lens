@@ -2,30 +2,31 @@
 
 ## Status
 
-Planned extended research sprint.
+Planned research preview sprint.
 
 ## Sprint goal
 
-Evaluate x64lens on a reproducible network-facing infrastructure case study and define analyst utility criteria.
+Run a frozen high-resolution pilot campaign and prepare `v0.1.0-rc1` for
+structured external feedback.
 
 ## Planned deliverables
 
-- [ ] Select public, redistributable network-service or infrastructure binaries.
-- [ ] Record versions, build provenance, exposure role, and hardening profile.
-- [ ] Run x64lens and baseline tools under the fixed methodology.
-- [ ] Define defensive triage tasks and expected analyst decisions.
-- [ ] Compare raw gadget output with semantic and mitigation-aware summaries.
-- [ ] Record where x64lens helps, where it is incomplete, and where baseline tools provide more detail.
-- [ ] Add case-study threats to validity.
+- [ ] Pilot runs across every frozen condition and available baseline.
+- [ ] Raw rows, generated summaries, timer-floor evidence, and environment metadata.
+- [ ] Preview coverage reconciliation and explicit unsupported conditions.
+- [ ] Source, binary, checksum, version, corpus, benchmark, and reproduction artifacts.
+- [ ] Preview claim-to-evidence table and threats-to-validity update.
+- [ ] `v0.1.0-rc1` tag only when every preview gate passes.
 
 ## Acceptance criteria
 
-- [ ] Case-study targets are public and reproducible.
-- [ ] Analyst tasks are defined before interpreting results.
-- [ ] Findings distinguish measured evidence from inference.
-- [ ] No operational or exploitability claim exceeds static-analysis evidence.
-- [ ] Case-study artifacts can be regenerated from the public repository.
+- [ ] Pilot results regenerate from raw rows.
+- [ ] No diagnostic rows are merged into the frozen pilot.
+- [ ] Native and Docker validation pass.
+- [ ] Release archives and checksums verify.
+- [ ] Preview claims remain bounded to measured versions, targets, tasks, and profiles.
 
 ## Handoff
 
-Sprint 17 freezes the replication package and paper after incorporating benchmark and case-study evidence.
+Sprint 17 runs the publication-grade repeated campaign without changing the
+frozen method.

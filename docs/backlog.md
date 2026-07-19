@@ -70,9 +70,8 @@ later sprints rather than Patch 037:
   completeness/truncation fields are implemented in Patch 040. Campaign and
   benchmark artifacts retain target digests externally; Patch 041 completes
   raw, exact-suffix, and semantic-exact per-candidate provenance.
-- Publication-grade benchmarking, high-resolution timing, frozen corpus, and
-  normalized baseline definitions remain Sprint 12 and Sprint 13 work.
-- SARIF, CI policy gates, and enterprise export formats remain Sprint 15 work.
+- High-resolution diagnostic measurement begins in Sprint 11. Frozen corpus, normalized baseline definitions, preview measurement, and publication-grade trials belong to Sprints 15 through 17.
+- SARIF, CI policy gates, and enterprise export formats remain Sprint 19 work.
 
 ### Sprint 9: evidence provenance and schema transition — complete
 
@@ -112,61 +111,88 @@ later sprints rather than Patch 037:
 - [x] Machine-readable fixture coverage table and per-family false-positive boundaries.
 - [x] First reviewed score entries after effect validation: ordered two-pop 95 and positive aligned stack adjustment 35. Register transfer and memory remain unscored pending controllability facts.
 
-### Sprint 11: reproducible corpus
+### Sprint 11: diagnostic benchmark foundation
 
-- [ ] Compiler, optimization, linkage, and hardening matrix.
-- [ ] Target/source/tool hashes and exact build commands.
-- [ ] Manifest validator and regeneration workflow.
-- [ ] Fixed preview corpus membership.
-- [ ] Redistribution and license records for larger targets.
+- [ ] High-resolution monotonic runner with per-child CPU and max RSS.
+- [ ] Provisional reproducible corpus with hashes, build commands, and licenses.
+- [ ] Timer-floor, batching, warmup, ordering, and cache policy.
+- [ ] Separate core, gadget-report, and integrated-analysis modes.
+- [ ] Baseline task-definition matrix and development gap register.
+- [ ] Diagnostic rows isolated from future frozen campaigns.
 
-### Sprint 12: high-resolution benchmark preview
+### Sprint 12: loader and mitigation precision
 
-- [ ] Nanosecond-resolution timing.
-- [ ] Per-child CPU and max RSS capture.
-- [ ] Batching or larger-target policy for sub-resolution runs.
-- [ ] Randomized tool order and warmup policy.
-- [ ] Pilot comparison campaign.
-- [ ] `v0.1.0-rc1` preview release dry run.
+- [ ] PIE executable versus shared-object distinction.
+- [ ] Bounded CET IBT and SHSTK GNU-property evidence.
+- [ ] Overlapping executable-region scan/count policy.
+- [ ] `p_align`, congruence, virtual-range, and executable-entrypoint behavior.
+- [ ] Explicit ELF extended-numbering support or stable unsupported result.
+- [ ] Deterministic malformed and mitigation fixtures for every new parser path.
 
-## Extended research tranche
+### Sprint 13: semantic capability completion
 
-### Sprint 13
+- [ ] Generic exact-pop semantic decision for all 16 GPRs.
+- [ ] Linux syscall `r10` argument-role decision.
+- [ ] Score/null policy freeze for every release-facing family.
+- [ ] Only measured bounded family additions with complete effects and fixtures.
+- [ ] Diagnostic restart for any changed task definition.
 
-- [ ] Publication-grade comparative benchmark campaign.
+### Sprint 14: optional profile ablations
+
+- [ ] Candidate-scoped decoder profile when a measured gap justifies it.
+- [ ] Target-level concurrency baseline.
+- [ ] Candidate-validation worker profile with deterministic output.
+- [ ] Region-worker experiment only after overlap and global-capacity rules are fixed.
+- [ ] Separate dependency, binary-size, CPU, RSS, wall-time, output-hash, and cleanup evidence.
+
+### Sprint 15: campaign freeze
+
+- [ ] Final corpus manifest, licenses, hashes, and regeneration.
+- [ ] Frozen schema/extractor, runner, baselines, commands, task definitions, and environment strata.
+- [ ] Coverage-definition reconciliation specification.
+- [ ] Campaign identifier and restart procedure.
+
+### Sprint 16: preview campaign
+
+- [ ] Frozen pilot across every condition.
+- [ ] Raw rows and generated preview summaries.
+- [ ] `v0.1.0-rc1` release rehearsal and checksummed artifacts.
+
+### Sprint 17: publication comparative campaign
+
+- [ ] Publication-grade repeated trials.
 - [ ] Coverage-definition reconciliation.
-- [ ] Raw result freeze and generated summaries.
+- [ ] Raw result, summary, table, and figure freeze.
 
-### Sprint 14
+### Sprint 18: mitigation-aware triage
 
-- [ ] Mitigation-aware binary triage model.
-- [ ] Fact, heuristic, and limitation separation.
-- [ ] Evidence-backed representative primitive selection.
+- [ ] Binary-level triage record separate from per-candidate score.
+- [ ] Fact, heuristic, evidence, confidence, and limitation separation.
+- [ ] Representative primitive selection and contradictory-evidence fixtures.
 
-### Sprint 15
+### Sprint 19: automation and schema stabilization
 
-- [ ] Schema and automation stabilization.
-- [ ] Optional CI policy modes with stable exit semantics.
+- [ ] Release-facing schema compatibility freeze.
+- [ ] Optional CI policy semantics and stable policy exit codes.
 - [ ] SARIF feasibility as a report adapter.
 
-### Sprint 16
+### Sprint 20: infrastructure case study
 
-- [ ] Public network-facing infrastructure case study.
-- [ ] Defined analyst tasks and utility criteria.
-- [ ] Reproducible case-study artifacts.
+- [ ] Public network-facing target set and predefined analyst tasks.
+- [ ] Reproducible case-study evidence and limitations.
 
-### Sprint 17
+### Sprint 21: replication and paper freeze
 
-- [ ] Replication package and paper freeze.
-- [ ] Claim-to-evidence matrix.
-- [ ] Clean-environment reproduction rehearsal.
+- [ ] Independent clean-environment rehearsal.
+- [ ] Claim-to-evidence matrix and generated paper figures/tables.
+- [ ] Release-candidate artifact validation.
 
-### Sprint 18
+### Sprint 22: first research release
 
 - [ ] `v0.1.0` release.
-- [ ] Checksummed source and binary artifacts.
+- [ ] Checksummed source, binary, corpus, benchmark, case-study, and reproduction artifacts.
 - [ ] Final paper and submission package.
-- [ ] Extended research retrospective.
+- [ ] Extended research retrospective and post-release backlog.
 
 ## Cross-cutting backlog
 
@@ -241,7 +267,7 @@ Patch 035 hardens section-label rendering and overlap handling, adds a focused s
 
 ## Sprint 8 Patch 036 backlog update
 
-Patch 036 resolves the immediate historical-review hardening items: byte-safe JSON for target paths and bounded section labels, file-offset plus virtual-address agreement for labels, Docker `.env` context exclusion, benchmark artifact sanity checks, JSON coverage-register validation, per-run temporary directories, and robust missing-tool install hints. Remaining industry-comparison work stays in Sprint 9 and Sprint 12/13: provenance schema `0.2.0`, decoder-gap measurement, high-resolution benchmarks, pinned baseline environments, and normalized coverage definitions.
+Patch 036 resolves the immediate historical-review hardening items: byte-safe JSON for target paths and bounded section labels, file-offset plus virtual-address agreement for labels, Docker `.env` context exclusion, benchmark artifact sanity checks, JSON coverage-register validation, per-run temporary directories, and robust missing-tool install hints. Remaining industry-comparison work stays in Sprint 9 and Sprints 11-17: provenance schema `0.2.0`, decoder-gap measurement, high-resolution benchmarks, pinned baseline environments, and normalized coverage definitions.
 
 ## Sprint 8 closeout update
 
@@ -418,6 +444,11 @@ priorities.
 Patch 052 corrects the Patch 051 effect and gate findings without expanding the
 primitive catalog. Full-width syscall descriptors, the zero-immediate return
 boundary, contracted text separators, canonical memory side-car reconciliation,
-numeric score-policy mutations, and strict-lint availability are permanent
+numeric score-policy mutation gates, and strict-lint availability are permanent
 validation surfaces. Patch 053 remains the architecture/capability reassessment;
 Patch 054 remains Sprint 10 closeout.
+
+
+## Sprint 10 Patch 053 roadmap reassessment update
+
+Patch 053 corrects the Patch 052 internal-harness symbol, applies the accepted documentation corrections, adds manifest-relative delivery checksum verification, and establishes the twenty-two-sprint benchmark-informed roadmap. Sprint 11 begins diagnostic measurement without freezing the publication corpus. Sprints 12 through 14 close loader, mitigation, semantic, and optional-profile decisions; Sprint 15 freezes the campaign. Patch 054 remains Sprint 10 closeout.

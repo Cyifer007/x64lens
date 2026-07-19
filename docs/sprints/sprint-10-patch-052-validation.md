@@ -15,6 +15,7 @@ Related documentation:
 - [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
 - [Scoring Model](../scoring-model.md)
 - [Output Contract](../contracts/output-contract.md)
+- [JSON Schema Guide](../json-schema.md)
 - [Sprint 10 Plan](sprint-10-plan.md)
 - [Validation Plan](../validation-plan.md)
 
@@ -122,10 +123,8 @@ MALFORMED_TIMEOUT=2 make validation-smoke
 
 ## Docker matrix
 
-Default Buildx metadata failures are classified separately from product
-behavior. A restricted environment may use a writable temporary Buildx
-configuration, but the complete container build, test, context, and aggregate
-paths must still pass.
+Container acceptance requires the complete build, test, context-hygiene,
+aggregate-validation, and native/container byte-parity paths to pass.
 
 ```bash
 make docker-available-check

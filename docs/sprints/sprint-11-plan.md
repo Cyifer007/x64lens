@@ -2,53 +2,42 @@
 
 ## Status
 
-Planned.
+Planned diagnostic measurement sprint.
 
 ## Sprint goal
 
-Create a reproducible corpus and manifest that can support fixed research experiments rather than host-dependent smoke checks.
-
-## Entry gate from Sprint 10 capability review
-
-Sprint 11 corpus membership must not freeze ambiguous analyzer facts. Before
-corpus generation begins, Patch 053 and any smallest required Patch 054 closeout
-correction must resolve or explicitly defer:
-
-- PIE executable versus shared-object interpretation for `ET_DYN`;
-- bounded GNU property evidence for CET/IBT/SHSTK;
-- overlapping executable `PT_LOAD` region/count semantics;
-- remaining score-policy questions after Patch 051 calibration;
-- capability-snapshot items classified as pre-release requirements.
-
-The result must identify which expected corpus facts are machine-checkable and which remain explicit unknowns or limitations.
+Build the high-resolution benchmark runner and a provisional reproducible corpus
+so measurements can guide capability work without freezing the publication
+campaign prematurely.
 
 ## Planned deliverables
 
-- [ ] Build controlled binaries across GCC and Clang when available.
-- [ ] Include selected optimization levels and linkage modes.
-- [ ] Include PIE, stack-protector, RELRO, executable-stack, and static/dynamic variants.
-- [ ] Include CET/IBT build variants when the host toolchain supports them.
-- [ ] Record source hash, compiler version, exact command, output hash, file size, and expected mitigation facts.
-- [ ] Add a manifest validator.
-- [ ] Add corpus regeneration commands that do not depend on private inputs.
-- [ ] Define fixed Tier 1 through Tier 4 corpus membership for the preview campaign.
-- [ ] Record license and redistribution status for larger open-source targets.
+- [ ] Standard-library runner using monotonic nanosecond timing and per-child resource usage.
+- [ ] Wall, user, system, max RSS, output bytes, exit status, tool hash, and target hash per row.
+- [ ] Provisional GCC/Clang corpus across selected optimization, linkage, and hardening combinations.
+- [ ] Exact build commands, source hashes, output hashes, licenses, and environment metadata.
+- [ ] Timer-floor measurement and batching/larger-target policy.
+- [ ] Separate core scanner, gadget JSON, and integrated `analyze` conditions.
+- [ ] Baseline task-definition matrix for ROPgadget, Ropper, and ropr.
+- [ ] Diagnostic campaign with development run counts and a capability/performance gap register.
+- [ ] Explicit separation of diagnostic rows from future frozen campaign rows.
 
 ## Acceptance criteria
 
-- [ ] Controlled corpus outputs can be regenerated from public source and commands.
-- [ ] Every benchmark target has a SHA-256 hash.
-- [ ] Expected mitigation states are machine-checkable.
-- [ ] Corpus membership is versioned and reviewable.
-- [ ] Benchmark scripts consume the manifest without manual target edits.
-- [ ] Private or proprietary binaries are not required for core reproduction.
+- [ ] Every row is reproducible and bound to immutable tool and target bytes.
+- [ ] Failed runs are retained rather than dropped.
+- [ ] Timing below the reliable floor is batched or labeled accordingly.
+- [ ] Tool scope and output work are stated for every comparison.
+- [ ] No diagnostic result is presented as publication-grade superiority evidence.
+- [ ] The gap register identifies concrete Sprint 12-14 decisions.
 
 ## Out of scope
 
-- Final repeated benchmark campaign.
-- Network infrastructure case-study conclusions.
-- Multi-architecture corpus support.
+- Final corpus freeze.
+- Publication repeated trials.
+- Final score or coverage claims.
 
 ## Handoff
 
-Sprint 12 freezes a preview corpus and adds higher-resolution benchmark infrastructure before the `v0.1.0-rc1` gate.
+Sprint 12 uses diagnostic evidence to prioritize loader and mitigation precision
+without changing the reference scanner definition.

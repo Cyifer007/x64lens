@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corrective candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 049 establish ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded structured memory-effect foundations. Patch 050 completes coarse current-family effects and fixture-gate hardening. Patch 051 adds candidate-index architectural effects, one-per-pattern coverage, centralized fixture orchestration, contract reconciliation, and selective scores. The repository now provides:
+Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 053 architecture and capability reassessment candidate. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Patches 046 through 052 establish and harden ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded structured memory effects, coarse and architectural effects, fixture contracts, selective scores, and fail-closed reconciliation. Patch 053 corrects the remaining Patch 052 harness/planning defects and separates diagnostic benchmarking from the frozen confirmatory campaign. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -20,7 +20,7 @@ Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corr
 - benchmark-integrity and Docker-context hygiene gates,
 - a repeatable checkpoint demonstration.
 
-The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 through 051 are later pre-release work, not a research release or evidence of universal performance or coverage superiority. Patch 052 resolves Patch 051 findings, Patch 053 performs the pre-corpus architecture/capability reassessment, and Patch 054 closes Sprint 10.
+The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint. Patches 046 through 053 are later pre-release work, not a research release or evidence of universal performance or coverage superiority. Patch 054 closes Sprint 10 after Patch 053 local acceptance.
 
 ## Sprint 7 evidence checkpoint
 
@@ -64,7 +64,7 @@ Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Pat
 
 Use a fixed corpus, baseline versions, high-resolution timing, per-child resource measurements, raw result preservation, and generated summaries.
 
-Status: smoke plumbing exists. Corpus and high-resolution infrastructure are planned for Sprints 11 and 12, with the comparative campaign in Sprint 13.
+Status: smoke plumbing exists. Sprint 11 builds the high-resolution diagnostic runner and provisional corpus. Sprints 12 through 14 use diagnostic evidence for capability hardening. Sprint 15 freezes the campaign, Sprint 16 runs the preview pilot, and Sprint 17 runs publication-grade repeated trials.
 
 ### Stage 6: operational case study
 
@@ -128,7 +128,7 @@ Potential future research includes:
 
 These are post-release research decisions, not hidden requirements for the current roadmap.
 
-See [`roadmap-18-sprints.md`](roadmap-18-sprints.md) and [`research-release-plan.md`](research-release-plan.md).
+See [`roadmap-22-sprints.md`](roadmap-22-sprints.md), [`design/benchmark-and-capability-stage-gates.md`](design/benchmark-and-capability-stage-gates.md), and [`research-release-plan.md`](research-release-plan.md).
 
 ## Patch 026 behavior oracle
 
@@ -223,7 +223,7 @@ from this campaign remain smoke evidence and cannot support superiority claims.
 Patch 044 preserves the dependency-free scanner as the product baseline and
 records a bounded hybrid research path. Candidate-scoped decoding can validate
 possible starts inside retained windows; deterministic candidate-validation or
-region/chunk profiles may later improve throughput. Sprint 12/13 must measure
+region/chunk profiles may later improve throughput. Sprints 11 and 14 must measure
 these against one-worker core analysis before integration or performance
 claims. Patch 045 subsequently completed the Sprint 9 closeout and release-readiness review.
 
@@ -271,7 +271,7 @@ This increases represented primitive breadth while retaining the dependency-free
 
 Patch 049 adds semantic-exact memory facts for six controlled qword base-plus-zero examples while preserving conservative fallback for SIB, displacement, `rsp`, and 32-bit forms. This improves the representational foundation for later corpus and coverage work, but it does not establish general memory-gadget coverage, decoded validity, lower RSS, or faster execution.
 
-The fixed arena grows by 64 KiB while candidate capacity remains unchanged. Sprint 12/13 measurement must determine any runtime or RSS effect under the frozen methodology.
+The fixed arena grows by 64 KiB while candidate capacity remains unchanged. Sprint 11 diagnostic measurement may characterize the effect, but Sprint 16/17 frozen measurement is required for release claims.
 
 
 ## Patch 050 research posture
@@ -283,7 +283,7 @@ At the Patch 050 boundary, the new Sprint 10 families remained unscored. Patch
 aligned stack adjustment to 35; transfer and memory remain unscored. Patch 053
 owns the broader capability reassessment, including PIE-versus-DSO reporting,
 CET/IBT/SHSTK property evidence, overlapping executable-segment count semantics,
-and remaining score-policy questions before Sprint 11 freezes a corpus.
+and remaining score-policy questions before Sprint 15 freezes the campaign corpus.
 
 
 ## Sprint 10 Patch 052 corrective update
@@ -291,6 +291,13 @@ and remaining score-policy questions before Sprint 11 freezes a corpus.
 Patch 052 corrects the Patch 051 effect and gate findings without expanding the
 primitive catalog. Full-width syscall descriptors, the zero-immediate return
 boundary, contracted text separators, canonical memory side-car reconciliation,
-numeric score-policy mutations, and strict-lint availability are permanent
+numeric score-policy mutation gates, and strict-lint availability are permanent
 validation surfaces. Patch 053 remains the architecture/capability reassessment;
 Patch 054 remains Sprint 10 closeout.
+
+
+## Sprint 10 Patch 053 benchmark-informed roadmap update
+
+Patch 053 adopts a twenty-two-sprint roadmap. Sprint 11 begins diagnostic measurement early enough to falsify performance assumptions and identify capability gaps. Those provisional results may redirect Sprints 12 through 14 and are never merged into the frozen campaign. Sprint 15 freezes the corpus, schema/extractor, runner, baselines, commands, task definitions, and environment strata; Sprint 16 owns the preview pilot and Sprint 17 owns publication-grade comparison. Sprints 18 through 22 complete triage, automation, case study, replication, and release.
+
+The release does not require full decoding, JOP/COP/SROP, chain generation, symbolic execution, other architectures, or other file formats. It does require honest task definitions, measurable residual gaps, loader/mitigation precision, reproducible experiments, and bounded claims.

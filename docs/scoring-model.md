@@ -189,3 +189,15 @@ both reconciliation gates.
 The scoring engine also compares full-width architectural descriptors through a
 register, preventing immediate-width truncation from allowing an invalid record
 to retain a score. Register-transfer and memory families remain unscored.
+
+## Sprint 10 Patch 053 score-freeze decision
+
+Patch 053 adds no score. Sprint 11 diagnostic measurements may expose where score
+or family definitions need revision, but they are not score-calibration evidence
+by themselves. Sprint 13 owns the release-facing score/null policy decision, and
+Sprint 15 freezes that policy with the confirmatory campaign.
+
+A score change after the Sprint 15 freeze requires a new campaign identifier or
+complete rerun of every affected condition. Register-transfer and memory-family
+scores remain `null` until their required controllability and uncertainty facts
+exist.

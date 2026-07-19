@@ -8,7 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 10 Patch 052 internal memory-sidecar reconciliation, numeric score-policy mutation, strict ShellCheck availability, and zero-immediate return regressions.
+- Sprint 10 Patch 053 benchmark-informed diagnostic, capability-hardening, campaign-freeze, preview, publication, operational, and release stage gates.
+- A canonical twenty-two-sprint roadmap, Sprint 19 through Sprint 22 plans, machine-readable research-stage authority, and manifest-relative checksum verification.
+- ADR 0039, the benchmark/capability stage-gate design, and the Patch 053 validation record.
+
+- Sprint 10 Patch 052 internal memory-sidecar reconciliation, numeric score-policy mutation gates, strict ShellCheck availability, and zero-immediate return regressions.
 - ADR 0038 and the Patch 052 validation record.
 
 - Sprint 10 Patch 051 candidate-index architectural-effect side-car, one-per-pattern fixture, exact-pattern catalog, centralized fixture suite, fail-fast gate, and three-contract reconciliation.
@@ -138,6 +142,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- Separate diagnostic benchmark evidence from the frozen preview and publication campaigns; Sprint 11 measures early, Sprint 15 freezes the campaign, and Sprints 16-17 run confirmatory work.
+- Expand the canonical roadmap from eighteen to twenty-two sprints so loader/mitigation precision, semantic completion, and optional decoder/concurrency ablations occur before campaign freeze.
+- Keep the dependency-free decoder-free one-worker analyzer as the reference profile while treating broader families and acceleration as measured conditional profiles.
+
 - Advance Sprint 10 through the Patch 052 corrective candidate while preserving the 112-byte raw record, 24-byte architectural-effect side-car, 4,096-candidate capacity, 819,200-byte fixed arena, dependency-free runtime, tool version `0.1.0-dev`, and schema `0.2.0`.
 - Treat NASM number-overflow warnings as build failures and make strict ShellCheck mode reject a missing executable.
 
@@ -252,6 +260,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Correct the Patch 052 memory-effect reconciliation harness to use `GADGET_SUMMARY_RECORD_SIZE` at both allocation sites.
+- Make delivery checksum verification resolve sibling-relative entries from the manifest directory rather than the caller current directory.
+- Correct Patch 052 chronology, schema-optionality, fixture-count, navigation, public-boundary, and unsupported-performance wording.
 
 - Preserve the full 64-bit syscall architectural-effect descriptor during stores and scoring comparisons.
 - Accept valid `ret imm16 0` candidates with total stack delta 8.

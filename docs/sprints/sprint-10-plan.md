@@ -2,7 +2,7 @@
 
 ## Status
 
-Active through Patch 051. Patches 046 through 049 established ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, and bounded qword base-plus-zero memory families. Patch 050 is the committed first-pass foundation for completed coarse current-family effects and fixture-gate hardening. Patch 051 reconciles that foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and selective score calibration.
+Active through the Patch 053 architecture and capability reassessment candidate. Patches 046 through 052 established and hardened ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded qword base-plus-zero memory families, current-family effects, architectural effects, score policy, and fail-closed validation. Patch 053 corrects the remaining Patch 052 harness and planning defects, separates diagnostic measurement from the frozen campaign, and expands the canonical roadmap to twenty-two sprints. Patch 054 remains the Sprint 10 closeout.
 
 Related documentation:
 
@@ -12,13 +12,18 @@ Related documentation:
 - [ADR 0035](../adr/0035-bounded-memory-effect-sidecar-and-authenticated-public-overlay.md)
 - [ADR 0036](../adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md)
 - [ADR 0037](../adr/0037-architectural-effects-and-contract-reconciliation.md)
+- [ADR 0038](../adr/0038-patch051-corrective-effect-and-gate-hardening.md)
+- [ADR 0039](../adr/0039-benchmark-informed-capability-roadmap.md)
+- [Benchmark and Capability Stage Gates](../design/benchmark-and-capability-stage-gates.md)
 - [Primitive Effect Model](../design/primitive-effect-model.md)
 - [Family Coverage Table](../design/sprint10-family-coverage.md)
 - [Exact-Pattern Catalog](../design/sprint10-exact-pattern-catalog.md)
 - [Scoring Model](../scoring-model.md)
 - [Output Contract](../contracts/output-contract.md)
 - [Patch 051 Validation Plan](sprint-10-patch-051-validation.md)
-- [Canonical Roadmap](../roadmap-18-sprints.md)
+- [Patch 052 Validation Plan](sprint-10-patch-052-validation.md)
+- [Patch 053 Validation Plan](sprint-10-patch-053-validation.md)
+- [Canonical Roadmap](../roadmap-22-sprints.md)
 
 ## Sprint goal
 
@@ -59,8 +64,8 @@ validity, side effects, score meaning, or the defensive deployment profile.
    explicit score deferral.
 6. **Patch 051:** reconcile the committed Patch 050 foundation through one architectural-effect, score, exact-pattern, semantic-family, and fixture-suite contract.
 7. **Patch 052:** resolve Patch 051 findings.
-8. **Patch 053:** architecture and capability reassessment before corpus freeze, including PIE-versus-DSO semantics, CET/IBT/SHSTK evidence, overlapping executable-segment count semantics, and pre-release capability priorities.
-9. **Patch 054:** Sprint 10 closeout or the smallest correction proved necessary by Patch 053.
+8. **Patch 053:** correct the Patch 052 harness/planning findings and establish the benchmark-informed capability roadmap, diagnostic/frozen evidence split, release gates, and twenty-two-sprint sequence.
+9. **Patch 054:** Sprint 10 closeout or the smallest correction proved necessary by Patch 053 validation.
 
 This sequence prevents the capability audit from being hidden inside a nominal
 closeout patch and prevents Sprint 11 corpus work from freezing ambiguous facts.
@@ -105,8 +110,7 @@ performance results.
 
 Sprint 10 does not make a decoder mandatory and does not add a parallel default.
 A future decoder should validate retained candidate starts and write additive
-side-car evidence. Target-level concurrency and candidate-validation workers
-remain measured profiles for Sprints 12 and 13. No acceleration profile may
+side-car evidence. Target-level concurrency and candidate-validation workers remain optional measured profiles for Sprint 14 after Sprint 11 diagnostic evidence and Sprint 12-13 capability hardening. No acceleration profile may
 change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Out of scope
@@ -121,7 +125,7 @@ change candidate order, capacity semantics, evidence layers, or score facts.
 
 ## Handoff
 
-Patch 052 corrects the Patch 051 effect encoding, ret-imm16 lower boundary, text separator, memory-sidecar reconciliation, score-policy gate, and strict-lint availability findings. Patch 053 then reassesses architecture and pre-release capability priorities before Sprint 11 freezes a compiler/hardening corpus. Sprint 11 must not encode ambiguous PIE/DSO, CET property, or executable-segment semantics into a frozen manifest.
+Patch 052 corrects the Patch 051 effect encoding, ret-imm16 lower boundary, text separator, memory-sidecar reconciliation, score-policy gate, and strict-lint availability findings. Patch 053 corrects the remaining internal-harness and planning defects and records the expanded roadmap. Sprint 11 begins diagnostic measurement with a provisional corpus; Sprint 15—not Sprint 11—freezes the release campaign after loader, mitigation, semantic, decoder, and concurrency decisions are complete.
 
 ## Patch 046 boundary
 
@@ -182,6 +186,11 @@ closes Sprint 10.
 Patch 052 adds no primitive family. It corrects full-width syscall effect
 encoding, accepts the valid zero-immediate return boundary, restores contracted
 text separators, requires exact memory side-car reconciliation, and promotes
-score and strict-lint availability into permanent negative gates. Patch 053
-performs the planned architecture/capability reassessment; Patch 054 closes the
-sprint.
+score and strict-lint availability into permanent negative gates. Patch 053 performs the planned architecture/capability reassessment and benchmark sequencing decision; Patch 054 closes the sprint.
+
+
+## Patch 053 boundary
+
+Patch 053 adds no primitive, record, schema, capacity, decoder, or worker change. It corrects the Patch 052 memory-harness size symbol, applies the accepted public documentation corrections, adds manifest-relative checksum verification, introduces machine-readable research stage gates, and replaces the canonical eighteen-sprint plan with a twenty-two-sprint roadmap.
+
+The research decision is to measure early but freeze late: Sprint 11 diagnostic evidence may redirect development; Sprints 12 through 14 close capability questions; Sprint 15 freezes the confirmatory campaign; Sprint 16 runs the preview pilot; Sprint 17 runs publication-grade comparisons.

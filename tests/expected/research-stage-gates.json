@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "canonical_roadmap": "docs/roadmap-22-sprints.md",
+  "diagnostic_sprint": 11,
+  "campaign_freeze_sprint": 15,
+  "preview_sprint": 16,
+  "publication_campaign_sprint": 17,
+  "release_sprint": 22,
+  "stages": [
+    {
+      "id": "diagnostic_foundation",
+      "start_sprint": 11,
+      "end_sprint": 11,
+      "evidence_class": "development",
+      "frozen": false
+    },
+    {
+      "id": "capability_hardening",
+      "start_sprint": 12,
+      "end_sprint": 14,
+      "evidence_class": "development",
+      "frozen": false
+    },
+    {
+      "id": "campaign_freeze",
+      "start_sprint": 15,
+      "end_sprint": 15,
+      "evidence_class": "campaign_authority",
+      "frozen": true
+    },
+    {
+      "id": "preview",
+      "start_sprint": 16,
+      "end_sprint": 16,
+      "evidence_class": "preview",
+      "frozen": true
+    },
+    {
+      "id": "comparative_campaign",
+      "start_sprint": 17,
+      "end_sprint": 17,
+      "evidence_class": "publication",
+      "frozen": true
+    },
+    {
+      "id": "defensive_value",
+      "start_sprint": 18,
+      "end_sprint": 20,
+      "evidence_class": "operational",
+      "frozen": true
+    },
+    {
+      "id": "replication_release",
+      "start_sprint": 21,
+      "end_sprint": 22,
+      "evidence_class": "release",
+      "frozen": true
+    }
+  ],
+  "capability_gates": [
+    {
+      "id": "benchmark_task_definitions",
+      "owner_sprint": 11,
+      "required_before": "campaign_freeze",
+      "status": "planned"
+    },
+    {
+      "id": "executable_overlap_policy",
+      "owner_sprint": 12,
+      "required_before": "campaign_freeze",
+      "status": "planned"
+    },
+    {
+      "id": "program_header_validity",
+      "owner_sprint": 12,
+      "required_before": "campaign_freeze",
+      "status": "planned"
+    },
+    {
+      "id": "pie_shared_object_distinction",
+      "owner_sprint": 12,
+      "required_before": "preview",
+      "status": "planned"
+    },
+    {
+      "id": "cet_ibt_shstk_properties",
+      "owner_sprint": 12,
+      "required_before": "preview",
+      "status": "planned"
+    },
+    {
+      "id": "elf_extended_numbering",
+      "owner_sprint": 12,
+      "required_before": "preview",
+      "status": "planned"
+    },
+    {
+      "id": "generic_pop_and_syscall_roles",
+      "owner_sprint": 13,
+      "required_before": "campaign_freeze",
+      "status": "planned"
+    },
+    {
+      "id": "score_policy_freeze",
+      "owner_sprint": 13,
+      "required_before": "campaign_freeze",
+      "status": "planned"
+    },
+    {
+      "id": "immutable_report_target_binding",
+      "owner_sprint": 15,
+      "required_before": "preview",
+      "status": "planned"
+    }
+  ],
+  "conditional_profiles": [
+    {
+      "id": "candidate_scoped_decoder",
+      "decision_sprint": 14,
+      "default": false,
+      "preserves_reference_profile": true
+    },
+    {
+      "id": "deterministic_concurrency",
+      "decision_sprint": 14,
+      "default": false,
+      "preserves_reference_profile": true
+    },
+    {
+      "id": "measured_broader_rop_families",
+      "decision_sprint": 13,
+      "default": false,
+      "preserves_reference_profile": true
+    }
+  ]
+}

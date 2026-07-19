@@ -2,7 +2,9 @@
 
 ## Status
 
-Historical validation record. Patch 049 implementation passed native and qualified Docker validation; delivery authentication and fixture-oracle corrections continue in Patch 050.
+Historical validation record. Patch 049 implementation passed native and
+qualified Docker validation; Patch 050 later corrected delivery-authentication
+and fixture-oracle findings.
 
 ## Source base
 

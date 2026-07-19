@@ -131,5 +131,6 @@ Patch 051 native and qualified Docker validation exposed four corrective
 defects: truncated syscall flag descriptors, rejection of `ret imm16 0`, the
 wrong text effect separator, and permissive memory side-car reconciliation. It
 also showed that numeric score values were not cross-checked by both maintained
-contract gates. Patch 052 owns those corrections and the corresponding
+contract gates and that strict ShellCheck mode did not independently reject a
+missing executable. Patch 052 owns those corrections and the corresponding
 regressions.

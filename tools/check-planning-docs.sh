@@ -2,7 +2,7 @@
 # Validate the structural planning contract for the post-checkpoint roadmap.
 # This check confirms that canonical roadmap, release, design, ADR, and sprint
 # files exist and that superseded planning language is not active in Sprint 7
-# through Sprint 18 plans. It does not replace editorial or technical review.
+# through Sprint 22 plans. It does not replace editorial or technical review.
 
 set -euo pipefail
 
@@ -13,6 +13,7 @@ fail() {
 
 required=(
     README.md
+    docs/roadmap-22-sprints.md
     docs/roadmap-18-sprints.md
     docs/roadmap-12-sprints.md
     docs/research-release-plan.md
@@ -49,6 +50,8 @@ required=(
     docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md
     docs/adr/0037-architectural-effects-and-contract-reconciliation.md
     docs/adr/0038-patch051-corrective-effect-and-gate-hardening.md
+    docs/adr/0039-benchmark-informed-capability-roadmap.md
+    docs/design/benchmark-and-capability-stage-gates.md
     docs/design/sprint10-exact-pattern-catalog.md
     docs/design/candidate-scoped-decoder-and-parallelism.md
     docs/design/primitive-effect-model.md
@@ -84,6 +87,7 @@ required=(
     docs/sprints/sprint-10-patch-050-validation.md
     docs/sprints/sprint-10-patch-051-validation.md
     docs/sprints/sprint-10-patch-052-validation.md
+    docs/sprints/sprint-10-patch-053-validation.md
     docs/sprints/sprint-07-retro.md
     docs/sprints/sprint-08-retro.md
     docs/sprints/sprint-09-retro.md
@@ -108,6 +112,9 @@ required=(
     tools/sprint10-family-coverage-smoke.py
     tools/sprint10-score-policy-smoke.py
     tools/shellcheck-contract-smoke.py
+    tools/research-stage-gates-smoke.py
+    tools/verify-checksum-manifest.py
+    tools/checksum-manifest-path-smoke.py
     tests/internal/memory-effect-reconciliation.asm
     tools/validate-sprint10-transfer-disassembly.py
     tools/validate-sprint10-stack-adjust-disassembly.py
@@ -126,6 +133,7 @@ required=(
     tests/expected/x64lens-report-sprint10-stack-adjust-0.2.0.json
     tests/expected/x64lens-report-sprint10-memory-0.2.0.json
     tests/expected/sprint10-family-coverage.json
+    tests/expected/research-stage-gates.json
     tests/expected/decoder-gap-controlled.json
     tests/toy-src/gadgets_sprint10.S
     tests/toy-src/gadgets_sprint10_transfer.S
@@ -138,14 +146,14 @@ for path in "${required[@]}"; do
 done
 
 plan_count=0
-for sprint in $(seq -w 1 18); do
+for sprint in $(seq -w 1 22); do
     path="docs/sprints/sprint-${sprint}-plan.md"
     [[ -f "$path" ]] || fail "missing sprint plan: $path"
     plan_count=$((plan_count + 1))
 done
 
 forward_count=0
-for sprint in $(seq -w 9 18); do
+for sprint in $(seq -w 9 22); do
     path="docs/sprints/sprint-${sprint}-plan.md"
     grep -q '^## Status$' "$path" || fail "missing Status section: $path"
     grep -q '^## Sprint goal$' "$path" || fail "missing Sprint goal section: $path"
@@ -155,10 +163,12 @@ for sprint in $(seq -w 9 18); do
     forward_count=$((forward_count + 1))
 done
 
-grep -q 'docs/roadmap-18-sprints.md' README.md \
-    || fail 'README does not reference the canonical eighteen-sprint roadmap'
-grep -q 'canonical roadmap' docs/roadmap-18-sprints.md \
-    || fail 'canonical roadmap declaration is missing'
+grep -q 'docs/roadmap-22-sprints.md' README.md \
+    || fail 'README does not reference the canonical twenty-two-sprint roadmap'
+grep -q 'canonical x64lens implementation and research roadmap' docs/roadmap-22-sprints.md \
+    || fail 'canonical twenty-two-sprint roadmap declaration is missing'
+grep -qi 'superseded' docs/roadmap-18-sprints.md \
+    || fail 'eighteen-sprint compatibility document is not marked superseded'
 grep -qi 'superseded' docs/roadmap-12-sprints.md \
     || fail 'twelve-sprint compatibility document is not marked superseded'
 grep -q 'v0.1.0-rc1' docs/research-release-plan.md \
@@ -191,6 +201,14 @@ grep -q 'Patch 050' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 050 effect-completion boundary'
 grep -q 'Patch 052' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 052 corrective boundary'
+grep -q 'Patch 053' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not record the Patch 053 reassessment boundary'
+grep -q 'Patch 054' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not preserve the Patch 054 closeout boundary'
+grep -q 'ADR 0039' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not link the benchmark-informed roadmap decision'
+grep -q 'sprint-10-patch-053-validation.md' docs/sprints/sprint-10-plan.md \
+    || fail 'Sprint 10 plan does not link Patch 053 validation'
 grep -q 'memory-effect-reconciliation-smoke' docs/sprints/sprint-10-patch-052-validation.md \
     || fail 'Patch 052 validation does not name the memory reconciliation gate'
 grep -qi 'fail-fast' docs/adr/0036-sprint10-effect-completion-and-fixture-gate-hardening.md \
@@ -264,6 +282,16 @@ grep -q '%define X64LENS_SCHEMA       "0.2.0"' include/constants.inc \
     || fail 'compiled schema version is not 0.2.0'
 grep -q '^SCHEMA       := 0.2.0$' Makefile \
     || fail 'Makefile schema variable is not 0.2.0'
+grep -q '^research-stage-gates-smoke:' Makefile \
+    || fail 'Makefile does not define research-stage-gates-smoke'
+grep -q '^checksum-manifest-path-smoke:' Makefile \
+    || fail 'Makefile does not define checksum-manifest-path-smoke'
+grep -q 'Research preview candidate | Sprint 16' docs/roadmap-22-sprints.md \
+    || fail 'preview milestone is not assigned to Sprint 16'
+grep -q 'First research release | Sprint 22' docs/roadmap-22-sprints.md \
+    || fail 'release milestone is not assigned to Sprint 22'
+grep -q 'Diagnostic measurement checkpoint | Sprint 11' docs/roadmap-22-sprints.md \
+    || fail 'diagnostic measurement milestone is missing'
 grep -q 'make malformed-smoke' docs/sprints/sprint-07-plan.md \
     || fail 'Sprint 7 plan does not name the malformed-input gate'
 grep -q 'make mitigation-matrix-smoke' docs/sprints/sprint-07-plan.md \
@@ -354,7 +382,7 @@ grep -q '^json-effect-consistency-smoke:' Makefile \
 grep -q '^sprint-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint-closeout-smoke'
 validation_line="$(grep '^validation-smoke:' Makefile || true)"
-for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke research-stage-gates-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
     [[ "$validation_line" == *"$target"* ]] \
         || fail "validation-smoke does not include required target: $target"
 done

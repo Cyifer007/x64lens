@@ -2,13 +2,13 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 052 corrective candidate. Patches 046 through 049 establish ordered multi-pop, register-transfer, stack-adjust, and bounded qword memory families. Patch 050 is the committed first-pass foundation for completed coarse family effects and fixture-gate hardening. Patch 051 reconciles that foundation with a candidate-index architectural-effect side-car, one-per-pattern coverage, centralized fail-fast fixture orchestration, and two evidence-backed score entries. Patch 052 corrects the effect-encoding, minimum return-delta, text-format, memory-reconciliation, score-policy, and strict-lint findings without adding a runtime dependency.
+> Status: Sprints 1 through 9 are complete. Sprint 10 is active through the Patch 053 architecture and capability reassessment candidate. Patches 046 through 052 establish and harden ordered multi-pop, register-transfer, stack-adjust, bounded qword memory, coarse side-effect, architectural-effect, scoring, and validation contracts. Patch 053 corrects the remaining Patch 052 harness and planning defects, begins diagnostic benchmark design before feature freeze, expands the canonical roadmap to twenty-two sprints, and reserves Patch 054 for Sprint 10 closeout.
 >
 > Tool version: `0.1.0-dev`
 >
 > JSON schema version: `0.2.0`
 >
-> Canonical roadmap: [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md)
+> Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md)
 
 ## Why this project exists
 
@@ -82,7 +82,7 @@ The current line does not implement exploit generation, payload generation, remo
 - Per-candidate `evidence` identifies raw, exact-suffix, and semantic-exact provenance; `full_sequence_valid` remains `null` until decoder evidence exists.
 - A future **decoder-validated candidate** is one whose selected start decodes as a complete instruction sequence ending at the terminator; that evidence does not erase its raw or exact-suffix facts.
 - A future **semantic-decoded candidate** is classified from decoded instruction and operand facts and remains distinct from a semantic-exact candidate.
-- Current JSON reports distinguish exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, coarse `side_effects`, optional `register_transfer`, optional structured `memory_access`, and optional `architectural_effects`. The architectural side-car records represented GPR reads/writes, condition flags, return/syscall control flow, stack-source facts, and whether the exact-suffix model is complete. Ordered multi-pop candidates score 95 and positive aligned stack adjustments score 35 only after their semantic and architectural facts validate. Register-transfer and memory candidates remain unscored because source-value and address/content controllability are not represented. These remain semantic-exact facts; `full_sequence_valid` stays `null`.
+- Current JSON reports include exact `stack_pop_order`, unordered semantic `controls`, explicit `clobbers`, coarse `side_effects`, `register_transfer`, structured `memory_access`, and `architectural_effects`. The formal schema keeps these additive fields optional for compatibility with retained earlier `0.2.0` reports; current-producer validation requires their presence and cross-field consistency, using `null` for inapplicable transfer or memory relations. The architectural side-car records represented GPR reads/writes, condition flags, return/syscall control flow, stack-source facts, and whether the exact-suffix model is complete. Ordered multi-pop candidates score 95 and positive aligned stack adjustments score 35 only after their semantic and architectural facts validate. Register-transfer and memory candidates remain unscored because source-value and address/content controllability are not represented. These remain semantic-exact facts; `full_sequence_valid` stays `null`.
 - Analysis completeness is independent from decoder validity. `complete: true` means every loader-derived executable region was scanned within the current candidate capacity, not that every candidate is a decoder-validated instruction sequence.
 - A mitigation result is a static indicator, not a final security verdict. The canary field is an indicator, not proof that every function is stack-protected. The stripped field and section labels are section-table metadata indicators, not runtime loader authority. Text section labels are escaped for single-line report stability, JSON labels are byte-safe escaped, and ambiguous or contradictory executable section metadata is left unlabeled.
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
@@ -130,6 +130,8 @@ make sprint10-fixture-gate-smoke
 make sprint10-contract-reconciliation-smoke
 make json-effect-consistency-smoke
 make public-overlay-verification-smoke
+make research-stage-gates-smoke
+make checksum-manifest-path-smoke
 make decoder-gap-hardening-smoke
 make decoder-gap-smoke
 ```
@@ -276,7 +278,7 @@ RUNS=1 MAX_DEPTH=4 make bench-baselines-smoke
 make bench-summary-latest
 ```
 
-These results verify measurement plumbing. They are not publication results. Patch 036 rejects non-positive run counts, invalid max-depth values, nonnumeric or negative timing/RSS fields, and mixed benchmark summaries by default. Small x64lens runs can still fall below GNU `time` display resolution. Sprint 12 replaces this with a higher-resolution runner before the research preview candidate.
+These results verify measurement plumbing. They are not publication results. Patch 036 rejects non-positive run counts, invalid max-depth values, nonnumeric or negative timing/RSS fields, and mixed benchmark summaries by default. Small x64lens runs can still fall below GNU `time` display resolution. Sprint 11 introduces a high-resolution diagnostic runner and provisional corpus. Sprint 15 freezes the final method, Sprint 16 runs the preview pilot, and Sprint 17 owns the publication-grade campaign.
 
 See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
 
@@ -302,25 +304,31 @@ See [`docs/design/primitive-effect-model.md`](docs/design/primitive-effect-model
 
 The current Sprint 10 authority chain continues through
 [ADR 0037](docs/adr/0037-architectural-effects-and-contract-reconciliation.md),
+[ADR 0038](docs/adr/0038-patch051-corrective-effect-and-gate-hardening.md),
 the [family coverage table](docs/design/sprint10-family-coverage.md), the
 [exact-pattern catalog](docs/design/sprint10-exact-pattern-catalog.md), the
 [scoring model](docs/scoring-model.md), the
 [output contract](docs/contracts/output-contract.md), and the
-[Patch 052 validation record](docs/sprints/sprint-10-patch-052-validation.md).
+[Patch 052 validation record](docs/sprints/sprint-10-patch-052-validation.md),
+[ADR 0039](docs/adr/0039-benchmark-informed-capability-roadmap.md), and the
+[Patch 053 validation record](docs/sprints/sprint-10-patch-053-validation.md).
 
 ## Roadmap and release gates
 
-The canonical eighteen-sprint roadmap defines:
+The canonical twenty-two-sprint roadmap defines:
 
 - Sprint 7 hostile-input hardening,
 - Sprint 8 mitigation and metadata depth,
 - Sprint 9 report identity, completeness, evidence provenance, and decoder-gap measurement,
-- Sprint 10 evidence-aware primitive expansion, active through Patch 052 with ordered two-pop, exact register-transfer, exact positive aligned stack-adjust, bounded base-plus-zero qword memory effects, coarse and architectural effects, one-per-pattern coverage, fail-fast fixture orchestration, and selective score calibration,
-- Sprint 11 reproducible corpus,
-- Sprint 12 high-resolution benchmark infrastructure and `v0.1.0-rc1`,
-- Sprints 13 through 18 comparative experiments, triage modeling, automation stabilization, infrastructure case study, replication freeze, and `v0.1.0`.
+- Sprint 10 evidence-aware primitive expansion and contract closure through Patch 054,
+- Sprint 11 diagnostic benchmark infrastructure and a provisional reproducible corpus,
+- Sprints 12 through 14 loader/mitigation precision, semantic capability completion, and optional decoder/concurrency ablations,
+- Sprint 15 corpus, schema, baseline, command, task-definition, and methodology freeze,
+- Sprint 16 frozen preview pilot and `v0.1.0-rc1`,
+- Sprint 17 publication-grade comparative campaign,
+- Sprints 18 through 22 defensive triage, automation, infrastructure case study, replication freeze, and `v0.1.0`.
 
-See [`docs/roadmap-18-sprints.md`](docs/roadmap-18-sprints.md) and [`docs/research-release-plan.md`](docs/research-release-plan.md).
+See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/benchmark-and-capability-stage-gates.md`](docs/design/benchmark-and-capability-stage-gates.md), and [`docs/research-release-plan.md`](docs/research-release-plan.md).
 
 ## Versioning
 
@@ -335,7 +343,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add optional ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory facts without redefining historical counts. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Decoder-backed facts remain optional additive evidence rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

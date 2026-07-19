@@ -37,7 +37,9 @@ make test
 
 ## Why Docker/devcontainer second
 
-Docker is the reproducibility layer, not the only development layer. It lets the project define exactly what dependencies are needed and gives reviewers a fast way to build the project without manually configuring a system.
+Docker is the reproducibility layer, not the only development layer. It lets
+the project define exactly what dependencies are needed and gives reviewers a
+repeatable build path without manually configuring a system.
 
 Recommended commands:
 

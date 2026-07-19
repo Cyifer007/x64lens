@@ -208,3 +208,14 @@ Patch 050 keeps schema `0.2.0` because it adds no field and changes no count mea
 - fixtures are not rewritten in place to pretend earlier producers emitted later facts.
 
 This is a patch-compatible validator strengthening under the existing evolution policy, not a schema-minor transition.
+
+## Sprint 10 Patch 053 schema and campaign-freeze rule
+
+Patch 053 leaves schema `0.2.0` unchanged. Diagnostic benchmark extraction may
+evolve before Sprint 15, but every row records its schema and extractor
+identity. Sprint 15 freezes the release-facing schema/extractor pair.
+
+A later field or semantic change that affects frozen extraction requires a new
+campaign identifier or complete rerun of affected preview and publication
+conditions. Ordinary JSON target-digest binding is a separate decision from the
+external campaign manifests and must be resolved before the Sprint 16 preview.

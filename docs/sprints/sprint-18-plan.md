@@ -2,31 +2,31 @@
 
 ## Status
 
-Planned first research release sprint.
+Planned defensive triage sprint.
 
 ## Sprint goal
 
-Publish the first research release and submission package from the frozen, reproduced evidence base.
+Create an evidence-backed binary-level triage layer that combines mitigation,
+primitive coverage, score, provenance, completeness, and uncertainty without
+claiming exploitability.
 
 ## Planned deliverables
 
-- [ ] Tag and publish `v0.1.0` after the release checklist passes.
-- [ ] Publish source, Linux x86_64 binary, SHA-256 checksums, version output, and approved benchmark artifacts.
-- [ ] Publish reproduction instructions and corpus manifest.
-- [ ] Finalize paper source, figures, tables, and bibliography.
-- [ ] Finalize release notes and known limitations.
-- [ ] Write the extended research retrospective.
-- [ ] Open post-release backlog for decoder, multi-architecture, and deeper primitive research.
+- [ ] Binary-level triage record separate from per-candidate score.
+- [ ] Observed facts, heuristic interpretation, confidence, and limitations as separate fields.
+- [ ] Representative primitive selection without hiding the full candidate set.
+- [ ] Mitigation-aware constraints including PIE/DSO, RELRO, NX, canary, IBT, and SHSTK when known.
+- [ ] Controlled contradictory and incomplete-evidence fixtures.
+- [ ] Analyst task definitions for later case-study use.
 
 ## Acceptance criteria
 
-- [ ] Release tag points to a clean validated commit.
-- [ ] Artifact checksums verify.
-- [ ] Public documentation and contracts are current.
-- [ ] Benchmark and case-study claims are reproducible.
-- [ ] Schema and CLI versions match release documentation.
-- [ ] The paper does not overclaim beyond measured evidence.
+- [ ] Every conclusion traces to machine-readable facts.
+- [ ] Unknown state remains visible.
+- [ ] Reports never state that a binary is exploitable without an independent vulnerability and runtime context.
+- [ ] Text and JSON agree.
+- [ ] Benchmark data remains frozen.
 
-## Post-release direction
+## Handoff
 
-Potential post-`v0.1.0` work includes an optional embedded decoder, ARM64 engine research, PE/Mach-O formats, JOP/COP/SROP models, richer CI outputs, and larger infrastructure studies. These are separate research decisions, not hidden release requirements.
+Sprint 19 stabilizes automation and compatibility around the triage model.

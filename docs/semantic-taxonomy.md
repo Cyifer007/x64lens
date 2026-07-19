@@ -236,3 +236,15 @@ stack cost, register writes, return control flow, and model-complete state
 validate. Positive aligned stack adjustment is scored 35 after its immediate,
 stack delta, condition-flag writes, return control flow, and complete effect
 model validate. Register transfer and memory access remain unscored.
+
+## Sprint 10 Patch 053 semantic capability gates
+
+Patch 053 adds no primitive family. Sprint 13 must decide the release-facing
+semantic treatment of the eight exact single-pop GPR forms that remain
+`unknown_candidate` and the Linux syscall `r10` argument role. Diagnostic
+coverage evidence may justify additional bounded ROP families, but only when
+operand roles, effects, fixtures, false-positive boundaries, provenance, and
+score/null policy fit the current record model.
+
+Full disassembly, JOP, COP, SROP, symbolic execution, chain generation, other
+architectures, and other file formats remain outside the first-release core.

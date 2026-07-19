@@ -110,7 +110,10 @@ make docker-test
 make docker-validation-smoke
 ```
 
-`make docker-test` rebuilds the development image before running tests, so Dockerfile dependency changes are not accidentally validated against a stale local image. Docker layer caching keeps repeat runs fast once the image is current.
+`make docker-test` rebuilds the development image before running tests, so
+Dockerfile dependency changes are not accidentally validated against a stale
+local image. Docker layer caching allows repeat builds to reuse unchanged
+layers.
 
 Run smoke benchmarks after the correctness path passes:
 
@@ -173,7 +176,9 @@ The table below lists the public Make targets. A new development environment sho
 | `make scaffold-check` | Verify required repository structure. |
 | `make diagrams-check` | Verify diagram source files exist. |
 | `make public-docs-check` | Reject private or dialogue-style wording in public repository files. |
-| `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 18 planning structure. |
+| `make planning-docs-check` | Verify canonical roadmap, release gates, schema plan, and Sprint 7 through Sprint 22 planning structure. |
+| `make research-stage-gates-smoke` | Validate diagnostic, hardening, freeze, preview, campaign, and release sequencing. |
+| `make checksum-manifest-path-smoke` | Prove delivery checksum paths resolve relative to the manifest directory. |
 | `make patch-bundle-hygiene BUNDLE=<zip>` | Verify public patch bundle hygiene. |
 | `make patch-bundle-hygiene-smoke` | Regression-test portable unsafe/private/generated ZIP rejection under varied roots. |
 | `make public-docs-hygiene-smoke` | Regression-test transfer-name and host-path rejection. |
@@ -277,7 +282,7 @@ The demo validates both human-readable and JSON integrated output. `checkpoint-t
 
 ## Roadmap orientation
 
-The canonical development plan is `docs/roadmap-18-sprints.md`. The earlier twelve-sprint file is retained only as a superseded compatibility reference. New implementation work should be checked against the active sprint plan, the research release plan, and the relevant design contracts before code changes begin.
+The canonical development plan is `docs/roadmap-22-sprints.md`. The earlier twelve- and eighteen-sprint files are retained only as superseded compatibility references. New implementation work should be checked against the active sprint plan, the research release plan, and the relevant design contracts before code changes begin.
 
 ## Mitigation oracle tour
 

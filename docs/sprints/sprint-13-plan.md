@@ -2,39 +2,31 @@
 
 ## Status
 
-Planned extended research sprint.
+Planned semantic capability completion sprint.
 
 ## Sprint goal
 
-Run the fixed comparative benchmark campaign and reconcile coverage definitions across x64lens and baseline tools.
+Close measured release-facing semantic gaps without turning x64lens into a
+general-purpose decoder or chain generator.
 
 ## Planned deliverables
 
-- [ ] Freeze baseline tool versions and commands.
-- [ ] Run at least 20 measured trials per tool/target condition where practical.
-- [ ] Preserve raw per-run rows and environment metadata.
-- [ ] Compute median, p95, median absolute deviation, and confidence intervals where justified.
-- [ ] Reconcile raw, exact, semantic, decoded-valid, and baseline gadget definitions.
-- [ ] Measure candidate and output-count differences separately from runtime.
-- [ ] Record failed or unsupported targets rather than dropping them.
-- [ ] Generate tables and figures from scripts.
+- [ ] Decide and implement or explicitly reject a generic semantic role for all exact single-pop GPR patterns.
+- [ ] Add the Linux syscall `r10` argument-control role when syscall setup remains a release-facing capability.
+- [ ] Freeze score/null policy for every release-facing exact family.
+- [ ] Use Sprint 11-12 diagnostics to select only bounded additional multi-pop, transfer, stack, or memory families that materially affect research tasks.
+- [ ] Add exact fixtures, effects, false-positive boundaries, schema validation, and score decisions for any selected family.
+- [ ] Record unsupported family gaps that remain outside the release scope.
 
 ## Acceptance criteria
 
-- [ ] Every reported result can be traced to raw rows.
-- [ ] Coverage comparisons state the compared definition.
-- [ ] No claim extends beyond the measured corpus and versions.
-- [ ] Timing and RSS summaries are reproducible from committed scripts.
-- [ ] Any method change triggers a documented campaign restart or separate dataset.
+- [ ] Every release-facing semantic family has controlled fixtures and complete represented effects or explicit partial state.
+- [ ] Exact-only patterns are documented and machine-readable.
+- [ ] No score is assigned without corresponding facts and rationale.
+- [ ] New families preserve schema `0.2.x`, capacity, provenance, and deterministic output.
+- [ ] Diagnostic results are restarted where task definitions change.
 
 ## Handoff
 
-Sprint 14 uses measured facts to refine mitigation-aware defensive triage without changing the benchmark dataset.
-
-## Patch 044 decision refinement
-
-The fixed campaign must decide whether candidate-scoped decoder validation or
-parallel execution provides enough correctness/coverage/latency benefit to
-justify its RSS, binary-size, dependency, and complexity costs. Publish results
-by profile and worker count. Do not merge them into the dependency-free default
-or claim superiority unless task definitions and evidence layers are matched.
+Sprint 14 tests optional validity and acceleration profiles against the stable
+one-worker core.

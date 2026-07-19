@@ -68,11 +68,14 @@ validation.
 16. [`../sprints/sprint-10-patch-051-validation.md`](../sprints/sprint-10-patch-051-validation.md)
 17. [`../validation-plan.md`](../validation-plan.md)
 18. [`../backlog.md`](../backlog.md)
-19. [`../roadmap-18-sprints.md`](../roadmap-18-sprints.md)
-20. [`../../CHANGELOG.md`](../../CHANGELOG.md)
+19. [`benchmark-and-capability-stage-gates.md`](benchmark-and-capability-stage-gates.md)
+20. [`../roadmap-22-sprints.md`](../roadmap-22-sprints.md)
+21. [`../../CHANGELOG.md`](../../CHANGELOG.md)
 
 
 ## Sprint 10 corrective navigation
 
 - [ADR 0038: Patch 051 Corrective Effect and Gate Hardening](../adr/0038-patch051-corrective-effect-and-gate-hardening.md)
 - [Patch 052 Validation](../sprints/sprint-10-patch-052-validation.md)
+- [ADR 0039: Benchmark-Informed Capability Roadmap](../adr/0039-benchmark-informed-capability-roadmap.md)
+- [Patch 053 Validation](../sprints/sprint-10-patch-053-validation.md)

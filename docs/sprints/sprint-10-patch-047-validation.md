@@ -2,7 +2,9 @@
 
 ## Status
 
-Historical validation record. Patch 047 was rejected as delivered; Patch 048 corrected its build and validation defects, and current validation follows Patch 050.
+Historical validation record. Patch 047 was rejected as delivered; Patch 048
+corrected its build and validation defects, and current validation follows the
+Patch 052 corrective candidate.
 
 ## Scope
 
@@ -26,7 +28,7 @@ the [Primitive Effect Model](../design/primitive-effect-model.md), the
 [Semantic Taxonomy](../semantic-taxonomy.md), the
 [Architecture](../architecture.md), the [JSON Schema Contract](../json-schema.md),
 the [Sprint 10 Plan](sprint-10-plan.md), and the
-[canonical roadmap](../roadmap-18-sprints.md).
+[canonical roadmap](../roadmap-22-sprints.md).
 
 ## Controlled register-transfer fixture
 

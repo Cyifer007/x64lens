@@ -16,8 +16,8 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 | Milestone | Version | Status |
 |---|---|---|
 | Integrated development checkpoint | `v0.1.0-dev` | Completed after Sprint 6 Patch 023. Local unless explicitly pushed. |
-| Research preview candidate | `v0.1.0-rc1` | Planned after Sprint 12 release gates. |
-| First research release | `v0.1.0` | Planned after Sprint 18 release gates. |
+| Research preview candidate | `v0.1.0-rc1` | Planned after Sprint 16 preview gates. |
+| First research release | `v0.1.0` | Planned after Sprint 22 release gates. |
 
 ## Checkpoint tag verification
 
@@ -101,3 +101,17 @@ A future decoder-enabled or parallel build profile must have unambiguous artifac
 ## Patch 048 compatibility note
 
 Patch 048 retains tool version `0.1.0-dev` and schema version `0.2.0`. `stack_adjust` and `flags_write` are compatible additions to the existing side-effect enumeration; no required historical field or count meaning changes. A future required condition-flag structure or memory-operand object requires a separate schema decision.
+
+## Sprint 10 Patch 053 milestone schedule
+
+The evidence-gated roadmap now targets:
+
+```text
+Sprint 15  campaign freeze
+Sprint 16  v0.1.0-rc1 candidate
+Sprint 17  publication comparative campaign
+Sprint 22  v0.1.0 research release
+```
+
+Diagnostic evidence from Sprint 11 remains development data. It does not carry
+the release authority of a frozen Sprint 15 campaign.

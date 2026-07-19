@@ -2,30 +2,32 @@
 
 ## Status
 
-Planned extended research sprint.
+Planned campaign-freeze sprint.
 
 ## Sprint goal
 
-Stabilize machine-consumer interfaces for CI, vulnerability-management enrichment, and release compatibility.
+Freeze the corpus, schema/extractor, runner, baseline versions, commands, task
+definitions, and environment strata for preview and publication measurement.
 
 ## Planned deliverables
 
-- [ ] Freeze schema `0.2.x` fields used by the release campaign.
-- [ ] Add schema compatibility and migration tests.
-- [ ] Add optional CI policy modes only when their semantics are explicit.
-- [ ] Evaluate SARIF as a separate output adapter without changing analysis decisions.
-- [ ] Add stable exit-code behavior for policy evaluation.
-- [ ] Add representative JSON fixtures for supported report states.
-- [ ] Document backward-compatibility guarantees for `v0.1.0`.
+- [ ] Final Tier 1-4 corpus manifest and regeneration workflow.
+- [ ] Target/source/tool hashes and redistribution/license records.
+- [ ] Frozen x64lens commit, schema, extractor, benchmark runner, max depth, and output modes.
+- [ ] Frozen baseline versions and exact commands.
+- [ ] Frozen warmup, ordering, affinity, cache, timer-floor, and batching policies.
+- [ ] Coverage-definition reconciliation specification for every tool/profile.
+- [ ] Campaign identifier and restart procedure.
+- [ ] Clean preview of every condition with no missing metadata.
 
 ## Acceptance criteria
 
-- [ ] Automation outputs are generated from internal facts.
-- [ ] Policy failures are distinguishable from parser or runtime failures.
-- [ ] SARIF, if added, remains an adapter rather than a second classifier.
-- [ ] Schema and CLI compatibility tests pass in native and Docker environments.
-- [ ] No breaking schema change occurs after campaign freeze without restarting affected experiments.
+- [ ] Every target and tool is immutable and authenticated.
+- [ ] Every compared task is explicitly defined.
+- [ ] No release-blocking capability gate remains unresolved.
+- [ ] Any later method or semantic change requires a new campaign or complete rerun.
+- [ ] Private or proprietary binaries are not required for reproduction.
 
 ## Handoff
 
-Sprint 16 applies the stabilized report and policy surfaces to an operational infrastructure case study.
+Sprint 16 runs the frozen pilot and prepares the research preview candidate.

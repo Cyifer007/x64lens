@@ -43,7 +43,7 @@ ok_message_len: equ $ - ok_message
 
 section .bss
 align 16
-summary:        resb GADGET_SUMMARY_SIZE
+summary:        resb GADGET_SUMMARY_RECORD_SIZE
 gadgets:        resb GADGET_RECORD_SIZE * 2
 memory_records: resb MEMORY_EFFECT_RECORD_SIZE * 2
 effect_records: resb CANDIDATE_EFFECT_RECORD_SIZE * 2
@@ -186,6 +186,6 @@ init_read_gadget:
 clear_state:
     lea     rdi, [summary]
     xor     eax, eax
-    mov     ecx, (GADGET_SUMMARY_SIZE + (GADGET_RECORD_SIZE * 2) + (MEMORY_EFFECT_RECORD_SIZE * 2) + (CANDIDATE_EFFECT_RECORD_SIZE * 2)) / 8
+    mov     ecx, (GADGET_SUMMARY_RECORD_SIZE + (GADGET_RECORD_SIZE * 2) + (MEMORY_EFFECT_RECORD_SIZE * 2) + (CANDIDATE_EFFECT_RECORD_SIZE * 2)) / 8
     rep stosq
     ret

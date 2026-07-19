@@ -8,7 +8,7 @@ Related documentation: the
 [Primitive Effect Model](../design/primitive-effect-model.md), the
 [Sprint 10 Plan](../sprints/sprint-10-plan.md), the
 [Patch 046 Validation Plan](../sprints/sprint-10-patch-046-validation.md), and
-the [canonical roadmap](../roadmap-18-sprints.md).
+the [canonical roadmap](../roadmap-22-sprints.md).
 
 ## Context
 

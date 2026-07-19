@@ -244,3 +244,10 @@ Human-readable side-effect names are separated by comma and one space. Register
 sets retain the pipe separator. The distinction is contractual because scripts
 and review fixtures compare stable effect text independently from register-set
 formatting.
+
+## Sprint 10 Patch 053 benchmark-stage output rule
+
+Patch 053 changes no text or JSON report field. Diagnostic benchmark artifacts
+must record the producer tool/schema identity and must not be represented as
+frozen release evidence. A future optional decoder or worker profile receives a
+separate profile identity; it may not change reference output facts silently.

@@ -116,7 +116,7 @@ Integrated commands must consume internal records and reuse report-section imple
 
 ## Roadmap and release-gate rule
 
-After the Sprint 6 checkpoint, feature work must map to the canonical eighteen-sprint roadmap or an explicit ADR. The current priority order is parser safety, mitigation depth, evidence provenance, primitive expansion, corpus reproducibility, benchmark infrastructure, comparative experiments, triage, and release.
+After the Sprint 6 checkpoint, feature work must map to the canonical twenty-two-sprint roadmap or an explicit ADR. The current priority order is parser safety, mitigation depth, evidence provenance, primitive expansion, corpus reproducibility, benchmark infrastructure, comparative experiments, triage, and release.
 
 A planned release date does not override an unmet evidence gate. `v0.1.0-rc1` and `v0.1.0` require the artifacts and checks defined in `docs/research-release-plan.md`.
 
@@ -126,7 +126,7 @@ Schema `0.2.0` is the current producer contract. Compatible per-candidate proven
 
 ## Planning-document validation rule
 
-`make planning-docs-check` verifies the canonical roadmap, release plan, design seams, ADR, and Sprint 7 through Sprint 18 plans. It is a structural guardrail, not a substitute for technical review.
+`make planning-docs-check` verifies the canonical roadmap, release plan, design seams, ADR, and Sprint 7 through Sprint 22 plans. It is a structural guardrail, not a substitute for technical review.
 
 ## Hostile-input regression rule
 
@@ -303,3 +303,10 @@ the represented value exceeds that domain. Build flags treat number-overflow
 warnings as errors. Dense side-car materializers must validate exact canonical
 records keyed to the current candidate, and permanent internal mutation harnesses
 should cover contradictions that public JSON cannot express directly.
+
+
+## Diagnostic-before-freeze benchmark rule
+
+Benchmark infrastructure may run before feature freeze to guide development, but diagnostic rows and confirmatory rows are separate evidence classes. Sprint 11 diagnostic results may change code, corpus, task definitions, and methodology. Sprint 15 freezes corpus, schema/extractor, runner, baselines, commands, task definitions, and environment strata. Any affected change after freeze requires a new campaign identifier or complete rerun.
+
+No development-smoke or diagnostic result may be promoted into a preview or publication claim by relabeling it.

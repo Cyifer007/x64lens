@@ -2,31 +2,32 @@
 
 ## Status
 
-Planned extended research sprint.
+Planned publication comparative campaign.
 
 ## Sprint goal
 
-Freeze the replication package, paper evidence, and release candidate through an independent reproduction rehearsal.
+Run repeated trials under the frozen methodology and reconcile coverage and
+resource results across x64lens and baseline tools.
 
 ## Planned deliverables
 
-- [ ] Finalize the IEEE paper draft and references.
-- [ ] Generate all tables and figures from committed scripts.
-- [ ] Build a claim-to-evidence matrix.
-- [ ] Rehearse a clean build and experiment subset on a fresh environment.
-- [ ] Validate release archives and checksums.
-- [ ] Review public/private boundaries and repository voice.
-- [ ] Freeze baseline, corpus, schema, and benchmark datasets.
-- [ ] Record unresolved reviewer risks and planned responses.
+- [ ] At least 20 measured trials per practical tool/target/profile condition.
+- [ ] Raw per-run rows with failures retained.
+- [ ] Median, p95, median absolute deviation, min/max, and justified confidence intervals.
+- [ ] Coverage tables separating raw, exact, semantic, decoder-backed, unknown, and scored facts.
+- [ ] Baseline definition, duplicate, alignment, canonicalization, and work-scope reconciliation.
+- [ ] Generated tables and figures from scripts.
+- [ ] Frozen result archive and campaign checksum manifest.
 
 ## Acceptance criteria
 
-- [ ] A clean environment can reproduce core outputs from public instructions.
-- [ ] Every quantitative claim maps to raw evidence.
-- [ ] Paper limitations match repository limitations.
-- [ ] Release candidate artifacts pass hygiene and checksum validation.
-- [ ] No private input is required for the core evaluation.
+- [ ] Every result traces to raw rows.
+- [ ] No method change occurs during the campaign.
+- [ ] Runtime/RSS comparisons use task-equivalent or explicitly qualified scopes.
+- [ ] Coverage disagreement categories are preserved rather than collapsed.
+- [ ] No claim extends beyond the frozen corpus and versions.
 
 ## Handoff
 
-Sprint 18 performs final release, publication packaging, and retrospective work without adding unreviewed analysis features.
+Sprint 18 converts measured facts into a defensive triage model without changing
+the benchmark dataset.

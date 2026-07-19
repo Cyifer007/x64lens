@@ -127,7 +127,9 @@ A limited internal decoder may be justified for a tightly bounded instruction su
 - Sprint 9 Patch 044: corrective campaign hardening and candidate-scoped decoder/parallelism gate.
 - Sprint 9 Patch 045: closeout audit; no mandatory decoder implementation.
 - Sprint 10: evidence-aware primitive expansion without requiring an embedded decoder.
-- Sprint 13: coverage reconciliation may trigger the final pre-release decoder decision.
+- Sprint 11: diagnostic coverage evidence identifies whether a decoder profile is materially useful.
+- Sprint 14: candidate-scoped decoder ablation and pre-freeze decision.
+- Sprint 17: frozen coverage reconciliation reports any retained profile separately.
 - Post-`v0.1.0`: broader decoder-backed analysis remains a primary research direction if not required earlier.
 
 ## Classification preference
@@ -201,3 +203,15 @@ risk first seam; executable-region and chunk scanning require deterministic
 ordering, overlap and deduplication rules, a global capacity contract, and
 bounded per-worker memory. Sprint 12 and Sprint 13 own the measurement and
 ablation gates before any default-runtime change.
+
+## Patch 053 benchmark-informed decoder timeline
+
+Sprint 11 diagnostic evidence should quantify which coverage disagreements
+matter to the research tasks. Sprint 14 owns the optional candidate-scoped
+decoder ablation. The reference analyzer remains decoder-free.
+
+A decoder profile may proceed only when it preserves raw and exact evidence,
+uses bounded retained candidate starts, records its dependency and license, and
+shows a material correctness or task benefit relative to its binary-size,
+startup, CPU, RSS, and hostile-input costs. Any accepted profile is frozen with
+its own identity in Sprint 15 and measured separately thereafter.

@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted Sprint 10 entry foundation. Patch 047 was rejected as delivered; Patch
-048 is the current corrective implementation candidate.
+Accepted Sprint 10 entry foundation. Patch 047 was rejected as delivered and
+Patch 048 corrected it. Current validation follows the Patch 052 corrective
+candidate.
 
 ## Purpose
 
@@ -14,7 +15,7 @@ validated Sprint 9 closeout state.
 Related documentation: the [Sprint 10 Plan](sprint-10-plan.md),
 [ADR 0032](../adr/0032-ordered-multi-pop-foundation.md), the
 [Primitive Effect Model](../design/primitive-effect-model.md), and the
-[canonical roadmap](../roadmap-18-sprints.md).
+[canonical roadmap](../roadmap-22-sprints.md).
 
 The implementation adds ordered two-pop argument-control evidence, explicit
 clobber and side-effect output fields, a separate controlled fixture, and

@@ -14,7 +14,7 @@ the
 [Sprint 10 Plan](../sprints/sprint-10-plan.md), the
 [Patch 047 Validation Plan](../sprints/sprint-10-patch-047-validation.md), the
 [Patch 048 Validation Plan](../sprints/sprint-10-patch-048-validation.md), and
-the [canonical roadmap](../roadmap-18-sprints.md).
+the [canonical roadmap](../roadmap-22-sprints.md).
 
 ## Fact layers
 
@@ -55,7 +55,7 @@ The `controls` array follows canonical bitmap order; `stack_pop_order` preserves
 execution order. Consumers must not treat array order in `controls` as execution
 order.
 
-## Current Patch 046 family
+## Patch 046 ordered multi-pop foundation
 
 Patch 046 recognizes exactly two distinct System V argument-register pops before
 `ret`. Supported registers are:
@@ -71,8 +71,11 @@ pattern: pop reg; pop reg; ret
 semantic_class: arg_control
 stack_delta: 24
 side_effects: [stack_read]
-score: null
+score at Patch 046 boundary: null
 ```
+
+Patch 051 preserves these semantic facts and calibrates the current score to
+95 after architectural-effect validation.
 
 A duplicate pair, or a pair with either pop outside the supported argument-
 register set, does not receive the generic family. The strongest existing
