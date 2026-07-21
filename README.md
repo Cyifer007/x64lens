@@ -289,11 +289,32 @@ make diagnostic-task-definitions-smoke
 make bench-diagnostic-smoke
 ```
 
-The diagnostic runner retains and hashes its source and exact specification, snapshots and hashes the tool and target, records monotonic nanosecond wall time plus direct-child CPU and maximum RSS, preserves stdout/stderr and failed rows, measures a timer floor, counterbalances condition order, cleans same-group and escaped descendants, and publishes one complete ignored campaign tree. These rows remain mutable development evidence and are not publication results.
+The diagnostic runner retains and hashes its source, exact specification, tools, targets, and timer probe. Actual child execution uses write-sealed Linux `memfd` copies bound to those retained hashes; campaign-relative replay commands still resolve to byte-identical retained files. The runner records monotonic nanosecond wall time plus Linux `wait4` resource data for the selected child, preserves stdout/stderr and failed rows, rechecks retained artifact identities after the final child exits, measures a timer floor, counterbalances condition order, cleans same-group and escaped descendants, and publishes one complete ignored campaign tree. The `wait4` counters include descendants that the selected child already waited for, but exclude descendants reaped separately by the runner; maximum RSS is a maximum within that scope, not a process-tree sum. These rows remain mutable development evidence and are not publication results.
 
 The current CLI has no report-suppressed scanner-only condition. Schema `0.2.0` JSON from `gadgets` and `analyze` also shares the same analysis body and differs by command identity. Patch 055 records those boundaries instead of relabeling report cost as scanner cost or claiming the two JSON commands perform independent workloads. Sprint 15 freezes the final method, Sprint 16 runs the preview pilot, and Sprint 17 owns the publication-grade campaign.
 
 See [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md), [`docs/design/diagnostic-benchmark-task-definitions.md`](docs/design/diagnostic-benchmark-task-definitions.md), and [`docs/benchmark-smoke-interpretation.md`](docs/benchmark-smoke-interpretation.md).
+
+Sprint 11 provisional corpus regeneration:
+
+```bash
+make corpus-tools-check
+make provisional-corpus-smoke
+make provisional-corpus-build
+make provisional-corpus-verify
+```
+
+Patch 056 tracks one project-authored freestanding C source and a versioned
+24-target GCC/Clang matrix. Generated binaries remain ignored and are never
+executed by the builder. Each result retains source, license, builder, tool,
+command, environment, output, SHA-256, and bounded ELF-generation evidence,
+then publishes through no-replace transactional semantics. The matrix is
+explicitly diagnostic, unfrozen, and not publication eligible. Requested PIE
+and shared roles remain build intents until Sprint 12 resolves loader identity.
+
+See [`benchmarks/corpus/README.md`](benchmarks/corpus/README.md),
+[ADR 0042](docs/adr/0042-provisional-corpus-provenance-and-regeneration.md), and
+the [Patch 056 validation record](docs/sprints/sprint-11-patch-056-validation.md).
 
 ## Architecture
 

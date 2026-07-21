@@ -1094,22 +1094,28 @@ standard-library measurement adapter around the existing binary:
 ```text
 diagnostic specification
   -> retained specification and runner source
-  -> immutable tool and target snapshots
+  -> hashed retained tool, target, and timer-probe files
+  -> write-sealed Linux memfd execution copies
   -> version and timer-floor probes
   -> one isolated process group per condition
-  -> monotonic wall time plus direct-child wait4 resource facts
+  -> monotonic wall time plus selected-child wait4 resource facts
   -> retained output and failure artifacts
   -> complete diagnostic manifest
   -> atomic no-replace publication
 ```
 
-The adapter executes only snapshotted bytes, isolates each child from user home
-and XDG configuration state, and records campaign-relative
+The adapter executes byte-identical write-sealed copies, isolates each child
+from user home and XDG configuration state, and records campaign-relative replay
 commands so retained commands remain resolvable after the staging directory is
-renamed. It enables Linux child-subreaper behavior and reaps same-group or escaped
-descendants on timeout or unexpected helper persistence. Direct-child CPU and
-RSS fields do not aggregate descendant resources. These are measurement-integrity
-controls; they do not become analyzer facts or a runtime dependency.
+renamed. After the final child exits, it reconciles version, timer, stdout, and
+stderr artifacts against their captured sizes and hashes. It enables Linux
+child-subreaper behavior and reaps same-group or escaped descendants on timeout
+or unexpected helper persistence. The `wait4` fields
+include resources of descendants already waited for by the selected child, but
+exclude descendants reaped separately by the runner. Maximum RSS is the maximum
+within the `wait4` scope, not a process-tree sum. These are
+measurement-integrity controls; they do not become analyzer facts or a runtime
+dependency.
 
 The first task authority intentionally exposes an unavailable architecture
 seam. No public scanner-only command exists, so the diagnostic runner cannot
@@ -1126,3 +1132,30 @@ and concurrency defaults come from the stage authority; and semantic/score/
 effect counts are cross-checked against the independent one-per-pattern JSON
 fixture. Summary files can no longer certify coordinated drift by changing only
 each other.
+
+## Sprint 11 Patch 056 corpus-generation boundary
+
+Patch 056 adds no runtime module. Corpus generation remains an external
+standard-library development path:
+
+```text
+versioned corpus specification
+  -> repository-confined source and license validation
+  -> read-only retained input snapshots
+  -> fixed GCC/Clang build matrix with forced resolved-linker selection
+  -> bounded command streams and subreaper process-tree cleanup
+  -> bounded ELF64 generation oracle
+  -> command/output/tool reconciliation
+  -> checksum and metadata normalization
+  -> transaction-safe no-replace publication
+```
+
+The builder never invokes x64lens to decide whether its outputs are valid and
+never executes a generated target. Its ELF reader confirms only requested build
+facts; it does not become loader, mitigation, executable-region, or candidate
+authority. Requested PIE/shared roles remain provisional labels until Sprint 12.
+
+GCC, Clang, GNU ld.bfd, and Python are development dependencies for corpus
+regeneration only. They do not enter the freestanding analyzer. The runtime
+pipeline, 4096-candidate boundary, 819200-byte command arena, schema `0.2.0`,
+decoder-free default, and one-worker determinism are unchanged.

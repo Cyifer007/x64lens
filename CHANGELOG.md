@@ -8,7 +8,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 11 Patch 055 standard-library high-resolution diagnostic runner with immutable tool/target snapshots, monotonic nanosecond timing, Linux direct-child resource capture, timer-floor evidence, subreaper cleanup for same-group and escaped descendants, failed-row retention, and transactional no-replace publication.
+- Sprint 11 Patch 056 manifest-driven provisional corpus generation over one project-authored freestanding source: GCC and Clang, `O0` and `O2`, requested non-PIE/PIE/shared roles, and minimal/hardened profiles produce 24 ignored diagnostic ELF targets.
+- `make corpus-tools-check`, `make provisional-corpus-build`, `make provisional-corpus-verify`, `make provisional-corpus-smoke`, and `make clean-provisional-corpus`.
+- Transactional no-replace corpus publication with source/license/builder snapshots, exact command and tool identity, forced resolved-linker selection, bounded log capture, bounded ELF generation facts, fixed-environment enforcement, late reauthentication, exact checksums, normalized metadata, subreaper cleanup, and regenerated-checksum semantic tamper rejection.
+- ADR 0042, the provisional corpus guide, and the Patch 056 validation record.
+
+- Sprint 11 Patch 055 standard-library high-resolution diagnostic runner with hashed retained inputs, write-sealed Linux `memfd` execution copies, final artifact-identity reconciliation, monotonic nanosecond timing, accurately scoped Linux `wait4` resource capture, timer-floor evidence, subreaper cleanup for same-group and escaped descendants, failed-row retention, and transactional no-replace publication.
 - Machine-readable Sprint 11 task definitions and a controlled reference specification that measure truthful gadget/analyze JSON command conditions while marking scanner-only cost unavailable.
 - `make diagnostic-runner-smoke`, `make diagnostic-task-definitions-smoke`, `make sprint11-diagnostic-reference-smoke`, `make bench-diagnostic-smoke`, ADR 0041, and the Patch 055 validation record.
 - `make patch054-corrective-regression-smoke`, path-specific stale-roadmap checks, source-linked Sprint 10 reference-profile validation, independent canonical-report count reconciliation, and data-driven closeout success output.
@@ -152,6 +157,9 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Changed
 
+- The development container and environment checker now include Clang only for provisional corpus regeneration; the x64lens runtime dependency surface is unchanged.
+- Generated provisional corpus trees are ignored, excluded from Docker contexts, and rejected from ordinary public source bundles.
+
 - Close Sprint 10 and activate Sprint 11 as the diagnostic benchmark foundation while retaining Sprint 15 as the campaign-freeze boundary.
 - Reconcile the canonical twenty-two-sprint roadmap, release milestones, publication plan, versioning, and active sprint plans with the machine-readable stage authority.
 
@@ -273,6 +281,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Corrected the Patch 055 diagnostic runner's resource-scope wording, explicit publication-eligibility requirement, spawn-window signal cleanup, immutable execution-input handling, and final retained-artifact reconciliation.
+- Removed the accidentally tracked local Patch 055 application diff and Windows `Zone.Identifier` stream; future root-level application patches and alternate-data-stream copies remain local-only.
+- Hardened the Patch 056 corpus process lifecycle against post-spawn signal leakage and escaped `setsid` descendants; the smoke now covers both cleanup paths and cannot leave a live builder or helper during temporary-tree cleanup.
 
 - Correct contradictory Sprint 11 through Sprint 13 ownership left in active public prose after the Patch 053 roadmap transition.
 - Reject private execution-handoff narration in public repository content while retaining generic platform and reproducibility guidance.

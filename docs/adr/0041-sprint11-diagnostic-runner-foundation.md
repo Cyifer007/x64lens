@@ -34,23 +34,31 @@ those commands as three independent workloads would create misleading evidence.
    adds no runtime dependency to x64lens. Its dedicated environment gate checks
    only the build tools, sample compiler, Make, and Python rather than requiring
    unrelated comparison or archive utilities.
-2. Preserve the exact campaign specification and runner source, then snapshot
-   every tool, target, and timer-floor probe before execution. Hash sources
-   before and after copying, execute only tool/probe snapshots, and record
-   snapshot size and SHA-256 identity. A source spec or runner change during a
-   campaign fails closed.
-3. Measure the direct tool child with `time.monotonic_ns()` and Linux `wait4`,
-   recording wall, user, system, maximum RSS, faults, context switches, output
-   size, output hashes, exit state, signal state, and timeout state. Descendant
-   resources are not aggregated and remain an explicit methodology limitation.
+2. Preserve the exact campaign specification and runner source, then retain
+   hashed copies of every tool, target, and timer-floor probe before execution.
+   Execute byte-identical copies held in write-sealed Linux `memfd` objects,
+   while recording campaign-relative replay commands that resolve to the
+   retained files. Source, retained, and sealed-copy identities must reconcile.
+   Request `MFD_EXEC` explicitly for executable copies, with an `EINVAL` fallback
+   for older kernels, and fail the diagnostic platform preflight if host policy
+   still prohibits sealed executable memfds. A source spec or runner change
+   during a campaign fails closed.
+3. Measure wall time with `time.monotonic_ns()` and collect Linux `wait4`
+   resource data for the selected tool child, recording user, system, maximum
+   RSS, faults, context switches, output size, output hashes, exit state, signal
+   state, and timeout state. The `wait4` counters include descendants that the
+   selected child waited for; descendants reaped separately by the runner are
+   excluded. Maximum RSS is a maximum within that scope, not a process-tree sum.
 4. Start every measured command in a distinct process group. Enable Linux
    subreaper behavior, terminate and reap both same-group helpers and descendants
    that create another session or process group, and retain the failed row
    instead of discarding it.
 5. Publish a campaign only after all rows, outputs, timer-floor samples, and the
-   manifest are complete. Reject symlinks and other non-regular members before
-   flushing the result tree, then rename it with no-replace semantics so an
-   existing campaign is never overwritten.
+   manifest are complete. After the final child exits, recheck the retained
+   version output, timer evidence, and every row's stdout/stderr size and hash.
+   Reject symlinks and other non-regular members before flushing the result
+   tree, then rename it with no-replace semantics so an existing campaign is
+   never overwritten.
 6. Require every campaign to declare `evidence_class: diagnostic`,
    `frozen: false`, and `publication_eligible: false`. Diagnostic rows cannot be
    promoted into the Sprint 15-frozen campaign by renaming them.
@@ -97,7 +105,8 @@ The diagnostic path surrounds that pipeline:
 
 ```text
 campaign specification
-  -> immutable tool/target snapshots
+  -> hashed retained tool/target files
+  -> write-sealed Linux memfd execution copies
   -> timer-floor probes
   -> isolated child execution
   -> raw rows and output artifacts
@@ -116,6 +125,13 @@ change score policy.
   evidence rather than silently reducing the sample count.
 - Tool and target identity is bound to the bytes actually executed and analyzed,
   not merely to mutable source paths.
+- Linux `memfd_create`, file seals, `/proc/self/fd`, `wait4`, child-subreaper
+  control, `/proc` child enumeration, and no-replace rename support are
+  deliberate runner platform requirements.
+- The runner rejects mutation by measured children, but it is not a filesystem
+  sandbox against a concurrent external process with the same user identity.
+  Diagnostic trees remain mutable after publication and require fresh
+  authentication before any later evidence promotion.
 - The initial reference campaign can validate the runner and command parity, but
   it cannot establish scanner-only cost or baseline superiority.
 - Provisional corpus construction, baseline adapters, summary statistics, and

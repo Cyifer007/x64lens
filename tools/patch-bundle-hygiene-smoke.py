@@ -228,6 +228,7 @@ def cases() -> list[Case]:
         Case("generated-zero-root", ("src/main.asm", "tests/bin/gadgets"), False, "generated test binary"),
         Case("generated-one-root", ("root/src/main.asm", "root/tests/results/result.json"), False, "generated test result"),
         Case("generated-multiple-roots", ("a/src/main.asm", "b/benchmarks/results/run.tsv"), False, "generated benchmark result"),
+        Case("generated-provisional-corpus", ("root/benchmarks/corpus/generated/s11/targets/sample.elf",), False, "generated diagnostic corpus"),
         Case("generated-deep-root", ("a/b/src/main.asm", "a/b/build/main.o"), False, "generated/local directory"),
         Case("generated-toy-deep-root", ("a/tests/toy-src/subdir/gadgets",), False, "generated toy binary"),
         Case("private-zero-git", ("src/main.asm", ".git/config"), False, "private/local directory"),

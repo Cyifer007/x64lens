@@ -2,10 +2,10 @@
 """Run provenance-bound Sprint 11 diagnostic benchmark conditions.
 
 The runner is development and research infrastructure, not a runtime dependency
-of x64lens. It uses only Python's standard library, snapshots immutable tool and
-target bytes, measures each process with monotonic nanosecond timing and Linux
-wait4 resource data, retains failed rows, and publishes one complete campaign
-tree transactionally.
+of x64lens. It uses only Python's standard library, retains hashed input
+snapshots, executes write-sealed copies, measures each process with monotonic
+nanosecond timing and Linux wait4 resource data, retains failed rows, and
+publishes one complete campaign tree transactionally.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import csv
 import ctypes
 from datetime import datetime, timezone
 import errno
+import fcntl
 import hashlib
 import json
 import math
@@ -36,6 +37,7 @@ import uuid
 RUNNER_SCHEMA_VERSION = 1
 EVIDENCE_CLASS = "diagnostic"
 PUBLICATION_ELIGIBLE = False
+MFD_EXEC_FLAG = 0x0010
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 SAFE_ENV = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 TASK_SCOPES = {
@@ -61,7 +63,16 @@ RESERVED_ENVIRONMENT_KEYS = {
     "X64LENS_BENCHMARK_EVIDENCE_CLASS",
 }
 ACTIVE_PROCESS_GROUP: int | None = None
+SPAWNING_PROCESS = False
 INTERRUPTED_BY: int | None = None
+WAIT4_RESOURCE_SCOPE = (
+    "Linux wait4 rusage for the selected child, including descendants that child waited for; "
+    "descendants reaped separately by the runner are excluded; not complete process-tree accounting"
+)
+WAIT4_MAX_RSS_UNIT = (
+    "kilobytes on Linux; maximum across the selected child and descendants it waited for, "
+    "not a process-tree sum"
+)
 
 ROW_FIELDS = (
     "runner_schema_version",
@@ -191,9 +202,283 @@ def file_identity(path: Path) -> dict[str, Any]:
     }
 
 
+def file_identity_fd(fd: int) -> dict[str, Any]:
+    metadata = os.fstat(fd)
+    digest = hashlib.sha256()
+    offset = 0
+    while offset < metadata.st_size:
+        chunk = os.pread(fd, min(1024 * 1024, metadata.st_size - offset), offset)
+        require(chunk, "short read while capturing measured output")
+        digest.update(chunk)
+        offset += len(chunk)
+    return {
+        "size_bytes": metadata.st_size,
+        "mtime_ns": metadata.st_mtime_ns,
+        "sha256": digest.hexdigest(),
+    }
+
+
+def capture_open_artifact_identity(handle: Any, path: Path, label: str) -> dict[str, Any]:
+    handle.flush()
+    descriptor_metadata = os.fstat(handle.fileno())
+    path_metadata = path.lstat()
+    require(stat.S_ISREG(descriptor_metadata.st_mode), f"{label} descriptor is not a regular file")
+    require(stat.S_ISREG(path_metadata.st_mode), f"{label} path is not a regular file")
+    require(
+        (descriptor_metadata.st_dev, descriptor_metadata.st_ino)
+        == (path_metadata.st_dev, path_metadata.st_ino),
+        f"{label} path changed during execution",
+    )
+    os.fchmod(handle.fileno(), 0o444)
+    read_fd = os.open(
+        f"/proc/self/fd/{handle.fileno()}",
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0),
+    )
+    try:
+        read_metadata = os.fstat(read_fd)
+        require(
+            (descriptor_metadata.st_dev, descriptor_metadata.st_ino)
+            == (read_metadata.st_dev, read_metadata.st_ino),
+            f"{label} descriptor changed while reopening for capture",
+        )
+        return file_identity_fd(read_fd)
+    finally:
+        os.close(read_fd)
+
+
+def require_snapshot_identity(
+    path: Path,
+    record: dict[str, Any],
+    label: str,
+    expected_mode: int,
+) -> None:
+    metadata = path.lstat()
+    require(stat.S_ISREG(metadata.st_mode), f"{label} snapshot is not a regular file")
+    require(stat.S_IMODE(metadata.st_mode) == expected_mode, f"{label} snapshot mode changed during execution")
+    identity = file_identity(path)
+    require(
+        identity["size_bytes"] == record["size_bytes"] and identity["sha256"] == record["sha256"],
+        f"{label} snapshot changed during execution",
+    )
+
+
+def require_artifact_identity(
+    path: Path,
+    *,
+    expected_size: int,
+    expected_sha256: str,
+    label: str,
+) -> None:
+    metadata = path.lstat()
+    require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
+    identity = file_identity(path)
+    require(
+        identity["size_bytes"] == expected_size and identity["sha256"] == expected_sha256,
+        f"{label} changed after capture",
+    )
+
+
+def write_all(fd: int, value: bytes) -> None:
+    offset = 0
+    while offset < len(value):
+        written = os.write(fd, value[offset:])
+        require(written > 0, "short write while creating sealed execution input")
+        offset += written
+
+
+def create_execution_memfd(label: str, *, executable: bool) -> tuple[int, str]:
+    require(hasattr(os, "memfd_create"), "Linux memfd_create is required for sealed execution inputs")
+    base_flags = getattr(os, "MFD_CLOEXEC", 0x0001) | getattr(os, "MFD_ALLOW_SEALING", 0x0002)
+    name = f"x64lens-{label}"[:200]
+    if not executable:
+        return os.memfd_create(name, base_flags), "nonexecutable"
+    try:
+        return os.memfd_create(name, base_flags | getattr(os, "MFD_EXEC", MFD_EXEC_FLAG)), "explicit_mfd_exec"
+    except OSError as exc:
+        if exc.errno != errno.EINVAL:
+            raise RunnerError(f"cannot create executable Linux memfd: {exc}") from exc
+        try:
+            return os.memfd_create(name, base_flags), "legacy_implicit_exec"
+        except OSError as fallback_exc:
+            raise RunnerError(f"cannot create legacy executable Linux memfd: {fallback_exc}") from fallback_exc
+
+
+def add_execution_seals(fd: int, label: str) -> None:
+    required_seals = (
+        fcntl.F_SEAL_SEAL
+        | fcntl.F_SEAL_SHRINK
+        | fcntl.F_SEAL_GROW
+        | fcntl.F_SEAL_WRITE
+    )
+    fcntl.fcntl(fd, fcntl.F_ADD_SEALS, required_seals)
+    observed_seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
+    require(observed_seals & required_seals == required_seals, f"cannot seal execution input: {label}")
+
+
+def sealed_execution_copy(source: Path, label: str, expected_mode: int) -> dict[str, Any]:
+    required_constants = (
+        "F_ADD_SEALS",
+        "F_GET_SEALS",
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE",
+    )
+    require(
+        all(hasattr(fcntl, name) for name in required_constants),
+        "Linux file seals are required for sealed execution inputs",
+    )
+    executable = bool(expected_mode & 0o111)
+    fd, creation_mode = create_execution_memfd(label, executable=executable)
+    try:
+        with source.open("rb") as handle:
+            while chunk := handle.read(1024 * 1024):
+                write_all(fd, chunk)
+        try:
+            os.fchmod(fd, expected_mode)
+        except OSError as exc:
+            raise RunnerError(
+                f"cannot set sealed execution input mode for {label}; "
+                f"Linux memfd execution policy may prohibit executable memfds: {exc}"
+            ) from exc
+        add_execution_seals(fd, label)
+        execution_path = Path(f"/proc/self/fd/{fd}")
+        identity = file_identity(execution_path)
+        source_identity = file_identity(source)
+        require(
+            identity["size_bytes"] == source_identity["size_bytes"]
+            and identity["sha256"] == source_identity["sha256"],
+            f"sealed execution input mismatch: {label}",
+        )
+        return {
+            "execution_fd": fd,
+            "execution_absolute": execution_path,
+            "execution_protection": "linux_memfd_write_sealed",
+            "execution_memfd_creation": creation_mode,
+            "execution_sha256": identity["sha256"],
+            "execution_size_bytes": identity["size_bytes"],
+            "execution_seals": ["seal", "shrink", "grow", "write"],
+        }
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def diagnostic_platform_preflight() -> str:
+    require(platform.system() == "Linux" and hasattr(os, "wait4"), "diagnostic runner requires Linux wait4")
+    required_constants = (
+        "F_ADD_SEALS",
+        "F_GET_SEALS",
+        "F_SEAL_SEAL",
+        "F_SEAL_SHRINK",
+        "F_SEAL_GROW",
+        "F_SEAL_WRITE",
+    )
+    require(
+        all(hasattr(fcntl, name) for name in required_constants),
+        "Linux file seals are required for sealed execution inputs",
+    )
+    fd, creation_mode = create_execution_memfd("platform-preflight", executable=True)
+    try:
+        write_all(fd, b"#!/bin/sh\nexit 0\n")
+        try:
+            os.fchmod(fd, 0o555)
+        except OSError as exc:
+            raise RunnerError(
+                "cannot make the diagnostic preflight memfd executable; "
+                f"Linux memfd execution policy rejected it: {exc}"
+            ) from exc
+        add_execution_seals(fd, "platform-preflight")
+        completed = subprocess.run(
+            [f"/proc/self/fd/{fd}"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=command_environment({}),
+            close_fds=True,
+            pass_fds=(fd,),
+            timeout=5,
+            check=False,
+        )
+        require(
+            completed.returncode == 0,
+            "sealed executable memfd preflight failed: "
+            + completed.stderr.decode("utf-8", errors="replace").strip(),
+        )
+        return creation_mode
+    finally:
+        os.close(fd)
+
+
+def require_execution_identity(record: dict[str, Any], label: str, expected_mode: int) -> None:
+    path = record["execution_absolute"]
+    fd = record["execution_fd"]
+    metadata = path.stat()
+    require(stat.S_ISREG(metadata.st_mode), f"{label} sealed execution copy is not a regular file")
+    require(
+        stat.S_IMODE(metadata.st_mode) == expected_mode,
+        f"{label} sealed execution copy mode changed during execution",
+    )
+    required_seals = (
+        fcntl.F_SEAL_SEAL
+        | fcntl.F_SEAL_SHRINK
+        | fcntl.F_SEAL_GROW
+        | fcntl.F_SEAL_WRITE
+    )
+    observed_seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
+    require(observed_seals & required_seals == required_seals, f"{label} execution seals changed")
+    identity = file_identity(path)
+    require(
+        identity["size_bytes"] == record["execution_size_bytes"]
+        and identity["sha256"] == record["execution_sha256"]
+        and identity["sha256"] == record["sha256"],
+        f"{label} sealed execution copy changed during execution",
+    )
+
+
+def close_execution_inputs(
+    tools: dict[str, dict[str, Any]],
+    targets: dict[str, dict[str, Any]],
+    probe: dict[str, Any] | None,
+) -> None:
+    records = [*tools.values(), *targets.values()]
+    if probe is not None:
+        records.append(probe)
+    for record in records:
+        fd = record.pop("execution_fd", None)
+        if isinstance(fd, int):
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+def require_campaign_snapshot_identities(
+    *,
+    spec_snapshot: Path,
+    spec_record: dict[str, Any],
+    runner_snapshot: Path,
+    runner_record: dict[str, Any],
+    tools: dict[str, dict[str, Any]],
+    targets: dict[str, dict[str, Any]],
+    probe: dict[str, Any],
+) -> None:
+    require_snapshot_identity(spec_snapshot, spec_record, "campaign spec", 0o444)
+    require_snapshot_identity(runner_snapshot, runner_record, "diagnostic runner", 0o555)
+    for tool_id, tool in tools.items():
+        require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool_id}", 0o555)
+        require_execution_identity(tool, f"tool {tool_id}", 0o555)
+    for target_id, target in targets.items():
+        require_snapshot_identity(target["snapshot_absolute"], target, f"target {target_id}", 0o444)
+        require_execution_identity(target, f"target {target_id}", 0o444)
+    require_snapshot_identity(probe["snapshot_absolute"], probe, "timer floor probe", 0o555)
+    require_execution_identity(probe, "timer floor probe", 0o555)
+
+
 def write_json(path: Path, value: Any) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.chmod(temporary, 0o444)
     os.replace(temporary, path)
 
 
@@ -331,8 +616,8 @@ def environment_manifest(subreaper_enabled: bool) -> dict[str, Any]:
         "cpu_affinity": affinity,
         "cpu_governor": read_optional_text(Path("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")),
         "subreaper_enabled": subreaper_enabled,
-        "max_rss_unit": "kilobytes for the direct measured child on Linux wait4",
-        "resource_scope": "direct measured child; descendant cleanup is tracked separately and is not aggregate resource accounting",
+        "max_rss_unit": WAIT4_MAX_RSS_UNIT,
+        "resource_scope": WAIT4_RESOURCE_SCOPE,
     }
 
 
@@ -359,6 +644,8 @@ def signal_handler(signum: int, _frame: Any) -> None:
             pass
         except OSError:
             pass
+    elif SPAWNING_PROCESS:
+        return
     raise RunnerInterrupted(f"interrupted by {signal.Signals(signum).name}")
 
 
@@ -548,8 +835,9 @@ def execute_process(
     stderr_path: Path,
     timeout_seconds: float,
     environment: dict[str, str],
+    pass_fds: tuple[int, ...] = (),
 ) -> dict[str, Any]:
-    global ACTIVE_PROCESS_GROUP
+    global ACTIVE_PROCESS_GROUP, SPAWNING_PROCESS
     require(argv and Path(argv[0]).is_absolute(), "measured executable path must be absolute")
     cwd.mkdir(parents=True, exist_ok=True)
     stdout_path.parent.mkdir(parents=True, exist_ok=True)
@@ -561,23 +849,30 @@ def execute_process(
         stdout_path.open("wb") as stdout_handle,
         stderr_path.open("wb") as stderr_handle,
     ):
+        process: subprocess.Popen[bytes] | None = None
+        pid: int | None = None
+        SPAWNING_PROCESS = True
         try:
-            process = subprocess.Popen(
-                argv,
-                cwd=cwd,
-                stdin=stdin_handle,
-                stdout=stdout_handle,
-                stderr=stderr_handle,
-                env=environment,
-                close_fds=True,
-                start_new_session=True,
-            )
-        except OSError as exc:
-            raise RunnerError(f"cannot start measured command {argv[0]}: {exc}") from exc
+            try:
+                process = subprocess.Popen(
+                    argv,
+                    cwd=cwd,
+                    stdin=stdin_handle,
+                    stdout=stdout_handle,
+                    stderr=stderr_handle,
+                    env=environment,
+                    close_fds=True,
+                    pass_fds=pass_fds,
+                    start_new_session=True,
+                )
+            except OSError as exc:
+                raise RunnerError(f"cannot start measured command {argv[0]}: {exc}") from exc
 
-        pid = process.pid
-        ACTIVE_PROCESS_GROUP = pid
-        try:
+            pid = process.pid
+            ACTIVE_PROCESS_GROUP = pid
+            SPAWNING_PROCESS = False
+            if INTERRUPTED_BY is not None:
+                raise RunnerInterrupted(f"interrupted by {signal.Signals(INTERRUPTED_BY).name}")
             status, usage, timed_out = wait_for_process(pid, timeout_seconds)
             end_ns = time.monotonic_ns()
             group_cleanup_required, group_descendants_reaped = cleanup_process_group(pid)
@@ -585,29 +880,35 @@ def execute_process(
             cleanup_required = group_cleanup_required or adopted_cleanup_required
             descendants_reaped = group_descendants_reaped + adopted_descendants_reaped
         except BaseException:
-            try:
-                os.killpg(pid, signal.SIGKILL)
-            except OSError:
-                pass
-            try:
-                emergency_status = best_effort_reap_main(pid)
-                if emergency_status is not None:
-                    process.returncode = os.waitstatus_to_exitcode(emergency_status)
-            except OSError:
-                pass
-            try:
-                cleanup_process_group(pid)
-            except RunnerError:
-                pass
-            try:
-                cleanup_adopted_descendants()
-            except RunnerError:
-                pass
+            SPAWNING_PROCESS = False
+            if pid is not None:
+                try:
+                    os.killpg(pid, signal.SIGKILL)
+                except OSError:
+                    pass
+                try:
+                    emergency_status = best_effort_reap_main(pid)
+                    if emergency_status is not None and process is not None:
+                        process.returncode = os.waitstatus_to_exitcode(emergency_status)
+                except OSError:
+                    pass
+                try:
+                    cleanup_process_group(pid)
+                except RunnerError:
+                    pass
+                try:
+                    cleanup_adopted_descendants()
+                except RunnerError:
+                    pass
             raise
         finally:
+            SPAWNING_PROCESS = False
             ACTIVE_PROCESS_GROUP = None
 
+        assert process is not None
         process.returncode = os.waitstatus_to_exitcode(status)
+        stdout_identity = capture_open_artifact_identity(stdout_handle, stdout_path, "measured stdout")
+        stderr_identity = capture_open_artifact_identity(stderr_handle, stderr_path, "measured stderr")
 
     exit_code: int | None = None
     signal_number: int | None = None
@@ -627,8 +928,6 @@ def execute_process(
     else:
         process_outcome = "success"
 
-    stdout_identity = file_identity(stdout_path)
-    stderr_identity = file_identity(stderr_path)
     return {
         "start_monotonic_ns": start_ns,
         "end_monotonic_ns": end_ns,
@@ -699,7 +998,7 @@ def parse_spec(path: Path, campaign_override: str | None) -> tuple[dict[str, Any
     require(spec.get("schema_version") == RUNNER_SCHEMA_VERSION, "unsupported campaign spec schema")
     require(spec.get("evidence_class") == EVIDENCE_CLASS, "runner accepts diagnostic evidence only")
     require(spec.get("frozen") is False, "diagnostic campaign must declare frozen=false")
-    require(spec.get("publication_eligible", False) is False, "diagnostic campaign cannot be publication eligible")
+    require(spec.get("publication_eligible") is False, "diagnostic campaign must declare publication_eligible=false")
     campaign_id = safe_identifier(campaign_override or spec.get("campaign_id"), "campaign_id")
     spec["campaign_id"] = campaign_id
 
@@ -849,74 +1148,87 @@ def snapshot_inputs(
     environment: dict[str, str],
 ) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]], dict[str, Any]]:
     tools: dict[str, dict[str, Any]] = {}
-    for tool in spec["tools"]:
-        requested, source = resolve_spec_path(spec_dir, tool["path"], f"tool {tool['id']}")
-        require(os.access(source, os.X_OK), f"tool is not executable: {source}")
-        snapshot = stage / "inputs" / "tools" / tool["id"]
-        identity = immutable_snapshot(source, snapshot, executable=True)
-        tools[tool["id"]] = {
-            **tool,
-            **identity,
-            "source_path_requested": requested,
-            "source_path_resolved": str(source),
-            "snapshot_path": str(snapshot.relative_to(stage)),
-            "snapshot_absolute": snapshot,
-        }
-
     targets: dict[str, dict[str, Any]] = {}
-    for target in spec["targets"]:
-        requested, source = resolve_spec_path(spec_dir, target["path"], f"target {target['id']}")
-        snapshot = stage / "inputs" / "targets" / target["id"]
-        identity = immutable_snapshot(source, snapshot, executable=False)
-        targets[target["id"]] = {
-            **target,
-            **identity,
-            "source_path_requested": requested,
-            "source_path_resolved": str(source),
-            "snapshot_path": str(snapshot.relative_to(stage)),
-            "snapshot_absolute": snapshot,
+    probe: dict[str, Any] | None = None
+    try:
+        for tool in spec["tools"]:
+            requested, source = resolve_spec_path(spec_dir, tool["path"], f"tool {tool['id']}")
+            require(os.access(source, os.X_OK), f"tool is not executable: {source}")
+            snapshot = stage / "inputs" / "tools" / tool["id"]
+            identity = immutable_snapshot(source, snapshot, executable=True)
+            tools[tool["id"]] = {
+                **tool,
+                **identity,
+                **sealed_execution_copy(snapshot, f"tool-{tool['id']}", 0o555),
+                "source_path_requested": requested,
+                "source_path_resolved": str(source),
+                "snapshot_path": str(snapshot.relative_to(stage)),
+                "snapshot_absolute": snapshot,
+            }
+
+        for target in spec["targets"]:
+            requested, source = resolve_spec_path(spec_dir, target["path"], f"target {target['id']}")
+            snapshot = stage / "inputs" / "targets" / target["id"]
+            identity = immutable_snapshot(source, snapshot, executable=False)
+            targets[target["id"]] = {
+                **target,
+                **identity,
+                **sealed_execution_copy(snapshot, f"target-{target['id']}", 0o444),
+                "source_path_requested": requested,
+                "source_path_resolved": str(source),
+                "snapshot_path": str(snapshot.relative_to(stage)),
+                "snapshot_absolute": snapshot,
+            }
+
+        requested_probe, probe_source = resolve_spec_path(spec_dir, spec["timer_floor"]["probe"], "timer floor probe")
+        require(os.access(probe_source, os.X_OK), f"timer floor probe is not executable: {probe_source}")
+        probe_snapshot = stage / "inputs" / "timer-floor" / "probe"
+        probe_identity = immutable_snapshot(probe_source, probe_snapshot, executable=True)
+        probe = {
+            **probe_identity,
+            **sealed_execution_copy(probe_snapshot, "timer-floor-probe", 0o555),
+            "source_path_requested": requested_probe,
+            "source_path_resolved": str(probe_source),
+            "snapshot_path": str(probe_snapshot.relative_to(stage)),
+            "snapshot_absolute": probe_snapshot,
         }
 
-    requested_probe, probe_source = resolve_spec_path(spec_dir, spec["timer_floor"]["probe"], "timer floor probe")
-    require(os.access(probe_source, os.X_OK), f"timer floor probe is not executable: {probe_source}")
-    probe_snapshot = stage / "inputs" / "timer-floor" / "probe"
-    probe_identity = immutable_snapshot(probe_source, probe_snapshot, executable=True)
-    probe = {
-        **probe_identity,
-        "source_path_requested": requested_probe,
-        "source_path_resolved": str(probe_source),
-        "snapshot_path": str(probe_snapshot.relative_to(stage)),
-        "snapshot_absolute": probe_snapshot,
-    }
+        for tool_id, tool in tools.items():
+            version_dir = stage / "inputs" / "versions" / tool_id
+            version_workdir = version_dir / "work"
+            require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool_id}", 0o555)
+            require_execution_identity(tool, f"tool {tool_id}", 0o555)
+            result = execute_process(
+                expand_argv(tool["version_argv"], tool["execution_absolute"]),
+                cwd=version_workdir,
+                stdout_path=version_dir / "stdout.bin",
+                stderr_path=version_dir / "stderr.bin",
+                timeout_seconds=min(5.0, spec["timeout_seconds"]),
+                environment=isolated_child_environment(environment, version_workdir),
+                pass_fds=(tool["execution_fd"],),
+            )
+            require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool_id}", 0o555)
+            require_execution_identity(tool, f"tool {tool_id}", 0o555)
+            require(result["process_outcome"] == "success", f"version command failed for {tool_id}: {result['process_outcome']}")
+            observed = observed_version(version_dir / "stdout.bin", version_dir / "stderr.bin")
+            require(tool["version"] in observed, f"declared version {tool['version']!r} not found in {tool_id} version output {observed!r}")
+            tool["version_observed"] = observed
+            tool["version_command"] = expand_argv(
+                tool["version_argv"],
+                path_from_workdir(tool["snapshot_absolute"], version_workdir),
+            )
+            tool["version_command_cwd"] = str(version_workdir.relative_to(stage))
+            tool["version_result"] = {
+                key: value for key, value in result.items()
+                if key not in {"start_monotonic_ns", "end_monotonic_ns"}
+            }
+            tool["version_stdout_path"] = str((version_dir / "stdout.bin").relative_to(stage))
+            tool["version_stderr_path"] = str((version_dir / "stderr.bin").relative_to(stage))
 
-    for tool_id, tool in tools.items():
-        version_dir = stage / "inputs" / "versions" / tool_id
-        version_workdir = version_dir / "work"
-        result = execute_process(
-            expand_argv(tool["version_argv"], tool["snapshot_absolute"]),
-            cwd=version_workdir,
-            stdout_path=version_dir / "stdout.bin",
-            stderr_path=version_dir / "stderr.bin",
-            timeout_seconds=min(5.0, spec["timeout_seconds"]),
-            environment=isolated_child_environment(environment, version_workdir),
-        )
-        require(result["process_outcome"] == "success", f"version command failed for {tool_id}: {result['process_outcome']}")
-        observed = observed_version(version_dir / "stdout.bin", version_dir / "stderr.bin")
-        require(tool["version"] in observed, f"declared version {tool['version']!r} not found in {tool_id} version output {observed!r}")
-        tool["version_observed"] = observed
-        tool["version_command"] = expand_argv(
-            tool["version_argv"],
-            path_from_workdir(tool["snapshot_absolute"], version_workdir),
-        )
-        tool["version_command_cwd"] = str(version_workdir.relative_to(stage))
-        tool["version_result"] = {
-            key: value for key, value in result.items()
-            if key not in {"start_monotonic_ns", "end_monotonic_ns"}
-        }
-        tool["version_stdout_path"] = str((version_dir / "stdout.bin").relative_to(stage))
-        tool["version_stderr_path"] = str((version_dir / "stderr.bin").relative_to(stage))
-
-    return tools, targets, probe
+        return tools, targets, probe
+    except BaseException:
+        close_execution_inputs(tools, targets, probe)
+        raise
 
 
 def timer_floor_campaign(
@@ -928,14 +1240,19 @@ def timer_floor_campaign(
     samples: list[dict[str, Any]] = []
     for index in range(1, spec["timer_floor"]["runs"] + 1):
         sample_dir = stage / "timer-floor" / f"probe-{index:03d}"
+        require_snapshot_identity(probe["snapshot_absolute"], probe, "timer floor probe", 0o555)
+        require_execution_identity(probe, "timer floor probe", 0o555)
         result = execute_process(
-            [str(probe["snapshot_absolute"])],
+            [str(probe["execution_absolute"])],
             cwd=sample_dir / "work",
             stdout_path=sample_dir / "stdout.bin",
             stderr_path=sample_dir / "stderr.bin",
             timeout_seconds=min(5.0, spec["timeout_seconds"]),
             environment=isolated_child_environment(environment, sample_dir / "work"),
+            pass_fds=(probe["execution_fd"],),
         )
+        require_snapshot_identity(probe["snapshot_absolute"], probe, "timer floor probe", 0o555)
+        require_execution_identity(probe, "timer floor probe", 0o555)
         require(result["process_outcome"] == "success", f"timer floor probe {index} failed: {result['process_outcome']}")
         samples.append({
             "run": index,
@@ -1071,12 +1388,16 @@ def run_conditions(
             run_workdir = run_dir / "work"
             stdout_path = run_dir / "stdout.bin"
             stderr_path = run_dir / "stderr.bin"
-            argv = expand_argv(condition["argv"], tool["snapshot_absolute"], target["snapshot_absolute"])
+            argv = expand_argv(condition["argv"], tool["execution_absolute"], target["execution_absolute"])
             recorded_argv = expand_argv(
                 condition["argv"],
                 path_from_workdir(tool["snapshot_absolute"], run_workdir),
                 path_from_workdir(target["snapshot_absolute"], run_workdir),
             )
+            require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool['id']}", 0o555)
+            require_snapshot_identity(target["snapshot_absolute"], target, f"target {target['id']}", 0o444)
+            require_execution_identity(tool, f"tool {tool['id']}", 0o555)
+            require_execution_identity(target, f"target {target['id']}", 0o444)
             result = execute_process(
                 argv,
                 cwd=run_workdir,
@@ -1084,7 +1405,12 @@ def run_conditions(
                 stderr_path=stderr_path,
                 timeout_seconds=spec["timeout_seconds"],
                 environment=isolated_child_environment(environment, run_workdir),
+                pass_fds=(tool["execution_fd"], target["execution_fd"]),
             )
+            require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool['id']}", 0o555)
+            require_snapshot_identity(target["snapshot_absolute"], target, f"target {target['id']}", 0o444)
+            require_execution_identity(tool, f"tool {tool['id']}", 0o555)
+            require_execution_identity(target, f"target {target['id']}", 0o444)
             wall_seconds = result["wall_time_ns"] / 1_000_000_000
             throughput = (target["size_bytes"] / (1024 * 1024)) / wall_seconds if wall_seconds > 0 else None
             timing_class = (
@@ -1175,11 +1501,59 @@ def write_rows(path: Path, rows: list[dict[str, Any]]) -> None:
             writer.writerow({field: render_row_value(row.get(field)) for field in ROW_FIELDS})
 
 
+def require_campaign_artifact_identities(
+    *,
+    stage: Path,
+    tools: dict[str, dict[str, Any]],
+    timer_floor: dict[str, Any],
+    rows: list[dict[str, Any]],
+) -> None:
+    for tool_id, tool in tools.items():
+        version = tool["version_result"]
+        for stream in ("stdout", "stderr"):
+            require_artifact_identity(
+                stage / tool[f"version_{stream}_path"],
+                expected_size=version[f"{stream}_bytes"],
+                expected_sha256=version[f"{stream}_sha256"],
+                label=f"tool {tool_id} version {stream}",
+            )
+
+    for sample in timer_floor["samples"]:
+        for stream in ("stdout", "stderr"):
+            require_artifact_identity(
+                stage / sample[f"{stream}_path"],
+                expected_size=sample[f"{stream}_bytes"],
+                expected_sha256=sample[f"{stream}_sha256"],
+                label=f"timer floor sample {sample['run']} {stream}",
+            )
+
+    encoded_timer_floor = (
+        json.dumps(timer_floor, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+    require_artifact_identity(
+        stage / "timer-floor.json",
+        expected_size=len(encoded_timer_floor),
+        expected_sha256=sha256_bytes(encoded_timer_floor),
+        label="timer floor artifact",
+    )
+
+    for row in rows:
+        for stream in ("stdout", "stderr"):
+            require_artifact_identity(
+                stage / row[f"{stream}_path"],
+                expected_size=row[f"{stream}_bytes"],
+                expected_sha256=row[f"{stream}_sha256"],
+                label=f"row {row['run_id']} {stream}",
+            )
+
+
 def strip_runtime_paths(value: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for key in sorted(value):
         record = dict(value[key])
         record.pop("snapshot_absolute", None)
+        record.pop("execution_absolute", None)
+        record.pop("execution_fd", None)
         output.append(record)
     return output
 
@@ -1205,6 +1579,8 @@ def build_manifest(
     primary = sum(row["included_in_primary_summary"] is True for row in rows)
     probe_record = dict(probe)
     probe_record.pop("snapshot_absolute", None)
+    probe_record.pop("execution_absolute", None)
+    probe_record.pop("execution_fd", None)
     return {
         "schema_version": RUNNER_SCHEMA_VERSION,
         "campaign_id": spec["campaign_id"],
@@ -1217,8 +1593,12 @@ def build_manifest(
             **runner_record,
             "python_standard_library_only": True,
             "measurement_api": "time.monotonic_ns + os.wait4",
-            "resource_scope": "direct measured child; descendant resources are not aggregated",
+            "resource_scope": WAIT4_RESOURCE_SCOPE,
             "process_isolation": "new session/process group per run",
+            "execution_input_protection": (
+                "write-sealed Linux memfd copies bound to the retained tool, target, "
+                "and timer-probe snapshot hashes"
+            ),
             "transactional_publication": True,
         },
         "spec": {
@@ -1234,6 +1614,9 @@ def build_manifest(
             "cache_policy": spec["cache_policy"],
             "failed_rows_retained": True,
             "fail_campaign_on_error": spec["fail_campaign_on_error"],
+            "retained_artifact_identity_reconciliation": (
+                "version, timer-floor, stdout, and stderr bytes are rechecked after the final measured child exits"
+            ),
             "child_environment": "fixed C/UTC/PATH plus per-command HOME, TMPDIR, and XDG roots",
             "reserved_environment_keys": sorted(RESERVED_ENVIRONMENT_KEYS),
             "timer_floor_interpretation": "single-process results below the recorded floor require a larger target or future reviewed batching",
@@ -1275,6 +1658,9 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
     stage = output_root / f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
     require(not stage.exists(), f"staging path already exists: {stage}")
     stage.mkdir(mode=0o700)
+    tools: dict[str, dict[str, Any]] = {}
+    targets: dict[str, dict[str, Any]] = {}
+    probe: dict[str, Any] | None = None
 
     try:
         spec_snapshot = stage / "inputs" / "spec" / "campaign.json"
@@ -1299,9 +1685,43 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         subreaper_enabled = enable_subreaper()
         environment = command_environment(spec.get("environment", {}))
         tools, targets, probe = snapshot_inputs(spec, spec_path.parent, stage, environment)
+        assert probe is not None
+        require_campaign_snapshot_identities(
+            spec_snapshot=spec_snapshot,
+            spec_record=spec_record,
+            runner_snapshot=runner_snapshot,
+            runner_record=runner_record,
+            tools=tools,
+            targets=targets,
+            probe=probe,
+        )
         floor = timer_floor_campaign(spec, stage, probe, environment)
+        require_campaign_snapshot_identities(
+            spec_snapshot=spec_snapshot,
+            spec_record=spec_record,
+            runner_snapshot=runner_snapshot,
+            runner_record=runner_record,
+            tools=tools,
+            targets=targets,
+            probe=probe,
+        )
         rows = run_conditions(spec, stage, tools, targets, floor, environment)
         write_rows(stage / "rows.tsv", rows)
+        require_campaign_artifact_identities(
+            stage=stage,
+            tools=tools,
+            timer_floor=floor,
+            rows=rows,
+        )
+        require_campaign_snapshot_identities(
+            spec_snapshot=spec_snapshot,
+            spec_record=spec_record,
+            runner_snapshot=runner_snapshot,
+            runner_record=runner_record,
+            tools=tools,
+            targets=targets,
+            probe=probe,
+        )
         require(file_identity(spec_path)["sha256"] == spec_source_identity["sha256"], "campaign spec changed during execution")
         require(file_identity(runner_source)["sha256"] == runner_source_identity["sha256"], "diagnostic runner source changed during execution")
         manifest = build_manifest(
@@ -1327,18 +1747,35 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         if stage.exists():
             shutil.rmtree(stage, ignore_errors=True)
         raise
+    finally:
+        close_execution_inputs(tools, targets, probe)
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run a Sprint 11 diagnostic benchmark campaign")
-    parser.add_argument("--spec", required=True, type=Path, help="diagnostic campaign JSON specification")
-    parser.add_argument("--output-root", required=True, type=Path, help="directory that receives the campaign tree")
+    parser.add_argument("--platform-check", action="store_true", help="check required Linux runner facilities and exit")
+    parser.add_argument("--spec", type=Path, help="diagnostic campaign JSON specification")
+    parser.add_argument("--output-root", type=Path, help="directory that receives the campaign tree")
     parser.add_argument("--campaign-id", help="safe unique campaign identifier override")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.platform_check:
+        if args.spec is not None or args.output_root is not None or args.campaign_id is not None:
+            parser.error("--platform-check cannot be combined with campaign arguments")
+    elif args.spec is None or args.output_root is None:
+        parser.error("--spec and --output-root are required for a campaign")
+    return args
 
 
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
+    if args.platform_check:
+        try:
+            creation_mode = diagnostic_platform_preflight()
+        except (OSError, RunnerError, ValueError, subprocess.SubprocessError) as exc:
+            print(f"diagnostic-runner-platform-check: error: {exc}", file=sys.stderr)
+            return 2
+        print(f"diagnostic-runner-platform-check: ok memfd_exec={creation_mode} write_seals=4")
+        return 0
     install_signal_handlers()
     try:
         final, exit_code = run_campaign(args.spec, args.output_root, args.campaign_id)

@@ -50,6 +50,11 @@
 /benchmarks/corpus/*.elf
 /benchmarks/corpus/*.tar
 /benchmarks/corpus/*.tar.gz
+/benchmarks/corpus/generated/
+
+# Local application artifacts and Windows alternate-data-stream copies
+/S??-P???-complete.patch
+*:Zone.Identifier
 
 # Logs and temporary files
 *.log

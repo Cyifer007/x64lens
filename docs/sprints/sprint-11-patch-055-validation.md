@@ -59,8 +59,12 @@ sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 se
 
 The diagnostic runner smoke must prove:
 
-- retained runner, exact campaign specification, tool, and target snapshots
-  match their source SHA-256 values;
+- retained runner, exact campaign specification, tool, target, and timer-probe
+  files match their source SHA-256 values;
+- tools, targets, and timer probes execute through write-sealed Linux `memfd`
+  copies whose identities match the retained files;
+- the diagnostic platform check executes an explicitly requested `MFD_EXEC`
+  memfd where supported and preserves an older-kernel `EINVAL` fallback;
 - version output contains the declared tool version;
 - timer-floor probes preserve every sample;
 - warmup rows are retained but excluded from the primary measured set;
@@ -68,6 +72,9 @@ The diagnostic runner smoke must prove:
 - each child uses isolated home, temporary, cache, configuration, and data
   roots under its retained work directory;
 - process stdout and stderr sizes and hashes match retained artifacts;
+- transient retained-file mutation cannot change the bytes consumed by a
+  measured child, and persistent version, timer, or prior-row artifact mutation
+  rejects publication;
 - schema `0.2.0` count extraction occurs after timing;
 - a nonzero exit and a timeout both remain in `rows.tsv`;
 - timeout cleanup terminates and reaps a descendant that escapes the measured process group;
@@ -78,8 +85,14 @@ The diagnostic runner smoke must prove:
 - reserved locale, path, home, temporary, and XDG environment keys cannot be
   overridden by a condition;
 - mutation of the source specification during execution fails before publication;
+- omission of the required `publication_eligible:false` declaration rejects the
+  specification;
 - a symlink or other non-regular file in the result tree rejects publication;
 - no staging directory remains after success or failure.
+
+The measured-child integrity tests do not model a concurrent external writer
+with the same user identity. Run the campaign in an unshared workspace and
+reauthenticate retained evidence before any later promotion.
 
 ## Reference diagnostic command
 

@@ -115,8 +115,10 @@ later sprints rather than Patch 037:
 ### Sprint 11: diagnostic benchmark foundation
 
 - [x] High-resolution standard-library runner with monotonic nanosecond timing,
-  Linux direct-child CPU/max-RSS capture, retained runner/spec identity, immutable tool/target snapshots, failed-row
-  retention, process-group cleanup, and transactional result publication.
+  accurately scoped Linux `wait4` CPU/max-RSS capture, retained runner/spec identity,
+  hashed tool/target retention, write-sealed execution copies, final artifact
+  reconciliation, failed-row retention, process-group cleanup, and
+  transactional result publication.
 - [ ] Provisional reproducible corpus with hashes, build commands, and licenses.
 - [x] Timer-floor samples, below-floor labels, warmup retention, alternating
   order, and explicit warm/uncontrolled cache policy.
@@ -489,8 +491,9 @@ Deferred capability work remains evidence-gated:
 
 Patch 055 establishes the diagnostic runner and task-scope foundation without
 changing the analyzer runtime. Every campaign is explicitly mutable diagnostic
-evidence, snapshots the bytes it executes and analyzes, retains failed rows,
-measures a timer floor, and publishes complete result trees without replacing an
+evidence, retains hashed inputs, executes write-sealed byte-identical copies,
+retains failed rows, measures a timer floor, reconciles captured artifacts after
+the final child, and publishes complete result trees without replacing an
 existing identity.
 
 The patch also closes two Patch 054 validation false negatives. Roadmap
@@ -502,3 +505,19 @@ derived from observed values.
 
 Remaining Sprint 11 priorities are corpus generation, baseline adapters,
 development summaries, and the Sprint 12-14 engineering gap register.
+
+## Sprint 11 Patch 056 update
+
+Patch 056 completes the first provisional-corpus regeneration surface:
+
+- [x] project-authored freestanding source and Apache-2.0 license binding;
+- [x] 24-target GCC/Clang, `O0`/`O2`, role, and hardening matrix;
+- [x] exact command, source, builder, tool, environment, output, and hash records;
+- [x] bounded ELF generation checks without target execution;
+- [x] two-build byte/mode/mtime reproducibility;
+- [x] interruption cleanup, semantic tamper rejection, and no-replace publication;
+- [x] generated-corpus Git, Docker, and public-bundle exclusion.
+
+Remaining Sprint 11 priorities are normalized baseline adapters, corpus-backed
+diagnostic rows, development summaries, coverage-definition inputs, and the
+Sprint 12-14 engineering gap register.

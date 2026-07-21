@@ -319,17 +319,35 @@ A sprint closes only when its plan, retrospective, active roadmap, release miles
 ## Diagnostic runner evidence rule
 
 A high-resolution diagnostic campaign must retain the exact specification and
-runner source, execute immutable snapshots of the tool and target, preserve
-source and snapshot hashes, retain the exact
-campaign-relative command, and record every warmup, measured, failed, signaled,
-timed-out, or extractor-failed row. Tool output must be captured before
-post-process extraction so parsing work does not contaminate child timing.
+runner source, preserve source and retained-file hashes, and execute
+byte-identical tool and target copies held in write-sealed Linux `memfd`
+objects. The retained campaign-relative replay command must resolve from its
+recorded working directory to the corresponding retained files; the manifest
+must disclose the sealed execution-path model. Every warmup, measured, failed,
+signaled, timed-out, or extractor-failed row is retained. Tool output must be
+captured before post-process extraction so parsing work does not contaminate
+child timing.
 
 Each condition runs in its own process group. Timeout and interruption handling
 must terminate and reap same-group helpers and descendants adopted by the Linux
-subreaper even when they escape into another session. `wait4` CPU and RSS fields
-describe the direct measured child; descendant resources are not aggregate facts. Result publication must be transactional
-and must not replace an existing campaign identity.
+subreaper even when they escape into another session. `wait4` CPU, fault, and
+context-switch fields describe the selected child plus descendants that child
+waited for; `wait4` maximum RSS is the maximum within that scope. Descendants
+reaped separately by the runner are excluded, so these fields are not complete
+process-tree accounting. After the final measured child exits, retained version
+output, timer evidence, and every row's stdout/stderr must still match their
+captured sizes and hashes. Result publication must be transactional and must
+not replace an existing campaign identity.
+
+The diagnostic platform gate must execute a write-sealed executable-`memfd`
+preflight. Supporting kernels receive an explicit `MFD_EXEC` request; fallback
+without that flag is limited to the `EINVAL` behavior of older kernels. A host
+policy that prohibits executable memfds is a prerequisite failure.
+
+Measured descendants are inside this integrity boundary. A concurrent external
+process with the same user identity is not: it can mutate a diagnostic tree
+during or after publication. Campaign workspaces must exclude such writers, and
+any evidence selected for promotion must be authenticated again.
 
 Measured children use fixed locale, timezone, and executable-path settings plus
 per-command private home, temporary, cache, configuration, and data roots. A
@@ -359,3 +377,25 @@ authorities. A checker must not rely only on machine files that can be mutated i
 lockstep, and its success output must render observed values rather than fixed
 expected prose. Every reproduced false negative receives a permanent negative
 regression.
+
+## Provisional corpus regeneration rule
+
+A generated diagnostic corpus must be derived from tracked source and a
+versioned manifest, retain source/license/tool/command/output identity, reject
+reserved environment overrides, and publish only after complete integrity
+validation. Generated targets are never executed, remain ignored, and do not
+enter ordinary public source or Docker artifacts.
+
+Compiler commands must use bounded output capture, force the recorded linker
+selection rather than merely name it, isolate each command in a new session,
+and reap both same-group and subreaper-adopted descendants after success,
+timeout, or interruption. A post-spawn signal may be deferred only until the
+child is registered; it must then terminate the complete observed process tree
+before staging cleanup.
+
+Corpus regeneration must fail closed on compiler failure, timeout, signal,
+unsafe member type, input mutation, malformed ELF output, checksum/semantic
+mismatch, or an existing final identity. A stable corpus identifier is
+no-replace; rebuilding it requires explicit removal or a new identifier.
+Diagnostic corpus labels must not preempt analyzer loader or mitigation
+contracts.

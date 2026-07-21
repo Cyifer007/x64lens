@@ -101,12 +101,41 @@ def main() -> int:
         require(all(row["scored_candidate_count"] == "11" for row in rows), "controlled score count mismatch")
         require(manifest["outcomes"]["row_count"] == 8, "manifest row count mismatch")
         require(manifest["outcomes"]["failure_row_count"] == 0, "manifest recorded a reference failure")
-        require("direct measured child" in manifest["runner"]["resource_scope"], "resource boundary missing")
+        resource_scope = manifest["runner"]["resource_scope"]
+        require(
+            "including descendants that child waited for" in resource_scope
+            and "descendants reaped separately by the runner are excluded" in resource_scope,
+            "wait4 resource boundary missing",
+        )
+        require(
+            "write-sealed Linux memfd copies" in manifest["runner"]["execution_input_protection"],
+            "sealed execution-input policy missing",
+        )
+        require(
+            "rechecked after the final measured child exits"
+            in manifest["policies"]["retained_artifact_identity_reconciliation"],
+            "retained-artifact reconciliation policy missing",
+        )
         require(sha256(result / manifest["runner"]["snapshot_path"]) == manifest["runner"]["sha256"], "runner snapshot identity mismatch")
         require(sha256(result / manifest["spec"]["snapshot_path"]) == manifest["spec"]["sha256"], "spec snapshot identity mismatch")
 
         tools = {item["id"]: item for item in manifest["tools"]}
         targets = {item["id"]: item for item in manifest["targets"]}
+        execution_records = [*tools.values(), *targets.values(), manifest["timer_floor_probe"]]
+        for record in execution_records:
+            require(record["execution_protection"] == "linux_memfd_write_sealed", "sealed execution protection missing")
+            require(record["execution_sha256"] == record["sha256"], "sealed execution hash mismatch")
+            require(record["execution_size_bytes"] == record["size_bytes"], "sealed execution size mismatch")
+            require("execution_absolute" not in record and "execution_fd" not in record, "runtime execution handle leaked")
+        for record in [*tools.values(), manifest["timer_floor_probe"]]:
+            require(
+                record["execution_memfd_creation"] in {"explicit_mfd_exec", "legacy_implicit_exec"},
+                "executable memfd creation policy missing",
+            )
+        require(
+            all(record["execution_memfd_creation"] == "nonexecutable" for record in targets.values()),
+            "target memfd execution policy mismatch",
+        )
         require(tools["x64lens"]["sha256"] == sha256(ANALYZER), "analyzer snapshot hash mismatch")
         require(targets["controlled-gadgets"]["sha256"] == sha256(TARGET), "target snapshot hash mismatch")
         version_command = tools["x64lens"]["version_command"]

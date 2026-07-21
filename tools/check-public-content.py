@@ -33,6 +33,7 @@ TEXT_BASENAMES = {"Makefile", "Dockerfile"}
 SELF_EXCLUSIONS: frozenset[str] = frozenset()
 PATH_EXCLUSIONS = (
     "tests/bin/", "tests/results/", "tests/invalid/", "benchmarks/results/",
+    "benchmarks/corpus/generated/",
     ".local/", ".codex/", ".codex-log/", ".agents/",
 )
 

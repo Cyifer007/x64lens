@@ -83,13 +83,57 @@ Set `DIAGNOSTIC_CAMPAIGN_ID` to choose a stable local result identity. Campaigns
 are written under `benchmarks/results/diagnostic/` and remain ignored until a
 later evidence-promotion decision.
 
-Each campaign retains the runner and exact specification, immutable tool and target snapshots, isolated per-command environment roots, observed tool version
-output, timer-floor samples, warmup and measured rows, direct-child process resource data,
-stdout/stderr artifacts, and a manifest. Failed rows are preserved. Campaigns
-are explicitly diagnostic, mutable, and not publication eligible.
+Each campaign retains hashed runner, exact-specification, tool, target, and
+timer-probe files. The measured child receives byte-identical, write-sealed
+Linux `memfd` copies of the tool, target, and probe; recorded replay commands
+resolve campaign-relatively to the retained files. Campaigns also retain
+isolated per-command environment roots, observed tool version output,
+timer-floor samples, warmup and measured rows, Linux `wait4` resource data for
+the selected child, stdout/stderr artifacts, and a manifest. The runner
+reconciles version, timer, and row artifact identities after the final measured
+child exits. Resource counters include descendants the selected child waited
+for, but not descendants reaped separately by the runner; maximum RSS is not a
+process-tree sum. Failed rows are preserved. Campaigns are explicitly
+diagnostic, mutable, and not publication eligible.
+
+`make diagnostic-tools-check` executes a sealed executable-`memfd` preflight.
+On kernels that support `MFD_EXEC`, the runner requests it explicitly; an
+`EINVAL` retry without that flag supports older kernels. A host policy that
+prohibits executable memfds fails this prerequisite rather than degrading to
+mutable execution input.
+
+The campaign-integrity boundary covers the runner and measured descendants.
+Concurrent external processes with the same user identity are outside that
+boundary and can mutate diagnostic evidence, including after publication.
+Run campaigns in a workspace not shared with such writers and authenticate any
+evidence again before promotion.
 
 The initial reference specification contains gadget JSON and analyze JSON
 command conditions. It deliberately contains no scanner-only condition because
 the current CLI has no report-suppressed scanner path. The two JSON commands
 share the current analysis body and remain a command-identity parity pair rather
 than independent work scopes.
+
+## Sprint 11 Patch 056 provisional corpus
+
+Patch 056 adds a versioned 24-target GCC/Clang corpus that is generated outside
+the analyzer and ignored by Git:
+
+```bash
+make corpus-tools-check
+make provisional-corpus-smoke
+make provisional-corpus-build
+make provisional-corpus-verify
+```
+
+The matrix covers `O0`/`O2`, requested non-PIE executable, PIE-style
+executable, and shared-object roles, plus minimal and hardened profiles. The
+builder retains source, license, specification, builder, compiler/linker,
+command, environment, output, checksum, and bounded ELF facts. It never
+executes a target and publishes only after late reauthentication, metadata
+normalization, fsync, and `renameat2(RENAME_NOREPLACE)`.
+
+Generated files live under `benchmarks/corpus/generated/` and are excluded from
+normal public source bundles and Docker contexts. They are mutable diagnostic
+evidence, not the Sprint 15-frozen corpus. See
+[`corpus/README.md`](corpus/README.md).

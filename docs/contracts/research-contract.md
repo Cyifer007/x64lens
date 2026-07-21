@@ -141,14 +141,37 @@ Diagnostic measurement may begin before corpus and method freeze when its purpos
 
 ## Sprint 11 diagnostic-row integrity rule
 
-Each diagnostic process execution retains immutable tool and target identity,
-exact command, task/profile identity, phase, order, timer-floor classification,
-wall/user/system time, direct-child maximum RSS, output size and hashes, exit or signal state,
-and extraction outcome. Warmups and failures remain in the raw dataset even
-when they are excluded from a primary measured summary. Descendant resource use
-is not aggregated into the direct-child row and must remain an explicit limitation.
+Each diagnostic process execution uses write-sealed tool and target bytes bound
+to hashed retained files, and records a resolvable campaign-relative replay
+command, task/profile identity, phase, order, timer-floor classification,
+wall/user/system time, `wait4` maximum RSS, output size and hashes, exit or
+signal state, and extraction outcome. Retained version, timer, stdout, and
+stderr artifacts are reconciled after the final child exits. Warmups and
+failures remain in the raw dataset even when they are excluded from a primary
+measured summary. The `wait4` counters
+include descendants the selected child waited for; descendants reaped separately
+by the runner are excluded, and maximum RSS is not a process-tree sum.
 
 A timer-floor threshold is an interpretation warning, not a value to subtract
 from measured time. Rows below the floor require a larger target or a separately
 reviewed batch method. A command label is not evidence that two commands perform
 different work.
+
+## Provisional corpus evidence rule
+
+Before campaign freeze, a provisional corpus may guide engineering only when
+its source, license, build matrix, exact commands, compiler/linker identities,
+environment, target hashes, and regeneration procedure are preserved. Generated
+targets must be marked diagnostic, unfrozen, and not publication eligible.
+
+Byte equality across two builds supports reproducibility only within the
+recorded tool and host stratum. It does not establish corpus representativeness,
+cross-toolchain reproducibility, task equivalence, mitigation accuracy, or a
+performance advantage. Requested build roles must remain separate from loader
+interpretation until analyzer evidence supports them.
+
+Compiler and linker paths must be reauthenticated before publication, and the
+command record must show how the requested linker was selected. This does not
+prove immunity to transient mutation by an unrelated same-UID writer or capture
+unbundled auxiliary compiler programs; those boundaries remain explicit until
+the Sprint 15 campaign authority adopts a stronger execution-input model.

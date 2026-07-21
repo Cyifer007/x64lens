@@ -344,8 +344,9 @@ The Sprint 5 and Sprint 6 smoke harnesses use GNU `time` and correctly validate 
 
 Patch 053 moves this work to Sprint 11. Patch 055 implements the first
 standard-library Python runner using a monotonic nanosecond clock and Linux
-per-child `wait4` resource information instead of cumulative parent-process
-measurements.
+`wait4` resource information for each selected child instead of cumulative
+parent-process measurements. A selected child's `wait4` record includes
+descendants that child waited for.
 
 Required runner behavior:
 
@@ -613,12 +614,14 @@ Patch 055 implements the first higher-resolution runner at
 
 - diagnostic-only campaign specifications with `frozen:false` and
   `publication_eligible:false`;
-- immutable runner, campaign-specification, tool, target, and timer-probe
-  snapshots bound by SHA-256;
+- hashed retained runner, campaign-specification, tool, target, and timer-probe
+  files, with tool, target, and probe execution through byte-identical
+  write-sealed Linux `memfd` copies;
 - declared version reconciliation against retained version-command output;
-- monotonic nanosecond wall timing and Linux direct-child user, system, maximum
-  RSS, fault, and context-switch measurements; descendant resource use is not
-  aggregated and remains a separately identified limitation;
+- monotonic nanosecond wall timing and Linux `wait4` user, system, maximum RSS,
+  fault, and context-switch measurements for the selected child; the counters
+  include descendants that child waited for, exclude descendants reaped
+  separately by the runner, and do not provide complete process-tree accounting;
 - retained stdout/stderr bytes and SHA-256 values;
 - distinct warmup and measured rows with listed or alternating order;
 - explicit warm or uncontrolled cache policy;
@@ -628,7 +631,20 @@ Patch 055 implements the first higher-resolution runner at
 - timeout, signal, nonzero-exit, same-group or escaped-descendant cleanup, and
   extractor outcomes;
 - failed-row retention;
+- post-child reconciliation of retained version, timer-floor, stdout, and
+  stderr artifacts against their captured sizes and SHA-256 values;
 - complete result-tree flush followed by atomic no-replace publication.
+
+`make diagnostic-tools-check` must execute the runner's sealed executable-`memfd`
+preflight. The runner requests `MFD_EXEC` on supporting kernels and retries
+without the flag only when an older kernel reports `EINVAL`. A host that
+prohibits executable memfds is incompatible with this runner.
+
+This integrity model contains measured children; it does not claim a filesystem
+sandbox against concurrent external processes running as the same user.
+Diagnostic result trees are mutable after publication. Campaign workspaces must
+exclude such writers, and retained evidence must be authenticated again before
+promotion.
 
 The reference specification uses one controlled target and the two truthful
 current JSON command identities. It validates the runner and report extractor;
@@ -639,3 +655,30 @@ The timer-floor threshold is a diagnostic warning boundary, not a correction
 factor. Patch 055 does not divide or subtract the floor from measured rows. A
 below-floor condition requires a larger target or a future reviewed batching
 method with explicit batch metadata.
+
+## Sprint 11 Patch 056 provisional corpus method
+
+The first provisional reproducible corpus is
+`s11-p056-provisional-v1`. It contains 24 project-generated targets from one
+freestanding Apache-2.0 source:
+
+```text
+GCC, Clang
+x O0, O2
+x requested non-PIE executable, PIE-style executable, shared object
+x minimal, hardened
+```
+
+Every build retains canonical command arguments, compiler-driver and requested-
+linker identity, a forced resolved-linker directory selector, target triple,
+source/license/builder hashes, fixed effective environment, output hash and
+size, target nonexecution state, and bounded ELF facts. Compiler output streams
+are bounded, and Linux subreaper cleanup covers same-group and escaped helpers.
+Two-build smoke validation requires byte-, mode-, and normalized-mtime identity.
+
+This matrix is diagnostic sampling, not a representative population and not a
+publication corpus. Compiler versions and auxiliary toolchain programs remain
+part of the recorded environment stratum. Requested `ET_DYN` roles are not
+release-facing PIE/DSO truth. Baseline comparisons may begin only after Patch
+057 defines commands, output scope, duplicates, alignment, and failure handling
+for each tool.

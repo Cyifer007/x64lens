@@ -20,7 +20,9 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install the baseline tools needed for local build/test parity.
+# Install the baseline tools needed for local build/test parity. GCC and
+# Clang are both development-only inputs for the provisional corpus matrix;
+# they do not become runtime dependencies of the freestanding analyzer.
 # Optional comparison tools such as ROPgadget, Ropper, and ropr remain
 # intentionally outside the image because publication baseline environments
 # should record tool installation and versions explicitly.
@@ -33,6 +35,7 @@ RUN apt-get update \
        gdb \
        git \
        gcc \
+       clang \
        make \
        nasm \
        python3 \

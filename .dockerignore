@@ -47,6 +47,7 @@ tests/toy-src/*.o
 tests/toy-src/*.bin
 tests/toy-src/*.elf
 benchmarks/results/*
+benchmarks/corpus/generated/
 !benchmarks/results/.gitkeep
 
 # Large, sensitive, or non-reproducible artifacts.
@@ -63,6 +64,8 @@ secrets/
 *.qcow2
 *.iso
 *.zip
+S??-P???-complete.patch
+*:Zone.Identifier
 
 # Editor/cache noise.
 .vscode/

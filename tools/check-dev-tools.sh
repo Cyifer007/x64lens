@@ -12,6 +12,7 @@
 #   --samples     Required to build the controlled toy corpus.
 #   --dev         Required for the normal local validation suite.
 #   --diagnostic  Required for the Sprint 11 reference diagnostic runner.
+#   --corpus      Required for provisional GCC/Clang corpus regeneration.
 #   --baselines   Optional baseline gadget tools; warnings by default.
 #   --analysis    Optional review/comparison tools; warnings by default.
 #   --all         Dev tools plus optional baseline and analysis tools.
@@ -21,6 +22,9 @@ set -euo pipefail
 MODE="${1:---dev}"
 REQUIRE_BASELINES="${REQUIRE_BASELINES:-0}"
 ROPR_MIN_CARGO="${ROPR_MIN_CARGO:-1.85.0}"
+DIAGNOSTIC_RUNNER="$(dirname -- "${BASH_SOURCE[0]}")/../benchmarks/scripts/diagnostic-runner.py"
+CORPUS_BUILDER="$(dirname -- "${BASH_SOURCE[0]}")/../benchmarks/scripts/build-provisional-corpus.py"
+CORPUS_SPEC="$(dirname -- "${BASH_SOURCE[0]}")/../benchmarks/corpus/specs/sprint11-provisional-corpus-v1.json"
 
 missing_required=0
 missing_optional=0
@@ -131,7 +135,7 @@ print_install_hint() {
     '' \
     'Ubuntu 24.04 development dependency install:' \
     '  sudo apt update' \
-    '  sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
+    '  sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip' \
     '  # Optional review/comparison tools:' \
     '  sudo apt install -y checksec radare2 strace shellcheck' \
     '' \
@@ -165,7 +169,33 @@ check_diagnostic() {
   check_build
   check_samples
   check_cmd python3 "standard-library diagnostic runner"
+  if have_command python3; then
+    local platform_result
+    if platform_result="$(python3 "$DIAGNOSTIC_RUNNER" --platform-check 2>&1)"; then
+      printf 'ok: %-18s %s\n' "python:linux-runner" "$platform_result"
+    else
+      printf 'missing: %-13s %s\n' "python:linux-runner" "$platform_result" >&2
+      missing_required=1
+    fi
+  fi
 }
+
+check_corpus() {
+  check_cmd python3 "standard-library provisional corpus builder"
+  check_cmd gcc "required GCC diagnostic-corpus compiler"
+  check_cmd clang "required Clang diagnostic-corpus compiler"
+  check_cmd ld.bfd "required GNU BFD linker for fixed corpus commands"
+  if have_command python3; then
+    local platform_result
+    if platform_result="$(python3 "$CORPUS_BUILDER" --spec "$CORPUS_SPEC" --platform-check 2>&1)"; then
+      printf 'ok: %-18s %s\n' "python:corpus" "$platform_result"
+    else
+      printf 'missing: %-13s %s\n' "python:corpus" "$platform_result" >&2
+      missing_required=1
+    fi
+  fi
+}
+
 
 check_dev() {
   check_build
@@ -210,6 +240,9 @@ case "$MODE" in
   --diagnostic)
     check_diagnostic
     ;;
+  --corpus)
+    check_corpus
+    ;;
   --baselines)
     check_baselines
     ;;
@@ -218,6 +251,7 @@ case "$MODE" in
     ;;
   --all)
     check_dev
+    check_corpus
     check_baselines
     check_analysis_tools
     ;;
@@ -226,6 +260,9 @@ case "$MODE" in
     echo
     echo "[required development tools]"
     check_dev || true
+    echo
+    echo "[required provisional corpus tools]"
+    check_corpus || true
     echo
     echo "[optional baseline tools]"
     check_baselines || true
@@ -245,7 +282,7 @@ case "$MODE" in
     fi
     ;;
   *)
-    echo "usage: $0 [--build|--samples|--dev|--diagnostic|--baselines|--analysis|--all|--doctor]" >&2
+    echo "usage: $0 [--build|--samples|--dev|--diagnostic|--corpus|--baselines|--analysis|--all|--doctor]" >&2
     exit 2
     ;;
 esac
@@ -274,6 +311,8 @@ case "$MODE" in
   --build) echo "build-tools-check: ok" ;;
   --samples) echo "sample-tools-check: ok" ;;
   --dev) echo "dev-tools-check: ok" ;;
+  --diagnostic) echo "diagnostic-tools-check: ok" ;;
+  --corpus) echo "corpus-tools-check: ok" ;;
   --baselines) echo "baseline-tools-check: ok" ;;
   --analysis) echo "analysis-tools-check: ok" ;;
   --all) echo "full-tools-check: ok" ;;

@@ -1410,11 +1410,14 @@ sprint10-closeout-smoke: ok sprint=10 patches=9 families=11 exact_patterns=25 se
 ```
 
 The runner smoke uses generated tools and targets in a temporary directory. It
-proves retained runner/spec/tool/target snapshots, declared-version reconciliation, monotonic and
-`wait4` direct-child metrics, timer-floor preservation, warmup/measured row separation,
-alternating order, output hashes, post-timing JSON extraction, nonzero and
-timeout retention, escaped-descendant cleanup, invalid diagnostic-spec rejection, no-replace publication, and staging
-cleanup.
+proves retained runner/spec/tool/target identities, write-sealed execution
+copies, declared-version reconciliation, monotonic timing, the Linux `wait4`
+selected-child and waited-descendant resource scope, timer-floor preservation,
+warmup/measured row separation, alternating order, output hashes, final
+artifact-identity reconciliation, post-timing JSON extraction, nonzero and
+timeout retention, escaped-descendant cleanup, invalid diagnostic-spec
+rejection, transient and persistent mutation handling, no-replace publication,
+spawn-window interruption cleanup, and staging cleanup.
 
 The controlled repository campaign is:
 
@@ -1434,3 +1437,40 @@ Patch acceptance still requires strict ShellCheck, the complete native
 aggregate, capacity and malformed-input no-partial-output behavior, qualified
 container validation, and native/container report parity. The diagnostic runner
 must not change those runtime facts.
+
+## Sprint 11 Patch 056 provisional corpus validation
+
+Focused commands:
+
+```bash
+make corpus-tools-check
+make provisional-corpus-smoke
+```
+
+Expected result:
+
+```text
+corpus-tools-check: ok
+provisional-corpus-smoke: ok targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=2 capture_limits=1
+```
+
+The smoke gate performs two complete temporary builds and compares every
+retained file, mode, and normalized timestamp. It validates exact matrix
+membership, source/license/tool/command/output relationships, exact canonical
+command reconstruction, bounded ELF facts, explicit diagnostic eligibility,
+fixed environment policy, target nonexecution, late reauthentication,
+no-replace publication, checksum-regeneration tamper rejection, unsafe-member
+rejection, escaped-descendant cleanup, and post-spawn interruption cleanup.
+
+Manual retained-result validation:
+
+```bash
+make clean-provisional-corpus
+make provisional-corpus-build
+make provisional-corpus-verify
+```
+
+Generated corpus data remains outside public source and Docker artifacts. Full
+Patch 056 acceptance still requires strict ShellCheck, the complete native
+aggregate, capacity and malformed-input contracts, qualified Docker validation,
+and native/container JSON parity.

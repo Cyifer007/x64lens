@@ -28,7 +28,7 @@ public-release boundary hardening. Patches 046 through 049 establish ordered
 multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
 050 completes their coarse effects, Patch 051 adds architectural effects and two
 reviewed scores, and Patch 052 corrects the resulting effect and validation
-findings. Patch 055 implements the first Sprint 11 high-resolution runner and task-definition tranche. Provisional corpus, baseline, summary, and gap-register work remains diagnostic. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
+findings. Patches 055 and 056 implement the high-resolution runner, truthful task authority, and first 24-target source-reproducible provisional corpus. Baseline adapters, summaries, corpus-backed rows, and the gap register remain diagnostic work. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -269,8 +269,22 @@ caller's working directory.
 
 ## Sprint 11 Patch 055 release-boundary update
 
-Patch 055 diagnostic campaign trees are development evidence only. Immutable
-snapshots, precise timing, failure retention, and transactional publication
-improve evidence integrity but do not satisfy the preview corpus, baseline,
-freeze, or repeated-trial gates. The first controlled reference campaign cannot
-be relabeled as preview or publication evidence.
+Patch 055 diagnostic campaign trees are development evidence only. Hash-bound
+write-sealed execution inputs, precise timing, failure retention, final artifact
+reconciliation, and transactional publication improve evidence integrity but
+do not satisfy the preview corpus, baseline, freeze, or repeated-trial gates.
+The first controlled reference campaign cannot be relabeled as preview or
+publication evidence.
+
+## Sprint 11 Patch 056 release-gate update
+
+Patch 056 supplies the first source-, license-, command-, tool-, environment-,
+and output-authenticated provisional corpus. It advances the diagnostic
+measurement checkpoint but does not satisfy the preview corpus gate. The
+24-target matrix remains ignored, mutable, and explicitly
+`publication_eligible:false`.
+
+Before `v0.1.0-rc1`, Sprint 15 must replace or formally retain corpus membership
+under frozen toolchain, license, task, and environment authorities. Any target
+promoted from this provisional corpus must be reauthenticated and incorporated
+under the frozen campaign identifier.

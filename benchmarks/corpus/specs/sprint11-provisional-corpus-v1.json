@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "corpus_id": "s11-p056-provisional-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "target_count": 24,
+  "source": {
+    "id": "freestanding-control-flow-v1",
+    "path": "../sources/sprint11-provisional-control-flow.c",
+    "sha256": "89a408bbb6153cd70ac37db7c78cffbe1fb4a6de13f15537b8c28422864db8a3",
+    "license": "Apache-2.0",
+    "license_path": "../../../LICENSE",
+    "license_sha256": "84b2003e21a0205edc383afa769ecafc59de04e8a3415af95bb6b2dbf959381d",
+    "redistribution": "project-authored source; generated binaries are local diagnostic artifacts and are not committed"
+  },
+  "toolchains": [
+    {
+      "id": "gcc",
+      "command": "gcc",
+      "required": true
+    },
+    {
+      "id": "clang",
+      "command": "clang",
+      "required": true
+    }
+  ],
+  "linker": {
+    "id": "gnu-ld-bfd",
+    "command": "ld.bfd",
+    "driver_flag": "-fuse-ld=bfd"
+  },
+  "common_compile_flags": [
+    "-std=c11",
+    "-ffreestanding",
+    "-fno-builtin",
+    "-fno-ident",
+    "-fno-asynchronous-unwind-tables",
+    "-fno-unwind-tables",
+    "-fno-omit-frame-pointer",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "common_link_flags": [
+    "-nostdlib",
+    "-nodefaultlibs",
+    "-nostartfiles",
+    "-Wl,--build-id=none"
+  ],
+  "optimization_profiles": [
+    {
+      "id": "o0",
+      "flags": [
+        "-O0"
+      ]
+    },
+    {
+      "id": "o2",
+      "flags": [
+        "-O2"
+      ]
+    }
+  ],
+  "artifact_profiles": [
+    {
+      "id": "exec-nopie",
+      "output_suffix": ".elf",
+      "compile_flags": [
+        "-fno-pie"
+      ],
+      "link_flags": [
+        "-no-pie",
+        "-Wl,-e,_start"
+      ],
+      "expected_elf_type": "ET_EXEC",
+      "expected_dynamic": false,
+      "expected_interpreter": false,
+      "expected_entry_state": "nonzero"
+    },
+    {
+      "id": "exec-pie",
+      "output_suffix": ".elf",
+      "compile_flags": [
+        "-fPIE"
+      ],
+      "link_flags": [
+        "-pie",
+        "-Wl,--no-dynamic-linker",
+        "-Wl,-e,_start"
+      ],
+      "expected_elf_type": "ET_DYN",
+      "expected_dynamic": true,
+      "expected_interpreter": false,
+      "expected_entry_state": "nonzero"
+    },
+    {
+      "id": "shared",
+      "output_suffix": ".so",
+      "compile_flags": [
+        "-fPIC"
+      ],
+      "link_flags": [
+        "-shared"
+      ],
+      "expected_elf_type": "ET_DYN",
+      "expected_dynamic": true,
+      "expected_interpreter": false,
+      "expected_entry_state": "unconstrained"
+    }
+  ],
+  "hardening_profiles": [
+    {
+      "id": "minimal",
+      "compile_flags": [
+        "-fno-stack-protector",
+        "-fcf-protection=none"
+      ],
+      "link_flags": [
+        "-Wl,-z,norelro",
+        "-Wl,-z,execstack"
+      ],
+      "expected_stack_executable": true,
+      "expected_ibt": false,
+      "expected_shstk": false,
+      "expected_relro_when_dynamic": false
+    },
+    {
+      "id": "hardened",
+      "compile_flags": [
+        "-fstack-protector-strong",
+        "-fcf-protection=full"
+      ],
+      "link_flags": [
+        "-Wl,-z,relro",
+        "-Wl,-z,now",
+        "-Wl,-z,noexecstack"
+      ],
+      "expected_stack_executable": false,
+      "expected_ibt": true,
+      "expected_shstk": true,
+      "expected_relro_when_dynamic": true
+    }
+  ],
+  "build_environment": {
+    "LC_ALL": "C",
+    "LANG": "C",
+    "TZ": "UTC",
+    "SOURCE_DATE_EPOCH": "0",
+    "ZERO_AR_DATE": "1"
+  },
+  "limits": {
+    "timeout_seconds": 60,
+    "maximum_output_bytes": 16777216,
+    "maximum_log_bytes": 4194304
+  }
+}

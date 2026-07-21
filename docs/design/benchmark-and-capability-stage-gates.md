@@ -186,9 +186,12 @@ Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement. The r
 
 Patch 055 implements the first diagnostic runner and task-definition tranche:
 
-- standard-library monotonic timing and Linux direct-child resource capture, with descendant resources explicitly non-aggregate;
-- retained runner/specification identity plus immutable tool, target, and
-  timer-probe snapshots;
+- standard-library monotonic timing and Linux `wait4` resource capture whose
+  selected-child, waited-descendant, and separately reaped-descendant scopes are
+  explicit;
+- retained runner/specification identity plus hashed tool, target, and
+  timer-probe files executed through write-sealed Linux `memfd` copies;
+- final reconciliation of retained version, timer, stdout, and stderr artifacts;
 - retained warmup, measured, failed, signaled, timed-out, and extraction rows;
 - explicit timer-floor and cache/order policy;
 - process-group containment plus subreaper cleanup of escaped descendants;
@@ -201,3 +204,22 @@ This satisfies runner plumbing and initial task identity. It does not complete
 the Sprint 11 provisional corpus, baseline adapters, development summary, or
 gap register. The diagnostic stage remains mutable and the campaign-freeze gate
 remains Sprint 15.
+
+## Sprint 11 Patch 056 provisional corpus status
+
+Patch 056 completes the first corpus-regeneration tranche:
+
+- one project-authored Apache-2.0 freestanding source;
+- a 24-target GCC/Clang, optimization, requested-role, and hardening matrix;
+- exact source, license, builder, compiler-driver, requested-linker, command,
+  environment, output, and SHA-256 records;
+- two-build byte/mode/mtime reproducibility;
+- target nonexecution;
+- explicit `diagnostic`, `frozen=false`, and `publication_eligible=false` state;
+- signal-safe compiler cleanup, late reauthentication, and no-replace
+  publication; and
+- generated-corpus exclusion from Git, Docker, and ordinary public overlays.
+
+This advances but does not complete the Sprint 11 diagnostic gate. Patch 057
+still owns normalized baseline adapters, and Patch 058 owns corpus-backed
+summaries and the engineering gap register.

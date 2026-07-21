@@ -206,6 +206,8 @@ def forbidden_reason(member: MemberPath) -> str | None:
         if not (len(parts) >= 3 and parts[-3:] == ("benchmarks", "results", ".gitkeep")):
             if parts[-2:] != ("benchmarks", "results"):
                 return "generated benchmark result"
+    if contains_sequence(parts, ("benchmarks", "corpus", "generated")):
+        return "generated diagnostic corpus"
     if contains_sequence(parts, ("tests", "toy-src")) and basename in GENERATED_TOY_BASENAMES:
         return "generated toy binary"
 
