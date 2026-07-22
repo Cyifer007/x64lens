@@ -119,7 +119,7 @@ later sprints rather than Patch 037:
   hashed tool/target retention, write-sealed execution copies, final artifact
   reconciliation, failed-row retention, process-group cleanup, and
   transactional result publication.
-- [ ] Provisional reproducible corpus with hashes, build commands, and licenses.
+- [x] Provisional reproducible corpus with hashes, build commands, and licenses.
 - [x] Timer-floor samples, below-floor labels, warmup retention, alternating
   order, and explicit warm/uncontrolled cache policy.
 - [x] Truthful initial task authority: gadget JSON and analyze JSON are current
@@ -128,6 +128,9 @@ later sprints rather than Patch 037:
 - [ ] Add a scanner-only condition only through a reviewed instrumentation seam
   when diagnostic evidence justifies it.
 - [x] Initial planned baseline task records for ROPgadget, Ropper, and ropr.
+- [x] Patch 057 runner/corpus integrity correction: execution-sealed target
+  inputs, exact workspace/member closure, checked cleanup, safe clean path, and
+  non-root oracle parity.
 - [ ] Baseline adapters, normalized task definitions, and version locks.
 - [ ] Provisional corpus diagnostic campaign and development gap register.
 - [x] Diagnostic rows isolated from future frozen campaigns.
@@ -521,3 +524,22 @@ Patch 056 completes the first provisional-corpus regeneration surface:
 Remaining Sprint 11 priorities are normalized baseline adapters, corpus-backed
 diagnostic rows, development summaries, coverage-definition inputs, and the
 Sprint 12-14 engineering gap register.
+
+## Sprint 11 Patch 057 update
+
+Patch 057 resolves the confirmed diagnostic-integrity defects before expanding
+comparison scope:
+
+- target memfds require a kernel-enforced no-execute creation policy and
+  execution seal;
+- runner and corpus staging cleanup is checked and mode-robust;
+- compiler metadata commands leave an empty workspace and build commands may
+  leave only the named bounded output;
+- corpus verification requires the exact expected files and directories;
+- `clean-provisional-corpus` is phony and removes only the fully verified,
+  specification-derived corpus below its output root; and
+- checksum-regeneration probes run under non-root permissions.
+
+Normalized baseline adapters move to Patch 058. Development summaries and the
+engineering gap register move to Patch 059, followed by Sprint 11 closeout in
+Patch 060 unless later evidence requires another corrective boundary.

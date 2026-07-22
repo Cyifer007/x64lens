@@ -27,7 +27,7 @@ Then inside Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 git clone <repo-url>
 cd x64lens
 make scaffold-check
@@ -75,7 +75,7 @@ Install the standard development toolchain on Ubuntu 24.04 with:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 

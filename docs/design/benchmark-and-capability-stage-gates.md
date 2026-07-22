@@ -221,5 +221,14 @@ Patch 056 completes the first corpus-regeneration tranche:
 - generated-corpus exclusion from Git, Docker, and ordinary public overlays.
 
 This advances but does not complete the Sprint 11 diagnostic gate. Patch 057
-still owns normalized baseline adapters, and Patch 058 owns corpus-backed
-summaries and the engineering gap register.
+corrects the runner and corpus integrity findings. Patch 058 owns normalized
+baseline adapters, and Patch 059 owns corpus-backed summaries and the
+engineering gap register.
+
+## Sprint 11 Patch 057 integrity status
+
+The diagnostic gate now requires a non-executable execution-sealed target
+object, exact command-workspace and corpus-member closure, verified staging
+cleanup, and a manifest-recognized clean path. These are method-integrity gates,
+not capability or performance results. Baseline normalization remains open for
+Patch 058, and the gap register remains open for Patch 059.

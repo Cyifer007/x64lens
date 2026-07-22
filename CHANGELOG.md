@@ -8,6 +8,15 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 11 Patch 057 diagnostic-integrity correction: non-executable target
+  memfds sealed against execute-mode changes, verified staging cleanup, exact
+  compiler-workspace and published-member closure, and a manifest-derived safe
+  corpus clean path.
+- Regression coverage for direct target-execution attempts, mode-locked staging
+  trees, undeclared compiler side files, Make clean-path overrides, and non-root
+  checksum mutation probes.
+- ADR 0043 and the Patch 057 validation record.
+
 - Sprint 11 Patch 056 manifest-driven provisional corpus generation over one project-authored freestanding source: GCC and Clang, `O0` and `O2`, requested non-PIE/PIE/shared roles, and minimal/hardened profiles produce 24 ignored diagnostic ELF targets.
 - `make corpus-tools-check`, `make provisional-corpus-build`, `make provisional-corpus-verify`, `make provisional-corpus-smoke`, and `make clean-provisional-corpus`.
 - Transactional no-replace corpus publication with source/license/builder snapshots, exact command and tool identity, forced resolved-linker selection, bounded log capture, bounded ELF generation facts, fixed-environment enforcement, late reauthentication, exact checksums, normalized metadata, subreaper cleanup, and regenerated-checksum semantic tamper rejection.
@@ -283,7 +292,7 @@ The project follows semantic versioning once the first public release is cut.
 ### Fixed
 
 - Corrected the Patch 055 diagnostic runner's resource-scope wording, explicit publication-eligibility requirement, spawn-window signal cleanup, immutable execution-input handling, and final retained-artifact reconciliation.
-- Removed the accidentally tracked local Patch 055 application diff and Windows `Zone.Identifier` stream; future root-level application patches and alternate-data-stream copies remain local-only.
+- Excluded root-level patch-application artifacts and Windows alternate-data-stream copies from source tracking, Docker contexts, and ordinary public bundles.
 - Hardened the Patch 056 corpus process lifecycle against post-spawn signal leakage and escaped `setsid` descendants; the smoke now covers both cleanup paths and cannot leave a live builder or helper during temporary-tree cleanup.
 
 - Correct contradictory Sprint 11 through Sprint 13 ownership left in active public prose after the Patch 053 roadmap transition.

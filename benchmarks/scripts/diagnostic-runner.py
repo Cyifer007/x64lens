@@ -37,7 +37,9 @@ import uuid
 RUNNER_SCHEMA_VERSION = 1
 EVIDENCE_CLASS = "diagnostic"
 PUBLICATION_ELIGIBLE = False
+MFD_NOEXEC_SEAL_FLAG = 0x0008
 MFD_EXEC_FLAG = 0x0010
+F_SEAL_EXEC_FLAG = 0x0020
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 SAFE_ENV = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 TASK_SCOPES = {
@@ -152,6 +154,66 @@ class RunnerInterrupted(RunnerError):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RunnerError(message)
+
+
+def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
+    """Remove one owned staging directory without following symlinks."""
+    os.fchmod(directory_fd, 0o700)
+    with os.scandir(directory_fd) as entries:
+        snapshot = list(entries)
+    for entry in snapshot:
+        metadata = entry.stat(follow_symlinks=False)
+        if stat.S_ISDIR(metadata.st_mode):
+            require(metadata.st_dev == device, f"{label} crosses a filesystem boundary: {entry.name}")
+            os.chmod(entry.name, 0o700, dir_fd=directory_fd, follow_symlinks=False)
+            child_fd = os.open(
+                entry.name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=directory_fd,
+            )
+            try:
+                observed = os.fstat(child_fd)
+                require(
+                    (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                    f"{label} directory changed during cleanup: {entry.name}",
+                )
+                _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
+            finally:
+                os.close(child_fd)
+            os.rmdir(entry.name, dir_fd=directory_fd)
+        else:
+            os.unlink(entry.name, dir_fd=directory_fd)
+
+
+def remove_staging_tree(path: Path, expected_parent: Path, label: str) -> None:
+    """Delete an exact same-parent staging tree and verify complete removal."""
+    parent = expected_parent.resolve(strict=True)
+    candidate = Path(os.path.abspath(path))
+    require(candidate.parent == parent, f"{label} is outside its expected parent")
+    metadata = os.lstat(candidate)
+    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
+    parent_fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0))
+    try:
+        os.chmod(candidate.name, 0o700, dir_fd=parent_fd, follow_symlinks=False)
+        directory_fd = os.open(
+            candidate.name,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=parent_fd,
+        )
+        try:
+            observed = os.fstat(directory_fd)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"{label} changed before cleanup",
+            )
+            _clear_directory_fd(directory_fd, label, metadata.st_dev)
+        finally:
+            os.close(directory_fd)
+        os.rmdir(candidate.name, dir_fd=parent_fd)
+        os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
+    require(not os.path.lexists(candidate), f"{label} survived cleanup")
 
 
 def positive_int(value: Any, name: str, *, minimum: int = 1) -> int:
@@ -291,7 +353,18 @@ def create_execution_memfd(label: str, *, executable: bool) -> tuple[int, str]:
     base_flags = getattr(os, "MFD_CLOEXEC", 0x0001) | getattr(os, "MFD_ALLOW_SEALING", 0x0002)
     name = f"x64lens-{label}"[:200]
     if not executable:
-        return os.memfd_create(name, base_flags), "nonexecutable"
+        try:
+            return (
+                os.memfd_create(
+                    name,
+                    base_flags | getattr(os, "MFD_NOEXEC_SEAL", MFD_NOEXEC_SEAL_FLAG),
+                ),
+                "explicit_mfd_noexec_seal",
+            )
+        except OSError as exc:
+            raise RunnerError(
+                "Linux MFD_NOEXEC_SEAL support is required to guarantee that measured target bytes cannot execute"
+            ) from exc
     try:
         return os.memfd_create(name, base_flags | getattr(os, "MFD_EXEC", MFD_EXEC_FLAG)), "explicit_mfd_exec"
     except OSError as exc:
@@ -303,16 +376,24 @@ def create_execution_memfd(label: str, *, executable: bool) -> tuple[int, str]:
             raise RunnerError(f"cannot create legacy executable Linux memfd: {fallback_exc}") from fallback_exc
 
 
-def add_execution_seals(fd: int, label: str) -> None:
-    required_seals = (
+def execution_seal_mask(*, executable: bool) -> int:
+    required = (
         fcntl.F_SEAL_SEAL
         | fcntl.F_SEAL_SHRINK
         | fcntl.F_SEAL_GROW
         | fcntl.F_SEAL_WRITE
     )
+    if not executable:
+        required |= getattr(fcntl, "F_SEAL_EXEC", F_SEAL_EXEC_FLAG)
+    return required
+
+
+def add_execution_seals(fd: int, label: str, *, executable: bool) -> int:
+    required_seals = execution_seal_mask(executable=executable)
     fcntl.fcntl(fd, fcntl.F_ADD_SEALS, required_seals)
     observed_seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
     require(observed_seals & required_seals == required_seals, f"cannot seal execution input: {label}")
+    return observed_seals
 
 
 def sealed_execution_copy(source: Path, label: str, expected_mode: int) -> dict[str, Any]:
@@ -341,7 +422,7 @@ def sealed_execution_copy(source: Path, label: str, expected_mode: int) -> dict[
                 f"cannot set sealed execution input mode for {label}; "
                 f"Linux memfd execution policy may prohibit executable memfds: {exc}"
             ) from exc
-        add_execution_seals(fd, label)
+        observed_seals = add_execution_seals(fd, label, executable=executable)
         execution_path = Path(f"/proc/self/fd/{fd}")
         identity = file_identity(execution_path)
         source_identity = file_identity(source)
@@ -353,11 +434,18 @@ def sealed_execution_copy(source: Path, label: str, expected_mode: int) -> dict[
         return {
             "execution_fd": fd,
             "execution_absolute": execution_path,
-            "execution_protection": "linux_memfd_write_sealed",
+            "execution_protection": (
+                "linux_memfd_write_sealed" if executable else "linux_memfd_noexec_write_sealed"
+            ),
             "execution_memfd_creation": creation_mode,
             "execution_sha256": identity["sha256"],
             "execution_size_bytes": identity["size_bytes"],
-            "execution_seals": ["seal", "shrink", "grow", "write"],
+            "execution_seals": (
+                ["seal", "shrink", "grow", "write"]
+                if executable
+                else ["seal", "shrink", "grow", "write", "exec"]
+            ),
+            "execution_seal_mask": observed_seals,
         }
     except BaseException:
         os.close(fd)
@@ -388,7 +476,7 @@ def diagnostic_platform_preflight() -> str:
                 "cannot make the diagnostic preflight memfd executable; "
                 f"Linux memfd execution policy rejected it: {exc}"
             ) from exc
-        add_execution_seals(fd, "platform-preflight")
+        add_execution_seals(fd, "platform-preflight", executable=True)
         completed = subprocess.run(
             [f"/proc/self/fd/{fd}"],
             stdin=subprocess.DEVNULL,
@@ -405,9 +493,43 @@ def diagnostic_platform_preflight() -> str:
             "sealed executable memfd preflight failed: "
             + completed.stderr.decode("utf-8", errors="replace").strip(),
         )
-        return creation_mode
     finally:
         os.close(fd)
+
+    noexec_fd, noexec_creation_mode = create_execution_memfd("platform-noexec-preflight", executable=False)
+    try:
+        with Path("/bin/true").open("rb") as handle:
+            while chunk := handle.read(1024 * 1024):
+                write_all(noexec_fd, chunk)
+        os.fchmod(noexec_fd, 0o444)
+        add_execution_seals(noexec_fd, "platform-noexec-preflight", executable=False)
+        noexec_path = f"/proc/self/fd/{noexec_fd}"
+        try:
+            os.fchmod(noexec_fd, 0o555)
+        except OSError:
+            pass
+        else:
+            raise RunnerError("MFD_NOEXEC_SEAL allowed executable mode to be added")
+        try:
+            denied = subprocess.run(
+                [noexec_path],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                pass_fds=(noexec_fd,),
+                timeout=5,
+                check=False,
+            )
+        except OSError as exc:
+            require(
+                exc.errno in {errno.EACCES, errno.EPERM},
+                f"unexpected MFD_NOEXEC_SEAL execution error: {exc}",
+            )
+        else:
+            require(denied.returncode != 0, "MFD_NOEXEC_SEAL target executed during platform preflight")
+        return f"{creation_mode};target={noexec_creation_mode}"
+    finally:
+        os.close(noexec_fd)
 
 
 def require_execution_identity(record: dict[str, Any], label: str, expected_mode: int) -> None:
@@ -419,12 +541,7 @@ def require_execution_identity(record: dict[str, Any], label: str, expected_mode
         stat.S_IMODE(metadata.st_mode) == expected_mode,
         f"{label} sealed execution copy mode changed during execution",
     )
-    required_seals = (
-        fcntl.F_SEAL_SEAL
-        | fcntl.F_SEAL_SHRINK
-        | fcntl.F_SEAL_GROW
-        | fcntl.F_SEAL_WRITE
-    )
+    required_seals = execution_seal_mask(executable=bool(expected_mode & 0o111))
     observed_seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
     require(observed_seals & required_seals == required_seals, f"{label} execution seals changed")
     identity = file_identity(path)
@@ -1657,12 +1774,12 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
     require(not final.exists(), f"campaign result already exists: {final}")
     stage = output_root / f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
     require(not stage.exists(), f"staging path already exists: {stage}")
-    stage.mkdir(mode=0o700)
     tools: dict[str, dict[str, Any]] = {}
     targets: dict[str, dict[str, Any]] = {}
     probe: dict[str, Any] | None = None
 
     try:
+        stage.mkdir(mode=0o700)
         spec_snapshot = stage / "inputs" / "spec" / "campaign.json"
         spec_snapshot.parent.mkdir(parents=True, exist_ok=True)
         spec_snapshot.write_bytes(spec_raw)
@@ -1743,9 +1860,17 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         failures = manifest["outcomes"]["failure_row_count"]
         exit_code = 1 if failures and spec["fail_campaign_on_error"] else 0
         return final, exit_code
-    except BaseException:
-        if stage.exists():
-            shutil.rmtree(stage, ignore_errors=True)
+    except BaseException as failure:
+        cleanup_failure: BaseException | None = None
+        if os.path.lexists(stage):
+            try:
+                remove_staging_tree(stage, output_root, "diagnostic campaign staging tree")
+            except BaseException as exc:
+                cleanup_failure = exc
+        if cleanup_failure is not None:
+            raise RunnerError(
+                f"campaign failed with {type(failure).__name__}; staging cleanup also failed: {cleanup_failure}"
+            ) from failure
         raise
     finally:
         close_execution_inputs(tools, targets, probe)
@@ -1774,7 +1899,7 @@ def main(argv: list[str]) -> int:
         except (OSError, RunnerError, ValueError, subprocess.SubprocessError) as exc:
             print(f"diagnostic-runner-platform-check: error: {exc}", file=sys.stderr)
             return 2
-        print(f"diagnostic-runner-platform-check: ok memfd_exec={creation_mode} write_seals=4")
+        print(f"diagnostic-runner-platform-check: ok memfd={creation_mode} write_seals=4 noexec_seal=1")
         return 0
     install_signal_handlers()
     try:

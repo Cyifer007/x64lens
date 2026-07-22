@@ -4,8 +4,9 @@
 
 Active diagnostic measurement sprint after Sprint 10 Patch 054 closeout.
 Patches 055 and 056 implement the runner, task-definition, and provisional
-corpus foundations; baseline adapters, summaries, and the gap register remain
-active.
+corpus foundations. Patch 057 corrects the runner, corpus, cleanup, and
+validation integrity findings before measurement scope expands. Baseline
+adapters, summaries, and the gap register remain active.
 
 ## Sprint goal
 
@@ -22,8 +23,9 @@ campaign prematurely.
   exit status, signal state, tool hash, and target hash per row.
 - [x] Provisional 24-target GCC/Clang corpus across `O0`/`O2`, requested
   executable/PIE/shared roles, and minimal/hardened combinations.
-- [x] Hashed retained runner inputs, write-sealed diagnostic execution copies,
-  source/license/builder snapshots, compiler/linker identities, exact build
+- [x] Hashed retained runner inputs, executable write-sealed tool/probe copies,
+  non-executable execution-sealed target copies, source/license/builder
+  snapshots, compiler/linker identities, exact build
   commands, generated-output hashes, and environment metadata.
 - [x] Timer-floor measurement, below-floor labeling, warmup retention,
   counterbalanced ordering, and explicit warm/uncontrolled cache policy.
@@ -50,11 +52,15 @@ campaign prematurely.
    transactional regeneration workflow, including compiler, optimization,
    requested role, hardening, source, output, command, hash, environment, and
    license provenance.
-3. **Patch 057:** normalized ROPgadget, Ropper, and ropr task adapters with
+3. **Patch 057 (implemented candidate):** smallest diagnostic-integrity
+   correction for non-executable target inputs, exact corpus workspace/member
+   closure, checked staging cleanup, safe corpus removal, and non-root oracle
+   parity.
+4. **Patch 058:** normalized ROPgadget, Ropper, and ropr task adapters with
    version identity and failure-preserving rows.
-4. **Patch 058:** development summaries, coverage reconciliation inputs, and the
+5. **Patch 059:** development summaries, coverage reconciliation inputs, and the
    engineering gap register that directs Sprints 12 through 14.
-5. **Patch 059:** Sprint 11 closeout and diagnostic checkpoint review, subject to
+6. **Patch 060:** Sprint 11 closeout and diagnostic checkpoint review, subject to
    findings from the preceding patches.
 
 The exact later patch count remains evidence-driven; the sequence describes the
@@ -62,8 +68,9 @@ intended responsibility boundaries rather than a calendar guarantee.
 
 ## Acceptance criteria
 
-- [x] Every runner row is bound to write-sealed tool and target bytes whose
-  hashes match retained campaign files.
+- [x] Every runner row is bound to immutable tool and target bytes whose hashes
+  match retained campaign files; target inputs additionally require a kernel-
+  enforced execution seal.
 - [x] Failed runs, signals, timeouts, and extractor failures are retained rather
   than dropped.
 - [x] Timing below the provisional reliable floor is labeled and cannot support

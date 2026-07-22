@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the diagnostic benchmark foundation. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Sprint 10 added and hardened ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded structured memory effects, coarse and architectural effects, fixture contracts, selective scores, fail-closed reconciliation, and the twenty-two-sprint research sequence. Patch 054 reconciles public chronology, checksum-manifest rules, closeout state, and Sprint 11 entry. Patch 055 adds the standard-library high-resolution diagnostic runner, hash-bound write-sealed benchmark inputs, final artifact reconciliation, failure-preserving transactional evidence, an honest task-scope authority, and durable corrections for the Patch 054 checker false negatives. Patch 056 adds the first source-, license-, command-, tool-, environment-, and output-authenticated 24-target provisional corpus with deterministic regeneration and no target execution. The repository now provides:
+Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the diagnostic benchmark foundation. Sprint 9 established report identity, completeness, schema `0.2.0`, candidate provenance, portable decoder-gap evidence, immutable campaign inputs, signal-safe publication and child cleanup, external-parser integrity, strict ZIP metadata policy, and the candidate-scoped decoder/parallelism decision. Sprint 10 added and hardened ordered multi-pop, exact register-transfer, exact positive aligned stack-adjust, bounded structured memory effects, coarse and architectural effects, fixture contracts, selective scores, fail-closed reconciliation, and the twenty-two-sprint research sequence. Patch 054 reconciles public chronology, checksum-manifest rules, closeout state, and Sprint 11 entry. Patch 055 adds the standard-library high-resolution diagnostic runner, hash-bound write-sealed benchmark inputs, final artifact reconciliation, failure-preserving transactional evidence, an honest task-scope authority, and durable corrections for the Patch 054 checker false negatives. Patch 056 adds the first source-, license-, command-, tool-, environment-, and output-authenticated 24-target provisional corpus. Patch 057 corrects its diagnostic-integrity boundary with execution-sealed non-executable target inputs, exact compiler workspace and retained-member closure, checked staging cleanup, and safe corpus removal. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -348,6 +348,15 @@ source, license, command, tool, environment, and output identity.
 
 The corpus is intentionally small and mutable. It can reveal output-cost,
 loader-role, mitigation, semantic, and baseline-definition gaps, but it cannot
-support superiority or representativeness claims. Patch 057 adds normalized
-baseline adapters; Patch 058 uses the resulting rows to form the engineering
-gap register for Sprints 12 through 14.
+support superiority or representativeness claims. Patch 057 first corrects the
+measurement-integrity findings. Patch 058 adds normalized baseline adapters;
+Patch 059 uses the resulting rows to form the engineering gap register for
+Sprints 12 through 14.
+
+## Sprint 11 Patch 057 research posture
+
+Patch 057 adds no comparative result and no analyzer capability. It removes
+known ways that diagnostic evidence could overstate target nonexecution, retain
+undeclared compiler artifacts, hide failed cleanup, or delete an unsafe path.
+Earlier development rows remain diagnostic and are not promoted. The corrected
+method requires a new campaign identity before baseline comparison resumes.

@@ -399,3 +399,23 @@ mismatch, or an existing final identity. A stable corpus identifier is
 no-replace; rebuilding it requires explicit removal or a new identifier.
 Diagnostic corpus labels must not preempt analyzer loader or mitigation
 contracts.
+
+## Diagnostic execution-input rule
+
+A benchmark runner that passes target bytes to a measured process must not label
+them non-executable based only on file mode. The retained target object requires
+a kernel-enforced no-execute creation policy and execution seal. When that
+facility is unavailable, the diagnostic condition fails as an environment
+prerequisite. Tool and probe inputs may be executable only through separately
+identified immutable execution copies. This is an input-object guarantee, not a
+sandbox claim against a hostile measured tool copying bytes.
+
+## Generated-corpus workspace and cleanup rule
+
+A corpus builder must define both the allowed command workspace and the exact
+published member set. Undeclared compiler files, directories, links, devices,
+or alternate outputs fail the transaction. Staging creation belongs inside the
+protected transaction, cleanup failures cannot be ignored, and an explicit
+clean target may remove only the specification-derived corpus identity beneath
+the configured output root after validating its manifest. Raw recursive deletion
+of a caller-selected corpus path is prohibited.

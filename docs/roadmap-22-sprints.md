@@ -14,10 +14,11 @@ versions, commands, and task definitions are frozen.
 ## Current checkpoint
 
 Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
-diagnostic benchmark foundation. Patches 055 and 056 implement the hardened
-runner, task-definition authority, and first reproducible 24-target provisional
-corpus; baseline adapters, corpus-backed summaries, and the gap register remain
-active work. Sprint 15 freezes the
+diagnostic benchmark foundation. Patches 055 and 056 implement the runner,
+task-definition authority, and first reproducible 24-target provisional corpus.
+Patch 057 corrects the diagnostic target-execution, corpus-membership, cleanup,
+and safe-removal boundaries before baseline scope expands; adapters, corpus-
+backed summaries, and the gap register remain active work. Sprint 15 freezes the
 confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,

@@ -28,7 +28,14 @@ public-release boundary hardening. Patches 046 through 049 establish ordered
 multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
 050 completes their coarse effects, Patch 051 adds architectural effects and two
 reviewed scores, and Patch 052 corrects the resulting effect and validation
-findings. Patches 055 and 056 implement the high-resolution runner, truthful task authority, and first 24-target source-reproducible provisional corpus. Baseline adapters, summaries, corpus-backed rows, and the gap register remain diagnostic work. Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
+findings. Patch 053 establishes the canonical twenty-two-sprint sequence, and
+Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement.
+Patches 055 and 056 implement the high-resolution runner, truthful task
+authority, and first 24-target source-reproducible provisional corpus. Baseline
+adapters, summaries, corpus-backed rows, and the gap register remain diagnostic
+work. Loader, mitigation, semantic, and optional-profile decisions occupy
+Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs
+in Sprint 16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -288,3 +295,12 @@ Before `v0.1.0-rc1`, Sprint 15 must replace or formally retain corpus membership
 under frozen toolchain, license, task, and environment authorities. Any target
 promoted from this provisional corpus must be reauthenticated and incorporated
 under the frozen campaign identifier.
+
+## Sprint 11 Patch 057 release-gate update
+
+The preview path now requires kernel-enforced non-executable target input
+objects for the diagnostic runner, exact corpus workspace and member closure,
+verified staging cleanup, and specification-derived corpus removal. A mode-only
+target claim, ignored cleanup failure, or checksummed undeclared compiler member
+cannot satisfy the preview evidence gate. Patch 057 remains development
+infrastructure and supplies no release-facing comparative result.

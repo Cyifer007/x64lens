@@ -682,3 +682,20 @@ part of the recorded environment stratum. Requested `ET_DYN` roles are not
 release-facing PIE/DSO truth. Baseline comparisons may begin only after Patch
 057 defines commands, output scope, duplicates, alignment, and failure handling
 for each tool.
+
+## Sprint 11 Patch 057 integrity correction
+
+Target protection is now a benchmark prerequisite rather than a descriptive
+mode. Tool and timer-probe snapshots are executable write-sealed Linux memfds.
+Target snapshots require `MFD_NOEXEC_SEAL`, retain mode `0444`, and require
+`F_SEAL_EXEC`; a host without that support cannot run this diagnostic method.
+The guarantee applies to the passed target object and does not make the measured
+tool an adversarially contained sandbox.
+
+Corpus commands run from one empty retained workspace. Tool metadata commands
+must leave it empty, and each compiler command may leave only its one named
+bounded output. Verification reconstructs the exact expected member set instead
+of accepting every checksummed regular file. Staging cleanup and explicit corpus
+removal are verified operations. These corrections invalidate earlier Patch 056
+diagnostic rows that depended on the weaker execution or membership model; any
+new campaign receives a distinct identifier.

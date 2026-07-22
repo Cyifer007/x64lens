@@ -60,7 +60,7 @@ Expected output:
 
 ```text
 corpus-tools-check: ok
-provisional-corpus-smoke: ok targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=2 capture_limits=1
+provisional-corpus-smoke: ok targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 capture_limits=1 clean_guards=1 make_clean_guards=1 membership_rejections=1
 ```
 
 The smoke gate performs two complete builds and requires identical retained
@@ -74,14 +74,17 @@ files, modes, and normalized timestamps. It also validates:
 - bounded ELF generation facts;
 - explicit `diagnostic`, `frozen=false`, and `publication_eligible=false` state;
 - fixed environment and reserved-variable rejection;
-- target nonexecution and mode `0444`;
+- recorded target-nonexecution policy and target mode `0444`;
 - late reauthentication;
 - no-replace publication;
 - regenerated-checksum semantic tamper rejection;
-- non-regular member rejection; and
-- active-command cleanup of a descendant that escapes through `setsid`; and
-- compiler cleanup after `SIGINT` in the post-spawn registration window; and
-- in-flight stdout/stderr limit enforcement with no published or staging residue.
+- non-regular member rejection;
+- active-command cleanup of a descendant that escapes through `setsid`;
+- compiler cleanup after `SIGINT` in the post-spawn registration window;
+- exact compiler-workspace and retained-member closure;
+- manifest-derived clean-path containment and Make `.PHONY` enforcement;
+- cleanup of mode-locked staging members; and
+- in-flight stdout capture-limit enforcement with no published or staging residue.
 
 ## Manual regeneration
 
@@ -162,6 +165,7 @@ Docker context or a normal public source overlay.
 
 ## Next step
 
-Patch 057 adds normalized baseline adapters over the versioned corpus. It must
-retain each baseline's task definition, version, command, failures, and output
-scope rather than treating unlike gadget counts as equivalent.
+Patch 057 corrects the diagnostic-integrity findings discovered after Patch
+056. Patch 058 then adds normalized baseline adapters over the versioned corpus.
+It must retain each baseline's task definition, version, command, failures, and
+output scope rather than treating unlike gadget counts as equivalent.

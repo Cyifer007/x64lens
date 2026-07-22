@@ -1159,3 +1159,26 @@ GCC, Clang, GNU ld.bfd, and Python are development dependencies for corpus
 regeneration only. They do not enter the freestanding analyzer. The runtime
 pipeline, 4096-candidate boundary, 819200-byte command arena, schema `0.2.0`,
 decoder-free default, and one-worker determinism are unchanged.
+
+## Sprint 11 Patch 057 diagnostic-integrity boundary
+
+Patch 057 changes development infrastructure, not the analyzer pipeline.
+Diagnostic execution now distinguishes two immutable input classes:
+
+```text
+measured tool and timer probe -> executable write-sealed memfd
+target under analysis         -> non-executable memfd with an execution seal
+```
+
+The runner rejects hosts that cannot provide `MFD_NOEXEC_SEAL` and
+`F_SEAL_EXEC`; it does not silently weaken the target-nonexecution claim. This
+protects the passed target object, not against a hostile tool copying bytes.
+
+The runner and corpus builder also share a fail-closed transaction rule:
+staging creation occurs inside the protected `try` region, cleanup traverses the
+owned same-parent tree without following links, inode identity is checked when a
+directory is opened, restrictive modes are repaired for cleanup, and cleanup
+failure is reported alongside the original failure. Corpus compilation uses one
+otherwise-empty workspace and closes both the generated and verified member
+sets. The analyzer's mapping, loader, scanner, classifier, side-car, scoring,
+and reporting boundaries remain unchanged.

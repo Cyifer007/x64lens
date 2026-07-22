@@ -162,3 +162,18 @@ of different work scope.
 Rejected for the reference harness because a standard-library implementation is
 portable into minimal and air-gapped development environments and keeps the
 measurement dependency surface explicit.
+
+## Patch 057 correction
+
+Post-Patch-056 validation demonstrated that mode `0444` plus write/size seals did
+not prevent a measured process from adding execute permission temporarily and
+directly executing the target memfd. Patch 057 therefore requires target
+execution copies to be created with Linux `MFD_NOEXEC_SEAL` and to carry
+`F_SEAL_EXEC`. There is no mode-only fallback. Tool and timer-probe copies remain
+executable write-sealed memfds.
+
+This narrows the claim to the object supplied by the runner. It prevents direct
+execution and execute-mode escalation of that target object; it does not sandbox
+a hostile measured program from copying bytes into another object. The runner
+also moves staging creation inside its protected transaction and reports any
+verified cleanup failure.

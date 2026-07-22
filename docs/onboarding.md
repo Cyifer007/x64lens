@@ -1,6 +1,6 @@
 # Onboarding and Local Development Checklist
 
-This document provides a reproducible path for setting up a new Ubuntu-based development environment, validating required tools, building x64lens, running the test suite, and exercising every public Make target.
+This document provides a reproducible path for setting up a new Ubuntu-based development environment, validating required tools, building x64lens, running the test suite, and exercising common public Make targets.
 
 ## Supported baseline environment
 
@@ -12,7 +12,7 @@ Install the baseline development packages:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
+sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
 
@@ -125,7 +125,12 @@ make bench-summary-latest
 
 ## Make target tour
 
-The table below lists the public Make targets. A new development environment should exercise the checks first, then the build/test targets, then Docker and benchmark targets as needed.
+The table below lists common public Make targets. Use `make help` as the
+authoritative current target inventory. For the Sprint 11 diagnostic and corpus
+workflows, see [`../benchmarks/README.md`](../benchmarks/README.md) and the
+[`../benchmarks/corpus/README.md`](../benchmarks/corpus/README.md) corpus guide.
+A new development environment should exercise the checks first, then the
+build/test targets, then Docker and benchmark targets as needed.
 
 | Target | Purpose |
 |---|---|

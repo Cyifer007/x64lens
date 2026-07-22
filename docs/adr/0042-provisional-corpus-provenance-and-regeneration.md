@@ -7,10 +7,11 @@ Accepted for Sprint 11 Patch 056.
 ## Context
 
 Patch 055 established a high-resolution diagnostic runner and demonstrated that
-measurement integrity depends on explicit eligibility, immutable retained
-inputs, child cleanup, late artifact authentication, and transactional
-publication. Sprint 11 still lacked a reproducible target set with source,
-license, build-command, tool, and output identity.
+measurement integrity depends on explicit eligibility, hash-bound retained
+inputs and write-sealed execution copies, child cleanup, late artifact
+authentication, and transactional publication. Sprint 11 still lacked a
+reproducible target set with source, license, build-command, tool, and output
+identity.
 
 Using installed system binaries alone would make results dependent on the host
 distribution and would not provide exact build provenance. Committing generated
@@ -97,8 +98,8 @@ The smoke gate proves:
 - no-replace behavior;
 - reserved-environment rejection;
 - tamper rejection after checksum regeneration;
-- symlink rejection; and
-- active-command cleanup for an escaped `setsid` descendant; and
+- symlink rejection;
+- active-command cleanup for an escaped `setsid` descendant;
 - deterministic interruption cleanup in the post-spawn registration window; and
 - in-flight compiler output-limit enforcement with process-tree cleanup.
 
@@ -142,3 +143,16 @@ The smoke gate proves:
   would duplicate or preempt the committed analyzer architecture.
 - **Add corpus generation to the runtime CLI:** rejected because benchmark and
   build orchestration remain external development infrastructure.
+
+## Patch 057 correction
+
+Post-Patch-056 validation found that undeclared compiler side files could enter
+the retained corpus, the raw Make clean recipe accepted an unsafe caller-
+controlled path, and best-effort staging removal could hide residue. Patch 057
+therefore requires an otherwise-empty shared command workspace, permits only the
+one named compiler output, verifies the exact retained file and directory set,
+derives cleanup solely from the validated corpus identifier and output root,
+and removes staging through checked file-descriptor-relative traversal. The
+clean target is phony and delegates to the builder; it contains no recursive
+shell deletion. The non-root checksum-mutation oracle now makes its copied
+checksum writable only for regeneration and restores the retained mode.

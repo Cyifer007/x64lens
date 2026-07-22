@@ -181,6 +181,73 @@ def assert_spawn_interruption_cleanup(tmp: Path) -> None:
     require(not Path(f"/proc/{spawned[0]}").exists(), f"spawn-window child survived interruption: {spawned[0]}")
 
 
+def assert_target_nonexecution(tmp: Path) -> None:
+    target = tmp / "noexec-target"
+    target.write_bytes(Path("/bin/true").read_bytes())
+    tool = tmp / "noexec-tool.py"
+    tool.write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, os, subprocess, sys\n"
+        "if sys.argv[1] == 'version': print('noexec-tool 1.0'); raise SystemExit(0)\n"
+        "target = sys.argv[2]\n"
+        "chmod_denied = False\n"
+        "try: os.chmod(target, 0o555)\n"
+        "except OSError: chmod_denied = True\n"
+        "try: executed = subprocess.run([target], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0\n"
+        "except OSError: executed = False\n"
+        "print(json.dumps({'schema_version':'0.2.0','tool':'x64lens','tool_version':'1.0','report_type':'analysis','command':'gadgets','analysis':{'complete':True},'counts':{'raw_candidate_count':0,'exact_pattern_count':0,'semantic_candidate_count':0,'unknown_candidate_count':0,'scored_candidate_count':0},'target_guard':{'chmod_denied':chmod_denied,'executed':executed}}))\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    spec = tmp / "noexec-spec.json"
+    write_spec(
+        spec,
+        campaign_id="s11-p057-target-noexec",
+        tool=tool,
+        target=target,
+        conditions=[{
+            "id": "target-noexec",
+            "tool": "fakebench",
+            "target": "fixture",
+            "task_scope": "gadget_report",
+            "profile_id": "core-1w",
+            "worker_count": 1,
+            "output_scope": "target nonexecution probe",
+            "argv": ["{tool}", "gadgets", "{target}"],
+            "extractor": "x64lens_json_0_2",
+            "expected_report_command": "gadgets",
+        }],
+        warmups=0,
+        timeout=2.0,
+    )
+    output = tmp / "noexec-output"
+    completed = run(spec, output)
+    require(completed.returncode == 0, f"target nonexecution campaign failed: {completed.stderr}")
+    result = output / "s11-p057-target-noexec"
+    manifest = json.loads((result / "manifest.json").read_text(encoding="utf-8"))
+    target_record = manifest["targets"][0]
+    require(target_record["execution_memfd_creation"] == "explicit_mfd_noexec_seal", "target did not use MFD_NOEXEC_SEAL")
+    require("exec" in target_record["execution_seals"], "target execution seal is absent")
+    row = read_rows(result / "rows.tsv")[0]
+    report = json.loads((result / row["stdout_path"]).read_text(encoding="utf-8"))
+    require(report["target_guard"] == {"chmod_denied": True, "executed": False}, "measured tool could execute target bytes")
+
+
+def assert_locked_stage_cleanup(tmp: Path) -> None:
+    module_spec = importlib.util.spec_from_file_location("diagnostic_runner_cleanup_probe", RUNNER)
+    require(module_spec is not None and module_spec.loader is not None, "cannot load runner for cleanup probe")
+    module = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(module)
+    root = tmp / "locked-stage-root"
+    root.mkdir()
+    stage = root / ".locked.staging"
+    (stage / "nested").mkdir(parents=True)
+    (stage / "nested" / "value").write_text("x", encoding="utf-8")
+    os.chmod(stage / "nested", 0)
+    module.remove_staging_tree(stage, root, "locked staging probe")
+    require(not stage.exists(), "mode-000 staging tree survived cleanup")
+
+
 def assert_artifact_hashes(result: Path, rows: list[dict[str, str]]) -> None:
     for row in rows:
         for prefix in ("stdout", "stderr"):
@@ -209,6 +276,8 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="x64lens-diagnostic-runner-smoke-") as raw:
         tmp = Path(raw)
         assert_spawn_interruption_cleanup(tmp)
+        assert_locked_stage_cleanup(tmp)
+        assert_target_nonexecution(tmp)
         tool = tmp / "fakebench.sh"
         target = tmp / "fixture.bin"
         target.write_bytes(b"controlled diagnostic target\n")
@@ -427,23 +496,20 @@ raise SystemExit(9)
         require(sha256(result / "inputs/targets/fixture") == sha256(target), "target snapshot hash mismatch")
         execution_records = [*manifest["tools"], *manifest["targets"], manifest["timer_floor_probe"]]
         for record in execution_records:
-            require(record["execution_protection"] == "linux_memfd_write_sealed", "sealed execution protection missing")
             require(record["execution_sha256"] == record["sha256"], "sealed execution hash mismatch")
             require(record["execution_size_bytes"] == record["size_bytes"], "sealed execution size mismatch")
-            require(
-                record["execution_seals"] == ["seal", "shrink", "grow", "write"],
-                "sealed execution seal inventory mismatch",
-            )
             require("execution_absolute" not in record and "execution_fd" not in record, "runtime execution handle leaked")
         for record in [*manifest["tools"], manifest["timer_floor_probe"]]:
+            require(record["execution_protection"] == "linux_memfd_write_sealed", "executable sealed protection missing")
+            require(record["execution_seals"] == ["seal", "shrink", "grow", "write"], "executable seal inventory mismatch")
             require(
                 record["execution_memfd_creation"] in {"explicit_mfd_exec", "legacy_implicit_exec"},
                 "executable memfd creation policy missing",
             )
-        require(
-            all(record["execution_memfd_creation"] == "nonexecutable" for record in manifest["targets"]),
-            "target memfd execution policy mismatch",
-        )
+        for record in manifest["targets"]:
+            require(record["execution_protection"] == "linux_memfd_noexec_write_sealed", "target no-exec protection missing")
+            require(record["execution_seals"] == ["seal", "shrink", "grow", "write", "exec"], "target seal inventory mismatch")
+            require(record["execution_memfd_creation"] == "explicit_mfd_noexec_seal", "target memfd execution policy mismatch")
         require(not list(success_root.glob(".*.staging-*")), "success staging directory leaked")
 
         manifest_hash = sha256(result / "manifest.json")
@@ -789,7 +855,11 @@ raise SystemExit(9)
         require(not (unsafe_root / "diagnostic-unsafe-artifact").exists(), "unsafe-artifact campaign was published")
         require(not list(unsafe_root.glob(".*.staging-*")), "unsafe-artifact campaign leaked staging state")
 
-    print("diagnostic-runner-smoke: ok success_rows=6 failure_rows=2 overwrite_rejected=1 descendants_cleaned=1 invalid_specs_rejected=2 source_mutations_rejected=1 unsafe_artifacts_rejected=1")
+    print(
+        "diagnostic-runner-smoke: ok success_rows=6 failure_rows=2 overwrite_rejected=1 "
+        "descendants_cleaned=1 invalid_specs_rejected=2 source_mutations_rejected=1 "
+        "unsafe_artifacts_rejected=1 target_nonexecution=1 locked_cleanup=1"
+    )
     return 0
 
 

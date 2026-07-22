@@ -137,3 +137,21 @@ Generated files live under `benchmarks/corpus/generated/` and are excluded from
 normal public source bundles and Docker contexts. They are mutable diagnostic
 evidence, not the Sprint 15-frozen corpus. See
 [`corpus/README.md`](corpus/README.md).
+
+## Sprint 11 Patch 057 diagnostic-integrity correction
+
+Patch 057 makes the target execution boundary explicit. Tool and timer-probe
+snapshots remain executable write-sealed memfds. Target snapshots require Linux
+`MFD_NOEXEC_SEAL` plus `F_SEAL_EXEC`, remain mode `0444`, and are rejected when
+the host cannot enforce that property. This prevents the measured command from
+adding execute bits to, or directly executing, the passed target object. It is
+not a general sandbox against a hostile tool copying bytes into a different
+object.
+
+Both the runner and corpus builder create staging trees inside their protected
+transaction and remove them through checked file-descriptor-relative cleanup.
+Cleanup failures are reported with the originating failure rather than hidden.
+The corpus builder uses one otherwise-empty command workspace, accepts only the
+named output after a successful compiler command, and verifies the exact final
+member set. The Make clean target delegates to the manifest-aware builder and
+never recursively deletes a caller-selected corpus path.

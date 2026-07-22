@@ -95,7 +95,7 @@ Install required development tools:
 
 ```bash
 sudo apt update
-sudo apt install -y nasm binutils gcc gdb make python3 python3-jsonschema python3-venv \
+sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv \
   python3-pip pipx time git curl ca-certificates unzip zip
 pipx ensurepath
 ```
@@ -315,6 +315,20 @@ and shared roles remain build intents until Sprint 12 resolves loader identity.
 See [`benchmarks/corpus/README.md`](benchmarks/corpus/README.md),
 [ADR 0042](docs/adr/0042-provisional-corpus-provenance-and-regeneration.md), and
 the [Patch 056 validation record](docs/sprints/sprint-11-patch-056-validation.md).
+
+Patch 057 hardens that diagnostic foundation before baseline adapters are added.
+Target snapshots supplied to measured tools now require Linux
+`MFD_NOEXEC_SEAL` and an execution seal; unsupported kernels fail the runner
+prerequisite instead of falling back to a mode-only claim. Corpus builds reject
+undeclared compiler workspace members, verification enforces the exact retained
+member set, staging cleanup is checked rather than ignored, and
+`make clean-provisional-corpus` derives the only removable path from the corpus
+specification and output root. These controls do not turn the runner into a
+sandbox: a hostile measured program could copy input bytes elsewhere, so
+diagnostic tools remain trusted measurement participants.
+
+See [ADR 0043](docs/adr/0043-sprint11-diagnostic-integrity-correction.md) and
+the [Patch 057 validation record](docs/sprints/sprint-11-patch-057-validation.md).
 
 ## Architecture
 

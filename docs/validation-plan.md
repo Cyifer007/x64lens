@@ -1458,9 +1458,11 @@ The smoke gate performs two complete temporary builds and compares every
 retained file, mode, and normalized timestamp. It validates exact matrix
 membership, source/license/tool/command/output relationships, exact canonical
 command reconstruction, bounded ELF facts, explicit diagnostic eligibility,
-fixed environment policy, target nonexecution, late reauthentication,
+fixed environment policy, the recorded target-nonexecution state and target mode
+`0444`, late reauthentication,
 no-replace publication, checksum-regeneration tamper rejection, unsafe-member
-rejection, escaped-descendant cleanup, and post-spawn interruption cleanup.
+rejection, escaped-descendant cleanup, post-spawn interruption cleanup, and
+in-flight stdout capture-limit enforcement.
 
 Manual retained-result validation:
 
@@ -1474,3 +1476,34 @@ Generated corpus data remains outside public source and Docker artifacts. Full
 Patch 056 acceptance still requires strict ShellCheck, the complete native
 aggregate, capacity and malformed-input contracts, qualified Docker validation,
 and native/container JSON parity.
+
+## Sprint 11 Patch 057 diagnostic-integrity validation
+
+Focused commands:
+
+```bash
+make diagnostic-tools-check
+make diagnostic-runner-smoke
+make corpus-tools-check
+make provisional-corpus-smoke
+```
+
+Expected focused banners:
+
+```text
+diagnostic-runner-smoke: ok success_rows=6 failure_rows=2 overwrite_rejected=1 descendants_cleaned=1 invalid_specs_rejected=2 source_mutations_rejected=1 unsafe_artifacts_rejected=1 target_nonexecution=1 locked_cleanup=1
+provisional-corpus-smoke: ok targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 capture_limits=1 clean_guards=1 make_clean_guards=1 membership_rejections=1
+```
+
+The runner gate must prove that a measured tool cannot add execute mode to or
+directly execute the passed target memfd, and that mode-locked staging content
+is removed. The platform check must fail when Linux `MFD_NOEXEC_SEAL` and the
+execution seal are unavailable. The corpus gate must reject undeclared compiler
+side members, enforce the exact final member set, prove Make clean-path override
+containment and `.PHONY` behavior, repair restrictive staging modes during
+cleanup, and run checksum tamper probes without root privileges.
+
+Full acceptance remains strict ShellCheck, clean NASM build, samples, native
+aggregate, exact 4096/4097 capacity behavior, malformed-input no-partial-output,
+qualified Docker validation as the non-root container user, and native/container
+JSON parity.

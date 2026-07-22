@@ -94,7 +94,7 @@ benchmarks/corpus/generated/s11-p056-provisional-v1/
     tool-versions/
   logs/
   targets/
-  work/
+  command-workdir/
 ```
 
 The manifest records:
@@ -135,12 +135,18 @@ corpus. Compiler children run in isolated process groups. Linux subreaper
 cleanup also adopts, kills, and reaps descendants that escape their original
 session or process group. Compiler stdout and stderr are drained concurrently through nonblocking pipes.
 Each stream is bounded during execution; exceeding the specification limit
-terminates and reaps the compiler process tree before staging is removed.
+terminates and reaps the compiler process tree before staging is removed. Every
+tool-metadata command must leave the shared command workspace empty. Every
+compiler command may create only its one named output, and that output must
+remain within the configured size bound. Undeclared files, directories, links,
+or devices reject the transaction and cannot enter the retained checksum set.
 
-The fixed build environment rejects specification overrides for `PATH`, `HOME`,
-`TMPDIR`, Python loader variables, dynamic-loader injection variables, and
-compiler search-path variables. The effective `PATH` is derived from resolved
-required tool locations plus standard system paths.
+The fixed build environment reserves `PATH`, `HOME`, `TMPDIR`, `PYTHONPATH`,
+`PYTHONHOME`, `LD_PRELOAD`, `LD_LIBRARY_PATH`, `GCC_EXEC_PREFIX`,
+`COMPILER_PATH`, and `LIBRARY_PATH` against specification overrides. Other
+accepted specification-provided keys remain explicit in the retained effective-
+environment record. The effective `PATH` is derived from resolved required tool
+locations plus standard system paths.
 
 ## ELF facts and authority boundary
 
@@ -190,6 +196,8 @@ license, checksum, and campaign contract.
 
 ## Next step
 
-Patch 057 consumes this manifest surface when normalizing ROPgadget, Ropper, and
-ropr task adapters. It must preserve tool-specific definitions and failed rows
-rather than treating the 24 targets as proof of comparable coverage.
+Patch 057 corrects the post-Patch-056 diagnostic-integrity findings before new
+measurement scope is added. Patch 058 consumes this manifest surface when
+normalizing ROPgadget, Ropper, and ropr task adapters. It must preserve
+tool-specific definitions and failed rows rather than treating the 24 targets
+as proof of comparable coverage.

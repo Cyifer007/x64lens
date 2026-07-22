@@ -27,6 +27,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import uuid
 from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
@@ -112,6 +113,118 @@ _INTERRUPTED_BY: int | None = None
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise CorpusError(message)
+
+
+def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
+    """Remove one owned staging directory without following symlinks."""
+    os.fchmod(directory_fd, 0o700)
+    with os.scandir(directory_fd) as entries:
+        snapshot = list(entries)
+    for entry in snapshot:
+        metadata = entry.stat(follow_symlinks=False)
+        if stat.S_ISDIR(metadata.st_mode):
+            require(metadata.st_dev == device, f"{label} crosses a filesystem boundary: {entry.name}")
+            os.chmod(entry.name, 0o700, dir_fd=directory_fd, follow_symlinks=False)
+            child_fd = os.open(
+                entry.name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=directory_fd,
+            )
+            try:
+                observed = os.fstat(child_fd)
+                require(
+                    (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                    f"{label} directory changed during cleanup: {entry.name}",
+                )
+                _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
+            finally:
+                os.close(child_fd)
+            os.rmdir(entry.name, dir_fd=directory_fd)
+        else:
+            os.unlink(entry.name, dir_fd=directory_fd)
+
+
+def remove_owned_tree(path: pathlib.Path, expected_parent: pathlib.Path, label: str) -> None:
+    """Delete an exact same-parent tree and verify complete removal."""
+    parent = expected_parent.resolve(strict=True)
+    candidate = pathlib.Path(os.path.abspath(path))
+    require(candidate.parent == parent, f"{label} is outside its expected parent")
+    metadata = os.lstat(candidate)
+    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
+    parent_fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0))
+    try:
+        os.chmod(candidate.name, 0o700, dir_fd=parent_fd, follow_symlinks=False)
+        directory_fd = os.open(
+            candidate.name,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=parent_fd,
+        )
+        try:
+            observed = os.fstat(directory_fd)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"{label} changed before cleanup",
+            )
+            _clear_directory_fd(directory_fd, label, metadata.st_dev)
+        finally:
+            os.close(directory_fd)
+        os.rmdir(candidate.name, dir_fd=parent_fd)
+        os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
+    require(not os.path.lexists(candidate), f"{label} survived cleanup")
+
+
+def require_workspace_members(workspace: pathlib.Path, allowed_file: pathlib.Path | None = None) -> None:
+    """Reject every compiler-created member except one named output file."""
+    expected = set() if allowed_file is None else {allowed_file.name}
+    observed: set[str] = set()
+    with os.scandir(workspace) as entries:
+        for entry in entries:
+            observed.add(entry.name)
+            metadata = entry.stat(follow_symlinks=False)
+            if allowed_file is not None and entry.name == allowed_file.name:
+                require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1, "compiler output is not one regular file")
+            else:
+                raise CorpusError(f"compiler created an undeclared workspace member: {entry.name}")
+    require(observed == expected, "compiler workspace membership changed")
+
+
+def exact_member_sets(root: pathlib.Path) -> tuple[set[str], set[str]]:
+    files: set[str] = set()
+    directories: set[str] = set()
+    for path in root.rglob("*"):
+        metadata = path.lstat()
+        relative = path.relative_to(root).as_posix()
+        if stat.S_ISDIR(metadata.st_mode):
+            directories.add(relative)
+        else:
+            require(stat.S_ISREG(metadata.st_mode), f"corpus contains a non-regular member: {relative}")
+            files.add(relative)
+    return files, directories
+
+
+def expected_directories(files: set[str], explicit: set[str] | None = None) -> set[str]:
+    directories = set(explicit or set())
+    for name in files:
+        parent = pathlib.PurePosixPath(name).parent
+        while parent != pathlib.PurePosixPath("."):
+            directories.add(parent.as_posix())
+            parent = parent.parent
+    return directories
+
+
+def require_exact_members(root: pathlib.Path, expected_files: set[str], explicit_directories: set[str] | None = None) -> None:
+    observed_files, observed_directories = exact_member_sets(root)
+    expected_dirs = expected_directories(expected_files, explicit_directories)
+    require(
+        observed_files == expected_files,
+        f"corpus file membership changed: missing={sorted(expected_files - observed_files)} extra={sorted(observed_files - expected_files)}",
+    )
+    require(
+        observed_directories == expected_dirs,
+        f"corpus directory membership changed: missing={sorted(expected_dirs - observed_directories)} extra={sorted(observed_directories - expected_dirs)}",
+    )
 
 
 def safe_id(value: Any, name: str) -> str:
@@ -835,6 +948,7 @@ def capture_tool_metadata(
     requested: str,
     path: pathlib.Path,
     stage: pathlib.Path,
+    workspace: pathlib.Path,
     environment: dict[str, str],
     timeout: int,
     maximum_capture_bytes: int,
@@ -843,7 +957,9 @@ def capture_tool_metadata(
 ) -> dict[str, Any]:
     base = stage / "inputs" / "tool-versions" / identifier
     base.mkdir(parents=True, exist_ok=True)
-    version = run_command([str(path), "--version"], base, environment, timeout, maximum_capture_bytes)
+    require_workspace_members(workspace)
+    version = run_command([str(path), "--version"], workspace, environment, timeout, maximum_capture_bytes)
+    require_workspace_members(workspace)
     require(version.returncode == 0, f"{identifier} --version failed with exit {version.returncode}")
     write_bytes(base / "version.stdout", version.stdout)
     write_bytes(base / "version.stderr", version.stderr)
@@ -860,7 +976,8 @@ def capture_tool_metadata(
         "version_first_line": version.stdout.decode("utf-8", errors="replace").splitlines()[0] if version.stdout else "",
     })
     if compiler:
-        machine = run_command([str(path), "-dumpmachine"], base, environment, timeout, maximum_capture_bytes)
+        machine = run_command([str(path), "-dumpmachine"], workspace, environment, timeout, maximum_capture_bytes)
+        require_workspace_members(workspace)
         require(machine.returncode == 0, f"{identifier} -dumpmachine failed with exit {machine.returncode}")
         write_bytes(base / "target.stdout", machine.stdout)
         write_bytes(base / "target.stderr", machine.stderr)
@@ -1078,11 +1195,8 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     output_root = output_root.resolve(strict=True)
     final = output_root / corpus_id
     require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
-    stage = pathlib.Path(tempfile.mkdtemp(prefix=f".{corpus_id}.staging.", dir=output_root))
-    os.chmod(stage, DIRECTORY_MODE)
-    enable_subreaper()
-    require(not direct_child_pids(), "corpus builder started with unrelated child processes")
-    install_signal_handlers()
+    stage = output_root / f".{corpus_id}.staging.{uuid.uuid4().hex}"
+    require(not stage.exists(), f"staging path already exists: {stage}")
     source_identities = {
         "spec": file_identity(spec_path),
         "source": file_identity(source_paths["source"]),
@@ -1094,6 +1208,11 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     command_records: list[dict[str, Any]] = []
     target_records: list[dict[str, Any]] = []
     try:
+        stage.mkdir(mode=0o700)
+        os.chmod(stage, DIRECTORY_MODE)
+        enable_subreaper()
+        require(not direct_child_pids(), "corpus builder started with unrelated child processes")
+        install_signal_handlers()
         for directory in (
             stage / "inputs" / "spec",
             stage / "inputs" / "source",
@@ -1101,7 +1220,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             stage / "inputs" / "builder",
             stage / "logs",
             stage / "targets",
-            stage / "work",
+            stage / "command-workdir",
         ):
             directory.mkdir(parents=True, exist_ok=True)
             os.chmod(directory, DIRECTORY_MODE)
@@ -1125,12 +1244,12 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
         for toolchain in spec["toolchains"]:
             tool_path = tool_paths[toolchain["id"]]
             tool_records.append(capture_tool_metadata(
-                toolchain["id"], toolchain["command"], tool_path, stage, environment, timeout,
+                toolchain["id"], toolchain["command"], tool_path, stage, stage / "command-workdir", environment, timeout,
                 maximum_log_bytes, compiler=True
             ))
         linker_path = tool_paths[spec["linker"]["id"]]
         tool_records.append(capture_tool_metadata(
-            spec["linker"]["id"], spec["linker"]["command"], linker_path, stage, environment, timeout,
+            spec["linker"]["id"], spec["linker"]["command"], linker_path, stage, stage / "command-workdir", environment, timeout,
             maximum_log_bytes, compiler=False
         ))
         tool_before = {record["id"]: file_identity(tool_paths[record["id"]]) for record in tool_records}
@@ -1150,8 +1269,8 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                         target_id = "-".join((toolchain["id"], optimization["id"], artifact["id"], hardening["id"]))
                         safe_id(target_id, "target id")
                         suffix = artifact["output_suffix"]
-                        workdir = stage / "work" / target_id
-                        workdir.mkdir(parents=True, exist_ok=False)
+                        workdir = stage / "command-workdir"
+                        require_workspace_members(workdir)
                         output_work = workdir / f"{target_id}{suffix}"
                         argv = [
                             str(compiler),
@@ -1170,6 +1289,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                             str(output_work),
                         ]
                         result = run_command(argv, workdir, environment, timeout, maximum_log_bytes)
+                        require_workspace_members(workdir, output_work if result.returncode == 0 else None)
                         log_root = stage / "logs" / target_id
                         log_root.mkdir(parents=True, exist_ok=False)
                         stdout_path = log_root / "compiler.stdout"
@@ -1184,6 +1304,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                         validate_elf_expectations(facts, artifact, hardening, target_id)
                         final_target = stage / "targets" / f"{target_id}{suffix}"
                         os.rename(output_work, final_target)
+                        require_workspace_members(workdir)
                         os.chmod(final_target, TARGET_MODE)
                         os.utime(final_target, (FIXED_MTIME, FIXED_MTIME), follow_symlinks=False)
                         output_identity = file_identity(final_target)
@@ -1210,7 +1331,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                             "optimization_id": optimization["id"],
                             "artifact_id": artifact["id"],
                             "hardening_id": hardening["id"],
-                            "cwd": f"work/{target_id}",
+                            "cwd": "command-workdir",
                             "argv_json": canonical_argv,
                             "exit_code": result.returncode,
                             "stdout_path": stdout_path.relative_to(stage).as_posix(),
@@ -1339,8 +1460,28 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             require(sha256_file(target_path) == target["sha256"], f"retained target changed: {target['id']}")
             require(parse_elf(target_path) == target["elf"], f"retained target ELF facts changed: {target['id']}")
 
+        expected_files = {
+            "corpus-manifest.json",
+            "commands.tsv",
+            spec_snapshot.relative_to(stage).as_posix(),
+            source_snapshot.relative_to(stage).as_posix(),
+            license_snapshot.relative_to(stage).as_posix(),
+            builder_snapshot.relative_to(stage).as_posix(),
+        }
+        for tool in tool_records:
+            for key, value in tool.items():
+                if key.endswith("_path") and isinstance(value, str) and value.startswith("inputs/"):
+                    expected_files.add(value)
+        for command in command_records:
+            expected_files.add(command["stdout_path"])
+            expected_files.add(command["stderr_path"])
+            expected_files.add(command["output_path"])
+        require_exact_members(stage, expected_files, {"command-workdir"})
+
         normalize_tree_metadata(stage)
         write_checksum_manifest(stage)
+        expected_files.add("SHA256SUMS.txt")
+        require_exact_members(stage, expected_files, {"command-workdir"})
         normalize_tree_metadata(stage)
         verify_checksum_manifest(stage)
         validate_tree_metadata(stage)
@@ -1353,9 +1494,17 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             os.close(parent_fd)
         verify_corpus(final)
         return final
-    except BaseException:
-        if stage.exists():
-            shutil.rmtree(stage, ignore_errors=True)
+    except BaseException as failure:
+        cleanup_failure: BaseException | None = None
+        if os.path.lexists(stage):
+            try:
+                remove_owned_tree(stage, output_root, "provisional corpus staging tree")
+            except BaseException as exc:
+                cleanup_failure = exc
+        if cleanup_failure is not None:
+            raise CorpusError(
+                f"corpus build failed with {type(failure).__name__}; staging cleanup also failed: {cleanup_failure}"
+            ) from failure
         raise
 
 
@@ -1720,7 +1869,7 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         require(row["optimization_id"] == target["optimization_id"], f"command optimization id mismatch: {target_id}")
         require(row["artifact_id"] == target["artifact_id"], f"command artifact id mismatch: {target_id}")
         require(row["hardening_id"] == target["hardening_id"], f"command hardening id mismatch: {target_id}")
-        require(row["cwd"] == f"work/{target_id}", f"command cwd mismatch: {target_id}")
+        require(row["cwd"] == "command-workdir", f"command cwd mismatch: {target_id}")
         artifact = artifact_by_id[target["artifact_id"]]
         hardening = hardening_by_id[target["hardening_id"]]
         optimization = optimization_by_id[target["optimization_id"]]
@@ -1758,6 +1907,25 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         require(sha256_file(stdout_path) == require_sha256(row["stdout_sha256"], f"command stdout hash {target_id}"), f"command stdout hash mismatch: {target_id}")
         require(sha256_file(stderr_path) == require_sha256(row["stderr_sha256"], f"command stderr hash {target_id}"), f"command stderr hash mismatch: {target_id}")
 
+    expected_files = {
+        "SHA256SUMS.txt",
+        "corpus-manifest.json",
+        manifest["commands_path"],
+        inputs["spec"]["snapshot_path"],
+        inputs["source"]["snapshot_path"],
+        inputs["license"]["snapshot_path"],
+        inputs["builder"]["snapshot_path"],
+    }
+    for tool in tools:
+        for key, value in tool.items():
+            if key.endswith("_path") and isinstance(value, str) and value.startswith("inputs/"):
+                expected_files.add(value)
+    for row in commands:
+        expected_files.add(row["stdout_path"])
+        expected_files.add(row["stderr_path"])
+        expected_files.add(row["output_path"])
+    require_exact_members(root, expected_files, {"command-workdir"})
+
     for path in validate_regular_tree(root):
         metadata = path.lstat()
         expected_mode = SCRIPT_MODE if path == builder_snapshot else TEXT_MODE
@@ -1766,12 +1934,36 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
     return manifest
 
 
+def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
+    spec, _raw, _paths = parse_spec(spec_path, repo_root)
+    output_root.mkdir(parents=True, exist_ok=True)
+    output_root = output_root.resolve(strict=True)
+    target = output_root / spec["corpus_id"]
+    candidate = pathlib.Path(os.path.abspath(target))
+    require(candidate.parent == output_root and candidate.name == spec["corpus_id"], "refusing an out-of-scope corpus cleanup path")
+    if not os.path.lexists(candidate):
+        return candidate
+    metadata = os.lstat(candidate)
+    require(stat.S_ISDIR(metadata.st_mode), "refusing to clean a non-directory corpus path")
+    manifest = verify_corpus(candidate)
+    require(
+        manifest.get("corpus_id") == spec["corpus_id"]
+        and manifest.get("evidence_class") == "diagnostic"
+        and manifest.get("frozen") is False
+        and manifest.get("publication_eligible") is False,
+        "refusing to clean a directory without the expected provisional corpus identity",
+    )
+    remove_owned_tree(candidate, output_root, "provisional corpus")
+    return candidate
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--spec", type=pathlib.Path, help="corpus specification JSON")
     actions = parser.add_mutually_exclusive_group(required=True)
     actions.add_argument("--output-root", type=pathlib.Path, help="parent directory for transactional corpus publication")
     actions.add_argument("--verify", type=pathlib.Path, help="verify an existing generated corpus")
+    actions.add_argument("--clean-output-root", type=pathlib.Path, help="safely remove the spec-named generated corpus below this root")
     actions.add_argument("--platform-check", action="store_true", help="validate platform and required tools")
     actions.add_argument("--print-corpus-id", action="store_true", help="print corpus_id from the validated specification")
     return parser.parse_args(argv)
@@ -1790,8 +1982,12 @@ def main(argv: Sequence[str]) -> int:
             f"artifacts={matrix['artifact_profiles']} hardening={matrix['hardening_profiles']}"
         )
         return 0
-    require(args.spec is not None, "--spec is required for build, platform check, or corpus-id output")
+    require(args.spec is not None, "--spec is required for build, clean, platform check, or corpus-id output")
     spec_path = args.spec.resolve(strict=True)
+    if args.clean_output_root is not None:
+        target = clean_corpus(spec_path, args.clean_output_root, repo_root)
+        print(f"clean-provisional-corpus: ok path={target}")
+        return 0
     if args.platform_check:
         print(platform_check(spec_path, repo_root))
         return 0

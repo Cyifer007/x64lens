@@ -123,19 +123,20 @@ def main() -> int:
         targets = {item["id"]: item for item in manifest["targets"]}
         execution_records = [*tools.values(), *targets.values(), manifest["timer_floor_probe"]]
         for record in execution_records:
-            require(record["execution_protection"] == "linux_memfd_write_sealed", "sealed execution protection missing")
             require(record["execution_sha256"] == record["sha256"], "sealed execution hash mismatch")
             require(record["execution_size_bytes"] == record["size_bytes"], "sealed execution size mismatch")
             require("execution_absolute" not in record and "execution_fd" not in record, "runtime execution handle leaked")
         for record in [*tools.values(), manifest["timer_floor_probe"]]:
+            require(record["execution_protection"] == "linux_memfd_write_sealed", "executable sealed protection missing")
+            require(record["execution_seals"] == ["seal", "shrink", "grow", "write"], "executable seal inventory mismatch")
             require(
                 record["execution_memfd_creation"] in {"explicit_mfd_exec", "legacy_implicit_exec"},
                 "executable memfd creation policy missing",
             )
-        require(
-            all(record["execution_memfd_creation"] == "nonexecutable" for record in targets.values()),
-            "target memfd execution policy mismatch",
-        )
+        for record in targets.values():
+            require(record["execution_protection"] == "linux_memfd_noexec_write_sealed", "target no-exec protection missing")
+            require(record["execution_seals"] == ["seal", "shrink", "grow", "write", "exec"], "target seal inventory mismatch")
+            require(record["execution_memfd_creation"] == "explicit_mfd_noexec_seal", "target memfd execution policy mismatch")
         require(tools["x64lens"]["sha256"] == sha256(ANALYZER), "analyzer snapshot hash mismatch")
         require(targets["controlled-gadgets"]["sha256"] == sha256(TARGET), "target snapshot hash mismatch")
         version_command = tools["x64lens"]["version_command"]

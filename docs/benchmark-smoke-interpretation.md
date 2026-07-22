@@ -79,6 +79,5 @@ make the controlled campaign a comparative result.
 
 The current reference specification measures gadget JSON and analyze JSON as a
 command-identity parity pair. It does not contain a scanner-only row because no
-truthful report-suppressed scanner path exists. Baseline adapters, provisional
-corpus construction, and the engineering gap register remain later Sprint 11
-work.
+truthful report-suppressed scanner path exists. Baseline adapters, corpus-backed
+diagnostic rows, and the engineering gap register remain later Sprint 11 work.

@@ -82,6 +82,7 @@ def write_spec(path: pathlib.Path, mutate: Any) -> None:
 
 def regenerate_checksums(root: pathlib.Path) -> None:
     checksum = root / "SHA256SUMS.txt"
+    os.chmod(checksum, 0o644)
     lines = []
     for path in sorted(root.rglob("*")):
         if path.is_file() and path != checksum:
@@ -279,6 +280,139 @@ def spawn_window_probe(temporary: pathlib.Path) -> None:
     require(completed.stdout.strip() == "spawn-window-probe: ok", f"unexpected spawn-window probe output: {completed.stdout!r}")
 
 
+def clean_target_probe(source_corpus: pathlib.Path, temporary: pathlib.Path) -> None:
+    makefile_text = (ROOT / "Makefile").read_text(encoding="utf-8")
+    phony_line = next((line for line in makefile_text.splitlines() if line.startswith(".PHONY:")), "")
+    require("clean-provisional-corpus" in phony_line.split(), "clean-provisional-corpus is not phony")
+    require('rm -rf "$(PROVISIONAL_CORPUS_PATH)"' not in makefile_text, "clean target still contains unbounded rm -rf")
+
+    root = temporary / "clean-root"
+    root.mkdir()
+    corpus = root / CORPUS_ID
+    shutil.copytree(source_corpus, corpus)
+    unrelated = temporary / "clean-victim"
+    unrelated.mkdir()
+    victim = unrelated / "sentinel.txt"
+    victim.write_text("keep", encoding="utf-8")
+    clean = subprocess.run(
+        [
+            "make",
+            "--no-print-directory",
+            "clean-provisional-corpus",
+            f"PROVISIONAL_CORPUS_ROOT={root}",
+            f"PROVISIONAL_CORPUS_PATH={unrelated}",
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    require(clean.returncode == 0 and not corpus.exists(), f"safe corpus clean failed: {clean.stdout} {clean.stderr}")
+    require(victim.read_text(encoding="utf-8") == "keep", "overridden corpus path was deleted")
+
+    forged = root / CORPUS_ID
+    forged.mkdir()
+    (forged / "corpus-manifest.json").write_text(
+        json.dumps({
+            "corpus_id": CORPUS_ID,
+            "evidence_class": "diagnostic",
+            "frozen": False,
+            "publication_eligible": False,
+        }) + "\n",
+        encoding="utf-8",
+    )
+    forged_result = subprocess.run(
+        ["make", "--no-print-directory", "clean-provisional-corpus", f"PROVISIONAL_CORPUS_ROOT={root}"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    require(forged_result.returncode != 0 and forged.exists(), "forged corpus marker was accepted for cleanup")
+    shutil.rmtree(forged)
+
+    root_marker = root / "unrelated.txt"
+    root_marker.write_text("keep", encoding="utf-8")
+    clean_again = subprocess.run(
+        ["make", "--no-print-directory", "clean-provisional-corpus", f"PROVISIONAL_CORPUS_ROOT={root}"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    require(
+        clean_again.returncode == 0 and root_marker.read_text(encoding="utf-8") == "keep",
+        "absent corpus cleanup touched unrelated state",
+    )
+
+
+def side_member_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> None:
+    wrapper = temporary / "side-member-compiler.py"
+    real_gcc = shutil.which("gcc")
+    require(real_gcc is not None, "gcc is required for the side-member probe")
+    wrapper.write_text(
+        "#!/usr/bin/env python3\n"
+        "import os, pathlib, subprocess, sys\n"
+        "if len(sys.argv) > 1 and sys.argv[1] in {'--version', '-dumpmachine'}:\n"
+        "    pathlib.Path('undeclared-side-file.bin').write_bytes(b'X' * 1048576)\n"
+        f"    raise SystemExit(subprocess.run([{real_gcc!r}, *sys.argv[1:]]).returncode)\n"
+        f"raise SystemExit(subprocess.run([{real_gcc!r}, *sys.argv[1:]]).returncode)\n",
+        encoding="utf-8",
+    )
+    wrapper.chmod(0o755)
+    spec = json.loads(json.dumps(base_spec))
+    spec["source"]["path"] = str((ROOT / "benchmarks/corpus/sources/sprint11-provisional-control-flow.c").resolve())
+    spec["source"]["license_path"] = str((ROOT / "LICENSE").resolve())
+    spec["corpus_id"] = "s11-p057-side-member-probe"
+    spec["toolchains"] = [{"id": "gcc", "command": str(wrapper), "required": True}]
+    spec["optimization_profiles"] = spec["optimization_profiles"][:1]
+    spec["artifact_profiles"] = spec["artifact_profiles"][:1]
+    spec["hardening_profiles"] = spec["hardening_profiles"][:1]
+    spec["target_count"] = 1
+    path = temporary / "side-member-spec.json"
+    path.write_text(json.dumps(spec, indent=2) + "\n", encoding="utf-8")
+    output = temporary / "side-member-output"
+    output.mkdir()
+    result = run("--spec", str(path), "--output-root", str(output), timeout=60)
+    require(result.returncode == 2 and "undeclared workspace member" in result.stderr, f"side member was not rejected: {result.stderr}")
+    assert_no_stage_or_final(output)
+
+
+def locked_cleanup_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> None:
+    wrapper = temporary / "locked-cleanup-compiler.py"
+    wrapper.write_text(
+        "#!/usr/bin/env python3\n"
+        "import os, pathlib, sys\n"
+        "if len(sys.argv) > 1 and sys.argv[1] == '--version': print('fakecc 1.0'); raise SystemExit(0)\n"
+        "if len(sys.argv) > 1 and sys.argv[1] == '-dumpmachine': print('x86_64-linux-gnu'); raise SystemExit(0)\n"
+        "pathlib.Path('locked').mkdir(); os.chmod('locked', 0); raise SystemExit(7)\n",
+        encoding="utf-8",
+    )
+    wrapper.chmod(0o755)
+    spec = json.loads(json.dumps(base_spec))
+    spec["source"]["path"] = str((ROOT / "benchmarks/corpus/sources/sprint11-provisional-control-flow.c").resolve())
+    spec["source"]["license_path"] = str((ROOT / "LICENSE").resolve())
+    spec["corpus_id"] = "s11-p057-locked-cleanup-probe"
+    spec["toolchains"] = [{"id": "fakecc", "command": str(wrapper), "required": True}]
+    spec["optimization_profiles"] = spec["optimization_profiles"][:1]
+    spec["artifact_profiles"] = spec["artifact_profiles"][:1]
+    spec["hardening_profiles"] = spec["hardening_profiles"][:1]
+    spec["target_count"] = 1
+    path = temporary / "locked-cleanup-spec.json"
+    path.write_text(json.dumps(spec, indent=2) + "\n", encoding="utf-8")
+    output = temporary / "locked-cleanup-output"
+    output.mkdir()
+    result = run("--spec", str(path), "--output-root", str(output), timeout=60)
+    require(result.returncode == 2, "locked cleanup compiler unexpectedly succeeded")
+    assert_no_stage_or_final(output)
+
+
 def main() -> int:
     require(BUILDER.is_file() and os.access(BUILDER, os.X_OK), "missing executable provisional corpus builder")
     require(SPEC.is_file(), "missing provisional corpus specification")
@@ -450,10 +584,14 @@ def main() -> int:
         interruption_probe(base_spec, temporary)
         spawn_window_probe(temporary)
         capture_limit_probe(base_spec, temporary)
+        clean_target_probe(first_corpus, temporary)
+        side_member_probe(base_spec, temporary)
+        locked_cleanup_probe(base_spec, temporary)
 
     print(
         "provisional-corpus-smoke: ok "
-        "targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=2 capture_limits=1"
+        "targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 "
+        "capture_limits=1 clean_guards=1 make_clean_guards=1 membership_rejections=1"
     )
     return 0
 
