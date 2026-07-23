@@ -240,6 +240,61 @@ def publish_commit_probe(temporary: pathlib.Path) -> None:
         owned.close()
 
 
+
+def publish_substitution_probe(temporary: pathlib.Path) -> None:
+    """Reject a foreign directory substituted at the final publication path."""
+    module = load_builder_module("x64lens_corpus_publish_substitution_probe")
+    root = temporary / "publish-substitution-root"
+    root.mkdir()
+    owned = module.OwnedStage.create(root, ".publish-substitution.staging")
+    final = root / "published"
+    (owned.path / "corpus-manifest.json").write_text("{}\n", encoding="utf-8")
+    original = module.atomic_publish_noreplace
+
+    def substitute_after_move(stage: pathlib.Path, destination: pathlib.Path) -> None:
+        escaped = root / ".owned-after-publication"
+        os.rename(stage, escaped)
+        destination.mkdir()
+        (destination / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+
+    module.atomic_publish_noreplace = substitute_after_move
+    try:
+        try:
+            module.publish_owned_stage(owned, final, "corpus publication substitution probe")
+        except module.CorpusError as exc:
+            require("substituted directory" in str(exc), f"unexpected substitution diagnostic: {exc}")
+        else:
+            raise SmokeError("foreign publication substitution was accepted")
+        require(owned.committed is False, "foreign publication substitution marked the owned stage committed")
+        require(final.is_dir(), "foreign published directory disappeared")
+        require((final / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign published directory changed")
+        owned.cleanup("corpus publication substitution cleanup")
+        require(not (root / ".owned-after-publication").exists(), "escaped owned corpus stage survived cleanup")
+        require(final.is_dir(), "owned-stage cleanup deleted the foreign published directory")
+    finally:
+        module.atomic_publish_noreplace = original
+        owned.close()
+
+
+def duplicate_tool_manifest_probe(corpus: pathlib.Path, temporary: pathlib.Path) -> None:
+    """Reject a checksummed corpus whose tool inventory contains a duplicate record."""
+    parent = temporary / "duplicate-tool-record"
+    parent.mkdir()
+    duplicate = parent / CORPUS_ID
+    shutil.copytree(corpus, duplicate)
+    manifest_path = duplicate / "corpus-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["tools"].append(json.loads(json.dumps(manifest["tools"][0])))
+    os.chmod(manifest_path, 0o644)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.chmod(manifest_path, 0o444)
+    regenerate_checksums(duplicate)
+    result = run("--verify", str(duplicate), timeout=30)
+    require(
+        result.returncode == 2 and "tool records are duplicated" in result.stderr,
+        f"duplicate authenticated tool record was not rejected: {result.stderr}",
+    )
+
 def early_signal_probe(temporary: pathlib.Path) -> None:
     """Prove SIGTERM is handled before any staging directory can be orphaned."""
     module = load_builder_module("x64lens_corpus_early_signal_probe")
@@ -249,9 +304,9 @@ def early_signal_probe(temporary: pathlib.Path) -> None:
     original_sigint = signal.getsignal(signal.SIGINT)
     original_sigterm = signal.getsignal(signal.SIGTERM)
 
-    def interrupting_create(cls, parent, name):
+    def interrupting_create(cls, parent, name, registry=None):
         os.kill(os.getpid(), signal.SIGTERM)
-        return original_create(cls, parent, name)
+        return original_create(cls, parent, name, registry)
 
     module.OwnedStage.create = classmethod(interrupting_create)
     try:
@@ -265,6 +320,7 @@ def early_signal_probe(temporary: pathlib.Path) -> None:
         module.OwnedStage.create = classmethod(original_create)
         signal.signal(signal.SIGINT, original_sigint)
         signal.signal(signal.SIGTERM, original_sigterm)
+        module.CREATING_STAGE = False
         module.INTERRUPTED_BY = None
     assert_no_stage_or_final(output, CORPUS_ID)
 
@@ -736,6 +792,8 @@ def main() -> int:
         early_signal_probe(temporary)
         stage_identity_probe(temporary)
         publish_commit_probe(temporary)
+        publish_substitution_probe(temporary)
+        duplicate_tool_manifest_probe(first_corpus, temporary)
         capture_limit_probe(base_spec, temporary)
         retained_limit_probes(first_corpus, temporary)
         clean_target_probe(first_corpus, temporary)
@@ -746,7 +804,8 @@ def main() -> int:
         "provisional-corpus-smoke: ok "
         "targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 "
         "capture_limits=1 retained_limits=2 clean_guards=1 make_clean_guards=1 "
-        "membership_rejections=1 stage_substitution=1 early_signals=1 post_publish_commit=1"
+        "membership_rejections=1 stage_substitution=1 early_signals=1 post_publish_commit=1 "
+        "publish_substitution=1 duplicate_tool_records=1"
     )
     return 0
 

@@ -125,5 +125,5 @@ data.
 ## Deferred decision
 
 Patch 042 establishes the evidence generator and explicit decision gate. The
-embedded-decoder verdict is made only after authoritative WSL2 campaign evidence
-is reviewed. Broad primitive expansion remains deferred to Sprint 10.
+embedded-decoder verdict is made only after controlled selected-system campaign
+evidence is reviewed. Broad primitive expansion remains deferred to Sprint 10.

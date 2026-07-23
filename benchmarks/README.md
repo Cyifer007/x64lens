@@ -84,9 +84,10 @@ are written under `benchmarks/results/diagnostic/` and remain ignored until a
 later evidence-promotion decision.
 
 Each campaign retains hashed runner, exact-specification, tool, target, and
-timer-probe files. The measured child receives byte-identical, write-sealed
-Linux `memfd` copies of the tool, target, and probe; recorded replay commands
-resolve campaign-relatively to the retained files. Campaigns also retain
+timer-probe files. The measured child receives byte-identical executable,
+write-sealed Linux `memfd` copies of the tool and probe plus a non-executable,
+execution-sealed target copy; recorded replay commands resolve
+campaign-relatively to the retained files. Campaigns also retain
 isolated per-command environment roots, observed tool version output,
 timer-floor samples, warmup and measured rows, Linux `wait4` resource data for
 the selected child, stdout/stderr artifacts, and a manifest. The runner
@@ -165,13 +166,17 @@ make diagnostic-task-definitions-smoke
 make baseline-output-adapter-smoke
 ```
 
-`benchmarks/scripts/baseline-output-adapter.py` consumes retained native output;
-it does not invoke the baseline tool. Before parsing it authenticates the exact
-command, tool executable and version evidence, target, stdout, stderr, and
-adapter source against the task authority. Native output remains the primary
-artifact.
+`benchmarks/scripts/baseline-output-adapter.py` consumes caller-supplied retained
+native output; it does not invoke the baseline tool. Before parsing it reconciles
+the supplied task command and authenticates the tool executable, target, retained
+version-output file and declared version text, stdout, stderr, and adapter source
+against the task authority. Native output remains the primary artifact. The
+standalone adapter does not consume a runner row, campaign manifest, or execution
+outcome, so a campaign must bind those inputs before treating a normalized
+artifact as the result of a particular invocation.
 
-The initial common relation is exact `pop rdi; ret`. Tool-native totals,
+The initial common relation is canonical `pop rdi; ret` over represented
+instruction text; it does not decode target bytes. Tool-native totals,
 unique-native totals, duplicate counts, return-terminated populations, and the
 canonical exact relation remain separate. No normalized artifact contains an
 unlabeled `gadget_count` field. Uncategorized or over-limit native output is a

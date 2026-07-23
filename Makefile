@@ -56,7 +56,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -74,6 +74,9 @@ help:
 	@echo "  make diagnostic-runner-smoke  Validate high-resolution runner provenance, timing, and failure retention"
 	@echo "  make diagnostic-task-definitions-smoke  Validate truthful Sprint 11 task scopes"
 	@echo "  make baseline-output-adapter-smoke  Validate bounded task-normalized ROPgadget/Ropper/ropr adapters"
+	@echo "  make diagnostic-transaction-smoke  Validate runner stage ownership, future paths, and interruption cleanup"
+	@echo "  make sprint11-measurement-plane-smoke  Validate matched relations, runtime closure, and address calibration"
+	@echo "  make sprint11-campaign-plan-smoke  Validate the 30-condition provisional diagnostic plan"
 	@echo "  make provisional-corpus-build  Build the ignored 24-target GCC/Clang diagnostic corpus"
 	@echo "  make provisional-corpus-verify  Reauthenticate the generated provisional corpus"
 	@echo "  make provisional-corpus-smoke  Prove two-build reproducibility, integrity, and cleanup"
@@ -477,7 +480,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -591,11 +594,20 @@ patch054-corrective-regression-smoke:
 diagnostic-runner-smoke:
 	python3 tools/diagnostic-runner-smoke.py
 
+diagnostic-transaction-smoke:
+	python3 tools/diagnostic-transaction-smoke.py
+
 diagnostic-task-definitions-smoke:
 	python3 tools/diagnostic-task-definitions-smoke.py
 
 baseline-output-adapter-smoke:
 	python3 tools/baseline-output-adapter-smoke.py
+
+sprint11-measurement-plane-smoke: corpus-tools-check
+	python3 tools/sprint11-measurement-plane-smoke.py
+
+sprint11-campaign-plan-smoke:
+	python3 tools/sprint11-campaign-plan-smoke.py
 
 sprint11-diagnostic-reference-smoke: diagnostic-tools-check all samples
 	python3 tools/sprint11-diagnostic-reference-smoke.py
@@ -629,6 +641,10 @@ script-perms-check:
 	@test -x benchmarks/scripts/diagnostic-runner.py
 	@test -x benchmarks/scripts/build-provisional-corpus.py
 	@test -x benchmarks/scripts/baseline-output-adapter.py
+	@test -f benchmarks/scripts/diagnostic_artifact.py
+	@test -x benchmarks/scripts/x64lens-relation-extractor.py
+	@test -x benchmarks/scripts/runtime-closure-manifest.py
+	@test -x benchmarks/scripts/address-coordinate-calibrator.py
 	@test -x benchmarks/scripts/bench-x64lens.sh
 	@test -x tools/benchmark-integrity-smoke.py
 	@test -x tools/patch-bundle-hygiene-smoke.py
@@ -678,8 +694,11 @@ script-perms-check:
 	@test -x tools/sprint10-closeout-smoke.py
 	@test -x tools/patch054-corrective-regression-smoke.py
 	@test -x tools/diagnostic-runner-smoke.py
+	@test -x tools/diagnostic-transaction-smoke.py
 	@test -x tools/diagnostic-task-definitions-smoke.py
 	@test -x tools/baseline-output-adapter-smoke.py
+	@test -x tools/sprint11-measurement-plane-smoke.py
+	@test -x tools/sprint11-campaign-plan-smoke.py
 	@test -x tools/sprint11-diagnostic-reference-smoke.py
 	@test -x tools/provisional-corpus-smoke.py
 	@test -x tools/verify-checksum-manifest.py
@@ -751,6 +770,11 @@ scaffold-check: script-perms-check
 	@test -f tests/expected/sprint10-closeout.json
 	@test -f benchmarks/specs/sprint11-reference-diagnostic.json
 	@test -f benchmarks/task-definitions/sprint11-diagnostic-tasks.json
+	@test -f benchmarks/task-definitions/sprint11-p059-campaign-plan.json
+	@test -f benchmarks/scripts/diagnostic_artifact.py
+	@test -f benchmarks/scripts/x64lens-relation-extractor.py
+	@test -f benchmarks/scripts/runtime-closure-manifest.py
+	@test -f benchmarks/scripts/address-coordinate-calibrator.py
 	@test -f tests/fixtures/baseline-adapters/ropgadget-valid.txt
 	@test -f tests/fixtures/baseline-adapters/ropper-valid.txt
 	@test -f tests/fixtures/baseline-adapters/ropr-valid.txt
@@ -763,9 +787,11 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0042-provisional-corpus-provenance-and-regeneration.md
 	@test -f docs/adr/0043-sprint11-diagnostic-integrity-correction.md
 	@test -f docs/adr/0044-task-normalized-baseline-adapters-and-diagnostic-integrity.md
+	@test -f docs/adr/0045-measurement-plane-and-transaction-integrity.md
 	@test -f docs/sprints/sprint-11-patch-056-validation.md
 	@test -f docs/sprints/sprint-11-patch-057-validation.md
 	@test -f docs/sprints/sprint-11-patch-058-validation.md
+	@test -f docs/sprints/sprint-11-patch-059-validation.md
 	@test -f docs/research-release-plan.md
 	@test -f docs/design/evidence-provenance-model.md
 	@test -f docs/design/schema-evolution.md

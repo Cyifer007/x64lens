@@ -426,8 +426,13 @@ of a caller-selected corpus path is prohibited.
 
 External baseline normalization is development infrastructure and must remain
 separate from measurement and analyzer authority. An adapter must authenticate
-its task definition, exact command, tool/version identity, target, native
-stdout/stderr, capture limits, and adapter source before emitting normalized
-facts. Native output and duplicates remain retained. Uncategorized output fails
-closed, and no tool-specific total may be relabeled as an unlabeled cross-tool
-`gadget_count`.
+its task definition, supplied task command, tool executable, target, retained
+version-output file and declared version text, native stdout/stderr, capture
+limits, and adapter source before emitting normalized facts. Native output and
+duplicates remain retained. Uncategorized output fails closed, and no
+tool-specific total may be relabeled as an unlabeled cross-tool `gadget_count`.
+
+File authentication is not execution provenance. Before a normalized artifact
+enters a campaign row or summary, orchestration must bind it to the corresponding
+runner row, manifest, child outcome, and capture identities. A standalone adapter
+that does not consume those records cannot establish that binding.

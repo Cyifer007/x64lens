@@ -1,10 +1,14 @@
 # Sprint 11 Patch 058 Validation
 
+## Status
+
+Implementation candidate; empirical acceptance is pending.
+
 ## Purpose
 
-Patch 058 completes the task-normalized ROPgadget, Ropper, and ropr adapter
-foundation while correcting the remaining Patch 057 runner, corpus, oracle, and
-delivery-integrity findings.
+The Patch 058 implementation candidate supplies the task-normalized ROPgadget,
+Ropper, and ropr adapter foundation while addressing Patch 057 runner, corpus,
+oracle, and evidence-integrity findings.
 
 No analyzer assembly, CLI, JSON schema, semantic class, score, candidate
 capacity, command-arena size, decoder policy, or worker policy changes.
@@ -21,7 +25,6 @@ tools/diagnostic-runner-smoke.py
 tools/provisional-corpus-smoke.py
 tools/diagnostic-task-definitions-smoke.py
 tools/baseline-output-adapter-smoke.py
-tools/sprint11-diagnostic-reference-smoke.py
 tests/fixtures/baseline-adapters/*.txt
 Makefile
 ```
@@ -40,19 +43,26 @@ diagnostic-task-definitions-smoke: ok tasks=3 implemented=2 unavailable=1 baseli
 baseline-output-adapter-smoke: ok tools=3 controlled_records=15 exact_relation_precision=1.000 exact_relation_recall=1.000 adversarial_cases=20 generic_counts=0
 ```
 
-The adapter smoke must prove:
+The adapter smoke must exercise:
 
-- exact command-template reconciliation for each baseline;
-- executable/version/target/native-output/adapter authentication, including deterministic late-mutation rejection;
+- exact supplied-command reconciliation for each baseline;
+- executable, target, retained version-output file and declared version text,
+  native-output, and adapter authentication, including deterministic late-mutation
+  rejection;
 - bounded stdout and stderr rejection plus line, record-count, instruction-count, and 64-bit address limits;
 - deterministic normalized output;
 - native duplicate preservation and separate unique counts;
 - exact `pop rdi; ret` normalization for represented ROPgadget, Ropper, and
   ropr syntax;
 - rejection of invalid UTF-8, uncategorized lines, non-return records, stale
-  identity, unsafe links, and pre-existing output paths; and
+  identity, unsafe links, and pre-existing output paths;
 - absence of an unlabeled `gadget_count` field; and
 - explicit rejection of decoder-backed native records as a substitute for raw executable-byte evidence.
+
+The smoke uses controlled native-output fixtures. It does not pin and execute a
+supported real version of every baseline, and the standalone adapter does not
+consume a runner row, campaign manifest, child outcome, or capture record. Those
+limits keep parser validation separate from end-to-end campaign provenance.
 
 ## Focused runner validation
 
@@ -135,7 +145,8 @@ make native-docker-json-parity-smoke
 The baseline adapter fixture gate and corpus smoke must pass under the configured
 non-root container user. Optional baseline executables may remain absent during
 normal validation; a diagnostic campaign condition is admitted only when its
-exact tool/version identity is present and retained.
+tool executable and declared version text are present with retained version
+output and the campaign binds them to the corresponding runner row.
 
 ## Artifact acceptance
 

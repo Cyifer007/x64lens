@@ -183,6 +183,12 @@ Cross-tool comparison requires retained native output plus a versioned adapter
 and task authority. Tool-native records, unique records, exact normalized
 relations, x64lens evidence-layer counts, timing, RSS, and output size are
 separate results. Adapter failure is preserved as a failed diagnostic condition;
-it is not evidence of zero baseline coverage. Patch 058's exact
-`pop rdi; ret` relation is a bounded reconciliation surface, not a claim that
-the compared tools perform identical work.
+it is not evidence of zero baseline coverage. Patch 058's canonical
+`pop rdi; ret` relation over represented instruction text is a bounded
+reconciliation surface, not a claim that the compared tools perform identical
+work or that target bytes were decoded by the adapter.
+
+Authenticated standalone files do not prove that a particular invocation
+produced them. Campaign rows and summaries require an explicit binding among the
+runner row, manifest, child outcome, retained capture identities, and normalized
+artifact.

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "plan_id": "sprint11-p059-stage-zero-and-corrected-comparison-plan-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "status": "pre_execution_authority",
+  "corpus_spec": "benchmarks/corpus/specs/sprint11-provisional-corpus-v1.json",
+  "task_authority": "benchmarks/task-definitions/sprint11-diagnostic-tasks.json",
+  "reference_profile": "core-1w",
+  "maximum_depth": 4,
+  "selection_policy": {
+    "target_count": 6,
+    "roles": [
+      "et_exec",
+      "pie_et_dyn",
+      "shared_et_dyn"
+    ],
+    "targets_per_role": 2,
+    "compiler_balance": [
+      "gcc",
+      "clang"
+    ],
+    "optimization_balance": [
+      "o0",
+      "o2"
+    ],
+    "hardening_balance": [
+      "minimal",
+      "hardened"
+    ],
+    "target_ids": [
+      "gcc-o0-exec-nopie-minimal",
+      "clang-o2-exec-nopie-hardened",
+      "gcc-o0-exec-pie-minimal",
+      "clang-o2-exec-pie-hardened",
+      "gcc-o0-shared-minimal",
+      "clang-o2-shared-hardened"
+    ]
+  },
+  "comparative_matrix": {
+    "tools": [
+      "x64lens",
+      "ropgadget",
+      "ropper",
+      "ropr"
+    ],
+    "x64lens_condition": "x64lens-gadget-json--<target_id>",
+    "baseline_conditions": [
+      "ropgadget-rop-report--<target_id>",
+      "ropper-rop-report--<target_id>",
+      "ropr-rop-report--<target_id>"
+    ],
+    "condition_count": 24,
+    "required_relation_artifacts_per_condition": 1,
+    "required_runtime_closure_per_tool_identity": 1
+  },
+  "x64lens_control_matrix": {
+    "condition": "x64lens-analysis-json--<target_id>",
+    "condition_count": 6,
+    "purpose": "preserve integrated-analysis cost as a separate non-baseline control"
+  },
+  "total_condition_count": 30,
+  "stage_zero_requirements": {
+    "matched_x64lens_relation_artifact": true,
+    "address_coordinate_calibration": {
+      "roles": [
+        "et_exec",
+        "pie_et_dyn",
+        "shared_et_dyn"
+      ],
+      "required_before_cross_tool_address_intersection": true
+    },
+    "runtime_closure_manifest": true,
+    "explicit_outcome_states": [
+      "success",
+      "tool_failure",
+      "output_limit",
+      "timeout",
+      "normalization_failure",
+      "closure_partial",
+      "coordinate_mismatch",
+      "below_timer_floor"
+    ]
+  },
+  "summary_gate": {
+    "requires_all_30_conditions_accounted_for": true,
+    "requires_native_and_normalized_artifacts": true,
+    "requires_runtime_closure_identity": true,
+    "requires_coordinate_calibration": true,
+    "generic_gadget_count_forbidden": true,
+    "below_floor_performance_claim_forbidden": true,
+    "diagnostic_only": true
+  },
+  "claim_boundaries": [
+    "This plan fixes diagnostic condition scope; it does not claim the optional baseline tools are installed or pinned on the current host.",
+    "The 24 comparative conditions pair six targets with x64lens gadget JSON and three baseline tools; six x64lens analyze conditions are separate integrated-analysis controls.",
+    "Cross-tool address intersections require role-specific coordinate calibration and may remain mismatch or insufficient evidence.",
+    "Runtime closure records identify observed execution dependencies and may be partial; entrypoint hashes alone are not complete runtime identity.",
+    "All rows remain mutable development evidence and are excluded from the Sprint 15-frozen campaign."
+  ]
+}

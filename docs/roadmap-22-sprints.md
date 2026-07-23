@@ -17,9 +17,10 @@ Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
 diagnostic benchmark foundation. Patches 055 and 056 implement the runner,
 task-definition authority, and first reproducible 24-target provisional corpus.
 Patch 057 corrects the diagnostic target-execution, corpus-membership, cleanup,
-and safe-removal boundaries before baseline scope expands; adapters, corpus-
-backed summaries, and the gap register remain active work. Sprint 15 freezes the
-confirmatory campaign.
+and safe-removal boundaries. The Patch 058 implementation candidate adds
+standalone baseline adapters; corpus-backed rows, adapter-to-row binding,
+development summaries, and the gap register remain active work. Sprint 15
+freezes the confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must

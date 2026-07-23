@@ -132,9 +132,10 @@ later sprints rather than Patch 037:
   inputs, exact workspace/member closure, checked cleanup, safe clean path, and
   non-root oracle parity.
 - [x] Patch 058 task-authority v2 and bounded ROPgadget, Ropper, and ropr
-  native-output adapters with exact command/version/target/output identity,
-  duplicate-preserving tool-specific metrics, and exact `pop rdi; ret`
-  normalization.
+  native-output adapters with exact task-command reconciliation, authenticated
+  tool, target, retained version-output, and native-stream files,
+  duplicate-preserving tool-specific metrics, and canonical `pop rdi; ret`
+  normalization over represented instruction text.
 - [ ] Provisional corpus diagnostic campaign and development gap register.
 - [x] Diagnostic rows isolated from future frozen campaigns.
 
@@ -524,9 +525,9 @@ Patch 056 completes the first provisional-corpus regeneration surface:
 - [x] interruption cleanup, semantic tamper rejection, and no-replace publication;
 - [x] generated-corpus Git, Docker, and public-bundle exclusion.
 
-Remaining Sprint 11 priorities are normalized baseline adapters, corpus-backed
-diagnostic rows, development summaries, coverage-definition inputs, and the
-Sprint 12-14 engineering gap register.
+Remaining Sprint 11 priorities are corpus-backed diagnostic rows, adapter-to-row
+binding, development summaries, coverage-definition inputs, and the Sprint 12-14
+engineering gap register.
 
 ## Sprint 11 Patch 057 update
 
@@ -546,3 +547,17 @@ comparison scope:
 Normalized baseline adapters move to Patch 058. Development summaries and the
 engineering gap register move to Patch 059, followed by Sprint 11 closeout in
 Patch 060 unless later evidence requires another corrective boundary.
+
+## Sprint 11 Patch 058 update
+
+The Patch 058 implementation candidate adds bounded native-output adapters for
+ROPgadget, Ropper, and ropr, preserves tool-specific and duplicate metrics, and
+materializes a canonical `pop rdi; ret` relation over represented instruction
+text. The raw executable-return-byte relation remains explicitly unavailable for
+these external baselines.
+
+Each standalone adapter authenticates caller-supplied commands, files, hashes,
+limits, and declared version text. It does not consume a diagnostic runner row,
+campaign manifest, execution outcome, or capture record, so Patch 059 must bind
+normalization to corpus-backed rows before generating development summaries and
+the engineering gap register. Patch 060 remains the Sprint 11 closeout boundary.

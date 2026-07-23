@@ -30,12 +30,13 @@ multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
 reviewed scores, and Patch 052 corrects the resulting effect and validation
 findings. Patch 053 establishes the canonical twenty-two-sprint sequence, and
 Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement.
-Patches 055 and 056 implement the high-resolution runner, truthful task
-authority, and first 24-target source-reproducible provisional corpus. Baseline
-adapters, summaries, corpus-backed rows, and the gap register remain diagnostic
-work. Loader, mitigation, semantic, and optional-profile decisions occupy
-Sprints 12 through 14. The campaign freezes in Sprint 15, the preview pilot runs
-in Sprint 16, and the publication campaign runs in Sprint 17.
+Patches 055 through 057 implement and harden the high-resolution runner, truthful
+task authority, and first 24-target source-reproducible provisional corpus. The
+Patch 058 implementation candidate adds standalone baseline adapters. Corpus-
+backed rows, adapter-to-row binding, summaries, and the gap register remain
+diagnostic work. Loader, mitigation, semantic, and optional-profile decisions
+occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview
+pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -304,3 +305,16 @@ verified staging cleanup, and specification-derived corpus removal. A mode-only
 target claim, ignored cleanup failure, or checksummed undeclared compiler member
 cannot satisfy the preview evidence gate. Patch 057 remains development
 infrastructure and supplies no release-facing comparative result.
+
+## Sprint 11 Patch 058 release-gate update
+
+The Patch 058 implementation candidate adds bounded standalone native-output
+adapters and additional diagnostic evidence-integrity controls. It supplies no
+release-facing comparative result. The adapters authenticate supplied files and
+declared metadata, but do not consume runner rows, campaign manifests, child
+outcomes, or capture records.
+
+Before a baseline row or summary can advance the diagnostic checkpoint,
+orchestration must bind that execution record to its normalized artifact. Sprint
+15 must still freeze admitted tool versions, commands, task definitions, adapters,
+and corpus identities before confirmatory measurement begins.

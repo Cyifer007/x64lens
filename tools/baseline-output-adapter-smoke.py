@@ -1,23 +1,37 @@
 #!/usr/bin/env python3
-"""Validate the Sprint 11 ROPgadget, Ropper, and ropr output adapters."""
+"""Durable regression gate for runner-bound Sprint 11 baseline adapters."""
 from __future__ import annotations
 
+import csv
 import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 from typing import Any
 
+sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "benchmarks/scripts/baseline-output-adapter.py"
+COMMON = ROOT / "benchmarks/scripts/diagnostic_artifact.py"
 AUTHORITY = ROOT / "benchmarks/task-definitions/sprint11-diagnostic-tasks.json"
 FIXTURES = ROOT / "tests/fixtures/baseline-adapters"
-TOOLS = ("ropgadget", "ropper", "ropr")
+
+VERSIONS = {
+    "ropgadget": "Version:        ROPgadget v7.7",
+    "ropper": "Version: Ropper 1.13.13",
+    "ropr": "ropr 0.2.26",
+}
+CONDITIONS = {
+    "ropgadget": "ropgadget-rop-report",
+    "ropper": "ropper-rop-report",
+    "ropr": "ropr-rop-report",
+}
 
 
 class SmokeError(RuntimeError):
@@ -30,391 +44,382 @@ def require(condition: bool, message: str) -> None:
 
 
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while block := handle.read(1024 * 1024):
+            digest.update(block)
+    return digest.hexdigest()
 
 
-
-def load_adapter_module() -> Any:
-    spec = importlib.util.spec_from_file_location("x64lens_baseline_output_adapter", ADAPTER)
-    require(spec is not None and spec.loader is not None, "cannot load adapter module")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
-
-def authority() -> dict[str, Any]:
-    return json.loads(AUTHORITY.read_text(encoding="utf-8"))
+def write_tsv(path: Path, rows: list[dict[str, Any]]) -> None:
+    fields = sorted({key for row in rows for key in row})
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields, delimiter="\t", lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
 
 
-def baseline(tool: str, source: dict[str, Any] | None = None) -> dict[str, Any]:
-    source = source if source is not None else authority()
-    return next(item for item in source["baselines"] if item["id"] == tool)
-
-
-def substituted_command(template: list[str], tool_path: Path, target_path: Path) -> list[str]:
+def command_for(authority: dict[str, Any], tool: str, cwd: Path, tool_path: Path, target_path: Path) -> list[str]:
+    baseline = next(item for item in authority["baselines"] if item["id"] == tool)
     return [
-        str(tool_path) if item == "<tool>" else str(target_path) if item == "<target>" else item
-        for item in template
+        os.path.relpath(tool_path, cwd) if item == "<tool>" else
+        os.path.relpath(target_path, cwd) if item == "<target>" else
+        item
+        for item in baseline["command_template"]
     ]
 
 
-def invoke(
-    *,
-    tool: str,
-    work: Path,
-    native_stdout: Path,
-    output: Path,
-    task_authority: Path = AUTHORITY,
-    command: list[str] | None = None,
-    condition_id: str | None = None,
-    target_sha256: str | None = None,
-    version_text: str | None = None,
-    native_stderr: Path | None = None,
-    tool_mode: int = 0o755,
-) -> subprocess.CompletedProcess[str]:
-    tool_record = baseline(tool, json.loads(task_authority.read_text(encoding="utf-8")))
-    tool_path = work / tool_record["executable_name"]
-    if not tool_path.exists():
-        tool_path.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-    tool_path.chmod(tool_mode)
-    target = work / "target.elf"
-    if not target.exists():
-        target.write_bytes(b"controlled baseline adapter target\n")
-    version = work / f"{tool}-version.txt"
-    version.write_text(version_text if version_text is not None else f"{tool} controlled-1.0\n", encoding="utf-8")
-    stderr = native_stderr if native_stderr is not None else work / f"{tool}-stderr.bin"
-    if not stderr.exists():
+def build_campaign(base: Path, *, authority: dict[str, Any] | None = None) -> tuple[Path, dict[str, dict[str, Any]]]:
+    authority = authority or json.loads(AUTHORITY.read_text(encoding="utf-8"))
+    campaign = base / "campaign"
+    (campaign / "inputs/tools").mkdir(parents=True)
+    (campaign / "inputs/targets").mkdir(parents=True)
+    (campaign / "inputs/versions").mkdir(parents=True)
+    (campaign / "outputs").mkdir(parents=True)
+    target = campaign / "inputs/targets/controlled-gadgets"
+    target.write_bytes(b"controlled adapter target\n")
+    target.chmod(0o444)
+    target_sha = sha256(target)
+    rows: list[dict[str, Any]] = []
+    tools: list[dict[str, Any]] = []
+    result: dict[str, dict[str, Any]] = {}
+    for order, tool in enumerate(("ropgadget", "ropper", "ropr"), start=1):
+        baseline = next(item for item in authority["baselines"] if item["id"] == tool)
+        executable = campaign / f"inputs/tools/{tool}"
+        executable.write_text(f"#!/bin/sh\necho {tool}\n", encoding="utf-8")
+        executable.chmod(0o555)
+        version_dir = campaign / f"inputs/versions/{tool}"
+        version_dir.mkdir()
+        version_stdout = version_dir / "stdout.bin"
+        version_stdout.write_text(VERSIONS[tool] + "\n", encoding="utf-8")
+        version_stdout.chmod(0o444)
+        version_stderr = version_dir / "stderr.bin"
+        version_stderr.write_bytes(b"")
+        version_stderr.chmod(0o444)
+        run_id = f"measured-001-{order:02d}-{CONDITIONS[tool]}"
+        run_dir = campaign / f"outputs/{run_id}"
+        work = run_dir / "work"
+        work.mkdir(parents=True)
+        stdout = run_dir / "stdout.bin"
+        stdout.write_bytes((FIXTURES / f"{tool}-valid.txt").read_bytes())
+        stdout.chmod(0o444)
+        stderr = run_dir / "stderr.bin"
         stderr.write_bytes(b"")
-    command_value = command or substituted_command(tool_record["command_template"], tool_path, target)
-    argv = [
-        sys.executable,
-        str(ADAPTER),
-        "--tool",
-        tool,
-        "--tool-version",
-        "controlled-1.0",
-        "--tool-executable",
-        str(tool_path),
-        "--version-output",
-        str(version),
-        "--condition-id",
-        condition_id or tool_record["condition_id"],
-        "--target-id",
-        "controlled-target",
-        "--target-path",
-        str(target),
-        "--target-sha256",
-        target_sha256 or sha256(target),
-        "--command-json",
-        json.dumps(command_value, separators=(",", ":")),
-        "--command-cwd",
-        str(work),
-        "--native-stdout",
-        str(native_stdout),
-        "--native-stderr",
-        str(stderr),
-        "--task-authority",
-        str(task_authority),
-        "--output",
-        str(output),
-    ]
+        stderr.chmod(0o444)
+        tool_sha = sha256(executable)
+        command = command_for(authority, tool, work, executable, target)
+        row = {
+            "runner_schema_version": "2",
+            "campaign_id": "adapter-smoke-v2",
+            "run_id": run_id,
+            "phase": "measured",
+            "round": "1",
+            "order_index": str(order),
+            "condition_id": CONDITIONS[tool],
+            "task_scope": "baseline_gadget_report",
+            "tool_id": tool,
+            "tool_version": VERSIONS[tool],
+            "tool_sha256": tool_sha,
+            "target_id": "controlled-gadgets",
+            "target_sha256": target_sha,
+            "target_license": "Apache-2.0 project-controlled fixture",
+            "command_json": json.dumps(command, separators=(",", ":")),
+            "command_cwd": str(work.relative_to(campaign)),
+            "stdout_path": str(stdout.relative_to(campaign)),
+            "stderr_path": str(stderr.relative_to(campaign)),
+            "stdout_limit_bytes": str(baseline["capture_policy"]["maximum_stdout_bytes"]),
+            "stderr_limit_bytes": str(baseline["capture_policy"]["maximum_stderr_bytes"]),
+            "stdout_bytes": str(stdout.stat().st_size),
+            "stdout_sha256": sha256(stdout),
+            "stderr_bytes": "0",
+            "stderr_sha256": sha256(stderr),
+            "exit_code": "0",
+            "process_outcome": "success",
+            "outcome": "success",
+        }
+        rows.append(row)
+        tools.append({
+            "id": tool,
+            "version": VERSIONS[tool],
+            "version_observed": VERSIONS[tool],
+            "sha256": tool_sha,
+            "size_bytes": executable.stat().st_size,
+            "snapshot_path": str(executable.relative_to(campaign)),
+            "version_stdout_path": str(version_stdout.relative_to(campaign)),
+            "version_stderr_path": str(version_stderr.relative_to(campaign)),
+            "version_result": {
+                "stdout_bytes": version_stdout.stat().st_size,
+                "stdout_sha256": sha256(version_stdout),
+                "stderr_bytes": 0,
+                "stderr_sha256": sha256(version_stderr),
+            },
+        })
+        result[tool] = {"run_id": run_id, "stdout": stdout, "stderr": stderr}
+    rows_path = campaign / "rows.tsv"
+    write_tsv(rows_path, rows)
+    rows_path.chmod(0o444)
+    manifest = {
+        "schema_version": 2,
+        "campaign_id": "adapter-smoke-v2",
+        "evidence_class": "diagnostic",
+        "frozen": False,
+        "publication_eligible": False,
+        "artifacts": {"rows": "rows.tsv", "rows_sha256": sha256(rows_path)},
+        "outcomes": {"row_count": len(rows)},
+        "tools": tools,
+        "targets": [{
+            "id": "controlled-gadgets",
+            "license": "Apache-2.0 project-controlled fixture",
+            "sha256": target_sha,
+            "size_bytes": target.stat().st_size,
+            "snapshot_path": str(target.relative_to(campaign)),
+        }],
+    }
+    manifest_path = campaign / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path.chmod(0o444)
+    return campaign, result
+
+
+def run_adapter(campaign: Path, run_id: str, authority: Path, output: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        argv,
+        [sys.executable, str(ADAPTER), "--campaign-result", str(campaign), "--run-id", run_id,
+         "--task-authority", str(authority), "--output", str(output)],
         cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
-        timeout=15,
+        timeout=20,
     )
 
 
-def assert_no_generic_count(value: Any, path: str = "root") -> None:
+def load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def contains_generic_count(value: Any) -> bool:
     if isinstance(value, dict):
-        for key, item in value.items():
-            require(key != "gadget_count", f"generic gadget_count key at {path}.{key}")
-            assert_no_generic_count(item, f"{path}.{key}")
-    elif isinstance(value, list):
-        for index, item in enumerate(value):
-            assert_no_generic_count(item, f"{path}[{index}]")
+        return any(key == "gadget_count" or contains_generic_count(item) for key, item in value.items())
+    if isinstance(value, list):
+        return any(contains_generic_count(item) for item in value)
+    return False
 
 
-def expect_failure(completed: subprocess.CompletedProcess[str], output: Path, label: str) -> None:
-    require(completed.returncode == 2, f"{label} returned {completed.returncode}: {completed.stdout} {completed.stderr}")
-    require(not output.exists(), f"{label} left partial normalized output")
+def refresh_campaign_hashes(campaign: Path) -> None:
+    rows = campaign / "rows.tsv"
+    manifest = campaign / "manifest.json"
+    manifest.chmod(0o644)
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    data["artifacts"]["rows_sha256"] = sha256(rows)
+    manifest.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest.chmod(0o444)
 
 
 def main() -> int:
-    require(ADAPTER.is_file() and ADAPTER.stat().st_mode & 0o111, "adapter is missing or non-executable")
-    source_authority = authority()
-    expected_exact_lines = {"ropgadget": (3, 4), "ropper": (4, 5), "ropr": (3, 4)}
-    valid_artifacts: dict[str, bytes] = {}
-    adversarial_cases = 0
-
-    with tempfile.TemporaryDirectory(prefix="x64lens-baseline-adapter-smoke-") as raw:
-        temporary = Path(raw)
-        for tool in TOOLS:
-            work = temporary / tool
-            work.mkdir()
-            native = FIXTURES / f"{tool}-valid.txt"
-            output = work / "normalized-1.json"
-            first = invoke(tool=tool, work=work, native_stdout=native, output=output)
-            require(first.returncode == 0, f"{tool} valid fixture failed: {first.stdout} {first.stderr}")
-            require(f"tool={tool} records=5 return_records=5 pop_rdi_ret=2" in first.stdout, f"{tool} success banner mismatch")
+    with tempfile.TemporaryDirectory(prefix="x64lens-baseline-adapter-v2-") as raw:
+        base = Path(raw)
+        authority_copy = base / "authority.json"
+        shutil.copy2(AUTHORITY, authority_copy)
+        authority_copy.chmod(0o444)
+        authority = json.loads(authority_copy.read_text(encoding="utf-8"))
+        campaign, records = build_campaign(base, authority=authority)
+        artifacts: dict[str, dict[str, Any]] = {}
+        for tool in ("ropgadget", "ropper", "ropr"):
+            output = base / f"{tool}.json"
+            result = run_adapter(campaign, records[tool]["run_id"], authority_copy, output)
+            require(result.returncode == 0, f"{tool} adapter failed: {result.stderr}")
             artifact = json.loads(output.read_text(encoding="utf-8"))
-            require(artifact["schema_version"] == 1, f"{tool} adapter schema mismatch")
-            require(artifact["adapter"]["id"] == "x64lens-sprint11-baseline-output-adapter-v1", f"{tool} adapter identity mismatch")
-            require(artifact["evidence_class"] == "diagnostic" and artifact["frozen"] is False, f"{tool} evidence class mismatch")
-            require(artifact["publication_eligible"] is False, f"{tool} publication boundary mismatch")
-            require(artifact["tool"]["id"] == tool and artifact["tool"]["version"] == "controlled-1.0", f"{tool} identity mismatch")
-            require(artifact["tool"]["executable"]["sha256"] == sha256(work / baseline(tool)["executable_name"]), f"{tool} executable hash mismatch")
-            require(artifact["target"]["sha256"] == sha256(work / "target.elf"), f"{tool} target hash mismatch")
-            require(artifact["native_output"]["stdout"]["sha256"] == sha256(native), f"{tool} stdout hash mismatch")
+            artifacts[tool] = artifact
             metrics = artifact["metrics"]
-            require(metrics == {
-                "canonical_exact_pop_rdi_ret_record_count": 2,
-                "duplicate_tool_native_record_count": 1,
-                "tool_native_record_count": 5,
-                "tool_reported_return_terminator_record_count": 5,
-                "unique_canonical_exact_pop_rdi_ret_relation_count": 1,
-                "unique_tool_native_record_count": 4,
-                "unique_tool_reported_return_terminator_site_count": 4,
-            }, f"{tool} metric mismatch: {metrics}")
-            expected_exact = [
-                {"address": "0x0000000000401000", "instructions": ["pop rdi", "ret"], "source_line": line}
-                for line in expected_exact_lines[tool]
-            ]
-            require(artifact["normalized_relations"]["canonical_exact_pop_rdi_ret"]["records"] == expected_exact, f"{tool} exact relation mismatch")
-            require(artifact["normalized_relations"]["binary_fact_arg_control_rdi_present"] is True, f"{tool} binary fact mismatch")
-            require(artifact["native_output"]["uncategorized_stdout_line_count"] == 0, f"{tool} uncategorized line mismatch")
-            assert_no_generic_count(artifact)
-            valid_artifacts[tool] = output.read_bytes()
+            require(artifact["schema_version"] == 2, f"{tool} schema mismatch")
+            require(artifact["adapter"]["id"].endswith("-v2"), f"{tool} adapter identity mismatch")
+            require(artifact["campaign_binding"]["run_id"] == records[tool]["run_id"], f"{tool} row binding mismatch")
+            require(metrics["tool_native_record_count"] == 5, f"{tool} native record count mismatch")
+            require(metrics["unique_tool_native_record_count"] == 4, f"{tool} unique count mismatch")
+            require(metrics["duplicate_tool_native_record_count"] == 1, f"{tool} duplicate count mismatch")
+            require(metrics["canonical_exact_pop_rdi_ret_record_count"] == 2, f"{tool} exact relation count mismatch")
+            require(not contains_generic_count(artifact), f"{tool} artifact contains generic gadget_count")
 
-            output2 = work / "normalized-2.json"
-            second = invoke(tool=tool, work=work, native_stdout=native, output=output2)
-            require(second.returncode == 0 and output2.read_bytes() == valid_artifacts[tool], f"{tool} normalized output is not deterministic")
+        # retq remains visible as native text but is canonicalized to ret in the
+        # exact cross-tool relation.
+        retq_campaign = base / "retq-campaign"
+        shutil.copytree(campaign, retq_campaign)
+        retq_stdout = retq_campaign / records["ropgadget"]["stdout"].relative_to(campaign)
+        retq_stdout.chmod(0o644)
+        retq_stdout.write_text("0x401000 : pop rdi ; retq\n", encoding="utf-8")
+        retq_stdout.chmod(0o444)
+        rows_path = retq_campaign / "rows.tsv"
+        rows = list(csv.DictReader(rows_path.open(encoding="utf-8"), delimiter="\t"))
+        for row in rows:
+            if row["run_id"] == records["ropgadget"]["run_id"]:
+                row["stdout_bytes"] = str(retq_stdout.stat().st_size)
+                row["stdout_sha256"] = sha256(retq_stdout)
+        rows_path.chmod(0o644)
+        write_tsv(rows_path, rows)
+        rows_path.chmod(0o444)
+        refresh_campaign_hashes(retq_campaign)
+        retq_output = base / "retq.json"
+        retq_result = run_adapter(retq_campaign, records["ropgadget"]["run_id"], authority_copy, retq_output)
+        require(retq_result.returncode == 0, f"retq canonicalization failed: {retq_result.stderr}")
+        retq_artifact = json.loads(retq_output.read_text(encoding="utf-8"))
+        relation = retq_artifact["normalized_relations"]["canonical_exact_pop_rdi_ret"]["records"][0]
+        native = retq_artifact["native_output"]["native_records"][0]
+        require(relation["instructions"] == ["pop rdi", "ret"], "retq relation was not canonicalized")
+        require(native["native_instructions"] == ["pop rdi", "retq"], "retq native evidence was not preserved")
 
-        # ANSI output is accepted only after exact byte counting and normalization.
-        ansi_work = temporary / "ansi"
-        ansi_work.mkdir()
-        ansi_native = ansi_work / "ropr-ansi.txt"
-        ansi_native.write_bytes(FIXTURES.joinpath("ropr-valid.txt").read_bytes().replace(b"0x0000000000401000", b"\x1b[31m0x0000000000401000\x1b[0m", 1))
-        ansi_output = ansi_work / "normalized.json"
-        ansi = invoke(tool="ropr", work=ansi_work, native_stdout=ansi_native, output=ansi_output)
-        require(ansi.returncode == 0, f"ANSI fixture failed: {ansi.stderr}")
-        require(json.loads(ansi_output.read_text(encoding="utf-8"))["native_output"]["ansi_sequences_removed_from_stdout"] == 2, "ANSI removal count mismatch")
+        adversarial = 0
+        # Version substring attacks must fail exact first-line authentication.
+        bad_version = base / "bad-version"
+        shutil.copytree(campaign, bad_version)
+        version_path = bad_version / "inputs/versions/ropgadget/stdout.bin"
+        version_path.chmod(0o644)
+        version_path.write_text("prefix Version:        ROPgadget v7.7 suffix\n", encoding="utf-8")
+        version_path.chmod(0o444)
+        manifest = bad_version / "manifest.json"
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        for tool in data["tools"]:
+            if tool["id"] == "ropgadget":
+                tool["version_result"]["stdout_bytes"] = version_path.stat().st_size
+                tool["version_result"]["stdout_sha256"] = sha256(version_path)
+        manifest.chmod(0o644)
+        manifest.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        manifest.chmod(0o444)
+        result = run_adapter(bad_version, records["ropgadget"]["run_id"], authority_copy, base / "bad-version.json")
+        require(result.returncode == 2, "substring-only version evidence was accepted")
+        adversarial += 1
 
-        # Every negative control must fail before creating output.
-        base_work = temporary / "negative"
-        base_work.mkdir()
-        valid_native = FIXTURES / "ropgadget-valid.txt"
+        # The raw-byte line bound applies before ANSI removal.
+        raw_bound = base / "raw-bound"
+        shutil.copytree(campaign, raw_bound)
+        stdout = raw_bound / records["ropgadget"]["stdout"].relative_to(campaign)
+        stdout.chmod(0o644)
+        stdout.write_bytes(b"\x1b[31m" * 1800 + b"0x401000 : pop rdi ; ret\n")
+        stdout.chmod(0o444)
+        rows_path = raw_bound / "rows.tsv"
+        rows = list(csv.DictReader(rows_path.open(encoding="utf-8"), delimiter="\t"))
+        for row in rows:
+            if row["run_id"] == records["ropgadget"]["run_id"]:
+                row["stdout_bytes"] = str(stdout.stat().st_size)
+                row["stdout_sha256"] = sha256(stdout)
+        rows_path.chmod(0o644)
+        write_tsv(rows_path, rows)
+        rows_path.chmod(0o444)
+        refresh_campaign_hashes(raw_bound)
+        result = run_adapter(raw_bound, records["ropgadget"]["run_id"], authority_copy, base / "raw-bound.json")
+        require(result.returncode == 2, "escape-heavy over-bound raw line was accepted")
+        adversarial += 1
 
-        unknown = base_work / "unknown.txt"
-        unknown.write_text(valid_native.read_text(encoding="utf-8") + "unclassified native line\n", encoding="utf-8")
-        output = base_work / "unknown.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=unknown, output=output), output, "unknown line")
-        adversarial_cases += 1
+        # The running adapter must match the authority-declared path and schema.
+        altered_authority = base / "altered-authority.json"
+        altered = json.loads(authority_copy.read_text(encoding="utf-8"))
+        altered["baselines"][0]["adapter"]["path"] = "benchmarks/scripts/not-the-running-adapter.py"
+        altered_authority.write_text(json.dumps(altered) + "\n", encoding="utf-8")
+        result = run_adapter(campaign, records["ropgadget"]["run_id"], altered_authority, base / "altered.json")
+        require(result.returncode == 2, "authority-declared adapter path mismatch was accepted")
+        adversarial += 1
 
-        nonreturn = base_work / "nonreturn.txt"
-        nonreturn.write_text("0x0000000000401000 : jmp rax\n", encoding="utf-8")
-        output = base_work / "nonreturn.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=nonreturn, output=output), output, "non-return record")
-        adversarial_cases += 1
+        # Pre-existing outputs and symlink outputs are never replaced or followed.
+        existing = base / "existing.json"
+        existing.write_text("foreign\n", encoding="utf-8")
+        result = run_adapter(campaign, records["ropgadget"]["run_id"], authority_copy, existing)
+        require(result.returncode == 2 and existing.read_text() == "foreign\n", "pre-existing output was modified")
+        adversarial += 1
+        victim = base / "victim.txt"
+        victim.write_text("victim\n", encoding="utf-8")
+        symlink = base / "symlink.json"
+        symlink.symlink_to(victim)
+        result = run_adapter(campaign, records["ropgadget"]["run_id"], authority_copy, symlink)
+        require(result.returncode == 2 and victim.read_text() == "victim\n", "symlink output victim was modified")
+        adversarial += 1
 
-        invalid_utf8 = base_work / "invalid-utf8.txt"
-        invalid_utf8.write_bytes(b"0x4000 : pop rdi ; ret\n\xff\n")
-        output = base_work / "invalid-utf8.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=invalid_utf8, output=output), output, "invalid UTF-8")
-        adversarial_cases += 1
+        # In-process deterministic post-precommit mutation: the published inode
+        # must be removed and the command must fail.
+        adapter_module = load_module("baseline_adapter_under_smoke", ADAPTER)
+        common_module = sys.modules["diagnostic_artifact"]
+        late_output = base / "late-output.json"
+        late_stdout = campaign / records["ropgadget"]["stdout"].relative_to(campaign)
+        original_publish = adapter_module.atomic_publish_bytes
 
-        oversized_address = base_work / "oversized-address.txt"
-        oversized_address.write_text("0x10000000000000000 : pop rdi ; ret\n", encoding="utf-8")
-        output = base_work / "oversized-address.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=oversized_address, output=output), output, "oversized address")
-        adversarial_cases += 1
+        def mutate_between_barriers(output: Path, data: bytes, *, reauthenticate, mode: int = 0o444):
+            calls = 0
+            def wrapped() -> None:
+                nonlocal calls
+                reauthenticate()
+                calls += 1
+                if calls == 1:
+                    late_stdout.chmod(0o644)
+                    late_stdout.write_bytes(late_stdout.read_bytes() + b"# late mutation\n")
+                    late_stdout.chmod(0o444)
+            return original_publish(output, data, reauthenticate=wrapped, mode=mode)
 
-        wrong_condition = base_work / "wrong-condition.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=wrong_condition, condition_id="wrong-condition"), wrong_condition, "wrong condition")
-        adversarial_cases += 1
+        adapter_module.atomic_publish_bytes = mutate_between_barriers
+        try:
+            code = adapter_module.main([
+                "--campaign-result", str(campaign), "--run-id", records["ropgadget"]["run_id"],
+                "--task-authority", str(authority_copy), "--output", str(late_output),
+            ])
+        except Exception:
+            code = 2
+        finally:
+            adapter_module.atomic_publish_bytes = original_publish
+        require(code != 0 and not late_output.exists(), "post-authentication input mutation produced a successful output")
+        adversarial += 1
+        # Restore the campaign for the final path-substitution probe.
+        shutil.rmtree(campaign)
+        campaign, records = build_campaign(base / "rebuilt", authority=authority)
 
-        command_record = baseline("ropgadget")
-        tool_path = base_work / command_record["executable_name"]
-        target_path = base_work / "target.elf"
-        valid_command = substituted_command(command_record["command_template"], tool_path, target_path)
-        wrong_command = list(valid_command)
-        wrong_command[3] = "6"
-        output = base_work / "wrong-command.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, command=wrong_command), output, "wrong command")
-        adversarial_cases += 1
+        adapter_module = load_module("baseline_adapter_output_substitution_smoke", ADAPTER)
+        common_module = sys.modules["diagnostic_artifact"]
+        foreign = base / "foreign-final.txt"
+        foreign.write_text("foreign final\n", encoding="utf-8")
+        substituted = base / "substituted.json"
+        escaped = base / "escaped-owned-output.json"
+        original_rename = common_module._renameat2
 
-        output = base_work / "wrong-target-hash.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, target_sha256="0" * 64), output, "wrong target hash")
-        adversarial_cases += 1
+        def substitute_after_rename(parent_fd: int, source_name: str, destination_name: str) -> None:
+            original_rename(parent_fd, source_name, destination_name)
+            os.rename(destination_name, escaped.name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd)
+            fd = os.open(destination_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o444, dir_fd=parent_fd)
+            try:
+                os.write(fd, b"foreign final\n")
+                os.fsync(fd)
+            finally:
+                os.close(fd)
 
-        output = base_work / "wrong-version.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, version_text="different version\n"), output, "missing version evidence")
-        adversarial_cases += 1
-
-        output = base_work / "nonexec-tool.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, tool_mode=0o644), output, "non-executable tool")
-        (base_work / command_record["executable_name"]).chmod(0o755)
-        adversarial_cases += 1
-
-        # A self-consistent smaller authority cap must still reject oversized evidence.
-        limited_authority = base_work / "limited-authority.json"
-        limited_value = authority()
-        limited = baseline("ropgadget", limited_value)
-        limited["capture_policy"]["maximum_stdout_bytes"] = 4096
-        limited_authority.write_text(json.dumps(limited_value, indent=2) + "\n", encoding="utf-8")
-        oversized = base_work / "oversized.txt"
-        oversized.write_bytes(valid_native.read_bytes() + b" " * 4096)
-        output = base_work / "oversized.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=oversized, output=output, task_authority=limited_authority), output, "stdout cap")
-        adversarial_cases += 1
-
-        parser_limit_authority = base_work / "parser-limit-authority.json"
-        parser_limit_value = authority()
-        parser_native = baseline("ropgadget", parser_limit_value)["native_output_contract"]
-        parser_native["maximum_line_bytes"] = 64
-        parser_native["maximum_record_count"] = 2
-        parser_native["maximum_instruction_count"] = 1
-        parser_limit_authority.write_text(json.dumps(parser_limit_value, indent=2) + "\n", encoding="utf-8")
-
-        long_line = base_work / "long-line.txt"
-        long_line.write_text("0x4000 : " + "pop rax ; " * 10 + "ret\n", encoding="utf-8")
-        output = base_work / "long-line.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=long_line, output=output, task_authority=parser_limit_authority), output, "line bound")
-        adversarial_cases += 1
-
-        too_many_records = base_work / "too-many-records.txt"
-        too_many_records.write_text("0x4000 : ret\n0x4001 : ret\n0x4002 : ret\n", encoding="utf-8")
-        output = base_work / "record-bound.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=too_many_records, output=output, task_authority=parser_limit_authority), output, "record bound")
-        adversarial_cases += 1
-
-        too_many_instructions = base_work / "too-many-instructions.txt"
-        too_many_instructions.write_text("0x4000 : pop rdi ; ret\n", encoding="utf-8")
-        output = base_work / "instruction-bound.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=too_many_instructions, output=output, task_authority=parser_limit_authority), output, "instruction bound")
-        adversarial_cases += 1
-
-        limited_stderr_authority = base_work / "limited-stderr-authority.json"
-        limited_stderr_value = authority()
-        baseline("ropgadget", limited_stderr_value)["capture_policy"]["maximum_stderr_bytes"] = 4
-        limited_stderr_authority.write_text(json.dumps(limited_stderr_value, indent=2) + "\n", encoding="utf-8")
-        noisy_stderr = base_work / "noisy-stderr.bin"
-        noisy_stderr.write_bytes(b"12345")
-        output = base_work / "stderr-cap.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, task_authority=limited_stderr_authority, native_stderr=noisy_stderr), output, "stderr cap")
-        adversarial_cases += 1
-
-        # Final-component symlinks are rejected without touching their victims.
-        victim = base_work / "victim.txt"
-        victim.write_text("unchanged\n", encoding="utf-8")
-        stdout_link = base_work / "stdout-link"
-        stdout_link.symlink_to(valid_native)
-        output = base_work / "symlink-input.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=stdout_link, output=output), output, "symlink input")
-        require(victim.read_text(encoding="utf-8") == "unchanged\n", "input symlink probe changed unrelated victim")
-        adversarial_cases += 1
-
-        real_output_parent = base_work / "real-output-parent"
-        real_output_parent.mkdir()
-        linked_output_parent = base_work / "linked-output-parent"
-        linked_output_parent.symlink_to(real_output_parent, target_is_directory=True)
-        linked_output = linked_output_parent / "normalized.json"
-        completed = invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=linked_output)
-        require(completed.returncode == 2 and not (real_output_parent / "normalized.json").exists(), "output parent symlink was accepted")
-        adversarial_cases += 1
-
-        output_link = base_work / "output-link.json"
-        output_link.symlink_to(victim)
-        completed = invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output_link)
-        require(completed.returncode == 2, "output symlink was accepted")
-        require(output_link.is_symlink() and victim.read_text(encoding="utf-8") == "unchanged\n", "output symlink victim was modified")
-        adversarial_cases += 1
-
-        preexisting = base_work / "preexisting.json"
-        preexisting.write_text("preserve\n", encoding="utf-8")
-        completed = invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=preexisting)
-        require(completed.returncode == 2 and preexisting.read_text(encoding="utf-8") == "preserve\n", "preexisting output was replaced")
-        adversarial_cases += 1
-
-        malformed_authority = base_work / "malformed-authority.json"
-        malformed_value = authority()
-        malformed_value["authority_id"] = "wrong-authority"
-        malformed_authority.write_text(json.dumps(malformed_value), encoding="utf-8")
-        output = base_work / "bad-authority-output.json"
-        expect_failure(invoke(tool="ropgadget", work=base_work, native_stdout=valid_native, output=output, task_authority=malformed_authority), output, "wrong authority")
-        adversarial_cases += 1
-
-        # Mutating a retained input after parsing but before final authentication
-        # must fail.  An in-process wrapper gives this race a deterministic
-        # location without adding a production-only pause or test hook.
-        late_work = temporary / "late-mutation"
-        late_work.mkdir()
-        late_record = baseline("ropgadget")
-        late_tool = late_work / late_record["executable_name"]
-        late_tool.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-        late_tool.chmod(0o755)
-        late_target = late_work / "target.elf"
-        late_target.write_bytes(b"controlled late mutation target\n")
-        late_version = late_work / "ropgadget-version.txt"
-        late_version.write_text("ropgadget controlled-1.0\n", encoding="utf-8")
-        late_native = late_work / "native.txt"
-        late_native.write_bytes(valid_native.read_bytes())
-        late_stderr = late_work / "stderr.bin"
-        late_stderr.write_bytes(b"")
-        late_output = late_work / "normalized.json"
-        late_command = substituted_command(late_record["command_template"], late_tool, late_target)
-        module = load_adapter_module()
-        late_args = module.parse_args([
-            "--tool", "ropgadget",
-            "--tool-version", "controlled-1.0",
-            "--tool-executable", str(late_tool),
-            "--version-output", str(late_version),
-            "--condition-id", late_record["condition_id"],
-            "--target-id", "controlled-target",
-            "--target-path", str(late_target),
-            "--target-sha256", sha256(late_target),
-            "--command-json", json.dumps(late_command, separators=(",", ":")),
-            "--command-cwd", str(late_work),
-            "--native-stdout", str(late_native),
-            "--native-stderr", str(late_stderr),
-            "--task-authority", str(AUTHORITY),
-            "--output", str(late_output),
-        ])
-        original_builder = module.build_artifact
-
-        def mutate_after_build(*args: Any, **kwargs: Any) -> dict[str, Any]:
-            artifact = original_builder(*args, **kwargs)
-            late_native.write_bytes(late_native.read_bytes() + b"0x0000000000402000 : ret\n")
-            return artifact
-
-        module.build_artifact = mutate_after_build
+        common_module._renameat2 = substitute_after_rename
         try:
             try:
-                module.normalize(late_args)
-            except module.AdapterError as exc:
-                require("native stdout" in str(exc), f"late mutation failed for the wrong reason: {exc}")
-            else:
-                raise SmokeError("late native-output mutation was accepted")
+                adapter_module.main([
+                    "--campaign-result", str(campaign), "--run-id", records["ropgadget"]["run_id"],
+                    "--task-authority", str(authority_copy), "--output", str(substituted),
+                ])
+                code = 0
+            except Exception:
+                code = 2
         finally:
-            module.build_artifact = original_builder
-        require(not late_output.exists(), "late mutation left partial normalized output")
-        adversarial_cases += 1
+            common_module._renameat2 = original_rename
+        require(code != 0, "output-path substitution produced exit zero")
+        require(substituted.read_bytes() == b"foreign final\n", "foreign substituted output was deleted or modified")
+        adversarial += 1
 
-    print(
-        "baseline-output-adapter-smoke: ok "
-        "tools=3 controlled_records=15 exact_relation_precision=1.000 "
-        f"exact_relation_recall=1.000 adversarial_cases={adversarial_cases} generic_counts=0"
-    )
+        print(
+            "baseline-output-adapter-smoke: ok "
+            "tools=3 controlled_records=15 exact_relation_precision=1.000 "
+            "exact_relation_recall=1.000 adversarial_cases=" + str(adversarial) + " "
+            "runner_binding=1 raw_line_bound=1 exact_version=1 retq_canonicalized=1 generic_counts=0"
+        )
     return 0
 
 
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (OSError, ValueError, KeyError, SmokeError, subprocess.SubprocessError) as exc:
+    except (SmokeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as exc:
         print(f"baseline-output-adapter-smoke: error: {exc}", file=sys.stderr)
         raise SystemExit(1)

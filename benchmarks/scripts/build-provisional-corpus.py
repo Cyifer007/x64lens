@@ -107,7 +107,27 @@ class CommandResult:
 
 _ACTIVE_PROCESS: subprocess.Popen[bytes] | None = None
 _SPAWNING_PROCESS = False
+_CREATING_STAGE = False
 _INTERRUPTED_BY: int | None = None
+
+
+def restore_signal_mask_deferred(previous_mask: set[signal.Signals]) -> None:
+    """Restore a signal mask without allowing pending campaign signals to abort cleanup."""
+    global _INTERRUPTED_BY
+    handlers = {signum: signal.getsignal(signum) for signum in SIGNALS}
+
+    def record_only(signum: int, _frame: Any) -> None:
+        global _INTERRUPTED_BY
+        if _INTERRUPTED_BY is None:
+            _INTERRUPTED_BY = signum
+
+    for signum in SIGNALS:
+        signal.signal(signum, record_only)
+    try:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+    finally:
+        for signum, handler in handlers.items():
+            signal.signal(signum, handler)
 
 
 def require(condition: bool, message: str) -> None:
@@ -129,28 +149,59 @@ class OwnedStage:
     committed: bool = False
 
     @classmethod
-    def create(cls, parent: pathlib.Path, name: str) -> "OwnedStage":
+    def create(
+        cls,
+        parent: pathlib.Path,
+        name: str,
+        registry: list["OwnedStage"] | None = None,
+    ) -> "OwnedStage":
         resolved_parent = parent.resolve(strict=True)
         require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, "unsafe staging directory name")
         parent_fd = os.open(
             resolved_parent,
             os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
         )
+        created_identity: tuple[int, int] | None = None
+        directory_fd = -1
         try:
             os.mkdir(name, 0o700, dir_fd=parent_fd)
+            created = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+            require(stat.S_ISDIR(created.st_mode), "created staging object is not a directory")
+            created_identity = (created.st_dev, created.st_ino)
             directory_fd = os.open(
                 name,
                 os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
                 dir_fd=parent_fd,
             )
             metadata = os.fstat(directory_fd)
-            require(stat.S_ISDIR(metadata.st_mode), "created staging object is not a directory")
-            return cls(
-                resolved_parent / name, resolved_parent, name, parent_fd, directory_fd,
-                metadata.st_dev, metadata.st_ino,
+            require(
+                stat.S_ISDIR(metadata.st_mode)
+                and (metadata.st_dev, metadata.st_ino) == created_identity,
+                "created staging directory changed while being opened",
             )
-        except BaseException:
+            owned = cls(resolved_parent / name, resolved_parent, name, parent_fd, directory_fd, metadata.st_dev, metadata.st_ino)
+            if registry is not None:
+                registry.append(owned)
+            return owned
+        except BaseException as failure:
+            if directory_fd >= 0:
+                os.close(directory_fd)
+            cleanup_failure: BaseException | None = None
+            if created_identity is not None:
+                try:
+                    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+                    if stat.S_ISDIR(observed.st_mode) and (observed.st_dev, observed.st_ino) == created_identity:
+                        os.rmdir(name, dir_fd=parent_fd)
+                        os.fsync(parent_fd)
+                except FileNotFoundError:
+                    pass
+                except BaseException as exc:
+                    cleanup_failure = exc
             os.close(parent_fd)
+            if cleanup_failure is not None:
+                raise CorpusError(
+                    f"staging creation failed with {type(failure).__name__}; partial-stage cleanup also failed: {cleanup_failure}"
+                ) from failure
             raise
 
     @classmethod
@@ -196,43 +247,54 @@ class OwnedStage:
             f"{label} path no longer names the builder-owned staging directory",
         )
 
-    def current_owned_name(self, label: str) -> str:
-        matches: list[str] = []
-        with os.scandir(self.parent_fd) as entries:
-            for entry in entries:
-                try:
-                    metadata = entry.stat(follow_symlinks=False)
-                except FileNotFoundError:
-                    continue
-                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode):
-                    matches.append(entry.name)
-        require(len(matches) == 1, f"{label} creation-time identity is not reachable below its expected parent")
-        return matches[0]
+    def _current_parent_and_name(self, label: str) -> tuple[int, str]:
+        for _attempt in range(32):
+            parent_fd = os.open(
+                f"/proc/self/fd/{self.directory_fd}/..",
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0),
+            )
+            matches: list[str] = []
+            try:
+                with os.scandir(parent_fd) as entries:
+                    for entry in entries:
+                        try:
+                            metadata = entry.stat(follow_symlinks=False)
+                        except FileNotFoundError:
+                            continue
+                        if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode):
+                            matches.append(entry.name)
+                if len(matches) == 1:
+                    return parent_fd, matches[0]
+            except BaseException:
+                os.close(parent_fd)
+                raise
+            os.close(parent_fd)
+        raise CorpusError(f"{label} creation-time identity is not reachable from its current parent")
 
     def cleanup(self, label: str) -> None:
-        _clear_directory_fd(self.directory_fd, label, self.device)
-        current_name = self.current_owned_name(label)
-        metadata = os.stat(current_name, dir_fd=self.parent_fd, follow_symlinks=False)
-        require(
-            (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
-            f"{label} changed before final removal",
-        )
-        os.rmdir(current_name, dir_fd=self.parent_fd)
-        os.fsync(self.parent_fd)
-        with os.scandir(self.parent_fd) as entries:
-            for entry in entries:
+        previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+        try:
+            _clear_directory_fd(self.directory_fd, label, self.device)
+            for _attempt in range(32):
+                parent_fd, current_name = self._current_parent_and_name(label)
                 try:
-                    observed = entry.stat(follow_symlinks=False)
-                except FileNotFoundError:
-                    continue
-                require(
-                    (observed.st_dev, observed.st_ino) != (self.device, self.inode),
-                    f"{label} survived cleanup under {entry.name}",
-                )
+                    metadata = os.stat(current_name, dir_fd=parent_fd, follow_symlinks=False)
+                    require((metadata.st_dev, metadata.st_ino) == (self.device, self.inode), f"{label} changed before final removal")
+                    try:
+                        os.rmdir(current_name, dir_fd=parent_fd)
+                    except FileNotFoundError:
+                        continue
+                    os.fsync(parent_fd)
+                    return
+                finally:
+                    os.close(parent_fd)
+            raise CorpusError(f"{label} could not be removed after repeated relocation")
+        finally:
+            restore_signal_mask_deferred(previous)
 
 
 def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> None:
-    """Commit an authenticated stage; detect a rename even if reporting is interrupted."""
+    """Commit an authenticated stage and prove the final inode is owned."""
     stage.require_named_identity(label)
     previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
     try:
@@ -247,11 +309,16 @@ def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> N
                 if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode):
                     stage.committed = True
             raise
-        else:
-            stage.committed = True
-            os.fsync(stage.parent_fd)
+        metadata = os.stat(final, follow_symlinks=False)
+        require(
+            stat.S_ISDIR(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode),
+            f"{label} publication committed a substituted directory",
+        )
+        stage.committed = True
+        os.fsync(stage.parent_fd)
     finally:
-        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+        restore_signal_mask_deferred(previous)
 
 
 def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
@@ -467,14 +534,17 @@ def resolve_tool(command: str, name: str) -> pathlib.Path:
 
 def signal_handler(signum: int, _frame: Any) -> None:
     global _INTERRUPTED_BY
-    _INTERRUPTED_BY = signum
+    first_signal = _INTERRUPTED_BY is None
+    if first_signal:
+        _INTERRUPTED_BY = signum
     if _ACTIVE_PROCESS is not None:
         try:
             os.killpg(_ACTIVE_PROCESS.pid, signal.SIGKILL)
-        except (ProcessLookupError, PermissionError):
+        except ProcessLookupError:
             pass
-        return
-    if _SPAWNING_PROCESS:
+        except OSError:
+            pass
+    if not first_signal or _SPAWNING_PROCESS or _CREATING_STAGE:
         return
     raise CorpusInterrupted(signum)
 
@@ -482,6 +552,12 @@ def signal_handler(signum: int, _frame: Any) -> None:
 def install_signal_handlers() -> None:
     for signum in SIGNALS:
         signal.signal(signum, signal_handler)
+
+
+def ignore_campaign_signals() -> None:
+    """Keep repeated termination from replacing the controlled interrupted exit."""
+    for signum in SIGNALS:
+        signal.signal(signum, signal.SIG_IGN)
 
 
 def enable_subreaper() -> None:
@@ -747,6 +823,12 @@ def run_command(
         if _INTERRUPTED_BY is not None:
             raise CorpusInterrupted(_INTERRUPTED_BY)
         return CommandResult(tuple(argv), process.returncode, stdout, stderr)
+    except BaseException:
+        # A Python signal handler can raise from inside selector.poll before the
+        # normal interrupted branch runs.  Always terminate and reap the owned
+        # process tree before propagating any capture failure.
+        terminate_process_tree(process)
+        raise
     finally:
         _ACTIVE_PROCESS = None
 
@@ -1328,6 +1410,7 @@ def platform_check(spec_path: pathlib.Path, repo_root: pathlib.Path) -> str:
 
 
 def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
+    global _CREATING_STAGE
     spec, spec_raw, source_paths = parse_spec(spec_path, repo_root)
     corpus_id = spec["corpus_id"]
     output_root.mkdir(parents=True, exist_ok=True)
@@ -1336,6 +1419,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
     stage_name = f".{corpus_id}.staging.{uuid.uuid4().hex}"
     owned_stage: OwnedStage | None = None
+    stage_registry: list[OwnedStage] = []
     source_identities = {
         "spec": file_identity(spec_path),
         "source": file_identity(source_paths["source"]),
@@ -1350,11 +1434,17 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
         install_signal_handlers()
         enable_subreaper()
         require(not direct_child_pids(), "corpus builder started with unrelated child processes")
-        previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+        _CREATING_STAGE = True
         try:
-            owned_stage = OwnedStage.create(output_root, stage_name)
+            previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+            try:
+                owned_stage = OwnedStage.create(output_root, stage_name, stage_registry)
+            finally:
+                signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
         finally:
-            signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+            _CREATING_STAGE = False
+        if _INTERRUPTED_BY is not None:
+            raise CorpusInterrupted(_INTERRUPTED_BY)
         stage = owned_stage.path
         os.chmod(stage, DIRECTORY_MODE)
         for directory in (
@@ -1634,6 +1724,11 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
         verify_corpus(final)
         return final
     except BaseException as failure:
+        if owned_stage is None and stage_registry:
+            # A pending signal can be raised at the return boundary before the
+            # caller stores the returned object. The registry is populated
+            # inside create(), so cleanup retains creation-time inode authority.
+            owned_stage = stage_registry[-1]
         if owned_stage is not None and owned_stage.committed and isinstance(failure, CorpusInterrupted):
             return final
         cleanup_failure: BaseException | None = None
@@ -1648,6 +1743,9 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             ) from failure
         raise
     finally:
+        _CREATING_STAGE = False
+        if owned_stage is None and stage_registry:
+            owned_stage = stage_registry[-1]
         if owned_stage is not None:
             owned_stage.close()
 
@@ -1872,8 +1970,10 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
 
     tools = manifest.get("tools")
     require(isinstance(tools, list), "corpus tool records are missing")
-    expected_tool_ids = set(toolchain_ids) | {linker["id"]}
-    require({safe_id(record.get("id"), "tool id") for record in tools if isinstance(record, dict)} == expected_tool_ids, "tool identity set does not match the retained specification")
+    expected_tool_order = [*toolchain_ids, linker["id"]]
+    observed_tool_ids = [safe_id(record.get("id"), "tool id") for record in tools if isinstance(record, dict)]
+    require(len(observed_tool_ids) == len(tools), "corpus contains a non-object tool record")
+    require(observed_tool_ids == expected_tool_order, "tool records are duplicated, missing, or out of canonical order")
     expected_commands = {toolchain["id"]: toolchain["command"] for toolchain in toolchains}
     expected_commands[linker["id"]] = linker["command"]
     for index, record in enumerate(tools):
@@ -2161,6 +2261,7 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main(sys.argv[1:]))
     except CorpusInterrupted as exc:
+        ignore_campaign_signals()
         print(f"provisional-corpus: error: {exc}", file=sys.stderr)
         raise SystemExit(128 + exc.signum)
     except (CorpusError, OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:

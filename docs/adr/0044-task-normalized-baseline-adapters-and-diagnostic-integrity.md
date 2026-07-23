@@ -26,7 +26,8 @@ would collapse incompatible candidate definitions into an ambiguous count.
 
 ## Decision
 
-Patch 058 completes the next diagnostic tranche in two parts.
+The Patch 058 implementation candidate supplies the next diagnostic tranche in
+two parts.
 
 ### Evidence-integrity correction
 
@@ -56,13 +57,14 @@ Ropper
 ropr
 ```
 
-The adapter consumes retained native stdout and stderr after execution. It does
+The adapter consumes caller-supplied retained native stdout and stderr. It does
 not invoke a baseline tool, select executable regions, reinterpret target bytes,
 or mutate x64lens analysis facts. Before normalization it authenticates:
 
 - the task-authority file and condition identifier;
 - the exact command against the versioned command template;
-- tool executable path, mode, SHA-256, and retained version evidence;
+- tool executable path, mode, and SHA-256, plus the retained version-output file
+  and caller-declared version text;
 - target path, mode, and SHA-256;
 - native stdout and stderr path, size, and SHA-256; and
 - adapter identity and source SHA-256.
@@ -72,12 +74,22 @@ working directory are reauthenticated. A late replacement therefore fails the
 normalization transaction instead of leaving an artifact bound only to stale
 in-memory bytes.
 
+The standalone adapter does not consume a diagnostic runner row, campaign
+manifest, child outcome, or capture record. Its checks authenticate the supplied
+files and metadata, but do not establish that those streams or version bytes were
+produced by a particular recorded invocation. Campaign integration must add that
+row-to-normalization binding before summaries use the artifact.
+The adapter also does not execute or validate the authority's version-command
+template; it checks only that the caller-declared version text occurs in the
+retained version-output file.
+
 Native output remains the primary baseline artifact. The normalized artifact
 adds only explicitly named, task-scoped relations:
 
 ```text
 tool_native_record_count
 unique_tool_native_record_count
+duplicate_tool_native_record_count
 tool_reported_return_terminator_record_count
 unique_tool_reported_return_terminator_site_count
 canonical_exact_pop_rdi_ret_record_count
@@ -93,7 +105,9 @@ The external baselines do not expose the loader-authoritative raw executable-byt
 observation represented by x64lens raw scanning. That cross-tool relation is
 therefore explicitly unavailable and cannot be substituted with decoder-backed
 baseline output. The implemented common relations begin at retained
-return-terminated records and the exact `pop rdi; ret` relation.
+return-terminated records and the canonical `pop rdi; ret` relation over
+represented instruction text; the adapter does not derive that relation by
+decoding target bytes.
 
 ### Conservative parser policy
 
@@ -131,23 +145,27 @@ evidence, not runtime classification authority.
 
 ### Positive
 
-- Baseline commands and native artifacts are authenticated before parsing.
+- Supplied task commands and native artifact identities are authenticated before
+  parsing.
 - Output limits apply during capture and again during later verification.
 - Tool-specific totals cannot silently become an unlabeled cross-tool metric.
 - Duplicate native records and canonical exact relations remain separately
   visible.
 - Parser disagreement is retained as a failed diagnostic condition instead of a
   guessed normal result.
-- The next diagnostic campaign can measure all declared baseline tasks without
-  adding a runtime dependency to x64lens.
+- A later diagnostic campaign can bind all declared baseline tasks to these
+  adapters without adding a runtime dependency to x64lens.
 
 ### Costs and limitations
 
 - Baseline adapters are version-sensitive and must be reevaluated when native
   syntax changes.
-- The initial common relation is intentionally narrow: exact `pop rdi; ret`.
+- The initial common relation is intentionally narrow: canonical `pop rdi; ret`
+  over represented instruction text.
 - The adapters do not make ROPgadget, Ropper, and ropr task-equivalent to
   x64lens; they make the remaining differences explicit.
+- The controlled fixtures do not pin and execute supported real-tool versions,
+  and the standalone adapters do not bind normalized output to runner rows.
 - Sprint 11 results remain diagnostic, mutable, unfrozen, and ineligible for
   publication claims.
 

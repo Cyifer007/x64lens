@@ -230,5 +230,19 @@ engineering gap register.
 The diagnostic gate now requires a non-executable execution-sealed target
 object, exact command-workspace and corpus-member closure, verified staging
 cleanup, and a manifest-recognized clean path. These are method-integrity gates,
-not capability or performance results. Baseline normalization remains open for
-Patch 058, and the gap register remains open for Patch 059.
+not capability or performance results. At the Patch 057 boundary, baseline
+normalization remained open for Patch 058 and the gap register for Patch 059.
+
+## Sprint 11 Patch 058 baseline-normalization status
+
+The Patch 058 implementation candidate supplies bounded standalone native-output
+adapters for ROPgadget, Ropper, and ropr. They preserve tool-specific records and
+duplicates, expose a canonical `pop rdi; ret` relation over represented
+instruction text, and keep the raw executable-return-byte relation explicitly
+unavailable.
+
+The adapters authenticate caller-supplied commands, files, hashes, limits, and
+declared version text, but do not consume runner rows, campaign manifests, child
+outcomes, or capture records. Patch 059 must bind normalization to corpus-backed
+rows before summaries or the engineering gap register are generated. Patch 060
+remains the closeout boundary; Sprint 15 remains the campaign freeze.

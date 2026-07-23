@@ -290,7 +290,7 @@ make diagnostic-task-definitions-smoke
 make bench-diagnostic-smoke
 ```
 
-The diagnostic runner retains and hashes its source, exact specification, tools, targets, and timer probe. Actual child execution uses write-sealed Linux `memfd` copies bound to those retained hashes; campaign-relative replay commands still resolve to byte-identical retained files. The runner records monotonic nanosecond wall time plus Linux `wait4` resource data for the selected child, preserves stdout/stderr and failed rows, rechecks retained artifact identities after the final child exits, measures a timer floor, counterbalances condition order, cleans same-group and escaped descendants, and publishes one complete ignored campaign tree. The `wait4` counters include descendants that the selected child already waited for, but exclude descendants reaped separately by the runner; maximum RSS is a maximum within that scope, not a process-tree sum. These rows remain mutable development evidence and are not publication results.
+The diagnostic runner retains and hashes its source, exact specification, tools, targets, and timer probe. Measured tools and the timer probe execute from byte-identical, executable, write-sealed Linux `memfd` copies. Target snapshots instead use non-executable `MFD_NOEXEC_SEAL` memfds carrying `F_SEAL_EXEC`; campaign-relative replay commands still resolve to byte-identical retained files. The runner records monotonic nanosecond wall time plus Linux `wait4` resource data for the selected child, preserves stdout/stderr and failed rows, rechecks retained artifact identities after the final child exits, measures a timer floor, counterbalances condition order, cleans same-group and escaped descendants, and publishes one complete ignored campaign tree. The `wait4` counters include descendants that the selected child already waited for, but exclude descendants reaped separately by the runner; maximum RSS is a maximum within that scope, not a process-tree sum. These rows remain mutable development evidence and are not publication results.
 
 The current CLI has no report-suppressed scanner-only condition. Schema `0.2.0` JSON from `gadgets` and `analyze` also shares the same analysis body and differs by command identity. Patch 055 records those boundaries instead of relabeling report cost as scanner cost or claiming the two JSON commands perform independent workloads. Sprint 15 freezes the final method, Sprint 16 runs the preview pilot, and Sprint 17 owns the publication-grade campaign.
 
@@ -317,7 +317,7 @@ See [`benchmarks/corpus/README.md`](benchmarks/corpus/README.md),
 [ADR 0042](docs/adr/0042-provisional-corpus-provenance-and-regeneration.md), and
 the [Patch 056 validation record](docs/sprints/sprint-11-patch-056-validation.md).
 
-Patch 057 hardens that diagnostic foundation before baseline adapters are added.
+Patch 057 hardened that diagnostic foundation before Patch 058 added baseline adapters.
 Target snapshots supplied to measured tools now require Linux
 `MFD_NOEXEC_SEAL` and an execution seal; unsupported kernels fail the runner
 prerequisite instead of falling back to a mode-only claim. Corpus builds reject
@@ -332,14 +332,18 @@ See [ADR 0043](docs/adr/0043-sprint11-diagnostic-integrity-correction.md) and
 the [Patch 057 validation record](docs/sprints/sprint-11-patch-057-validation.md).
 
 Patch 058 adds bounded task-normalized adapters for ROPgadget, Ropper, and ropr.
-The adapters authenticate the exact task command, tool/version identity, target,
-native stdout/stderr, capture limits, and adapter source before parsing. Native
-output and duplicate behavior remain retained; the first common relation is
-exact `pop rdi; ret`. Tool-specific totals are never collapsed into an unlabeled
-cross-tool gadget count. Patch 058 also closes remaining runner and corpus
-integrity gaps around bounded parent-side capture, stage substitution, early
-interruption, post-publication commit recognition, and retained output/log
-limits.
+Each adapter independently reconciles the supplied task command and authenticates
+the tool executable, target, retained version-output file and declared version
+text, native stdout/stderr, capture limits, and adapter source before parsing. It
+does not invoke the tool or consume a runner row, campaign manifest, or execution
+outcome, so those checks alone do not prove that the supplied streams came from a
+particular recorded run. Native output and duplicate behavior remain retained;
+the first common relation is canonical `pop rdi; ret` over represented
+instruction text, not decoded target bytes. Tool-specific totals are never
+collapsed into an unlabeled cross-tool gadget count. Patch 058 also addresses
+runner and corpus integrity gaps around bounded parent-side capture, stage
+substitution, early interruption, post-publication commit recognition, and
+retained output/log limits.
 
 ```bash
 make diagnostic-task-definitions-smoke

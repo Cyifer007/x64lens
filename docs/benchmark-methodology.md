@@ -705,11 +705,13 @@ new campaign receives a distinct identifier.
 
 Patch 058 introduces versioned diagnostic adapters for ROPgadget, Ropper, and
 ropr. Each condition retains native stdout and stderr as the primary evidence.
-Normalization runs afterward and is accepted only when the exact task command,
-tool executable and version output, target, stream hashes and sizes, capture
-limits, and adapter source identity agree.
+The standalone normalization step reconciles the supplied task command and
+authenticates the tool executable, target, retained version-output file and
+declared version text, stream hashes and sizes, capture limits, and adapter source
+identity.
 
-The initial shared relation is exact `pop rdi; ret`. Reports preserve:
+The initial shared relation is canonical `pop rdi; ret` over represented
+instruction text, not a relation decoded from target bytes. Reports preserve:
 
 ```text
 tool-native records and duplicates
@@ -725,8 +727,16 @@ unknown, or scored counts. The normalized artifacts contain no unlabeled
 `gadget_count`. A parser rejection, output-limit event, nonzero exit, signal, or
 timeout remains a failed diagnostic row and is not converted into zero coverage.
 
+The adapter itself does not consume a runner row, campaign manifest, execution
+outcome, or capture record. Campaign orchestration must bind the authenticated
+files to a particular invocation before a normalized artifact enters a row or
+summary; file identity alone is not execution provenance. The adapter also does
+not execute or validate the authority's version-command template; it checks the
+caller-declared version text against the retained version-output file.
+
 The controlled fixtures establish parser behavior for represented native syntax,
 not universal baseline compatibility. Every baseline version admitted to a
 campaign must retain its native output and pass the same identity and adversarial
-parsing gates. Sprint 15 remains the command/task freeze and Sprint 17 remains
-the coverage-reconciliation campaign.
+parsing gates. The controlled fixtures do not establish compatibility with a
+pinned installed version of every baseline. Sprint 15 remains the command/task
+freeze and Sprint 17 remains the coverage-reconciliation campaign.

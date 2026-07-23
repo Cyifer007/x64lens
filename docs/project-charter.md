@@ -158,4 +158,14 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 
 ## Current implementation stage
 
-Sprints 1 through 10 are complete after Patch 054. Sprint 11 uses a provisional corpus and mutable method so performance, resource, coverage, and task-definition evidence can redirect the implementation before campaign freeze. Patches 055 and 056 implement the high-resolution runner, initial task authority, and first reproducible provisional corpus while preserving the unchanged reference binary. Sprint 15 freezes the confirmatory method; Sprint 16 produces the preview campaign, Sprint 17 runs publication-grade comparative trials, and Sprint 22 is the first research-release gate.
+Sprints 1 through 10 are complete after Patch 054. Sprint 11 uses a provisional
+corpus and mutable method so performance, resource, coverage, and task-definition
+evidence can redirect the implementation before campaign freeze. Patches 055
+through 057 implement and harden the high-resolution runner, initial task
+authority, and first reproducible provisional corpus while preserving the
+unchanged reference binary. The Patch 058 implementation candidate adds
+standalone baseline adapters; corpus-backed rows, adapter-to-row binding,
+summaries, and the gap register remain Sprint 11 work. Sprint 15 freezes the
+confirmatory method; Sprint 16 produces the preview campaign, Sprint 17 runs
+publication-grade comparative trials, and Sprint 22 is the first research-release
+gate.

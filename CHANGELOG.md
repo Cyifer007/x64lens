@@ -8,7 +8,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 11 Patch 058 task-normalized ROPgadget, Ropper, and ropr native-output adapters with exact command/version/tool/target/output identity, bounded streams and parser state, late input reauthentication, duplicate-preserving tool-specific metrics, an explicit unavailable raw-byte relation, and an exact `pop rdi; ret` relation.
+- Sprint 11 Patch 058 task-normalized ROPgadget, Ropper, and ropr native-output adapters with exact task-command reconciliation, authenticated tool, target, retained version-output, and native-stream files, bounded streams and parser state, late input reauthentication, duplicate-preserving tool-specific metrics, an explicit unavailable raw-byte relation, and a canonical `pop rdi; ret` relation over represented instruction text.
 - Regression coverage for output-limit rows, future capture-path symlinks, staging substitution, early interruption, post-publication commit recognition, retained corpus output/log limits, conservative baseline parsing, and absence of an unlabeled cross-tool gadget count.
 - ADR 0044, task-authority version 2, `make baseline-output-adapter-smoke`, and the Patch 058 validation record.
 
@@ -464,7 +464,7 @@ The project follows semantic versioning once the first public release is cut.
 - Added `make json-smoke` and JSON parsing checks in `tests/run-tests.sh`.
 - Extended scanner smoke benchmark TSV output with `scored_candidate_count`.
 - Added a public repository voice rule to documentation and output contracts.
-- Closed Sprint 4 Patch 015 validation with local WSL2 and Docker evidence for the first semantic classifier pass.
+- Closed Sprint 4 Patch 015 validation with native and Docker evidence for the first semantic classifier pass.
 - Added `x64lens_classifier_apply_exact` in `src/classifier.asm` to map supported exact suffix pattern IDs into conservative semantic primitive facts.
 - Added semantic class, controlled-register bitmap, stack-delta, and side-effect population for supported exact suffix patterns.
 - Added semantic summary counts, unknown candidate counts, per-class primitive counts, and register coverage to gadget text output.

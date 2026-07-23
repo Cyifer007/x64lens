@@ -6,8 +6,9 @@ Active diagnostic measurement sprint after Sprint 10 Patch 054 closeout.
 Patches 055 and 056 implement the runner, task-definition, and provisional
 corpus foundations. Patch 057 corrects the first runner, corpus, cleanup, and
 validation-integrity findings. Patch 058 adds bounded task-normalized baseline
-adapters and closes the remaining evidence-integrity gaps found during Patch 057
-validation. Diagnostic summaries and the gap register remain active.
+adapters and addresses additional evidence-integrity gaps found during Patch 057
+validation. Adapter-to-row campaign binding, diagnostic summaries, and the gap
+register remain active.
 
 ## Sprint goal
 
@@ -37,9 +38,12 @@ campaign prematurely.
 - [ ] Add a scanner-only profile only if diagnostic evidence justifies a
   reviewed report-suppression or instrumentation seam.
 - [x] Initial baseline task records for ROPgadget, Ropper, and ropr.
-- [x] Versioned task-normalized baseline adapters with exact commands, bounded
-  native stdout/stderr, tool/version/target/output authentication, duplicate
-  preservation, and an exact `pop rdi; ret` relation.
+- [x] Versioned task-normalized baseline adapters with supplied-command
+  reconciliation, bounded native stdout/stderr, authenticated tool, target,
+  retained version-output, and native-stream files, duplicate preservation, and
+  a canonical `pop rdi; ret` relation over represented instruction text.
+- [ ] Bind normalized artifacts to runner rows, campaign manifests, child
+  outcomes, and capture identities before development summaries are generated.
 - [x] Controlled reference diagnostic campaign with development run counts.
 - [ ] Provisional corpus campaign and capability/performance gap register.
 - [x] Explicit separation of diagnostic rows from future frozen campaign rows.
@@ -58,12 +62,13 @@ campaign prematurely.
    correction for non-executable target inputs, exact corpus workspace/member
    closure, checked staging cleanup, safe corpus removal, and non-root oracle
    parity.
-4. **Patch 058 (implemented candidate):** remaining runner/corpus integrity
+4. **Patch 058 (implemented candidate):** additional runner/corpus integrity
    corrections plus normalized ROPgadget, Ropper, and ropr native-output
-   adapters with bounded capture, exact command/version identity, conservative
-   parsing, and failure-preserving evidence.
-5. **Patch 059:** development summaries, coverage reconciliation inputs, and the
-   engineering gap register that directs Sprints 12 through 14.
+   adapters with bounded capture, supplied-command and artifact authentication,
+   conservative represented-text parsing, and failure-preserving evidence.
+5. **Patch 059:** provisional corpus diagnostic rows, adapter-to-row binding,
+   development summaries, coverage reconciliation inputs, and the engineering
+   gap register that directs Sprints 12 through 14.
 6. **Patch 060:** Sprint 11 closeout and diagnostic checkpoint review, subject to
    findings from the preceding patches.
 

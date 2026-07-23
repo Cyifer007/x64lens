@@ -1,20 +1,106 @@
 {
-  "schema_version": 2,
-  "authority_id": "sprint11-diagnostic-task-definitions-v2",
+  "schema_version": 3,
+  "authority_id": "sprint11-diagnostic-task-definitions-v3",
   "evidence_class": "diagnostic",
   "frozen": false,
   "publication_eligible": false,
   "reference_profile": "core-1w",
   "campaign_freeze_sprint": 15,
   "adapter_policy": {
-    "adapter_id": "x64lens-sprint11-baseline-output-adapter-v1",
+    "adapter_id": "x64lens-sprint11-baseline-output-adapter-v2",
     "adapter_path": "benchmarks/scripts/baseline-output-adapter.py",
     "native_output_retained": true,
     "uncategorized_output_policy": "reject",
     "duplicate_policy": "preserve every native record and report tool-specific record, unique-record, and duplicate-record totals",
     "canonicalization_policy": "lowercase and whitespace-normalize instruction text; preserve native sequence and source line; canonicalize addresses as 16-digit hexadecimal strings",
     "analysis_authority": false,
-    "late_input_reauthentication": true
+    "late_input_reauthentication": true,
+    "adapter_schema_version": 2,
+    "campaign_row_binding_required": true,
+    "raw_line_limit_applied_before_ansi_normalization": true,
+    "atomic_output_commit_with_postcommit_reauthentication": true,
+    "canonical_return_aliases": {
+      "retq": "ret"
+    }
+  },
+  "x64lens_relation_policy": {
+    "extractor_id": "x64lens-sprint11-relation-extractor-v1",
+    "extractor_path": "benchmarks/scripts/x64lens-relation-extractor.py",
+    "artifact_schema_version": 1,
+    "runner_extractor": "x64lens_json_0_2",
+    "report_schema_version": "0.2.0",
+    "report_command": "gadgets",
+    "campaign_row_binding_required": true,
+    "measured_phase_required": true,
+    "normalized_relation_ids": [
+      "canonical_exact_pop_rdi_ret",
+      "binary_fact_arg_control_rdi_present"
+    ],
+    "address_coordinates": [
+      "virtual_address_start",
+      "virtual_address_terminator",
+      "file_offset_start",
+      "file_offset_terminator"
+    ],
+    "late_input_reauthentication": true,
+    "atomic_output_commit_with_postcommit_reauthentication": true
+  },
+  "runtime_closure_policy": {
+    "generator_id": "x64lens-sprint11-runtime-closure-v1",
+    "generator_path": "benchmarks/scripts/runtime-closure-manifest.py",
+    "artifact_schema_version": 1,
+    "campaign_row_binding_required": true,
+    "measured_phase_required": true,
+    "closure_modes": [
+      "native_elf",
+      "python_console_entrypoint",
+      "script_interpreter"
+    ],
+    "python_observation": "retained version command under declared shebang interpreter with imported module, distribution, extension, and mapped native-library capture",
+    "native_observation": "bounded recursive DT_NEEDED and PT_INTERP closure using authenticated readelf and ldconfig identities",
+    "completeness_states": [
+      "complete",
+      "partial"
+    ],
+    "late_input_reauthentication": true,
+    "atomic_output_commit_with_postcommit_reauthentication": true
+  },
+  "address_coordinate_policy": {
+    "calibrator_id": "x64lens-sprint11-address-coordinate-calibrator-v1",
+    "calibrator_path": "benchmarks/scripts/address-coordinate-calibrator.py",
+    "artifact_schema_version": 1,
+    "required_roles": [
+      {
+        "id": "et_exec",
+        "artifact_id": "exec-nopie",
+        "elf_type": "ET_EXEC"
+      },
+      {
+        "id": "pie_et_dyn",
+        "artifact_id": "exec-pie",
+        "elf_type": "ET_DYN"
+      },
+      {
+        "id": "shared_et_dyn",
+        "artifact_id": "shared",
+        "elf_type": "ET_DYN"
+      }
+    ],
+    "required_tools": [
+      "x64lens",
+      "ropgadget",
+      "ropper",
+      "ropr"
+    ],
+    "baseline_coordinates": [
+      "virtual_address",
+      "file_offset",
+      "ambiguous",
+      "mismatch",
+      "insufficient_relation_evidence"
+    ],
+    "late_input_reauthentication": true,
+    "atomic_output_commit_with_postcommit_reauthentication": true
   },
   "normalized_relations": [
     {
@@ -76,7 +162,8 @@
       ],
       "extractor": "x64lens_json_0_2",
       "parity_group": "x64lens-schema-0.2-command-identity",
-      "work_scope_note": "Runs the complete current analysis pipeline and JSON adapter."
+      "work_scope_note": "Runs the complete current analysis pipeline and JSON adapter.",
+      "condition_id_rule": "base_or_base--target_id"
     },
     {
       "id": "x64lens_integrated_analysis_json",
@@ -94,7 +181,8 @@
       ],
       "extractor": "x64lens_json_0_2",
       "parity_group": "x64lens-schema-0.2-command-identity",
-      "work_scope_note": "Current JSON output shares the same report body and analysis facts as gadgets; the command identity differs, so this is not yet an independently broader workload."
+      "work_scope_note": "Current JSON output shares the same report body and analysis facts as gadgets; the command identity differs, so this is not yet an independently broader workload.",
+      "condition_id_rule": "base_or_base--target_id"
     }
   ],
   "baselines": [
@@ -117,8 +205,7 @@
         "--only",
         "pop|ret",
         "--nojop",
-        "--nosys",
-        "--silent"
+        "--nosys"
       ],
       "normalization_required": true,
       "normalized_relation_ids": [
@@ -140,15 +227,28 @@
         "uncategorized_line_policy": "reject",
         "maximum_line_bytes": 8192,
         "maximum_record_count": 262144,
-        "maximum_instruction_count": 5
+        "maximum_instruction_count": 5,
+        "maximum_line_bytes_scope": "raw_bytes_before_ansi_normalization",
+        "return_alias_policy": {
+          "retq": "ret"
+        }
       },
       "adapter": {
-        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "id": "x64lens-sprint11-baseline-output-adapter-v2",
         "path": "benchmarks/scripts/baseline-output-adapter.py",
-        "schema_version": 1
+        "schema_version": 2,
+        "authority_schema_version": 3,
+        "campaign_row_binding_required": true
       },
-      "work_scope_note": "ROPgadget performs Capstone-backed ROP discovery over its own executable-segment and canonicalization rules, restricted to pop/ret mnemonics, five-byte search depth, and ROP-only output.",
-      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
+      "work_scope_note": "ROPgadget performs Capstone-backed ROP discovery over its own executable-segment and canonicalization rules, restricted to pop/ret mnemonics, five-byte search depth, ROP-only output, and retained native gadget text.",
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope.",
+      "version_contract": {
+        "source": "retained_runner_version_stdout",
+        "comparison": "exact_trimmed_first_line",
+        "declared_version_source": "runner_manifest_tool_record",
+        "line_regex": "^Version:\\s+ROPgadget v[0-9][0-9A-Za-z._+-]*$"
+      },
+      "condition_id_rule": "base_or_base--target_id"
     },
     {
       "id": "ropper",
@@ -191,15 +291,28 @@
         "uncategorized_line_policy": "reject",
         "maximum_line_bytes": 8192,
         "maximum_record_count": 262144,
-        "maximum_instruction_count": 5
+        "maximum_instruction_count": 5,
+        "maximum_line_bytes_scope": "raw_bytes_before_ansi_normalization",
+        "return_alias_policy": {
+          "retq": "ret"
+        }
       },
       "adapter": {
-        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "id": "x64lens-sprint11-baseline-output-adapter-v2",
         "path": "benchmarks/scripts/baseline-output-adapter.py",
-        "schema_version": 1
+        "schema_version": 2,
+        "authority_schema_version": 3,
+        "campaign_row_binding_required": true
       },
       "work_scope_note": "Ropper performs Capstone-backed ROP discovery under its own section, quality, duplicate, cache, and instruction-count rules with color disabled; --single disables its multi-process scanning path for this diagnostic condition.",
-      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope.",
+      "version_contract": {
+        "source": "retained_runner_version_stdout",
+        "comparison": "exact_trimmed_first_line",
+        "declared_version_source": "runner_manifest_tool_record",
+        "line_regex": "^Version:\\s+Ropper [0-9][0-9A-Za-z._+-]*$"
+      },
+      "condition_id_rule": "base_or_base--target_id"
     },
     {
       "id": "ropr",
@@ -241,15 +354,28 @@
         "uncategorized_line_policy": "reject",
         "maximum_line_bytes": 8192,
         "maximum_record_count": 262144,
-        "maximum_instruction_count": 5
+        "maximum_instruction_count": 5,
+        "maximum_line_bytes_scope": "raw_bytes_before_ansi_normalization",
+        "return_alias_policy": {
+          "retq": "ret"
+        }
       },
       "adapter": {
-        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "id": "x64lens-sprint11-baseline-output-adapter-v2",
         "path": "benchmarks/scripts/baseline-output-adapter.py",
-        "schema_version": 1
+        "schema_version": 2,
+        "authority_schema_version": 3,
+        "campaign_row_binding_required": true
       },
       "work_scope_note": "ropr performs its native multithreaded x86 ROP discovery under its own executable-range, quality, duplicate, and maximum-instruction rules with JOP and syscall records disabled.",
-      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope.",
+      "version_contract": {
+        "source": "retained_runner_version_stdout",
+        "comparison": "exact_trimmed_first_line",
+        "declared_version_source": "runner_manifest_tool_record",
+        "line_regex": "^ropr [0-9][0-9A-Za-z._+-]*$"
+      },
+      "condition_id_rule": "base_or_base--target_id"
     }
   ],
   "claim_boundaries": [
@@ -259,6 +385,7 @@
     "Baseline-native totals remain tool-specific and are never substituted for x64lens raw, exact, semantic-exact, unknown, decoder-backed, or scored populations.",
     "The adapter consumes retained baseline output and cannot become runtime mapping, decoding, classification, scoring, or report authority.",
     "Core scanner timing remains unavailable until a real report-suppressed instrumentation seam exists.",
-    "Raw executable-return-byte presence remains unavailable for the external baselines because their native reports are decoded gadget outputs, not loader-authoritative byte scans."
+    "Raw executable-return-byte presence remains unavailable for the external baselines because their native reports are decoded gadget outputs, not loader-authoritative byte scans.",
+    "A normalized relation artifact is valid only when it authenticates one runner manifest, one rows.tsv record, and that row's retained tool, version, target, command, stdout, and stderr objects."
   ]
 }

@@ -87,7 +87,7 @@ Every admitted baseline condition retains:
 
 - executable path, mode, SHA-256, version command, and version output;
 - exact measured command and working directory;
-- immutable target path, mode, and SHA-256;
+- authenticated target path, mode, and SHA-256;
 - bounded native stdout and stderr with hashes and sizes;
 - explicit per-line, record-count, and instruction-count parser limits;
 - exit, signal, timeout, and output-limit outcome;
@@ -97,6 +97,14 @@ Every admitted baseline condition retains:
 
 The Patch 058 adapters reject uncategorized native output. Parser failure is a
 failed diagnostic condition, not zero baseline coverage.
+
+The standalone adapters consume the supplied command, tool and target files,
+retained version output, native streams, and adapter authority. They do not
+consume a runner row, campaign manifest, child outcome, or capture record.
+Campaign integration must bind those records before the normalized artifact can
+represent a particular measured invocation. The adapters also do not execute or
+validate the retained version command; they require the caller-declared version
+text to occur in the authenticated version-output file.
 
 ## Normalized relation set
 
@@ -117,6 +125,7 @@ For each tool, the adapter retains the native record and emits:
 ```text
 tool_native_record_count
 unique_tool_native_record_count
+duplicate_tool_native_record_count
 tool_reported_return_terminator_record_count
 unique_tool_reported_return_terminator_site_count
 canonical_exact_pop_rdi_ret_record_count
@@ -141,7 +150,8 @@ filtering, duplicate handling, canonicalization, depth, and formatting work.
 
 ## Diagnostic claim boundary
 
-Patch 058 establishes bounded baseline normalization and evidence identity. It
+Patch 058 establishes bounded baseline normalization and supplied-artifact
+identity. It
 does not support claims that x64lens is faster, lower-RSS, more complete, or
 more operationally useful than another tool. Those claims require the Sprint
 15-frozen method and later preview/publication campaigns.

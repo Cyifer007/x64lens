@@ -273,7 +273,7 @@ Expected controlled fixture signals:
 | Exact pattern count | 7 |
 | Known labels | `pop rdi; ret`, `pop rsi; ret`, `pop rdx; ret`, `pop rax; ret`, `leave; ret`, `syscall; ret`, `ret imm16` |
 
-Sprint 3 validation evidence from local WSL2 and Docker runs:
+Sprint 3 validation evidence from native and Docker runs:
 
 ```text
 make test -> tests: ok
@@ -1525,6 +1525,12 @@ gadget total. The adapter gate uses controlled ROPgadget, Ropper, and ropr nativ
 outputs plus adversarial malformed, over-limit, stale-identity, symlink, and
 pre-existing-output cases. It requires deterministic normalized bytes and exact
 represented `pop rdi; ret` precision and recall.
+
+These controlled fixtures validate represented parser syntax; they do not pin and
+execute a supported real version of every baseline. The standalone adapter also
+does not consume a runner row, campaign manifest, child outcome, or capture
+record. Campaign-level validation must bind those records before normalized
+artifacts enter development summaries.
 
 The runner and corpus gates additionally cover bounded parent-side capture,
 output-limit failure retention, future stream-path symlinks, stage substitution,

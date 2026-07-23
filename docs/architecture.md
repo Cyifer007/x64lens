@@ -1186,26 +1186,30 @@ and reporting boundaries remain unchanged.
 
 ## Sprint 11 Patch 058 baseline-normalization boundary
 
-Patch 058 adds no analyzer module. The diagnostic runner first retains bounded
-native baseline stdout and stderr. A separate standard-library adapter then
-authenticates the task authority, exact command, tool and version, target,
-native streams, and its own source before producing one normalized diagnostic
-artifact:
+Patch 058 adds no analyzer module. The diagnostic runner can retain bounded
+native baseline stdout and stderr. A separate standard-library adapter
+independently reconciles the supplied task command and authenticates the task
+authority, tool executable, target, retained version-output file and declared
+version text, native streams, and its own source before producing one normalized
+diagnostic artifact:
 
 ```text
 retained baseline native output
   -> identity and capture-limit verification
   -> conservative tool-specific parser
   -> native record and duplicate preservation
-  -> exact cross-tool relation materialization
+  -> represented-text cross-tool relation materialization
   -> normalized diagnostic artifact
 ```
 
 The adapter cannot map the target, select executable regions, scan bytes,
 classify x64lens candidates, write candidate side-cars, score candidates, or
 format an x64lens report. Baseline native output remains external evidence.
-The first common relation is exact `pop rdi; ret`; a baseline-native total is
-never renamed to a generic gadget population.
+The first common relation is canonical `pop rdi; ret` over represented
+instruction text; a baseline-native total is never renamed to a generic gadget
+population. Because the adapter does not consume a runner row, campaign manifest,
+execution outcome, or capture record, its standalone file checks are not an
+end-to-end binding between a measured invocation and normalized output.
 
 Patch 058 also strengthens the external transaction layer. Parent-owned pipes
 bound measured output before any future artifact pathname is opened. Staging
