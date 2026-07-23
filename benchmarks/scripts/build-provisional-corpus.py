@@ -115,6 +115,145 @@ def require(condition: bool, message: str) -> None:
         raise CorpusError(message)
 
 
+@dataclass
+class OwnedStage:
+    """Creation-time identity for a same-parent corpus staging directory."""
+
+    path: pathlib.Path
+    parent: pathlib.Path
+    name: str
+    parent_fd: int
+    directory_fd: int
+    device: int
+    inode: int
+    committed: bool = False
+
+    @classmethod
+    def create(cls, parent: pathlib.Path, name: str) -> "OwnedStage":
+        resolved_parent = parent.resolve(strict=True)
+        require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, "unsafe staging directory name")
+        parent_fd = os.open(
+            resolved_parent,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            os.mkdir(name, 0o700, dir_fd=parent_fd)
+            directory_fd = os.open(
+                name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_fd,
+            )
+            metadata = os.fstat(directory_fd)
+            require(stat.S_ISDIR(metadata.st_mode), "created staging object is not a directory")
+            return cls(
+                resolved_parent / name, resolved_parent, name, parent_fd, directory_fd,
+                metadata.st_dev, metadata.st_ino,
+            )
+        except BaseException:
+            os.close(parent_fd)
+            raise
+
+    @classmethod
+    def adopt(cls, path: pathlib.Path, expected_parent: pathlib.Path, label: str) -> "OwnedStage":
+        parent = expected_parent.resolve(strict=True)
+        candidate = pathlib.Path(os.path.abspath(path))
+        require(candidate.parent == parent, f"{label} is outside its expected parent")
+        metadata = os.lstat(candidate)
+        require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
+        parent_fd = os.open(
+            parent,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            directory_fd = os.open(
+                candidate.name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_fd,
+            )
+            observed = os.fstat(directory_fd)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"{label} changed while being adopted",
+            )
+            return cls(candidate, parent, candidate.name, parent_fd, directory_fd, metadata.st_dev, metadata.st_ino)
+        except BaseException:
+            os.close(parent_fd)
+            raise
+
+    def close(self) -> None:
+        if self.directory_fd >= 0:
+            os.close(self.directory_fd)
+            self.directory_fd = -1
+        if self.parent_fd >= 0:
+            os.close(self.parent_fd)
+            self.parent_fd = -1
+
+    def require_named_identity(self, label: str) -> None:
+        metadata = os.stat(self.name, dir_fd=self.parent_fd, follow_symlinks=False)
+        require(
+            stat.S_ISDIR(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
+            f"{label} path no longer names the builder-owned staging directory",
+        )
+
+    def current_owned_name(self, label: str) -> str:
+        matches: list[str] = []
+        with os.scandir(self.parent_fd) as entries:
+            for entry in entries:
+                try:
+                    metadata = entry.stat(follow_symlinks=False)
+                except FileNotFoundError:
+                    continue
+                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode):
+                    matches.append(entry.name)
+        require(len(matches) == 1, f"{label} creation-time identity is not reachable below its expected parent")
+        return matches[0]
+
+    def cleanup(self, label: str) -> None:
+        _clear_directory_fd(self.directory_fd, label, self.device)
+        current_name = self.current_owned_name(label)
+        metadata = os.stat(current_name, dir_fd=self.parent_fd, follow_symlinks=False)
+        require(
+            (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
+            f"{label} changed before final removal",
+        )
+        os.rmdir(current_name, dir_fd=self.parent_fd)
+        os.fsync(self.parent_fd)
+        with os.scandir(self.parent_fd) as entries:
+            for entry in entries:
+                try:
+                    observed = entry.stat(follow_symlinks=False)
+                except FileNotFoundError:
+                    continue
+                require(
+                    (observed.st_dev, observed.st_ino) != (self.device, self.inode),
+                    f"{label} survived cleanup under {entry.name}",
+                )
+
+
+def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> None:
+    """Commit an authenticated stage; detect a rename even if reporting is interrupted."""
+    stage.require_named_identity(label)
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    try:
+        try:
+            atomic_publish_noreplace(stage.path, final)
+        except BaseException:
+            try:
+                metadata = os.stat(final, follow_symlinks=False)
+            except OSError:
+                pass
+            else:
+                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode):
+                    stage.committed = True
+            raise
+        else:
+            stage.committed = True
+            os.fsync(stage.parent_fd)
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+
+
 def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
     """Remove one owned staging directory without following symlinks."""
     os.fchmod(directory_fd, 0o700)
@@ -145,34 +284,12 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
 
 
 def remove_owned_tree(path: pathlib.Path, expected_parent: pathlib.Path, label: str) -> None:
-    """Delete an exact same-parent tree and verify complete removal."""
-    parent = expected_parent.resolve(strict=True)
-    candidate = pathlib.Path(os.path.abspath(path))
-    require(candidate.parent == parent, f"{label} is outside its expected parent")
-    metadata = os.lstat(candidate)
-    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
-    parent_fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0))
+    """Compatibility wrapper that adopts and removes one exact real tree."""
+    owned = OwnedStage.adopt(path, expected_parent, label)
     try:
-        os.chmod(candidate.name, 0o700, dir_fd=parent_fd, follow_symlinks=False)
-        directory_fd = os.open(
-            candidate.name,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            dir_fd=parent_fd,
-        )
-        try:
-            observed = os.fstat(directory_fd)
-            require(
-                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
-                f"{label} changed before cleanup",
-            )
-            _clear_directory_fd(directory_fd, label, metadata.st_dev)
-        finally:
-            os.close(directory_fd)
-        os.rmdir(candidate.name, dir_fd=parent_fd)
-        os.fsync(parent_fd)
+        owned.cleanup(label)
     finally:
-        os.close(parent_fd)
-    require(not os.path.lexists(candidate), f"{label} survived cleanup")
+        owned.close()
 
 
 def require_workspace_members(workspace: pathlib.Path, allowed_file: pathlib.Path | None = None) -> None:
@@ -369,8 +486,7 @@ def install_signal_handlers() -> None:
 
 def enable_subreaper() -> None:
     require(sys.platform.startswith("linux"), "provisional corpus builder requires Linux")
-    children_path = pathlib.Path(f"/proc/self/task/{os.getpid()}/children")
-    require(children_path.is_file(), "Linux /proc child enumeration is required")
+    require(pathlib.Path("/proc").is_dir(), "Linux /proc child enumeration is required")
     libc = ctypes.CDLL(None, use_errno=True)
     prctl = libc.prctl
     prctl.argtypes = [ctypes.c_int, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong]
@@ -394,6 +510,29 @@ def direct_child_pids() -> set[int]:
     path = pathlib.Path(f"/proc/self/task/{os.getpid()}/children")
     try:
         text = path.read_text(encoding="ascii").strip()
+    except FileNotFoundError:
+        proc = pathlib.Path("/proc")
+        require(proc.is_dir(), "Linux /proc child enumeration is unavailable")
+        parent_pid = os.getpid()
+        children: set[int] = set()
+        for candidate in proc.iterdir():
+            if not candidate.name.isdigit():
+                continue
+            try:
+                status_text = (candidate / "status").read_text(encoding="ascii", errors="strict")
+            except (FileNotFoundError, ProcessLookupError, PermissionError, OSError, UnicodeError):
+                continue
+            ppid: int | None = None
+            for line in status_text.splitlines():
+                if line.startswith("PPid:"):
+                    try:
+                        ppid = int(line.split(":", 1)[1].strip())
+                    except ValueError as exc:
+                        raise CorpusError(f"invalid PPid in {candidate}/status") from exc
+                    break
+            if ppid == parent_pid:
+                children.add(int(candidate.name))
+        return children
     except OSError as exc:
         raise CorpusError(f"cannot inspect Linux child process state: {exc}") from exc
     if not text:
@@ -1195,8 +1334,8 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     output_root = output_root.resolve(strict=True)
     final = output_root / corpus_id
     require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
-    stage = output_root / f".{corpus_id}.staging.{uuid.uuid4().hex}"
-    require(not stage.exists(), f"staging path already exists: {stage}")
+    stage_name = f".{corpus_id}.staging.{uuid.uuid4().hex}"
+    owned_stage: OwnedStage | None = None
     source_identities = {
         "spec": file_identity(spec_path),
         "source": file_identity(source_paths["source"]),
@@ -1208,11 +1347,16 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     command_records: list[dict[str, Any]] = []
     target_records: list[dict[str, Any]] = []
     try:
-        stage.mkdir(mode=0o700)
-        os.chmod(stage, DIRECTORY_MODE)
+        install_signal_handlers()
         enable_subreaper()
         require(not direct_child_pids(), "corpus builder started with unrelated child processes")
-        install_signal_handlers()
+        previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+        try:
+            owned_stage = OwnedStage.create(output_root, stage_name)
+        finally:
+            signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+        stage = owned_stage.path
+        os.chmod(stage, DIRECTORY_MODE)
         for directory in (
             stage / "inputs" / "spec",
             stage / "inputs" / "source",
@@ -1486,19 +1630,16 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
         verify_checksum_manifest(stage)
         validate_tree_metadata(stage)
         fsync_tree(stage)
-        atomic_publish_noreplace(stage, final)
-        parent_fd = os.open(output_root, os.O_RDONLY | os.O_DIRECTORY)
-        try:
-            os.fsync(parent_fd)
-        finally:
-            os.close(parent_fd)
+        publish_owned_stage(owned_stage, final, "provisional corpus staging tree")
         verify_corpus(final)
         return final
     except BaseException as failure:
+        if owned_stage is not None and owned_stage.committed and isinstance(failure, CorpusInterrupted):
+            return final
         cleanup_failure: BaseException | None = None
-        if os.path.lexists(stage):
+        if owned_stage is not None and not owned_stage.committed:
             try:
-                remove_owned_tree(stage, output_root, "provisional corpus staging tree")
+                owned_stage.cleanup("provisional corpus staging tree")
             except BaseException as exc:
                 cleanup_failure = exc
         if cleanup_failure is not None:
@@ -1506,6 +1647,9 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                 f"corpus build failed with {type(failure).__name__}; staging cleanup also failed: {cleanup_failure}"
             ) from failure
         raise
+    finally:
+        if owned_stage is not None:
+            owned_stage.close()
 
 
 def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
@@ -1689,13 +1833,13 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         "retained limits are missing or malformed",
     )
     require_int(retained_limits.get("timeout_seconds"), "retained timeout_seconds", minimum=1, maximum=600)
-    require_int(
+    maximum_output_bytes = require_int(
         retained_limits.get("maximum_output_bytes"),
         "retained maximum_output_bytes",
         minimum=4096,
         maximum=256 * 1024 * 1024,
     )
-    require_int(
+    maximum_log_bytes = require_int(
         retained_limits.get("maximum_log_bytes"),
         "retained maximum_log_bytes",
         minimum=4096,
@@ -1761,8 +1905,10 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         require(record.get("version_argv") == ["{tool}", "--version"], f"tool version command changed: {tool_id}")
         for stem in ("version", *(() if tool_id == linker["id"] else ("target",))):
             path = corpus_member(root, record.get(f"{stem}_stdout_path"), f"tools[{index}].{stem}_stdout_path")
+            require(path.stat().st_size <= maximum_log_bytes, f"tool {stem} stdout exceeds retained maximum_log_bytes: {tool_id}")
             require(sha256_file(path) == require_sha256(record.get(f"{stem}_stdout_sha256"), f"tools[{index}].{stem}_stdout_sha256"), f"tool {stem} stdout hash mismatch")
             stderr_path = corpus_member(root, record.get(f"{stem}_stderr_path"), f"tools[{index}].{stem}_stderr_path")
+            require(stderr_path.stat().st_size <= maximum_log_bytes, f"tool {stem} stderr exceeds retained maximum_log_bytes: {tool_id}")
             require(sha256_file(stderr_path) == require_sha256(record.get(f"{stem}_stderr_sha256"), f"tools[{index}].{stem}_stderr_sha256"), f"tool {stem} stderr hash mismatch")
             if stem == "version":
                 require(path.stat().st_size == record.get("version_stdout_size_bytes"), f"tool version stdout size mismatch: {tool_id}")
@@ -1851,6 +1997,7 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         identity = file_identity(path)
         require(identity["mode"] == f"{TARGET_MODE:04o}" and target.get("mode") == f"{TARGET_MODE:04o}", f"target mode changed: {target_id}")
         require(identity["size_bytes"] == target.get("size_bytes"), f"target size mismatch: {target_id}")
+        require(identity["size_bytes"] <= maximum_output_bytes, f"target exceeds retained maximum_output_bytes: {target_id}")
         require(identity["sha256"] == target.get("sha256"), f"target hash mismatch: {target_id}")
         require(target.get("target_executed") is False, f"target execution policy changed: {target_id}")
         facts = parse_elf(path)
@@ -1904,6 +2051,8 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         )
         stdout_path = corpus_member(root, row["stdout_path"], f"command stdout path {target_id}")
         stderr_path = corpus_member(root, row["stderr_path"], f"command stderr path {target_id}")
+        require(stdout_path.stat().st_size <= maximum_log_bytes, f"command stdout exceeds retained maximum_log_bytes: {target_id}")
+        require(stderr_path.stat().st_size <= maximum_log_bytes, f"command stderr exceeds retained maximum_log_bytes: {target_id}")
         require(sha256_file(stdout_path) == require_sha256(row["stdout_sha256"], f"command stdout hash {target_id}"), f"command stdout hash mismatch: {target_id}")
         require(sha256_file(stderr_path) == require_sha256(row["stderr_sha256"], f"command stderr hash {target_id}"), f"command stderr hash mismatch: {target_id}")
 

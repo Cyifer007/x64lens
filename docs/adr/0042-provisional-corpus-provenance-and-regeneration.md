@@ -111,7 +111,7 @@ The smoke gate proves:
 - GCC/Clang, optimization, role, and hardening differences can be studied
   without changing the analyzer.
 - Corpus bytes remain outside the public source tree and can be rebuilt locally.
-- The same manifest surface can feed Patch 057 adapters and later campaign
+- The same manifest surface can feed Patch 058 adapters and later campaign
   generation.
 - The design preserves air-gapped runtime and CI/CD deployment characteristics.
 

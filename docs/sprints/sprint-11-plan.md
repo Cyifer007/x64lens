@@ -4,9 +4,10 @@
 
 Active diagnostic measurement sprint after Sprint 10 Patch 054 closeout.
 Patches 055 and 056 implement the runner, task-definition, and provisional
-corpus foundations. Patch 057 corrects the runner, corpus, cleanup, and
-validation integrity findings before measurement scope expands. Baseline
-adapters, summaries, and the gap register remain active.
+corpus foundations. Patch 057 corrects the first runner, corpus, cleanup, and
+validation-integrity findings. Patch 058 adds bounded task-normalized baseline
+adapters and closes the remaining evidence-integrity gaps found during Patch 057
+validation. Diagnostic summaries and the gap register remain active.
 
 ## Sprint goal
 
@@ -35,9 +36,10 @@ campaign prematurely.
   report timing for a nonexistent core condition.
 - [ ] Add a scanner-only profile only if diagnostic evidence justifies a
   reviewed report-suppression or instrumentation seam.
-- [x] Initial baseline task records for ROPgadget, Ropper, and ropr, marked
-  planned pending command and candidate-definition normalization.
-- [ ] Implement baseline adapters and version-lock capture.
+- [x] Initial baseline task records for ROPgadget, Ropper, and ropr.
+- [x] Versioned task-normalized baseline adapters with exact commands, bounded
+  native stdout/stderr, tool/version/target/output authentication, duplicate
+  preservation, and an exact `pop rdi; ret` relation.
 - [x] Controlled reference diagnostic campaign with development run counts.
 - [ ] Provisional corpus campaign and capability/performance gap register.
 - [x] Explicit separation of diagnostic rows from future frozen campaign rows.
@@ -56,8 +58,10 @@ campaign prematurely.
    correction for non-executable target inputs, exact corpus workspace/member
    closure, checked staging cleanup, safe corpus removal, and non-root oracle
    parity.
-4. **Patch 058:** normalized ROPgadget, Ropper, and ropr task adapters with
-   version identity and failure-preserving rows.
+4. **Patch 058 (implemented candidate):** remaining runner/corpus integrity
+   corrections plus normalized ROPgadget, Ropper, and ropr native-output
+   adapters with bounded capture, exact command/version identity, conservative
+   parsing, and failure-preserving evidence.
 5. **Patch 059:** development summaries, coverage reconciliation inputs, and the
    engineering gap register that directs Sprints 12 through 14.
 6. **Patch 060:** Sprint 11 closeout and diagnostic checkpoint review, subject to
@@ -76,6 +80,8 @@ intended responsibility boundaries rather than a calendar guarantee.
 - [x] Timing below the provisional reliable floor is labeled and cannot support
   an unqualified single-process interpretation.
 - [x] Tool scope and output work are stated for every current condition.
+- [x] Baseline native output, duplicates, task-specific totals, and the first
+  canonical exact relation remain separate and authenticated.
 - [x] Campaign publication is transactional and refuses to replace an existing
   result identity.
 - [x] Measured process groups and escaped adopted descendants are cleaned up and reaped.

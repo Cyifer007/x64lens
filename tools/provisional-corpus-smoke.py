@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -91,8 +92,8 @@ def regenerate_checksums(root: pathlib.Path) -> None:
     os.chmod(checksum, 0o444)
 
 
-def assert_no_stage_or_final(output_root: pathlib.Path) -> None:
-    require(not (output_root / CORPUS_ID).exists(), "failed corpus build published a final result")
+def assert_no_stage_or_final(output_root: pathlib.Path, corpus_id: str) -> None:
+    require(not (output_root / corpus_id).exists(), f"failed corpus build published final result: {corpus_id}")
     stage_names = [path.name for path in output_root.iterdir() if ".staging." in path.name]
     require(not stage_names, f"failed corpus build left staging paths: {stage_names}")
 
@@ -175,9 +176,158 @@ def interruption_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> No
     while time.monotonic() < deadline and any(pid_exists(pid) for pid in pids):
         time.sleep(0.05)
     require(not any(pid_exists(pid) for pid in pids), f"interrupted compiler process survived: {pids}")
-    assert_no_stage_or_final(output_root)
+    assert_no_stage_or_final(output_root, spec["corpus_id"])
 
 
+
+
+def load_builder_module(name: str):
+    module_spec = importlib.util.spec_from_file_location(name, BUILDER)
+    require(module_spec is not None and module_spec.loader is not None, "cannot load provisional corpus builder module")
+    module = importlib.util.module_from_spec(module_spec)
+    sys.modules[module_spec.name] = module
+    module_spec.loader.exec_module(module)
+    return module
+
+
+def stage_identity_probe(temporary: pathlib.Path) -> None:
+    """Remove the creation-time stage after rename without deleting a replacement."""
+    module = load_builder_module("x64lens_corpus_stage_identity_probe")
+    root = temporary / "stage-substitution-root"
+    root.mkdir()
+    owned = module.OwnedStage.create(root, ".owned.staging")
+    try:
+        (owned.path / "owned.txt").write_text("owned\n", encoding="utf-8")
+        escaped = root / ".escaped-original"
+        os.rename(owned.path, escaped)
+        replacement = root / ".owned.staging"
+        replacement.mkdir()
+        (replacement / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+        owned.cleanup("corpus stage substitution probe")
+        require(not escaped.exists(), "renamed builder-owned stage survived cleanup")
+        require(replacement.is_dir(), "foreign replacement stage was deleted")
+        require((replacement / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign replacement changed")
+    finally:
+        owned.close()
+
+
+def publish_commit_probe(temporary: pathlib.Path) -> None:
+    """Retain committed state when publication reporting fails after rename."""
+    module = load_builder_module("x64lens_corpus_publish_probe")
+    root = temporary / "publish-commit-root"
+    root.mkdir()
+    owned = module.OwnedStage.create(root, ".publish.staging")
+    final = root / "published"
+    (owned.path / "corpus-manifest.json").write_text("{}\n", encoding="utf-8")
+    original = module.atomic_publish_noreplace
+
+    def publish_then_interrupt(stage: pathlib.Path, destination: pathlib.Path) -> None:
+        original(stage, destination)
+        raise module.CorpusInterrupted(signal.SIGINT)
+
+    module.atomic_publish_noreplace = publish_then_interrupt
+    try:
+        try:
+            module.publish_owned_stage(owned, final, "corpus publish commit probe")
+        except module.CorpusInterrupted:
+            pass
+        else:
+            raise SmokeError("post-rename corpus interruption was not injected")
+        require(owned.committed is True, "post-rename corpus interruption lost committed state")
+        require(final.is_dir() and (final / "corpus-manifest.json").is_file(), "committed corpus result was not retained")
+    finally:
+        module.atomic_publish_noreplace = original
+        owned.close()
+
+
+def early_signal_probe(temporary: pathlib.Path) -> None:
+    """Prove SIGTERM is handled before any staging directory can be orphaned."""
+    module = load_builder_module("x64lens_corpus_early_signal_probe")
+    output = temporary / "early-signal-output"
+    output.mkdir()
+    original_create = module.OwnedStage.create.__func__
+    original_sigint = signal.getsignal(signal.SIGINT)
+    original_sigterm = signal.getsignal(signal.SIGTERM)
+
+    def interrupting_create(cls, parent, name):
+        os.kill(os.getpid(), signal.SIGTERM)
+        return original_create(cls, parent, name)
+
+    module.OwnedStage.create = classmethod(interrupting_create)
+    try:
+        try:
+            module.build_corpus(SPEC, output, ROOT)
+        except module.CorpusInterrupted as exc:
+            require(exc.signum == signal.SIGTERM, "early signal identity mismatch")
+        else:
+            raise SmokeError("early SIGTERM did not interrupt corpus construction")
+    finally:
+        module.OwnedStage.create = classmethod(original_create)
+        signal.signal(signal.SIGINT, original_sigint)
+        signal.signal(signal.SIGTERM, original_sigterm)
+        module.INTERRUPTED_BY = None
+    assert_no_stage_or_final(output, CORPUS_ID)
+
+
+def update_spec_snapshot_and_manifest(corpus: pathlib.Path, mutate: Any) -> None:
+    spec_path = corpus / "inputs/spec/corpus-spec.json"
+    manifest_path = corpus / "corpus-manifest.json"
+    spec_value = json.loads(spec_path.read_text(encoding="utf-8"))
+    mutate(spec_value)
+    os.chmod(spec_path, 0o644)
+    spec_path.write_text(json.dumps(spec_value, indent=2) + "\n", encoding="utf-8")
+    os.chmod(spec_path, 0o444)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["inputs"]["spec"]["sha256"] = sha256(spec_path)
+    manifest["inputs"]["spec"]["size_bytes"] = spec_path.stat().st_size
+    os.chmod(manifest_path, 0o644)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.chmod(manifest_path, 0o444)
+
+
+def retained_limit_probes(source_corpus: pathlib.Path, temporary: pathlib.Path) -> None:
+    """Reject self-consistent evidence whose retained files exceed its own limits."""
+    output_mutation_root = temporary / "retained-output-limit-root"
+    output_mutation_root.mkdir()
+    output_mutation = output_mutation_root / CORPUS_ID
+    shutil.copytree(source_corpus, output_mutation)
+    update_spec_snapshot_and_manifest(
+        output_mutation,
+        lambda data: data["limits"].__setitem__("maximum_output_bytes", 4096),
+    )
+    regenerate_checksums(output_mutation)
+    output_result = run("--verify", str(output_mutation), timeout=30)
+    require(
+        output_result.returncode == 2 and "target exceeds retained maximum_output_bytes" in output_result.stderr,
+        f"retained output limit mutation was accepted: {output_result.stderr}",
+    )
+
+    log_mutation_root = temporary / "retained-log-limit-root"
+    log_mutation_root.mkdir()
+    log_mutation = log_mutation_root / CORPUS_ID
+    shutil.copytree(source_corpus, log_mutation)
+    manifest_path = log_mutation / "corpus-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    tool = manifest["tools"][0]
+    version_stdout = log_mutation / tool["version_stdout_path"]
+    os.chmod(version_stdout, 0o644)
+    version_stdout.write_bytes(version_stdout.read_bytes() + b"X" * 8192)
+    os.chmod(version_stdout, 0o444)
+    tool["version_stdout_sha256"] = sha256(version_stdout)
+    tool["version_stdout_size_bytes"] = version_stdout.stat().st_size
+    os.chmod(manifest_path, 0o644)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.chmod(manifest_path, 0o444)
+    update_spec_snapshot_and_manifest(
+        log_mutation,
+        lambda data: data["limits"].__setitem__("maximum_log_bytes", 4096),
+    )
+    regenerate_checksums(log_mutation)
+    log_result = run("--verify", str(log_mutation), timeout=30)
+    require(
+        log_result.returncode == 2 and "exceeds retained maximum_log_bytes" in log_result.stderr,
+        f"retained log limit mutation was accepted: {log_result.stderr}",
+    )
 
 def capture_limit_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> None:
     fake_dir = temporary / "capture-limit-tools"
@@ -222,7 +372,7 @@ def capture_limit_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> N
     while time.monotonic() < deadline and pid_exists(pid):
         time.sleep(0.05)
     require(not pid_exists(pid), f"capture-limit compiler survived: {pid}")
-    assert_no_stage_or_final(output_root)
+    assert_no_stage_or_final(output_root, spec["corpus_id"])
 
 
 def spawn_window_probe(temporary: pathlib.Path) -> None:
@@ -381,7 +531,7 @@ def side_member_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> Non
     output.mkdir()
     result = run("--spec", str(path), "--output-root", str(output), timeout=60)
     require(result.returncode == 2 and "undeclared workspace member" in result.stderr, f"side member was not rejected: {result.stderr}")
-    assert_no_stage_or_final(output)
+    assert_no_stage_or_final(output, spec["corpus_id"])
 
 
 def locked_cleanup_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> None:
@@ -410,7 +560,7 @@ def locked_cleanup_probe(base_spec: dict[str, Any], temporary: pathlib.Path) -> 
     output.mkdir()
     result = run("--spec", str(path), "--output-root", str(output), timeout=60)
     require(result.returncode == 2, "locked cleanup compiler unexpectedly succeeded")
-    assert_no_stage_or_final(output)
+    assert_no_stage_or_final(output, spec["corpus_id"])
 
 
 def main() -> int:
@@ -512,7 +662,7 @@ def main() -> int:
         missing = run("--spec", str(missing_spec), "--output-root", str(missing_output), timeout=30)
         require(missing.returncode == 2, "missing compiler was not rejected")
         require("required tool is missing" in missing.stderr, f"unexpected missing-tool diagnostic: {missing.stderr}")
-        assert_no_stage_or_final(missing_output)
+        assert_no_stage_or_final(missing_output, json.loads(missing_spec.read_text(encoding="utf-8"))["corpus_id"])
 
         tampered = temporary / CORPUS_ID
         shutil.copytree(first_corpus, tampered)
@@ -583,7 +733,11 @@ def main() -> int:
 
         interruption_probe(base_spec, temporary)
         spawn_window_probe(temporary)
+        early_signal_probe(temporary)
+        stage_identity_probe(temporary)
+        publish_commit_probe(temporary)
         capture_limit_probe(base_spec, temporary)
+        retained_limit_probes(first_corpus, temporary)
         clean_target_probe(first_corpus, temporary)
         side_member_probe(base_spec, temporary)
         locked_cleanup_probe(base_spec, temporary)
@@ -591,7 +745,8 @@ def main() -> int:
     print(
         "provisional-corpus-smoke: ok "
         "targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 "
-        "capture_limits=1 clean_guards=1 make_clean_guards=1 membership_rejections=1"
+        "capture_limits=1 retained_limits=2 clean_guards=1 make_clean_guards=1 "
+        "membership_rejections=1 stage_substitution=1 early_signals=1 post_publish_commit=1"
     )
     return 0
 

@@ -1507,3 +1507,30 @@ Full acceptance remains strict ShellCheck, clean NASM build, samples, native
 aggregate, exact 4096/4097 capacity behavior, malformed-input no-partial-output,
 qualified Docker validation as the non-root container user, and native/container
 JSON parity.
+
+## Sprint 11 Patch 058 baseline-adapter and integrity validation
+
+Focused development gates:
+
+```bash
+make diagnostic-task-definitions-smoke
+make baseline-output-adapter-smoke
+make diagnostic-runner-smoke
+make provisional-corpus-smoke
+```
+
+The task-definition gate requires three implemented adapters, exact command
+arrays, explicit per-stream limits, named normalized relations, and no generic
+gadget total. The adapter gate uses controlled ROPgadget, Ropper, and ropr native
+outputs plus adversarial malformed, over-limit, stale-identity, symlink, and
+pre-existing-output cases. It requires deterministic normalized bytes and exact
+represented `pop rdi; ret` precision and recall.
+
+The runner and corpus gates additionally cover bounded parent-side capture,
+output-limit failure retention, future stream-path symlinks, stage substitution,
+early installed signal handling, post-publication commit recognition, retained
+output/log limits, and corpus-ID-specific negative oracles.
+
+Full acceptance remains strict ShellCheck, clean NASM build, all samples and
+native validation, exact 4096/4097 capacity behavior, malformed-input
+no-partial-output, non-root Docker validation, and native/container JSON parity.

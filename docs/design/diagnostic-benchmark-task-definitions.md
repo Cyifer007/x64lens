@@ -3,13 +3,14 @@
 ## Purpose
 
 Sprint 11 measurements are useful only when each row states what work was
-performed. This document defines the initial task authority used by Patch 055.
-The machine-readable companion is
+performed. The machine-readable authority is
 `benchmarks/task-definitions/sprint11-diagnostic-tasks.json`.
 
-These definitions are mutable diagnostic authorities. Sprint 15 freezes the
-confirmatory task definitions after loader, semantic, and optional-profile
-choices are complete.
+Patch 058 advances that authority to version 2. It retains the truthful x64lens
+conditions established in Patch 055 and adds bounded, versioned native-output
+adapters for ROPgadget, Ropper, and ropr. These definitions remain mutable
+diagnostic authorities. Sprint 15 freezes the confirmatory task definitions
+after loader, semantic, and optional-profile choices are complete.
 
 ## Reference profile
 
@@ -22,19 +23,23 @@ candidate capacity: 4096
 output ordering: deterministic
 ```
 
-The runner is external research infrastructure. Its Python dependency does not
-become a dependency of the x64lens runtime artifact.
+The runner and baseline adapters are external research infrastructure. Their
+Python dependency and optional baseline tools do not become dependencies of the
+x64lens runtime artifact.
 
 ## Current task matrix
 
-| Task | Status | Command | Work represented |
+| Task | Status | Exact command template | Work represented |
 |---|---|---|---|
 | Core scanner | Unavailable | none | No public report-suppressed scanner-only path exists. Report timing must not be relabeled as scanner cost. |
 | Gadget JSON | Implemented | `x64lens gadgets --format json --max-depth 4 <target>` | Complete current analysis pipeline plus schema `0.2.0` JSON rendering under `command: gadgets`. |
 | Integrated-analysis JSON | Implemented | `x64lens analyze --format json --max-depth 4 <target>` | The same current analysis facts and JSON body under `command: analyze`; this is a command-path parity condition, not yet an independently broader workload. |
-| ROPgadget report | Planned | pending normalization | Baseline-reported gadget task with explicit terminator, depth, duplicate, alignment, and output rules. |
-| Ropper report | Planned | pending normalization | Baseline-reported gadget task with explicit terminator, depth, duplicate, alignment, and output rules. |
-| ropr report | Planned | pending normalization | Baseline-reported gadget task with explicit terminator, depth, duplicate, alignment, and output rules. |
+| ROPgadget report | Adapter implemented | `ROPgadget --binary <target> --depth 5 --only 'pop|ret' --nojop --nosys --silent` | ROPgadget-native return-oriented report under an explicit depth/filter/output scope. |
+| Ropper report | Adapter implemented | `ropper --file <target> --nocolor --single --type rop --inst-count 5` | Ropper-native single-process return-oriented report with color disabled and an explicit instruction limit. |
+| ropr report | Adapter implemented | `ropr --colour false --max-instr 5 --nojop --nosys <target>` | ropr-native return-oriented report with color, JOP, and syscall categories disabled for this task. |
+
+The command templates define the Patch 058 diagnostic task. They do not claim
+that each baseline performs identical internal work.
 
 ## Why core timing is unavailable
 
@@ -76,27 +81,67 @@ command-orchestration regressions. They must not be presented as a comparison
 between a narrow gadget engine and a broader integrated engine until their
 actual work scopes diverge by design.
 
-## Baseline normalization requirements
+## Baseline native-output contract
 
-Before a baseline condition is admitted, record:
+Every admitted baseline condition retains:
 
-- exact executable or package version and identity;
-- exact command and output mode;
-- return terminators included;
-- maximum instruction or byte depth;
-- aligned and unaligned behavior;
-- invalid-instruction filtering;
-- duplicate and canonicalization policy;
-- whether formatting is included;
-- output bytes and failure behavior;
-- candidate metric names specific to that tool.
+- executable path, mode, SHA-256, version command, and version output;
+- exact measured command and working directory;
+- immutable target path, mode, and SHA-256;
+- bounded native stdout and stderr with hashes and sizes;
+- explicit per-line, record-count, and instruction-count parser limits;
+- exit, signal, timeout, and output-limit outcome;
+- adapter path, identity, and SHA-256;
+- late reauthentication that each retained path still names the recorded bytes; and
+- a normalized artifact that references rather than replaces native output.
+
+The Patch 058 adapters reject uncategorized native output. Parser failure is a
+failed diagnostic condition, not zero baseline coverage.
+
+## Normalized relation set
+
+A raw executable-return-byte relation is explicitly unavailable for the external
+baselines. ROPgadget, Ropper, and ropr expose decoder-backed gadget records; they
+do not expose a loader-authoritative raw-byte scan that can be equated with
+x64lens `raw_candidate_count`. Native return records therefore cannot substitute
+for that evidence layer.
+
+The first implemented cross-tool relation is intentionally narrow:
+
+```text
+canonical_exact_pop_rdi_ret
+```
+
+For each tool, the adapter retains the native record and emits:
+
+```text
+tool_native_record_count
+unique_tool_native_record_count
+tool_reported_return_terminator_record_count
+unique_tool_reported_return_terminator_site_count
+canonical_exact_pop_rdi_ret_record_count
+unique_canonical_exact_pop_rdi_ret_relation_count
+binary_fact_arg_control_rdi_present
+```
+
+The native and unique populations remain separate. The canonical relation
+requires exact represented instructions `pop rdi; ret` or `pop rdi; retq`; it
+is not inferred from a substring or tool summary line.
+
+## Metric boundary
 
 A baseline's reported total remains tool-specific. It must not be written into
-an unlabeled cross-tool `gadget_count` column.
+an unlabeled cross-tool `gadget_count` column. Runtime, RSS, output size, native
+record populations, normalized exact relations, and x64lens raw/exact/semantic/
+unknown/scored metrics remain distinct.
+
+The adapters do not establish task equivalence. They expose the remaining
+differences in alignment policy, instruction decoding, invalid-instruction
+filtering, duplicate handling, canonicalization, depth, and formatting work.
 
 ## Diagnostic claim boundary
 
-Patch 055 campaigns establish measurement plumbing and early observations only.
-They do not support claims that x64lens is faster, lower-RSS, more complete, or
+Patch 058 establishes bounded baseline normalization and evidence identity. It
+does not support claims that x64lens is faster, lower-RSS, more complete, or
 more operationally useful than another tool. Those claims require the Sprint
 15-frozen method and later preview/publication campaigns.

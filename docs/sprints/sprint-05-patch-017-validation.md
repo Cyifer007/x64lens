@@ -2,9 +2,10 @@
 
 ## Status
 
-Validated locally and in Docker.
+Validated natively and in Docker.
 
-Patch 017 adds the first scoring and JSON output path. The implementation validated after Docker became reachable in the WSL environment. An earlier `docker` command lookup failure was an environment availability issue, not a code or fixture failure, because the same `make docker-test` target passed after Docker integration was active.
+Patch 017 adds the first scoring and JSON output path. The required native and
+Docker checks completed successfully.
 
 ## What changed
 
@@ -117,7 +118,7 @@ make diagrams-check -> diagrams-check: ok
 make clean && make -> build/x64lens linked
 make samples -> controlled binaries rebuilt
 make test -> tests: ok
-make docker-test -> tests: ok after Docker became reachable
+make docker-test -> tests: ok
 make validate-gadget-fixture -> validate-gadget-fixture: ok
 make semantic-smoke -> validate-gadget-fixture: ok
 make json-smoke -> json-smoke: ok

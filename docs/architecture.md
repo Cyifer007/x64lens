@@ -1172,7 +1172,8 @@ target under analysis         -> non-executable memfd with an execution seal
 
 The runner rejects hosts that cannot provide `MFD_NOEXEC_SEAL` and
 `F_SEAL_EXEC`; it does not silently weaken the target-nonexecution claim. This
-protects the passed target object, not against a hostile tool copying bytes.
+protection applies only to the passed target object; it does not prevent a
+hostile tool from copying those bytes into another object.
 
 The runner and corpus builder also share a fail-closed transaction rule:
 staging creation occurs inside the protected `try` region, cleanup traverses the
@@ -1182,3 +1183,33 @@ failure is reported alongside the original failure. Corpus compilation uses one
 otherwise-empty workspace and closes both the generated and verified member
 sets. The analyzer's mapping, loader, scanner, classifier, side-car, scoring,
 and reporting boundaries remain unchanged.
+
+## Sprint 11 Patch 058 baseline-normalization boundary
+
+Patch 058 adds no analyzer module. The diagnostic runner first retains bounded
+native baseline stdout and stderr. A separate standard-library adapter then
+authenticates the task authority, exact command, tool and version, target,
+native streams, and its own source before producing one normalized diagnostic
+artifact:
+
+```text
+retained baseline native output
+  -> identity and capture-limit verification
+  -> conservative tool-specific parser
+  -> native record and duplicate preservation
+  -> exact cross-tool relation materialization
+  -> normalized diagnostic artifact
+```
+
+The adapter cannot map the target, select executable regions, scan bytes,
+classify x64lens candidates, write candidate side-cars, score candidates, or
+format an x64lens report. Baseline native output remains external evidence.
+The first common relation is exact `pop rdi; ret`; a baseline-native total is
+never renamed to a generic gadget population.
+
+Patch 058 also strengthens the external transaction layer. Parent-owned pipes
+bound measured output before any future artifact pathname is opened. Staging
+ownership follows the creation-time device and inode after a same-parent rename,
+and cleanup preserves an unrelated replacement at the original pathname. These
+controls protect research evidence without changing the dependency-free,
+decoder-free, one-worker runtime pipeline.

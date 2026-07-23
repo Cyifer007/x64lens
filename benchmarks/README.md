@@ -155,3 +155,29 @@ The corpus builder uses one otherwise-empty command workspace, accepts only the
 named output after a successful compiler command, and verifies the exact final
 member set. The Make clean target delegates to the manifest-aware builder and
 never recursively deletes a caller-selected corpus path.
+
+## Sprint 11 Patch 058 task-normalized baseline adapters
+
+Validate the versioned baseline task authority and all three adapters with:
+
+```bash
+make diagnostic-task-definitions-smoke
+make baseline-output-adapter-smoke
+```
+
+`benchmarks/scripts/baseline-output-adapter.py` consumes retained native output;
+it does not invoke the baseline tool. Before parsing it authenticates the exact
+command, tool executable and version evidence, target, stdout, stderr, and
+adapter source against the task authority. Native output remains the primary
+artifact.
+
+The initial common relation is exact `pop rdi; ret`. Tool-native totals,
+unique-native totals, duplicate counts, return-terminated populations, and the
+canonical exact relation remain separate. No normalized artifact contains an
+unlabeled `gadget_count` field. Uncategorized or over-limit native output is a
+failed diagnostic condition rather than a guessed zero result.
+
+Patch 058 also moves runner and corpus output capture to bounded parent-owned
+pipes, follows owned staging objects after same-parent renames, preserves
+unrelated replacements, rechecks retained corpus limits, and records a completed
+no-replace publication as committed when interruption follows the commit.

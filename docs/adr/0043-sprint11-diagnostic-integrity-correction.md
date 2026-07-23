@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted for Sprint 11 Patch 057.
+Implemented in Sprint 11 Patch 057 and subsequently strengthened by Patch 058
+where later validation found additional evidence-integrity gaps.
 
 ## Context
 
@@ -101,7 +102,9 @@ and deterministic.
 - The passed target object cannot be made executable transiently.
 - Published corpus membership is closed and reproducible.
 - Failure paths cannot silently retain staging state.
-- Explicit cleanup cannot be redirected through Make variable substitution.
+- Overriding `PROVISIONAL_CORPUS_PATH` cannot redirect cleanup; the builder
+  derives the removable member from the configured output root and validated
+  `corpus_id`.
 - Native and non-root container corpus oracles use the same permission model.
 
 ### Costs and limitations

@@ -1,11 +1,56 @@
 {
-  "schema_version": 1,
-  "authority_id": "sprint11-diagnostic-task-definitions-v1",
+  "schema_version": 2,
+  "authority_id": "sprint11-diagnostic-task-definitions-v2",
   "evidence_class": "diagnostic",
   "frozen": false,
   "publication_eligible": false,
   "reference_profile": "core-1w",
   "campaign_freeze_sprint": 15,
+  "adapter_policy": {
+    "adapter_id": "x64lens-sprint11-baseline-output-adapter-v1",
+    "adapter_path": "benchmarks/scripts/baseline-output-adapter.py",
+    "native_output_retained": true,
+    "uncategorized_output_policy": "reject",
+    "duplicate_policy": "preserve every native record and report tool-specific record, unique-record, and duplicate-record totals",
+    "canonicalization_policy": "lowercase and whitespace-normalize instruction text; preserve native sequence and source line; canonicalize addresses as 16-digit hexadecimal strings",
+    "analysis_authority": false,
+    "late_input_reauthentication": true
+  },
+  "normalized_relations": [
+    {
+      "id": "executable_return_byte_presence",
+      "status": "unavailable",
+      "scope": "cross_tool_raw_byte",
+      "reason": "ROPgadget, Ropper, and ropr expose decoder-backed gadget records rather than a program-header-authoritative raw executable-byte observation. No baseline-native total is substituted for this relation.",
+      "substitution_allowed": false
+    },
+    {
+      "id": "tool_reported_return_terminator_records",
+      "scope": "tool_specific",
+      "comparison_rule": "Retain and label each baseline's own return-terminated records. Tool-native totals are not cross-tool gadget populations.",
+      "status": "implemented"
+    },
+    {
+      "id": "canonical_exact_pop_rdi_ret",
+      "scope": "cross_tool_exact_relation",
+      "comparison_key": [
+        "address",
+        "instructions"
+      ],
+      "canonical_instructions": [
+        "pop rdi",
+        "ret"
+      ],
+      "comparison_rule": "Compare only an exact two-instruction pop-rdi-return relation emitted by the named baseline. This does not become an x64lens semantic-exact or decoder-backed population.",
+      "status": "implemented"
+    },
+    {
+      "id": "binary_fact_arg_control_rdi_present",
+      "scope": "binary_fact",
+      "comparison_rule": "True when the baseline native output contains at least one canonical_exact_pop_rdi_ret relation.",
+      "status": "implemented"
+    }
+  ],
   "tasks": [
     {
       "id": "core_scanner",
@@ -55,27 +100,165 @@
   "baselines": [
     {
       "id": "ropgadget",
-      "status": "planned",
+      "status": "implemented",
       "task_scope": "baseline_gadget_report",
-      "normalization_required": true
+      "condition_id": "ropgadget-rop-report",
+      "executable_name": "ROPgadget",
+      "version_command_template": [
+        "<tool>",
+        "--version"
+      ],
+      "command_template": [
+        "<tool>",
+        "--binary",
+        "<target>",
+        "--depth",
+        "5",
+        "--only",
+        "pop|ret",
+        "--nojop",
+        "--nosys",
+        "--silent"
+      ],
+      "normalization_required": true,
+      "normalized_relation_ids": [
+        "tool_reported_return_terminator_records",
+        "canonical_exact_pop_rdi_ret",
+        "binary_fact_arg_control_rdi_present"
+      ],
+      "capture_policy": {
+        "maximum_stdout_bytes": 16777216,
+        "maximum_stderr_bytes": 1048576,
+        "output_limit_outcome": "output_limit"
+      },
+      "native_output_contract": {
+        "stream": "stdout",
+        "format": "address-colon-semicolon-instruction-text",
+        "require_utf8": true,
+        "ansi_policy": "strip-and-count",
+        "require_return_terminated": true,
+        "uncategorized_line_policy": "reject",
+        "maximum_line_bytes": 8192,
+        "maximum_record_count": 262144,
+        "maximum_instruction_count": 5
+      },
+      "adapter": {
+        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "path": "benchmarks/scripts/baseline-output-adapter.py",
+        "schema_version": 1
+      },
+      "work_scope_note": "ROPgadget performs Capstone-backed ROP discovery over its own executable-segment and canonicalization rules, restricted to pop/ret mnemonics, five-byte search depth, and ROP-only output.",
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
     },
     {
       "id": "ropper",
-      "status": "planned",
+      "status": "implemented",
       "task_scope": "baseline_gadget_report",
-      "normalization_required": true
+      "condition_id": "ropper-rop-report",
+      "executable_name": "ropper",
+      "version_command_template": [
+        "<tool>",
+        "--version"
+      ],
+      "command_template": [
+        "<tool>",
+        "--file",
+        "<target>",
+        "--nocolor",
+        "--single",
+        "--type",
+        "rop",
+        "--inst-count",
+        "5"
+      ],
+      "normalization_required": true,
+      "normalized_relation_ids": [
+        "tool_reported_return_terminator_records",
+        "canonical_exact_pop_rdi_ret",
+        "binary_fact_arg_control_rdi_present"
+      ],
+      "capture_policy": {
+        "maximum_stdout_bytes": 16777216,
+        "maximum_stderr_bytes": 1048576,
+        "output_limit_outcome": "output_limit"
+      },
+      "native_output_contract": {
+        "stream": "stdout",
+        "format": "address-colon-semicolon-instruction-text",
+        "require_utf8": true,
+        "ansi_policy": "strip-and-count",
+        "require_return_terminated": true,
+        "uncategorized_line_policy": "reject",
+        "maximum_line_bytes": 8192,
+        "maximum_record_count": 262144,
+        "maximum_instruction_count": 5
+      },
+      "adapter": {
+        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "path": "benchmarks/scripts/baseline-output-adapter.py",
+        "schema_version": 1
+      },
+      "work_scope_note": "Ropper performs Capstone-backed ROP discovery under its own section, quality, duplicate, cache, and instruction-count rules with color disabled; --single disables its multi-process scanning path for this diagnostic condition.",
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
     },
     {
       "id": "ropr",
-      "status": "planned",
+      "status": "implemented",
       "task_scope": "baseline_gadget_report",
-      "normalization_required": true
+      "condition_id": "ropr-rop-report",
+      "executable_name": "ropr",
+      "version_command_template": [
+        "<tool>",
+        "--version"
+      ],
+      "command_template": [
+        "<tool>",
+        "--colour",
+        "false",
+        "--max-instr",
+        "5",
+        "--nojop",
+        "--nosys",
+        "<target>"
+      ],
+      "normalization_required": true,
+      "normalized_relation_ids": [
+        "tool_reported_return_terminator_records",
+        "canonical_exact_pop_rdi_ret",
+        "binary_fact_arg_control_rdi_present"
+      ],
+      "capture_policy": {
+        "maximum_stdout_bytes": 16777216,
+        "maximum_stderr_bytes": 1048576,
+        "output_limit_outcome": "output_limit"
+      },
+      "native_output_contract": {
+        "stream": "stdout",
+        "format": "address-colon-semicolon-instruction-text",
+        "require_utf8": true,
+        "ansi_policy": "strip-and-count",
+        "require_return_terminated": true,
+        "uncategorized_line_policy": "reject",
+        "maximum_line_bytes": 8192,
+        "maximum_record_count": 262144,
+        "maximum_instruction_count": 5
+      },
+      "adapter": {
+        "id": "x64lens-sprint11-baseline-output-adapter-v1",
+        "path": "benchmarks/scripts/baseline-output-adapter.py",
+        "schema_version": 1
+      },
+      "work_scope_note": "ropr performs its native multithreaded x86 ROP discovery under its own executable-range, quality, duplicate, and maximum-instruction rules with JOP and syscall records disabled.",
+      "task_equivalence_note": "Only the canonical exact pop-rdi-return relation and derived binary fact are normalized across tools. Runtime and native totals remain qualified by this tool-specific work scope."
     }
   ],
   "claim_boundaries": [
-    "Diagnostic rows are development evidence only.",
+    "Diagnostic rows and normalized artifacts are mutable development evidence only.",
     "A command label does not prove a distinct amount of analysis work.",
     "No generic gadget_count is comparable before candidate-definition reconciliation.",
-    "Core scanner timing remains unavailable until a real report-suppressed instrumentation seam exists."
+    "Baseline-native totals remain tool-specific and are never substituted for x64lens raw, exact, semantic-exact, unknown, decoder-backed, or scored populations.",
+    "The adapter consumes retained baseline output and cannot become runtime mapping, decoding, classification, scoring, or report authority.",
+    "Core scanner timing remains unavailable until a real report-suppressed instrumentation seam exists.",
+    "Raw executable-return-byte presence remains unavailable for the external baselines because their native reports are decoded gadget outputs, not loader-authoritative byte scans."
   ]
 }

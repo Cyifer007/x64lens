@@ -1,0 +1,9 @@
+[INFO] Load gadgets for section: LOAD
+Gadgets
+=======
+0x0000000000401000: pop rdi; ret;
+0x0000000000401000: pop rdi; ret;
+0x0000000000401010: pop rax; ret;
+0x0000000000401020: pop rdi; nop; ret;
+0x0000000000401030: ret 0x10;
+4 gadgets found

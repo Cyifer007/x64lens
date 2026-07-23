@@ -19,7 +19,7 @@ repository tree: exact Patch 041 commit contents
 
 Patch 042 must reject, under any archive root:
 
-- `.git/`, `.local/`, `.codex/`, and other private orchestration state;
+- version-control metadata and other local-only non-source workspace state;
 - `AGENTS.override.md`, `.env` other than `.env.example`, project context files,
   private notes, secrets, proprietary/malware/course material;
 - generated build, test, benchmark, and toy-binary outputs;

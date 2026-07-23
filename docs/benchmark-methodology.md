@@ -615,8 +615,9 @@ Patch 055 implements the first higher-resolution runner at
 - diagnostic-only campaign specifications with `frozen:false` and
   `publication_eligible:false`;
 - hashed retained runner, campaign-specification, tool, target, and timer-probe
-  files, with tool, target, and probe execution through byte-identical
-  write-sealed Linux `memfd` copies;
+  files, with tool and probe execution through byte-identical executable
+  write-sealed Linux `memfd` copies and target-byte delivery through a byte-
+  identical non-executable `MFD_NOEXEC_SEAL` memfd carrying `F_SEAL_EXEC`;
 - declared version reconciliation against retained version-command output;
 - monotonic nanosecond wall timing and Linux `wait4` user, system, maximum RSS,
   fault, and context-switch measurements for the selected child; the counters
@@ -680,7 +681,7 @@ This matrix is diagnostic sampling, not a representative population and not a
 publication corpus. Compiler versions and auxiliary toolchain programs remain
 part of the recorded environment stratum. Requested `ET_DYN` roles are not
 release-facing PIE/DSO truth. Baseline comparisons may begin only after Patch
-057 defines commands, output scope, duplicates, alignment, and failure handling
+058 defines commands, output scope, duplicates, alignment, and failure handling
 for each tool.
 
 ## Sprint 11 Patch 057 integrity correction
@@ -699,3 +700,33 @@ of accepting every checksummed regular file. Staging cleanup and explicit corpus
 removal are verified operations. These corrections invalidate earlier Patch 056
 diagnostic rows that depended on the weaker execution or membership model; any
 new campaign receives a distinct identifier.
+
+## Sprint 11 Patch 058 baseline normalization
+
+Patch 058 introduces versioned diagnostic adapters for ROPgadget, Ropper, and
+ropr. Each condition retains native stdout and stderr as the primary evidence.
+Normalization runs afterward and is accepted only when the exact task command,
+tool executable and version output, target, stream hashes and sizes, capture
+limits, and adapter source identity agree.
+
+The initial shared relation is exact `pop rdi; ret`. Reports preserve:
+
+```text
+tool-native records and duplicates
+unique tool-native records
+return-terminated records and sites
+exact pop-rdi-return records
+unique exact pop-rdi-return relations
+binary presence of represented rdi argument control
+```
+
+These populations are not interchangeable with x64lens raw, exact, semantic,
+unknown, or scored counts. The normalized artifacts contain no unlabeled
+`gadget_count`. A parser rejection, output-limit event, nonzero exit, signal, or
+timeout remains a failed diagnostic row and is not converted into zero coverage.
+
+The controlled fixtures establish parser behavior for represented native syntax,
+not universal baseline compatibility. Every baseline version admitted to a
+campaign must retain its native output and pass the same identity and adversarial
+parsing gates. Sprint 15 remains the command/task freeze and Sprint 17 remains
+the coverage-reconciliation campaign.

@@ -141,7 +141,8 @@ Diagnostic measurement may begin before corpus and method freeze when its purpos
 
 ## Sprint 11 diagnostic-row integrity rule
 
-Each diagnostic process execution uses write-sealed tool and target bytes bound
+Each diagnostic process execution uses executable write-sealed tool bytes and
+non-executable `MFD_NOEXEC_SEAL` target bytes carrying `F_SEAL_EXEC`, both bound
 to hashed retained files, and records a resolvable campaign-relative replay
 command, task/profile identity, phase, order, timer-floor classification,
 wall/user/system time, `wait4` maximum RSS, output size and hashes, exit or
@@ -175,3 +176,13 @@ command record must show how the requested linker was selected. This does not
 prove immunity to transient mutation by an unrelated same-UID writer or capture
 unbundled auxiliary compiler programs; those boundaries remain explicit until
 the Sprint 15 campaign authority adopts a stronger execution-input model.
+
+## Baseline-normalization evidence rule
+
+Cross-tool comparison requires retained native output plus a versioned adapter
+and task authority. Tool-native records, unique records, exact normalized
+relations, x64lens evidence-layer counts, timing, RSS, and output size are
+separate results. Adapter failure is preserved as a failed diagnostic condition;
+it is not evidence of zero baseline coverage. Patch 058's exact
+`pop rdi; ret` relation is a bounded reconciliation surface, not a claim that
+the compared tools perform identical work.

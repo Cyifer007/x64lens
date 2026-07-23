@@ -1,0 +1,8 @@
+ROP gadgets
+===========
+0x0000000000401000: pop rdi; ret;
+0x0000000000401000: pop rdi; ret;
+0x0000000000401010: pop rax; ret;
+0x0000000000401020: pop rdi; nop; ret;
+0x0000000000401030: ret 0x10;
+==> Found 4 gadgets in 0.001 seconds

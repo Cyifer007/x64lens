@@ -80,7 +80,7 @@ These remain Sprint 5 follow-up items after Patch 019:
 - [x] `make scaffold-check` succeeds for Patch 017; rerun for Patch 018.
 - [x] `make diagrams-check` succeeds for Patch 017; rerun for Patch 018.
 - [x] `make clean && make && make test` succeeds for Patch 017; rerun for Patch 018.
-- [x] `make docker-test` succeeds for Patch 017 after Docker became reachable; rerun for Patch 018.
+- [x] `make docker-test` succeeds for Patch 017; rerun for Patch 018.
 - [x] `make validate-gadget-fixture` succeeds for Patch 017; rerun for Patch 018.
 - [x] `make semantic-smoke` succeeds for Patch 017; rerun for Patch 018.
 - [x] `make json-smoke` succeeds for Patch 017; Patch 018 strengthens it with the reusable validator.

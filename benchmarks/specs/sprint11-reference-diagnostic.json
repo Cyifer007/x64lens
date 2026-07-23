@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "campaign_id": "s11-p055-reference-diagnostic",
   "evidence_class": "diagnostic",
   "frozen": false,
@@ -77,5 +77,9 @@
       "expected_report_command": "analyze",
       "output_scope": "schema 0.2.0 analysis report produced through the analyze command"
     }
-  ]
+  ],
+  "capture_limits": {
+    "maximum_stdout_bytes": 16777216,
+    "maximum_stderr_bytes": 1048576
+  }
 }

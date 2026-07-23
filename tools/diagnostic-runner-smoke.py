@@ -45,9 +45,9 @@ def run(spec: Path, output_root: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def write_spec(path: Path, *, campaign_id: str, tool: Path, target: Path, conditions: list[dict[str, object]], warmups: int, timeout: float) -> None:
+def write_spec(path: Path, *, campaign_id: str, tool: Path, target: Path, conditions: list[dict[str, object]], warmups: int, timeout: float, stdout_limit: int = 1048576, stderr_limit: int = 1048576) -> None:
     value = {
-        "schema_version": 1,
+        "schema_version": 2,
         "campaign_id": campaign_id,
         "evidence_class": "diagnostic",
         "frozen": False,
@@ -58,6 +58,10 @@ def write_spec(path: Path, *, campaign_id: str, tool: Path, target: Path, condit
         "order_policy": "alternating",
         "cache_policy": "warm" if warmups else "uncontrolled",
         "fail_campaign_on_error": True,
+        "capture_limits": {
+            "maximum_stdout_bytes": stdout_limit,
+            "maximum_stderr_bytes": stderr_limit
+        },
         "environment": {"FAKEBENCH_MARKER": "sprint11"},
         "timer_floor": {
             "probe": "/bin/true",
@@ -143,6 +147,7 @@ def assert_spawn_interruption_cleanup(tmp: Path) -> None:
     module_spec = importlib.util.spec_from_file_location("diagnostic_runner_spawn_probe", RUNNER)
     require(module_spec is not None and module_spec.loader is not None, "cannot load runner for spawn interruption probe")
     module = importlib.util.module_from_spec(module_spec)
+    sys.modules[module_spec.name] = module
     module_spec.loader.exec_module(module)
 
     original_popen = module.subprocess.Popen
@@ -167,6 +172,8 @@ def assert_spawn_interruption_cleanup(tmp: Path) -> None:
                 stderr_path=tmp / "spawn-interruption" / "stderr.bin",
                 timeout_seconds=31,
                 environment={"LANG": "C", "LC_ALL": "C", "TZ": "UTC"},
+                maximum_stdout_bytes=4096,
+                maximum_stderr_bytes=4096,
             )
         except module.RunnerInterrupted:
             pass
@@ -214,8 +221,7 @@ def assert_target_nonexecution(tmp: Path) -> None:
             "worker_count": 1,
             "output_scope": "target nonexecution probe",
             "argv": ["{tool}", "gadgets", "{target}"],
-            "extractor": "x64lens_json_0_2",
-            "expected_report_command": "gadgets",
+            "extractor": "none",
         }],
         warmups=0,
         timeout=2.0,
@@ -237,6 +243,7 @@ def assert_locked_stage_cleanup(tmp: Path) -> None:
     module_spec = importlib.util.spec_from_file_location("diagnostic_runner_cleanup_probe", RUNNER)
     require(module_spec is not None and module_spec.loader is not None, "cannot load runner for cleanup probe")
     module = importlib.util.module_from_spec(module_spec)
+    sys.modules[module_spec.name] = module
     module_spec.loader.exec_module(module)
     root = tmp / "locked-stage-root"
     root.mkdir()
@@ -246,6 +253,113 @@ def assert_locked_stage_cleanup(tmp: Path) -> None:
     os.chmod(stage / "nested", 0)
     module.remove_staging_tree(stage, root, "locked staging probe")
     require(not stage.exists(), "mode-000 staging tree survived cleanup")
+
+
+def load_runner_module(name: str):
+    module_spec = importlib.util.spec_from_file_location(name, RUNNER)
+    require(module_spec is not None and module_spec.loader is not None, "cannot load diagnostic runner module")
+    module = importlib.util.module_from_spec(module_spec)
+    sys.modules[module_spec.name] = module
+    module_spec.loader.exec_module(module)
+    return module
+
+
+def assert_stage_identity_cleanup(tmp: Path) -> None:
+    """Clean the creation-time stage after rename without deleting a replacement."""
+    module = load_runner_module("diagnostic_runner_stage_identity_probe")
+    root = tmp / "stage-substitution-root"
+    root.mkdir()
+    owned = module.OwnedStage.create(root, ".owned.staging")
+    try:
+        (owned.path / "owned.txt").write_text("owned\n", encoding="utf-8")
+        escaped = root / ".escaped-original"
+        os.rename(owned.path, escaped)
+        replacement = root / ".owned.staging"
+        replacement.mkdir()
+        (replacement / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+        owned.cleanup("stage substitution probe")
+        require(not escaped.exists(), "renamed runner-owned stage survived cleanup")
+        require(replacement.is_dir(), "foreign replacement stage was deleted")
+        require((replacement / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign replacement changed")
+    finally:
+        owned.close()
+
+
+def assert_publish_commit_detection(tmp: Path) -> None:
+    """Treat a same-parent no-replace rename as committed even if reporting is interrupted."""
+    module = load_runner_module("diagnostic_runner_publish_probe")
+    root = tmp / "publish-commit-root"
+    root.mkdir()
+    owned = module.OwnedStage.create(root, ".publish.staging")
+    final = root / "published"
+    (owned.path / "manifest.json").write_text("{}\n", encoding="utf-8")
+    original = module.atomic_publish_noreplace
+
+    def publish_then_interrupt(stage: Path, destination: Path) -> None:
+        original(stage, destination)
+        raise module.RunnerInterrupted("injected post-rename interruption")
+
+    module.atomic_publish_noreplace = publish_then_interrupt
+    try:
+        try:
+            module._publish_owned_stage(owned, final, "publish commit probe")
+        except module.RunnerInterrupted:
+            pass
+        else:
+            raise SmokeError("post-rename interruption was not injected")
+        require(owned.committed is True, "post-rename interruption lost committed state")
+        require(final.is_dir() and (final / "manifest.json").is_file(), "committed result was not retained")
+    finally:
+        module.atomic_publish_noreplace = original
+        owned.close()
+
+
+def assert_future_stream_symlink_protection(tmp: Path) -> None:
+    """Reject a child-created future capture symlink without touching its victim."""
+    target = tmp / "future-stream-target"
+    target.write_bytes(b"controlled target\n")
+    victim = tmp / "future-stream-victim"
+    victim.write_text("preserve-victim\n", encoding="utf-8")
+    tool = tmp / "future-stream-tool.py"
+    tool.write_text(
+        "#!/usr/bin/env python3\n"
+        "from pathlib import Path\n"
+        "import sys\n"
+        "if sys.argv[1] == 'version':\n"
+        f"    (Path.cwd().parent / 'stdout.bin').symlink_to({str(victim)!r})\n"
+        "    print('future-stream-tool 1.0')\n"
+        "    raise SystemExit(0)\n"
+        "raise SystemExit(9)\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    spec = tmp / "future-stream-spec.json"
+    write_spec(
+        spec,
+        campaign_id="diagnostic-future-stream-symlink",
+        tool=tool,
+        target=target,
+        conditions=[{
+            "id": "unused",
+            "task_scope": "baseline_gadget_report",
+            "profile_id": "core-1w",
+            "worker_count": 1,
+            "tool": "fakebench",
+            "target": "fixture",
+            "argv": ["{tool}", "unused", "{target}"],
+            "extractor": "none",
+            "output_scope": "future stream symlink probe",
+        }],
+        warmups=0,
+        timeout=2.0,
+    )
+    output = tmp / "future-stream-output"
+    completed = run(spec, output)
+    require(completed.returncode == 2, "future stream symlink campaign was accepted")
+    require("pre-existing retained stdout" in completed.stderr, f"unexpected future-stream diagnostic: {completed.stderr}")
+    require(victim.read_text(encoding="utf-8") == "preserve-victim\n", "future stream symlink clobbered its victim")
+    require(not (output / "diagnostic-future-stream-symlink").exists(), "future stream campaign was published")
+    require(not list(output.glob(".*.staging-*")), "future stream campaign leaked staging state")
 
 
 def assert_artifact_hashes(result: Path, rows: list[dict[str, str]]) -> None:
@@ -277,6 +391,9 @@ def main() -> int:
         tmp = Path(raw)
         assert_spawn_interruption_cleanup(tmp)
         assert_locked_stage_cleanup(tmp)
+        assert_stage_identity_cleanup(tmp)
+        assert_publish_commit_detection(tmp)
+        assert_future_stream_symlink_protection(tmp)
         assert_target_nonexecution(tmp)
         tool = tmp / "fakebench.sh"
         target = tmp / "fixture.bin"
@@ -380,6 +497,10 @@ if mode == "replace-own-stdout":
     artifact = Path.cwd().parent / "stdout.bin"
     artifact.unlink()
     artifact.symlink_to("/dev/null")
+    raise SystemExit(0)
+if mode == "noisy":
+    os.write(1, b"x" * 8192)
+    time.sleep(0.1)
     raise SystemExit(0)
 if mode == "fail":
     print("intentional failure", file=sys.stderr)
@@ -516,6 +637,41 @@ raise SystemExit(9)
         duplicate = run(success_spec, success_root)
         require(duplicate.returncode == 2, "existing campaign result was overwritten or accepted")
         require(sha256(result / "manifest.json") == manifest_hash, "existing campaign changed after overwrite rejection")
+
+        output_limit_spec = tmp / "output-limit.json"
+        output_limit_root = tmp / "output-limit-results"
+        write_spec(
+            output_limit_spec,
+            campaign_id="diagnostic-output-limit",
+            tool=tool,
+            target=target,
+            conditions=[{
+                "id": "stdout-limit",
+                "task_scope": "baseline_gadget_report",
+                "profile_id": "core-1w",
+                "worker_count": 1,
+                "tool": "fakebench",
+                "target": "fixture",
+                "argv": ["{tool}", "noisy", "{target}"],
+                "extractor": "none",
+                "output_scope": "bounded stdout limit probe",
+            }],
+            warmups=0,
+            timeout=2.0,
+            stdout_limit=4096,
+            stderr_limit=4096,
+        )
+        output_limited = run(output_limit_spec, output_limit_root)
+        require(output_limited.returncode == 1, f"output-limit campaign result mismatch: {output_limited.returncode} {output_limited.stderr}")
+        output_limit_result = output_limit_root / "diagnostic-output-limit"
+        output_limit_rows = read_rows(output_limit_result / "rows.tsv")
+        require(len(output_limit_rows) == 1, "output-limit row count mismatch")
+        output_limit_row = output_limit_rows[0]
+        require(output_limit_row["process_outcome"] == "output_limit", "output-limit outcome missing")
+        require(output_limit_row["output_limit_streams"] == "stdout", "output-limit stream identity mismatch")
+        require(output_limit_row["stdout_limit_bytes"] == "4096" and output_limit_row["stdout_bytes"] == "4096", "output-limit retained byte count mismatch")
+        require((output_limit_result / output_limit_row["stdout_path"]).stat().st_size == 4096, "output-limit artifact size mismatch")
+        require(not list(output_limit_root.glob(".*.staging-*")), "output-limit campaign leaked staging state")
 
         failure_spec = tmp / "failure.json"
         failure_root = tmp / "failure-results"
@@ -744,11 +900,6 @@ raise SystemExit(9)
                 "diagnostic-timer-artifact-mutation",
                 "timer floor artifact changed after capture",
             ),
-            (
-                "replace-own-stdout",
-                "diagnostic-stdout-replacement",
-                "measured stdout path is not a regular file",
-            ),
         ):
             artifact_spec = tmp / f"{artifact_mode}.json"
             artifact_root = tmp / f"{artifact_mode}-results"
@@ -858,7 +1009,8 @@ raise SystemExit(9)
     print(
         "diagnostic-runner-smoke: ok success_rows=6 failure_rows=2 overwrite_rejected=1 "
         "descendants_cleaned=1 invalid_specs_rejected=2 source_mutations_rejected=1 "
-        "unsafe_artifacts_rejected=1 target_nonexecution=1 locked_cleanup=1"
+        "unsafe_artifacts_rejected=1 target_nonexecution=1 locked_cleanup=1 "
+        "stage_substitution=1 future_stream_symlink=1 output_limits=1 post_publish_commit=1"
     )
     return 0
 

@@ -319,11 +319,13 @@ A sprint closes only when its plan, retrospective, active roadmap, release miles
 ## Diagnostic runner evidence rule
 
 A high-resolution diagnostic campaign must retain the exact specification and
-runner source, preserve source and retained-file hashes, and execute
-byte-identical tool and target copies held in write-sealed Linux `memfd`
-objects. The retained campaign-relative replay command must resolve from its
-recorded working directory to the corresponding retained files; the manifest
-must disclose the sealed execution-path model. Every warmup, measured, failed,
+runner source, preserve source and retained-file hashes, execute byte-identical
+tool copies held in executable write-sealed Linux `memfd` objects, and pass
+byte-identical target copies through non-executable `MFD_NOEXEC_SEAL` memfds
+carrying `F_SEAL_EXEC`. The retained campaign-relative replay command must
+resolve from its recorded working directory to the corresponding retained
+files; the manifest must disclose the sealed execution-path model. Every
+warmup, measured, failed,
 signaled, timed-out, or extractor-failed row is retained. Tool output must be
 captured before post-process extraction so parsing work does not contaminate
 child timing.
@@ -419,3 +421,13 @@ protected transaction, cleanup failures cannot be ignored, and an explicit
 clean target may remove only the specification-derived corpus identity beneath
 the configured output root after validating its manifest. Raw recursive deletion
 of a caller-selected corpus path is prohibited.
+
+## Baseline-adapter evidence rule
+
+External baseline normalization is development infrastructure and must remain
+separate from measurement and analyzer authority. An adapter must authenticate
+its task definition, exact command, tool/version identity, target, native
+stdout/stderr, capture limits, and adapter source before emitting normalized
+facts. Native output and duplicates remain retained. Uncategorized output fails
+closed, and no tool-specific total may be relabeled as an unlabeled cross-tool
+`gadget_count`.

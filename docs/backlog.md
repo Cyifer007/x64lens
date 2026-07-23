@@ -131,7 +131,10 @@ later sprints rather than Patch 037:
 - [x] Patch 057 runner/corpus integrity correction: execution-sealed target
   inputs, exact workspace/member closure, checked cleanup, safe clean path, and
   non-root oracle parity.
-- [ ] Baseline adapters, normalized task definitions, and version locks.
+- [x] Patch 058 task-authority v2 and bounded ROPgadget, Ropper, and ropr
+  native-output adapters with exact command/version/target/output identity,
+  duplicate-preserving tool-specific metrics, and exact `pop rdi; ret`
+  normalization.
 - [ ] Provisional corpus diagnostic campaign and development gap register.
 - [x] Diagnostic rows isolated from future frozen campaigns.
 

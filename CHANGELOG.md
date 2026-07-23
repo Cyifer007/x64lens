@@ -8,6 +8,10 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 11 Patch 058 task-normalized ROPgadget, Ropper, and ropr native-output adapters with exact command/version/tool/target/output identity, bounded streams and parser state, late input reauthentication, duplicate-preserving tool-specific metrics, an explicit unavailable raw-byte relation, and an exact `pop rdi; ret` relation.
+- Regression coverage for output-limit rows, future capture-path symlinks, staging substitution, early interruption, post-publication commit recognition, retained corpus output/log limits, conservative baseline parsing, and absence of an unlabeled cross-tool gadget count.
+- ADR 0044, task-authority version 2, `make baseline-output-adapter-smoke`, and the Patch 058 validation record.
+
 - Sprint 11 Patch 057 diagnostic-integrity correction: non-executable target
   memfds sealed against execute-mode changes, verified staging cleanup, exact
   compiler-workspace and published-member closure, and a manifest-derived safe

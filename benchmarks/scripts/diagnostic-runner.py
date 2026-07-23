@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import ctypes
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import errno
 import fcntl
@@ -24,6 +25,7 @@ from pathlib import Path
 import platform
 import re
 import resource
+import selectors
 import shutil
 import signal
 import statistics
@@ -34,7 +36,7 @@ import time
 from typing import Any, Iterable
 import uuid
 
-RUNNER_SCHEMA_VERSION = 1
+RUNNER_SCHEMA_VERSION = 2
 EVIDENCE_CLASS = "diagnostic"
 PUBLICATION_ELIGIBLE = False
 MFD_NOEXEC_SEAL_FLAG = 0x0008
@@ -52,6 +54,8 @@ TASK_SCOPES = {
 EXTRACTORS = {"none", "x64lens_json_0_2"}
 ORDER_POLICIES = {"listed", "alternating"}
 CACHE_POLICIES = {"warm", "uncontrolled"}
+SIGNALS = {signal.SIGINT, signal.SIGTERM}
+MAX_CAPTURE_BYTES = 256 * 1024 * 1024
 RESERVED_ENVIRONMENT_KEYS = {
     "HOME",
     "TMPDIR",
@@ -104,6 +108,9 @@ ROW_FIELDS = (
     "command_cwd",
     "stdout_path",
     "stderr_path",
+    "stdout_limit_bytes",
+    "stderr_limit_bytes",
+    "output_limit_streams",
     "start_monotonic_ns",
     "end_monotonic_ns",
     "wall_time_ns",
@@ -156,6 +163,155 @@ def require(condition: bool, message: str) -> None:
         raise RunnerError(message)
 
 
+@dataclass
+class OwnedStage:
+    """Creation-time identity for one same-parent staging directory.
+
+    Cleanup follows the held directory descriptor and removes only the directory
+    whose device/inode identity was captured at creation.  A same-UID tool may
+    still create unrelated state in the output root; that foreign state is never
+    mistaken for, or deleted as, the runner-owned transaction.
+    """
+
+    path: Path
+    parent: Path
+    name: str
+    parent_fd: int
+    directory_fd: int
+    device: int
+    inode: int
+    committed: bool = False
+
+    @classmethod
+    def create(cls, parent: Path, name: str) -> "OwnedStage":
+        resolved_parent = parent.resolve(strict=True)
+        require(Path(name).name == name and name not in {"", ".", ".."}, "unsafe staging directory name")
+        parent_fd = os.open(
+            resolved_parent,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            os.mkdir(name, 0o700, dir_fd=parent_fd)
+            directory_fd = os.open(
+                name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_fd,
+            )
+            metadata = os.fstat(directory_fd)
+            require(stat.S_ISDIR(metadata.st_mode), "created staging object is not a directory")
+            return cls(
+                path=resolved_parent / name,
+                parent=resolved_parent,
+                name=name,
+                parent_fd=parent_fd,
+                directory_fd=directory_fd,
+                device=metadata.st_dev,
+                inode=metadata.st_ino,
+            )
+        except BaseException:
+            os.close(parent_fd)
+            raise
+
+    @classmethod
+    def adopt(cls, path: Path, expected_parent: Path, label: str) -> "OwnedStage":
+        parent = expected_parent.resolve(strict=True)
+        candidate = Path(os.path.abspath(path))
+        require(candidate.parent == parent, f"{label} is outside its expected parent")
+        metadata = os.lstat(candidate)
+        require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
+        parent_fd = os.open(
+            parent,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            directory_fd = os.open(
+                candidate.name,
+                os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_fd,
+            )
+            observed = os.fstat(directory_fd)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"{label} changed while being adopted",
+            )
+            return cls(candidate, parent, candidate.name, parent_fd, directory_fd, metadata.st_dev, metadata.st_ino)
+        except BaseException:
+            os.close(parent_fd)
+            raise
+
+    def close(self) -> None:
+        if self.directory_fd >= 0:
+            os.close(self.directory_fd)
+            self.directory_fd = -1
+        if self.parent_fd >= 0:
+            os.close(self.parent_fd)
+            self.parent_fd = -1
+
+    def require_named_identity(self, label: str) -> None:
+        metadata = os.stat(self.name, dir_fd=self.parent_fd, follow_symlinks=False)
+        require(
+            stat.S_ISDIR(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
+            f"{label} path no longer names the runner-owned staging directory",
+        )
+
+    def current_owned_name(self, label: str) -> str:
+        matches: list[str] = []
+        with os.scandir(self.parent_fd) as entries:
+            for entry in entries:
+                try:
+                    metadata = entry.stat(follow_symlinks=False)
+                except FileNotFoundError:
+                    continue
+                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode):
+                    matches.append(entry.name)
+        require(len(matches) == 1, f"{label} creation-time identity is not reachable below its expected parent")
+        return matches[0]
+
+    def cleanup(self, label: str) -> None:
+        _clear_directory_fd(self.directory_fd, label, self.device)
+        current_name = self.current_owned_name(label)
+        metadata = os.stat(current_name, dir_fd=self.parent_fd, follow_symlinks=False)
+        require(
+            (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
+            f"{label} changed before final removal",
+        )
+        os.rmdir(current_name, dir_fd=self.parent_fd)
+        os.fsync(self.parent_fd)
+        with os.scandir(self.parent_fd) as entries:
+            for entry in entries:
+                try:
+                    observed = entry.stat(follow_symlinks=False)
+                except FileNotFoundError:
+                    continue
+                require(
+                    (observed.st_dev, observed.st_ino) != (self.device, self.inode),
+                    f"{label} survived cleanup under {entry.name}",
+                )
+
+
+def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
+    """Commit one owned stage; a pending signal observes committed=True."""
+    stage.require_named_identity(label)
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    try:
+        try:
+            atomic_publish_noreplace(stage.path, final)
+        except BaseException:
+            try:
+                metadata = os.stat(final, follow_symlinks=False)
+            except OSError:
+                pass
+            else:
+                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode):
+                    stage.committed = True
+            raise
+        else:
+            stage.committed = True
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+
+
 def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
     """Remove one owned staging directory without following symlinks."""
     os.fchmod(directory_fd, 0o700)
@@ -186,34 +342,12 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
 
 
 def remove_staging_tree(path: Path, expected_parent: Path, label: str) -> None:
-    """Delete an exact same-parent staging tree and verify complete removal."""
-    parent = expected_parent.resolve(strict=True)
-    candidate = Path(os.path.abspath(path))
-    require(candidate.parent == parent, f"{label} is outside its expected parent")
-    metadata = os.lstat(candidate)
-    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
-    parent_fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0))
+    """Compatibility wrapper for tests that adopt and remove one real tree."""
+    owned = OwnedStage.adopt(path, expected_parent, label)
     try:
-        os.chmod(candidate.name, 0o700, dir_fd=parent_fd, follow_symlinks=False)
-        directory_fd = os.open(
-            candidate.name,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            dir_fd=parent_fd,
-        )
-        try:
-            observed = os.fstat(directory_fd)
-            require(
-                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
-                f"{label} changed before cleanup",
-            )
-            _clear_directory_fd(directory_fd, label, metadata.st_dev)
-        finally:
-            os.close(directory_fd)
-        os.rmdir(candidate.name, dir_fd=parent_fd)
-        os.fsync(parent_fd)
+        owned.cleanup(label)
     finally:
-        os.close(parent_fd)
-    require(not os.path.lexists(candidate), f"{label} survived cleanup")
+        owned.close()
 
 
 def positive_int(value: Any, name: str, *, minimum: int = 1) -> int:
@@ -782,10 +916,33 @@ def process_group_exists(pgid: int) -> bool:
 
 
 def direct_child_pids() -> set[int]:
-    """Return children currently parented to this Linux subreaper."""
+    """Return current children using the task file or a bounded /proc scan."""
     path = Path(f"/proc/self/task/{os.getpid()}/children")
     try:
         text = path.read_text(encoding="ascii").strip()
+    except FileNotFoundError:
+        proc = Path("/proc")
+        require(proc.is_dir(), "Linux /proc child enumeration is unavailable")
+        parent_pid = os.getpid()
+        children: set[int] = set()
+        for candidate in proc.iterdir():
+            if not candidate.name.isdigit():
+                continue
+            try:
+                status_text = (candidate / "status").read_text(encoding="ascii", errors="strict")
+            except (FileNotFoundError, ProcessLookupError, PermissionError, OSError, UnicodeError):
+                continue
+            ppid: int | None = None
+            for line in status_text.splitlines():
+                if line.startswith("PPid:"):
+                    try:
+                        ppid = int(line.split(":", 1)[1].strip())
+                    except ValueError as exc:
+                        raise RunnerError(f"invalid PPid in {candidate}/status") from exc
+                    break
+            if ppid == parent_pid:
+                children.add(int(candidate.name))
+        return children
     except OSError as exc:
         raise RunnerError(f"cannot inspect Linux child process state: {exc}") from exc
     if not text:
@@ -944,6 +1101,51 @@ def best_effort_reap_main(pid: int, timeout_seconds: float = 0.5) -> int | None:
     return None
 
 
+def _signal_process_group(pid: int, signum: int) -> None:
+    try:
+        os.killpg(pid, signum)
+    except ProcessLookupError:
+        pass
+
+
+def _open_capture_directory(path: Path, label: str) -> int:
+    path.mkdir(parents=True, exist_ok=True)
+    metadata = os.lstat(path)
+    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
+    directory_fd = os.open(
+        path,
+        os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    observed = os.fstat(directory_fd)
+    require(
+        (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+        f"{label} changed while being opened",
+    )
+    return directory_fd
+
+
+def _persist_captured_artifact(directory_fd: int, name: str, data: bytes, label: str) -> dict[str, Any]:
+    require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    flags = (
+        os.O_RDWR
+        | os.O_CREAT
+        | os.O_EXCL
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    try:
+        fd = os.open(name, flags, 0o600, dir_fd=directory_fd)
+    except FileExistsError as exc:
+        raise RunnerError(f"refusing pre-existing retained {label}: {name}") from exc
+    try:
+        write_all(fd, data)
+        os.fchmod(fd, 0o600)
+        os.fsync(fd)
+        return file_identity_fd(fd)
+    finally:
+        os.close(fd)
+
+
 def execute_process(
     argv: list[str],
     *,
@@ -952,31 +1154,48 @@ def execute_process(
     stderr_path: Path,
     timeout_seconds: float,
     environment: dict[str, str],
+    maximum_stdout_bytes: int,
+    maximum_stderr_bytes: int,
     pass_fds: tuple[int, ...] = (),
 ) -> dict[str, Any]:
+    """Execute one measured child with exact bounded parent-side capture."""
     global ACTIVE_PROCESS_GROUP, SPAWNING_PROCESS
     require(argv and Path(argv[0]).is_absolute(), "measured executable path must be absolute")
+    require(stdout_path.parent == stderr_path.parent, "stdout and stderr must share one capture directory")
+    positive_int(maximum_stdout_bytes, "maximum_stdout_bytes")
+    positive_int(maximum_stderr_bytes, "maximum_stderr_bytes")
+    require(maximum_stdout_bytes <= MAX_CAPTURE_BYTES, "maximum_stdout_bytes exceeds the runner bound")
+    require(maximum_stderr_bytes <= MAX_CAPTURE_BYTES, "maximum_stderr_bytes exceeds the runner bound")
     cwd.mkdir(parents=True, exist_ok=True)
-    stdout_path.parent.mkdir(parents=True, exist_ok=True)
-    stderr_path.parent.mkdir(parents=True, exist_ok=True)
+    capture_fd = _open_capture_directory(stdout_path.parent, "capture directory")
     require(not direct_child_pids(), "runner has unrelated child processes before measurement")
     start_ns = time.monotonic_ns()
-    with (
-        open(os.devnull, "rb") as stdin_handle,
-        stdout_path.open("wb") as stdout_handle,
-        stderr_path.open("wb") as stderr_handle,
-    ):
-        process: subprocess.Popen[bytes] | None = None
-        pid: int | None = None
-        SPAWNING_PROCESS = True
-        try:
+    process: subprocess.Popen[bytes] | None = None
+    pid: int | None = None
+    selector = selectors.DefaultSelector()
+    status: int | None = None
+    usage: resource.struct_rusage | None = None
+    end_ns: int | None = None
+    timed_out = False
+    termination_reason: str | None = None
+    output_limit_streams: list[str] = []
+    term_deadline: float | None = None
+    kill_deadline: float | None = None
+    cleanup_required = False
+    descendants_reaped = 0
+    buffers = {"stdout": bytearray(), "stderr": bytearray()}
+    stream_limits = {"stdout": maximum_stdout_bytes, "stderr": maximum_stderr_bytes}
+    streams: dict[int, tuple[str, Any]] = {}
+    try:
+        with open(os.devnull, "rb") as stdin_handle:
+            SPAWNING_PROCESS = True
             try:
                 process = subprocess.Popen(
                     argv,
                     cwd=cwd,
                     stdin=stdin_handle,
-                    stdout=stdout_handle,
-                    stderr=stderr_handle,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                     env=environment,
                     close_fds=True,
                     pass_fds=pass_fds,
@@ -984,48 +1203,122 @@ def execute_process(
                 )
             except OSError as exc:
                 raise RunnerError(f"cannot start measured command {argv[0]}: {exc}") from exc
-
             pid = process.pid
             ACTIVE_PROCESS_GROUP = pid
             SPAWNING_PROCESS = False
             if INTERRUPTED_BY is not None:
                 raise RunnerInterrupted(f"interrupted by {signal.Signals(INTERRUPTED_BY).name}")
-            status, usage, timed_out = wait_for_process(pid, timeout_seconds)
-            end_ns = time.monotonic_ns()
-            group_cleanup_required, group_descendants_reaped = cleanup_process_group(pid)
-            adopted_cleanup_required, adopted_descendants_reaped = cleanup_adopted_descendants()
-            cleanup_required = group_cleanup_required or adopted_cleanup_required
-            descendants_reaped = group_descendants_reaped + adopted_descendants_reaped
-        except BaseException:
-            SPAWNING_PROCESS = False
-            if pid is not None:
-                try:
-                    os.killpg(pid, signal.SIGKILL)
-                except OSError:
-                    pass
-                try:
-                    emergency_status = best_effort_reap_main(pid)
-                    if emergency_status is not None and process is not None:
-                        process.returncode = os.waitstatus_to_exitcode(emergency_status)
-                except OSError:
-                    pass
-                try:
-                    cleanup_process_group(pid)
-                except RunnerError:
-                    pass
-                try:
-                    cleanup_adopted_descendants()
-                except RunnerError:
-                    pass
-            raise
-        finally:
-            SPAWNING_PROCESS = False
-            ACTIVE_PROCESS_GROUP = None
+            require(process.stdout is not None and process.stderr is not None, "measured capture pipes are missing")
+            for label, stream in (("stdout", process.stdout), ("stderr", process.stderr)):
+                descriptor = stream.fileno()
+                os.set_blocking(descriptor, False)
+                streams[descriptor] = (label, stream)
+                selector.register(stream, selectors.EVENT_READ, descriptor)
 
-        assert process is not None
-        process.returncode = os.waitstatus_to_exitcode(status)
-        stdout_identity = capture_open_artifact_identity(stdout_handle, stdout_path, "measured stdout")
-        stderr_identity = capture_open_artifact_identity(stderr_handle, stderr_path, "measured stderr")
+            deadline = time.monotonic() + timeout_seconds
+            cleanup_done = False
+            while status is None or selector.get_map():
+                if INTERRUPTED_BY is not None:
+                    raise RunnerInterrupted(f"interrupted by {signal.Signals(INTERRUPTED_BY).name}")
+                now = time.monotonic()
+                if status is None:
+                    try:
+                        waited, observed_status, observed_usage = os.wait4(pid, os.WNOHANG)
+                    except InterruptedError:
+                        waited = 0
+                    if waited == pid:
+                        status = observed_status
+                        usage = observed_usage
+                        end_ns = time.monotonic_ns()
+
+                if status is None and termination_reason is None and now >= deadline:
+                    timed_out = True
+                    termination_reason = "timeout"
+                    _signal_process_group(pid, signal.SIGTERM)
+                    term_deadline = now + 0.15
+                    kill_deadline = now + 2.15
+                if status is None and term_deadline is not None and now >= term_deadline:
+                    _signal_process_group(pid, signal.SIGKILL)
+                    term_deadline = None
+                if status is None and kill_deadline is not None and now >= kill_deadline:
+                    raise RunnerError(f"measured process {pid} did not reap after SIGKILL")
+
+                selected = selector.select(0.01 if status is None else 0)
+                for key, _events in selected:
+                    descriptor = key.data
+                    label, stream = streams[descriptor]
+                    buffer = buffers[label]
+                    limit = stream_limits[label]
+                    room = limit - len(buffer)
+                    try:
+                        chunk = os.read(descriptor, min(65536, max(1, room + 1)))
+                    except BlockingIOError:
+                        continue
+                    if not chunk:
+                        selector.unregister(stream)
+                        stream.close()
+                        continue
+                    if len(chunk) > room:
+                        if room > 0:
+                            buffer.extend(chunk[:room])
+                        if label not in output_limit_streams:
+                            output_limit_streams.append(label)
+                        if termination_reason is None:
+                            termination_reason = "output_limit"
+                            _signal_process_group(pid, signal.SIGTERM)
+                            term_deadline = time.monotonic() + 0.15
+                            kill_deadline = time.monotonic() + 2.15
+                    else:
+                        buffer.extend(chunk)
+
+                if status is not None and not cleanup_done:
+                    group_cleanup_required, group_descendants_reaped = cleanup_process_group(pid)
+                    adopted_cleanup_required, adopted_descendants_reaped = cleanup_adopted_descendants()
+                    cleanup_required = group_cleanup_required or adopted_cleanup_required
+                    descendants_reaped = group_descendants_reaped + adopted_descendants_reaped
+                    cleanup_done = True
+                if status is not None and not selector.get_map():
+                    break
+
+            assert status is not None and usage is not None and end_ns is not None and process is not None
+            process.returncode = os.waitstatus_to_exitcode(status)
+    except BaseException:
+        SPAWNING_PROCESS = False
+        if capture_fd >= 0:
+            os.close(capture_fd)
+            capture_fd = -1
+        if pid is not None:
+            _signal_process_group(pid, signal.SIGKILL)
+            try:
+                emergency_status = best_effort_reap_main(pid)
+                if emergency_status is not None and process is not None:
+                    process.returncode = os.waitstatus_to_exitcode(emergency_status)
+            except OSError:
+                pass
+            try:
+                cleanup_process_group(pid)
+            except RunnerError:
+                pass
+            try:
+                cleanup_adopted_descendants()
+            except RunnerError:
+                pass
+        raise
+    finally:
+        SPAWNING_PROCESS = False
+        ACTIVE_PROCESS_GROUP = None
+        selector.close()
+        for _label, stream in streams.values():
+            try:
+                stream.close()
+            except OSError:
+                pass
+
+    try:
+        stdout_identity = _persist_captured_artifact(capture_fd, stdout_path.name, bytes(buffers["stdout"]), "stdout")
+        stderr_identity = _persist_captured_artifact(capture_fd, stderr_path.name, bytes(buffers["stderr"]), "stderr")
+    finally:
+        os.close(capture_fd)
 
     exit_code: int | None = None
     signal_number: int | None = None
@@ -1034,7 +1327,9 @@ def execute_process(
     elif os.WIFSIGNALED(status):
         signal_number = os.WTERMSIG(status)
 
-    if timed_out:
+    if termination_reason == "output_limit":
+        process_outcome = "output_limit"
+    elif timed_out:
         process_outcome = "timeout"
     elif signal_number is not None:
         process_outcome = "signal"
@@ -1056,6 +1351,9 @@ def execute_process(
         "major_faults": int(usage.ru_majflt),
         "voluntary_context_switches": int(usage.ru_nvcsw),
         "involuntary_context_switches": int(usage.ru_nivcsw),
+        "stdout_limit_bytes": maximum_stdout_bytes,
+        "stderr_limit_bytes": maximum_stderr_bytes,
+        "output_limit_streams": "|".join(output_limit_streams),
         "stdout_bytes": stdout_identity["size_bytes"],
         "stdout_sha256": stdout_identity["sha256"],
         "stderr_bytes": stderr_identity["size_bytes"],
@@ -1127,6 +1425,24 @@ def parse_spec(path: Path, campaign_override: str | None) -> tuple[dict[str, Any
     if spec["cache_policy"] == "warm":
         require(spec["warmup_runs"] >= 1, "cache_policy=warm requires at least one warmup run")
     require(isinstance(spec.get("fail_campaign_on_error"), bool), "fail_campaign_on_error must be boolean")
+
+    capture_limits = spec.get("capture_limits")
+    require(
+        isinstance(capture_limits, dict)
+        and set(capture_limits) == {"maximum_stdout_bytes", "maximum_stderr_bytes"},
+        "capture_limits must contain maximum_stdout_bytes and maximum_stderr_bytes",
+    )
+    capture_limits["maximum_stdout_bytes"] = positive_int(
+        capture_limits.get("maximum_stdout_bytes"), "capture_limits.maximum_stdout_bytes", minimum=4096
+    )
+    capture_limits["maximum_stderr_bytes"] = positive_int(
+        capture_limits.get("maximum_stderr_bytes"), "capture_limits.maximum_stderr_bytes", minimum=4096
+    )
+    require(
+        capture_limits["maximum_stdout_bytes"] <= MAX_CAPTURE_BYTES
+        and capture_limits["maximum_stderr_bytes"] <= MAX_CAPTURE_BYTES,
+        "capture limit exceeds the runner maximum",
+    )
 
     environment = spec.get("environment", {})
     require(isinstance(environment, dict), "environment must be an object")
@@ -1322,6 +1638,8 @@ def snapshot_inputs(
                 stderr_path=version_dir / "stderr.bin",
                 timeout_seconds=min(5.0, spec["timeout_seconds"]),
                 environment=isolated_child_environment(environment, version_workdir),
+                maximum_stdout_bytes=spec["capture_limits"]["maximum_stdout_bytes"],
+                maximum_stderr_bytes=spec["capture_limits"]["maximum_stderr_bytes"],
                 pass_fds=(tool["execution_fd"],),
             )
             require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool_id}", 0o555)
@@ -1366,6 +1684,8 @@ def timer_floor_campaign(
             stderr_path=sample_dir / "stderr.bin",
             timeout_seconds=min(5.0, spec["timeout_seconds"]),
             environment=isolated_child_environment(environment, sample_dir / "work"),
+            maximum_stdout_bytes=spec["capture_limits"]["maximum_stdout_bytes"],
+            maximum_stderr_bytes=spec["capture_limits"]["maximum_stderr_bytes"],
             pass_fds=(probe["execution_fd"],),
         )
         require_snapshot_identity(probe["snapshot_absolute"], probe, "timer floor probe", 0o555)
@@ -1383,7 +1703,7 @@ def timer_floor_campaign(
     p95 = percentile(wall_values, 0.95)
     reliable_floor = max(clock_resolution, int(math.ceil(p95 * spec["timer_floor"]["threshold_multiplier"])))
     result = {
-        "schema_version": 1,
+        "schema_version": RUNNER_SCHEMA_VERSION,
         "probe_sha256": probe["sha256"],
         "runs": len(samples),
         "threshold_multiplier": spec["timer_floor"]["threshold_multiplier"],
@@ -1522,6 +1842,8 @@ def run_conditions(
                 stderr_path=stderr_path,
                 timeout_seconds=spec["timeout_seconds"],
                 environment=isolated_child_environment(environment, run_workdir),
+                maximum_stdout_bytes=spec["capture_limits"]["maximum_stdout_bytes"],
+                maximum_stderr_bytes=spec["capture_limits"]["maximum_stderr_bytes"],
                 pass_fds=(tool["execution_fd"], target["execution_fd"]),
             )
             require_snapshot_identity(tool["snapshot_absolute"], tool, f"tool {tool['id']}", 0o555)
@@ -1727,6 +2049,8 @@ def build_manifest(
             "warmup_runs": spec["warmup_runs"],
             "measured_runs": spec["measured_runs"],
             "timeout_seconds": spec["timeout_seconds"],
+            "capture_limits": spec["capture_limits"],
+            "output_limit_outcome": "output_limit",
             "order_policy": spec["order_policy"],
             "cache_policy": spec["cache_policy"],
             "failed_rows_retained": True,
@@ -1770,16 +2094,24 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
     runner_source_identity = file_identity(runner_source)
     output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
+    output_root = output_root.resolve(strict=True)
     final = output_root / spec["campaign_id"]
     require(not final.exists(), f"campaign result already exists: {final}")
-    stage = output_root / f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
-    require(not stage.exists(), f"staging path already exists: {stage}")
+    stage_name = f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
+    owned_stage: OwnedStage | None = None
     tools: dict[str, dict[str, Any]] = {}
     targets: dict[str, dict[str, Any]] = {}
     probe: dict[str, Any] | None = None
+    manifest: dict[str, Any] | None = None
+    exit_code = 0
 
     try:
-        stage.mkdir(mode=0o700)
+        previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+        try:
+            owned_stage = OwnedStage.create(output_root, stage_name)
+        finally:
+            signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+        stage = owned_stage.path
         spec_snapshot = stage / "inputs" / "spec" / "campaign.json"
         spec_snapshot.parent.mkdir(parents=True, exist_ok=True)
         spec_snapshot.write_bytes(spec_raw)
@@ -1800,6 +2132,7 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         }
 
         subreaper_enabled = enable_subreaper()
+        require(not direct_child_pids(), "runner started with unrelated child processes")
         environment = command_environment(spec.get("environment", {}))
         tools, targets, probe = snapshot_inputs(spec, spec_path.parent, stage, environment)
         assert probe is not None
@@ -1824,12 +2157,7 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         )
         rows = run_conditions(spec, stage, tools, targets, floor, environment)
         write_rows(stage / "rows.tsv", rows)
-        require_campaign_artifact_identities(
-            stage=stage,
-            tools=tools,
-            timer_floor=floor,
-            rows=rows,
-        )
+        require_campaign_artifact_identities(stage=stage, tools=tools, timer_floor=floor, rows=rows)
         require_campaign_snapshot_identities(
             spec_snapshot=spec_snapshot,
             spec_record=spec_record,
@@ -1856,15 +2184,20 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         )
         write_json(stage / "manifest.json", manifest)
         fsync_tree(stage)
-        atomic_publish_noreplace(stage, final)
         failures = manifest["outcomes"]["failure_row_count"]
         exit_code = 1 if failures and spec["fail_campaign_on_error"] else 0
+        _publish_owned_stage(owned_stage, final, "diagnostic campaign staging tree")
         return final, exit_code
     except BaseException as failure:
+        if owned_stage is not None and owned_stage.committed:
+            # The same-parent no-replace rename is the transaction commit point.
+            # A pending signal immediately after commit does not turn a complete
+            # authenticated result into a reported failed transaction.
+            return final, exit_code
         cleanup_failure: BaseException | None = None
-        if os.path.lexists(stage):
+        if owned_stage is not None:
             try:
-                remove_staging_tree(stage, output_root, "diagnostic campaign staging tree")
+                owned_stage.cleanup("diagnostic campaign staging tree")
             except BaseException as exc:
                 cleanup_failure = exc
         if cleanup_failure is not None:
@@ -1874,6 +2207,8 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         raise
     finally:
         close_execution_inputs(tools, targets, probe)
+        if owned_stage is not None:
+            owned_stage.close()
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

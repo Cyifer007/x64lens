@@ -91,12 +91,13 @@ See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`do
 
 ## Quick start on Ubuntu 24.04
 
-Install required development tools:
+Install the development tools required by the full quick-start validation
+sequence:
 
 ```bash
 sudo apt update
 sudo apt install -y nasm binutils gcc clang gdb make python3 python3-jsonschema python3-venv \
-  python3-pip pipx time git curl ca-certificates unzip zip
+  python3-pip pipx time git curl ca-certificates unzip zip shellcheck
 pipx ensurepath
 ```
 
@@ -330,6 +331,24 @@ diagnostic tools remain trusted measurement participants.
 See [ADR 0043](docs/adr/0043-sprint11-diagnostic-integrity-correction.md) and
 the [Patch 057 validation record](docs/sprints/sprint-11-patch-057-validation.md).
 
+Patch 058 adds bounded task-normalized adapters for ROPgadget, Ropper, and ropr.
+The adapters authenticate the exact task command, tool/version identity, target,
+native stdout/stderr, capture limits, and adapter source before parsing. Native
+output and duplicate behavior remain retained; the first common relation is
+exact `pop rdi; ret`. Tool-specific totals are never collapsed into an unlabeled
+cross-tool gadget count. Patch 058 also closes remaining runner and corpus
+integrity gaps around bounded parent-side capture, stage substitution, early
+interruption, post-publication commit recognition, and retained output/log
+limits.
+
+```bash
+make diagnostic-task-definitions-smoke
+make baseline-output-adapter-smoke
+```
+
+See [ADR 0044](docs/adr/0044-task-normalized-baseline-adapters-and-diagnostic-integrity.md)
+and the [Patch 058 validation record](docs/sprints/sprint-11-patch-058-validation.md).
+
 ## Architecture
 
 The core separation is mandatory:
@@ -430,7 +449,12 @@ Apache License 2.0. See [`LICENSE`](LICENSE).
 
 ## Optional analysis and review tools
 
-The core build and validation path does not require `checksec`, `radare2`/`rabin2`, `strace`, or `shellcheck`. They are useful local review tools for mitigation comparison, ELF metadata comparison, syscall/cleanup inspection, and shell-helper linting. Treat their output as comparator evidence with version-specific semantics, not as authoritative replacement for x64lens contracts.
+The core build and validation path does not require `checksec`,
+`radare2`/`rabin2`, or `strace`. ShellCheck is optional for core build/test
+validation but required by `make sprint-closeout-smoke`. These tools support
+mitigation comparison, ELF metadata comparison, syscall/cleanup inspection, and
+shell-helper linting. Treat their output as comparator evidence with version-
+specific semantics, not as authoritative replacement for x64lens contracts.
 
 Example inventory commands:
 
