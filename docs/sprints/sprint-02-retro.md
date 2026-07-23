@@ -314,7 +314,7 @@ Executable regions:
 - Comment/documentation contract upheld: touched assembly, config, script, and documentation files include human-readable purpose and workflow comments.
 - Output contract upheld: text output reports mitigation indicators and loader facts without claiming exploitability.
 - Research contract upheld: no performance, coverage, or exploitability claims were made without benchmark data.
-- Context persistence contract upheld: local project state must be updated after this sprint closeout.
+- Maintained public Sprint 2 status, roadmap, backlog, and validation authorities were reconciled at closeout.
 
 ## Sprint 2 follow-up backlog
 

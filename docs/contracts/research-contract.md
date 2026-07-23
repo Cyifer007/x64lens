@@ -189,6 +189,26 @@ reconciliation surface, not a claim that the compared tools perform identical
 work or that target bytes were decoded by the adapter.
 
 Authenticated standalone files do not prove that a particular invocation
-produced them. Campaign rows and summaries require an explicit binding among the
-runner row, manifest, child outcome, retained capture identities, and normalized
-artifact.
+produced them. A current normalized artifact requires an explicit binding among
+the runner row, manifest, child outcome, exact command, and retained tool, target,
+version, stdout, and stderr identities.
+
+## Stage-zero measurement-plane evidence rule
+
+Matched x64lens relations must be derived from an authenticated retained report,
+not a second target scan or a new ELF, classification, scoring, or reporting
+authority. Native baseline records, duplicates, return-terminator sites,
+normalized relations, x64lens evidence-layer populations, and binary presence
+remain distinct. Baseline decoder output cannot substitute for unavailable
+loader-authoritative raw executable-byte presence.
+
+Coordinate comparisons remain blocked until manifest-bound `ET_EXEC`,
+PIE-intended `ET_DYN`, and shared-object `ET_DYN` roles calibrate; `ET_DYN` alone
+does not identify PIE or DSO. Runtime closure is bounded observed evidence, and
+`complete` means complete only within the recorded path. A Python
+version-command observation may be narrower than a later analysis command.
+
+A fully accounted campaign plan is not an executed campaign. Stage-zero rows and
+artifacts remain diagnostic, unfrozen, and publication-ineligible and cannot
+support performance, RSS, coverage, superiority, defensive-utility, or
+exploitability claims.

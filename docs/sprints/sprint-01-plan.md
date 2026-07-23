@@ -15,7 +15,7 @@ Build the initial project skeleton and ELF64 header validation path.
 - [x] Verify WSL2 build path.
 - [x] Verify Docker Desktop/WSL2 build path.
 - [ ] Verify devcontainer path from VS Code. This is not a Sprint 1 blocker because Docker validation passed.
-- [x] Update local-only project context under `.local/project-context/` if maintained.
+- [x] Reconcile maintained public Sprint 1 status and next-step authorities.
 - [x] Add human-readable comments to current source and config scaffolding.
 - [x] Repository scaffold.
 - [x] Documentation skeleton.
@@ -37,7 +37,7 @@ Build the initial project skeleton and ELF64 header validation path.
 ## Acceptance criteria
 
 - [x] `make` succeeds on Linux with NASM installed.
-- [x] `make test` succeeds after local validation.
+- [x] `make test` succeeds.
 - [x] `x64lens version` prints the tool version.
 - [x] `x64lens help` prints usage.
 - [x] `x64lens info <file>` identifies valid ELF64 x86_64 binaries.
@@ -75,8 +75,8 @@ Sprint 1 testing succeeded. Completed closeout actions:
 
 1. Commit the Sprint 1 baseline. Complete: `cb4d649`.
 2. Update `docs/sprints/sprint-01-retro.md` with exact outputs. Complete.
-3. Update local-only project state with completed items and Sprint 2 focus. Complete in closeout patch.
-4. Send the sprint summary to the appropriate academic or research reviewer if needed. Pending maintainer action.
+3. Reconcile maintained public Sprint 1 status with the Sprint 2 focus. Complete in closeout patch.
+4. Record any external review separately from repository acceptance. Not required for closeout.
 5. Begin Sprint 2 by implementing program header parsing and executable region mapping. Next technical step.
 
 If Sprint 1 testing fails:
@@ -103,12 +103,12 @@ This patch advances Sprint 1 from CLI scaffold to a working `info <file>` path. 
 
 ## Next steps after Patch 004 validation
 
-Patch 004 validation succeeded locally and in Docker. Completed actions:
+The Patch 004 validation record reports native and Docker success. Completed actions:
 
 1. Capture command output for `./build/x64lens info ./tests/bin/minimal_nopie` and `/bin/ls`. Complete.
 2. Compare the core fields against `readelf -h`. Deferred to Sprint 2 follow-up automation, not a Sprint 1 blocker.
 3. Write `docs/sprints/sprint-01-retro.md`. Complete.
-4. Update local-only `PROJECT_STATE.md`. Complete in closeout patch.
+4. Reconcile maintained public Sprint 1 status. Complete in closeout patch.
 5. Commit the Sprint 1 implementation baseline. Complete: `cb4d649`.
 6. Begin Sprint 2 with program-header parsing and executable-region mapping. Next technical step.
 

@@ -740,3 +740,48 @@ campaign must retain its native output and pass the same identity and adversaria
 parsing gates. The controlled fixtures do not establish compatibility with a
 pinned installed version of every baseline. Sprint 15 remains the command/task
 freeze and Sprint 17 remains the coverage-reconciliation campaign.
+
+## Sprint 11 Patch 059 stage-zero measurement plane
+
+Patch 059 binds each normalized baseline artifact to one authenticated runner
+row and its manifest, child outcome, exact command, tool, target, retained exact
+version, stdout, and stderr objects. Standalone file hashes are not treated as
+execution provenance. Native records, unique and duplicate records,
+return-terminator records and sites, normalized records and relations, binary
+presence, and x64lens raw/exact/semantic/unknown/scored populations remain
+separate. Baseline raw executable-byte presence remains unavailable, and no
+generic cross-tool `gadget_count` is introduced.
+
+The matched x64lens extractor derives its narrow relation from a retained
+complete schema `0.2.0` `gadgets` report. It does not rescan target bytes, parse
+ELF as runtime authority, classify or score candidates, or modify analyzer facts.
+Address-coordinate aggregation is blocked until manifest-bound `ET_EXEC`,
+PIE-intended `ET_DYN`, and shared-object `ET_DYN` roles calibrate; `ET_DYN` alone
+does not identify PIE or DSO. Runtime closure records a bounded observation of
+native dependency resolution or the retained version-command path. `complete`
+is scoped to that observation rather than a universal dependency guarantee.
+
+The corrected 24-comparison plus six-control plan is pre-execution authority.
+Patch 059 does not execute it, generate corpus-wide summaries or the engineering
+gap register, or establish a performance, RSS, coverage, or superiority result.
+All stage-zero rows and artifacts remain diagnostic, unfrozen, and
+publication-ineligible. Planned Patch 060 owns the campaign, summaries, and gap
+register; planned Patch 061 owns Sprint 11 closeout.
+
+
+## Sprint 11 Patch 060 diagnostic campaign method
+
+Patch 060 defines 24 task-qualified gadget-report comparisons and six separate
+x64lens integrated-analysis controls over six selected provisional targets.
+Every planned condition receives one accounting record. Available tools execute
+through the high-resolution runner; absent tools remain `unavailable_tool`.
+Failures, timeouts, output limits, normalization failures, coordinate
+qualification, closure qualification, and below-floor outcomes remain explicit.
+
+Generated summaries report only task-scoped native and normalized facts. They
+do not use a generic cross-tool gadget count. The six-target screen is not a
+full factorial design and therefore does not attribute differences to compiler,
+optimization, linkage, or hardening factors. Below-floor single-process rows
+remain excluded from primary timing summaries until a reviewed larger-target or
+whole-batch protocol is executed. Patch 060 evidence is diagnostic and cannot be
+merged into the Sprint 15-frozen campaign.

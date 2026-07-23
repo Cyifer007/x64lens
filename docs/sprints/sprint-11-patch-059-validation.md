@@ -1,10 +1,17 @@
 # Sprint 11 Patch 059 Validation
 
+## Status
+
+Implementation candidate; empirical acceptance is pending.
+
 ## Patch goal
 
 Correct the remaining Patch 058 diagnostic transaction and adapter-binding
 failures, then establish the stage-zero measurement plane required before a
 corpus-wide comparison or engineering gap register is generated.
+
+This patch defines and exercises controlled stage-zero infrastructure. It does
+not execute the provisional 30-condition comparative campaign.
 
 Patch 059 does not change analyzer assembly, CLI behavior, schema `0.2.0`,
 semantic classes, scores, record sizes, candidate capacity, command arena,
@@ -176,7 +183,8 @@ implementation, but it prevents the 30-condition campaign from running.
 
 ## Evidence classification
 
-All Patch 059 rows and derived artifacts remain diagnostic development evidence:
+Any controlled rows and derived artifacts produced while validating the Patch
+059 stage-zero plane remain diagnostic development evidence:
 
 ```text
 evidence_class: diagnostic
@@ -186,13 +194,22 @@ publication_eligible: false
 
 They cannot support release-facing performance, memory, coverage, or superiority
 claims and cannot be relabeled into the Sprint 15-frozen dataset.
+The maintained 30-condition plan is pre-execution authority rather than an
+executed comparative result.
 
 ## Known limitations
 
 - The baseline parsers normalize represented text; they do not decode target
-  bytes.
-- Runtime closure may be partial.
-- Address coordinates may remain ambiguous, mismatch, or insufficient.
+  bytes, and baseline raw executable-byte presence remains unavailable.
+- The x64lens relation extractor consumes the retained complete report. It does
+  not rescan target bytes, parse ELF as runtime authority, classify or score
+  candidates, or modify analyzer facts.
+- Runtime closure is bounded observed evidence. `complete` is scoped to that
+  observation, and a Python version-command path may be narrower than a later
+  analysis command.
+- Address coordinates may remain ambiguous, mismatch, or insufficient. The
+  manifest binds PIE-intended and shared-object roles; `ET_DYN` alone does not
+  distinguish them.
 - The stage-zero smoke uses controlled fake baseline tools.
 - Corpus-wide summaries and the engineering gap register remain the next
   implementation tranche.
@@ -200,8 +217,8 @@ claims and cannot be relabeled into the Sprint 15-frozen dataset.
 
 ## Handoff
 
-On acceptance, the next patch runs the authenticated 30-condition provisional
+On acceptance, planned Patch 060 runs the authenticated 30-condition provisional
 diagnostic plan where baseline tools are available, generates task-scoped
 summaries from preserved raw rows and relation artifacts, and writes the
-engineering gap register that directs Sprints 12 through 14. Sprint 11 closeout
-follows that campaign rather than sharing the same patch.
+engineering gap register that directs Sprints 12 through 14. Planned Patch 061
+performs Sprint 11 closeout rather than sharing the campaign patch.

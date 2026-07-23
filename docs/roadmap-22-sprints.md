@@ -18,9 +18,12 @@ diagnostic benchmark foundation. Patches 055 and 056 implement the runner,
 task-definition authority, and first reproducible 24-target provisional corpus.
 Patch 057 corrects the diagnostic target-execution, corpus-membership, cleanup,
 and safe-removal boundaries. The Patch 058 implementation candidate adds
-standalone baseline adapters; corpus-backed rows, adapter-to-row binding,
-development summaries, and the gap register remain active work. Sprint 15
-freezes the confirmatory campaign.
+standalone baseline adapters. The Patch 059 implementation candidate corrects
+their campaign binding and establishes matched relations, bounded runtime
+closure, role-specific coordinate calibration, and the pre-execution stage-zero
+plan. Patch 060 owns corpus-backed rows, development summaries, and the
+gap register; planned Patch 061 owns Sprint 11 closeout. Sprint 15 freezes the
+confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must

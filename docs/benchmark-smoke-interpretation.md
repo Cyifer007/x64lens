@@ -84,3 +84,16 @@ native-output adapters for ROPgadget, Ropper, and ropr, but the reference
 specification still has no baseline campaign rows and the adapters do not consume
 runner rows or manifests. Corpus-backed rows, adapter-to-row binding, development
 summaries, and the engineering gap register remain later Sprint 11 work.
+
+## Patch 059 stage-zero transition
+
+Patch 059 replaces the standalone adapter boundary with campaign-bound
+normalization and adds matched x64lens report-derived relations, bounded runtime
+closure, manifest-bound address-coordinate calibration, and the corrected
+pre-execution 24-comparison plus six-control plan. It does not execute the
+comparative campaign or produce a speed, RSS, coverage, or superiority result.
+
+Any controlled stage-zero rows remain diagnostic, unfrozen, and
+publication-ineligible. Patch 060 runs the authenticated available-tool provisional
+campaign and produces the engineering gap register; planned Patch 061 closes
+Sprint 11.

@@ -94,12 +94,12 @@ If Sprint 2 testing succeeds:
 1. Capture `mitigations` output for toy binaries.
 2. Compare program-header and mitigation findings against `readelf -l` and `checksec` where available.
 3. Update `docs/sprints/sprint-02-retro.md`.
-4. Update local-only `PROJECT_STATE.md` with Sprint 2 status.
+4. Reconcile maintained public Sprint 2 status.
 5. Start Sprint 3 with raw executable-region scanning and `ret` candidate discovery.
 
 ## Patch 006 implementation notes
 
-Patch 006 completed Sprint 2 implementation after local WSL2 and Docker validation. It adds the first `mitigations <file>` command path and introduces the internal program-header summary and executable-region record model.
+The Patch 006 validation record reports WSL2 and Docker success. The patch adds the first `mitigations <file>` command path and introduces the internal program-header summary and executable-region record model.
 
 Implemented and validated in this patch:
 

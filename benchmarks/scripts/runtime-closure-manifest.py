@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Record the observed runtime closure of one authenticated diagnostic tool row.
 
-The manifest binds the retained tool entrypoint to the interpreter, imported
-Python modules and distributions observed on its retained version-command path,
+The manifest binds one authenticated measured task row to the retained tool and
+target snapshots, the interpreter and Python imports observed on that task path,
 and recursively resolved ELF interpreter/DT_NEEDED objects. It is diagnostic
-provenance rather than a promise that every later analysis path imports the same
-closure.
+provenance for the named command/profile rather than a universal package claim.
 """
 from __future__ import annotations
 
@@ -187,10 +186,10 @@ raise SystemExit(0)
 def observe_python(
     interpreter: Path,
     entrypoint: Path,
-    version_arguments: list[str],
+    task_arguments: list[str],
 ) -> tuple[dict[str, Any], list[Path]]:
     result = run_bounded(
-        [str(interpreter), "-c", tracer_source(), str(entrypoint), json.dumps(version_arguments, separators=(",", ":"))]
+        [str(interpreter), "-c", tracer_source(), str(entrypoint), json.dumps(task_arguments, separators=(",", ":"))]
     )
     require(result.returncode == 0, f"Python closure tracer failed: {result.stderr.decode('utf-8', errors='replace')[:400]}")
     lines = result.stdout.decode("utf-8", errors="strict").splitlines()
@@ -200,7 +199,7 @@ def observe_python(
     except json.JSONDecodeError as exc:
         raise ClosureError(f"Python closure tracer result is invalid JSON: {exc}") from exc
     require(isinstance(observed, dict) and isinstance(observed.get("modules"), list), "Python closure trace is malformed")
-    require(observed.get("exit_code") == 0, f"tool version path exited {observed.get('exit_code')} under closure tracing")
+    require(observed.get("exit_code") == 0, f"tool task path exited {observed.get('exit_code')} under closure tracing")
     paths: list[Path] = []
     module_records: list[dict[str, str]] = []
     for item in observed["modules"]:
@@ -219,7 +218,9 @@ def observe_python(
     distributions = observed.get("distributions")
     require(isinstance(distributions, dict) and all(isinstance(k, str) and isinstance(v, str) for k, v in distributions.items()), "Python distribution trace is invalid")
     return {
-        "trace_command": ["{interpreter}", "-c", "<embedded-runtime-closure-tracer>", "{entrypoint}", *version_arguments],
+        "trace_command": ["{interpreter}", "-c", "<embedded-runtime-closure-tracer>", "{entrypoint}", *task_arguments],
+        "observation_scope": "measured_task_command",
+        "task_arguments": task_arguments,
         "version_path_exit_code": observed["exit_code"],
         "imported_modules": module_records,
         "distributions": [{"name": name, "version": distributions[name]} for name in sorted(distributions)],
@@ -319,6 +320,40 @@ def elf_closure(seeds: Iterable[Path], readelf: Path, ldconfig: Path | None) -> 
     return sorted(observed), sorted(objects, key=lambda item: item["path"]), sorted(unresolved)
 
 
+def task_arguments_from_row(context: Any, row: dict[str, str], tool: dict[str, Any], target: dict[str, Any]) -> list[str]:
+    """Reconstruct the retained task argv from the authenticated runner row."""
+    try:
+        command = json.loads(row["command_json"])
+    except json.JSONDecodeError as exc:
+        raise ClosureError(f"runner row command is invalid JSON: {exc}") from exc
+    require(isinstance(command, list) and command and all(isinstance(item, str) and item for item in command), "runner row command is invalid")
+    cwd = context.root.joinpath(*Path(row["command_cwd"]).parts).resolve(strict=True)
+    tool_snapshot = context.root.joinpath(*Path(tool["snapshot_path"]).parts).resolve(strict=True)
+    target_snapshot = context.root.joinpath(*Path(target["snapshot_path"]).parts).resolve(strict=True)
+
+    def resolved_argument(value: str) -> Path | None:
+        candidate = Path(value)
+        if not candidate.is_absolute():
+            candidate = cwd / candidate
+        try:
+            return candidate.resolve(strict=True)
+        except OSError:
+            return None
+
+    require(resolved_argument(command[0]) == tool_snapshot, "runner row task command is not bound to the retained tool snapshot")
+    output: list[str] = []
+    target_references = 0
+    for value in command[1:]:
+        resolved = resolved_argument(value)
+        if resolved == target_snapshot:
+            output.append(str(target_snapshot))
+            target_references += 1
+        else:
+            output.append(value)
+    require(target_references == 1, "runner row task command must reference the retained target exactly once")
+    return output
+
+
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
     safe_id(args.run_id, "run id")
@@ -357,37 +392,39 @@ def main(argv: list[str]) -> int:
         closure_mode = "native_elf"
         observation: dict[str, Any] = {}
         seed_paths: list[Path] = []
-        source_path = Path(tool.get("source_path_resolved", ""))
-        source_resolved: Path | None = None
-        if source_path.is_file():
-            source_resolved, _source_data, source_identity = resolved_regular(source_path, "tool source entrypoint")
-            external_identities.append((source_resolved, source_identity, "tool source entrypoint"))
         entrypoint_for_trace = context.root / tool["snapshot_path"]
+        target = context.targets[row["target_id"]]
+        task_arguments = task_arguments_from_row(context, row, tool, target)
         observed_python_paths: list[Path] = []
 
         if shebang is not None:
             interpreter, shebang_arguments = resolve_shebang_interpreter(shebang)
-            interpreter, interpreter_data, interpreter_identity = resolved_regular(interpreter, "tool interpreter")
+            interpreter, _interpreter_data, interpreter_identity = resolved_regular(interpreter, "tool interpreter")
             external_identities.append((interpreter, interpreter_identity, "tool interpreter"))
             seed_paths.append(interpreter)
-            version_argv = tool.get("version_argv")
-            require(isinstance(version_argv, list) and version_argv and version_argv[0] == "{tool}", "tool version argv is invalid")
-            version_arguments = [str(item) for item in version_argv[1:]]
             if "python" in interpreter.name.lower():
                 closure_mode = "python_console_entrypoint"
-                observation, imported_paths = observe_python(interpreter, entrypoint_for_trace, version_arguments)
+                observation, imported_paths = observe_python(interpreter, entrypoint_for_trace, task_arguments)
+                observation["shebang_arguments"] = shebang_arguments
                 observed_python_paths.extend(imported_paths)
                 seed_paths.extend(imported_paths)
             else:
                 closure_mode = "script_interpreter"
-                observation = {"shebang_arguments": shebang_arguments, "version_arguments": version_arguments}
+                observation = {
+                    "observation_scope": "measured_task_command",
+                    "shebang_arguments": shebang_arguments,
+                    "task_arguments": task_arguments,
+                    "trace_status": "interpreter_import_observation_unavailable",
+                }
         else:
             require(tool_data.startswith(ELF_MAGIC), "tool snapshot is neither an ELF object nor a supported script")
-            if source_resolved is not None:
-                seed_paths.append(source_resolved)
-            else:
-                # The retained snapshot is a regular campaign member and is already authenticated.
-                seed_paths.append(context.root / tool["snapshot_path"])
+            # Native closure authority is always the retained campaign snapshot.
+            # The mutable pre-snapshot source path is descriptive lineage only.
+            seed_paths.append(entrypoint_for_trace)
+            observation = {
+                "observation_scope": "retained_native_task_entrypoint",
+                "task_arguments": task_arguments,
+            }
 
         readelf_value = shutil.which("readelf")
         require(readelf_value is not None, "readelf is required for runtime closure")
@@ -433,6 +470,9 @@ def main(argv: list[str]) -> int:
                 "tool_id": row["tool_id"],
                 "tool_sha256": row["tool_sha256"],
                 "command_json": row["command_json"],
+                "command_cwd": row["command_cwd"],
+                "target_id": row["target_id"],
+                "target_sha256": row["target_sha256"],
             },
             "generator": {"id": GENERATOR_ID, "sha256": generator_identity["sha256"], "size_bytes": generator_identity["size_bytes"]},
             "authority": {"id": AUTHORITY_ID, "sha256": authority_identity["sha256"], "size_bytes": authority_identity["size_bytes"]},
@@ -441,7 +481,7 @@ def main(argv: list[str]) -> int:
             "entrypoint": {
                 "snapshot_path": tool["snapshot_path"],
                 "snapshot_sha256": tool_snapshot_identity["sha256"],
-                "source_path_resolved": str(source_resolved) if source_resolved else None,
+                "source_path_resolved_descriptive": tool.get("source_path_resolved"),
                 "declared_version": tool["version"],
                 "observed_version": tool["version_observed"],
             },
@@ -451,7 +491,7 @@ def main(argv: list[str]) -> int:
             "unresolved_dependencies": unresolved,
             "totals": {"runtime_file_count": len(file_records), "runtime_bytes": total_bytes, "unresolved_dependency_count": len(unresolved)},
             "claim_boundaries": [
-                "The Python closure is observed on the retained version-command path and may be narrower than a later analysis command.",
+                "The Python closure is observed on the authenticated measured task-command path for this row and profile.",
                 "The native closure records bounded PT_INTERP and DT_NEEDED resolution; unresolved names remain explicit.",
                 "The manifest authenticates runtime support objects but does not make them x64lens runtime dependencies.",
             ],
@@ -463,6 +503,7 @@ def main(argv: list[str]) -> int:
             (tool["snapshot_path"], tool_snapshot_identity, MAX_MEMBER_BYTES, "tool snapshot"),
             (tool["version_stdout_path"], version_stdout_identity, MAX_MEMBER_BYTES, "tool version stdout"),
             (tool["version_stderr_path"], version_stderr_identity, MAX_MEMBER_BYTES, "tool version stderr"),
+            (target["snapshot_path"], load_member(context.root_fd, context.root, target["snapshot_path"], MAX_MEMBER_BYTES, "target snapshot")[1], MAX_MEMBER_BYTES, "target snapshot"),
         ]
 
         def reauthenticate() -> None:

@@ -219,13 +219,13 @@ def publish_commit_probe(temporary: pathlib.Path) -> None:
     owned = module.OwnedStage.create(root, ".publish.staging")
     final = root / "published"
     (owned.path / "corpus-manifest.json").write_text("{}\n", encoding="utf-8")
-    original = module.atomic_publish_noreplace
+    original = module._rename_exchange
 
-    def publish_then_interrupt(stage: pathlib.Path, destination: pathlib.Path) -> None:
-        original(stage, destination)
+    def publish_then_interrupt(parent_fd: int, left: str, right: str, label: str) -> None:
+        original(parent_fd, left, right, label)
         raise module.CorpusInterrupted(signal.SIGINT)
 
-    module.atomic_publish_noreplace = publish_then_interrupt
+    module._rename_exchange = publish_then_interrupt
     try:
         try:
             module.publish_owned_stage(owned, final, "corpus publish commit probe")
@@ -235,8 +235,9 @@ def publish_commit_probe(temporary: pathlib.Path) -> None:
             raise SmokeError("post-rename corpus interruption was not injected")
         require(owned.committed is True, "post-rename corpus interruption lost committed state")
         require(final.is_dir() and (final / "corpus-manifest.json").is_file(), "committed corpus result was not retained")
+        require(not owned.path.exists(), "corpus publication placeholder survived interruption")
     finally:
-        module.atomic_publish_noreplace = original
+        module._rename_exchange = original
         owned.close()
 
 
@@ -249,15 +250,20 @@ def publish_substitution_probe(temporary: pathlib.Path) -> None:
     owned = module.OwnedStage.create(root, ".publish-substitution.staging")
     final = root / "published"
     (owned.path / "corpus-manifest.json").write_text("{}\n", encoding="utf-8")
-    original = module.atomic_publish_noreplace
+    original = module._rename_exchange
+    escaped = root / ".owned-after-publication"
+    exchange_calls = 0
 
-    def substitute_after_move(stage: pathlib.Path, destination: pathlib.Path) -> None:
-        escaped = root / ".owned-after-publication"
-        os.rename(stage, escaped)
-        destination.mkdir()
-        (destination / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+    def substitute_after_move(parent_fd: int, left: str, right: str, label: str) -> None:
+        nonlocal exchange_calls
+        exchange_calls += 1
+        if exchange_calls == 1:
+            os.rename(owned.path, escaped)
+            owned.path.mkdir()
+            (owned.path / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+        original(parent_fd, left, right, label)
 
-    module.atomic_publish_noreplace = substitute_after_move
+    module._rename_exchange = substitute_after_move
     try:
         try:
             module.publish_owned_stage(owned, final, "corpus publication substitution probe")
@@ -266,13 +272,15 @@ def publish_substitution_probe(temporary: pathlib.Path) -> None:
         else:
             raise SmokeError("foreign publication substitution was accepted")
         require(owned.committed is False, "foreign publication substitution marked the owned stage committed")
-        require(final.is_dir(), "foreign published directory disappeared")
-        require((final / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign published directory changed")
+        require(not final.exists(), "foreign publication occupied the final corpus name")
+        require((owned.path / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign stage changed")
         owned.cleanup("corpus publication substitution cleanup")
-        require(not (root / ".owned-after-publication").exists(), "escaped owned corpus stage survived cleanup")
-        require(final.is_dir(), "owned-stage cleanup deleted the foreign published directory")
+        require(not escaped.exists(), "escaped owned corpus stage survived cleanup")
+        require(owned.path.is_dir(), "owned-stage cleanup deleted the foreign stage")
+        (owned.path / "foreign.txt").unlink()
+        owned.path.rmdir()
     finally:
-        module.atomic_publish_noreplace = original
+        module._rename_exchange = original
         owned.close()
 
 

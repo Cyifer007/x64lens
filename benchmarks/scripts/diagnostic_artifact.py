@@ -17,6 +17,7 @@ import hashlib
 import io
 import json
 import os
+import posixpath
 from pathlib import Path, PurePosixPath
 import re
 import stat
@@ -98,22 +99,39 @@ def _open_directory_at(parent_fd: int, name: str, label: str) -> int:
 
 
 def open_real_directory(path: Path, label: str) -> tuple[Path, int, dict[str, Any]]:
+    """Open an absolute directory path without following any path component.
+
+    ``O_NOFOLLOW`` on only the final component does not protect callers from a
+    symlinked ancestor.  Walk from the filesystem root one component at a time,
+    retaining only directory descriptors opened with ``O_NOFOLLOW``.  The
+    returned descriptor, rather than the caller-supplied pathname, is the
+    authority for all later member access.
+    """
     absolute = Path(os.path.abspath(path))
-    metadata = os.lstat(absolute)
-    require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
-    fd = os.open(
-        absolute,
-        os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-    )
+    require(absolute.is_absolute(), f"{label} path is not absolute")
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    parts = absolute.parts
+    proc_prefix = (os.sep, "proc", "self", "fd")
+    if len(parts) >= 5 and parts[:4] == proc_prefix and parts[4].isdigit():
+        try:
+            current = os.dup(int(parts[4]))
+        except OSError as exc:
+            raise ArtifactError(f"{label} descriptor root is unavailable") from exc
+        remaining = parts[5:]
+    else:
+        current = os.open("/", flags)
+        remaining = parts[1:]
     try:
-        observed = os.fstat(fd)
-        require(
-            stat.S_ISDIR(observed.st_mode)
-            and (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
-            f"{label} changed while being opened",
-        )
-        resolved = Path(f"/proc/self/fd/{fd}").resolve(strict=True)
-        return resolved, fd, {
+        observed_root = os.fstat(current)
+        require(stat.S_ISDIR(observed_root.st_mode), f"{label} descriptor root is not a directory")
+        for component in remaining:
+            next_fd = _open_directory_at(current, component, f"{label} component")
+            os.close(current)
+            current = next_fd
+        observed = os.fstat(current)
+        require(stat.S_ISDIR(observed.st_mode), f"{label} is not a real directory")
+        resolved = Path(f"/proc/self/fd/{current}").resolve(strict=True)
+        return resolved, current, {
             "path_requested": str(path),
             "path_resolved": str(resolved),
             "device": observed.st_dev,
@@ -121,7 +139,7 @@ def open_real_directory(path: Path, label: str) -> tuple[Path, int, dict[str, An
             "mode": stat.S_IMODE(observed.st_mode),
         }
     except BaseException:
-        os.close(fd)
+        os.close(current)
         raise
 
 
@@ -335,14 +353,53 @@ def load_campaign(path: Path) -> CampaignContext:
             require(identity["sha256"] == require_sha256(record.get("sha256"), f"tool {tool_id} SHA-256"), f"tool {tool_id} snapshot hash mismatch")
             require(identity["size_bytes"] == record.get("size_bytes"), f"tool {tool_id} snapshot size mismatch")
             del data
+            version_argv = record.get("version_argv")
+            require(
+                isinstance(version_argv, list)
+                and version_argv
+                and version_argv[0] == "{tool}"
+                and all(isinstance(item, str) and "\x00" not in item for item in version_argv),
+                f"tool {tool_id} version argv is invalid",
+            )
+            version_command = record.get("version_command")
+            require(
+                isinstance(version_command, list)
+                and len(version_command) == len(version_argv)
+                and all(isinstance(item, str) and item and "\x00" not in item for item in version_command),
+                f"tool {tool_id} retained version command is invalid",
+            )
+            version_cwd = record.get("version_command_cwd")
+            directory_member_identity(root_fd, root, version_cwd, f"tool {tool_id} version command cwd")
+            expected_tool_argument = posixpath.relpath(record["snapshot_path"], version_cwd)
+            require(
+                version_command == [expected_tool_argument, *version_argv[1:]],
+                f"tool {tool_id} retained version command does not match version argv and snapshot",
+            )
+            result = record.get("version_result")
+            require(isinstance(result, dict), f"tool {tool_id} version result is missing")
+            require(
+                result.get("process_outcome") == "success"
+                and result.get("exit_code") == 0
+                and result.get("signal") is None
+                and result.get("timed_out") is False,
+                f"tool {tool_id} retained version command did not complete successfully",
+            )
+            retained_version_streams: list[bytes] = []
             for stream in ("stdout", "stderr"):
                 key = f"version_{stream}_path"
-                result = record.get("version_result")
-                require(isinstance(result, dict), f"tool {tool_id} version result is missing")
                 member_data, member_identity = load_member(root_fd, root, record.get(key), MAX_MEMBER_BYTES, f"tool {tool_id} version {stream}")
                 require(member_identity["size_bytes"] == result.get(f"{stream}_bytes"), f"tool {tool_id} version {stream} size mismatch")
                 require(member_identity["sha256"] == require_sha256(result.get(f"{stream}_sha256"), f"tool {tool_id} version {stream} hash"), f"tool {tool_id} version {stream} hash mismatch")
-                del member_data
+                retained_version_streams.append(member_data)
+            observed_lines: list[str] = []
+            for member_data in retained_version_streams:
+                try:
+                    observed_lines.extend(line.strip() for line in member_data.decode("utf-8", errors="strict").splitlines() if line.strip())
+                except UnicodeDecodeError as exc:
+                    raise ArtifactError(f"tool {tool_id} retained version output is not valid UTF-8: {exc}") from exc
+            require(observed_lines, f"tool {tool_id} retained version output is empty")
+            require(record.get("version_observed") == observed_lines[0], f"tool {tool_id} observed version record mismatch")
+            require(isinstance(record.get("version"), str) and record["version"], f"tool {tool_id} declared version is missing")
         for record in targets_raw:
             require(isinstance(record, dict), "campaign target record is invalid")
             target_id = safe_id(record.get("id"), "target id")

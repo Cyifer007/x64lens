@@ -112,7 +112,7 @@ Two non-blocking issues should be tracked:
 - **Metric-boundary contract:** followed. Raw candidate counts, exact pattern counts, semantic primitive counts, unknown counts, and future scored counts remain separate.
 - **Output contract:** followed for text output. The tool reports primitive availability and does not claim exploitability.
 - **Research contract:** followed. Smoke benchmark evidence is preserved as development evidence, not publication-grade performance proof.
-- **Context persistence contract:** followed. Sprint state, backlog, validation notes, roadmap, and local context were updated.
+- **Maintained authorities:** Sprint state, backlog, validation notes, and roadmap were reconciled at closeout.
 
 ## Known limitations after Sprint 4
 

@@ -32,11 +32,14 @@ findings. Patch 053 establishes the canonical twenty-two-sprint sequence, and
 Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement.
 Patches 055 through 057 implement and harden the high-resolution runner, truthful
 task authority, and first 24-target source-reproducible provisional corpus. The
-Patch 058 implementation candidate adds standalone baseline adapters. Corpus-
-backed rows, adapter-to-row binding, summaries, and the gap register remain
-diagnostic work. Loader, mitigation, semantic, and optional-profile decisions
-occupy Sprints 12 through 14. The campaign freezes in Sprint 15, the preview
-pilot runs in Sprint 16, and the publication campaign runs in Sprint 17.
+Patch 058 implementation candidate adds standalone baseline adapters. The Patch
+059 implementation candidate corrects their campaign binding and establishes
+matched relations, bounded runtime closure, role-specific coordinate calibration,
+and the pre-execution stage-zero plan. Planned Patch 060 owns corpus-backed rows,
+summaries, and the gap register; planned Patch 061 owns Sprint 11 closeout.
+Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12
+through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint
+16, and the publication campaign runs in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -318,3 +321,18 @@ Before a baseline row or summary can advance the diagnostic checkpoint,
 orchestration must bind that execution record to its normalized artifact. Sprint
 15 must still freeze admitted tool versions, commands, task definitions, adapters,
 and corpus identities before confirmatory measurement begins.
+
+## Sprint 11 Patch 059 release-gate update
+
+The Patch 059 implementation candidate provides the campaign-bound stage-zero
+measurement plane required before the diagnostic checkpoint can be completed. It
+adds no analyzer capability and delivers no executed comparative campaign,
+summary, performance/RSS/coverage result, or engineering gap register. Its
+derived artifacts remain `diagnostic`, `frozen: false`, and
+`publication_eligible: false`.
+
+The x64lens relation is derived from retained complete reports rather than a new
+scan, address coordinates remain unaggregated until manifest-bound role
+calibration succeeds, and runtime closure remains a bounded observation. Planned
+Patch 060 executes the authenticated provisional campaign and produces the gap
+register; planned Patch 061 performs Sprint 11 closeout.

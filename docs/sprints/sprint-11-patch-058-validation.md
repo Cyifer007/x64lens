@@ -166,7 +166,8 @@ accepted.
 
 ## Expected next step
 
-After Patch 058 is accepted, Patch 059 may run the provisional corpus diagnostic
-campaign, generate task-scoped development summaries, preserve normalized and
-native baseline discrepancies, and build the engineering gap register that
-directs Sprints 12 through 14.
+After Patch 058 is accepted, Patch 059 may correct campaign binding and establish
+the stage-zero measurement plane while preserving normalized and native baseline
+discrepancies. Planned Patch 060 runs the provisional corpus diagnostic campaign,
+generates task-scoped development summaries, and builds the engineering gap
+register that directs Sprints 12 through 14. Planned Patch 061 closes Sprint 11.

@@ -6,9 +6,10 @@ Sprint 11 measurements are useful only when each row states what work was
 performed. The machine-readable authority is
 `benchmarks/task-definitions/sprint11-diagnostic-tasks.json`.
 
-Patch 058 advances that authority to version 2. It retains the truthful x64lens
-conditions established in Patch 055 and adds bounded, versioned native-output
-adapters for ROPgadget, Ropper, and ropr. These definitions remain mutable
+Patch 059 advances that authority to version 3. It retains the truthful x64lens
+conditions established in Patch 055, the bounded native-output relations added
+in Patch 058, and campaign-bound adapters plus matched relation, runtime-closure,
+and coordinate-calibration authorities. These definitions remain mutable
 diagnostic authorities. Sprint 15 freezes the confirmatory task definitions
 after loader, semantic, and optional-profile choices are complete.
 
@@ -34,11 +35,11 @@ x64lens runtime artifact.
 | Core scanner | Unavailable | none | No public report-suppressed scanner-only path exists. Report timing must not be relabeled as scanner cost. |
 | Gadget JSON | Implemented | `x64lens gadgets --format json --max-depth 4 <target>` | Complete current analysis pipeline plus schema `0.2.0` JSON rendering under `command: gadgets`. |
 | Integrated-analysis JSON | Implemented | `x64lens analyze --format json --max-depth 4 <target>` | The same current analysis facts and JSON body under `command: analyze`; this is a command-path parity condition, not yet an independently broader workload. |
-| ROPgadget report | Adapter implemented | `ROPgadget --binary <target> --depth 5 --only 'pop|ret' --nojop --nosys --silent` | ROPgadget-native return-oriented report under an explicit depth/filter/output scope. |
+| ROPgadget report | Adapter implemented | `ROPgadget --binary <target> --depth 5 --only 'pop|ret' --nojop --nosys` | ROPgadget-native return-oriented report under an explicit depth/filter/output scope. |
 | Ropper report | Adapter implemented | `ropper --file <target> --nocolor --single --type rop --inst-count 5` | Ropper-native single-process return-oriented report with color disabled and an explicit instruction limit. |
 | ropr report | Adapter implemented | `ropr --colour false --max-instr 5 --nojop --nosys <target>` | ropr-native return-oriented report with color, JOP, and syscall categories disabled for this task. |
 
-The command templates define the Patch 058 diagnostic task. They do not claim
+The command templates define the current Patch 059 diagnostic task. They do not claim
 that each baseline performs identical internal work.
 
 ## Why core timing is unavailable
@@ -98,13 +99,12 @@ Every admitted baseline condition retains:
 The Patch 058 adapters reject uncategorized native output. Parser failure is a
 failed diagnostic condition, not zero baseline coverage.
 
-The standalone adapters consume the supplied command, tool and target files,
-retained version output, native streams, and adapter authority. They do not
-consume a runner row, campaign manifest, child outcome, or capture record.
-Campaign integration must bind those records before the normalized artifact can
-represent a particular measured invocation. The adapters also do not execute or
-validate the retained version command; they require the caller-declared version
-text to occur in the authenticated version-output file.
+Patch 059 adapters consume one authenticated campaign result and runner row.
+They bind the normalized artifact to the manifest, child outcome, exact command,
+tool and target snapshots, retained version output, native streams, and adapter
+authority. Exact trimmed first-line version evidence replaces the earlier
+caller-declared substring check. Standalone file hashes remain insufficient
+execution provenance.
 
 ## Normalized relation set
 
@@ -137,6 +137,25 @@ The native and unique populations remain separate. The canonical relation
 requires exact represented instructions `pop rdi; ret` or `pop rdi; retq`; it
 is not inferred from a substring or tool summary line.
 
+## Patch 059 stage-zero authorities
+
+The x64lens relation extractor consumes one authenticated successful `gadgets`
+row and its retained complete schema `0.2.0` report. It preserves the native
+report and its raw, exact, semantic, unknown, and scored populations. It does not
+rescan bytes, parse ELF as runtime authority, classify or score candidates, or
+modify analyzer facts.
+
+Address-coordinate calibration compares the narrow relation across
+manifest-bound `ET_EXEC`, PIE-intended `ET_DYN`, and shared-object `ET_DYN`
+roles. `ET_DYN` alone is not sufficient PIE/DSO identity. Runtime closure is a
+bounded observation of native dependency resolution or the retained
+version-command path; `complete` is scoped to that observation and is not a
+universal dependency claim.
+
+The maintained 24-comparison plus six-control plan is pre-execution authority.
+It is diagnostic, unfrozen, and publication-ineligible. It is not a comparative
+result.
+
 ## Metric boundary
 
 A baseline's reported total remains tool-specific. It must not be written into
@@ -150,8 +169,7 @@ filtering, duplicate handling, canonicalization, depth, and formatting work.
 
 ## Diagnostic claim boundary
 
-Patch 058 establishes bounded baseline normalization and supplied-artifact
-identity. It
-does not support claims that x64lens is faster, lower-RSS, more complete, or
-more operationally useful than another tool. Those claims require the Sprint
-15-frozen method and later preview/publication campaigns.
+Patch 059 establishes the stage-zero measurement plane and corrected
+pre-execution plan. It does not support claims that x64lens is faster, lower-RSS,
+more complete, or more operationally useful than another tool. Those claims
+require the Sprint 15-frozen method and later preview/publication campaigns.

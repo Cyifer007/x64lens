@@ -238,7 +238,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="x64lens-sprint11-measurement-plane-", dir=local_tmp) as raw:
         base = Path(raw)
         corpus = build_three_role_corpus(base)
-        spec, _tool_paths = campaign_spec(base, corpus)
+        spec, tool_paths = campaign_spec(base, corpus)
         campaign_output = base / "campaign-output"
         campaign = run([sys.executable, str(RUNNER), "--spec", str(spec), "--output-root", str(campaign_output)], timeout=180)
         require(campaign.returncode == 0, f"measurement-plane campaign failed rc={campaign.returncode}: stdout={campaign.stdout!r} stderr={campaign.stderr!r}")
@@ -259,7 +259,7 @@ def main() -> int:
             invoke(X_EXTRACTOR, ["--campaign-result", str(result_root), "--run-id", x_row["run_id"], "--task-authority", str(AUTHORITY), "--output", str(x_output)], "x64lens-relation-extractor: ok")
             x_artifact = json.loads(x_output.read_text(encoding="utf-8"))
             require(x_artifact["metrics"]["canonical_exact_pop_rdi_ret_record_count"] == 1, f"x64lens relation missing for {role}")
-            artifacts["x64lens"] = str(x_output)
+            artifacts["x64lens"] = {"path": str(x_output), "campaign_result": str(result_root)}
 
             for tool_id in TOOLS[1:]:
                 base_id = next(item["condition_id"] for item in json.loads(AUTHORITY.read_text())["baselines"] if item["id"] == tool_id)
@@ -269,8 +269,13 @@ def main() -> int:
                 normalized = json.loads(output.read_text(encoding="utf-8"))
                 require(normalized["metrics"]["canonical_exact_pop_rdi_ret_record_count"] == 1, f"baseline relation missing: {role}/{tool_id}")
                 require("gadget_count" not in json.dumps(normalized), "adapter emitted a generic gadget count")
-                artifacts[tool_id] = str(output)
+                artifacts[tool_id] = {"path": str(output), "campaign_result": str(result_root)}
             calibration_roles.append({"id": role, "corpus_target_id": target_id, "artifacts": artifacts})
+
+        # The closure generator must use the retained execution snapshot rather
+        # than rereading a mutable source entrypoint after the campaign.
+        tool_paths["ropgadget"].write_text("#!/usr/bin/env python3\nraise SystemExit(99)\n", encoding="utf-8")
+        tool_paths["ropgadget"].chmod(0o755)
 
         # Record one runtime closure for every tool from the ET_EXEC rows.
         et_target = ROLE_TARGETS["et_exec"]
@@ -287,10 +292,13 @@ def main() -> int:
             closure = json.loads(output.read_text(encoding="utf-8"))
             require(closure["status"] in {"complete", "partial"} and closure["totals"]["runtime_file_count"] > 0, f"runtime closure is empty: {tool_id}")
             require(closure["closure_mode"] == "python_console_entrypoint", f"unexpected fake-tool closure mode: {tool_id}")
+            campaign_manifest = json.loads((result_root / "manifest.json").read_text(encoding="utf-8"))
+            retained_tool = next(item for item in campaign_manifest["tools"] if item["id"] == tool_id)
+            require(closure["campaign"]["tool_sha256"] == retained_tool["sha256"], f"runtime closure did not bind retained snapshot: {tool_id}")
             closure_count += 1
 
         calibration_spec = base / "calibration-input.json"
-        calibration_spec.write_text(json.dumps({"schema_version": 1, "roles": calibration_roles}, indent=2) + "\n", encoding="utf-8")
+        calibration_spec.write_text(json.dumps({"schema_version": 2, "roles": calibration_roles}, indent=2) + "\n", encoding="utf-8")
         calibration_output = artifacts_root / "address-calibration.json"
         invoke(CALIBRATOR, ["--corpus-result", str(corpus), "--input-spec", str(calibration_spec), "--task-authority", str(AUTHORITY), "--output", str(calibration_output)], "address-coordinate-calibrator: ok", timeout=240)
         calibration = json.loads(calibration_output.read_text(encoding="utf-8"))
@@ -306,15 +314,28 @@ def main() -> int:
         invalid_result = run([sys.executable, str(CALIBRATOR), "--corpus-result", str(corpus), "--input-spec", str(invalid_spec), "--task-authority", str(AUTHORITY), "--output", str(artifacts_root / "invalid.json")], timeout=120)
         require(invalid_result.returncode == 2 and "does not satisfy role" in invalid_result.stderr, "role-substituted calibration input was accepted")
 
+        # Generator identity and native hashes are insufficient if normalized
+        # fields can be forged.  A modified relation must fail reproduction.
+        forged_relation = base / "forged-x64lens-relation.json"
+        forged = json.loads(Path(calibration_roles[0]["artifacts"]["x64lens"]["path"]).read_text(encoding="utf-8"))
+        forged["normalized_relations"][0]["virtual_address_start"] = "0x00000000deadbeef"
+        forged_relation.write_text(json.dumps(forged, indent=2) + "\n", encoding="utf-8")
+        forged_spec = base / "forged-calibration-input.json"
+        forged_input = json.loads(calibration_spec.read_text(encoding="utf-8"))
+        forged_input["roles"][0]["artifacts"]["x64lens"]["path"] = str(forged_relation)
+        forged_spec.write_text(json.dumps(forged_input, indent=2) + "\n", encoding="utf-8")
+        forged_result = run([sys.executable, str(CALIBRATOR), "--corpus-result", str(corpus), "--input-spec", str(forged_spec), "--task-authority", str(AUTHORITY), "--output", str(artifacts_root / "forged.json")], timeout=120)
+        require(forged_result.returncode == 2 and "does not reproduce" in forged_result.stderr, "forged normalized relation was accepted")
+
         # Derived artifacts are no-replace publications.
         x_row = row_by_condition[f"x64lens-gadget-json--{et_target}"]
-        overwrite = run([sys.executable, str(X_EXTRACTOR), "--campaign-result", str(result_root), "--run-id", x_row["run_id"], "--task-authority", str(AUTHORITY), "--output", calibration_roles[0]["artifacts"]["x64lens"]], timeout=60)
+        overwrite = run([sys.executable, str(X_EXTRACTOR), "--campaign-result", str(result_root), "--run-id", x_row["run_id"], "--task-authority", str(AUTHORITY), "--output", calibration_roles[0]["artifacts"]["x64lens"]["path"]], timeout=60)
         require(overwrite.returncode == 2 and "output already exists" in overwrite.stderr, "relation artifact overwrite was accepted")
 
     print(
         "sprint11-measurement-plane-smoke: ok "
         "targets=3 runner_rows=12 relation_artifacts=12 runtime_closures=4 "
-        "coordinate_roles=3 calibrated_tools=2 mismatch_controls=1 adversarial_cases=2 generic_counts=0"
+        "coordinate_roles=3 calibrated_tools=2 mismatch_controls=1 adversarial_cases=3 source_drift=1 forged_relations=1 generic_counts=0"
     )
     return 0
 

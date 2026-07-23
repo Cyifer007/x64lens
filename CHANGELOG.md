@@ -8,6 +8,22 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 11 Patch 060 authenticated provisional campaign execution with complete 24-comparison plus six-control condition accounting, retained native successes/failures/unavailable states, task-scoped generated summaries, coordinate and runtime-closure qualifications, and an engineering capability/performance gap register.
+- Patch 059 corrective integrity hardening for authority-bound version commands, no-follow artifact ancestry, relation reproduction from retained native evidence, task-snapshot runtime closure, reserve-and-exchange runner/corpus publication, and identity-bound private rollback.
+- `make patch059-corrective-regression-smoke`, `make sprint11-p060-campaign-smoke`, `make bench-sprint11-provisional-campaign`, ADR 0046, and the Patch 060 validation record. Patch 060 remains diagnostic, unfrozen, and publication-ineligible.
+
+- Sprint 11 Patch 059 diagnostic stage-zero measurement-plane infrastructure:
+  campaign-bound baseline normalization, matched x64lens relation extraction,
+  bounded runtime-closure manifests, role-specific address-coordinate
+  calibration, and a pre-execution 24-comparison plus six-control campaign plan.
+- Transaction and evidence-integrity hardening for future output paths, stage
+  ownership, post-rename failure, partial creation, repeated interruption,
+  retained stream limits, exact version evidence, and duplicate corpus-tool
+  records.
+- ADR 0045 and the Patch 059 validation record. Patch 059 remains diagnostic,
+  unfrozen, and publication-ineligible; it does not execute the comparative
+  campaign or establish performance, RSS, coverage, or superiority results.
+
 - Sprint 11 Patch 058 task-normalized ROPgadget, Ropper, and ropr native-output adapters with exact task-command reconciliation, authenticated tool, target, retained version-output, and native-stream files, bounded streams and parser state, late input reauthentication, duplicate-preserving tool-specific metrics, an explicit unavailable raw-byte relation, and a canonical `pop rdi; ret` relation over represented instruction text.
 - Regression coverage for output-limit rows, future capture-path symlinks, staging substitution, early interruption, post-publication commit recognition, retained corpus output/log limits, conservative baseline parsing, and absence of an unlabeled cross-tool gadget count.
 - ADR 0044, task-authority version 2, `make baseline-output-adapter-smoke`, and the Patch 058 validation record.

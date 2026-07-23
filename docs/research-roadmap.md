@@ -22,7 +22,7 @@ diagnostic-integrity boundary with execution-sealed non-executable target inputs
 exact compiler workspace and retained-member closure, checked staging cleanup,
 and safe corpus removal. The Patch 058 implementation candidate adds bounded
 standalone native-output adapters for ROPgadget, Ropper, and ropr plus additional
-runner and corpus evidence-integrity corrections. The repository now provides:
+runner and corpus evidence-integrity corrections. Patch 059 corrects campaign binding and establishes the diagnostic stage-zero measurement plane. Patch 060 corrects remaining integrity findings, executes the available-tool 30-condition campaign, and generates task summaries plus the engineering gap register. The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -44,6 +44,9 @@ runner and corpus evidence-integrity corrections. The repository now provides:
   post-child artifact reconciliation, and subreaper-backed process-tree cleanup,
 - standalone task-normalized baseline adapters with tool-specific metrics,
   represented-text relations, and an explicit unavailable raw-byte relation,
+- campaign-bound normalization, retained-report-derived matched x64lens
+  relations, bounded runtime closure, manifest-bound coordinate calibration, and
+  a pre-execution 24-comparison plus six-control plan,
 - a repeatable checkpoint demonstration.
 
 The `v0.1.0-dev` tag identifies the Sprint 6 integrated-prototype checkpoint.
@@ -51,8 +54,9 @@ Patches 046 through 053 are later pre-release work, not a research release or
 evidence of universal performance or coverage superiority. Patch 054 closes
 Sprint 10 and activates Sprint 11 diagnostic measurement. Patches 055 through
 057 implement and harden the runner, task-definition, and provisional-corpus
-tranches. The Patch 058 candidate adds standalone baseline normalization. None
-creates a publication campaign or changes the reference analyzer.
+tranches. The Patch 058 candidate adds standalone baseline normalization, and the
+Patch 059 candidate supplies the corrected stage-zero plane. Neither creates an
+executed comparative or publication campaign or changes the reference analyzer.
 
 ## Sprint 7 evidence checkpoint
 
@@ -96,7 +100,7 @@ Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Pat
 
 Use a fixed corpus, baseline versions, high-resolution timing, per-child resource measurements, raw result preservation, and generated summaries.
 
-Status: smoke plumbing exists. Patches 055 through 057 implement and harden the high-resolution diagnostic runner, controlled reference conditions, initial task authority, and a reproducible 24-target provisional corpus. The Patch 058 implementation candidate adds standalone baseline adapters, but corpus-backed diagnostic rows, adapter-to-row binding, development summaries, and the engineering gap register remain active Sprint 11 work. Sprints 12 through 14 use diagnostic evidence for capability hardening. Sprint 15 freezes the campaign, Sprint 16 runs the preview pilot, and Sprint 17 runs publication-grade repeated trials.
+Status: smoke plumbing exists. Patches 055 through 057 implement and harden the high-resolution diagnostic runner, controlled reference conditions, initial task authority, and a reproducible 24-target provisional corpus. The Patch 058 implementation candidate adds standalone baseline adapters, and the Patch 059 implementation candidate adds campaign binding plus the stage-zero measurement plane. Planned Patch 060 owns corpus-backed diagnostic rows, development summaries, and the engineering gap register; planned Patch 061 owns closeout. Sprints 12 through 14 use diagnostic evidence for capability hardening. Sprint 15 freezes the campaign, Sprint 16 runs the preview pilot, and Sprint 17 runs publication-grade repeated trials.
 
 ### Stage 6: operational case study
 
@@ -376,8 +380,9 @@ The corpus is intentionally small and mutable. It can reveal output-cost,
 loader-role, mitigation, semantic, and baseline-definition gaps, but it cannot
 support superiority or representativeness claims. Patch 057 first corrects the
 measurement-integrity findings. Patch 058 adds normalized baseline adapters;
-Patch 059 uses the resulting rows to form the engineering gap register for
-Sprints 12 through 14.
+Patch 059 corrects their campaign binding and establishes the stage-zero plane;
+planned Patch 060 uses the resulting rows to form the engineering gap register
+for Sprints 12 through 14.
 
 ## Sprint 11 Patch 057 research posture
 
@@ -396,6 +401,22 @@ text, and leave the raw executable-return-byte relation unavailable.
 
 The standalone adapters authenticate supplied files and declared metadata but do
 not consume a runner row, campaign manifest, child outcome, or capture record.
-Patch 059 therefore owns corpus-backed rows, the execution-to-normalization
-binding, development summaries, and the engineering gap register. Patch 060
-remains the Sprint 11 closeout boundary.
+Patch 059 therefore owns the execution-to-normalization correction and the
+stage-zero plane. Planned Patch 060 owns corpus-backed rows, development
+summaries, and the engineering gap register. Planned Patch 061 remains the
+Sprint 11 closeout boundary.
+
+## Sprint 11 Patch 059 research posture
+
+Patch 059 adds no comparative result and no analyzer capability. It binds
+baseline normalization to one authenticated runner row, derives the matched
+x64lens relation from a retained complete report, records bounded runtime
+closure, and calibrates address coordinates across manifest-bound roles. The
+maintained 30-condition plan remains pre-execution authority.
+
+All derived artifacts remain diagnostic, unfrozen, and publication-ineligible.
+Native baseline populations, normalized relations, x64lens evidence-layer
+populations, and binary presence remain distinct; baseline raw executable-byte
+presence remains unavailable. Planned Patch 060 runs the provisional campaign
+and produces the engineering gap register, and planned Patch 061 closes the
+sprint.

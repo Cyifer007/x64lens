@@ -171,15 +171,20 @@ def assert_publication_and_partial_create(base: Path) -> None:
     (owned.path / "owned.txt").write_text("owned\n", encoding="utf-8")
     escaped = root / ".escaped-owned"
     final = root / "published"
-    original_publish = module.atomic_publish_noreplace
+    original_exchange = module._rename_exchange
 
-    def substitute_then_publish(stage: Path, destination: Path) -> None:
-        os.rename(stage, escaped)
-        stage.mkdir()
-        (stage / "foreign.txt").write_text("foreign\n", encoding="utf-8")
-        original_publish(stage, destination)
+    exchange_calls = 0
 
-    module.atomic_publish_noreplace = substitute_then_publish
+    def substitute_then_exchange(parent_fd: int, left: str, right: str, label: str) -> None:
+        nonlocal exchange_calls
+        exchange_calls += 1
+        if exchange_calls == 1:
+            os.rename(owned.path, escaped)
+            owned.path.mkdir()
+            (owned.path / "foreign.txt").write_text("foreign\n", encoding="utf-8")
+        original_exchange(parent_fd, left, right, label)
+
+    module._rename_exchange = substitute_then_exchange
     try:
         try:
             module._publish_owned_stage(owned, final, "runner publication substitution regression")
@@ -188,12 +193,15 @@ def assert_publication_and_partial_create(base: Path) -> None:
         else:
             raise SmokeError("runner committed a substituted publication tree")
         require(owned.committed is False, "substituted publication was marked committed")
-        require((final / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign publication tree changed")
+        require(not final.exists(), "substituted publication occupied the final name")
+        require((owned.path / "foreign.txt").read_text(encoding="utf-8") == "foreign\n", "foreign stage changed")
         owned.cleanup("runner publication substitution cleanup")
         require(not escaped.exists(), "escaped runner-owned publication tree survived cleanup")
-        require(final.is_dir(), "owned cleanup deleted the foreign publication tree")
+        require(owned.path.is_dir(), "owned cleanup deleted the foreign stage")
+        (owned.path / "foreign.txt").unlink()
+        owned.path.rmdir()
     finally:
-        module.atomic_publish_noreplace = original_publish
+        module._rename_exchange = original_exchange
         owned.close()
 
     # A durability error after the rename preserves the complete tree but remains an error.
@@ -211,11 +219,11 @@ def assert_publication_and_partial_create(base: Path) -> None:
     output = base / "publish-error-output"
     write_spec(spec, "publish-error-regression", tool, target, ["run"])
 
-    def rename_then_fail(stage: Path, destination: Path) -> None:
-        os.rename(stage, destination)
+    def rename_then_fail(parent_fd: int, left: str, right: str, label: str) -> None:
+        original_exchange(parent_fd, left, right, label)
         raise OSError(errno.EIO, "injected durability failure after rename")
 
-    module.atomic_publish_noreplace = rename_then_fail
+    module._rename_exchange = rename_then_fail
     try:
         try:
             module.run_campaign(spec, output, None)
@@ -224,7 +232,7 @@ def assert_publication_and_partial_create(base: Path) -> None:
         else:
             raise SmokeError("post-rename durability error was converted into success")
     finally:
-        module.atomic_publish_noreplace = original_publish
+        module._rename_exchange = original_exchange
     require((output / "publish-error-regression" / "manifest.json").is_file(), "committed result was lost after durability error")
 
     # A descriptor-open failure immediately after mkdir must remove the partial object.

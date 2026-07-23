@@ -432,7 +432,26 @@ limits, and adapter source before emitting normalized facts. Native output and
 duplicates remain retained. Uncategorized output fails closed, and no
 tool-specific total may be relabeled as an unlabeled cross-tool `gadget_count`.
 
-File authentication is not execution provenance. Before a normalized artifact
-enters a campaign row or summary, orchestration must bind it to the corresponding
-runner row, manifest, child outcome, and capture identities. A standalone adapter
-that does not consume those records cannot establish that binding.
+File authentication is not execution provenance. A current normalized artifact
+must consume and bind the corresponding runner row, manifest, child outcome,
+exact command, and retained tool, target, version, stdout, and stderr identities.
+Standalone hashes or caller-supplied files cannot establish that binding.
+
+## Stage-zero derived-artifact rule
+
+A matched x64lens relation extractor may consume an authenticated retained report
+but must not rescan target bytes, parse ELF as runtime authority, classify or
+score candidates, or modify analyzer facts. The native report and its raw, exact,
+semantic, unknown, and scored populations remain authoritative and separately
+retained.
+
+Address-coordinate calibration must bind requested `ET_EXEC`, PIE-intended
+`ET_DYN`, and shared-object `ET_DYN` roles to the verified corpus manifest;
+`ET_DYN` alone cannot establish PIE/DSO identity. Runtime closure must identify
+its observed path and bounds. A `complete` result is complete only within that
+observation and must not be described as a universal package or dependency
+guarantee.
+
+Stage-zero plans and controlled artifacts remain diagnostic, unfrozen, and
+publication-ineligible. They do not become comparative evidence merely because
+their commands, hashes, or condition counts are complete.

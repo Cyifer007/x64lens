@@ -40,6 +40,8 @@ import uuid
 RUNNER_SCHEMA_VERSION = 2
 EVIDENCE_CLASS = "diagnostic"
 PUBLICATION_ELIGIBLE = False
+RENAME_NOREPLACE = 1
+RENAME_EXCHANGE = 2
 MFD_NOEXEC_SEAL_FLAG = 0x0008
 MFD_EXEC_FLAG = 0x0010
 F_SEAL_EXEC_FLAG = 0x0020
@@ -294,6 +296,12 @@ class OwnedStage:
             os.close(parent_fd)
             raise
 
+    @property
+    def authoritative_path(self) -> Path:
+        """Descriptor-rooted path that continues to name the owned directory."""
+        require(self.directory_fd >= 0, "staging directory descriptor is closed")
+        return Path(f"/proc/self/fd/{self.directory_fd}")
+
     def close(self) -> None:
         if self.directory_fd >= 0:
             os.close(self.directory_fd)
@@ -360,30 +368,118 @@ class OwnedStage:
             restore_signal_mask_deferred(previous)
 
 
+def _rename_exchange(parent_fd: int, left: str, right: str, label: str) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    renameat2 = getattr(libc, "renameat2", None)
+    require(renameat2 is not None, "Linux renameat2 is required for authenticated publication")
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    result = renameat2(parent_fd, os.fsencode(left), parent_fd, os.fsencode(right), RENAME_EXCHANGE)
+    if result != 0:
+        code = ctypes.get_errno()
+        raise RunnerError(f"{label} exchange failed: {os.strerror(code)}")
+
+
+def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], label: str) -> None:
+    metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(
+        stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity,
+        f"{label} placeholder identity changed",
+    )
+    os.rmdir(name, dir_fd=parent_fd)
+
+
 def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
-    """Commit one owned stage and prove the final name has the owned inode."""
-    stage.require_named_identity(label)
+    """Commit exactly the creation-time stage inode with exchange-and-verify CAS.
+
+    A private placeholder reserves the final name. An atomic exchange moves the
+    object currently named as the stage to the final name; post-exchange inode
+    authentication either commits the owned directory or exchanges a substituted
+    object back and removes the placeholder.
+    """
+    final_absolute = Path(os.path.abspath(final))
+    require(final_absolute.parent == stage.parent, f"{label} final path is outside the staging parent")
     previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    placeholder_fd = -1
+    placeholder_identity: tuple[int, int] | None = None
+    exchanged = False
     try:
+        stage.require_named_identity(label)
         try:
-            atomic_publish_noreplace(stage.path, final)
-        except BaseException:
-            try:
-                metadata = os.stat(final, follow_symlinks=False)
-            except OSError:
-                pass
-            else:
-                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode):
-                    stage.committed = True
-            raise
-        metadata = os.stat(final, follow_symlinks=False)
-        require(
-            stat.S_ISDIR(metadata.st_mode)
-            and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode),
-            f"{label} publication committed a substituted directory",
+            os.mkdir(final_absolute.name, 0o700, dir_fd=stage.parent_fd)
+        except FileExistsError as exc:
+            raise RunnerError(f"campaign result already exists: {final_absolute}") from exc
+        placeholder_fd = os.open(
+            final_absolute.name,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=stage.parent_fd,
         )
+        placeholder_stat = os.fstat(placeholder_fd)
+        placeholder_identity = (placeholder_stat.st_dev, placeholder_stat.st_ino)
+        _rename_exchange(stage.parent_fd, stage.name, final_absolute.name, label)
+        exchanged = True
+        final_stat = os.stat(final_absolute.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+        if not (
+            stat.S_ISDIR(final_stat.st_mode)
+            and (final_stat.st_dev, final_stat.st_ino) == (stage.device, stage.inode)
+        ):
+            _rename_exchange(stage.parent_fd, final_absolute.name, stage.name, f"{label} rollback")
+            exchanged = False
+            _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+            placeholder_identity = None
+            os.fsync(stage.parent_fd)
+            raise RunnerError(f"{label} publication refused a substituted directory")
+        stage_placeholder = os.stat(stage.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+        require(
+            stat.S_ISDIR(stage_placeholder.st_mode)
+            and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
+            f"{label} placeholder changed after exchange",
+        )
+        os.rmdir(stage.name, dir_fd=stage.parent_fd)
+        placeholder_identity = None
+        os.fsync(stage.parent_fd)
         stage.committed = True
+    except BaseException as failure:
+        recovery_failure: BaseException | None = None
+        if placeholder_identity is not None:
+            try:
+                try:
+                    final_stat = os.stat(final_absolute.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+                    final_identity = (final_stat.st_dev, final_stat.st_ino)
+                except FileNotFoundError:
+                    final_identity = None
+                try:
+                    stage_stat = os.stat(stage.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+                    stage_identity = (stage_stat.st_dev, stage_stat.st_ino)
+                except FileNotFoundError:
+                    stage_identity = None
+
+                owned_identity = (stage.device, stage.inode)
+                if final_identity == owned_identity:
+                    if stage_identity == placeholder_identity:
+                        _remove_placeholder(stage.parent_fd, stage.name, placeholder_identity, label)
+                    stage.committed = True
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+                elif final_identity == placeholder_identity:
+                    _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+                elif stage_identity == placeholder_identity and final_identity is not None:
+                    _rename_exchange(stage.parent_fd, final_absolute.name, stage.name, f"{label} recovery")
+                    _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+            except BaseException as exc:
+                recovery_failure = exc
+        if recovery_failure is not None:
+            raise RunnerError(
+                f"{label} publication failed with {type(failure).__name__}; recovery also failed: {recovery_failure}"
+            ) from failure
+        raise
     finally:
+        if placeholder_fd >= 0:
+            os.close(placeholder_fd)
         restore_signal_mask_deferred(previous)
 
 
@@ -801,17 +897,48 @@ def require_campaign_snapshot_identities(
     require_execution_identity(probe, "timer floor probe", 0o555)
 
 
+
+
+def open_directory_nofollow(path: Path, label: str) -> int:
+    """Open a directory without accepting symlink ancestors.
+
+    A descriptor-rooted ``/proc/self/fd/<n>`` prefix is accepted only for an
+    already-open directory descriptor owned by this process. Every remaining
+    component is opened relative to the preceding descriptor with O_NOFOLLOW.
+    """
+    absolute = Path(os.path.abspath(path))
+    parts = absolute.parts
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    proc_prefix = (os.sep, "proc", "self", "fd")
+    if len(parts) >= 5 and parts[:4] == proc_prefix and parts[4].isdigit():
+        source_fd = int(parts[4])
+        try:
+            current_fd = os.dup(source_fd)
+        except OSError as exc:
+            raise RunnerError(f"{label} descriptor root is unavailable") from exc
+        remaining = parts[5:]
+    else:
+        current_fd = os.open(os.sep, flags)
+        remaining = parts[1:]
+    try:
+        metadata = os.fstat(current_fd)
+        require(stat.S_ISDIR(metadata.st_mode), f"{label} root is not a directory")
+        for component in remaining:
+            require(component not in {"", ".", ".."}, f"{label} contains an unsafe component")
+            next_fd = os.open(component, flags, dir_fd=current_fd)
+            os.close(current_fd)
+            current_fd = next_fd
+            metadata = os.fstat(current_fd)
+            require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
+        return current_fd
+    except BaseException:
+        os.close(current_fd)
+        raise
+
 def write_json(path: Path, value: Any) -> None:
     data = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
-    parent_metadata = os.lstat(path.parent)
-    require(stat.S_ISDIR(parent_metadata.st_mode), f"JSON parent is not a real directory: {path.parent}")
-    parent_fd = os.open(
-        path.parent,
-        os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-    )
+    parent_fd = open_directory_nofollow(path.parent, f"JSON parent {path.parent}")
     try:
-        observed = os.fstat(parent_fd)
-        require((observed.st_dev, observed.st_ino) == (parent_metadata.st_dev, parent_metadata.st_ino), f"JSON parent changed: {path.parent}")
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         try:
             fd = os.open(path.name, flags, 0o600, dir_fd=parent_fd)
@@ -849,10 +976,15 @@ def fsync_tree(root: Path) -> None:
             flags |= getattr(os, "O_DIRECTORY", 0)
         fd = os.open(path, flags)
         try:
+            observed = os.fstat(fd)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"campaign staging member changed during durability walk: {path.relative_to(root)}",
+            )
             os.fsync(fd)
         finally:
             os.close(fd)
-    fd = os.open(root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | nofollow | cloexec)
+    fd = open_directory_nofollow(root, "campaign staging root")
     try:
         os.fsync(fd)
     finally:
@@ -1214,18 +1346,8 @@ def _signal_process_group(pid: int, signum: int) -> None:
 def _open_capture_directory(path: Path, label: str) -> int:
     """Create one result directory exclusively below a real existing parent."""
     parent = path.parent
-    parent_metadata = os.lstat(parent)
-    require(stat.S_ISDIR(parent_metadata.st_mode), f"{label} parent is not a real directory")
-    parent_fd = os.open(
-        parent,
-        os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-    )
+    parent_fd = open_directory_nofollow(parent, f"{label} parent")
     try:
-        observed_parent = os.fstat(parent_fd)
-        require(
-            (observed_parent.st_dev, observed_parent.st_ino) == (parent_metadata.st_dev, parent_metadata.st_ino),
-            f"{label} parent changed while being opened",
-        )
         try:
             os.mkdir(path.name, 0o700, dir_fd=parent_fd)
         except FileExistsError as exc:
@@ -2125,12 +2247,8 @@ def write_rows(path: Path, rows: list[dict[str, Any]]) -> None:
     for row in rows:
         writer.writerow({field: render_row_value(row.get(field)) for field in ROW_FIELDS})
     data = buffer.getvalue().encode("utf-8")
-    parent_metadata = os.lstat(path.parent)
-    require(stat.S_ISDIR(parent_metadata.st_mode), f"rows parent is not a real directory: {path.parent}")
-    parent_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0))
+    parent_fd = open_directory_nofollow(path.parent, f"rows parent {path.parent}")
     try:
-        observed = os.fstat(parent_fd)
-        require((observed.st_dev, observed.st_ino) == (parent_metadata.st_dev, parent_metadata.st_ino), "rows parent changed")
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         try:
             fd = os.open(path.name, flags, 0o600, dir_fd=parent_fd)
@@ -2326,7 +2444,7 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
             CREATING_STAGE = False
         if INTERRUPTED_BY is not None:
             raise RunnerInterrupted(f"interrupted by {signal.Signals(INTERRUPTED_BY).name}")
-        stage = owned_stage.path
+        stage = owned_stage.authoritative_path
         spec_snapshot = stage / "inputs" / "spec" / "campaign.json"
         spec_snapshot.parent.mkdir(parents=True, exist_ok=True)
         spec_snapshot.write_bytes(spec_raw)

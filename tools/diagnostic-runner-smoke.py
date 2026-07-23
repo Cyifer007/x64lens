@@ -293,13 +293,13 @@ def assert_publish_commit_detection(tmp: Path) -> None:
     owned = module.OwnedStage.create(root, ".publish.staging")
     final = root / "published"
     (owned.path / "manifest.json").write_text("{}\n", encoding="utf-8")
-    original = module.atomic_publish_noreplace
+    original = module._rename_exchange
 
-    def publish_then_interrupt(stage: Path, destination: Path) -> None:
-        original(stage, destination)
+    def publish_then_interrupt(parent_fd: int, left: str, right: str, label: str) -> None:
+        original(parent_fd, left, right, label)
         raise module.RunnerInterrupted("injected post-rename interruption")
 
-    module.atomic_publish_noreplace = publish_then_interrupt
+    module._rename_exchange = publish_then_interrupt
     try:
         try:
             module._publish_owned_stage(owned, final, "publish commit probe")
@@ -309,8 +309,9 @@ def assert_publish_commit_detection(tmp: Path) -> None:
             raise SmokeError("post-rename interruption was not injected")
         require(owned.committed is True, "post-rename interruption lost committed state")
         require(final.is_dir() and (final / "manifest.json").is_file(), "committed result was not retained")
+        require(not owned.path.exists(), "publication placeholder survived post-rename interruption")
     finally:
-        module.atomic_publish_noreplace = original
+        module._rename_exchange = original
         owned.close()
 
 

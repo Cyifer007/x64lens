@@ -90,6 +90,8 @@ def build_campaign(base: Path, *, authority: dict[str, Any] | None = None) -> tu
         executable.chmod(0o555)
         version_dir = campaign / f"inputs/versions/{tool}"
         version_dir.mkdir()
+        version_work = version_dir / "work"
+        version_work.mkdir()
         version_stdout = version_dir / "stdout.bin"
         version_stdout.write_text(VERSIONS[tool] + "\n", encoding="utf-8")
         version_stdout.chmod(0o444)
@@ -138,10 +140,14 @@ def build_campaign(base: Path, *, authority: dict[str, Any] | None = None) -> tu
             "outcome": "success",
         }
         rows.append(row)
+        version_argv = [item.replace("<tool>", "{tool}") for item in baseline["version_command_template"]]
         tools.append({
             "id": tool,
             "version": VERSIONS[tool],
             "version_observed": VERSIONS[tool],
+            "version_argv": version_argv,
+            "version_command": [os.path.relpath(executable, version_work), *version_argv[1:]],
+            "version_command_cwd": str(version_work.relative_to(campaign)),
             "sha256": tool_sha,
             "size_bytes": executable.stat().st_size,
             "snapshot_path": str(executable.relative_to(campaign)),
@@ -152,6 +158,10 @@ def build_campaign(base: Path, *, authority: dict[str, Any] | None = None) -> tu
                 "stdout_sha256": sha256(version_stdout),
                 "stderr_bytes": 0,
                 "stderr_sha256": sha256(version_stderr),
+                "process_outcome": "success",
+                "exit_code": 0,
+                "signal": None,
+                "timed_out": False,
             },
         })
         result[tool] = {"run_id": run_id, "stdout": stdout, "stderr": stderr}
@@ -292,6 +302,23 @@ def main() -> int:
         manifest.chmod(0o444)
         result = run_adapter(bad_version, records["ropgadget"]["run_id"], authority_copy, base / "bad-version.json")
         require(result.returncode == 2, "substring-only version evidence was accepted")
+        adversarial += 1
+
+        # Version-command syntax is part of the task authority and retained
+        # campaign identity, not merely a version-output string.
+        bad_version_argv = base / "bad-version-argv"
+        shutil.copytree(campaign, bad_version_argv)
+        manifest_path = bad_version_argv / "manifest.json"
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for tool_record in data["tools"]:
+            if tool_record["id"] == "ropgadget":
+                tool_record["version_argv"] = ["{tool}", "--help"]
+                tool_record["version_command"][-1] = "--help"
+        manifest_path.chmod(0o644)
+        manifest_path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        manifest_path.chmod(0o444)
+        result = run_adapter(bad_version_argv, records["ropgadget"]["run_id"], authority_copy, base / "bad-version-argv.json")
+        require(result.returncode == 2 and "version argv differs from task authority" in result.stderr, "authority-inconsistent version argv was accepted")
         adversarial += 1
 
         # The raw-byte line bound applies before ANSI removal.

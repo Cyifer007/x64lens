@@ -1,0 +1,130 @@
+{
+  "schema_version": 2,
+  "plan_id": "sprint11-p060-authenticated-provisional-campaign-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "status": "executable_provisional_campaign_authority",
+  "corpus_spec": "benchmarks/corpus/specs/sprint11-provisional-corpus-v1.json",
+  "task_authority": "benchmarks/task-definitions/sprint11-diagnostic-tasks.json",
+  "reference_profile": "core-1w",
+  "maximum_depth": 4,
+  "execution_policy": {
+    "warmup_runs": 1,
+    "measured_runs": 5,
+    "order_policy": "alternating",
+    "cache_policy": "warm",
+    "timeout_seconds": 120,
+    "fail_campaign_on_error": false,
+    "timer_floor_runs": 9,
+    "timer_floor_threshold_multiplier": 5,
+    "below_floor_batch_sizes": [2, 4, 8, 16, 32, 64],
+    "below_floor_rule": "Prefer a larger target under the same task. If no larger same-task target is available, retain fixed whole-batch rows for K in 2,4,8,16,32,64; do not divide batch time into invented single-run latency."
+  },
+  "tool_authority": [
+    {
+      "id": "x64lens",
+      "required_for_execution": true,
+      "expected_version": "0.1.0-dev",
+      "version_argv": ["{tool}", "version"]
+    },
+    {
+      "id": "ropgadget",
+      "required_for_execution": false,
+      "expected_version": "Version: ROPgadget v7.7",
+      "version_argv": ["{tool}", "--version"]
+    },
+    {
+      "id": "ropper",
+      "required_for_execution": false,
+      "expected_version": "Version: Ropper 1.13.13",
+      "version_argv": ["{tool}", "--version"]
+    },
+    {
+      "id": "ropr",
+      "required_for_execution": false,
+      "expected_version": "ropr 0.2.26",
+      "version_argv": ["{tool}", "--version"]
+    }
+  ],
+  "selection_policy": {
+    "target_count": 6,
+    "roles": ["et_exec", "pie_et_dyn", "shared_et_dyn"],
+    "targets_per_role": 2,
+    "compiler_balance": ["gcc", "clang"],
+    "optimization_balance": ["o0", "o2"],
+    "hardening_balance": ["minimal", "hardened"],
+    "role_targets": {
+      "et_exec": ["gcc-o0-exec-nopie-minimal", "clang-o2-exec-nopie-hardened"],
+      "pie_et_dyn": ["gcc-o0-exec-pie-minimal", "clang-o2-exec-pie-hardened"],
+      "shared_et_dyn": ["gcc-o0-shared-minimal", "clang-o2-shared-hardened"]
+    },
+    "target_ids": [
+      "gcc-o0-exec-nopie-minimal",
+      "clang-o2-exec-nopie-hardened",
+      "gcc-o0-exec-pie-minimal",
+      "clang-o2-exec-pie-hardened",
+      "gcc-o0-shared-minimal",
+      "clang-o2-shared-hardened"
+    ]
+  },
+  "comparative_matrix": {
+    "tools": ["x64lens", "ropgadget", "ropper", "ropr"],
+    "x64lens_condition": "x64lens-gadget-json--<target_id>",
+    "baseline_conditions": [
+      "ropgadget-rop-report--<target_id>",
+      "ropper-rop-report--<target_id>",
+      "ropr-rop-report--<target_id>"
+    ],
+    "condition_count": 24,
+    "required_relation_artifacts_per_successful_condition": 1,
+    "runtime_closure_scope": "one artifact per observed tool/task-scope pair"
+  },
+  "x64lens_control_matrix": {
+    "condition": "x64lens-analysis-json--<target_id>",
+    "condition_count": 6,
+    "purpose": "preserve integrated-analysis cost as a separate non-baseline control"
+  },
+  "total_condition_count": 30,
+  "accounting_states": [
+    "success",
+    "unavailable_tool",
+    "tool_failure",
+    "output_limit",
+    "timeout",
+    "normalization_failure",
+    "closure_partial",
+    "coordinate_mismatch",
+    "coordinate_unavailable",
+    "below_timer_floor"
+  ],
+  "summary_contract": {
+    "requires_all_30_conditions_accounted_for": true,
+    "retains_every_native_runner_row": true,
+    "native_and_normalized_artifacts_remain_separate": true,
+    "statistics_use_only_successful_measured_rows_above_the_reliable_floor": true,
+    "failed_and_below_floor_rows_are_never_dropped": true,
+    "generic_gadget_count_forbidden": true,
+    "manual_summary_edits_forbidden": true,
+    "diagnostic_only": true
+  },
+  "gap_register_contract": {
+    "roadmap_window": [12, 13, 14],
+    "allowed_dispositions": ["selected_priority", "measurement_required", "deferred", "not_supported"],
+    "requires_source_evidence": true,
+    "generic_count_delta_forbidden": true,
+    "unavailable_tool_is_environment_evidence_not_a_product_defect": true,
+    "below_floor_rows_cannot_select_a_performance_priority": true,
+    "coordinate_mismatch_blocks_address_intersection": true
+  },
+  "claim_boundaries": [
+    "This is mutable Sprint 11 diagnostic evidence and is never merged into the Sprint 15-frozen confirmatory campaign after a material change.",
+    "Every planned condition is accounted for even when a pinned optional baseline is unavailable or fails.",
+    "Only task-scoped, explicitly named native and normalized metrics are summarized; no generic gadget count exists.",
+    "Cross-tool address intersections require authenticated role-specific coordinate calibration.",
+    "Runtime closure is an observed task-path dependency surface and may remain partial.",
+    "The six-target screen cannot attribute compiler, optimization, linkage, or hardening effects independently; a full-factor experiment requires the complete balanced matrix.",
+    "Timing below the reliable floor is retained and excluded from single-run performance interpretation.",
+    "Diagnostic results may redirect Sprints 12 through 14 but do not support release-facing superiority claims."
+  ]
+}

@@ -136,7 +136,7 @@ later sprints rather than Patch 037:
   tool, target, retained version-output, and native-stream files,
   duplicate-preserving tool-specific metrics, and canonical `pop rdi; ret`
   normalization over represented instruction text.
-- [ ] Provisional corpus diagnostic campaign and development gap register.
+- [x] Patch 060 authenticated provisional campaign with 30-condition accounting, task-scoped generated summaries, and an engineering development gap register; missing optional baselines remain explicit unavailable conditions.
 - [x] Diagnostic rows isolated from future frozen campaigns.
 
 ### Sprint 12: loader and mitigation precision
@@ -510,8 +510,9 @@ and record sizes, capacity, arena size, tool/schema versions, and optional-
 profile defaults are read from maintained source authorities. Success output is
 derived from observed values.
 
-Remaining Sprint 11 priorities are corpus generation, baseline adapters,
-development summaries, and the Sprint 12-14 engineering gap register.
+Remaining Sprint 11 priorities are the authenticated provisional campaign,
+task-scoped development summaries, the Sprint 12-14 engineering gap register,
+and closeout.
 
 ## Sprint 11 Patch 056 update
 
@@ -525,9 +526,9 @@ Patch 056 completes the first provisional-corpus regeneration surface:
 - [x] interruption cleanup, semantic tamper rejection, and no-replace publication;
 - [x] generated-corpus Git, Docker, and public-bundle exclusion.
 
-Remaining Sprint 11 priorities are corpus-backed diagnostic rows, adapter-to-row
-binding, development summaries, coverage-definition inputs, and the Sprint 12-14
-engineering gap register.
+After the Patch 059 stage-zero measurement plane, remaining Sprint 11 priorities
+are corpus-backed diagnostic rows, development summaries, coverage-definition
+inputs, the Sprint 12-14 engineering gap register, and closeout.
 
 ## Sprint 11 Patch 057 update
 
@@ -544,9 +545,11 @@ comparison scope:
   specification-derived corpus below its output root; and
 - checksum-regeneration probes run under non-root permissions.
 
-Normalized baseline adapters move to Patch 058. Development summaries and the
-engineering gap register move to Patch 059, followed by Sprint 11 closeout in
-Patch 060 unless later evidence requires another corrective boundary.
+Normalized baseline adapters move to Patch 058. Patch 059 corrects their
+execution binding and establishes the stage-zero measurement plane. The
+authenticated campaign, development summaries, and engineering gap register move
+to planned Patch 060, followed by Sprint 11 closeout in planned Patch 061 unless
+later evidence requires another corrective boundary.
 
 ## Sprint 11 Patch 058 update
 
@@ -558,6 +561,42 @@ these external baselines.
 
 Each standalone adapter authenticates caller-supplied commands, files, hashes,
 limits, and declared version text. It does not consume a diagnostic runner row,
-campaign manifest, execution outcome, or capture record, so Patch 059 must bind
-normalization to corpus-backed rows before generating development summaries and
-the engineering gap register. Patch 060 remains the Sprint 11 closeout boundary.
+campaign manifest, execution outcome, or capture record. Patch 059 replaces that
+standalone boundary with campaign-bound normalization before any development
+summary. Planned Patch 060 runs the authenticated campaign and produces the
+engineering gap register; planned Patch 061 remains the Sprint 11 closeout
+boundary.
+
+## Sprint 11 Patch 059 update
+
+The Patch 059 implementation candidate corrects the remaining transaction and
+adapter-binding failures and establishes a diagnostic stage-zero measurement
+plane:
+
+- each normalized baseline artifact binds one authenticated runner row and its
+  retained command, tool, target, exact version, stdout, and stderr objects;
+- the matched x64lens extractor derives the narrow relation from a retained
+  complete report without rescanning bytes or becoming analyzer authority;
+- address calibration keeps manifest-bound `ET_EXEC`, PIE-intended `ET_DYN`, and
+  shared-object `ET_DYN` roles separate;
+- runtime closure is bounded observed evidence rather than a universal
+  dependency claim; and
+- the 24-comparison plus six-control plan remains pre-execution authority.
+
+Patch 059 is diagnostic, unfrozen, and publication-ineligible. It produces no
+corpus-wide comparative result, development summary, or gap register.
+
+
+## Sprint 11 Patch 060 backlog update
+
+Patch 060 corrects the remaining Patch 059 evidence-integrity findings and
+executes the authenticated provisional campaign for every available tool while
+retaining missing baselines as unavailable conditions. It generates task-scoped
+summaries and an engineering gap register without introducing a generic gadget
+count, causal factor attribution, or publication claim.
+
+Evidence-backed handoff priorities are bounded PIE-versus-DSO identity and GNU
+property evidence in Sprint 12, followed by exact-only semantic-role decisions
+in Sprint 13. Candidate-scoped decoding and concurrency remain deferred Sprint
+14 ablations because the current campaign does not justify making either
+profile mandatory. Patch 061 owns Sprint 11 closeout.

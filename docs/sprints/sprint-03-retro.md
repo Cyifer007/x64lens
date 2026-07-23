@@ -206,7 +206,7 @@ pattern: ret imm16
 - **Comment and documentation contract:** followed. Touched source, test, benchmark, and documentation files were updated together.
 - **Output contract:** followed. Text output reports raw facts and exact patterns without claiming exploitability.
 - **Research contract:** followed. Smoke benchmark output is treated as development evidence, not publication evidence.
-- **Context persistence contract:** followed. Sprint state, backlog, validation plan, benchmark methodology, and project context were updated.
+- **Maintained authorities:** Sprint state, backlog, validation plan, and benchmark methodology were reconciled at closeout.
 
 ## Known limitations after Sprint 3
 

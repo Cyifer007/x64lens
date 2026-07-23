@@ -417,6 +417,15 @@ def normalize(args: argparse.Namespace) -> tuple[bytes, Any, list[tuple[str, dic
         require(adapter.get("campaign_row_binding_required") is True, f"campaign-row binding is not required for {tool_id}")
 
         tool = context.tools[tool_id]
+        expected_version_argv = [
+            item.replace("<tool>", "{tool}")
+            for item in baseline.get("version_command_template", [])
+        ]
+        require(
+            expected_version_argv
+            and tool.get("version_argv") == expected_version_argv,
+            f"runner version argv differs from task authority for {tool_id}",
+        )
         target = context.targets[row["target_id"]]
         command_cwd_identity = directory_member_identity(context.root_fd, context.root, row["command_cwd"], f"row {row['run_id']} command cwd")
         command_cwd = context.root.joinpath(*Path(row["command_cwd"]).parts).resolve(strict=True)

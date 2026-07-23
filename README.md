@@ -4,6 +4,10 @@
 
 > Status: Sprints 1 through 10 are complete after Patch 054. Sprint 10 delivered ordered multi-pop, register-transfer, stack-adjust, bounded qword memory, coarse and architectural effects, selective scoring, fixture reconciliation, and the benchmark-informed twenty-two-sprint roadmap. Sprint 11 is active as the diagnostic benchmark foundation; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
+> Patch 059 is an implementation candidate for the diagnostic stage-zero
+> measurement plane. It does not contain an executed comparative campaign or a
+> performance, RSS, coverage, or superiority result.
+>
 > Tool version: `0.1.0-dev`
 >
 > JSON schema version: `0.2.0`
@@ -352,6 +356,46 @@ make baseline-output-adapter-smoke
 
 See [ADR 0044](docs/adr/0044-task-normalized-baseline-adapters-and-diagnostic-integrity.md)
 and the [Patch 058 validation record](docs/sprints/sprint-11-patch-058-validation.md).
+
+Patch 059 upgrades the task authority and baseline adapters to bind each
+normalized artifact to one authenticated campaign row, its child outcome, and
+the retained tool, target, exact version, stdout, and stderr objects. Standalone
+file hashes are not treated as end-to-end execution provenance. Native records,
+duplicates, return-terminator sites, normalized relations, binary presence, and
+x64lens raw/exact/semantic/unknown/scored populations remain distinct; there is
+no generic cross-tool `gadget_count`, and decoder-backed baseline output does not
+stand in for unavailable loader-authoritative raw-byte presence.
+
+The matched x64lens extractor consumes the retained complete schema `0.2.0`
+`gadgets` report. It does not rescan target bytes, parse ELF as runtime
+authority, classify or score candidates, or modify analyzer facts. Coordinate
+calibration uses manifest-bound `ET_EXEC`, PIE-intended `ET_DYN`, and
+shared-object `ET_DYN` roles; `ET_DYN` alone does not establish PIE or DSO
+identity. Runtime closure is a bounded observation of the declared path. Even a
+`complete` closure is complete only within that observation, and a Python
+version-command path may be narrower than a later analysis command.
+
+Patch 060 converts the maintained 30-condition authority into an authenticated
+provisional campaign. Every comparative, control, failed, below-floor, and
+unavailable-tool condition remains explicit. Generated task summaries preserve
+native rows, task scope, coordinate qualification, and bounded runtime closure;
+the engineering gap register selects only evidence-backed Sprint 12-14 work.
+The result remains `diagnostic`, `frozen: false`, and
+`publication_eligible: false`. Missing baselines are recorded rather than
+silently dropped or replaced. Patch 061 performs Sprint 11 closeout.
+
+```bash
+make patch059-corrective-regression-smoke
+make sprint11-measurement-plane-smoke
+make sprint11-campaign-plan-smoke
+make sprint11-p060-campaign-smoke
+make bench-sprint11-provisional-campaign
+```
+
+See [ADR 0045](docs/adr/0045-measurement-plane-and-transaction-integrity.md),
+[ADR 0046](docs/adr/0046-authenticated-provisional-campaign-and-gap-register.md),
+the [Patch 059 validation record](docs/sprints/sprint-11-patch-059-validation.md),
+and the [Patch 060 validation record](docs/sprints/sprint-11-patch-060-validation.md).
 
 ## Architecture
 

@@ -186,3 +186,61 @@ Patch 058 also moves runner and corpus output capture to bounded parent-owned
 pipes, follows owned staging objects after same-parent renames, preserves
 unrelated replacements, rechecks retained corpus limits, and records a completed
 no-replace publication as committed when interruption follows the commit.
+
+## Sprint 11 Patch 059 stage-zero measurement plane
+
+Patch 059 upgrades the task authority to version 3 and makes baseline
+normalization campaign-bound. The adapter now consumes one authenticated runner
+manifest and row, verifies the child outcome plus retained tool, target, exact
+version, stdout, and stderr objects, and preserves native records separately from
+normalized relations. File hashes without that binding are not execution
+provenance.
+
+The matched x64lens relation extractor consumes the retained complete schema
+`0.2.0` `gadgets` report. It does not rescan target bytes, parse ELF as runtime
+authority, classify or score candidates, or modify analyzer facts. The extractor
+preserves x64lens raw, exact, semantic, unknown, and scored populations while
+emitting only the narrow represented `pop rdi; ret` relation and binary-presence
+fact. Baseline native records, unique and duplicate records, return-terminator
+sites, normalized relations, and binary presence remain separate, and baseline
+raw executable-byte presence remains unavailable.
+
+Address calibration uses manifest-bound `ET_EXEC`, PIE-intended `ET_DYN`, and
+shared-object `ET_DYN` roles; `ET_DYN` alone is not PIE/DSO identity. Runtime
+closure records a bounded observation of native dependencies or the retained
+version-command path. `complete` means no unresolved dependency within that
+observation, not a universal dependency guarantee.
+
+```bash
+make diagnostic-transaction-smoke
+make sprint11-measurement-plane-smoke
+make sprint11-campaign-plan-smoke
+```
+
+The 24-comparison plus six-control plan remains pre-execution authority. Patch
+059 is diagnostic, unfrozen, and publication-ineligible and supplies no
+comparative performance, RSS, coverage, or superiority result. Patch 060 is the
+planned authenticated campaign, summary, and gap-register tranche; Patch 061 is
+the planned Sprint 11 closeout.
+
+
+## Sprint 11 Patch 060 provisional campaign
+
+Patch 060 executes the complete 30-condition authority through
+`benchmarks/scripts/sprint11-provisional-campaign.py`. The campaign preserves
+24 gadget-report comparisons, six independent x64lens analyze controls, native
+runner rows, normalized relation artifacts, task-path runtime closures, address
+coordinate status, task-scoped summaries, and the engineering gap register.
+
+```bash
+make provisional-corpus-verify
+make sprint11-p060-campaign-smoke
+make bench-sprint11-provisional-campaign
+```
+
+Optional baselines are never substituted. Missing executables remain explicit
+`unavailable_tool` conditions. Successful rows below the measured timer floor
+remain `below_timer_floor`; they are not divided into synthetic per-run values.
+The six selected targets are a diagnostic screen and cannot identify causal
+compiler, optimization, linkage, or hardening effects. All Patch 060 artifacts
+remain diagnostic, unfrozen, and publication-ineligible.

@@ -222,8 +222,9 @@ Patch 056 completes the first corpus-regeneration tranche:
 
 This advances but does not complete the Sprint 11 diagnostic gate. Patch 057
 corrects the runner and corpus integrity findings. Patch 058 owns normalized
-baseline adapters, and Patch 059 owns corpus-backed summaries and the
-engineering gap register.
+baseline adapters, Patch 059 owns their campaign binding and the stage-zero
+measurement plane. Patch 060 owns corpus-backed summaries and the engineering
+gap register, and Patch 061 owns closeout.
 
 ## Sprint 11 Patch 057 integrity status
 
@@ -231,7 +232,8 @@ The diagnostic gate now requires a non-executable execution-sealed target
 object, exact command-workspace and corpus-member closure, verified staging
 cleanup, and a manifest-recognized clean path. These are method-integrity gates,
 not capability or performance results. At the Patch 057 boundary, baseline
-normalization remained open for Patch 058 and the gap register for Patch 059.
+normalization remained open for Patch 058; later evidence inserted the Patch 059
+stage-zero correction before the Patch 060 campaign and gap register.
 
 ## Sprint 11 Patch 058 baseline-normalization status
 
@@ -243,6 +245,22 @@ unavailable.
 
 The adapters authenticate caller-supplied commands, files, hashes, limits, and
 declared version text, but do not consume runner rows, campaign manifests, child
-outcomes, or capture records. Patch 059 must bind normalization to corpus-backed
-rows before summaries or the engineering gap register are generated. Patch 060
-remains the closeout boundary; Sprint 15 remains the campaign freeze.
+outcomes, or capture records. Patch 059 replaces that standalone interface with
+campaign-bound normalization and the stage-zero measurement plane. Planned Patch
+060 runs the authenticated campaign and produces the summaries and engineering
+gap register; planned Patch 061 owns closeout. Sprint 15 remains the campaign
+freeze.
+
+## Sprint 11 Patch 059 stage-zero status
+
+The Patch 059 implementation candidate adds no comparative result and no analyzer
+capability. It binds normalized baseline artifacts to authenticated runner rows,
+derives a matched x64lens relation from retained reports, records bounded runtime
+closure, calibrates address coordinates across manifest-bound ELF roles, and
+fixes the 24-comparison plus six-control pre-execution plan.
+
+Native records, duplicates, return-terminator sites, normalized relations,
+x64lens evidence-layer populations, and binary presence remain separate. Baseline
+raw executable-byte presence remains unavailable, and no generic cross-tool
+`gadget_count` is introduced. All stage-zero artifacts remain diagnostic,
+unfrozen, and publication-ineligible.

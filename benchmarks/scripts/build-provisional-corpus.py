@@ -40,6 +40,7 @@ RESERVED_ENV = {
 }
 HEX_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 RENAME_NOREPLACE = 1
+RENAME_EXCHANGE = 2
 AT_FDCWD = -100
 FIXED_MTIME = 0
 TARGET_MODE = 0o444
@@ -231,6 +232,12 @@ class OwnedStage:
             os.close(parent_fd)
             raise
 
+    @property
+    def authoritative_path(self) -> Path:
+        """Descriptor-rooted path that continues to name the owned directory."""
+        require(self.directory_fd >= 0, "staging directory descriptor is closed")
+        return pathlib.Path(f"/proc/self/fd/{self.directory_fd}")
+
     def close(self) -> None:
         if self.directory_fd >= 0:
             os.close(self.directory_fd)
@@ -293,31 +300,101 @@ class OwnedStage:
             restore_signal_mask_deferred(previous)
 
 
+def _rename_exchange(parent_fd: int, left: str, right: str, label: str) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    renameat2 = getattr(libc, "renameat2", None)
+    require(renameat2 is not None, "Linux renameat2 is required for authenticated corpus publication")
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    result = renameat2(parent_fd, os.fsencode(left), parent_fd, os.fsencode(right), RENAME_EXCHANGE)
+    if result != 0:
+        code = ctypes.get_errno()
+        raise CorpusError(f"{label} exchange failed: {os.strerror(code)}")
+
+
+def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], label: str) -> None:
+    metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity, f"{label} placeholder identity changed")
+    os.rmdir(name, dir_fd=parent_fd)
+
+
 def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> None:
-    """Commit an authenticated stage and prove the final inode is owned."""
-    stage.require_named_identity(label)
+    """Commit exactly the creation-time corpus stage with exchange-and-verify CAS."""
+    final_absolute = pathlib.Path(os.path.abspath(final))
+    require(final_absolute.parent == stage.parent, f"{label} final path is outside the staging parent")
     previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    placeholder_fd = -1
+    placeholder_identity: tuple[int, int] | None = None
     try:
+        stage.require_named_identity(label)
         try:
-            atomic_publish_noreplace(stage.path, final)
-        except BaseException:
-            try:
-                metadata = os.stat(final, follow_symlinks=False)
-            except OSError:
-                pass
-            else:
-                if stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode):
-                    stage.committed = True
-            raise
-        metadata = os.stat(final, follow_symlinks=False)
-        require(
-            stat.S_ISDIR(metadata.st_mode)
-            and (metadata.st_dev, metadata.st_ino) == (stage.device, stage.inode),
-            f"{label} publication committed a substituted directory",
+            os.mkdir(final_absolute.name, 0o700, dir_fd=stage.parent_fd)
+        except FileExistsError as exc:
+            raise CorpusError(f"corpus already exists; refusing replacement: {final_absolute}") from exc
+        placeholder_fd = os.open(
+            final_absolute.name,
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=stage.parent_fd,
         )
-        stage.committed = True
+        placeholder_stat = os.fstat(placeholder_fd)
+        placeholder_identity = (placeholder_stat.st_dev, placeholder_stat.st_ino)
+        _rename_exchange(stage.parent_fd, stage.name, final_absolute.name, label)
+        final_stat = os.stat(final_absolute.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+        if not (stat.S_ISDIR(final_stat.st_mode) and (final_stat.st_dev, final_stat.st_ino) == (stage.device, stage.inode)):
+            _rename_exchange(stage.parent_fd, final_absolute.name, stage.name, f"{label} rollback")
+            _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+            placeholder_identity = None
+            os.fsync(stage.parent_fd)
+            raise CorpusError(f"{label} publication refused a substituted directory")
+        stage_placeholder = os.stat(stage.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+        require(
+            stat.S_ISDIR(stage_placeholder.st_mode) and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
+            f"{label} placeholder changed after exchange",
+        )
+        os.rmdir(stage.name, dir_fd=stage.parent_fd)
+        placeholder_identity = None
         os.fsync(stage.parent_fd)
+        stage.committed = True
+    except BaseException as failure:
+        recovery_failure: BaseException | None = None
+        if placeholder_identity is not None:
+            try:
+                try:
+                    final_stat = os.stat(final_absolute.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+                    final_identity = (final_stat.st_dev, final_stat.st_ino)
+                except FileNotFoundError:
+                    final_identity = None
+                try:
+                    stage_stat = os.stat(stage.name, dir_fd=stage.parent_fd, follow_symlinks=False)
+                    stage_identity = (stage_stat.st_dev, stage_stat.st_ino)
+                except FileNotFoundError:
+                    stage_identity = None
+                owned_identity = (stage.device, stage.inode)
+                if final_identity == owned_identity:
+                    if stage_identity == placeholder_identity:
+                        _remove_placeholder(stage.parent_fd, stage.name, placeholder_identity, label)
+                    stage.committed = True
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+                elif final_identity == placeholder_identity:
+                    _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+                elif stage_identity == placeholder_identity and final_identity is not None:
+                    _rename_exchange(stage.parent_fd, final_absolute.name, stage.name, f"{label} recovery")
+                    _remove_placeholder(stage.parent_fd, final_absolute.name, placeholder_identity, label)
+                    placeholder_identity = None
+                    os.fsync(stage.parent_fd)
+            except BaseException as exc:
+                recovery_failure = exc
+        if recovery_failure is not None:
+            raise CorpusError(
+                f"{label} publication failed with {type(failure).__name__}; recovery also failed: {recovery_failure}"
+            ) from failure
+        raise
     finally:
+        if placeholder_fd >= 0:
+            os.close(placeholder_fd)
         restore_signal_mask_deferred(previous)
 
 
@@ -783,6 +860,7 @@ def run_command(
     environment: dict[str, str],
     timeout_seconds: int,
     maximum_capture_bytes: int,
+    pass_fds: tuple[int, ...] = (),
 ) -> CommandResult:
     global _ACTIVE_PROCESS, _SPAWNING_PROCESS
     require(argv, "empty command")
@@ -801,6 +879,7 @@ def run_command(
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 start_new_session=True,
+                pass_fds=pass_fds,
             )
             _ACTIVE_PROCESS = process
         except BaseException as exc:
@@ -1175,11 +1254,12 @@ def capture_tool_metadata(
     maximum_capture_bytes: int,
     *,
     compiler: bool,
+    pass_fds: tuple[int, ...] = (),
 ) -> dict[str, Any]:
     base = stage / "inputs" / "tool-versions" / identifier
     base.mkdir(parents=True, exist_ok=True)
     require_workspace_members(workspace)
-    version = run_command([str(path), "--version"], workspace, environment, timeout, maximum_capture_bytes)
+    version = run_command([str(path), "--version"], workspace, environment, timeout, maximum_capture_bytes, pass_fds)
     require_workspace_members(workspace)
     require(version.returncode == 0, f"{identifier} --version failed with exit {version.returncode}")
     write_bytes(base / "version.stdout", version.stdout)
@@ -1197,7 +1277,7 @@ def capture_tool_metadata(
         "version_first_line": version.stdout.decode("utf-8", errors="replace").splitlines()[0] if version.stdout else "",
     })
     if compiler:
-        machine = run_command([str(path), "-dumpmachine"], workspace, environment, timeout, maximum_capture_bytes)
+        machine = run_command([str(path), "-dumpmachine"], workspace, environment, timeout, maximum_capture_bytes, pass_fds)
         require_workspace_members(workspace)
         require(machine.returncode == 0, f"{identifier} -dumpmachine failed with exit {machine.returncode}")
         write_bytes(base / "target.stdout", machine.stdout)
@@ -1247,24 +1327,84 @@ def render_commands_tsv(records: list[dict[str, Any]]) -> str:
     return "\n".join(lines) + "\n"
 
 
+
+
+def open_directory_nofollow(path: pathlib.Path, label: str) -> int:
+    """Open a directory without accepting symlink ancestors.
+
+    ``/proc/self/fd/<n>`` is accepted only as a descriptor root already owned
+    by this process. Remaining components are opened one at a time with
+    O_NOFOLLOW.
+    """
+    absolute = pathlib.Path(os.path.abspath(path))
+    parts = absolute.parts
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    proc_prefix = (os.sep, "proc", "self", "fd")
+    if len(parts) >= 5 and parts[:4] == proc_prefix and parts[4].isdigit():
+        try:
+            current_fd = os.dup(int(parts[4]))
+        except OSError as exc:
+            raise CorpusError(f"{label} descriptor root is unavailable") from exc
+        remaining = parts[5:]
+    else:
+        current_fd = os.open(os.sep, flags)
+        remaining = parts[1:]
+    try:
+        metadata = os.fstat(current_fd)
+        require(stat.S_ISDIR(metadata.st_mode), f"{label} root is not a directory")
+        for component in remaining:
+            require(component not in {"", ".", ".."}, f"{label} contains an unsafe component")
+            next_fd = os.open(component, flags, dir_fd=current_fd)
+            os.close(current_fd)
+            current_fd = next_fd
+            metadata = os.fstat(current_fd)
+            require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
+        return current_fd
+    except BaseException:
+        os.close(current_fd)
+        raise
+
+
+def root_directory_metadata(root: pathlib.Path, label: str) -> os.stat_result:
+    descriptor = open_directory_nofollow(root, label)
+    try:
+        return os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+
 def fsync_tree(root: pathlib.Path) -> None:
     for path in sorted(root.rglob("*")):
-        if path.is_file():
-            with path.open("rb") as handle:
-                os.fsync(handle.fileno())
-    directories = [root, *(path for path in root.rglob("*") if path.is_dir())]
-    for directory in sorted(directories, key=lambda item: len(item.parts), reverse=True):
-        descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+        metadata = path.lstat()
+        require(stat.S_ISREG(metadata.st_mode) or stat.S_ISDIR(metadata.st_mode), f"corpus contains a non-regular member: {path.relative_to(root)}")
+        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        if stat.S_ISDIR(metadata.st_mode):
+            flags |= os.O_DIRECTORY
+        descriptor = os.open(path, flags)
         try:
+            observed = os.fstat(descriptor)
+            require(
+                (observed.st_dev, observed.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"corpus member changed during durability walk: {path.relative_to(root)}",
+            )
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
+    descriptor = open_directory_nofollow(root, "corpus staging root")
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
 
 
 def normalize_tree_metadata(root: pathlib.Path) -> None:
-    directories = [root, *(path for path in root.rglob("*") if path.is_dir())]
-    for directory in directories:
-        require(not directory.is_symlink(), f"corpus contains a symlinked directory: {directory.relative_to(root) if directory != root else '.'}")
+    root_fd = open_directory_nofollow(root, "corpus root")
+    try:
+        os.fchmod(root_fd, DIRECTORY_MODE)
+        os.utime(root_fd, (FIXED_MTIME, FIXED_MTIME))
+    finally:
+        os.close(root_fd)
+    for directory in (path for path in root.rglob("*") if path.is_dir()):
+        require(not directory.is_symlink(), f"corpus contains a symlinked directory: {directory.relative_to(root)}")
         os.chmod(directory, DIRECTORY_MODE)
         os.utime(directory, (FIXED_MTIME, FIXED_MTIME), follow_symlinks=False)
     for path in (path for path in root.rglob("*") if path.is_file()):
@@ -1272,15 +1412,19 @@ def normalize_tree_metadata(root: pathlib.Path) -> None:
 
 
 def validate_tree_metadata(root: pathlib.Path) -> None:
-    for directory in [root, *(path for path in root.rglob("*") if path.is_dir())]:
+    root_metadata = root_directory_metadata(root, "corpus root")
+    require(stat.S_IMODE(root_metadata.st_mode) == DIRECTORY_MODE, "corpus root mode changed")
+    require(root_metadata.st_mtime_ns == 0, "corpus root mtime changed")
+    for directory in (path for path in root.rglob("*") if path.is_dir()):
         metadata = directory.lstat()
         require(stat.S_ISDIR(metadata.st_mode), f"corpus directory metadata changed: {directory}")
-        require(stat.S_IMODE(metadata.st_mode) == DIRECTORY_MODE, f"corpus directory mode changed: {directory.relative_to(root) if directory != root else '.'}")
-        require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {directory.relative_to(root) if directory != root else '.'}")
+        require(stat.S_IMODE(metadata.st_mode) == DIRECTORY_MODE, f"corpus directory mode changed: {directory.relative_to(root)}")
+        require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {directory.relative_to(root)}")
 
 
 def validate_regular_tree(root: pathlib.Path) -> list[pathlib.Path]:
-    require(root.is_dir() and not root.is_symlink(), "corpus root is not a real directory")
+    root_metadata = root_directory_metadata(root, "corpus root")
+    require(stat.S_ISDIR(root_metadata.st_mode), "corpus root is not a real directory")
     files: list[pathlib.Path] = []
     for path in sorted(root.rglob("*")):
         metadata = path.lstat()
@@ -1445,7 +1589,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             _CREATING_STAGE = False
         if _INTERRUPTED_BY is not None:
             raise CorpusInterrupted(_INTERRUPTED_BY)
-        stage = owned_stage.path
+        stage = owned_stage.authoritative_path
         os.chmod(stage, DIRECTORY_MODE)
         for directory in (
             stage / "inputs" / "spec",
@@ -1479,12 +1623,12 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             tool_path = tool_paths[toolchain["id"]]
             tool_records.append(capture_tool_metadata(
                 toolchain["id"], toolchain["command"], tool_path, stage, stage / "command-workdir", environment, timeout,
-                maximum_log_bytes, compiler=True
+                maximum_log_bytes, compiler=True, pass_fds=(owned_stage.directory_fd,)
             ))
         linker_path = tool_paths[spec["linker"]["id"]]
         tool_records.append(capture_tool_metadata(
             spec["linker"]["id"], spec["linker"]["command"], linker_path, stage, stage / "command-workdir", environment, timeout,
-            maximum_log_bytes, compiler=False
+            maximum_log_bytes, compiler=False, pass_fds=(owned_stage.directory_fd,)
         ))
         tool_before = {record["id"]: file_identity(tool_paths[record["id"]]) for record in tool_records}
         linker_search_flag = f"-B{linker_path.parent}{os.sep}"
@@ -1522,7 +1666,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
                             "-o",
                             str(output_work),
                         ]
-                        result = run_command(argv, workdir, environment, timeout, maximum_log_bytes)
+                        result = run_command(argv, workdir, environment, timeout, maximum_log_bytes, (owned_stage.directory_fd,))
                         require_workspace_members(workdir, output_work if result.returncode == 0 else None)
                         log_root = stage / "logs" / target_id
                         log_root.mkdir(parents=True, exist_ok=False)

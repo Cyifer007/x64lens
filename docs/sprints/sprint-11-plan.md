@@ -7,8 +7,12 @@ Patches 055 and 056 implement the runner, task-definition, and provisional
 corpus foundations. Patch 057 corrects the first runner, corpus, cleanup, and
 validation-integrity findings. Patch 058 adds bounded task-normalized baseline
 adapters and addresses additional evidence-integrity gaps found during Patch 057
-validation. Adapter-to-row campaign binding, diagnostic summaries, and the gap
-register remain active.
+validation. Patch 059 corrects adapter-to-row binding and establishes matched relations,
+bounded runtime closure, coordinate calibration, and the pre-execution campaign
+plan. Patch 060 corrects the remaining evidence-integrity findings, executes the
+available-tool 30-condition campaign, retains unavailable conditions, generates
+task-scoped summaries, and writes the engineering gap register. Patch 061
+remains the Sprint 11 closeout.
 
 ## Sprint goal
 
@@ -42,10 +46,13 @@ campaign prematurely.
   reconciliation, bounded native stdout/stderr, authenticated tool, target,
   retained version-output, and native-stream files, duplicate preservation, and
   a canonical `pop rdi; ret` relation over represented instruction text.
-- [ ] Bind normalized artifacts to runner rows, campaign manifests, child
+- [x] Bind normalized artifacts to runner rows, campaign manifests, child
   outcomes, and capture identities before development summaries are generated.
+- [x] Add matched x64lens report-derived relations, bounded runtime closure,
+  manifest-bound coordinate calibration, and a fully accounted pre-execution
+  24-comparison plus six-control plan.
 - [x] Controlled reference diagnostic campaign with development run counts.
-- [ ] Provisional corpus campaign and capability/performance gap register.
+- [x] Provisional corpus campaign with complete condition accounting, generated task-scoped summaries, and an evidence-backed capability/performance gap register; unavailable baselines remain explicit environment states.
 - [x] Explicit separation of diagnostic rows from future frozen campaign rows.
 
 ## Patch sequence
@@ -66,11 +73,18 @@ campaign prematurely.
    corrections plus normalized ROPgadget, Ropper, and ropr native-output
    adapters with bounded capture, supplied-command and artifact authentication,
    conservative represented-text parsing, and failure-preserving evidence.
-5. **Patch 059:** provisional corpus diagnostic rows, adapter-to-row binding,
-   development summaries, coverage reconciliation inputs, and the engineering
-   gap register that directs Sprints 12 through 14.
-6. **Patch 060:** Sprint 11 closeout and diagnostic checkpoint review, subject to
-   findings from the preceding patches.
+5. **Patch 059 (implementation candidate):** correct remaining transaction and
+   adapter-binding failures; establish report-derived matched x64lens relations,
+   bounded runtime closure, manifest-bound coordinate calibration, and the
+   pre-execution 30-condition stage-zero plan. No comparative campaign or gap
+   register is produced.
+6. **Patch 060 (implementation candidate):** correct the remaining Patch 059
+   evidence-integrity findings; execute the authenticated available-tool
+   24-comparison plus six-control campaign; retain unavailable states; generate
+   task-scoped summaries; and write the engineering gap register that directs
+   Sprints 12 through 14.
+7. **Patch 061 (planned):** Sprint 11 closeout and diagnostic checkpoint review,
+   subject to findings from the preceding patches.
 
 The exact later patch count remains evidence-driven; the sequence describes the
 intended responsibility boundaries rather than a calendar guarantee.
@@ -87,6 +101,9 @@ intended responsibility boundaries rather than a calendar guarantee.
 - [x] Tool scope and output work are stated for every current condition.
 - [x] Baseline native output, duplicates, task-specific totals, and the first
   canonical exact relation remain separate and authenticated.
+- [x] Matched x64lens relations are derived from retained reports, address
+  coordinates remain unaggregated until role-specific calibration succeeds, and
+  runtime closure remains bounded observed evidence.
 - [x] Campaign publication is transactional and refuses to replace an existing
   result identity.
 - [x] Measured process groups and escaped adopted descendants are cleaned up and reaped.
@@ -94,8 +111,9 @@ intended responsibility boundaries rather than a calendar guarantee.
   evidence.
 - [x] The provisional corpus regenerates byte/mode/mtime-identically twice and
   remains explicitly diagnostic, unfrozen, and not publication eligible.
-- [ ] The baseline campaign covers enough conditions to produce a concrete
-  Sprint 12-14 gap register.
+- [x] The generated gap register identifies concrete Sprint 12 and Sprint 13
+  priorities from authenticated x64lens observations while preserving baseline
+  unavailability and below-floor timing as non-product limitations.
 
 ## Out of scope
 
@@ -107,7 +125,9 @@ intended responsibility boundaries rather than a calendar guarantee.
 
 ## Handoff
 
-Sprint 12 uses diagnostic evidence to prioritize loader and mitigation precision
-without changing the reference scanner definition. A behavior, schema, task, or
-method change after a diagnostic campaign receives a new campaign identifier;
-Sprint 15 remains the confirmatory freeze.
+Planned Patch 060 produces the diagnostic evidence and gap register, and planned
+Patch 061 closes Sprint 11. Sprint 12 then uses that evidence to prioritize
+loader and mitigation precision without changing the reference scanner
+definition. A behavior, schema, task, or method change after a diagnostic
+campaign receives a new campaign identifier; Sprint 15 remains the confirmatory
+freeze.

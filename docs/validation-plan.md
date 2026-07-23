@@ -1540,3 +1540,54 @@ output/log limits, and corpus-ID-specific negative oracles.
 Full acceptance remains strict ShellCheck, clean NASM build, all samples and
 native validation, exact 4096/4097 capacity behavior, malformed-input
 no-partial-output, non-root Docker validation, and native/container JSON parity.
+
+## Sprint 11 Patch 059 stage-zero measurement-plane validation
+
+Focused development gates:
+
+```bash
+make diagnostic-task-definitions-smoke
+make baseline-output-adapter-smoke
+make diagnostic-runner-smoke
+make diagnostic-transaction-smoke
+make provisional-corpus-smoke
+make sprint11-measurement-plane-smoke
+make sprint11-campaign-plan-smoke
+```
+
+These gates validate campaign-bound normalization, exact retained version
+evidence, raw-line limits before ANSI handling, matched x64lens report-derived
+relations, bounded runtime closure, manifest-bound coordinate calibration,
+transaction ownership and signal cleanup, duplicate corpus-tool rejection, and
+the exact 24-comparison plus six-control pre-execution plan.
+
+The controlled stage-zero gates do not execute the installed-tool comparative
+campaign. Their rows and derived artifacts remain diagnostic, unfrozen, and
+publication-ineligible and cannot support performance, RSS, coverage, or
+superiority claims. Planned Patch 060 owns the authenticated campaign, summaries,
+and engineering gap register; planned Patch 061 owns Sprint 11 closeout.
+
+Full acceptance still requires strict ShellCheck, a clean NASM build, all
+samples and native validation, exact 4096/4097 capacity behavior, malformed-input
+no-partial-output, non-root Docker validation, and native/container JSON parity.
+
+
+## Sprint 11 Patch 060 authenticated campaign validation
+
+Patch 060 acceptance requires the Patch 059 corrective rollup and the complete
+controlled campaign oracle:
+
+```bash
+make patch059-corrective-regression-smoke
+make sprint11-campaign-plan-smoke
+make sprint11-p060-campaign-smoke
+```
+
+The controlled oracle executes 30 measured rows, derives 24 relation artifacts,
+records five task-path runtime closures, produces coordinate qualification, and
+generates the task summary and engineering gap register without a generic gadget
+count. The real provisional campaign uses `make
+bench-sprint11-provisional-campaign`; unavailable baselines remain explicit and
+do not block available x64lens rows. Complete native, strict ShellCheck, Docker,
+capacity, malformed-input, public-overlay, and native/container parity gates
+remain mandatory. See [Sprint 11 Patch 060 Validation](sprints/sprint-11-patch-060-validation.md).

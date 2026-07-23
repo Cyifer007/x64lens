@@ -1217,3 +1217,58 @@ ownership follows the creation-time device and inode after a same-parent rename,
 and cleanup preserves an unrelated replacement at the original pathname. These
 controls protect research evidence without changing the dependency-free,
 decoder-free, one-worker runtime pipeline.
+
+## Sprint 11 Patch 059 measurement-plane boundary
+
+Patch 059 upgrades the external research plane without adding an analyzer module
+or changing the runtime pipeline:
+
+```text
+authenticated runner row and retained report
+  -> campaign-bound baseline normalization or matched x64lens extraction
+  -> separately preserved native populations and normalized relations
+  -> manifest-bound address-coordinate calibration
+  -> bounded runtime-closure evidence
+```
+
+The x64lens extractor consumes the retained complete schema `0.2.0` `gadgets`
+report. It does not map or rescan the target, parse ELF as runtime authority,
+classify or score candidates, write side-cars, or modify the native report. It
+preserves the report's raw, exact, semantic, unknown, and scored counts while
+emitting only the narrow represented `pop rdi; ret` relation and binary-presence
+fact. Baseline-native, unique, duplicate, return-terminator, normalized-relation,
+and binary-presence populations remain separate; baseline raw executable-byte
+presence remains unavailable.
+
+Coordinate calibration binds `ET_EXEC`, PIE-intended `ET_DYN`, and shared-object
+`ET_DYN` roles to the verified corpus manifest. `ET_DYN` alone is not authority
+for PIE/DSO identity. Runtime closure is bounded observed evidence: a `complete`
+status means no unresolved dependency within the recorded path, not a universal
+dependency guarantee, and a Python version-command path may be narrower than a
+later analysis command.
+
+Future output creation, stage ownership, signal deferral, no-replace publication,
+and cleanup remain one external transaction. The target guarantee applies to the
+passed non-executable object; neither transaction integrity nor runtime-closure
+authentication turns a same-UID measured tool into a hostile-tool sandbox. The
+30-condition plan is pre-execution authority and all Patch 059 derived artifacts
+remain diagnostic, unfrozen, and publication-ineligible.
+
+
+## Sprint 11 Patch 060 diagnostic campaign boundary
+
+Patch 060 changes no analyzer module. It adds an external development pipeline:
+
+```text
+authenticated native runner rows
+  -> task-normalized relations
+  -> task-path runtime closure
+  -> role-specific coordinate qualification
+  -> generated summaries and engineering gap register
+```
+
+The pipeline consumes retained reports and native baseline text. It cannot map
+targets for the analyzer, select executable regions, scan candidates, classify,
+score, or emit schema `0.2.0` runtime reports. Program headers remain executable
+authority, and raw, exact, semantic-exact, unknown, decoder-backed, and scored
+facts remain independent.

@@ -306,7 +306,7 @@ These are not blockers for Sprint 1 completion, but should be completed early in
 - Output contract upheld: exit codes are stable for the implemented path, and text output is deterministic.
 - Research contract upheld: no performance, exploitability, or analyst-usefulness claims were made without benchmark data.
 - Release contract partially applicable: this is not a formal public release, but `make`, `make test`, and Docker smoke testing pass locally.
-- Context persistence contract upheld: local-only project state must be updated after Sprint 1 closeout.
+- Maintained public Sprint 1 status, roadmap, backlog, and validation authorities were reconciled at closeout.
 
 ## Sprint 2 entry condition
 

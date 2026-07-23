@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted for Sprint 11 Patch 059 implementation and local validation.
+Implementation candidate for Sprint 11 Patch 059; empirical acceptance is
+pending.
 
 ## Context
 
@@ -31,8 +32,9 @@ meaningful cross-tool experiment:
 
 ## Decision
 
-Patch 059 establishes a stage-zero diagnostic measurement plane and does not yet
-publish corpus-wide comparative summaries.
+Patch 059 establishes a stage-zero diagnostic measurement plane. It does not
+execute the provisional comparative campaign, publish corpus-wide summaries, or
+produce performance, RSS, coverage, or superiority evidence.
 
 ### Campaign-bound derived artifacts
 
@@ -52,10 +54,16 @@ canonicalized relation separately. Raw line limits apply before ANSI removal.
 Version evidence is compared as one exact trimmed first line under a
 baseline-specific syntax rule.
 
+Baseline native and unique records, duplicate records, return-terminator records
+and sites, canonical normalized records and relations, and binary presence
+remain distinct. None is renamed to a generic cross-tool `gadget_count`.
+
 ### Matched x64lens relation artifact
 
-The x64lens relation extractor consumes a successful measured `gadgets` row and
-schema `0.2.0` report. It emits only the current narrow relations:
+The x64lens relation extractor consumes the retained complete schema `0.2.0`
+report from a successful measured `gadgets` row. It preserves the report's raw,
+exact, semantic, unknown, and scored populations and emits only the current
+narrow relations:
 
 ```text
 canonical_exact_pop_rdi_ret
@@ -63,8 +71,9 @@ binary_fact_arg_control_rdi_present
 ```
 
 Each relation carries both virtual-address and file-offset start and terminator
-coordinates. The extractor does not alter runtime JSON, create candidates,
-decode bytes, or reinterpret semantic facts.
+coordinates. The extractor does not rescan target bytes, parse ELF as runtime
+authority, create or classify candidates, assign scores, alter runtime JSON, or
+reinterpret analyzer facts.
 
 ### Address-coordinate calibration
 
@@ -88,7 +97,9 @@ insufficient_relation_evidence
 ```
 
 No cross-tool address intersection is generated before role-specific
-calibration succeeds.
+calibration succeeds. Role identity comes from the verified provisional-corpus
+manifest and recorded build intent; `ET_DYN` alone does not distinguish a PIE
+executable from a shared object.
 
 ### Runtime-closure provenance
 
@@ -105,7 +116,10 @@ For native ELF tools it records the interpreter and bounded recursive
 observes the retained version command under the declared interpreter and records
 imported modules, installed distributions, extension modules, and mapped native
 libraries. Closure state is `complete` or `partial`; unresolved dependencies
-remain visible.
+remain visible. `complete` means that no dependency was unresolved within the
+bounded observation. It is not a universal dependency guarantee, and the
+observed Python version-command path may be narrower than a later analysis
+command.
 
 ### Corrected provisional campaign plan
 
@@ -169,7 +183,8 @@ Corpus verification also rejects duplicate authenticated tool records.
 - Target nonexecution protects the supplied target object; it is not a sandbox
   for a hostile same-UID tool.
 - The corpus-wide campaign, generated summaries, and engineering gap register
-  move to the next patch so they are built on the corrected plane.
+  move to planned Patch 060 so they are built on the corrected plane. Planned
+  Patch 061 owns Sprint 11 closeout.
 
 ## Rejected alternatives
 
