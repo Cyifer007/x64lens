@@ -14,7 +14,7 @@
     "X64LENS_DIAGNOSTIC_PROFILE": "core-1w"
   },
   "timer_floor": {
-    "probe": "/bin/true",
+    "probe": "/usr/bin/true",
     "runs": 9,
     "threshold_multiplier": 5
   },

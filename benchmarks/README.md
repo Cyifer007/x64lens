@@ -226,11 +226,21 @@ the planned Sprint 11 closeout.
 
 ## Sprint 11 Patch 060 provisional campaign
 
-Patch 060 executes the complete 30-condition authority through
-`benchmarks/scripts/sprint11-provisional-campaign.py`. The campaign preserves
-24 gadget-report comparisons, six independent x64lens analyze controls, native
-runner rows, normalized relation artifacts, task-path runtime closures, address
-coordinate status, task-scoped summaries, and the engineering gap register.
+Patch 060 accounts for the complete 30-condition authority through
+`benchmarks/scripts/sprint11-provisional-campaign.py`. Available authenticated
+tools execute through the runner; absent optional baselines remain explicit
+`unavailable_tool` conditions with zero native rows. The retained provisional
+campaign executed 12 x64lens conditions and accounted for 18 unavailable
+baseline conditions. It preserved 72 native rows—12 warmups and 60 measured
+rows—while keeping condition accounting, primary-summary eligibility,
+normalized relation artifacts, task-path runtime closures, address-coordinate
+status, task-scoped summaries, and the engineering gap register separate.
+
+All 60 measured rows were below the timer floor, leaving zero primary summary
+rows. Six x64lens relation artifacts and two bounded x64lens task-path closure
+artifacts were generated. Coordinate status remained unavailable, so cross-tool
+address intersections remain blocked pending authenticated role-controlled
+calibration.
 
 ```bash
 make provisional-corpus-verify
@@ -244,3 +254,10 @@ remain `below_timer_floor`; they are not divided into synthetic per-run values.
 The six selected targets are a diagnostic screen and cannot identify causal
 compiler, optimization, linkage, or hardening effects. All Patch 060 artifacts
 remain diagnostic, unfrozen, and publication-ineligible.
+
+
+## Sprint 11 Patch 061 closeout and campaign operation
+
+Patch 061 separates native execution, normalized comparison, runtime closure, and coordinate qualification. A successful process is not automatically a qualified cross-tool comparison. The campaign rejects recursive generic gadget-count fields, authenticates every imported generator, preserves isolated Python launcher context, rejects stale staging paths, and counts below-floor successful rows correctly.
+
+Use [`docs/sprints/sprint-11-diagnostic-campaign-guide.md`](../docs/sprints/sprint-11-diagnostic-campaign-guide.md) to install exact baselines, regenerate the corpus, run a new 30-condition campaign, verify the result tree, and interpret timer-floor, relation, coordinate, closure, and tool-native evidence. Sprint 11 is closed; all retained rows remain diagnostic, unfrozen, and publication-ineligible.

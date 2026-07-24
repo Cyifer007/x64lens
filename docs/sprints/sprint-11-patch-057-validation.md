@@ -139,5 +139,5 @@ After Patch 057 is empirically accepted, Patch 058 may add normalized ROPgadget,
 Ropper, and ropr adapters. It must preserve baseline-specific task definitions,
 version identity, command scope, duplicate/canonicalization policy, and failed
 rows. Patch 059 then corrects their campaign binding and establishes the
-stage-zero measurement plane. Planned Patch 060 produces development summaries
-and the engineering gap register; planned Patch 061 closes Sprint 11.
+stage-zero measurement plane. Patch 060 produces development summaries and the
+engineering gap register. Patch 061 closes Sprint 11.

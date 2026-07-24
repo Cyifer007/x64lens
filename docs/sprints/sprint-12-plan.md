@@ -2,12 +2,20 @@
 
 ## Status
 
-Planned loader and mitigation precision sprint.
+Active loader and mitigation precision sprint after Sprint 11 Patch 061 closeout.
 
 ## Sprint goal
 
 Resolve loader-identity, executable-region, and mitigation-evidence ambiguities
 that would otherwise corrupt corpus labels or defensive triage.
+
+## Entry order from Sprint 11 diagnostics
+
+1. Validate program-header ranges, alignment, congruence, entrypoint behavior, and explicit extended-numbering outcomes.
+2. Define overlapping executable-region scan, deduplication, and provenance semantics.
+3. Distinguish PIE executables from shared objects through bounded evidence.
+4. Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
+5. Rerun the diagnostic campaign under a new identifier after behavior changes.
 
 ## Planned deliverables
 

@@ -306,7 +306,7 @@ def main(argv: list[str]) -> int:
         role_id = safe_id(record.get("id"), "coordinate role id")
         require(role_id not in role_map, f"duplicate coordinate role: {role_id}")
         role_map[role_id] = record
-    require(tuple(role_map) == REQUIRED_ROLES, "coordinate roles are missing or out of canonical order")
+    require(set(role_map) == set(REQUIRED_ROLES), "coordinate roles are incomplete")
 
     builder, builder_path = load_builder(repository_root)
     _builder_data, builder_identity = load_regular_path(builder_path, MAX_MEMBER_BYTES, "corpus verifier")
@@ -328,12 +328,16 @@ def main(argv: list[str]) -> int:
         require(target["artifact_id"] == expected["artifact_id"] and target["elf"]["elf_type"] == expected["elf_type"], f"corpus target does not satisfy role {role_id}")
         role_targets[role_id] = target
         artifacts = record.get("artifacts")
-        require(isinstance(artifacts, dict) and tuple(artifacts) == REQUIRED_TOOLS, f"role {role_id} must name all tools in canonical order")
+        require(isinstance(artifacts, dict) and set(artifacts) == set(REQUIRED_TOOLS), f"role {role_id} must name all tools")
         for tool_id in REQUIRED_TOOLS:
             descriptor = artifacts[tool_id]
             require(isinstance(descriptor, dict) and set(descriptor) == {"path", "campaign_result"}, f"{role_id} {tool_id} artifact descriptor is invalid")
             path = Path(descriptor["path"])
             campaign_result = Path(descriptor["campaign_result"])
+            if not path.is_absolute():
+                path = Path(os.path.abspath(args.input_spec)).parent / path
+            if not campaign_result.is_absolute():
+                campaign_result = Path(os.path.abspath(args.input_spec)).parent / campaign_result
             value, identity = load_json_file(path, f"{role_id} {tool_id} relation artifact")
             artifact_inputs.append((Path(os.path.abspath(path)), identity, f"{role_id} {tool_id} relation artifact"))
             authenticated_target_id, authenticated_target_sha = authenticate_relation_artifact(
@@ -377,8 +381,20 @@ def main(argv: list[str]) -> int:
             overall = "mixed_or_ambiguous"
         by_tool[tool_id] = {"status": overall, "roles": per_role}
 
+    tool_statuses = [record["status"] for record in by_tool.values()]
+    if all(status in {"virtual_address", "file_offset"} for status in tool_statuses):
+        overall_status = "qualified"
+    elif all(status == "insufficient_relation_evidence" for status in tool_statuses):
+        overall_status = "insufficient_relation_evidence"
+    elif "mismatch" in tool_statuses:
+        overall_status = "mismatch"
+    else:
+        overall_status = "mixed_or_ambiguous"
+
     artifact = {
         "schema_version": ARTIFACT_SCHEMA,
+        "status": overall_status,
+        "tool_order": list(REQUIRED_TOOLS),
         "artifact_id": CALIBRATOR_ID,
         "evidence_class": "diagnostic",
         "frozen": False,

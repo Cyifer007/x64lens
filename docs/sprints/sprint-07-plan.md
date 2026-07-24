@@ -48,7 +48,8 @@ The parser already performed explicit range checks before Sprint 7, but the evid
 - [x] Route ELF64 and program-header analysis through the shared helpers.
 - [x] Expand deterministic malformed coverage for program-header and section-header table-end overflow.
 - [x] Fix the public-docs/generated-results interaction found during local validation.
-- [x] Exclude private local agent workspaces from permission normalization, Docker build context filtering, Git ignore gaps, and patch-bundle hygiene.
+- [x] Exclude non-source workspace directories from permission normalization,
+  Docker build context filtering, Git ignore gaps, and patch-bundle hygiene.
 
 ### Patch 029 closeout
 

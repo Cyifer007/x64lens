@@ -13,16 +13,14 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
-diagnostic benchmark foundation. Patches 055 and 056 implement the runner,
-task-definition authority, and first reproducible 24-target provisional corpus.
-Patch 057 corrects the diagnostic target-execution, corpus-membership, cleanup,
-and safe-removal boundaries. The Patch 058 implementation candidate adds
-standalone baseline adapters. The Patch 059 implementation candidate corrects
-their campaign binding and establishes matched relations, bounded runtime
-closure, role-specific coordinate calibration, and the pre-execution stage-zero
-plan. Patch 060 owns corpus-backed rows, development summaries, and the
-gap register; planned Patch 061 owns Sprint 11 closeout. Sprint 15 freezes the
+Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the
+provisional high-resolution runner, reproducible 24-target corpus, normalized
+baseline task authority, matched relation and runtime-closure evidence,
+30-condition diagnostic campaign authority, generated summaries, and engineering
+gap register. The all-tools rehearsal exposed unresolved single-run timing,
+coordinate-anchor, closure-context, and tool-definition boundaries; Patch 061
+corrects the evidence plane and preserves those limitations. Sprint 12 is active
+as the loader and mitigation precision sprint. Sprint 15 freezes the
 confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,

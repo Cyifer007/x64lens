@@ -2,27 +2,18 @@
 
 ## Current checkpoint
 
-Sprints 1 through 10 are complete after Patch 054. Sprint 11 is active as the
-diagnostic benchmark foundation. Sprint 9 established report identity,
-completeness, schema `0.2.0`, candidate provenance, portable decoder-gap
-evidence, immutable campaign inputs, signal-safe publication and child cleanup,
-external-parser integrity, strict ZIP metadata policy, and the candidate-scoped
-decoder/parallelism decision. Sprint 10 added and hardened ordered multi-pop,
-exact register-transfer, exact positive aligned stack-adjust, bounded structured
-memory effects, coarse and architectural effects, fixture contracts, selective
-scores, fail-closed reconciliation, and the twenty-two-sprint research sequence.
-Patch 054 reconciles public chronology, checksum-manifest rules, closeout state,
-and Sprint 11 entry. Patch 055 adds the standard-library high-resolution
-diagnostic runner, hash-bound write-sealed benchmark inputs, final artifact
-reconciliation, failure-preserving transactional evidence, an honest task-scope
-authority, and durable corrections for the Patch 054 checker false negatives.
-Patch 056 adds the first source-, license-, command-, tool-, environment-, and
-output-authenticated 24-target provisional corpus. Patch 057 corrects its
-diagnostic-integrity boundary with execution-sealed non-executable target inputs,
-exact compiler workspace and retained-member closure, checked staging cleanup,
-and safe corpus removal. The Patch 058 implementation candidate adds bounded
-standalone native-output adapters for ROPgadget, Ropper, and ropr plus additional
-runner and corpus evidence-integrity corrections. Patch 059 corrects campaign binding and establishes the diagnostic stage-zero measurement plane. Patch 060 corrects remaining integrity findings, executes the available-tool 30-condition campaign, and generates task summaries plus the engineering gap register. The repository now provides:
+Sprints 1 through 11 are complete after Patch 061. Sprint 9 established report
+identity, schema `0.2.0`, candidate provenance, and the decoder-free reference
+profile. Sprint 10 added bounded semantic-exact primitive and effect coverage.
+Sprint 11 established the provisional corpus, high-resolution runner, normalized
+baseline adapters, matched relations, task-path runtime closure, coordinate
+qualification, 30-condition campaign authority, generated summaries, and the
+engineering gap register. Patch 061 corrects the remaining transaction and
+comparison-accounting findings, preregisters the below-floor whole-batch method,
+records the diagnostic limitations. Sprint 12 is active as the loader and
+mitigation precision sprint.
+
+repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -54,9 +45,11 @@ Patches 046 through 053 are later pre-release work, not a research release or
 evidence of universal performance or coverage superiority. Patch 054 closes
 Sprint 10 and activates Sprint 11 diagnostic measurement. Patches 055 through
 057 implement and harden the runner, task-definition, and provisional-corpus
-tranches. The Patch 058 candidate adds standalone baseline normalization, and the
-Patch 059 candidate supplies the corrected stage-zero plane. Neither creates an
-executed comparative or publication campaign or changes the reference analyzer.
+tranches. Patch 058 adds standalone baseline normalization, and accepted Patch
+059 supplies the corrected stage-zero plane. Neither creates an executed
+comparative or publication campaign or changes the reference analyzer. The
+Patch 060 campaign remains mutable diagnostic evidence and does not support a
+release-facing comparison claim.
 
 ## Sprint 7 evidence checkpoint
 
@@ -100,7 +93,16 @@ Status: baseline indicators exist, Patch 030 adds bounded bind-now evidence, Pat
 
 Use a fixed corpus, baseline versions, high-resolution timing, per-child resource measurements, raw result preservation, and generated summaries.
 
-Status: smoke plumbing exists. Patches 055 through 057 implement and harden the high-resolution diagnostic runner, controlled reference conditions, initial task authority, and a reproducible 24-target provisional corpus. The Patch 058 implementation candidate adds standalone baseline adapters, and the Patch 059 implementation candidate adds campaign binding plus the stage-zero measurement plane. Planned Patch 060 owns corpus-backed diagnostic rows, development summaries, and the engineering gap register; planned Patch 061 owns closeout. Sprints 12 through 14 use diagnostic evidence for capability hardening. Sprint 15 freezes the campaign, Sprint 16 runs the preview pilot, and Sprint 17 runs publication-grade repeated trials.
+Status: the diagnostic measurement foundation is implemented. Patches 055
+through 058 provide the high-resolution runner, controlled reference conditions,
+task authority, reproducible provisional corpus, and standalone baseline
+adapters. Accepted Patch 059 adds campaign binding and the stage-zero
+measurement plane. The Patch 060 implementation candidate accounts for all 30
+provisional conditions, executes available-tool conditions, and generates
+corpus-backed rows, development summaries, and the engineering gap register.
+Patch 061 closes Sprint 11. Sprints 12 through 14 use diagnostic evidence
+for capability hardening, while Sprint 15 freezes the campaign, Sprint 16 runs
+the preview pilot, and Sprint 17 runs publication-grade repeated trials.
 
 ### Stage 6: operational case study
 
@@ -330,7 +332,7 @@ primitive catalog. Full-width syscall descriptors, the zero-immediate return
 boundary, contracted text separators, canonical memory side-car reconciliation,
 numeric score-policy mutation gates, and strict-lint availability are permanent
 validation surfaces. Patch 053 remains the architecture/capability reassessment;
-Patch 054 closes Sprint 10; Sprint 11 is active.
+Patch 054 closes Sprint 10; Sprint 11 is complete after Patch 061.
 
 
 ## Sprint 10 Patch 053 benchmark-informed roadmap update
@@ -381,8 +383,8 @@ loader-role, mitigation, semantic, and baseline-definition gaps, but it cannot
 support superiority or representativeness claims. Patch 057 first corrects the
 measurement-integrity findings. Patch 058 adds normalized baseline adapters;
 Patch 059 corrects their campaign binding and establishes the stage-zero plane;
-planned Patch 060 uses the resulting rows to form the engineering gap register
-for Sprints 12 through 14.
+Patch 060 uses the resulting rows to form the engineering gap register for
+Sprints 12 through 14, and Patch 061 closes the diagnostic sprint.
 
 ## Sprint 11 Patch 057 research posture
 
@@ -402,9 +404,9 @@ text, and leave the raw executable-return-byte relation unavailable.
 The standalone adapters authenticate supplied files and declared metadata but do
 not consume a runner row, campaign manifest, child outcome, or capture record.
 Patch 059 therefore owns the execution-to-normalization correction and the
-stage-zero plane. Planned Patch 060 owns corpus-backed rows, development
-summaries, and the engineering gap register. Planned Patch 061 remains the
-Sprint 11 closeout boundary.
+stage-zero plane. Patch 060 owns corpus-backed rows, development summaries, and
+the engineering gap register. Patch 061 closes Sprint 11 and hands the accepted
+diagnostic priorities to Sprint 12.
 
 ## Sprint 11 Patch 059 research posture
 
@@ -417,6 +419,26 @@ maintained 30-condition plan remains pre-execution authority.
 All derived artifacts remain diagnostic, unfrozen, and publication-ineligible.
 Native baseline populations, normalized relations, x64lens evidence-layer
 populations, and binary presence remain distinct; baseline raw executable-byte
-presence remains unavailable. Planned Patch 060 runs the provisional campaign
-and produces the engineering gap register, and planned Patch 061 closes the
-sprint.
+presence remains unavailable. Patch 060 runs the provisional campaign and
+produces the engineering gap register. Patch 061 closes the sprint.
+
+## Sprint 11 Patch 060 research posture
+
+Patch 060 accounts for all 30 provisional conditions while executing only the 12
+available x64lens conditions; 18 pinned-baseline conditions remain unavailable.
+The 72 native rows comprise 12 warmups and 60 measured rows, all below the timer
+floor and excluded from primary timing summaries. Six x64lens relation artifacts
+and two bounded task-path closure artifacts were generated, while coordinate
+status remained unavailable and cross-tool address intersections remained
+blocked.
+
+The gap register selects PIE-versus-DSO identity and bounded GNU-property
+evidence for Sprint 12 and exact-only semantic-role review for Sprint 13.
+Candidate-scoped decoding and concurrency remain deferred, optional Sprint 14
+ablations. These findings may redirect engineering work but remain diagnostic,
+mutable, unfrozen, and publication-ineligible.
+
+
+## Sprint 11 closeout research posture
+
+Sprint 11 produced method-validating diagnostic evidence rather than a comparative result. The all-tools rehearsal showed that the selected provisional targets were too small for stable x64lens single-run latency under the measured floor, that baseline-native records are not a common gadget population, and that the first exact relation supplied no positive coordinate anchor. Patch 061 turns those observations into explicit method gates. Sprint 12 begins with loader validity, overlap/provenance, PIE-versus-DSO identity, and GNU-property evidence. Any changed behavior receives a new diagnostic campaign identity.

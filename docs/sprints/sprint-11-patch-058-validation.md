@@ -2,7 +2,8 @@
 
 ## Status
 
-Implementation candidate; empirical acceptance is pending.
+Not independently accepted; superseded by the accepted Patch 059 corrective
+foundation.
 
 ## Purpose
 

@@ -48,16 +48,16 @@ ACTIVE_AUTHORITY_PATHS = (
 
 REQUIRED_TEXT = {
     "README.md": (
-        "Sprints 1 through 10 are complete",
-        "Sprint 11 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Sprint 15",
         "Sprint 16",
         "Sprint 17",
         "Sprint 22",
     ),
     "docs/roadmap-22-sprints.md": (
-        "Sprints 1 through 10 are complete",
-        "Sprint 11 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Diagnostic measurement checkpoint",
         "Campaign freeze",
         "Research preview candidate",
@@ -65,8 +65,8 @@ REQUIRED_TEXT = {
         "First research release",
     ),
     "docs/research-roadmap.md": (
-        "Sprints 1 through 10 are complete",
-        "Sprint 11 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Sprint 15 freezes",
         "Sprint 17 runs publication-grade",
     ),
@@ -76,8 +76,11 @@ REQUIRED_TEXT = {
         "Sprint 15",
     ),
     "docs/sprints/sprint-11-plan.md": (
-        "Active diagnostic measurement sprint",
+        "Closed by Patch 061",
         "Final corpus freeze",
+    ),
+    "docs/sprints/sprint-12-plan.md": (
+        "Active loader and mitigation precision sprint",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",
@@ -105,6 +108,7 @@ FORBIDDEN_ACTIVE_CLAIMS = tuple(
         r"requires\s+competitive\s+evidence",
         r"decoder\s+profile\s+(?:is|may be)\s+admitted\s+.*Sprint 17",
         r"Sprint 19\s+(?:freezes|will freeze)\s+.*schema",
+        r"Sprint 11\s+is\s+active",
     )
 )
 
@@ -145,8 +149,8 @@ def main() -> int:
             spec.get("release_sprint"),
         )
         require(milestones == (11, 15, 16, 17, 22), f"milestone mismatch: {milestones!r}")
-        require(spec.get("completed_sprints") == 10, "completed_sprints must be 10")
-        require(spec.get("active_sprint") == 11, "active_sprint must be 11")
+        require(spec.get("completed_sprints") == 11, "completed_sprints must be 11")
+        require(spec.get("active_sprint") == 12, "active_sprint must be 12")
 
         scanned = 0
         path_claims_checked = 0
@@ -172,7 +176,7 @@ def main() -> int:
     print(
         "research-roadmap-consistency-smoke: ok "
         f"documents={scanned} milestones=5 forbidden_patterns={len(FORBIDDEN_ACTIVE_CLAIMS)} "
-        f"path_claims={path_claims_checked} completed_sprints=10 active_sprint=11"
+        f"path_claims={path_claims_checked} completed_sprints=11 active_sprint=12"
     )
     return 0
 

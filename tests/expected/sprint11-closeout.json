@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "sprint": 11,
+  "status": "closed",
+  "closeout_patch": 61,
+  "completed_patches": [55, 56, 57, 58, 59, 60, 61],
+  "next_sprint": 12,
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "candidate_capacity": 4096,
+    "analysis_arena_bytes": 819200,
+    "mandatory_decoder": false,
+    "mandatory_threads": false
+  },
+  "diagnostic_checkpoint": {
+    "corpus_targets": 24,
+    "selected_targets": 6,
+    "planned_conditions": 30,
+    "baseline_adapters": 3,
+    "relation_authorities": 4,
+    "selected_priorities": 3,
+    "evidence_class": "diagnostic",
+    "frozen": false,
+    "publication_eligible": false
+  },
+  "method_gates": {
+    "native_and_comparison_status_separate": true,
+    "positive_coordinate_anchor_required": true,
+    "runtime_closure_task_path_bound": true,
+    "generic_gadget_count_forbidden_recursively": true,
+    "below_floor_single_run_claim_forbidden": true,
+    "whole_batch_division_forbidden": true
+  },
+  "empirical_boundary": {
+    "corrected_campaign_rerun_required": true,
+    "diagnostic_rows_are_publication_evidence": false,
+    "single_run_x64lens_latency_resolved": false,
+    "generic_cross_tool_count_comparable": false
+  },
+  "required_closeout_documents": [
+    "docs/adr/0047-sprint11-closeout-and-diagnostic-method-refinement.md",
+    "docs/sprints/sprint-11-patch-061-validation.md",
+    "docs/sprints/sprint-11-retro.md",
+    "docs/sprints/sprint-11-diagnostic-campaign-guide.md",
+    "docs/sprints/sprint-12-plan.md"
+  ]
+}

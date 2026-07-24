@@ -106,8 +106,8 @@ not a product defect.
   files and the summarizer rejects each one.
 - `SHELLCHECK_STRICT=1 make shellcheck-smoke` exits 0 when `shellcheck` is
   installed.
-- Comparator helpers still pass both documented and mission-order argument
-  forms and still reject same-file analyzer/target mistakes.
+- Comparator helpers still pass both supported argument orders and reject
+  same-file analyzer/target mistakes.
 - Public planning docs report `planning-docs-check: ok plans=18 forward_plans=10`.
 - Public closeout documentation describes Patch 039 / Sprint 8 completion and
   Sprint 9 as the next implementation tranche.

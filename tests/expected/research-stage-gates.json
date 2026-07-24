@@ -1,8 +1,8 @@
 {
   "version": 2,
   "canonical_roadmap": "docs/roadmap-22-sprints.md",
-  "completed_sprints": 10,
-  "active_sprint": 11,
+  "completed_sprints": 11,
+  "active_sprint": 12,
   "diagnostic_sprint": 11,
   "campaign_freeze_sprint": 15,
   "preview_sprint": 16,
@@ -64,7 +64,7 @@
       "id": "benchmark_task_definitions",
       "owner_sprint": 11,
       "required_before": "campaign_freeze",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "executable_overlap_policy",

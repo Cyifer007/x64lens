@@ -101,7 +101,7 @@ def main() -> int:
         tools = base / "tools"
         tools.mkdir()
         versions = {
-            "ropgadget": "Version: ROPgadget v7.7",
+            "ropgadget": "Version:        ROPgadget v7.7",
             "ropper": "Version: Ropper 1.13.13",
             "ropr": "ropr 0.2.26",
         }
@@ -141,6 +141,8 @@ def main() -> int:
         native = rows(root / "runner-results" / f"{campaign_id}-native" / "rows.tsv")
 
         require(manifest["campaign_id"] == campaign_id, "Patch 060 campaign identity changed")
+        generator_paths = {item["path"] for item in manifest.get("generators", [])}
+        require("benchmarks/scripts/diagnostic_artifact.py" in generator_paths, "imported diagnostic_artifact.py is not bound in the campaign manifest")
         require(manifest["evidence_class"] == "diagnostic", "Patch 060 evidence class changed")
         require(manifest["frozen"] is False and manifest["publication_eligible"] is False, "Patch 060 claim boundary changed")
         require(len(accounting) == 30 and len({item["condition_id"] for item in accounting}) == 30, "30-condition accounting is incomplete")
@@ -150,14 +152,27 @@ def main() -> int:
         require(sum(1 for path in (root / "relations").glob("*.json")) == 24, "normalized relation artifact count changed")
         require(len(summary["runtime_closures"]) == 5, "task-path runtime closure count changed")
         require(summary["condition_totals"]["planned"] == 30 and summary["condition_totals"]["unavailable_tool"] == 0, "summary condition accounting changed")
-        require(summary["coordinate_calibration"]["status"] != "unavailable", "complete relation inputs produced unavailable coordinate calibration")
+        require(summary["coordinate_calibration"]["status"] == "insufficient_relation_evidence", "zero-relation coordinate evidence was mislabeled as qualified")
         require(summary["factor_attribution"]["status"] == "not_identifiable_from_selected_screen", "selected-screen factor boundary changed")
         require(len(gap["selected_priorities"]) >= 1, "engineering gap register selected no evidence-backed priority")
         require(gap["evidence_class"] == "diagnostic" and gap["frozen"] is False and gap["publication_eligible"] is False, "gap-register evidence boundary changed")
         combined = json.dumps({"summary": summary, "gap": gap}, sort_keys=True)
         require("gadget_count" not in combined, "Patch 060 emitted a generic gadget count")
+        published_derivatives = list((root / "relations").glob("*.json")) + list((root / "runtime-closures").glob("*.json"))
+        require(published_derivatives, "Patch 060 produced no derivative artifacts")
+        require(all(".staging" not in item.read_text(encoding="utf-8") for item in published_derivatives), "published derivative retains a stale staging path")
         require("publication_eligible\": true" not in combined.lower(), "Patch 060 generated publication-eligible evidence")
         verify_checksum_manifest(root)
+
+        nested_plan = base / "nested-generic-count.json"
+        nested_value = json.loads(PLAN.read_text(encoding="utf-8"))
+        nested_value.setdefault("summary_contract", {}).setdefault("negative_control", {})["gadget_count"] = 1
+        nested_plan.write_text(json.dumps(nested_value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        nested_argv = list(argv)
+        nested_argv[nested_argv.index("--plan") + 1] = str(nested_plan)
+        nested_argv[nested_argv.index("--campaign-id") + 1] = campaign_id + "-nested-count"
+        nested = run(nested_argv, timeout=60)
+        require(nested.returncode == 2 and "generic gadget count" in nested.stderr, "recursive generic gadget_count authority was accepted")
 
         overwrite = run(argv, timeout=60)
         require(overwrite.returncode == 2 and "already exists" in overwrite.stderr, "Patch 060 campaign overwrite was accepted")
@@ -166,7 +181,7 @@ def main() -> int:
     print(
         "sprint11-p060-campaign-smoke: ok "
         "conditions=30 native_rows=30 relations=24 runtime_closures=5 "
-        "coordinate_qualified=1 gap_register=1 unavailable_tools=0 generic_counts=0"
+        "coordinate_blocked=1 gap_register=1 unavailable_tools=0 generic_counts=0 generator_bindings=1 stale_paths=0"
     )
     return 0
 

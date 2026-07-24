@@ -60,7 +60,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check
 
 help:
 	@echo "x64lens development targets"
@@ -476,7 +476,7 @@ shellcheck-smoke:
 # Sprint closeout gate. Normal development keeps ShellCheck optional, but a
 # sprint cannot close unless strict lint is available and the complete native
 # aggregate passes. Docker remains a separate reproducibility gate.
-sprint-closeout-smoke:
+sprint-closeout-smoke: sprint11-closeout-smoke
 	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
 		echo "error: sprint-closeout-smoke requires $(SHELLCHECK)" >&2; \
 		exit 127; \
@@ -487,7 +487,7 @@ sprint-closeout-smoke:
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -616,6 +616,9 @@ research-roadmap-consistency-smoke:
 sprint10-closeout-smoke:
 	python3 tools/sprint10-closeout-smoke.py
 
+sprint11-closeout-smoke:
+	python3 tools/sprint11-closeout-smoke.py
+
 patch054-corrective-regression-smoke:
 	python3 tools/patch054-corrective-regression-smoke.py
 
@@ -624,6 +627,12 @@ diagnostic-runner-smoke:
 
 diagnostic-transaction-smoke:
 	python3 tools/diagnostic-transaction-smoke.py
+
+runtime-closure-venv-smoke:
+	python3 tools/runtime-closure-venv-smoke.py
+
+sprint11-below-floor-policy-smoke:
+	python3 tools/sprint11-below-floor-policy-smoke.py
 
 diagnostic-task-definitions-smoke:
 	python3 tools/diagnostic-task-definitions-smoke.py
@@ -734,8 +743,11 @@ script-perms-check:
 	@test -x tools/research-stage-gates-smoke.py
 	@test -x tools/research-roadmap-consistency-smoke.py
 	@test -x tools/sprint10-closeout-smoke.py
+	@test -x tools/sprint11-closeout-smoke.py
 	@test -x tools/patch054-corrective-regression-smoke.py
 	@test -x tools/diagnostic-runner-smoke.py
+	@test -x tools/runtime-closure-venv-smoke.py
+	@test -x tools/sprint11-below-floor-policy-smoke.py
 	@test -x tools/diagnostic-transaction-smoke.py
 	@test -x tools/diagnostic-task-definitions-smoke.py
 	@test -x tools/baseline-output-adapter-smoke.py
@@ -811,6 +823,7 @@ scaffold-check: script-perms-check
 	@test -f docs/sprints/sprint-10-retro.md
 	@test -f tests/expected/research-stage-gates.json
 	@test -f tests/expected/sprint10-closeout.json
+	@test -f tests/expected/sprint11-closeout.json
 	@test -f benchmarks/specs/sprint11-reference-diagnostic.json
 	@test -f benchmarks/task-definitions/sprint11-diagnostic-tasks.json
 	@test -f benchmarks/task-definitions/sprint11-p059-campaign-plan.json
@@ -833,11 +846,15 @@ scaffold-check: script-perms-check
 	@test -f docs/adr/0044-task-normalized-baseline-adapters-and-diagnostic-integrity.md
 	@test -f docs/adr/0045-measurement-plane-and-transaction-integrity.md
 	@test -f docs/adr/0046-authenticated-provisional-campaign-and-gap-register.md
+	@test -f docs/adr/0047-sprint11-closeout-and-diagnostic-method-refinement.md
 	@test -f docs/sprints/sprint-11-patch-056-validation.md
 	@test -f docs/sprints/sprint-11-patch-057-validation.md
 	@test -f docs/sprints/sprint-11-patch-058-validation.md
 	@test -f docs/sprints/sprint-11-patch-059-validation.md
 	@test -f docs/sprints/sprint-11-patch-060-validation.md
+	@test -f docs/sprints/sprint-11-patch-061-validation.md
+	@test -f docs/sprints/sprint-11-retro.md
+	@test -f docs/sprints/sprint-11-diagnostic-campaign-guide.md
 	@test -f docs/research-release-plan.md
 	@test -f docs/design/evidence-provenance-model.md
 	@test -f docs/design/schema-evolution.md

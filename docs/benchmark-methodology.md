@@ -765,8 +765,8 @@ The corrected 24-comparison plus six-control plan is pre-execution authority.
 Patch 059 does not execute it, generate corpus-wide summaries or the engineering
 gap register, or establish a performance, RSS, coverage, or superiority result.
 All stage-zero rows and artifacts remain diagnostic, unfrozen, and
-publication-ineligible. Planned Patch 060 owns the campaign, summaries, and gap
-register; planned Patch 061 owns Sprint 11 closeout.
+publication-ineligible. Patch 060 owns the campaign, summaries, and gap register.
+Patch 061 closes Sprint 11 and records the refined below-floor method.
 
 
 ## Sprint 11 Patch 060 diagnostic campaign method

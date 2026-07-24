@@ -33,8 +33,8 @@ def main() -> int:
     try:
         spec = load_spec()
         require(spec.get("version") == 2, "unsupported specification version")
-        require(spec.get("completed_sprints") == 10, "completed_sprints must be 10")
-        require(spec.get("active_sprint") == 11, "active_sprint must be 11")
+        require(spec.get("completed_sprints") == 11, "completed_sprints must be 11")
+        require(spec.get("active_sprint") == 12, "active_sprint must be 12")
         require(spec.get("canonical_roadmap") == "docs/roadmap-22-sprints.md", "canonical roadmap mismatch")
 
         diagnostic = spec.get("diagnostic_sprint")
@@ -121,7 +121,7 @@ def main() -> int:
         "research-stage-gates-smoke: ok "
         f"stages={len(stages)} capability_gates={len(gates)} "
         f"conditional_profiles={len(profiles)} release_sprint={release} "
-        "completed_sprints=10 active_sprint=11"
+        "completed_sprints=11 active_sprint=12"
     )
     return 0
 

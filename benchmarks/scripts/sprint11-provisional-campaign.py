@@ -65,6 +65,7 @@ X_RELATION = ROOT / "benchmarks/scripts/x64lens-relation-extractor.py"
 BASELINE_ADAPTER = ROOT / "benchmarks/scripts/baseline-output-adapter.py"
 CLOSURE = ROOT / "benchmarks/scripts/runtime-closure-manifest.py"
 CALIBRATOR = ROOT / "benchmarks/scripts/address-coordinate-calibrator.py"
+DIAGNOSTIC_ARTIFACT = ROOT / "benchmarks/scripts/diagnostic_artifact.py"
 
 
 class CampaignError(RuntimeError):
@@ -191,6 +192,15 @@ def load_corpus_builder():
     return load_module(CORPUS_BUILDER, "x64lens_p060_corpus_builder")
 
 
+def contains_exact_key(value: Any, forbidden: str) -> bool:
+    """Return true when a forbidden field name appears at any depth."""
+    if isinstance(value, dict):
+        return forbidden in value or any(contains_exact_key(item, forbidden) for item in value.values())
+    if isinstance(value, list):
+        return any(contains_exact_key(item, forbidden) for item in value)
+    return False
+
+
 def validate_plan(plan: dict[str, Any]) -> None:
     require(plan.get("schema_version") == PLAN_SCHEMA_VERSION, "unsupported Patch 060 campaign-plan schema")
     require(plan.get("plan_id") == PLAN_ID, "unexpected Patch 060 campaign-plan identity")
@@ -208,6 +218,9 @@ def validate_plan(plan: dict[str, Any]) -> None:
     require(isinstance(controls, dict) and controls.get("condition_count") == 6, "control matrix must contain six conditions")
     summary = plan.get("summary_contract")
     require(isinstance(summary, dict) and summary.get("generic_gadget_count_forbidden") is True, "generic count prohibition is missing")
+    require(not contains_exact_key(plan, "gadget_count"), "campaign plan contains a recursive generic gadget count")
+    require(isinstance(plan.get("accounting_states"), list), "native accounting states are missing")
+    require(isinstance(plan.get("comparison_qualification_states"), list), "comparison qualification states are missing")
 
 
 def validate_authority(authority: dict[str, Any]) -> None:
@@ -217,6 +230,7 @@ def validate_authority(authority: dict[str, Any]) -> None:
     require(authority.get("frozen") is False and authority.get("publication_eligible") is False, "task authority claim boundary changed")
     baseline_ids = [item.get("id") for item in authority.get("baselines", []) if isinstance(item, dict)]
     require(tuple(baseline_ids) == BASELINES, "task authority baseline order changed")
+    require(not contains_exact_key(authority, "gadget_count"), "task authority contains a recursive generic gadget count")
 
 
 def resolve_tool(raw: str | None, required: bool, tool_id: str) -> Path | None:
@@ -374,7 +388,7 @@ def runner_spec(
         "capture_limits": {"maximum_stdout_bytes": 16777216, "maximum_stderr_bytes": 1048576},
         "environment": {"X64LENS_DIAGNOSTIC_PROFILE": plan["reference_profile"]},
         "timer_floor": {
-            "probe": "/bin/true",
+            "probe": "/usr/bin/true",
             "runs": policy["timer_floor_runs"],
             "threshold_multiplier": policy["timer_floor_threshold_multiplier"],
         },
@@ -432,7 +446,7 @@ def timing_summary(rows: list[dict[str, str]]) -> dict[str, Any]:
         "successful_measured_row_count": len(successful),
         "failed_measured_row_count": len(measured) - len(successful),
         "primary_summary_row_count": len(included),
-        "below_floor_success_row_count": sum(row.get("summary_exclusion_reason") == "below_reliable_timer_floor" for row in successful),
+        "below_floor_success_row_count": sum(row.get("timing_class") == "below_reliable_single_process_floor" for row in successful),
         "wall_time_ns": None,
         "user_time_ns": None,
         "system_time_ns": None,
@@ -459,8 +473,8 @@ def classify_condition(
     *,
     available: bool,
     rows: list[dict[str, str]],
-    relation_status: str,
 ) -> tuple[str, str]:
+    """Classify native execution without hiding derivative evidence state."""
     if not available:
         return "unavailable_tool", "pinned tool was not supplied on this host"
     measured = [row for row in rows if row.get("phase") == "measured"]
@@ -472,18 +486,42 @@ def classify_condition(
         if "timeout" in outcomes:
             return "timeout", "every measured row timed out"
         return "tool_failure", "no measured row completed successfully"
-    if relation_status == "failed":
-        return "normalization_failure", "native execution succeeded but the required normalized artifact failed"
     if all(row.get("included_in_primary_summary") != "true" for row in success):
         return "below_timer_floor", "successful rows were retained but all were below the reliable single-process floor"
     return "success", "at least one successful measured row is eligible for diagnostic summary"
+
+
+def classify_comparison(
+    *,
+    native_status: str,
+    relation_required: bool,
+    relation_status: str,
+    closure_status: str,
+    coordinate_status: str,
+    baseline: bool,
+) -> tuple[str, str]:
+    """Classify derivative comparison readiness independently from execution."""
+    if native_status in {"unavailable_tool", "tool_failure", "output_limit", "timeout"}:
+        return "not_applicable", "native execution did not produce a successful comparison input"
+    if not relation_required:
+        return "not_applicable", "condition is an integrated-analysis control, not a normalized comparison row"
+    if relation_status != "success":
+        return "normalization_failure", "native execution succeeded but the required normalized artifact is unavailable"
+    if closure_status != "complete":
+        return "closure_partial", "runtime closure is partial or failed for this task path"
+    if baseline:
+        if coordinate_status in {"mismatch", "mixed_or_ambiguous"}:
+            return "coordinate_mismatch", "displayed-address calibration did not select one stable coordinate"
+        if coordinate_status not in {"virtual_address", "file_offset"}:
+            return "coordinate_unavailable", "coordinate calibration lacks positive same-relation evidence"
+    return "qualified", "native, normalized, closure, and applicable coordinate evidence are available"
 
 
 def relation_metrics(path: Path) -> dict[str, Any]:
     value, _identity, _data = read_json(path, "normalized relation artifact")
     metrics = value.get("metrics")
     require(isinstance(metrics, dict), "relation artifact metrics are missing")
-    require("gadget_count" not in metrics, "relation artifact contains a generic gadget count")
+    require(not contains_exact_key(value, "gadget_count"), "relation artifact contains a recursive generic gadget count")
     return metrics
 
 
@@ -669,14 +707,14 @@ def render_summary_markdown(summary: dict[str, Any]) -> str:
         "",
         f"- Planned conditions: {summary['condition_totals']['planned']}",
         f"- Executed conditions: {summary['condition_totals']['executed']}",
-        f"- Successful: {summary['condition_totals']['success']}",
+        f"- Native summary-eligible: {summary['condition_totals']['success']}",
         f"- Unavailable tool: {summary['condition_totals']['unavailable_tool']}",
-        f"- Failed or non-summarizable: {summary['condition_totals']['other']}",
+        f"- Native below-floor or failed: {summary['condition_totals']['other']}",
         "",
         "## Task-scoped results",
         "",
-        "| Condition | Tool | Target | Status | Primary rows | Median wall ns | Median RSS KiB | Relation records |",
-        "|---|---|---|---|---:|---:|---:|---:|",
+        "| Condition | Tool | Target | Native status | Comparison | Primary rows | Median wall ns | Median RSS KiB | Relation records |",
+        "|---|---|---|---|---|---:|---:|---:|---:|",
     ]
     for item in summary["conditions"]:
         timing = item["timing"]
@@ -684,7 +722,7 @@ def render_summary_markdown(summary: dict[str, Any]) -> str:
         rss = timing["max_rss_kb"]["median"] if timing["max_rss_kb"] else "NA"
         relation = item.get("relation_metrics") or {}
         relation_count = relation.get("canonical_exact_pop_rdi_ret_record_count", "NA")
-        lines.append(f"| `{item['condition_id']}` | {item['tool_id']} | `{item['target_id']}` | {item['status']} | {timing['primary_summary_row_count']} | {wall} | {rss} | {relation_count} |")
+        lines.append(f"| `{item['condition_id']}` | {item['tool_id']} | `{item['target_id']}` | {item['status']} | {item['comparison_status']} | {timing['primary_summary_row_count']} | {wall} | {rss} | {relation_count} |")
     lines.extend([
         "",
         "## Interpretation boundaries",
@@ -762,7 +800,11 @@ def execute(args: argparse.Namespace) -> Path:
     require((ROOT / plan_required).resolve(strict=True) == args.task_authority.resolve(strict=True), "campaign plan points to a different task authority")
 
     builder = load_corpus_builder()
-    corpus_root = args.corpus_result.resolve(strict=True)
+    corpus_fd = builder.open_directory_nofollow(args.corpus_result, "provisional campaign corpus result")
+    try:
+        corpus_root = Path(f"/proc/self/fd/{corpus_fd}").resolve(strict=True)
+    finally:
+        os.close(corpus_fd)
     corpus_manifest = builder.verify_corpus(corpus_root)
     require(corpus_manifest["evidence_class"] == EVIDENCE_CLASS and corpus_manifest["frozen"] is False, "corpus is not provisional diagnostic evidence")
     corpus_manifest_path = corpus_root / "corpus-manifest.json"
@@ -781,12 +823,10 @@ def execute(args: argparse.Namespace) -> Path:
     require(isinstance(warmups, int) and 0 <= warmups <= 20, "warmup runs are outside the diagnostic bound")
     require(isinstance(measured, int) and 1 <= measured <= 100, "measured runs are outside the diagnostic bound")
 
-    output_root = args.output_root.resolve(strict=True) if args.output_root.exists() else Path(os.path.abspath(args.output_root))
-    output_root.mkdir(parents=True, exist_ok=True)
-    output_root = output_root.resolve(strict=True)
+    support = load_runner_support()
+    output_root = support.ensure_directory_nofollow(args.output_root, "provisional campaign output root")
     final = output_root / campaign_id
     require(not final.exists(), f"campaign result already exists: {final}")
-    support = load_runner_support()
     stage_registry: list[Any] = []
     owned = support.OwnedStage.create(output_root, f".{campaign_id}.staging.{uuid.uuid4().hex}", stage_registry)
     stage = owned.authoritative_path
@@ -904,7 +944,11 @@ def execute(args: argparse.Namespace) -> Path:
                     if path is None:
                         missing_calibration.append(condition_id)
                     else:
-                        artifacts[tool_id] = {"path": str(path), "campaign_result": str(runner_result)}
+                        coordinate_parent = stage / "coordinate"
+                        artifacts[tool_id] = {
+                            "path": os.path.relpath(path, coordinate_parent),
+                            "campaign_result": os.path.relpath(runner_result, coordinate_parent),
+                        }
                 calibration_roles.append({"id": role, "corpus_target_id": target_id, "artifacts": artifacts})
             if missing_calibration:
                 calibration = {
@@ -926,8 +970,12 @@ def execute(args: argparse.Namespace) -> Path:
                     stage_fd=owned.directory_fd,
                 )
                 if ok:
-                    calibration, _id, _data = read_json(calibration_output, "address coordinate calibration")
-                    calibration = {"status": "complete", "artifact": calibration_output.relative_to(stage).as_posix(), "tools": calibration.get("tools", {})}
+                    calibration_artifact, _id, _data = read_json(calibration_output, "address coordinate calibration")
+                    calibration = {
+                        "status": calibration_artifact.get("status", "mixed_or_ambiguous"),
+                        "artifact": calibration_output.relative_to(stage).as_posix(),
+                        "tools": calibration_artifact.get("tools", {}),
+                    }
                 else:
                     calibration = {"schema_version": 1, "status": "failed", "error": error, "claim_boundary": "Cross-tool address intersections remain blocked."}
                     write_json(stage / "coordinate" / "failure.json", calibration)
@@ -937,6 +985,15 @@ def execute(args: argparse.Namespace) -> Path:
                 for role, target_ids in role_targets.items()
                 for target_id in target_ids
             }
+            closure_status_by_scope = {
+                (item["tool_id"], item["task_scope"]): item.get("status", "failed")
+                for item in closure_records
+            }
+            coordinate_status_by_tool = {
+                tool_id: record.get("status", "coordinate_unavailable")
+                for tool_id, record in calibration.get("tools", {}).items()
+                if isinstance(record, dict)
+            }
             observations: list[dict[str, Any]] = []
             accounting: list[dict[str, Any]] = []
             condition_summaries: list[dict[str, Any]] = []
@@ -944,7 +1001,20 @@ def execute(args: argparse.Namespace) -> Path:
                 available = tool_paths[condition["tool_id"]] is not None
                 condition_rows = rows_by_condition[condition["id"]]
                 relation_state = relation_states.get(condition["id"], "not_required" if not condition["relation_required"] else "not_attempted")
-                status, reason = classify_condition(available=available, rows=condition_rows, relation_status=relation_state)
+                native_status, native_reason = classify_condition(available=available, rows=condition_rows)
+                closure_status = closure_status_by_scope.get((condition["tool_id"], condition["task_scope"]), "not_attempted")
+                coordinate_status = (
+                    "reference_coordinates" if condition["tool_id"] == "x64lens"
+                    else coordinate_status_by_tool.get(condition["tool_id"], calibration.get("status", "coordinate_unavailable"))
+                )
+                comparison_status, comparison_reason = classify_comparison(
+                    native_status=native_status,
+                    relation_required=condition["relation_required"],
+                    relation_status=relation_state,
+                    closure_status=closure_status,
+                    coordinate_status=coordinate_status,
+                    baseline=condition["tool_id"] != "x64lens",
+                )
                 selected = choose_success(condition_rows)
                 metrics = relation_metrics(relation_paths[condition["id"]]) if condition["id"] in relation_paths else None
                 timing = timing_summary(condition_rows)
@@ -957,8 +1027,12 @@ def execute(args: argparse.Namespace) -> Path:
                     "profile_id": condition["profile_id"],
                     "control": condition["control"],
                     "tool_available": available,
-                    "status": status,
-                    "reason": reason,
+                    "status": native_status,
+                    "reason": native_reason,
+                    "comparison_status": comparison_status,
+                    "comparison_reason": comparison_reason,
+                    "runtime_closure_status": closure_status,
+                    "coordinate_status": coordinate_status,
                     "native_row_count": len(condition_rows),
                     "warmup_row_count": sum(row.get("phase") == "warmup" for row in condition_rows),
                     "measured_row_count": sum(row.get("phase") == "measured" for row in condition_rows),
@@ -979,7 +1053,8 @@ def execute(args: argparse.Namespace) -> Path:
             require(len(accounting) == 30 and len({item["condition_id"] for item in accounting}) == 30, "condition accounting is not complete")
             accounting_fields = [
                 "condition_id", "tool_id", "target_id", "target_role", "task_scope", "profile_id", "control",
-                "tool_available", "status", "reason", "native_row_count", "warmup_row_count", "measured_row_count",
+                "tool_available", "status", "reason", "comparison_status", "comparison_reason",
+                "runtime_closure_status", "coordinate_status", "native_row_count", "warmup_row_count", "measured_row_count",
                 "successful_measured_row_count", "failed_measured_row_count", "primary_summary_row_count",
                 "relation_status", "relation_artifact", "selected_run_id", "run_ids",
             ]
@@ -987,6 +1062,10 @@ def execute(args: argparse.Namespace) -> Path:
             write_json(stage / "condition-accounting.json", {"schema_version": 1, "campaign_id": campaign_id, "conditions": accounting})
 
             status_counts = {state: sum(item["status"] == state for item in accounting) for state in plan["accounting_states"]}
+            comparison_counts = {
+                state: sum(item["comparison_status"] == state for item in accounting)
+                for state in plan["comparison_qualification_states"]
+            }
             summary = {
                 "schema_version": 1,
                 "summary_id": f"{campaign_id}-task-scoped-summary",
@@ -1000,6 +1079,8 @@ def execute(args: argparse.Namespace) -> Path:
                     "unavailable_tool": status_counts.get("unavailable_tool", 0),
                     "other": 30 - status_counts.get("success", 0) - status_counts.get("unavailable_tool", 0),
                     "by_status": status_counts,
+                    "comparison_by_status": comparison_counts,
+                    "comparison_qualified": comparison_counts.get("qualified", 0),
                 },
                 "runner": {
                     "campaign_id": context.manifest["campaign_id"],
@@ -1020,11 +1101,11 @@ def execute(args: argparse.Namespace) -> Path:
                 },
                 "claim_boundaries": plan["claim_boundaries"],
             }
-            require("gadget_count" not in json.dumps(summary), "generated summary contains a generic gadget count")
+            require(not contains_exact_key(summary, "gadget_count"), "generated summary contains a recursive generic gadget count")
             write_json(stage / "summaries" / "task-summary.json", summary)
             write_text(stage / "summaries" / "task-summary.md", render_summary_markdown(summary))
             summary_fields = [
-                "condition_id", "tool_id", "target_id", "task_scope", "status", "primary_summary_row_count",
+                "condition_id", "tool_id", "target_id", "task_scope", "status", "comparison_status", "primary_summary_row_count",
                 "median_wall_time_ns", "p95_wall_time_ns", "median_max_rss_kb", "relation_record_count",
             ]
             summary_rows = []
@@ -1038,6 +1119,7 @@ def execute(args: argparse.Namespace) -> Path:
                     "target_id": item["target_id"],
                     "task_scope": item["task_scope"],
                     "status": item["status"],
+                    "comparison_status": item["comparison_status"],
                     "primary_summary_row_count": item["timing"]["primary_summary_row_count"],
                     "median_wall_time_ns": wall["median"] if wall else None,
                     "p95_wall_time_ns": wall["p95"] if wall else None,
@@ -1054,11 +1136,11 @@ def execute(args: argparse.Namespace) -> Path:
                 calibration=calibration,
                 closure_records=closure_records,
             )
-            require("gadget_count" not in json.dumps(gap_register), "gap register contains a generic gadget count")
+            require(not contains_exact_key(gap_register, "gadget_count"), "gap register contains a recursive generic gadget count")
             write_json(stage / "engineering-gap-register.json", gap_register)
             write_text(stage / "engineering-gap-register.md", render_gap_markdown(gap_register))
 
-            generator_paths = [RUNNER, CORPUS_BUILDER, X_RELATION, BASELINE_ADAPTER, CLOSURE, CALIBRATOR, Path(__file__).resolve(strict=True)]
+            generator_paths = [RUNNER, CORPUS_BUILDER, X_RELATION, BASELINE_ADAPTER, CLOSURE, CALIBRATOR, DIAGNOSTIC_ARTIFACT, Path(__file__).resolve(strict=True)]
             generator_records = []
             for path in generator_paths:
                 record = identity(path)

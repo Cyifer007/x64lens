@@ -269,7 +269,7 @@ def build_artifact(
         },
         "campaign_binding": {
             "campaign_id": context.manifest["campaign_id"],
-            "campaign_root": str(context.root),
+            "campaign_root_scope": "retained_campaign_result",
             "manifest_size_bytes": context.manifest_identity["size_bytes"],
             "manifest_sha256": context.manifest_identity["sha256"],
             "rows_path": context.manifest["artifacts"]["rows"],
@@ -314,7 +314,11 @@ def build_artifact(
             "exit_code": int(row["exit_code"]),
             "command": parse_command_json(row["command_json"]),
             "command_cwd": row["command_cwd"],
-            "command_cwd_identity": command_cwd_identity,
+            "command_cwd_identity": {
+                **command_cwd_identity,
+                "path_resolved": row["command_cwd"],
+                "path_scope": "retained_campaign_result",
+            },
         },
         "native_output": {
             "stdout_path": row["stdout_path"],

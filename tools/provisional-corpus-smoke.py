@@ -211,6 +211,47 @@ def stage_identity_probe(temporary: pathlib.Path) -> None:
         owned.close()
 
 
+def path_ancestor_and_cleanup_probe(temporary: pathlib.Path) -> None:
+    """Reject symlink ancestors and use descriptor-relative cleanup removal."""
+    module = load_builder_module("x64lens_corpus_p061_path_probe")
+    root = temporary / "p061-path-probe"
+    root.mkdir()
+    real = root / "real"
+    real.mkdir()
+    alias = root / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+
+    output_result = run("--spec", str(SPEC), "--output-root", str(alias), timeout=30)
+    require(output_result.returncode == 2, "symlinked corpus output ancestor was accepted")
+    require(not (real / CORPUS_ID).exists(), "symlinked corpus output ancestor received state")
+
+    spec_dir = root / "spec-real"
+    spec_dir.mkdir()
+    spec_copy = spec_dir / "spec.json"
+    spec_copy.write_bytes(SPEC.read_bytes())
+    spec_alias = root / "spec-alias"
+    spec_alias.symlink_to(spec_dir, target_is_directory=True)
+    spec_result = run("--spec", str(spec_alias / "spec.json"), "--output-root", str(root / "spec-output"), timeout=30)
+    require(spec_result.returncode == 2, "symlinked corpus spec ancestor was accepted")
+
+    cleanup_root = root / "cleanup"
+    cleanup_root.mkdir()
+    owned = module.OwnedStage.create(cleanup_root, ".owned.staging")
+    (owned.path / "member").write_text("x\n", encoding="utf-8")
+    original_rmdir = module.os.rmdir
+
+    def forbidden_rmdir(*_args, **_kwargs):
+        raise SmokeError("corpus cleanup used Python pathname rmdir")
+
+    module.os.rmdir = forbidden_rmdir
+    try:
+        owned.cleanup("corpus descriptor cleanup regression")
+    finally:
+        module.os.rmdir = original_rmdir
+        owned.close()
+    require(not (cleanup_root / ".owned.staging").exists(), "corpus descriptor cleanup left residue")
+
+
 def publish_commit_probe(temporary: pathlib.Path) -> None:
     """Retain committed state when publication reporting fails after rename."""
     module = load_builder_module("x64lens_corpus_publish_probe")
@@ -799,6 +840,7 @@ def main() -> int:
         spawn_window_probe(temporary)
         early_signal_probe(temporary)
         stage_identity_probe(temporary)
+        path_ancestor_and_cleanup_probe(temporary)
         publish_commit_probe(temporary)
         publish_substitution_probe(temporary)
         duplicate_tool_manifest_probe(first_corpus, temporary)
@@ -813,7 +855,7 @@ def main() -> int:
         "targets=24 rebuilds=2 invalid_specs=8 tamper_cases=5 interruption_cleanup=3 "
         "capture_limits=1 retained_limits=2 clean_guards=1 make_clean_guards=1 "
         "membership_rejections=1 stage_substitution=1 early_signals=1 post_publish_commit=1 "
-        "publish_substitution=1 duplicate_tool_records=1"
+        "publish_substitution=1 duplicate_tool_records=1 symlink_ancestors=2 descriptor_cleanup=1"
     )
     return 0
 

@@ -224,7 +224,7 @@ This advances but does not complete the Sprint 11 diagnostic gate. Patch 057
 corrects the runner and corpus integrity findings. Patch 058 owns normalized
 baseline adapters, Patch 059 owns their campaign binding and the stage-zero
 measurement plane. Patch 060 owns corpus-backed summaries and the engineering
-gap register, and Patch 061 owns closeout.
+gap register, and Patch 061 closes Sprint 11.
 
 ## Sprint 11 Patch 057 integrity status
 
@@ -246,21 +246,36 @@ unavailable.
 The adapters authenticate caller-supplied commands, files, hashes, limits, and
 declared version text, but do not consume runner rows, campaign manifests, child
 outcomes, or capture records. Patch 059 replaces that standalone interface with
-campaign-bound normalization and the stage-zero measurement plane. Planned Patch
-060 runs the authenticated campaign and produces the summaries and engineering
-gap register; planned Patch 061 owns closeout. Sprint 15 remains the campaign
-freeze.
+campaign-bound normalization and the stage-zero measurement plane. Patch 060
+runs the authenticated campaign and produces the summaries and engineering gap
+register. Patch 061 closes Sprint 11. Sprint 15 remains the campaign freeze.
 
 ## Sprint 11 Patch 059 stage-zero status
 
-The Patch 059 implementation candidate adds no comparative result and no analyzer
-capability. It binds normalized baseline artifacts to authenticated runner rows,
-derives a matched x64lens relation from retained reports, records bounded runtime
-closure, calibrates address coordinates across manifest-bound ELF roles, and
-fixes the 24-comparison plus six-control pre-execution plan.
+Accepted Patch 059 adds no comparative result and no analyzer capability. It
+binds normalized baseline artifacts to authenticated runner rows, derives a
+matched x64lens relation from retained reports, records bounded runtime closure,
+calibrates address coordinates across manifest-bound ELF roles, and fixes the
+24-comparison plus six-control pre-execution plan.
 
 Native records, duplicates, return-terminator sites, normalized relations,
 x64lens evidence-layer populations, and binary presence remain separate. Baseline
 raw executable-byte presence remains unavailable, and no generic cross-tool
 `gadget_count` is introduced. All stage-zero artifacts remain diagnostic,
 unfrozen, and publication-ineligible.
+
+## Sprint 11 Patch 060 provisional-campaign status
+
+The Patch 060 implementation candidate corrects the remaining Patch 059
+evidence-integrity findings and accounts for all 30 planned conditions. The
+retained campaign executed 12 x64lens conditions, recorded 18 unavailable
+baseline conditions, retained 12 warmup and 60 measured native rows, and
+excluded every below-floor measured row from primary timing summaries.
+
+The campaign generated six x64lens relation artifacts, two bounded x64lens
+task-path closure artifacts, an explicit coordinate-unavailable result, task
+summaries, and the engineering gap register. The selected work is limited to
+PIE-versus-DSO identity and GNU-property evidence in Sprint 12 plus exact-only
+semantic-role review in Sprint 13. Decoder and concurrency remain deferred,
+optional Sprint 14 ablations. Patch 061 closes Sprint 11, and Sprint 15 remains
+the confirmatory campaign freeze.

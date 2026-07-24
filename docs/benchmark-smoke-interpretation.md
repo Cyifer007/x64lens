@@ -95,5 +95,4 @@ comparative campaign or produce a speed, RSS, coverage, or superiority result.
 
 Any controlled stage-zero rows remain diagnostic, unfrozen, and
 publication-ineligible. Patch 060 runs the authenticated available-tool provisional
-campaign and produces the engineering gap register; planned Patch 061 closes
-Sprint 11.
+campaign and produces the engineering gap register. Patch 061 closes Sprint 11.

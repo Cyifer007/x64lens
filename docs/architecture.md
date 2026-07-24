@@ -180,10 +180,17 @@ Benchmarking is a first-class feature, not an afterthought. Every analysis chang
 - runtime,
 - max RSS,
 - throughput,
-- gadget count,
-- semantic primitive count,
+- `raw_candidate_count`,
+- `exact_pattern_count`,
+- `semantic_candidate_count`,
+- `unknown_candidate_count`,
+- `scored_candidate_count`,
 - output size,
 - error count.
+
+Cross-tool tables additionally keep baseline-native records, duplicates,
+normalized relations, and binary-presence facts separate. None is an unlabeled
+generic gadget count.
 
 
 
@@ -1260,7 +1267,8 @@ remain diagnostic, unfrozen, and publication-ineligible.
 Patch 060 changes no analyzer module. It adds an external development pipeline:
 
 ```text
-authenticated native runner rows
+30-condition accounting
+  -> available-tool native runner rows or explicit unavailable conditions
   -> task-normalized relations
   -> task-path runtime closure
   -> role-specific coordinate qualification

@@ -41,6 +41,7 @@ RESERVED_ENV = {
 HEX_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 RENAME_NOREPLACE = 1
 RENAME_EXCHANGE = 2
+AT_REMOVEDIR = 0x200
 AT_FDCWD = -100
 FIXED_MTIME = 0
 TARGET_MODE = 0o444
@@ -136,6 +137,26 @@ def require(condition: bool, message: str) -> None:
         raise CorpusError(message)
 
 
+def _unlinkat_directory(parent_fd: int, name: str, label: str) -> None:
+    """Remove one directory entry with one unlinkat(AT_REMOVEDIR) syscall.
+
+    The kernel resolves and removes the named object atomically relative to the
+    held parent descriptor.  This avoids the check-then-rmdir pathname window
+    that could otherwise remove a substituted foreign directory.
+    """
+    require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    libc = ctypes.CDLL(None, use_errno=True)
+    unlinkat = getattr(libc, "unlinkat", None)
+    require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
+    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+    unlinkat.restype = ctypes.c_int
+    if unlinkat(parent_fd, os.fsencode(name), AT_REMOVEDIR) != 0:
+        code = ctypes.get_errno()
+        if code == errno.ENOENT:
+            raise FileNotFoundError(code, os.strerror(code), name)
+        raise CorpusError(f"{label} removal failed: {os.strerror(code)}")
+
+
 @dataclass
 class OwnedStage:
     """Creation-time identity for a same-parent corpus staging directory."""
@@ -156,12 +177,9 @@ class OwnedStage:
         name: str,
         registry: list["OwnedStage"] | None = None,
     ) -> "OwnedStage":
-        resolved_parent = parent.resolve(strict=True)
         require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, "unsafe staging directory name")
-        parent_fd = os.open(
-            resolved_parent,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-        )
+        parent_fd = open_directory_nofollow(parent, "staging parent")
+        resolved_parent = pathlib.Path(f"/proc/self/fd/{parent_fd}").resolve(strict=True)
         created_identity: tuple[int, int] | None = None
         directory_fd = -1
         try:
@@ -192,7 +210,7 @@ class OwnedStage:
                 try:
                     observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
                     if stat.S_ISDIR(observed.st_mode) and (observed.st_dev, observed.st_ino) == created_identity:
-                        os.rmdir(name, dir_fd=parent_fd)
+                        _unlinkat_directory(parent_fd, name, "partial staging directory")
                         os.fsync(parent_fd)
                 except FileNotFoundError:
                     pass
@@ -207,15 +225,12 @@ class OwnedStage:
 
     @classmethod
     def adopt(cls, path: pathlib.Path, expected_parent: pathlib.Path, label: str) -> "OwnedStage":
-        parent = expected_parent.resolve(strict=True)
+        parent_fd = open_directory_nofollow(expected_parent, f"{label} parent")
+        parent = pathlib.Path(f"/proc/self/fd/{parent_fd}").resolve(strict=True)
         candidate = pathlib.Path(os.path.abspath(path))
         require(candidate.parent == parent, f"{label} is outside its expected parent")
-        metadata = os.lstat(candidate)
+        metadata = os.stat(candidate.name, dir_fd=parent_fd, follow_symlinks=False)
         require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
-        parent_fd = os.open(
-            parent,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-        )
         try:
             directory_fd = os.open(
                 candidate.name,
@@ -288,7 +303,7 @@ class OwnedStage:
                     metadata = os.stat(current_name, dir_fd=parent_fd, follow_symlinks=False)
                     require((metadata.st_dev, metadata.st_ino) == (self.device, self.inode), f"{label} changed before final removal")
                     try:
-                        os.rmdir(current_name, dir_fd=parent_fd)
+                        _unlinkat_directory(parent_fd, current_name, label)
                     except FileNotFoundError:
                         continue
                     os.fsync(parent_fd)
@@ -315,7 +330,7 @@ def _rename_exchange(parent_fd: int, left: str, right: str, label: str) -> None:
 def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], label: str) -> None:
     metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
     require(stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity, f"{label} placeholder identity changed")
-    os.rmdir(name, dir_fd=parent_fd)
+    _unlinkat_directory(parent_fd, name, label)
 
 
 def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> None:
@@ -351,7 +366,7 @@ def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> N
             stat.S_ISDIR(stage_placeholder.st_mode) and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
             f"{label} placeholder changed after exchange",
         )
-        os.rmdir(stage.name, dir_fd=stage.parent_fd)
+        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder")
         placeholder_identity = None
         os.fsync(stage.parent_fd)
         stage.committed = True
@@ -422,7 +437,7 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
                 _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
             finally:
                 os.close(child_fd)
-            os.rmdir(entry.name, dir_fd=directory_fd)
+            _unlinkat_directory(directory_fd, entry.name, f"{label}/{entry.name}")
         else:
             os.unlink(entry.name, dir_fd=directory_fd)
 
@@ -555,6 +570,67 @@ def file_identity(path: pathlib.Path) -> dict[str, Any]:
         "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
         "mtime_ns": metadata.st_mtime_ns,
     }
+
+
+def authenticate_regular_path_nofollow(path: pathlib.Path, label: str) -> pathlib.Path:
+    """Authenticate one regular file without accepting symlink components."""
+    absolute = pathlib.Path(os.path.abspath(path))
+    require(absolute.name not in {"", ".", ".."}, f"{label} has no regular-file name")
+    parent_fd = open_directory_nofollow(absolute.parent, f"{label} parent")
+    fd = -1
+    try:
+        fd = os.open(
+            absolute.name,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=parent_fd,
+        )
+        metadata = os.fstat(fd)
+        require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
+        return pathlib.Path(f"/proc/self/fd/{fd}").resolve(strict=True)
+    except OSError as exc:
+        raise CorpusError(f"cannot authenticate {label}: {exc}") from exc
+    finally:
+        if fd >= 0:
+            os.close(fd)
+        os.close(parent_fd)
+
+
+def ensure_directory_nofollow(path: pathlib.Path, label: str, mode: int = 0o755) -> pathlib.Path:
+    """Create missing directory components while rejecting every symlink."""
+    absolute = pathlib.Path(os.path.abspath(path))
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    parts = absolute.parts
+    proc_prefix = (os.sep, "proc", "self", "fd")
+    if len(parts) >= 5 and parts[:4] == proc_prefix and parts[4].isdigit():
+        try:
+            current_fd = os.dup(int(parts[4]))
+        except OSError as exc:
+            raise CorpusError(f"{label} descriptor root is unavailable") from exc
+        remaining = parts[5:]
+    else:
+        current_fd = os.open(os.sep, flags)
+        remaining = parts[1:]
+    try:
+        for component in remaining:
+            require(component not in {"", ".", ".."}, f"{label} contains an unsafe component")
+            try:
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except FileNotFoundError:
+                try:
+                    os.mkdir(component, mode, dir_fd=current_fd)
+                    os.fsync(current_fd)
+                except FileExistsError:
+                    pass
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            os.close(current_fd)
+            current_fd = next_fd
+            metadata = os.fstat(current_fd)
+            require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
+        return pathlib.Path(f"/proc/self/fd/{current_fd}").resolve(strict=True)
+    except OSError as exc:
+        raise CorpusError(f"cannot open or create {label}: {exc}") from exc
+    finally:
+        os.close(current_fd)
 
 
 def write_bytes(path: pathlib.Path, data: bytes, mode: int = TEXT_MODE) -> None:
@@ -1558,7 +1634,7 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     spec, spec_raw, source_paths = parse_spec(spec_path, repo_root)
     corpus_id = spec["corpus_id"]
     output_root.mkdir(parents=True, exist_ok=True)
-    output_root = output_root.resolve(strict=True)
+    output_root = ensure_directory_nofollow(output_root, "corpus output root")
     final = output_root / corpus_id
     require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
     stage_name = f".{corpus_id}.staging.{uuid.uuid4().hex}"
@@ -1895,7 +1971,11 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
 
 
 def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
-    root = root.resolve(strict=True)
+    root_fd = open_directory_nofollow(root, "corpus result")
+    try:
+        root = pathlib.Path(f"/proc/self/fd/{root_fd}").resolve(strict=True)
+    finally:
+        os.close(root_fd)
     verify_checksum_manifest(root)
     validate_tree_metadata(root)
     manifest_path = root / "corpus-manifest.json"
@@ -2330,7 +2410,7 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
     spec, _raw, _paths = parse_spec(spec_path, repo_root)
     output_root.mkdir(parents=True, exist_ok=True)
-    output_root = output_root.resolve(strict=True)
+    output_root = ensure_directory_nofollow(output_root, "corpus output root")
     target = output_root / spec["corpus_id"]
     candidate = pathlib.Path(os.path.abspath(target))
     require(candidate.parent == output_root and candidate.name == spec["corpus_id"], "refusing an out-of-scope corpus cleanup path")
@@ -2376,7 +2456,7 @@ def main(argv: Sequence[str]) -> int:
         )
         return 0
     require(args.spec is not None, "--spec is required for build, clean, platform check, or corpus-id output")
-    spec_path = args.spec.resolve(strict=True)
+    spec_path = authenticate_regular_path_nofollow(args.spec, "corpus specification")
     if args.clean_output_root is not None:
         target = clean_corpus(spec_path, args.clean_output_root, repo_root)
         print(f"clean-provisional-corpus: ok path={target}")

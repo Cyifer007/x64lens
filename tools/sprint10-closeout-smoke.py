@@ -256,7 +256,10 @@ def main() -> int:
             "publication_campaign_sprint": 17,
             "release_sprint": 22,
         }, "research transition mismatch")
-        require(stages.get("completed_sprints") == 10 and stages.get("active_sprint") == 11, "stage status mismatch")
+        completed = stages.get("completed_sprints")
+        active = stages.get("active_sprint")
+        require(isinstance(completed, int) and completed >= 10, "stage status regressed before Sprint 10")
+        require(active == completed + 1, "active sprint must follow completed_sprints")
 
         for relative in closeout.get("required_closeout_documents", []):
             require((ROOT / relative).is_file(), f"missing closeout document: {relative}")
@@ -264,7 +267,7 @@ def main() -> int:
         sprint10 = (ROOT / "docs/sprints/sprint-10-plan.md").read_text(encoding="utf-8")
         sprint11 = (ROOT / "docs/sprints/sprint-11-plan.md").read_text(encoding="utf-8")
         require("Closed by Patch 054" in sprint10, "Sprint 10 plan is not closed")
-        require("Active diagnostic measurement sprint" in sprint11, "Sprint 11 plan is not active")
+        require("Active diagnostic measurement sprint" in sprint11 or "Closed by Patch 061" in sprint11, "Sprint 11 plan is neither active nor closed")
 
         makefile = MAKEFILE.read_text(encoding="utf-8")
         require("sprint10-closeout-smoke:" in makefile, "Make target is missing")

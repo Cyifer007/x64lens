@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation candidate; empirical acceptance is pending.
+Accepted as the stage-zero measurement-plane foundation used by Patch 060.
 
 ## Patch goal
 
@@ -179,7 +179,10 @@ When pinned ROPgadget, Ropper, and ropr executables are available, validate:
 - no unlabeled cross-tool gadget count.
 
 Absence of optional baseline tools does not invalidate the stage-zero
-implementation, but it prevents the 30-condition campaign from running.
+implementation. In Patch 060 it left 18 baseline conditions unavailable while
+12 x64lens conditions executed. It blocks full comparative execution and
+role-controlled calibration, not complete condition accounting or
+available-tool execution.
 
 ## Evidence classification
 
@@ -211,14 +214,17 @@ executed comparative result.
   manifest binds PIE-intended and shared-object roles; `ET_DYN` alone does not
   distinguish them.
 - The stage-zero smoke uses controlled fake baseline tools.
-- Corpus-wide summaries and the engineering gap register remain the next
-  implementation tranche.
+- At the Patch 059 boundary, corpus-wide summaries and the engineering gap
+  register remained the next implementation tranche; Patch 060 subsequently
+  generated them.
 - A hostile same-UID baseline is outside the object-nonexecution guarantee.
 
 ## Handoff
 
-On acceptance, planned Patch 060 runs the authenticated 30-condition provisional
-diagnostic plan where baseline tools are available, generates task-scoped
-summaries from preserved raw rows and relation artifacts, and writes the
-engineering gap register that directs Sprints 12 through 14. Planned Patch 061
-performs Sprint 11 closeout rather than sharing the campaign patch.
+Patch 060 subsequently accounted for all 30 provisional conditions, executed
+the 12 available x64lens conditions, generated task-scoped summaries from
+preserved rows and relation artifacts, and wrote the engineering gap register.
+That register selects PIE-versus-DSO identity and GNU-property evidence for
+Sprint 12 and exact-only semantic-role review for Sprint 13. Decoder and
+concurrency remain deferred optional Sprint 14 ablations. Planned Patch 061
+performs Sprint 11 closeout.

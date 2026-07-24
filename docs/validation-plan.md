@@ -1564,8 +1564,8 @@ the exact 24-comparison plus six-control pre-execution plan.
 The controlled stage-zero gates do not execute the installed-tool comparative
 campaign. Their rows and derived artifacts remain diagnostic, unfrozen, and
 publication-ineligible and cannot support performance, RSS, coverage, or
-superiority claims. Planned Patch 060 owns the authenticated campaign, summaries,
-and engineering gap register; planned Patch 061 owns Sprint 11 closeout.
+superiority claims. Patch 060 owns the authenticated campaign, summaries, and engineering gap
+register. Patch 061 closes Sprint 11 and activates Sprint 12.
 
 Full acceptance still requires strict ShellCheck, a clean NASM build, all
 samples and native validation, exact 4096/4097 capacity behavior, malformed-input
@@ -1591,3 +1591,24 @@ bench-sprint11-provisional-campaign`; unavailable baselines remain explicit and
 do not block available x64lens rows. Complete native, strict ShellCheck, Docker,
 capacity, malformed-input, public-overlay, and native/container parity gates
 remain mandatory. See [Sprint 11 Patch 060 Validation](sprints/sprint-11-patch-060-validation.md).
+
+
+## Sprint 11 Patch 061 closeout validation
+
+Patch 061 adds permanent gates for symlinked path ancestors, owned-stage cleanup, early-stage signals, exact baseline version authority, runtime closure through isolated Python entrypoints, independent native/comparison accounting, positive coordinate-anchor requirements, recursive generic-count rejection, complete generator binding, stale staging-path rejection, and the below-floor batch policy.
+
+Required focused commands are:
+
+```bash
+make diagnostic-transaction-smoke
+make provisional-corpus-smoke
+make runtime-closure-venv-smoke
+make sprint11-below-floor-policy-smoke
+make sprint11-p060-campaign-smoke
+make sprint11-closeout-smoke
+make research-stage-gates-smoke
+make research-roadmap-consistency-smoke
+make planning-docs-check
+```
+
+Empirical acceptance additionally requires the complete native and container aggregates and a fresh 30-condition run with the exact pinned baselines. A below-floor condition remains a successful process outcome but is excluded from single-run latency interpretation.

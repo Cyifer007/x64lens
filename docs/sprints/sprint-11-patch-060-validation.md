@@ -93,6 +93,35 @@ runtime closure, explicit coordinate status, no generic gadget count, generated
 summaries, and a diagnostic gap register. Missing tools and below-floor rows are
 valid recorded states, not successful comparative measurements.
 
+## Authenticated provisional campaign outcome
+
+The retained provisional campaign accounted for 30 planned conditions. Twelve
+x64lens conditions executed; 18 pinned-baseline conditions were recorded as
+`unavailable_tool` and therefore produced no native rows.
+
+The 12 executed conditions retained 72 native rows: 12 warmups and 60 measured
+rows. All 60 measured rows were successful process outcomes but below the timer
+floor. The condition table therefore records 12 `below_timer_floor` conditions,
+and zero rows enter primary timing summaries. These rows do not support
+single-run latency or comparative performance interpretation.
+
+Six x64lens relation artifacts and two x64lens task-path closure artifacts were
+generated. Both closure artifacts report `complete`, meaning only that no
+dependency was unresolved within the bounded observed task path; a partial
+closure remains an explicit possible state rather than a universal dependency
+claim. Coordinate status is `unavailable`, so cross-tool address intersections
+remain blocked until authenticated role-controlled baseline calibration exists.
+
+The engineering gap register selects exactly three priorities:
+
+- PIE-executable versus shared-object identity for Sprint 12;
+- bounded GNU-property IBT/SHSTK evidence for Sprint 12; and
+- exact-only semantic-role review for Sprint 13.
+
+Candidate-scoped decoding and concurrency remain deferred optional Sprint 14
+ablations, not accepted current requirements. The campaign and gap register
+remain diagnostic, mutable, unfrozen, and publication-ineligible.
+
 ## Corrective adversarial requirements
 
 Validation must reject:
@@ -133,6 +162,6 @@ publication, superiority, or analyst-utility conclusions.
 
 ## Next step
 
-After Lane A acceptance and Markdown reconciliation, Patch 061 closes Sprint 11
-and hands the evidence-backed priorities to Sprint 12. It should not implement
-Sprint 12 loader or mitigation changes inside the closeout patch.
+After Patch 060 acceptance, Patch 061 closes Sprint 11 and hands the
+evidence-backed priorities to Sprint 12. It should not implement Sprint 12
+loader or mitigation changes inside the closeout patch.

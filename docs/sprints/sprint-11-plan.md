@@ -2,17 +2,24 @@
 
 ## Status
 
-Active diagnostic measurement sprint after Sprint 10 Patch 054 closeout.
+Closed by Patch 061. Sprint 12 is active as the loader and mitigation precision sprint.
+
+Related closeout records:
+
+- [ADR 0047](../adr/0047-sprint11-closeout-and-diagnostic-method-refinement.md)
+- [Patch 061 validation](sprint-11-patch-061-validation.md)
+- [Sprint 11 retrospective](sprint-11-retro.md)
+- [Diagnostic campaign operator guide](sprint-11-diagnostic-campaign-guide.md)
 Patches 055 and 056 implement the runner, task-definition, and provisional
 corpus foundations. Patch 057 corrects the first runner, corpus, cleanup, and
 validation-integrity findings. Patch 058 adds bounded task-normalized baseline
 adapters and addresses additional evidence-integrity gaps found during Patch 057
-validation. Patch 059 corrects adapter-to-row binding and establishes matched relations,
-bounded runtime closure, coordinate calibration, and the pre-execution campaign
-plan. Patch 060 corrects the remaining evidence-integrity findings, executes the
-available-tool 30-condition campaign, retains unavailable conditions, generates
-task-scoped summaries, and writes the engineering gap register. Patch 061
-remains the Sprint 11 closeout.
+validation. Accepted Patch 059 corrects adapter-to-row binding and establishes
+matched relations, bounded runtime closure, coordinate calibration, and the
+pre-execution campaign plan. The Patch 060 implementation candidate corrects the
+remaining evidence-integrity findings, accounts for all 30 conditions, executes
+available-tool conditions, retains unavailable conditions, generates task-scoped
+summaries, and writes the engineering gap register. Patch 061 corrects the remaining transaction and campaign-accounting findings, records the below-floor protocol and operator guidance, closes Sprint 11, and activates Sprint 12.
 
 ## Sprint goal
 
@@ -73,7 +80,7 @@ campaign prematurely.
    corrections plus normalized ROPgadget, Ropper, and ropr native-output
    adapters with bounded capture, supplied-command and artifact authentication,
    conservative represented-text parsing, and failure-preserving evidence.
-5. **Patch 059 (implementation candidate):** correct remaining transaction and
+5. **Patch 059 (accepted):** correct remaining transaction and
    adapter-binding failures; establish report-derived matched x64lens relations,
    bounded runtime closure, manifest-bound coordinate calibration, and the
    pre-execution 30-condition stage-zero plan. No comparative campaign or gap
@@ -81,10 +88,11 @@ campaign prematurely.
 6. **Patch 060 (implementation candidate):** correct the remaining Patch 059
    evidence-integrity findings; execute the authenticated available-tool
    24-comparison plus six-control campaign; retain unavailable states; generate
-   task-scoped summaries; and write the engineering gap register that directs
-   Sprints 12 through 14.
-7. **Patch 061 (planned):** Sprint 11 closeout and diagnostic checkpoint review,
-   subject to findings from the preceding patches.
+   task-scoped summaries; and write the engineering gap register that selects
+   PIE-versus-DSO identity and GNU-property evidence for Sprint 12 and exact-only
+   semantic-role review for Sprint 13. Decoder and concurrency remain deferred,
+   optional Sprint 14 ablations.
+7. **Patch 061 (implemented candidate):** correct remaining transaction, coordinate, runtime-closure, accounting, and private-rollback findings; preregister the below-floor whole-batch policy; record the diagnostic assessment and operator guide; close Sprint 11; and activate Sprint 12.
 
 The exact later patch count remains evidence-driven; the sequence describes the
 intended responsibility boundaries rather than a calendar guarantee.
@@ -125,9 +133,4 @@ intended responsibility boundaries rather than a calendar guarantee.
 
 ## Handoff
 
-Planned Patch 060 produces the diagnostic evidence and gap register, and planned
-Patch 061 closes Sprint 11. Sprint 12 then uses that evidence to prioritize
-loader and mitigation precision without changing the reference scanner
-definition. A behavior, schema, task, or method change after a diagnostic
-campaign receives a new campaign identifier; Sprint 15 remains the confirmatory
-freeze.
+Patch 061 closes Sprint 11 after preserving the Patch 060 diagnostic observations and correcting the evidence plane that interprets them. Sprint 12 uses that evidence to prioritize loader and mitigation precision without changing the reference scanner definition. A behavior, schema, task, or method change after a diagnostic campaign receives a new campaign identifier; Sprint 15 remains the confirmatory freeze.

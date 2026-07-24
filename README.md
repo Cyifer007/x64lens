@@ -2,11 +2,9 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 10 are complete after Patch 054. Sprint 10 delivered ordered multi-pop, register-transfer, stack-adjust, bounded qword memory, coarse and architectural effects, selective scoring, fixture reconciliation, and the benchmark-informed twenty-two-sprint roadmap. Sprint 11 is active as the diagnostic benchmark foundation; the confirmatory corpus and method remain unfrozen until Sprint 15.
+> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
-> Patch 059 is an implementation candidate for the diagnostic stage-zero
-> measurement plane. It does not contain an executed comparative campaign or a
-> performance, RSS, coverage, or superiority result.
+> The all-tools diagnostic rehearsal accounted for all 30 conditions after one narrowly qualified version-banner correction. Every x64lens condition remained below the measured reliable single-run floor, so the repository makes no x64lens single-run latency or superiority claim from those rows. Tool-native record totals remain definition-specific, and address-level comparisons remain blocked until positive coordinate anchors exist.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -375,14 +373,21 @@ identity. Runtime closure is a bounded observation of the declared path. Even a
 `complete` closure is complete only within that observation, and a Python
 version-command path may be narrower than a later analysis command.
 
-Patch 060 converts the maintained 30-condition authority into an authenticated
-provisional campaign. Every comparative, control, failed, below-floor, and
-unavailable-tool condition remains explicit. Generated task summaries preserve
-native rows, task scope, coordinate qualification, and bounded runtime closure;
-the engineering gap register selects only evidence-backed Sprint 12-14 work.
-The result remains `diagnostic`, `frozen: false`, and
-`publication_eligible: false`. Missing baselines are recorded rather than
-silently dropped or replaced. Patch 061 performs Sprint 11 closeout.
+Patch 060 established the fully accounted 30-condition provisional campaign and
+generated the first task-scoped summaries and gap register. The first all-tools
+rehearsal then executed all 30 conditions and retained 180 process rows, but it
+also exposed version-banner, coordinate, runtime-closure, status-accounting, and
+transaction defects. Patch 061 corrects those defects and closes Sprint 11.
+
+Every x64lens condition in that rehearsal remained below the host's measured
+reliable single-run floor. Those process outcomes are retained, but they do not
+support a stable single-run latency comparison. The first normalized exact
+relation was absent across the selected targets, so it supplied no positive
+coordinate anchor. Baseline-native totals differed substantially and remain
+separate tool-specific populations. The gap register retains bounded Sprint 12
+loader and mitigation priorities and a Sprint 13 exact-pop semantic decision;
+decoder and concurrency remain optional Sprint 14 ablations. All Sprint 11
+results remain `diagnostic`, `frozen: false`, and `publication_eligible: false`.
 
 ```bash
 make patch059-corrective-regression-smoke
@@ -395,7 +400,7 @@ make bench-sprint11-provisional-campaign
 See [ADR 0045](docs/adr/0045-measurement-plane-and-transaction-integrity.md),
 [ADR 0046](docs/adr/0046-authenticated-provisional-campaign-and-gap-register.md),
 the [Patch 059 validation record](docs/sprints/sprint-11-patch-059-validation.md),
-and the [Patch 060 validation record](docs/sprints/sprint-11-patch-060-validation.md).
+the [Patch 060 validation record](docs/sprints/sprint-11-patch-060-validation.md), [ADR 0047](docs/adr/0047-sprint11-closeout-and-diagnostic-method-refinement.md), the [Patch 061 validation record](docs/sprints/sprint-11-patch-061-validation.md), and the [diagnostic campaign operator guide](docs/sprints/sprint-11-diagnostic-campaign-guide.md).
 
 ## Architecture
 

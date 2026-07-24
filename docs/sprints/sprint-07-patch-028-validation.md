@@ -19,9 +19,9 @@ inside a Git worktree and to exclude generated result directories in fallback
 mode. Generated validation evidence remains ignored and should not make aggregate
 validation cleanup-sensitive.
 
-Local automation also showed that `make normalize-perms` can fail when
-private agent workspaces are exposed read-only. Patch 028 excludes those private
-local workspaces from permission normalization and patch-bundle hygiene.
+Permission normalization can fail when excluded non-source workspace directories
+are mounted read-only. Patch 028 keeps those directories outside permission
+normalization and patch-bundle hygiene.
 
 ## Implementation summary
 

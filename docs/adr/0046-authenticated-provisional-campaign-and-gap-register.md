@@ -13,14 +13,15 @@ normalization, matched x64lens relations, address-coordinate calibration,
 runtime-closure evidence, and a 30-condition authority. Its review identified
 remaining integrity defects in version-command authority, path ancestry,
 derived-relation authenticity, retained executable selection, transactional
-publication, and private rollback identity. Running a comparative campaign
+publication, and rollback destination identity. Running a comparative campaign
 before correcting those defects would create apparently precise but
 insufficiently authenticated development evidence.
 
 Sprint 11 requires diagnostic rows, task-scoped summaries, and an engineering
-gap register. These artifacts may direct Sprints 12 through 14, but they remain
-mutable development evidence and cannot be promoted into preview or publication
-claims.
+gap register. The register may select bounded Sprint 12 and Sprint 13 work and
+record optional Sprint 14 ablation dispositions, but all of these artifacts
+remain mutable development evidence and cannot be promoted into preview or
+publication claims.
 
 ## Decision
 
@@ -62,7 +63,7 @@ Patch 060 requires:
 - runtime closure derived from retained execution snapshots and task commands;
 - creation-time stage identity preserved through reserve-and-exchange
   publication for runner and corpus results;
-- exact directory identity during private-package rollback;
+- exact destination-directory identity during rollback;
 - relative, caller-independent delivery checksum records.
 
 ## Metric and claim boundaries
@@ -108,7 +109,11 @@ Positive:
   absent;
 - failed and unavailable conditions remain visible;
 - summaries regenerate from authenticated native rows and derived artifacts;
-- Sprint 12 through 14 priorities are traceable to named diagnostic evidence;
+- the selected PIE-versus-DSO and GNU-property priorities for Sprint 12 and the
+  exact-only semantic-role review for Sprint 13 are traceable to named
+  diagnostic evidence;
+- decoder and concurrency remain deferred optional Sprint 14 ablations rather
+  than accepted current requirements;
 - the dependency-free one-worker analyzer remains the reference profile.
 
 Costs and limitations:
@@ -137,5 +142,5 @@ acceptance.
 
 ## Handoff
 
-Patch 061 performs Sprint 11 closeout, reconciles the accepted diagnostic gap
-register with Sprint 12 entry, and does not add loader or mitigation capability.
+Patch 061 closes Sprint 11, reconciles the accepted diagnostic gap register
+with Sprint 12 entry, and adds no loader or mitigation capability.

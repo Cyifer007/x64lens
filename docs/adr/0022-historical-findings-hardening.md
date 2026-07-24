@@ -10,7 +10,8 @@ The historical patch review and follow-up validation passes identified several c
 
 - JSON report strings could preserve JSON syntax while losing byte fidelity for target paths, and section-label JSON could emit invalid UTF-8 for high-bit section-name bytes.
 - Section labels were file-offset based, but hostile section tables can advertise a section virtual address that does not cover the candidate virtual address.
-- The Docker build context excluded private local workspaces but did not explicitly exclude `.env` and `.env.*` files.
+- The Docker build context excluded known non-source workspace directories but
+  did not explicitly exclude `.env` and `.env.*` files.
 - Benchmark smoke scripts accepted invalid run counts or impossible metric domains and could summarize unrelated artifacts as one aggregate.
 - Some validation helpers used fixed temporary file names, and one development-tool diagnostic relied on `cat` even when `PATH` was damaged.
 

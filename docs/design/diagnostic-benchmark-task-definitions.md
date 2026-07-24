@@ -39,8 +39,8 @@ x64lens runtime artifact.
 | Ropper report | Adapter implemented | `ropper --file <target> --nocolor --single --type rop --inst-count 5` | Ropper-native single-process return-oriented report with color disabled and an explicit instruction limit. |
 | ropr report | Adapter implemented | `ropr --colour false --max-instr 5 --nojop --nosys <target>` | ropr-native return-oriented report with color, JOP, and syscall categories disabled for this task. |
 
-The command templates define the current Patch 059 diagnostic task. They do not claim
-that each baseline performs identical internal work.
+The command templates define the current Sprint 11 diagnostic tasks. They do not
+claim that each baseline performs identical internal work.
 
 ## Why core timing is unavailable
 
@@ -155,6 +155,23 @@ universal dependency claim.
 The maintained 24-comparison plus six-control plan is pre-execution authority.
 It is diagnostic, unfrozen, and publication-ineligible. It is not a comparative
 result.
+
+## Patch 060 campaign-accounting boundary
+
+Patch 060 does not redefine the version 3 task authority. It accounts for all 30
+planned conditions while executing only conditions whose authenticated tools are
+available. Condition records, native runner rows, warmups, measured rows,
+primary-summary rows, normalized relation artifacts, task-path closure
+artifacts, and coordinate status remain separate evidence layers.
+
+The retained authenticated campaign accounted for 30 planned conditions: 12
+x64lens conditions executed and 18 baseline conditions were unavailable. The
+executed conditions produced 72 native rows—12 warmups and 60 measured rows.
+All 60 measured rows were below the timer floor, so zero rows entered primary
+timing summaries. Six x64lens relation artifacts and two complete x64lens
+task-path closure artifacts were generated; `complete` remains limited to those
+bounded observations. Coordinate status was unavailable, so cross-tool address
+intersections remain blocked pending authenticated role-controlled calibration.
 
 ## Metric boundary
 

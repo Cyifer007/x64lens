@@ -64,7 +64,7 @@ def write_spec(path: Path, *, campaign_id: str, tool: Path, target: Path, condit
         },
         "environment": {"FAKEBENCH_MARKER": "sprint11"},
         "timer_floor": {
-            "probe": "/bin/true",
+            "probe": "/usr/bin/true",
             "runs": 5,
             "threshold_multiplier": 2,
         },
@@ -190,7 +190,7 @@ def assert_spawn_interruption_cleanup(tmp: Path) -> None:
 
 def assert_target_nonexecution(tmp: Path) -> None:
     target = tmp / "noexec-target"
-    target.write_bytes(Path("/bin/true").read_bytes())
+    target.write_bytes(Path("/usr/bin/true").read_bytes())
     tool = tmp / "noexec-tool.py"
     tool.write_text(
         "#!/usr/bin/env python3\n"

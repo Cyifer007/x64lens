@@ -2,8 +2,7 @@
 
 ## Status
 
-Implementation candidate for Sprint 11 Patch 059; empirical acceptance is
-pending.
+Accepted as the Sprint 11 Patch 059 stage-zero measurement-plane foundation.
 
 ## Context
 
@@ -183,8 +182,8 @@ Corpus verification also rejects duplicate authenticated tool records.
 - Target nonexecution protects the supplied target object; it is not a sandbox
   for a hostile same-UID tool.
 - The corpus-wide campaign, generated summaries, and engineering gap register
-  move to planned Patch 060 so they are built on the corrected plane. Planned
-  Patch 061 owns Sprint 11 closeout.
+  move to Patch 060 so they are built on the corrected plane. Patch 061 closes
+  Sprint 11 after the campaign evidence is reconciled.
 
 ## Rejected alternatives
 

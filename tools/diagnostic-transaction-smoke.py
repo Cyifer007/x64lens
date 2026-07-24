@@ -97,7 +97,7 @@ def write_spec(path: Path, campaign_id: str, tool: Path, target: Path, modes: li
         "fail_campaign_on_error": True,
         "capture_limits": {"maximum_stdout_bytes": 4096, "maximum_stderr_bytes": 4096},
         "environment": {},
-        "timer_floor": {"probe": "/bin/true", "runs": 5, "threshold_multiplier": 2},
+        "timer_floor": {"probe": "/usr/bin/true", "runs": 5, "threshold_multiplier": 2},
         "tools": [{"id": "probe", "path": str(tool), "version": "1.0", "version_argv": ["{tool}", "version"]}],
         "targets": [{"id": "target", "path": str(target), "license": "project-generated probe"}],
         "conditions": conditions,
@@ -159,6 +159,57 @@ def assert_future_paths_and_stage_identity(base: Path) -> None:
     for child in replacements[0].iterdir():
         child.unlink()
     replacements[0].rmdir()
+
+
+def assert_symlink_ancestors_rejected(base: Path) -> None:
+    """Reject caller-supplied spec and output paths with symlink ancestors."""
+    base.mkdir()
+    real = base / "real"
+    real.mkdir()
+    tool = real / "tool.py"
+    target = real / "target"
+    victim = real / "victim"
+    victim.mkdir()
+    tool.write_text(
+        "#!/usr/bin/env python3\nimport sys\n"
+        "if sys.argv[1] == 'version': print('ancestor-tool 1.0'); raise SystemExit(0)\n"
+        "print('ok')\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    target.write_bytes(b"target\n")
+    spec = real / "spec.json"
+    write_spec(spec, "ancestor-regression", tool, target, ["run"])
+
+    alias = base / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+    spec_result = run_cli(alias / "spec.json", base / "spec-output")
+    require(spec_result.returncode == 2, f"spec symlink ancestor was not rejected: {spec_result.stderr}")
+    output_alias = base / "output-alias"
+    output_alias.symlink_to(victim, target_is_directory=True)
+    output_result = run_cli(spec, output_alias)
+    require(output_result.returncode == 2, f"output symlink ancestor was not rejected: {output_result.stderr}")
+    require(not (victim / "ancestor-regression").exists(), "symlinked output ancestor received campaign state")
+
+
+def assert_descriptor_cleanup_path(base: Path) -> None:
+    """Prove cleanup does not call Python's pathname rmdir wrapper."""
+    base.mkdir()
+    module = load_runner("x64lens_p061_runner_unlinkat_probe")
+    owned = module.OwnedStage.create(base, ".cleanup.staging")
+    (owned.path / "member").write_text("x\n", encoding="utf-8")
+    original_rmdir = module.os.rmdir
+
+    def forbidden_rmdir(*_args, **_kwargs):
+        raise SmokeError("cleanup used the check-then-rmdir wrapper")
+
+    module.os.rmdir = forbidden_rmdir
+    try:
+        owned.cleanup("descriptor cleanup regression")
+    finally:
+        module.os.rmdir = original_rmdir
+        owned.close()
+    require(not (base / ".cleanup.staging").exists(), "descriptor cleanup left the owned directory")
 
 
 def assert_publication_and_partial_create(base: Path) -> None:
@@ -355,6 +406,8 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="x64lens-diagnostic-transaction-smoke-") as raw:
         base = Path(raw)
         assert_future_paths_and_stage_identity(base / "path-and-stage")
+        assert_symlink_ancestors_rejected(base / "symlink-ancestors")
+        assert_descriptor_cleanup_path(base / "descriptor-cleanup")
         assert_publication_and_partial_create(base / "publication")
         early_stage_signal_case(base / "early-stage-signal")
         interrupt_case(base / "single-interrupt", repeated=False)
@@ -362,7 +415,8 @@ def main() -> int:
     print(
         "diagnostic-transaction-smoke: ok "
         "future_paths=2 stage_identity=1 publish_substitution=1 post_rename_error=1 "
-        "partial_create=1 early_stage_signal=1 interruption_cleanup=2"
+        "partial_create=1 early_stage_signal=1 interruption_cleanup=2 "
+        "symlink_ancestors=2 descriptor_cleanup=1"
     )
     return 0
 

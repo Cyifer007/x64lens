@@ -8,8 +8,22 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 11 Patch 060 authenticated provisional campaign execution with complete 24-comparison plus six-control condition accounting, retained native successes/failures/unavailable states, task-scoped generated summaries, coordinate and runtime-closure qualifications, and an engineering capability/performance gap register.
-- Patch 059 corrective integrity hardening for authority-bound version commands, no-follow artifact ancestry, relation reproduction from retained native evidence, task-snapshot runtime closure, reserve-and-exchange runner/corpus publication, and identity-bound private rollback.
+- Sprint 11 Patch 061 closeout with corrected transaction ownership, symlink-ancestor rejection, independent native/comparison/closure/coordinate states, exact ROPgadget 7.7 version authority, isolated Python environment closure, recursive generic-count rejection, complete generator binding, stale-staging-path removal, and corrected below-floor accounting.
+- A preregistered whole-batch measurement policy for unresolved fast conditions, a campaign operator and interpretation guide, ADR 0047, the Patch 061 validation record, the Sprint 11 retrospective, and a machine-readable Sprint 11 closeout authority.
+- Sprint 12 activation with program-header validity and extended numbering first, followed by executable-overlap/provenance, PIE-versus-DSO identity, and bounded GNU-property evidence. Sprint 11 remains diagnostic and supplies no release-facing speed, RSS, coverage, or superiority claim.
+
+- Sprint 11 Patch 060 authenticated provisional campaign with complete
+  24-comparison plus six-control condition accounting: 12 available x64lens
+  conditions executed, 18 baseline conditions remained unavailable, 72 native
+  rows were retained, and all 60 measured rows remained below the timer floor
+  and outside primary summaries. The campaign generated six relation artifacts,
+  two bounded task-path closure artifacts, an explicit coordinate-unavailable
+  result, task-scoped summaries, and an engineering gap register.
+- Patch 060 corrective integrity hardening for the remaining Patch 059 findings:
+  authority-bound version commands, no-follow artifact ancestry, relation
+  reproduction from retained native evidence, task-snapshot runtime closure,
+  reserve-and-exchange runner/corpus publication, and identity-bound rollback
+  destinations.
 - `make patch059-corrective-regression-smoke`, `make sprint11-p060-campaign-smoke`, `make bench-sprint11-provisional-campaign`, ADR 0046, and the Patch 060 validation record. Patch 060 remains diagnostic, unfrozen, and publication-ineligible.
 
 - Sprint 11 Patch 059 diagnostic stage-zero measurement-plane infrastructure:

@@ -112,7 +112,7 @@ later sprints rather than Patch 037:
 - [x] Machine-readable fixture coverage table and per-family false-positive boundaries.
 - [x] First reviewed score entries after effect validation: ordered two-pop 95 and positive aligned stack adjustment 35. Register transfer and memory remain unscored pending controllability facts.
 
-### Sprint 11: diagnostic benchmark foundation
+### Sprint 11: diagnostic benchmark foundation — complete
 
 - [x] High-resolution standard-library runner with monotonic nanosecond timing,
   accurately scoped Linux `wait4` CPU/max-RSS capture, retained runner/spec identity,
@@ -138,6 +138,8 @@ later sprints rather than Patch 037:
   normalization over represented instruction text.
 - [x] Patch 060 authenticated provisional campaign with 30-condition accounting, task-scoped generated summaries, and an engineering development gap register; missing optional baselines remain explicit unavailable conditions.
 - [x] Diagnostic rows isolated from future frozen campaigns.
+
+- [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
 ### Sprint 12: loader and mitigation precision
 
@@ -546,10 +548,9 @@ comparison scope:
 - checksum-regeneration probes run under non-root permissions.
 
 Normalized baseline adapters move to Patch 058. Patch 059 corrects their
-execution binding and establishes the stage-zero measurement plane. The
-authenticated campaign, development summaries, and engineering gap register move
-to planned Patch 060, followed by Sprint 11 closeout in planned Patch 061 unless
-later evidence requires another corrective boundary.
+execution binding and establishes the stage-zero measurement plane. Patch 060
+adds the authenticated campaign, development summaries, and engineering gap
+register. Patch 061 closes Sprint 11 after the required corrective boundary.
 
 ## Sprint 11 Patch 058 update
 
@@ -563,15 +564,13 @@ Each standalone adapter authenticates caller-supplied commands, files, hashes,
 limits, and declared version text. It does not consume a diagnostic runner row,
 campaign manifest, execution outcome, or capture record. Patch 059 replaces that
 standalone boundary with campaign-bound normalization before any development
-summary. Planned Patch 060 runs the authenticated campaign and produces the
-engineering gap register; planned Patch 061 remains the Sprint 11 closeout
-boundary.
+summary. Patch 060 runs the authenticated campaign and produces the engineering
+gap register. Patch 061 closes Sprint 11.
 
 ## Sprint 11 Patch 059 update
 
-The Patch 059 implementation candidate corrects the remaining transaction and
-adapter-binding failures and establishes a diagnostic stage-zero measurement
-plane:
+Accepted Patch 059 corrects the remaining transaction and adapter-binding
+failures and establishes the diagnostic stage-zero measurement plane:
 
 - each normalized baseline artifact binds one authenticated runner row and its
   retained command, tool, target, exact version, stdout, and stderr objects;
@@ -599,4 +598,4 @@ Evidence-backed handoff priorities are bounded PIE-versus-DSO identity and GNU
 property evidence in Sprint 12, followed by exact-only semantic-role decisions
 in Sprint 13. Candidate-scoped decoding and concurrency remain deferred Sprint
 14 ablations because the current campaign does not justify making either
-profile mandatory. Patch 061 owns Sprint 11 closeout.
+profile mandatory. Patch 061 closes Sprint 11 and activates Sprint 12.

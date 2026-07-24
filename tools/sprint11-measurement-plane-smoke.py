@@ -209,7 +209,7 @@ def campaign_spec(base: Path, corpus: Path) -> tuple[Path, dict[str, Path]]:
         "fail_campaign_on_error": True,
         "capture_limits": {"maximum_stdout_bytes": 16777216, "maximum_stderr_bytes": 1048576},
         "environment": {},
-        "timer_floor": {"probe": "/bin/true", "runs": 5, "threshold_multiplier": 2},
+        "timer_floor": {"probe": "/usr/bin/true", "runs": 5, "threshold_multiplier": 2},
         "tools": tools,
         "targets": target_records,
         "conditions": conditions,

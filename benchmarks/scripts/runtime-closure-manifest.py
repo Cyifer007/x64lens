@@ -108,9 +108,70 @@ def resolve_shebang_interpreter(parts: list[str]) -> tuple[Path, list[str]]:
         require(arguments, "env shebang does not name an interpreter")
         found = shutil.which(arguments[0])
         require(found is not None, f"shebang interpreter is missing: {arguments[0]}")
-        return Path(found).resolve(strict=True), arguments[1:]
+        return Path(os.path.abspath(found)), arguments[1:]
     require(executable.is_absolute(), "tool shebang interpreter must be absolute")
-    return executable.resolve(strict=True), arguments
+    return Path(os.path.abspath(executable)), arguments
+
+
+def launcher_identity(path: Path, label: str) -> dict[str, Any]:
+    """Record the execution pathname separately from its resolved target.
+
+    Python virtual environments rely on the launcher pathname to discover
+    ``pyvenv.cfg``.  Resolving that symlink before execution silently changes
+    the import context, so both the launcher object and target are retained.
+    """
+    absolute = Path(os.path.abspath(path))
+    metadata = os.lstat(absolute)
+    require(stat.S_ISREG(metadata.st_mode) or stat.S_ISLNK(metadata.st_mode), f"{label} is not a regular file or symlink")
+    record: dict[str, Any] = {
+        "path": str(absolute),
+        "device": metadata.st_dev,
+        "inode": metadata.st_ino,
+        "mode": stat.S_IMODE(metadata.st_mode),
+        "kind": "symlink" if stat.S_ISLNK(metadata.st_mode) else "regular",
+    }
+    if stat.S_ISLNK(metadata.st_mode):
+        record["link_target"] = os.readlink(absolute)
+    target = absolute.resolve(strict=True)
+    data, target_identity = load_regular_path(target, MAX_MEMBER_BYTES, f"{label} target")
+    del data
+    record["target_path"] = str(target)
+    record["target_sha256"] = target_identity["sha256"]
+    record["target_size_bytes"] = target_identity["size_bytes"]
+    return record
+
+
+def require_launcher_identity(path: Path, expected: dict[str, Any], label: str) -> None:
+    absolute = Path(os.path.abspath(path))
+    metadata = os.lstat(absolute)
+    require((metadata.st_dev, metadata.st_ino, stat.S_IMODE(metadata.st_mode)) == (expected["device"], expected["inode"], expected["mode"]), f"{label} launcher identity changed")
+    if expected["kind"] == "symlink":
+        require(stat.S_ISLNK(metadata.st_mode) and os.readlink(absolute) == expected["link_target"], f"{label} launcher symlink changed")
+    else:
+        require(stat.S_ISREG(metadata.st_mode), f"{label} launcher type changed")
+    target = absolute.resolve(strict=True)
+    data, identity = load_regular_path(target, MAX_MEMBER_BYTES, f"{label} target")
+    del data
+    require(str(target) == expected["target_path"] and identity["sha256"] == expected["target_sha256"] and identity["size_bytes"] == expected["target_size_bytes"], f"{label} launcher target changed")
+
+
+def portable_path(path: Path, campaign_root: Path) -> dict[str, str]:
+    """Represent campaign members without retaining a staging pathname."""
+    resolved = path.resolve(strict=True)
+    root = campaign_root.resolve(strict=True)
+    try:
+        relative = resolved.relative_to(root)
+    except ValueError:
+        return {"scope": "external", "path": str(resolved)}
+    return {"scope": "campaign_result", "path": relative.as_posix()}
+
+
+def portable_path_string(value: str, campaign_root: Path) -> str:
+    try:
+        record = portable_path(Path(value), campaign_root)
+    except (OSError, ValueError):
+        return value
+    return f"campaign://{record['path']}" if record["scope"] == "campaign_result" else record["path"]
 
 
 def run_bounded(argv: list[str], *, timeout: int = MAX_TRACE_SECONDS) -> subprocess.CompletedProcess[bytes]:
@@ -178,7 +239,16 @@ try:
                 if os.path.isfile(path): mapped.append(path)
 except OSError:
     pass
-print(json.dumps({"exit_code": exit_code, "modules": modules, "distributions": distributions, "mapped_files": sorted(set(mapped))}, sort_keys=True))
+print(json.dumps({
+    "exit_code": exit_code,
+    "modules": modules,
+    "distributions": distributions,
+    "mapped_files": sorted(set(mapped)),
+    "sys_executable": sys.executable,
+    "sys_prefix": sys.prefix,
+    "sys_base_prefix": getattr(sys, "base_prefix", sys.prefix),
+    "sys_path": list(sys.path),
+}, sort_keys=True))
 raise SystemExit(0)
 '''.strip()
 
@@ -225,6 +295,10 @@ def observe_python(
         "imported_modules": module_records,
         "distributions": [{"name": name, "version": distributions[name]} for name in sorted(distributions)],
         "mapped_native_files": sorted(set(mapped)),
+        "sys_executable": observed.get("sys_executable"),
+        "sys_prefix": observed.get("sys_prefix"),
+        "sys_base_prefix": observed.get("sys_base_prefix"),
+        "sys_path": observed.get("sys_path", []),
     }, paths
 
 
@@ -370,6 +444,7 @@ def main(argv: list[str]) -> int:
 
     context = load_campaign(args.campaign_result)
     external_identities: list[tuple[Path, dict[str, Any], str]] = []
+    launcher_identities: list[tuple[Path, dict[str, Any], str]] = []
     try:
         row = context.row(args.run_id)
         require(row.get("phase") == "measured", "runtime closure requires a measured runner row")
@@ -398,14 +473,17 @@ def main(argv: list[str]) -> int:
         observed_python_paths: list[Path] = []
 
         if shebang is not None:
-            interpreter, shebang_arguments = resolve_shebang_interpreter(shebang)
-            interpreter, _interpreter_data, interpreter_identity = resolved_regular(interpreter, "tool interpreter")
-            external_identities.append((interpreter, interpreter_identity, "tool interpreter"))
+            interpreter_launcher, shebang_arguments = resolve_shebang_interpreter(shebang)
+            launcher_record = launcher_identity(interpreter_launcher, "tool interpreter")
+            launcher_identities.append((interpreter_launcher, launcher_record, "tool interpreter"))
+            interpreter, _interpreter_data, interpreter_identity = resolved_regular(interpreter_launcher, "tool interpreter")
+            external_identities.append((interpreter, interpreter_identity, "tool interpreter target"))
             seed_paths.append(interpreter)
-            if "python" in interpreter.name.lower():
+            if "python" in interpreter_launcher.name.lower() or "python" in interpreter.name.lower():
                 closure_mode = "python_console_entrypoint"
-                observation, imported_paths = observe_python(interpreter, entrypoint_for_trace, task_arguments)
+                observation, imported_paths = observe_python(interpreter_launcher, entrypoint_for_trace, task_arguments)
                 observation["shebang_arguments"] = shebang_arguments
+                observation["interpreter_launcher"] = {key: value for key, value in launcher_record.items() if key not in {"device", "inode"}}
                 observed_python_paths.extend(imported_paths)
                 seed_paths.extend(imported_paths)
             else:
@@ -452,6 +530,26 @@ def main(argv: list[str]) -> int:
             external_identities.append((resolved, identity, f"runtime closure file {resolved}"))
             file_records.append(identity_record(identity, role="runtime_object"))
         file_records.sort(key=lambda item: item["path"])
+        campaign_root = context.root.resolve(strict=True)
+        for record in file_records:
+            descriptor = portable_path(Path(record["path"]), campaign_root)
+            record["path"] = descriptor["path"]
+            record["path_scope"] = descriptor["scope"]
+        if isinstance(observation.get("imported_modules"), list):
+            for record in observation["imported_modules"]:
+                if isinstance(record, dict) and isinstance(record.get("path"), str):
+                    descriptor = portable_path(Path(record["path"]), campaign_root)
+                    record["path"] = descriptor["path"]
+                    record["path_scope"] = descriptor["scope"]
+        if isinstance(observation.get("mapped_native_files"), list):
+            observation["mapped_native_files"] = [portable_path_string(value, campaign_root) for value in observation["mapped_native_files"]]
+        for field in ("task_arguments", "trace_command"):
+            values = observation.get(field)
+            if isinstance(values, list):
+                observation[field] = [portable_path_string(value, campaign_root) if isinstance(value, str) else value for value in values]
+        for record in native_graph:
+            record["path"] = portable_path_string(record["path"], campaign_root)
+            record["resolved_dependencies"] = [portable_path_string(value, campaign_root) for value in record["resolved_dependencies"]]
 
         complete = not unresolved
         artifact = {
@@ -491,7 +589,7 @@ def main(argv: list[str]) -> int:
             "unresolved_dependencies": unresolved,
             "totals": {"runtime_file_count": len(file_records), "runtime_bytes": total_bytes, "unresolved_dependency_count": len(unresolved)},
             "claim_boundaries": [
-                "The Python closure is observed on the authenticated measured task-command path for this row and profile.",
+                "The Python closure is observed through the retained launcher pathname so virtual-environment context is preserved.",
                 "The native closure records bounded PT_INTERP and DT_NEEDED resolution; unresolved names remain explicit.",
                 "The manifest authenticates runtime support objects but does not make them x64lens runtime dependencies.",
             ],
@@ -517,6 +615,8 @@ def main(argv: list[str]) -> int:
                     continue
                 dedup.add(key)
                 require_regular_path_identity(path, identity, MAX_MEMBER_BYTES, label)
+            for path, identity, label in launcher_identities:
+                require_launcher_identity(path, identity, label)
 
         atomic_publish_bytes(args.output, canonical_json_bytes(artifact), reauthenticate=reauthenticate)
     finally:

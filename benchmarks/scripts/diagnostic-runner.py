@@ -42,6 +42,7 @@ EVIDENCE_CLASS = "diagnostic"
 PUBLICATION_ELIGIBLE = False
 RENAME_NOREPLACE = 1
 RENAME_EXCHANGE = 2
+AT_REMOVEDIR = 0x200
 MFD_NOEXEC_SEAL_FLAG = 0x0008
 MFD_EXEC_FLAG = 0x0010
 F_SEAL_EXEC_FLAG = 0x0020
@@ -186,6 +187,26 @@ def require(condition: bool, message: str) -> None:
         raise RunnerError(message)
 
 
+def _unlinkat_directory(parent_fd: int, name: str, label: str) -> None:
+    """Remove one directory entry with one unlinkat(AT_REMOVEDIR) syscall.
+
+    The kernel resolves and removes the named object atomically relative to the
+    held parent descriptor.  This avoids the check-then-rmdir pathname window
+    that could otherwise remove a substituted foreign directory.
+    """
+    require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    libc = ctypes.CDLL(None, use_errno=True)
+    unlinkat = getattr(libc, "unlinkat", None)
+    require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
+    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+    unlinkat.restype = ctypes.c_int
+    if unlinkat(parent_fd, os.fsencode(name), AT_REMOVEDIR) != 0:
+        code = ctypes.get_errno()
+        if code == errno.ENOENT:
+            raise FileNotFoundError(code, os.strerror(code), name)
+        raise RunnerError(f"{label} removal failed: {os.strerror(code)}")
+
+
 @dataclass
 class OwnedStage:
     """Creation-time identity for one same-parent staging directory.
@@ -212,12 +233,9 @@ class OwnedStage:
         name: str,
         registry: list["OwnedStage"] | None = None,
     ) -> "OwnedStage":
-        resolved_parent = parent.resolve(strict=True)
         require(Path(name).name == name and name not in {"", ".", ".."}, "unsafe staging directory name")
-        parent_fd = os.open(
-            resolved_parent,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-        )
+        parent_fd = open_directory_nofollow(parent, "staging parent")
+        resolved_parent = Path(f"/proc/self/fd/{parent_fd}").resolve(strict=True)
         created_identity: tuple[int, int] | None = None
         directory_fd = -1
         try:
@@ -256,7 +274,7 @@ class OwnedStage:
                 try:
                     observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
                     if stat.S_ISDIR(observed.st_mode) and (observed.st_dev, observed.st_ino) == created_identity:
-                        os.rmdir(name, dir_fd=parent_fd)
+                        _unlinkat_directory(parent_fd, name, "partial staging directory")
                         os.fsync(parent_fd)
                 except FileNotFoundError:
                     pass
@@ -271,15 +289,12 @@ class OwnedStage:
 
     @classmethod
     def adopt(cls, path: Path, expected_parent: Path, label: str) -> "OwnedStage":
-        parent = expected_parent.resolve(strict=True)
+        parent_fd = open_directory_nofollow(expected_parent, f"{label} parent")
+        parent = Path(f"/proc/self/fd/{parent_fd}").resolve(strict=True)
         candidate = Path(os.path.abspath(path))
         require(candidate.parent == parent, f"{label} is outside its expected parent")
-        metadata = os.lstat(candidate)
+        metadata = os.stat(candidate.name, dir_fd=parent_fd, follow_symlinks=False)
         require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a real directory")
-        parent_fd = os.open(
-            parent,
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-        )
         try:
             directory_fd = os.open(
                 candidate.name,
@@ -356,7 +371,7 @@ class OwnedStage:
                         f"{label} changed before final removal",
                     )
                     try:
-                        os.rmdir(current_name, dir_fd=parent_fd)
+                        _unlinkat_directory(parent_fd, current_name, label)
                     except FileNotFoundError:
                         continue
                     os.fsync(parent_fd)
@@ -386,7 +401,7 @@ def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], la
         stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity,
         f"{label} placeholder identity changed",
     )
-    os.rmdir(name, dir_fd=parent_fd)
+    _unlinkat_directory(parent_fd, name, label)
 
 
 def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
@@ -435,7 +450,7 @@ def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
             and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
             f"{label} placeholder changed after exchange",
         )
-        os.rmdir(stage.name, dir_fd=stage.parent_fd)
+        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder")
         placeholder_identity = None
         os.fsync(stage.parent_fd)
         stage.committed = True
@@ -507,7 +522,7 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
                 _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
             finally:
                 os.close(child_fd)
-            os.rmdir(entry.name, dir_fd=directory_fd)
+            _unlinkat_directory(directory_fd, entry.name, f"{label}/{entry.name}")
         else:
             os.unlink(entry.name, dir_fd=directory_fd)
 
@@ -803,7 +818,7 @@ def diagnostic_platform_preflight() -> str:
 
     noexec_fd, noexec_creation_mode = create_execution_memfd("platform-noexec-preflight", executable=False)
     try:
-        with Path("/bin/true").open("rb") as handle:
+        with Path("/usr/bin/true").open("rb") as handle:
             while chunk := handle.read(1024 * 1024):
                 write_all(noexec_fd, chunk)
         os.fchmod(noexec_fd, 0o444)
@@ -934,6 +949,67 @@ def open_directory_nofollow(path: Path, label: str) -> int:
     except BaseException:
         os.close(current_fd)
         raise
+
+def authenticate_regular_path_nofollow(path: Path, label: str) -> Path:
+    """Authenticate one regular file without accepting symlink components."""
+    absolute = Path(os.path.abspath(path))
+    require(absolute.name not in {"", ".", ".."}, f"{label} has no regular-file name")
+    parent_fd = open_directory_nofollow(absolute.parent, f"{label} parent")
+    fd = -1
+    try:
+        fd = os.open(
+            absolute.name,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            dir_fd=parent_fd,
+        )
+        metadata = os.fstat(fd)
+        require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
+        return Path(f"/proc/self/fd/{fd}").resolve(strict=True)
+    except OSError as exc:
+        raise RunnerError(f"cannot authenticate {label}: {exc}") from exc
+    finally:
+        if fd >= 0:
+            os.close(fd)
+        os.close(parent_fd)
+
+
+def ensure_directory_nofollow(path: Path, label: str, mode: int = 0o755) -> Path:
+    """Create missing directory components while rejecting every symlink."""
+    absolute = Path(os.path.abspath(path))
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    parts = absolute.parts
+    proc_prefix = (os.sep, "proc", "self", "fd")
+    if len(parts) >= 5 and parts[:4] == proc_prefix and parts[4].isdigit():
+        try:
+            current_fd = os.dup(int(parts[4]))
+        except OSError as exc:
+            raise RunnerError(f"{label} descriptor root is unavailable") from exc
+        remaining = parts[5:]
+    else:
+        current_fd = os.open(os.sep, flags)
+        remaining = parts[1:]
+    try:
+        for component in remaining:
+            require(component not in {"", ".", ".."}, f"{label} contains an unsafe component")
+            try:
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except FileNotFoundError:
+                try:
+                    os.mkdir(component, mode, dir_fd=current_fd)
+                    os.fsync(current_fd)
+                except FileExistsError:
+                    pass
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            os.close(current_fd)
+            current_fd = next_fd
+            metadata = os.fstat(current_fd)
+            require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
+        return Path(f"/proc/self/fd/{current_fd}").resolve(strict=True)
+    except OSError as exc:
+        raise RunnerError(f"cannot open or create {label}: {exc}") from exc
+    finally:
+        os.close(current_fd)
+
 
 def write_json(path: Path, value: Any) -> None:
     data = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
@@ -1360,7 +1436,7 @@ def _open_capture_directory(path: Path, label: str) -> int:
             )
         except BaseException:
             try:
-                os.rmdir(path.name, dir_fd=parent_fd)
+                _unlinkat_directory(parent_fd, path.name, label)
             except OSError:
                 pass
             raise
@@ -1385,7 +1461,7 @@ def _create_child_directory(parent_fd: int, name: str, label: str) -> int:
         )
     except BaseException:
         try:
-            os.rmdir(name, dir_fd=parent_fd)
+            _unlinkat_directory(parent_fd, name, label)
         except OSError:
             pass
         raise
@@ -1663,11 +1739,7 @@ def resolve_spec_path(spec_dir: Path, raw: Any, name: str) -> tuple[str, Path]:
     candidate = Path(raw)
     if not candidate.is_absolute():
         candidate = spec_dir / candidate
-    try:
-        resolved = candidate.resolve(strict=True)
-    except OSError as exc:
-        raise RunnerError(f"cannot resolve {name} {raw!r}: {exc}") from exc
-    require(resolved.is_file(), f"{name} is not a regular file: {resolved}")
+    resolved = authenticate_regular_path_nofollow(candidate, name)
     return requested, resolved
 
 
@@ -1744,8 +1816,8 @@ def parse_spec(path: Path, campaign_override: str | None) -> tuple[dict[str, Any
     require(isinstance(timer_floor, dict), "timer_floor must be an object")
     timer_floor["runs"] = positive_int(timer_floor.get("runs"), "timer_floor.runs", minimum=5)
     timer_floor["threshold_multiplier"] = positive_number(timer_floor.get("threshold_multiplier"), "timer_floor.threshold_multiplier")
-    require(isinstance(timer_floor.get("probe", "/bin/true"), str), "timer_floor.probe must be a path string")
-    timer_floor.setdefault("probe", "/bin/true")
+    require(isinstance(timer_floor.get("probe", "/usr/bin/true"), str), "timer_floor.probe must be a path string")
+    timer_floor.setdefault("probe", "/usr/bin/true")
 
     tools = spec.get("tools")
     targets = spec.get("targets")
@@ -2414,13 +2486,11 @@ def build_manifest(
 
 def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | None) -> tuple[Path, int]:
     global CREATING_STAGE
-    spec_path = spec_path.resolve(strict=True)
+    spec_path = authenticate_regular_path_nofollow(spec_path, "campaign spec")
     spec, spec_raw, spec_source_identity = parse_spec(spec_path, campaign_override)
     runner_source = Path(__file__).resolve(strict=True)
     runner_source_identity = file_identity(runner_source)
-    output_root = output_root.resolve()
-    output_root.mkdir(parents=True, exist_ok=True)
-    output_root = output_root.resolve(strict=True)
+    output_root = ensure_directory_nofollow(output_root, "campaign output root")
     final = output_root / spec["campaign_id"]
     require(not final.exists(), f"campaign result already exists: {final}")
     stage_name = f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
