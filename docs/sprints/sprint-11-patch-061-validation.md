@@ -3,9 +3,9 @@
 ## Purpose
 
 Patch 061 corrects the remaining Sprint 11 transaction, campaign-accounting,
-coordinate, runtime-closure, and private-rollback findings; records the
-below-floor measurement policy; and closes the diagnostic benchmark sprint.
-It changes no analyzer behavior or public JSON schema.
+coordinate, runtime-closure, and rollback-destination identity findings;
+records the below-floor measurement policy; and closes the diagnostic benchmark
+sprint. It changes no analyzer behavior or public JSON schema.
 
 ## Focused commands
 
@@ -85,9 +85,29 @@ make native-docker-json-parity-smoke
 A Docker engine or metadata-path limitation is an environment result only when
 a complete qualified rerun succeeds.
 
-## Corrected all-tools campaign
+## Prior evidence carried into closeout
 
-With the exact pinned baselines installed:
+The Patch 060 cloud checkpoint accounted for all 30 planned conditions while
+executing the 12 available x64lens conditions and recording 18 pinned-baseline
+conditions as unavailable. Its 60 measured x64lens process rows were all below
+the reliable single-process timer floor.
+
+A later, separately qualified WSL2 replay used the exact pinned baselines and,
+after one narrow evidence-local correction to the ROPgadget 7.7 banner
+authority, executed 30 of 30 conditions, retained 180 of 180 successful process
+rows, and generated 24 relation artifacts. All 12 x64lens gadget and analyze
+conditions remained below that host's 6,361,100 ns reliable single-process
+floor. Two Python task-path runtime-closure failures left those closures
+incomplete, and coordinate calibration failed, so the replay was not
+comparison-qualified and did not replace the required fresh unmodified Patch
+061 campaign.
+
+Both retained evidence strata remain diagnostic, unfrozen, and
+publication-ineligible.
+
+## Required fresh corrected all-tools campaign
+
+With the exact pinned baselines installed, run a fresh unmodified campaign:
 
 ```bash
 REQUIRE_BASELINES=1 make baseline-tools-check
@@ -112,6 +132,6 @@ must not be reported as qualified calibration.
 
 ## Evidence classification
 
-Patch 061 and its campaign remain diagnostic development evidence. They do not
-support preview or publication claims about speed, RSS, coverage, superiority,
-or defensive usefulness.
+Patch 061 and any fresh campaign remain diagnostic development evidence. They
+do not support preview or publication claims about speed, RSS, coverage,
+superiority, or defensive usefulness.

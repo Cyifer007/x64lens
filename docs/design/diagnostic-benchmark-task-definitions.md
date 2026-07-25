@@ -156,7 +156,7 @@ The maintained 24-comparison plus six-control plan is pre-execution authority.
 It is diagnostic, unfrozen, and publication-ineligible. It is not a comparative
 result.
 
-## Patch 060 campaign-accounting boundary
+## Patch 060 cloud campaign-accounting boundary
 
 Patch 060 does not redefine the version 3 task authority. It accounts for all 30
 planned conditions while executing only conditions whose authenticated tools are
@@ -164,14 +164,29 @@ available. Condition records, native runner rows, warmups, measured rows,
 primary-summary rows, normalized relation artifacts, task-path closure
 artifacts, and coordinate status remain separate evidence layers.
 
-The retained authenticated campaign accounted for 30 planned conditions: 12
-x64lens conditions executed and 18 baseline conditions were unavailable. The
-executed conditions produced 72 native rows—12 warmups and 60 measured rows.
-All 60 measured rows were below the timer floor, so zero rows entered primary
-timing summaries. Six x64lens relation artifacts and two complete x64lens
-task-path closure artifacts were generated; `complete` remains limited to those
-bounded observations. Coordinate status was unavailable, so cross-tool address
-intersections remain blocked pending authenticated role-controlled calibration.
+The retained authenticated cloud checkpoint accounted for 30 planned
+conditions: 12 x64lens conditions executed and 18 baseline conditions were
+unavailable. The executed conditions produced 72 native rows—12 warmups and 60
+measured rows. All 60 measured x64lens rows were below the timer floor, so none
+entered primary timing summaries; they were retained as below-floor
+observations, not reported as zero or as a speed result. Six x64lens relation
+artifacts and two complete x64lens task-path closure artifacts were generated;
+`complete` remains limited to those bounded observations. Coordinate status was
+unavailable, so cross-tool address intersections remain blocked pending
+authenticated role-controlled calibration.
+
+A later WSL2 all-tools replay, qualified only for an evidence-local correction
+to the official ROPgadget 7.7 banner, executed all 30 conditions and retained
+180/180 successful process rows: 30 warmups and 150 measured rows. Seventeen
+conditions were above the 6,361,100 ns reliable floor and 13 were below it. All
+12 x64lens conditions were below that floor. The replay generated 24 normalized
+relations, but two Python task-path closures failed and coordinate calibration
+failed. It was therefore not comparison-qualified and does not replace the
+fresh, unmodified Patch 061 campaign required for empirical acceptance.
+
+Both evidence strata remain diagnostic, unfrozen, and publication-ineligible.
+Native execution, normalization, runtime closure, coordinate qualification, and
+comparison status are independent evidence layers.
 
 ## Metric boundary
 

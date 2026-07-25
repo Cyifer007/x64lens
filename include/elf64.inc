@@ -67,6 +67,16 @@
 %define ELF64_PHDR_SIZE      56
 %define ELF64_SHDR_SIZE      64
 
+; Extended-numbering sentinels and reserved-index boundary. ELF64 uses
+; section-header entry zero to carry large program-header counts, section
+; counts, or the section-name-table index. Patch 062 detects these forms and
+; either validates their structure before returning a stable unsupported
+; result or rejects malformed metadata.
+%define PN_XNUM              0xffff
+%define SHN_UNDEF            0
+%define SHN_LORESERVE        0xff00
+%define SHN_XINDEX           0xffff
+
 ; Section header fields used by the bounded SHDR metadata helpers.
 %define S_NAME               0x00
 %define S_TYPE               0x04

@@ -15,26 +15,44 @@ that would otherwise corrupt corpus labels or defensive triage.
 2. Define overlapping executable-region scan, deduplication, and provenance semantics.
 3. Distinguish PIE executables from shared objects through bounded evidence.
 4. Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
-5. Rerun the diagnostic campaign under a new identifier after behavior changes.
+5. Run a corrected held-out diagnostic confirmation under a new identifier
+   after behavior changes, using positive role-controlled coordinate anchors
+   and complete runtime closure for all five task paths.
 
 ## Planned deliverables
 
+- [x] Validate `p_align`, offset/virtual congruence, virtual ranges, and executable-entrypoint states. Patch 062.
+- [x] Detect ELF extended-numbering cases and return a bounded stable unsupported outcome after structural validation. Patch 062.
+- [ ] Define overlapping executable `PT_LOAD` scan, deduplication, count, and
+  provenance semantics.
 - [ ] Distinguish PIE executables from `ET_DYN` shared objects through bounded evidence.
 - [ ] Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
-- [ ] Define overlapping executable `PT_LOAD` scan, deduplication, and count semantics.
-- [ ] Validate or explicitly reject unsupported `p_align`, offset/virtual congruence, virtual ranges, and executable-entrypoint states.
-- [ ] Detect ELF extended-numbering cases and provide bounded support or stable unsupported outcomes.
-- [ ] Extend deterministic mitigation and malformed-input fixtures for every new parser path.
-- [ ] Re-run the diagnostic suite and record changed facts separately from Sprint 11 rows.
+- [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
+- [ ] Run the corrected held-out diagnostic confirmation under a new campaign
+  identity and record its facts separately from Sprint 11 rows and replays.
+
+## Patch sequence
+
+1. **Patch 062:** shared ordinary PHDR validity, explicit extended-numbering unsupported/malformed outcomes, and Patch 061 transaction corrections.
+2. **Next:** overlapping executable-region scan, deduplication, count, and provenance semantics.
+3. **Then:** bounded PIE-versus-DSO identity.
+4. **Then:** bounded GNU-property IBT/SHSTK evidence.
+5. **Closeout:** corrected held-out diagnostic confirmation and Sprint 12 reconciliation.
 
 ## Acceptance criteria
 
-- [ ] Program headers remain executable authority.
-- [ ] No new table is read without bounded range and count validation.
+- [x] Program headers remain executable authority.
+- [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
 - [ ] PIE, DSO, IBT, and SHSTK facts have controlled positive, negative, contradictory, truncated, and duplicate cases where applicable.
 - [ ] Overlapping segments cannot silently duplicate counts under the chosen policy.
+- [ ] Positive role-controlled anchors establish address-coordinate calibration.
+- [ ] All five task paths have complete runtime-closure evidence.
+- [ ] Comparison qualification is withheld unless both calibration and closure
+  gates pass.
 - [ ] Native and Docker facts agree.
 - [ ] Diagnostic measurements are versioned separately after behavior changes.
+- [ ] Held-out confirmation evidence remains diagnostic, unfrozen, and
+  publication-ineligible.
 
 ## Handoff
 

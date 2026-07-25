@@ -41,12 +41,21 @@ Positive:
 Tradeoffs:
 
 - Smoke rows are not yet fair publication benchmarks.
-- Baseline tool output counts are not normalized yet.
-- Tool definitions still need careful mapping before coverage claims.
+- At this historical stage, baseline-native output populations were not yet
+  mapped through named relations.
+- Tool definitions and duplicate policies still need careful mapping before
+  coverage claims.
 
 ## Future work
 
-- Normalize baseline gadget counts with documented parser rules.
+- Preserve each tool's native population totals and add task-specific named
+  relations with documented parser, duplicate, and reconciliation rules.
+- Do not introduce a generic cross-tool gadget count; every cross-tool
+  comparison must name the represented relation and its authority.
 - Add explicit baseline tool install notes.
 - Expand corpus tiers beyond fixtures and common system binaries.
 - Run repeated publication trials after the scanner, classifier, scoring, and output contracts stabilize.
+
+This direction supersedes the historical idea of normalizing unlike native
+populations into one gadget-count objective while preserving ADR 0007's
+development-smoke decision.

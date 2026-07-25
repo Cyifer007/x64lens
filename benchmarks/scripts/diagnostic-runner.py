@@ -187,14 +187,29 @@ def require(condition: bool, message: str) -> None:
         raise RunnerError(message)
 
 
-def _unlinkat_directory(parent_fd: int, name: str, label: str) -> None:
-    """Remove one directory entry with one unlinkat(AT_REMOVEDIR) syscall.
+def _unlinkat_directory(
+    parent_fd: int,
+    name: str,
+    label: str,
+    expected_identity: tuple[int, int],
+) -> None:
+    """Conditionally remove one directory entry relative to a held parent.
 
-    The kernel resolves and removes the named object atomically relative to the
-    held parent descriptor.  This avoids the check-then-rmdir pathname window
-    that could otherwise remove a substituted foreign directory.
+    Linux does not provide unlink-by-inode. The helper therefore performs the
+    final type/device/inode comparison inside the low-level removal boundary and
+    fails closed when the name was substituted. This preserves a foreign
+    replacement and leaves the displaced owned object available for evidence or
+    operator recovery. Protection against an already-hostile same-UID process
+    racing between this final comparison and ``unlinkat`` remains outside the
+    diagnostic trust model and is stated explicitly in the public contract.
     """
     require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(
+        stat.S_ISDIR(observed.st_mode)
+        and (observed.st_dev, observed.st_ino) == expected_identity,
+        f"{label} changed before final removal",
+    )
     libc = ctypes.CDLL(None, use_errno=True)
     unlinkat = getattr(libc, "unlinkat", None)
     require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
@@ -274,7 +289,7 @@ class OwnedStage:
                 try:
                     observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
                     if stat.S_ISDIR(observed.st_mode) and (observed.st_dev, observed.st_ino) == created_identity:
-                        _unlinkat_directory(parent_fd, name, "partial staging directory")
+                        _unlinkat_directory(parent_fd, name, "partial staging directory", created_identity)
                         os.fsync(parent_fd)
                 except FileNotFoundError:
                     pass
@@ -371,7 +386,7 @@ class OwnedStage:
                         f"{label} changed before final removal",
                     )
                     try:
-                        _unlinkat_directory(parent_fd, current_name, label)
+                        _unlinkat_directory(parent_fd, current_name, label, (self.device, self.inode))
                     except FileNotFoundError:
                         continue
                     os.fsync(parent_fd)
@@ -401,7 +416,7 @@ def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], la
         stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity,
         f"{label} placeholder identity changed",
     )
-    _unlinkat_directory(parent_fd, name, label)
+    _unlinkat_directory(parent_fd, name, label, identity)
 
 
 def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
@@ -450,7 +465,7 @@ def _publish_owned_stage(stage: OwnedStage, final: Path, label: str) -> None:
             and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
             f"{label} placeholder changed after exchange",
         )
-        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder")
+        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder", placeholder_identity)
         placeholder_identity = None
         os.fsync(stage.parent_fd)
         stage.committed = True
@@ -522,7 +537,12 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
                 _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
             finally:
                 os.close(child_fd)
-            _unlinkat_directory(directory_fd, entry.name, f"{label}/{entry.name}")
+            _unlinkat_directory(
+                directory_fd,
+                entry.name,
+                f"{label}/{entry.name}",
+                (metadata.st_dev, metadata.st_ino),
+            )
         else:
             os.unlink(entry.name, dir_fd=directory_fd)
 
@@ -950,27 +970,109 @@ def open_directory_nofollow(path: Path, label: str) -> int:
         os.close(current_fd)
         raise
 
-def authenticate_regular_path_nofollow(path: Path, label: str) -> Path:
-    """Authenticate one regular file without accepting symlink components."""
-    absolute = Path(os.path.abspath(path))
-    require(absolute.name not in {"", ".", ".."}, f"{label} has no regular-file name")
-    parent_fd = open_directory_nofollow(absolute.parent, f"{label} parent")
-    fd = -1
-    try:
-        fd = os.open(
-            absolute.name,
-            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            dir_fd=parent_fd,
+@dataclass
+class AuthenticatedRegularFile:
+    """A no-follow regular-file descriptor retained through consumption."""
+
+    requested_path: Path
+    resolved_path: Path
+    parent_fd: int
+    fd: int
+    device: int
+    inode: int
+    size_bytes: int
+    mtime_ns: int
+    mode: int
+    label: str
+
+    @classmethod
+    def open(cls, path: Path, label: str) -> "AuthenticatedRegularFile":
+        absolute = Path(os.path.abspath(path))
+        require(absolute.name not in {"", ".", ".."}, f"{label} has no regular-file name")
+        parent_fd = open_directory_nofollow(absolute.parent, f"{label} parent")
+        fd = -1
+        try:
+            resolved_parent = Path(f"/proc/self/fd/{parent_fd}").resolve(strict=True)
+            fd = os.open(
+                absolute.name,
+                os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_fd,
+            )
+            metadata = os.fstat(fd)
+            require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
+            named = os.stat(absolute.name, dir_fd=parent_fd, follow_symlinks=False)
+            require(
+                stat.S_ISREG(named.st_mode)
+                and (named.st_dev, named.st_ino) == (metadata.st_dev, metadata.st_ino),
+                f"{label} changed while being opened",
+            )
+            return cls(
+                requested_path=absolute,
+                resolved_path=resolved_parent / absolute.name,
+                parent_fd=parent_fd,
+                fd=fd,
+                device=metadata.st_dev,
+                inode=metadata.st_ino,
+                size_bytes=metadata.st_size,
+                mtime_ns=metadata.st_mtime_ns,
+                mode=stat.S_IMODE(metadata.st_mode),
+                label=label,
+            )
+        except OSError as exc:
+            if fd >= 0:
+                os.close(fd)
+            os.close(parent_fd)
+            raise RunnerError(f"cannot authenticate {label}: {exc}") from exc
+        except BaseException:
+            if fd >= 0:
+                os.close(fd)
+            os.close(parent_fd)
+            raise
+
+    def read_bytes(self, maximum_bytes: int) -> bytes:
+        require(self.size_bytes <= maximum_bytes, f"{self.label} exceeds the retained-input limit")
+        chunks: list[bytes] = []
+        offset = 0
+        while offset < self.size_bytes:
+            chunk = os.pread(self.fd, min(1024 * 1024, self.size_bytes - offset), offset)
+            require(chunk, f"short read while consuming {self.label}")
+            chunks.append(chunk)
+            offset += len(chunk)
+        data = b"".join(chunks)
+        self.require_open_identity()
+        require(len(data) == self.size_bytes, f"{self.label} size changed while being consumed")
+        return data
+
+    def require_open_identity(self) -> None:
+        metadata = os.fstat(self.fd)
+        require(
+            stat.S_ISREG(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mtime_ns)
+            == (self.device, self.inode, self.size_bytes, self.mtime_ns),
+            f"{self.label} open object changed during consumption",
         )
-        metadata = os.fstat(fd)
-        require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
-        return Path(f"/proc/self/fd/{fd}").resolve(strict=True)
-    except OSError as exc:
-        raise RunnerError(f"cannot authenticate {label}: {exc}") from exc
-    finally:
-        if fd >= 0:
-            os.close(fd)
-        os.close(parent_fd)
+
+    def require_named_identity(self) -> None:
+        metadata = os.stat(self.resolved_path.name, dir_fd=self.parent_fd, follow_symlinks=False)
+        require(
+            stat.S_ISREG(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino) == (self.device, self.inode),
+            f"{self.label} path changed during consumption",
+        )
+        self.require_open_identity()
+
+    def close(self) -> None:
+        if self.fd >= 0:
+            os.close(self.fd)
+            self.fd = -1
+        if self.parent_fd >= 0:
+            os.close(self.parent_fd)
+            self.parent_fd = -1
+
+
+def authenticate_regular_path_nofollow(path: Path, label: str) -> AuthenticatedRegularFile:
+    """Open and retain one regular file without following any component."""
+    return AuthenticatedRegularFile.open(path, label)
 
 
 def ensure_directory_nofollow(path: Path, label: str, mode: int = 0o755) -> Path:
@@ -1428,6 +1530,8 @@ def _open_capture_directory(path: Path, label: str) -> int:
             os.mkdir(path.name, 0o700, dir_fd=parent_fd)
         except FileExistsError as exc:
             raise RunnerError(f"refusing pre-existing {label}: {path}") from exc
+        created = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        identity = (created.st_dev, created.st_ino)
         try:
             directory_fd = os.open(
                 path.name,
@@ -1436,12 +1540,16 @@ def _open_capture_directory(path: Path, label: str) -> int:
             )
         except BaseException:
             try:
-                _unlinkat_directory(parent_fd, path.name, label)
-            except OSError:
+                _unlinkat_directory(parent_fd, path.name, label, identity)
+            except (OSError, RunnerError):
                 pass
             raise
         metadata = os.fstat(directory_fd)
-        require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a directory")
+        require(
+            stat.S_ISDIR(metadata.st_mode)
+            and (metadata.st_dev, metadata.st_ino) == identity,
+            f"{label} changed while being opened",
+        )
         return directory_fd
     finally:
         os.close(parent_fd)
@@ -1453,16 +1561,25 @@ def _create_child_directory(parent_fd: int, name: str, label: str) -> int:
         os.mkdir(name, 0o700, dir_fd=parent_fd)
     except FileExistsError as exc:
         raise RunnerError(f"refusing pre-existing {label}: {name}") from exc
+    created = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    identity = (created.st_dev, created.st_ino)
     try:
-        return os.open(
+        directory_fd = os.open(
             name,
             os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
             dir_fd=parent_fd,
         )
+        observed = os.fstat(directory_fd)
+        require(
+            stat.S_ISDIR(observed.st_mode)
+            and (observed.st_dev, observed.st_ino) == identity,
+            f"{label} changed while being opened",
+        )
+        return directory_fd
     except BaseException:
         try:
-            _unlinkat_directory(parent_fd, name, label)
-        except OSError:
+            _unlinkat_directory(parent_fd, name, label, identity)
+        except (OSError, RunnerError):
             pass
         raise
 
@@ -1733,40 +1850,67 @@ def execute_process(
     }
 
 
-def resolve_spec_path(spec_dir: Path, raw: Any, name: str) -> tuple[str, Path]:
+def resolve_spec_path(spec_dir: Path, raw: Any, name: str) -> tuple[str, AuthenticatedRegularFile]:
     require(isinstance(raw, str) and raw and "\x00" not in raw, f"{name} must be a nonempty path string")
     requested = raw
     candidate = Path(raw)
     if not candidate.is_absolute():
         candidate = spec_dir / candidate
-    resolved = authenticate_regular_path_nofollow(candidate, name)
-    return requested, resolved
+    return requested, authenticate_regular_path_nofollow(candidate, name)
 
 
-def immutable_snapshot(source: Path, destination: Path, *, executable: bool) -> dict[str, Any]:
-    before = file_identity(source)
+def immutable_snapshot(
+    source: AuthenticatedRegularFile,
+    destination: Path,
+    *,
+    executable: bool,
+) -> dict[str, Any]:
+    source.require_named_identity()
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source, destination)
-    os.chmod(destination, 0o555 if executable else 0o444)
-    after = file_identity(source)
-    copied = file_identity(destination)
-    require(before == after, f"source mutated while being snapshotted: {source}")
-    require(before["sha256"] == copied["sha256"] and before["size_bytes"] == copied["size_bytes"], f"snapshot mismatch: {source}")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0)
+    destination_fd = os.open(destination, flags, 0o600)
+    digest = hashlib.sha256()
+    copied = 0
+    try:
+        offset = 0
+        while offset < source.size_bytes:
+            chunk = os.pread(source.fd, min(1024 * 1024, source.size_bytes - offset), offset)
+            require(chunk, f"short read while snapshotting {source.label}")
+            write_all(destination_fd, chunk)
+            digest.update(chunk)
+            copied += len(chunk)
+            offset += len(chunk)
+        os.fchmod(destination_fd, 0o555 if executable else 0o444)
+        os.fsync(destination_fd)
+    finally:
+        os.close(destination_fd)
+    source.require_named_identity()
+    copied_identity = file_identity(destination)
+    require(copied == source.size_bytes, f"snapshot size mismatch: {source.resolved_path}")
+    require(
+        digest.hexdigest() == copied_identity["sha256"],
+        f"snapshot hash mismatch: {source.resolved_path}",
+    )
     return {
-        "source_size_bytes": before["size_bytes"],
-        "source_mtime_ns": before["mtime_ns"],
-        "sha256": copied["sha256"],
-        "size_bytes": copied["size_bytes"],
+        "source_size_bytes": source.size_bytes,
+        "source_mtime_ns": source.mtime_ns,
+        "sha256": copied_identity["sha256"],
+        "size_bytes": copied_identity["size_bytes"],
     }
 
 
-def parse_spec(path: Path, campaign_override: str | None) -> tuple[dict[str, Any], bytes, dict[str, Any]]:
+def parse_spec(source: AuthenticatedRegularFile, campaign_override: str | None) -> tuple[dict[str, Any], bytes, dict[str, Any]]:
     try:
-        before = file_identity(path)
-        raw = path.read_bytes()
-        after = file_identity(path)
-        require(before == after, "campaign spec mutated while being read")
-        require(before["size_bytes"] == len(raw) and before["sha256"] == sha256_bytes(raw), "campaign spec read identity mismatch")
+        raw = source.read_bytes(8 * 1024 * 1024)
+        source.require_named_identity()
+        before = {
+            "size_bytes": source.size_bytes,
+            "mtime_ns": source.mtime_ns,
+            "sha256": sha256_bytes(raw),
+            "device": source.device,
+            "inode": source.inode,
+            "mode": source.mode,
+        }
         spec = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise RunnerError(f"cannot load campaign spec: {exc}") from exc
@@ -1951,42 +2095,54 @@ def snapshot_inputs(
     try:
         for tool in spec["tools"]:
             requested, source = resolve_spec_path(spec_dir, tool["path"], f"tool {tool['id']}")
-            require(os.access(source, os.X_OK), f"tool is not executable: {source}")
-            snapshot = stage / "inputs" / "tools" / tool["id"]
-            identity = immutable_snapshot(source, snapshot, executable=True)
+            try:
+                require(source.mode & 0o111 != 0, f"tool is not executable: {source.resolved_path}")
+                snapshot = stage / "inputs" / "tools" / tool["id"]
+                identity = immutable_snapshot(source, snapshot, executable=True)
+                source_resolved = str(source.resolved_path)
+            finally:
+                source.close()
             tools[tool["id"]] = {
                 **tool,
                 **identity,
                 **sealed_execution_copy(snapshot, f"tool-{tool['id']}", 0o555),
                 "source_path_requested": requested,
-                "source_path_resolved": str(source),
+                "source_path_resolved": source_resolved,
                 "snapshot_path": str(snapshot.relative_to(stage)),
                 "snapshot_absolute": snapshot,
             }
 
         for target in spec["targets"]:
             requested, source = resolve_spec_path(spec_dir, target["path"], f"target {target['id']}")
-            snapshot = stage / "inputs" / "targets" / target["id"]
-            identity = immutable_snapshot(source, snapshot, executable=False)
+            try:
+                snapshot = stage / "inputs" / "targets" / target["id"]
+                identity = immutable_snapshot(source, snapshot, executable=False)
+                source_resolved = str(source.resolved_path)
+            finally:
+                source.close()
             targets[target["id"]] = {
                 **target,
                 **identity,
                 **sealed_execution_copy(snapshot, f"target-{target['id']}", 0o444),
                 "source_path_requested": requested,
-                "source_path_resolved": str(source),
+                "source_path_resolved": source_resolved,
                 "snapshot_path": str(snapshot.relative_to(stage)),
                 "snapshot_absolute": snapshot,
             }
 
         requested_probe, probe_source = resolve_spec_path(spec_dir, spec["timer_floor"]["probe"], "timer floor probe")
-        require(os.access(probe_source, os.X_OK), f"timer floor probe is not executable: {probe_source}")
-        probe_snapshot = stage / "inputs" / "timer-floor" / "probe"
-        probe_identity = immutable_snapshot(probe_source, probe_snapshot, executable=True)
+        try:
+            require(probe_source.mode & 0o111 != 0, f"timer floor probe is not executable: {probe_source.resolved_path}")
+            probe_snapshot = stage / "inputs" / "timer-floor" / "probe"
+            probe_identity = immutable_snapshot(probe_source, probe_snapshot, executable=True)
+            probe_resolved = str(probe_source.resolved_path)
+        finally:
+            probe_source.close()
         probe = {
             **probe_identity,
             **sealed_execution_copy(probe_snapshot, "timer-floor-probe", 0o555),
             "source_path_requested": requested_probe,
-            "source_path_resolved": str(probe_source),
+            "source_path_resolved": probe_resolved,
             "snapshot_path": str(probe_snapshot.relative_to(stage)),
             "snapshot_absolute": probe_snapshot,
         }
@@ -2486,10 +2642,16 @@ def build_manifest(
 
 def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | None) -> tuple[Path, int]:
     global CREATING_STAGE
-    spec_path = authenticate_regular_path_nofollow(spec_path, "campaign spec")
-    spec, spec_raw, spec_source_identity = parse_spec(spec_path, campaign_override)
-    runner_source = Path(__file__).resolve(strict=True)
-    runner_source_identity = file_identity(runner_source)
+    spec_source = authenticate_regular_path_nofollow(spec_path, "campaign spec")
+    runner_source_auth: AuthenticatedRegularFile | None = None
+    spec, spec_raw, spec_source_identity = parse_spec(spec_source, campaign_override)
+    spec_path = spec_source.resolved_path
+    runner_source_auth = authenticate_regular_path_nofollow(
+        Path(__file__).resolve(strict=True),
+        "diagnostic runner source",
+    )
+    runner_source = runner_source_auth.resolved_path
+    runner_source_identity = file_identity_fd(runner_source_auth.fd)
     output_root = ensure_directory_nofollow(output_root, "campaign output root")
     final = output_root / spec["campaign_id"]
     require(not final.exists(), f"campaign result already exists: {final}")
@@ -2526,7 +2688,7 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         }
 
         runner_snapshot = stage / "inputs" / "runner" / "diagnostic-runner.py"
-        runner_snapshot_identity = immutable_snapshot(runner_source, runner_snapshot, executable=True)
+        runner_snapshot_identity = immutable_snapshot(runner_source_auth, runner_snapshot, executable=True)
         require(runner_snapshot_identity["sha256"] == runner_source_identity["sha256"], "runner source changed before snapshot")
         runner_record = {
             **runner_snapshot_identity,
@@ -2570,8 +2732,13 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
             targets=targets,
             probe=probe,
         )
-        require(file_identity(spec_path)["sha256"] == spec_source_identity["sha256"], "campaign spec changed during execution")
-        require(file_identity(runner_source)["sha256"] == runner_source_identity["sha256"], "diagnostic runner source changed during execution")
+        spec_source.require_named_identity()
+        require(sha256_bytes(spec_source.read_bytes(8 * 1024 * 1024)) == spec_source_identity["sha256"], "campaign spec changed during execution")
+        runner_source_auth.require_named_identity()
+        require(
+            file_identity_fd(runner_source_auth.fd)["sha256"] == runner_source_identity["sha256"],
+            "diagnostic runner source changed during execution",
+        )
         manifest = build_manifest(
             spec=spec,
             spec_path=spec_path,
@@ -2622,6 +2789,9 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
             owned_stage = stage_registry[-1]
         if owned_stage is not None:
             owned_stage.close()
+        if runner_source_auth is not None:
+            runner_source_auth.close()
+        spec_source.close()
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

@@ -455,3 +455,7 @@ guarantee.
 Stage-zero plans and controlled artifacts remain diagnostic, unfrozen, and
 publication-ineligible. They do not become comparative evidence merely because
 their commands, hashes, or condition counts are complete.
+
+## Sprint 12 loader-validity rule
+
+Program-header parser changes must route ordinary PHDR validity through one shared policy and add deterministic valid, malformed, boundary, and unsupported fixtures. ELF extended-numbering sentinels must never reach ordinary table iteration. A structurally valid but unimplemented extended form returns the stable unsupported status; an unsafe or contradictory form returns malformed input. Neither path may emit partial stdout.

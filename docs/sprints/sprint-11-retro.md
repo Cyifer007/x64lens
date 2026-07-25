@@ -19,21 +19,31 @@ Completed work includes:
 - address-coordinate calibration with explicit blocked states;
 - a 30-condition provisional campaign authority;
 - generated summaries and an engineering gap register;
-- transaction, cleanup, archive, and private-application hardening.
+- transaction, cleanup, archive, and rollback-destination identity hardening.
 
 ## What the measurements showed
 
-The first all-tools rehearsal completed every planned process after one narrow
-version-banner authority correction. Every x64lens condition remained below the
-host's reliable single-run floor. Baseline-native totals differed substantially,
-but those totals reflect different discovery, filtering, duplicate, and
-canonicalization policies and are not a common gadget metric.
+The earlier cloud checkpoint accounted for all 30 planned conditions: 12
+x64lens conditions executed and 18 baseline conditions were retained as
+unavailable. A later WSL2 replay recorded 30/30 conditions and 180/180
+successful runner rows, with 24 relation artifacts. All 12 x64lens timings were
+below the 6,361,100 ns reliable single-process floor.
+
+Two Python task-path runtime-closure failures left those closures incomplete,
+and coordinate calibration failed. The replay therefore was not
+comparison-qualified and did not replace the required fresh, unmodified Patch
+061 campaign. Baseline-native totals differed substantially, but those totals
+reflect different discovery, filtering, duplicate, and canonicalization
+policies and are not a common gadget metric.
 
 The first normalized exact relation was absent across the selected targets. That
 negative observation was insufficient for coordinate calibration and broad
 coverage conclusions. The reports did expose a repeated exact-only
 `pop rbp; ret` semantic gap, which supports the planned Sprint 13 generic-pop
 role decision.
+
+All checkpoint, replay, relation, timing, summary, and gap-register evidence
+remains diagnostic, unfrozen, and publication-ineligible.
 
 ## What changed because of the evidence
 
@@ -80,8 +90,8 @@ change analyzer assembly, schema `0.2.0`, candidate records, score policy, or th
 ## Contract review
 
 The architecture, development, evidence, metric, release, and documentation
-contracts remain valid. Patch 061 strengthens benchmark and private-application
-integrity without changing runtime product contracts.
+contracts remain valid. Patch 061 strengthens benchmark transaction and
+rollback-destination identity without changing runtime product contracts.
 
 ## Sprint 12 handoff
 
@@ -89,4 +99,6 @@ Sprint 12 starts with bounded program-header validity and extended-numbering
 outcomes, executable-overlap/provenance semantics, PIE-versus-DSO identity, and
 GNU-property IBT/SHSTK evidence. Every new parser path requires checked ranges,
 hostile fixtures, no-partial-output behavior, native/container agreement, and a
-new diagnostic campaign identity.
+new diagnostic campaign identity. A corrected held-out diagnostic confirmation
+then requires positive role-controlled coordinate anchors and complete runtime
+closure for all five task paths before comparison qualification.

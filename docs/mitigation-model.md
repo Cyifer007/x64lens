@@ -153,3 +153,7 @@ capability review:
 
 These additions remain indicators and loader facts. They do not prove complete
 control-flow integrity, runtime ASLR, safety, or exploitability.
+
+## Sprint 12 Patch 062 loader precondition
+
+Mitigation evidence now depends on the shared ordinary program-header validity gate. Invalid alignment, load congruence, virtual-range overflow, or a nonzero entrypoint outside executable `PT_LOAD` memory is malformed input and cannot produce mitigation output. Structurally valid ELF64 extended-numbering input is explicitly unsupported at this boundary rather than being misinterpreted as ordinary PHDR/SHDR counts. Patch 062 adds no PIE-versus-DSO or CET fact; those remain later Sprint 12 evidence paths.

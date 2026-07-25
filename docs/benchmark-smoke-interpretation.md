@@ -79,11 +79,11 @@ make the controlled campaign a comparative result.
 
 The current reference specification measures gadget JSON and analyze JSON as a
 command-identity parity pair. It does not contain a scanner-only row because no
-truthful report-suppressed scanner path exists. Patch 058 adds standalone
-native-output adapters for ROPgadget, Ropper, and ropr, but the reference
-specification still has no baseline campaign rows and the adapters do not consume
-runner rows or manifests. Corpus-backed rows, adapter-to-row binding, development
-summaries, and the engineering gap register remain later Sprint 11 work.
+truthful report-suppressed scanner path exists. At the Patch 055 boundary,
+baseline campaign rows, adapter-to-row binding, development summaries, and the
+engineering gap register remained later Sprint 11 work. Patch 058 subsequently
+added standalone native-output adapters for ROPgadget, Ropper, and ropr; those
+adapters did not consume runner rows or manifests.
 
 ## Patch 059 stage-zero transition
 
@@ -94,5 +94,19 @@ pre-execution 24-comparison plus six-control plan. It does not execute the
 comparative campaign or produce a speed, RSS, coverage, or superiority result.
 
 Any controlled stage-zero rows remain diagnostic, unfrozen, and
-publication-ineligible. Patch 060 runs the authenticated available-tool provisional
-campaign and produces the engineering gap register. Patch 061 closes Sprint 11.
+publication-ineligible. Patch 060 subsequently produced the authenticated cloud
+checkpoint and engineering gap register. That checkpoint accounted for 30
+conditions, executed the 12 available x64lens conditions, recorded 18
+pinned-baseline conditions as unavailable, and retained 60 measured x64lens
+process rows, all below the reliable single-process timer floor.
+
+A later, separately qualified WSL2 replay used the exact pinned baselines and,
+after one narrow evidence-local correction to the ROPgadget 7.7 banner
+authority, executed 30 of 30 conditions, retained 180 of 180 successful process
+rows, and generated 24 relation artifacts. All 12 x64lens conditions remained
+below that host's 6,361,100 ns reliable floor. Two Python task-path
+runtime-closure failures left those closures incomplete, and coordinate
+calibration failed, so the replay was not comparison-qualified and did not
+replace the required fresh unmodified Patch 061 campaign. Both evidence strata
+remain diagnostic, unfrozen, and publication-ineligible. Patch 061 defines the
+remaining closeout corrections and below-floor policy.

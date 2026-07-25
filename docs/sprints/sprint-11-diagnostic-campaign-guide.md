@@ -48,8 +48,8 @@ Python baselines are normally installed in isolated environments:
 ```bash
 pipx ensurepath
 export PATH="$HOME/.local/bin:$PATH"
-pipx install 'ROPGadget==7.7'
-pipx install 'ropper==1.13.13'
+pipx install --force 'ROPGadget==7.7'
+pipx install --force 'ropper==1.13.13'
 ```
 
 `ropr` requires a sufficiently current Rust toolchain:
@@ -61,7 +61,9 @@ cargo install ropr --version 0.2.26 --locked
 export PATH="$HOME/.cargo/bin:$PATH"
 ```
 
-Confirm the exact executables and versions before collecting evidence:
+`REQUIRE_BASELINES=1` rejects an environment with no baseline tools; it does
+not by itself require all three. Confirm all three exact executables and
+versions before collecting all-tools evidence:
 
 ```bash
 command -v ROPgadget ropper ropr
@@ -277,7 +279,8 @@ Use this order when a condition is below the floor:
 3. use the preregistered whole-batch protocol;
 4. retain the condition as below-floor when the protocol cannot qualify it.
 
-The Sprint 11 whole-batch protocol evaluates:
+The Sprint 11 whole-batch protocol is
+`preregistered_not_yet_executed`. It evaluates:
 
 ```text
 batch sizes K: 2, 4, 8, 16, 32, 64
@@ -288,39 +291,53 @@ comparison rule: same K only
 ```
 
 A batch is the measurement unit. Do not divide its elapsed time into a claimed
-single-run latency. Dividing can be retained as an exploratory throughput
-calculation only when labeled separately and never used as single-run evidence.
+single-run latency. A qualified batch may support a separately labeled
+exploratory throughput value such as `K / batch_elapsed_time`; that value is not
+single-run evidence.
 
 ## 9. Interpreting the Sprint 11 diagnostic observations
 
-The retained all-tools rehearsal established these bounded observations:
+Keep the two retained evidence strata separate. The cloud checkpoint accounted
+for 30 planned conditions while executing the 12 available x64lens conditions
+and retaining 18 pinned-baseline conditions as unavailable. A later,
+separately qualified WSL2 replay used the exact pinned baselines and, after one
+narrow evidence-local correction to the ROPgadget 7.7 banner authority,
+executed 30 of 30 conditions, retained 180 successful process rows, and
+generated 24 normalized relations.
 
-- every planned process invocation completed in the qualified replay;
-- every x64lens gadget and analyze condition remained below that host's reliable
-  single-run floor;
+The WSL2 replay established these bounded observations:
+
+- 17 conditions were above the 6,361,100 ns reliable single-process floor and
+  13 were below it;
+- all 12 x64lens gadget and analyze conditions remained below that host's
+  6,361,100 ns reliable single-process floor;
 - baseline-native record totals differed substantially across tools;
 - the first selected exact relation was absent across the selected targets;
 - exact-only `pop rbp; ret` evidence appeared consistently in x64lens reports;
 - coordinate qualification lacked a positive anchor;
-- the initial Python baseline closure method lost isolated-environment context.
+- the initial Python baseline closure method lost isolated-environment context,
+  leaving two baseline closures incomplete; and
+- coordinate calibration failed, so the replay was not comparison-qualified.
 
 The strongest conclusion is methodological: the runner and task definitions
 successfully exposed where performance, coverage, address, and dependency
 questions were not yet identifiable. The observations do not prove universal
 speed leadership, lower RSS, equivalent gadget coverage, or baseline defects.
+Both evidence strata remain diagnostic, unfrozen, and publication-ineligible;
+the WSL2 replay does not replace the fresh unmodified Patch 061 campaign.
 
 ## 10. Next evidence steps
 
-After Patch 061 acceptance:
+After applying Patch 061 and before empirical acceptance:
 
-1. rerun the exact 30-condition campaign without authority edits;
+1. run a fresh exact 30-condition campaign without authority edits;
 2. require five complete task-path runtime closures;
 3. require positive coordinate anchors before address intersections;
 4. apply the whole-batch or larger-target protocol to unresolved x64lens timing;
 5. keep tool-native populations separate while adding only task-relevant
    normalized relations;
-6. begin Sprint 12 with bounded loader validity, overlap/provenance, PIE-versus-
-   DSO identity, and GNU-property evidence.
+6. continue active Sprint 12 work with bounded loader validity,
+   overlap/provenance, PIE-versus-DSO identity, and GNU-property evidence.
 
 Any change to analyzer behavior, task definition, corpus membership, adapter,
 runner, or method receives a new diagnostic campaign identifier.

@@ -812,7 +812,11 @@ raise SystemExit(9)
         mutation_spec.write_text(mutation_spec.read_text(encoding="utf-8") + "\n", encoding="utf-8")
         mutation_stdout, mutation_stderr = mutation_process.communicate(timeout=10)
         require(mutation_process.returncode == 2, f"campaign accepted source spec mutation: {mutation_stdout} {mutation_stderr}")
-        require("campaign spec changed during execution" in mutation_stderr, f"unexpected spec mutation diagnostic: {mutation_stderr}")
+        require(
+            "campaign spec changed during execution" in mutation_stderr
+            or "campaign spec open object changed during consumption" in mutation_stderr,
+            f"unexpected spec mutation diagnostic: {mutation_stderr}",
+        )
         require(not (mutation_root / "diagnostic-spec-mutation").exists(), "mutated-spec campaign was published")
         require(not list(mutation_root.glob(".*.staging-*")), "mutated-spec campaign leaked staging state")
 

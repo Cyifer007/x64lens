@@ -83,6 +83,11 @@ def main() -> int:
             require(owner <= gate_deadlines[deadline_name], f"{gate.get('id')} is scheduled after its deadline")
             require(gate.get("status") in {"planned", "implemented", "resolved"}, f"invalid status for {gate.get('id')}")
 
+        gate_status = {gate["id"]: gate["status"] for gate in gates}
+        require(gate_status["program_header_validity"] == "resolved", "Patch 062 PHDR-validity gate is not resolved")
+        require(gate_status["elf_extended_numbering"] == "resolved", "Patch 062 extended-numbering gate is not resolved")
+        require(gate_status["executable_overlap_policy"] == "planned", "overlap policy must remain the next open Sprint 12 gate")
+
         profiles = spec.get("conditional_profiles")
         require(isinstance(profiles, list) and len(profiles) == 3, "expected three conditional profiles")
         profile_ids = [profile.get("id") for profile in profiles]

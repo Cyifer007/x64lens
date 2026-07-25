@@ -136,19 +136,24 @@ later sprints rather than Patch 037:
   tool, target, retained version-output, and native-stream files,
   duplicate-preserving tool-specific metrics, and canonical `pop rdi; ret`
   normalization over represented instruction text.
-- [x] Patch 060 authenticated provisional campaign with 30-condition accounting, task-scoped generated summaries, and an engineering development gap register; missing optional baselines remain explicit unavailable conditions.
+- [x] Patch 060 cloud checkpoint with all 30 conditions accounted for:
+  12 x64lens conditions executed and 18 baseline conditions retained as
+  unavailable.
 - [x] Diagnostic rows isolated from future frozen campaigns.
-
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
 ### Sprint 12: loader and mitigation precision
 
+- [x] `p_align`, congruence, virtual-range, and executable-entrypoint behavior. Patch 062.
+- [x] Explicit ELF extended-numbering detection with structurally validated stable unsupported results. Patch 062.
+- [ ] Overlapping executable-region scan, deduplication, count, and provenance
+  semantics.
 - [ ] PIE executable versus shared-object distinction.
 - [ ] Bounded CET IBT and SHSTK GNU-property evidence.
-- [ ] Overlapping executable-region scan/count policy.
-- [ ] `p_align`, congruence, virtual-range, and executable-entrypoint behavior.
-- [ ] Explicit ELF extended-numbering support or stable unsupported result.
-- [ ] Deterministic malformed and mitigation fixtures for every new parser path.
+- [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
+- [ ] Corrected held-out diagnostic confirmation under a new campaign identity,
+  with positive role-controlled coordinate anchors and complete task-path
+  runtime closure for all five task paths.
 
 ### Sprint 13: semantic capability completion
 
@@ -477,16 +482,20 @@ Patch 054 remains Sprint 10 closeout.
 Patch 053 corrects the Patch 052 internal-harness symbol, reconciles public
 documentation with the Patch 052 contracts, adds manifest-relative checksum
 verification, and establishes the twenty-two-sprint benchmark-informed roadmap.
-Sprint 11 begins diagnostic measurement without freezing the publication
-corpus. Sprints 12 through 14 close loader, mitigation, semantic, and
-optional-profile decisions; Sprint 15 freezes the campaign. Patch 054 remains
-Sprint 10 closeout.
+At the Patch 054 closeout checkpoint, Sprint 11 began diagnostic measurement
+without freezing the publication corpus. Sprints 12 through 14 were assigned
+loader, mitigation, semantic, and optional-profile decisions before the Sprint
+15 campaign freeze.
 
 ## Sprint 10 Patch 054 closeout update
 
 Patch 054 closes Sprint 10 without adding another primitive family. The sprint now has maintained semantic-family, exact-pattern, fixture-suite, effect-completeness, false-positive, and score-policy authorities. The default analyzer remains bounded, dependency-free, decoder-free, and one-worker.
 
-Sprint 11 is the active diagnostic benchmark foundation. Its provisional corpus and measurement method may redirect implementation. The confirmatory campaign freezes in Sprint 15; preview, publication, operational, replication, and release work follows through Sprint 22.
+At that checkpoint, Sprint 11 became the active diagnostic benchmark
+foundation. Its provisional corpus and measurement method could redirect
+implementation. The confirmatory campaign remained scheduled to freeze in
+Sprint 15, followed by preview, publication, operational, replication, and
+release work through Sprint 22.
 
 Deferred capability work remains evidence-gated:
 
@@ -588,14 +597,25 @@ corpus-wide comparative result, development summary, or gap register.
 
 ## Sprint 11 Patch 060 backlog update
 
-Patch 060 corrects the remaining Patch 059 evidence-integrity findings and
-executes the authenticated provisional campaign for every available tool while
-retaining missing baselines as unavailable conditions. It generates task-scoped
-summaries and an engineering gap register without introducing a generic gadget
-count, causal factor attribution, or publication claim.
+Patch 060 corrected the remaining Patch 059 evidence-integrity findings and
+recorded the earlier cloud checkpoint with all 30 planned conditions accounted
+for: 12 x64lens conditions executed and 18 baseline conditions retained as
+unavailable. A later WSL2 replay recorded 30/30 conditions and 180/180
+successful runner rows, with 24 relation artifacts. All 12 x64lens timings were
+below the 6,361,100 ns reliable single-process floor.
 
-Evidence-backed handoff priorities are bounded PIE-versus-DSO identity and GNU
-property evidence in Sprint 12, followed by exact-only semantic-role decisions
-in Sprint 13. Candidate-scoped decoding and concurrency remain deferred Sprint
-14 ablations because the current campaign does not justify making either
-profile mandatory. Patch 061 closes Sprint 11 and activates Sprint 12.
+Two Python task-path runtime-closure failures left those closures incomplete,
+and coordinate calibration failed. The replay therefore was not
+comparison-qualified and did not replace the still-required fresh, unmodified
+Patch 061 campaign. The checkpoint, replay, summaries, and gap register remain
+diagnostic, unfrozen, and publication-ineligible.
+
+Evidence-backed Sprint 12 work proceeds in this order: bounded program-header
+validity and extended-numbering outcomes; executable-overlap/provenance
+semantics; PIE-versus-DSO identity; GNU-property evidence; and corrected
+held-out diagnostic confirmation with positive role-controlled coordinate
+anchors and complete task-path runtime closure for all five task paths.
+Exact-only semantic-role decisions follow in Sprint 13. Candidate-scoped
+decoding and concurrency remain deferred Sprint 14 ablations because the
+diagnostic evidence does not justify making either profile mandatory. Patch 061
+closes Sprint 11 and activates Sprint 12.

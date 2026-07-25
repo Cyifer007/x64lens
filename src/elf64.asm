@@ -1,18 +1,20 @@
 ; elf64.asm
 ;
 ; Purpose:
-;   ELF64 validation and metadata parsing.
+;   ELF64 identity, header-table, and extended-numbering validation.
 ;
 ; Module scope:
-;   Validate ELF magic, class, endianness, machine type, and basic header
-;   ranges before deeper parsing. This module treats all target bytes as
-;   untrusted and uses bounds helpers before reading offset-derived ranges.
+;   Validate ELF magic, class, endianness, machine type, fixed header fields,
+;   ordinary program-header loader contracts, bounded section-table structure,
+;   and the structural prerequisites for ELF extended numbering.
 ;
-; Current boundary:
-;   This module validates fixed ELF64 header fields, header-table ranges, and
-;   file-backed PT_LOAD ranges. Command-specific program-header semantics,
-;   mitigation interpretation, region discovery, and gadget analysis remain in
-;   their dedicated modules.
+; Patch 062 boundary:
+;   Ordinary program headers receive bounded p_align, congruence, virtual-end,
+;   and executable-entrypoint validation through phdr.asm. Extended-numbering
+;   encodings are detected and structurally validated, then return the stable
+;   unsupported status before any reporter consumes sentinel values. Program
+;   headers remain runtime mapping authority; section header zero is consulted
+;   only because the ELF ABI stores extended counts there.
 
 bits 64
 default rel
@@ -21,10 +23,9 @@ default rel
 %include "errors.inc"
 
 extern x64lens_bounds_has_size
-extern x64lens_bounds_range_valid
 extern x64lens_bounds_range_end_valid
 extern x64lens_bounds_table_extent_valid
-extern x64lens_bounds_table_entry_offset
+extern x64lens_phdr_validate_loader_contract
 
 section .text
 global x64lens_elf64_validate
@@ -35,141 +36,223 @@ global x64lens_elf64_validate
 ;   RAX = EXIT_OK
 ;
 ; Failure:
-;   RAX = EXIT_NOT_ELF64_X64 when the target is the wrong format/class/endian/arch
-;   RAX = EXIT_MALFORMED_ELF when ELF-declared offsets or sizes are unsafe
+;   RAX = EXIT_NOT_ELF64_X64 for the wrong format/class/endian/architecture
+;   RAX = EXIT_MALFORMED_ELF for unsafe or contradictory ELF structure
+;   RAX = EXIT_UNSUPPORTED for structurally valid extended numbering
 x64lens_elf64_validate:
     push    rbx
     push    r12
     push    r13
     push    r14
-    sub     rsp, 8              ; preserve 16-byte call-site alignment
+    push    r15
+    sub     rsp, 32             ; call alignment and bounded-table scratch
 
-    mov     rbx, rdi            ; mapped base
-    mov     r12, rsi            ; file size
+    mov     r15, rdi            ; mapped base
+    mov     r14, rsi            ; file size
 
-    ; Need at least four bytes before checking the ELF magic. Files that
-    ; have enough bytes for a magic check but do not match are classified as
-    ; non-ELF. Files that start with ELF magic but are too short for an ELF64
-    ; header are malformed/truncated ELF.
-    mov     rdi, r12
+    ; Need at least four bytes before checking the ELF magic. A matching magic
+    ; followed by a short header is malformed/truncated ELF rather than a
+    ; generic non-ELF input.
+    mov     rdi, r14
     mov     rsi, 4
     call    x64lens_bounds_has_size
     cmp     rax, 1
     jne     .malformed
 
-    ; ELF magic check.
-    cmp     byte [rbx + EI_MAG0], ELFMAG0
+    cmp     byte [r15 + EI_MAG0], ELFMAG0
     jne     .not_elf64_x64
-    cmp     byte [rbx + EI_MAG1], ELFMAG1
+    cmp     byte [r15 + EI_MAG1], ELFMAG1
     jne     .not_elf64_x64
-    cmp     byte [rbx + EI_MAG2], ELFMAG2
+    cmp     byte [r15 + EI_MAG2], ELFMAG2
     jne     .not_elf64_x64
-    cmp     byte [rbx + EI_MAG3], ELFMAG3
+    cmp     byte [r15 + EI_MAG3], ELFMAG3
     jne     .not_elf64_x64
 
-    ; Full ELF64 header-size check before reading the rest of e_ident and the
-    ; fixed header fields.
-    mov     rdi, r12
+    mov     rdi, r14
     mov     rsi, ELF64_EHDR_SIZE
     call    x64lens_bounds_has_size
     cmp     rax, 1
     jne     .malformed
 
-    ; ELF identity checks.
-    cmp     byte [rbx + EI_CLASS], ELFCLASS64
+    cmp     byte [r15 + EI_CLASS], ELFCLASS64
     jne     .not_elf64_x64
-    cmp     byte [rbx + EI_DATA], ELFDATA2LSB
+    cmp     byte [r15 + EI_DATA], ELFDATA2LSB
     jne     .not_elf64_x64
-    cmp     byte [rbx + EI_VERSION], 1
+    cmp     byte [r15 + EI_VERSION], 1
+    jne     .malformed
+    cmp     word [r15 + E_MACHINE], EM_X86_64
+    jne     .not_elf64_x64
+    cmp     dword [r15 + E_VERSION_OFF], 1
+    jne     .malformed
+    cmp     word [r15 + E_EHSIZE], ELF64_EHDR_SIZE
     jne     .malformed
 
-    ; Machine and ELF-header sanity checks.
-    cmp     word [rbx + E_MACHINE], EM_X86_64
-    jne     .not_elf64_x64
-    cmp     dword [rbx + E_VERSION_OFF], 1
-    jne     .malformed
-    cmp     word [rbx + E_EHSIZE], ELF64_EHDR_SIZE
-    jne     .malformed
+    ; Detect all ELF64 extended-numbering sentinels before ordinary table
+    ; validation. Bit 0 = PN_XNUM, bit 1 = extended section count, bit 2 =
+    ; extended section-name-table index.
+    xor     ebx, ebx
+    movzx   r13, word [r15 + E_PHNUM]
+    cmp     r13, PN_XNUM
+    jne     .extended_shnum
+    or      ebx, 1
+.extended_shnum:
+    movzx   rax, word [r15 + E_SHNUM]
+    test    rax, rax
+    jnz     .extended_shstr
+    cmp     qword [r15 + E_SHOFF], 0
+    je      .extended_shstr
+    or      ebx, 2
+.extended_shstr:
+    cmp     word [r15 + E_SHSTRNDX], SHN_XINDEX
+    jne     .extended_dispatch
+    or      ebx, 4
+.extended_dispatch:
+    test    ebx, ebx
+    jnz     .validate_extended_numbering
 
-    ; Validate program header table range when present.
-    movzx   r13, word [rbx + E_PHNUM]
-    test    r13, r13
-    je      .check_sections
-    cmp     word [rbx + E_PHENTSIZE], ELF64_PHDR_SIZE
+    ; Reserved section-count and section-index values require the extended
+    ; encodings above. Accepting them as ordinary values would reinterpret ABI
+    ; sentinels as table counts or indexes.
+    movzx   rax, word [r15 + E_SHNUM]
+    cmp     rax, SHN_LORESERVE
+    jae     .malformed
+    movzx   rax, word [r15 + E_SHSTRNDX]
+    cmp     rax, SHN_LORESERVE
+    jae     .malformed
+
+    ; Ordinary PHDR validation is centralized in phdr.asm so identity checks
+    ; and command-level analysis share exactly one loader policy.
+    mov     rdi, r15
+    mov     rsi, r14
+    mov     rdx, r13
+    call    x64lens_phdr_validate_loader_contract
+    test    rax, rax
+    jne     .done
+
+    ; Section headers remain metadata only. Validate the full fixed-stride
+    ; table and the section-name-table index when an ordinary table exists.
+    movzx   r12, word [r15 + E_SHNUM]
+    test    r12, r12
+    jnz     .ordinary_sections
+    cmp     qword [r15 + E_SHOFF], 0
     jne     .malformed
-    mov     rsi, [rbx + E_PHOFF]
+    cmp     word [r15 + E_SHSTRNDX], SHN_UNDEF
+    jne     .malformed
+    jmp     .ok
+
+.ordinary_sections:
+    cmp     word [r15 + E_SHENTSIZE], ELF64_SHDR_SIZE
+    jne     .malformed
+    mov     rsi, [r15 + E_SHOFF]
     test    rsi, rsi
-    je      .malformed
-    mov     rdi, r12
-    mov     rdx, ELF64_PHDR_SIZE
-    mov     rcx, r13
+    jz      .malformed
+    mov     rdi, r14
+    mov     rdx, ELF64_SHDR_SIZE
+    mov     rcx, r12
     lea     r8, [rsp]
     call    x64lens_bounds_table_extent_valid
     cmp     rax, 1
     jne     .malformed
 
-    ; Validate every file-backed PT_LOAD range before any command reports ELF
-    ; metadata. Shared bounded-table helpers compute each entry offset so the
-    ; loop does not depend on unchecked count-times-stride arithmetic.
-    xor     r14, r14
-.validate_program_headers:
-    cmp     r14, r13
-    jae     .check_sections
+    movzx   rax, word [r15 + E_SHSTRNDX]
+    test    rax, rax
+    jz      .ok
+    cmp     rax, r12
+    jae     .malformed
+    jmp     .ok
 
-    mov     rdi, r12
-    mov     rsi, [rbx + E_PHOFF]
-    mov     rdx, ELF64_PHDR_SIZE
-    mov     rcx, r13
-    mov     r8, r14
-    lea     r9, [rsp]
-    call    x64lens_bounds_table_entry_offset
-    cmp     rax, 1
+.validate_extended_numbering:
+    ; Every extended form depends on section header zero. Validate that entry
+    ; first without trusting the eventual extended count.
+    cmp     word [r15 + E_SHENTSIZE], ELF64_SHDR_SIZE
     jne     .malformed
-    mov     rax, [rsp]
-    lea     r10, [rbx + rax]
-
-    cmp     dword [r10 + P_TYPE], PT_LOAD
-    jne     .next_program_header
-
-    mov     rax, [r10 + P_FILESZ]
-    cmp     rax, [r10 + P_MEMSZ]
-    ja      .malformed
-
-    mov     rdi, r12
-    mov     rsi, [r10 + P_OFFSET]
-    mov     rdx, [r10 + P_FILESZ]
+    mov     r12, [r15 + E_SHOFF]
+    test    r12, r12
+    jz      .malformed
+    mov     rdi, r14
+    mov     rsi, r12
+    mov     rdx, ELF64_SHDR_SIZE
     lea     rcx, [rsp]
     call    x64lens_bounds_range_end_valid
     cmp     rax, 1
     jne     .malformed
-
-.next_program_header:
-    inc     r14
-    jmp     .validate_program_headers
-
-.check_sections:
-    ; Validate section header table range when present. Section headers are
-    ; not authoritative for runtime mapping, but unsafe section offsets still
-    ; indicate malformed input and must be rejected before future SHDR parsing.
-    movzx   r13, word [rbx + E_SHNUM]
-    test    r13, r13
-    je      .ok
-    ; ELF64 section-table entries have a fixed 64-byte layout. Accepting an
-    ; arbitrary nonzero entry size would make future section iteration depend
-    ; on an invalid stride, so reject it before any SHDR parser is enabled.
-    cmp     word [rbx + E_SHENTSIZE], ELF64_SHDR_SIZE
+    lea     r13, [r15 + r12]    ; bounded section-header entry zero
+    cmp     dword [r13 + S_TYPE], SHT_NULL
     jne     .malformed
-    mov     rsi, [rbx + E_SHOFF]
-    test    rsi, rsi
-    je      .malformed
-    mov     rdi, r12
+
+    ; Resolve the actual section count only for structural validation. A normal
+    ; e_shnum remains authoritative when section-count extension is inactive.
+    test    ebx, 2
+    jz      .extended_normal_shnum
+    mov     r12, [r13 + S_SIZE]
+    cmp     r12, SHN_LORESERVE
+    jb      .malformed
+    jmp     .extended_shnum_ready
+.extended_normal_shnum:
+    movzx   r12, word [r15 + E_SHNUM]
+    test    r12, r12
+    jz      .malformed
+    cmp     r12, SHN_LORESERVE
+    jae     .malformed
+.extended_shnum_ready:
+    mov     rdi, r14
+    mov     rsi, [r15 + E_SHOFF]
     mov     rdx, ELF64_SHDR_SIZE
-    mov     rcx, r13
+    mov     rcx, r12
     lea     r8, [rsp]
     call    x64lens_bounds_table_extent_valid
     cmp     rax, 1
     jne     .malformed
 
+    ; PN_XNUM stores the real program-header count in sh_info. Validate its
+    ; reserved-domain value and complete fixed-stride table before refusing the
+    ; feature. This distinguishes safe unsupported input from malformed input.
+    test    ebx, 1
+    jz      .extended_shstr_check
+    mov     eax, [r13 + S_INFO]
+    cmp     rax, PN_XNUM
+    jb      .malformed
+    cmp     word [r15 + E_PHENTSIZE], ELF64_PHDR_SIZE
+    jne     .malformed
+    mov     rsi, [r15 + E_PHOFF]
+    test    rsi, rsi
+    jz      .malformed
+    mov     rdi, r14
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, rax
+    lea     r8, [rsp]
+    call    x64lens_bounds_table_extent_valid
+    cmp     rax, 1
+    jne     .malformed
+
+.extended_shstr_check:
+    ; When SHN_XINDEX is not active, validate the ordinary section-name-table
+    ; index against the resolved section count. Reserved values still require
+    ; the sentinel form even when another extended-numbering feature is active.
+    test    ebx, 4
+    jnz     .extended_shstr_value
+    movzx   rax, word [r15 + E_SHSTRNDX]
+    test    rax, rax
+    jz      .unsupported
+    cmp     rax, SHN_LORESERVE
+    jae     .malformed
+    cmp     rax, r12
+    jae     .malformed
+    jmp     .unsupported
+
+.extended_shstr_value:
+    ; SHN_XINDEX stores the actual section-name-table index in sh_link. It must
+    ; name an entry inside the resolved section table and belong to the reserved
+    ; index domain that requires the sentinel.
+    mov     eax, [r13 + S_LINK]
+    cmp     rax, SHN_LORESERVE
+    jb      .malformed
+    cmp     rax, r12
+    jae     .malformed
+
+.unsupported:
+    mov     rax, EXIT_UNSUPPORTED
+    jmp     .done
 .ok:
     xor     rax, rax
     jmp     .done
@@ -179,7 +262,8 @@ x64lens_elf64_validate:
 .malformed:
     mov     rax, EXIT_MALFORMED_ELF
 .done:
-    add     rsp, 8
+    add     rsp, 32
+    pop     r15
     pop     r14
     pop     r13
     pop     r12

@@ -363,11 +363,21 @@ Required runner behavior:
 
 ### Resolution floor
 
-Before a campaign, measure the runner's practical timing floor. When a target completes too quickly for stable single-process measurement, use one of these documented strategies:
+Before a campaign, measure the runner's practical timing floor. When a target
+completes too quickly for stable single-process measurement, use this order:
 
-1. choose a larger corpus target,
-2. execute a fixed batch of independent tool invocations and divide only the wall-time aggregate, while retaining batch metadata,
-3. report the result as below the reliable single-run resolution floor.
+1. choose a larger corpus target that performs the same task;
+2. if the condition remains unresolved, use the preregistered whole-batch
+   protocol with `K = 2, 4, 8, 16, 32, 64`, at least nine counterbalanced
+   batches per `K`, a whole-batch median at least five times the measured floor,
+   `MAD / median <= 0.10`, and same-`K` comparisons only;
+3. report the result as below the reliable single-run resolution floor when no
+   larger target or batch qualifies.
+
+The batch is the measurement unit. Do not divide batch elapsed time into a
+claimed single-run latency. A qualified batch may support separately labeled
+exploratory throughput such as invocations per second, but not a per-invocation
+latency claim.
 
 Do not convert `0.00` smoke values into performance claims.
 

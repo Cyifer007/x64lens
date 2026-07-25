@@ -10,16 +10,26 @@ Related closeout records:
 - [Patch 061 validation](sprint-11-patch-061-validation.md)
 - [Sprint 11 retrospective](sprint-11-retro.md)
 - [Diagnostic campaign operator guide](sprint-11-diagnostic-campaign-guide.md)
+
 Patches 055 and 056 implement the runner, task-definition, and provisional
 corpus foundations. Patch 057 corrects the first runner, corpus, cleanup, and
 validation-integrity findings. Patch 058 adds bounded task-normalized baseline
 adapters and addresses additional evidence-integrity gaps found during Patch 057
 validation. Accepted Patch 059 corrects adapter-to-row binding and establishes
 matched relations, bounded runtime closure, coordinate calibration, and the
-pre-execution campaign plan. The Patch 060 implementation candidate corrects the
-remaining evidence-integrity findings, accounts for all 30 conditions, executes
-available-tool conditions, retains unavailable conditions, generates task-scoped
-summaries, and writes the engineering gap register. Patch 061 corrects the remaining transaction and campaign-accounting findings, records the below-floor protocol and operator guidance, closes Sprint 11, and activates Sprint 12.
+pre-execution campaign plan. The Patch 060 cloud checkpoint accounted for all
+30 conditions, executed 12 x64lens conditions, retained 18 baseline conditions
+as unavailable, generated task-scoped summaries, and wrote the engineering gap
+register. A later WSL2 replay recorded 30/30 conditions, 180/180 successful
+runner rows, and 24 relation artifacts, but its two Python runtime-closure
+failures and failed coordinate calibration prevent comparison qualification.
+All 12 x64lens timings were below the 6,361,100 ns reliable single-process
+floor.
+Patch 061 corrected the remaining transaction and campaign-accounting findings,
+recorded the below-floor protocol and operator guidance, closed Sprint 11, and
+activated Sprint 12. The replay does not replace the required fresh, unmodified
+Patch 061 campaign; all Sprint 11 evidence remains diagnostic, unfrozen, and
+publication-ineligible.
 
 ## Sprint goal
 
@@ -92,7 +102,11 @@ campaign prematurely.
    PIE-versus-DSO identity and GNU-property evidence for Sprint 12 and exact-only
    semantic-role review for Sprint 13. Decoder and concurrency remain deferred,
    optional Sprint 14 ablations.
-7. **Patch 061 (implemented candidate):** correct remaining transaction, coordinate, runtime-closure, accounting, and private-rollback findings; preregister the below-floor whole-batch policy; record the diagnostic assessment and operator guide; close Sprint 11; and activate Sprint 12.
+7. **Patch 061 (implemented candidate):** correct remaining transaction,
+   coordinate, runtime-closure, accounting, and rollback-destination identity
+   findings; preregister the below-floor whole-batch policy; record the
+   diagnostic assessment and operator guide; close Sprint 11; and activate
+   Sprint 12.
 
 The exact later patch count remains evidence-driven; the sequence describes the
 intended responsibility boundaries rather than a calendar guarantee.
@@ -133,4 +147,13 @@ intended responsibility boundaries rather than a calendar guarantee.
 
 ## Handoff
 
-Patch 061 closes Sprint 11 after preserving the Patch 060 diagnostic observations and correcting the evidence plane that interprets them. Sprint 12 uses that evidence to prioritize loader and mitigation precision without changing the reference scanner definition. A behavior, schema, task, or method change after a diagnostic campaign receives a new campaign identifier; Sprint 15 remains the confirmatory freeze.
+Patch 061 closes Sprint 11 after preserving the distinct cloud-checkpoint and
+WSL2-replay observations and correcting the evidence plane that interprets them.
+Sprint 12 uses that diagnostic evidence to prioritize program-header validity
+and extended numbering, overlap/provenance, PIE-versus-DSO identity, and GNU
+properties without changing the reference scanner definition. A corrected
+held-out diagnostic confirmation follows under a new identifier with positive
+role-controlled coordinate anchors and complete task-path runtime closure for
+all five task paths. A behavior, schema, task, or method change after a
+diagnostic campaign receives a new campaign identifier; Sprint 15 remains the
+confirmatory freeze.

@@ -178,9 +178,13 @@ capability authority. Validate it with:
 make research-stage-gates-smoke
 ```
 
-## Current stage after Sprint 10
+## Current stage after Sprint 11
 
-Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement. The reference analyzer and current semantic contracts are stable enough to measure, but the corpus and method remain provisional until Sprint 15. Sprints 12 through 14 may change capabilities or experimental profiles in response to diagnostic evidence; such changes require new diagnostic identities and do not contaminate the later frozen campaign.
+Patch 061 closes Sprint 11 and activates Sprint 12 loader and mitigation
+precision work. The diagnostic corpus and method remain provisional until
+Sprint 15. Sprints 12 through 14 may change capabilities or experimental
+profiles in response to diagnostic evidence; such changes require new
+diagnostic identities and do not contaminate the later frozen campaign.
 
 ## Sprint 11 Patch 055 foundation status
 
@@ -264,13 +268,14 @@ raw executable-byte presence remains unavailable, and no generic cross-tool
 `gadget_count` is introduced. All stage-zero artifacts remain diagnostic,
 unfrozen, and publication-ineligible.
 
-## Sprint 11 Patch 060 provisional-campaign status
+## Sprint 11 Patch 060 cloud checkpoint status
 
-The Patch 060 implementation candidate corrects the remaining Patch 059
-evidence-integrity findings and accounts for all 30 planned conditions. The
-retained campaign executed 12 x64lens conditions, recorded 18 unavailable
-baseline conditions, retained 12 warmup and 60 measured native rows, and
-excluded every below-floor measured row from primary timing summaries.
+The Patch 060 authenticated cloud checkpoint accounts for all 30 planned
+conditions. It executed 12 x64lens conditions, recorded 18 unavailable baseline
+conditions, retained 12 warmup and 60 measured native rows, and excluded every
+below-floor measured row from primary timing summaries. All 60 measured
+x64lens rows were below the reliable floor and remain retained below-floor
+observations, not zero timings or a speed result.
 
 The campaign generated six x64lens relation artifacts, two bounded x64lens
 task-path closure artifacts, an explicit coordinate-unavailable result, task
@@ -279,3 +284,23 @@ PIE-versus-DSO identity and GNU-property evidence in Sprint 12 plus exact-only
 semantic-role review in Sprint 13. Decoder and concurrency remain deferred,
 optional Sprint 14 ablations. Patch 061 closes Sprint 11, and Sprint 15 remains
 the confirmatory campaign freeze.
+
+## Sprint 11 Patch 061 closeout status
+
+A later WSL2 all-tools replay, qualified only for an evidence-local correction
+to the official ROPgadget 7.7 banner, executed 30/30 conditions and retained
+180/180 successful process rows. Seventeen conditions were above the 6,361,100
+ns reliable floor and 13 were below it; all 12 x64lens conditions were below
+that floor. The replay produced 24 normalized relations, but two Python
+task-path closures failed and coordinate calibration failed. It was not
+comparison-qualified and does not replace the fresh, unmodified Patch 061
+campaign required for empirical acceptance.
+
+The cloud checkpoint and WSL2 replay are separate diagnostic strata. Both
+remain unfrozen and publication-ineligible. Native execution, normalized
+relations, runtime closure, coordinate qualification, and comparison status
+remain independent; no generic cross-tool gadget count is permitted.
+
+## Sprint 12 Patch 062 capability-gate update
+
+The `program_header_validity` and `elf_extended_numbering` gates are resolved for the Patch 062 boundary. Ordinary PHDR validity is implemented and tested; extended numbering is detected, structurally validated, and returned as a stable unsupported condition rather than silently interpreted. The `executable_overlap_policy` gate remains planned and is the next ordered Sprint 12 change. Any diagnostic campaign after Patch 062 requires a new identifier because accepted input behavior changed.

@@ -137,14 +137,26 @@ def require(condition: bool, message: str) -> None:
         raise CorpusError(message)
 
 
-def _unlinkat_directory(parent_fd: int, name: str, label: str) -> None:
-    """Remove one directory entry with one unlinkat(AT_REMOVEDIR) syscall.
+def _unlinkat_directory(
+    parent_fd: int,
+    name: str,
+    label: str,
+    expected_identity: tuple[int, int],
+) -> None:
+    """Conditionally remove a directory relative to a held parent descriptor.
 
-    The kernel resolves and removes the named object atomically relative to the
-    held parent descriptor.  This avoids the check-then-rmdir pathname window
-    that could otherwise remove a substituted foreign directory.
+    The final device/inode comparison is performed inside the low-level helper.
+    A substituted name fails closed and is preserved. Linux has no unlink-by-
+    inode operation, so an already-hostile same-UID racer remains outside the
+    builder trust model and is not represented as a solved kernel primitive.
     """
     require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(
+        stat.S_ISDIR(observed.st_mode)
+        and (observed.st_dev, observed.st_ino) == expected_identity,
+        f"{label} changed before final removal",
+    )
     libc = ctypes.CDLL(None, use_errno=True)
     unlinkat = getattr(libc, "unlinkat", None)
     require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
@@ -210,7 +222,7 @@ class OwnedStage:
                 try:
                     observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
                     if stat.S_ISDIR(observed.st_mode) and (observed.st_dev, observed.st_ino) == created_identity:
-                        _unlinkat_directory(parent_fd, name, "partial staging directory")
+                        _unlinkat_directory(parent_fd, name, "partial staging directory", created_identity)
                         os.fsync(parent_fd)
                 except FileNotFoundError:
                     pass
@@ -303,7 +315,7 @@ class OwnedStage:
                     metadata = os.stat(current_name, dir_fd=parent_fd, follow_symlinks=False)
                     require((metadata.st_dev, metadata.st_ino) == (self.device, self.inode), f"{label} changed before final removal")
                     try:
-                        _unlinkat_directory(parent_fd, current_name, label)
+                        _unlinkat_directory(parent_fd, current_name, label, (self.device, self.inode))
                     except FileNotFoundError:
                         continue
                     os.fsync(parent_fd)
@@ -330,7 +342,7 @@ def _rename_exchange(parent_fd: int, left: str, right: str, label: str) -> None:
 def _remove_placeholder(parent_fd: int, name: str, identity: tuple[int, int], label: str) -> None:
     metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
     require(stat.S_ISDIR(metadata.st_mode) and (metadata.st_dev, metadata.st_ino) == identity, f"{label} placeholder identity changed")
-    _unlinkat_directory(parent_fd, name, label)
+    _unlinkat_directory(parent_fd, name, label, identity)
 
 
 def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> None:
@@ -366,7 +378,7 @@ def publish_owned_stage(stage: OwnedStage, final: pathlib.Path, label: str) -> N
             stat.S_ISDIR(stage_placeholder.st_mode) and (stage_placeholder.st_dev, stage_placeholder.st_ino) == placeholder_identity,
             f"{label} placeholder changed after exchange",
         )
-        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder")
+        _unlinkat_directory(stage.parent_fd, stage.name, f"{label} placeholder", placeholder_identity)
         placeholder_identity = None
         os.fsync(stage.parent_fd)
         stage.committed = True
@@ -437,7 +449,12 @@ def _clear_directory_fd(directory_fd: int, label: str, device: int) -> None:
                 _clear_directory_fd(child_fd, f"{label}/{entry.name}", device)
             finally:
                 os.close(child_fd)
-            _unlinkat_directory(directory_fd, entry.name, f"{label}/{entry.name}")
+            _unlinkat_directory(
+                directory_fd,
+                entry.name,
+                f"{label}/{entry.name}",
+                (metadata.st_dev, metadata.st_ino),
+            )
         else:
             os.unlink(entry.name, dir_fd=directory_fd)
 
@@ -1633,7 +1650,6 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     global _CREATING_STAGE
     spec, spec_raw, source_paths = parse_spec(spec_path, repo_root)
     corpus_id = spec["corpus_id"]
-    output_root.mkdir(parents=True, exist_ok=True)
     output_root = ensure_directory_nofollow(output_root, "corpus output root")
     final = output_root / corpus_id
     require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
@@ -2409,7 +2425,6 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
 
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
     spec, _raw, _paths = parse_spec(spec_path, repo_root)
-    output_root.mkdir(parents=True, exist_ok=True)
     output_root = ensure_directory_nofollow(output_root, "corpus output root")
     target = output_root / spec["corpus_id"]
     candidate = pathlib.Path(os.path.abspath(target))

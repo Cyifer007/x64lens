@@ -8,17 +8,30 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 11 Patch 061 closeout with corrected transaction ownership, symlink-ancestor rejection, independent native/comparison/closure/coordinate states, exact ROPgadget 7.7 version authority, isolated Python environment closure, recursive generic-count rejection, complete generator binding, stale-staging-path removal, and corrected below-floor accounting.
-- A preregistered whole-batch measurement policy for unresolved fast conditions, a campaign operator and interpretation guide, ADR 0047, the Patch 061 validation record, the Sprint 11 retrospective, and a machine-readable Sprint 11 closeout authority.
-- Sprint 12 activation with program-header validity and extended numbering first, followed by executable-overlap/provenance, PIE-versus-DSO identity, and bounded GNU-property evidence. Sprint 11 remains diagnostic and supplies no release-facing speed, RSS, coverage, or superiority claim.
+- Sprint 12 Patch 062 shared ordinary program-header validity for fixed table extent, `p_align`, offset/virtual congruence, non-wrapping virtual ranges, and executable-entrypoint containment.
+- Explicit ELF64 `PN_XNUM`, extended section-count, and `SHN_XINDEX` detection with bounded section-header-zero validation, stable unsupported outcomes for structurally valid forms, and malformed rejection for contradictory or unsafe encodings.
+- A 27-fixture, 108-execution PHDR/extended-numbering oracle across all four public command paths, plus Patch 061 transaction/path-continuity regressions for runner, corpus, derived artifacts, and private rollback.
+- ADR 0048 and the Patch 062 validation record. Overlap semantics, PIE-versus-DSO identity, and GNU-property IBT/SHSTK evidence remain later Sprint 12 work.
 
-- Sprint 11 Patch 060 authenticated provisional campaign with complete
+- Sprint 11 Patch 061 closeout with corrected transaction ownership, symlink-ancestor rejection, independent native/comparison/closure/coordinate states, exact ROPgadget 7.7 version authority, isolated Python environment closure, recursive generic-count rejection, complete generator binding, stale-staging-path removal, and corrected below-floor accounting.
+- A preregistered whole-batch measurement policy for unresolved below-floor conditions, a campaign operator and interpretation guide, ADR 0047, the Patch 061 validation record, the Sprint 11 retrospective, and a machine-readable Sprint 11 closeout authority.
+- Sprint 12 activation with program-header validity and extended numbering first, followed by executable-overlap/provenance, PIE-versus-DSO identity, bounded GNU-property evidence, and a corrected held-out diagnostic confirmation with positive coordinate anchors and five complete task-path closures. Sprint 11 remains diagnostic and supplies no release-facing speed, RSS, coverage, or superiority claim.
+
+- Sprint 11 Patch 060 cloud checkpoint with complete
   24-comparison plus six-control condition accounting: 12 available x64lens
   conditions executed, 18 baseline conditions remained unavailable, 72 native
   rows were retained, and all 60 measured rows remained below the timer floor
   and outside primary summaries. The campaign generated six relation artifacts,
   two bounded task-path closure artifacts, an explicit coordinate-unavailable
   result, task-scoped summaries, and an engineering gap register.
+- A later, separately qualified WSL2 replay used the exact pinned baselines and,
+  after one narrow evidence-local ROPgadget banner-authority correction,
+  executed all 30 conditions, retained 180 successful process rows, and
+  generated 24 normalized relations. Seventeen conditions were above the
+  6,361,100 ns reliable single-process floor and 13 were below it; all 12
+  x64lens conditions were below it. Two Python task-path closures and coordinate
+  calibration failed. The replay was not comparison-qualified and does not
+  replace the fresh unmodified Patch 061 empirical campaign.
 - Patch 060 corrective integrity hardening for the remaining Patch 059 findings:
   authority-bound version commands, no-follow artifact ancestry, relation
   reproduction from retained native evidence, task-snapshot runtime closure,

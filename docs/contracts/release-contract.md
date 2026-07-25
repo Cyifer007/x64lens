@@ -291,3 +291,7 @@ not source-release members, preview artifacts, publication datasets, or release
 checksums unless a later explicit promotion process validates and packages a
 frozen campaign. A campaign manifest that says `evidence_class: diagnostic`,
 `frozen: false`, or `publication_eligible: false` cannot satisfy a release gate.
+
+## Sprint 12 Patch 062 preview gate
+
+Preview validation must include the program-header validity and extended-numbering oracle. Ordinary invalid alignment, congruence, virtual range, and executable-entrypoint cases must fail closed. Structurally valid extended-numbering inputs must return the stable unsupported status until bounded support is implemented. Native and Docker outcomes must agree before a preview tag.

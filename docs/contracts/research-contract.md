@@ -212,3 +212,7 @@ A fully accounted campaign plan is not an executed campaign. Stage-zero rows and
 artifacts remain diagnostic, unfrozen, and publication-ineligible and cannot
 support performance, RSS, coverage, superiority, defensive-utility, or
 exploitability claims.
+
+## Sprint 12 loader-evidence rule
+
+Loader and mitigation claims require explicit ordinary-PHDR validity and explicit extended-numbering outcomes. A structurally validated unsupported result is not missing data and must remain separate from malformed input, ordinary negative evidence, or successful mitigation evidence. Diagnostic results collected before this behavior change remain a separate development dataset.

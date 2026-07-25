@@ -76,7 +76,7 @@
       "id": "program_header_validity",
       "owner_sprint": 12,
       "required_before": "campaign_freeze",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "pie_shared_object_distinction",
@@ -94,7 +94,7 @@
       "id": "elf_extended_numbering",
       "owner_sprint": 12,
       "required_before": "preview",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "generic_pop_and_syscall_roles",

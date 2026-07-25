@@ -168,3 +168,7 @@ limitations to prioritize bounded loader validity, overlap/provenance,
 PIE-versus-DSO identity, and GNU-property evidence. Sprint 15 freezes the
 confirmatory method; Sprint 16 produces the preview campaign, Sprint 17 runs
 publication-grade trials, and Sprint 22 is the first research-release gate.
+
+## Sprint 12 loader-precision checkpoint
+
+Patch 062 strengthens the bounded assembly-first parser without adding a runtime dependency or broadening offensive capability. Loader facts now reject invalid PHDR alignment, congruence, virtual ranges, and executable entrypoints before analysis. Structurally valid extended numbering is reported as unsupported rather than guessed. This supports defensive trustworthiness while preserving the dependency-free reference profile.

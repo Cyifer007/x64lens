@@ -234,3 +234,26 @@ smoke or diagnostic rows.
 ## Sprint 10 Patch 054 publication note
 
 Patch 054 closes Sprint 10 and begins the diagnostic measurement stage. The paper may describe Sprint 10 as completing the current bounded primitive, effect, provenance, fixture, false-positive, and score-policy foundations. It must not treat Sprint 11 diagnostic rows as publication evidence or imply that the corpus and method are frozen before Sprint 15.
+
+## Sprint 11 Patch 061 publication note
+
+Sprint 11 closes with two distinct diagnostic evidence strata. The earlier
+authenticated cloud checkpoint accounted for 30 conditions but executed only
+the 12 x64lens conditions because 18 baseline conditions were unavailable. A
+later WSL2 all-tools replay, qualified only for an evidence-local correction to
+the official ROPgadget 7.7 banner, executed 30/30 conditions and retained
+180/180 successful process rows. All 12 x64lens conditions were below the
+6,361,100 ns reliable floor. The replay produced 24 normalized relations, but
+two Python task-path closures failed and coordinate calibration failed, so it
+was not comparison-qualified and does not replace the fresh, unmodified Patch
+061 campaign required for empirical acceptance.
+
+Neither stratum is frozen or publication-eligible. The paper must not report
+below-floor x64lens observations as zero or as a speed result, collapse
+tool-native populations into a generic cross-tool gadget count, or treat native
+execution, normalization, runtime closure, coordinate qualification, and
+comparison status as interchangeable.
+
+## Sprint 12 Patch 062 publication boundary
+
+The paper may describe deterministic ordinary-PHDR validity and explicit extended-numbering unsupported outcomes for the reviewed fixtures. It may not claim complete ELF extended-numbering support, complete loader correctness, PIE-versus-DSO precision, CET evidence, or universal parser safety from this patch.

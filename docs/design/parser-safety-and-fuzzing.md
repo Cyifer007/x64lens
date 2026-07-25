@@ -255,3 +255,7 @@ The 4097-candidate input remains `EXIT_UNSUPPORTED` with empty stdout. Because
 the scanner stops at that point, no total dropped count is inferred. A future
 partial mode must explicitly redesign scanner progress accounting and add
 hostile-input coverage before it can emit incomplete state.
+
+## Sprint 12 Patch 062 PHDR and extended-numbering safety
+
+Patch 062 extends deterministic hostile-input coverage to loader alignment, congruence, virtual-range overflow, executable-entrypoint containment, and ELF64 extended-numbering carriers. Ordinary PHDR validation uses the shared checked table/range/addition helpers before pointer or range use. Extended counts are never used as ordinary 16-bit values: section-header entry zero is first bounded and required to be `SHT_NULL`, represented counts/indexes are range checked, and structurally valid forms return `EXIT_UNSUPPORTED` before reporting. Malformed or unsupported cases emit no partial stdout across `info`, `mitigations`, `gadgets`, and `analyze`.

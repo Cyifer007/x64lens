@@ -10,10 +10,10 @@ baseline adapters, matched relations, task-path runtime closure, coordinate
 qualification, 30-condition campaign authority, generated summaries, and the
 engineering gap register. Patch 061 corrects the remaining transaction and
 comparison-accounting findings, preregisters the below-floor whole-batch method,
-records the diagnostic limitations. Sprint 12 is active as the loader and
+and records the diagnostic limitations. Sprint 12 is active as the loader and
 mitigation precision sprint.
 
-repository now provides:
+The repository now provides:
 
 - a NASM-first ELF64 x86_64 parser and read-only mapping path,
 - program-header-authoritative executable regions,
@@ -422,15 +422,16 @@ populations, and binary presence remain distinct; baseline raw executable-byte
 presence remains unavailable. Patch 060 runs the provisional campaign and
 produces the engineering gap register. Patch 061 closes the sprint.
 
-## Sprint 11 Patch 060 research posture
+## Sprint 11 Patch 060 cloud research posture
 
-Patch 060 accounts for all 30 provisional conditions while executing only the 12
-available x64lens conditions; 18 pinned-baseline conditions remain unavailable.
-The 72 native rows comprise 12 warmups and 60 measured rows, all below the timer
-floor and excluded from primary timing summaries. Six x64lens relation artifacts
-and two bounded task-path closure artifacts were generated, while coordinate
-status remained unavailable and cross-tool address intersections remained
-blocked.
+The Patch 060 authenticated cloud checkpoint accounts for all 30 provisional
+conditions while executing only the 12 available x64lens conditions; 18
+pinned-baseline conditions remain unavailable. The 72 native rows comprise 12
+warmups and 60 measured rows. All 60 measured x64lens rows were below the timer
+floor and excluded from primary timing summaries; they were not reported as
+zero or as a speed result. Six x64lens relation artifacts and two bounded
+task-path closure artifacts were generated, while coordinate status remained
+unavailable and cross-tool address intersections remained blocked.
 
 The gap register selects PIE-versus-DSO identity and bounded GNU-property
 evidence for Sprint 12 and exact-only semantic-role review for Sprint 13.
@@ -441,4 +442,26 @@ mutable, unfrozen, and publication-ineligible.
 
 ## Sprint 11 closeout research posture
 
-Sprint 11 produced method-validating diagnostic evidence rather than a comparative result. The all-tools rehearsal showed that the selected provisional targets were too small for stable x64lens single-run latency under the measured floor, that baseline-native records are not a common gadget population, and that the first exact relation supplied no positive coordinate anchor. Patch 061 turns those observations into explicit method gates. Sprint 12 begins with loader validity, overlap/provenance, PIE-versus-DSO identity, and GNU-property evidence. Any changed behavior receives a new diagnostic campaign identity.
+Sprint 11 produced method-validating diagnostic evidence rather than a
+comparative result. A later WSL2 all-tools replay, qualified only for an
+evidence-local correction to the official ROPgadget 7.7 banner, executed 30/30
+conditions and retained 180/180 successful process rows. Seventeen conditions
+were above the 6,361,100 ns reliable floor and 13 were below it; all 12 x64lens
+conditions were below that floor. The replay produced 24 normalized relations,
+but two Python task-path closures failed and coordinate calibration failed. It
+was not comparison-qualified and does not replace the fresh, unmodified Patch
+061 campaign required for empirical acceptance.
+
+The cloud checkpoint and WSL2 replay remain separate diagnostic, unfrozen, and
+publication-ineligible evidence strata. Baseline-native records are not a
+common gadget population, and native execution, normalization, runtime closure,
+coordinate qualification, and comparison status remain independent. Patch 061
+turns those observations into explicit method gates. Sprint 12 proceeds through
+loader validity and extended numbering, overlap/provenance, PIE-versus-DSO
+identity, GNU-property evidence, and corrected held-out diagnostic confirmation
+with positive coordinate anchors and five complete task-path closures. Any
+changed behavior receives a new diagnostic campaign identity.
+
+## Sprint 12 Patch 062 research checkpoint
+
+Patch 062 resolves the first loader-precision tranche: ordinary program-header alignment, congruence, file/virtual ranges, executable-entrypoint containment, and explicit structurally validated unsupported outcomes for ELF64 extended numbering. The next evidence risk is overlapping executable-segment scan/count/provenance semantics, followed by PIE-versus-DSO and GNU-property indicators.

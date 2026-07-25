@@ -179,10 +179,10 @@ When pinned ROPgadget, Ropper, and ropr executables are available, validate:
 - no unlabeled cross-tool gadget count.
 
 Absence of optional baseline tools does not invalidate the stage-zero
-implementation. In Patch 060 it left 18 baseline conditions unavailable while
-12 x64lens conditions executed. It blocks full comparative execution and
-role-controlled calibration, not complete condition accounting or
-available-tool execution.
+implementation. In the Patch 060 cloud checkpoint it left 18 baseline
+conditions unavailable while 12 x64lens conditions executed. It blocks full
+comparative execution and role-controlled calibration, not complete condition
+accounting or available-tool execution.
 
 ## Evidence classification
 
@@ -221,10 +221,20 @@ executed comparative result.
 
 ## Handoff
 
-Patch 060 subsequently accounted for all 30 provisional conditions, executed
-the 12 available x64lens conditions, generated task-scoped summaries from
-preserved rows and relation artifacts, and wrote the engineering gap register.
-That register selects PIE-versus-DSO identity and GNU-property evidence for
+The Patch 060 cloud checkpoint subsequently accounted for all 30 provisional
+conditions, executed the 12 available x64lens conditions, generated task-scoped
+summaries from preserved rows and relation artifacts, and wrote the engineering
+gap register; all 60 measured x64lens process rows were below the reliable
+single-process timer floor. A later, separately qualified WSL2 replay executed
+30 of 30 conditions after one narrow evidence-local banner-authority
+correction, retained 180 of 180 successful process rows, and generated 24
+relation artifacts. All 12 x64lens conditions remained below that host's
+6,361,100 ns reliable single-process floor, while two Python task-path
+runtime-closure failures and failed coordinate calibration left the replay not
+comparison-qualified. Neither diagnostic, unfrozen, publication-ineligible
+stratum replaces the required fresh unmodified Patch 061 campaign.
+
+The gap register selects PIE-versus-DSO identity and GNU-property evidence for
 Sprint 12 and exact-only semantic-role review for Sprint 13. Decoder and
-concurrency remain deferred optional Sprint 14 ablations. Planned Patch 061
-performs Sprint 11 closeout.
+concurrency remain deferred optional Sprint 14 ablations. Patch 061
+subsequently defined the Sprint 11 closeout corrections and below-floor policy.

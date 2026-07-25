@@ -70,8 +70,14 @@ These remain Sprint 5 follow-up items after Patch 019:
 - [x] Record baseline tool versions in benchmark metadata when tools are installed.
 - [x] Add corpus manifest hash or manifest checksum capture.
 - [x] Update benchmark methodology with exact baseline smoke commands.
-- [ ] Normalize baseline gadget counts and tool-specific output definitions.
+- [x] Superseded in Sprint 11: preserve tool-native population totals, add
+  task-specific named relations, and prohibit a generic cross-tool gadget
+  count.
 - [ ] Write Sprint 5 retrospective after validation.
+
+The superseded item records the historical Sprint 5 direction; it does not
+retroactively claim that unlike tool-native populations share one count
+definition.
 
 ## Acceptance criteria for Patch 017
 

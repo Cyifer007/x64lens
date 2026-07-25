@@ -217,20 +217,19 @@ make sprint11-measurement-plane-smoke
 make sprint11-campaign-plan-smoke
 ```
 
-The 24-comparison plus six-control plan remains pre-execution authority. Patch
-059 is diagnostic, unfrozen, and publication-ineligible and supplies no
-comparative performance, RSS, coverage, or superiority result. Patch 060 is the
-planned authenticated campaign, summary, and gap-register tranche; Patch 061 is
-the planned Sprint 11 closeout.
+At the Patch 059 boundary, the 24-comparison plus six-control plan was
+pre-execution authority. Patch 059 supplied no comparative performance, RSS,
+coverage, or superiority result; Patch 060 and Patch 061 were the subsequent
+campaign and closeout tranches recorded below.
 
 
-## Sprint 11 Patch 060 provisional campaign
+## Sprint 11 Patch 060 cloud checkpoint
 
 Patch 060 accounts for the complete 30-condition authority through
 `benchmarks/scripts/sprint11-provisional-campaign.py`. Available authenticated
 tools execute through the runner; absent optional baselines remain explicit
-`unavailable_tool` conditions with zero native rows. The retained provisional
-campaign executed 12 x64lens conditions and accounted for 18 unavailable
+`unavailable_tool` conditions with zero native rows. The retained cloud
+checkpoint executed 12 x64lens conditions and accounted for 18 unavailable
 baseline conditions. It preserved 72 native rows—12 warmups and 60 measured
 rows—while keeping condition accounting, primary-summary eligibility,
 normalized relation artifacts, task-path runtime closures, address-coordinate
@@ -260,4 +259,17 @@ remain diagnostic, unfrozen, and publication-ineligible.
 
 Patch 061 separates native execution, normalized comparison, runtime closure, and coordinate qualification. A successful process is not automatically a qualified cross-tool comparison. The campaign rejects recursive generic gadget-count fields, authenticates every imported generator, preserves isolated Python launcher context, rejects stale staging paths, and counts below-floor successful rows correctly.
 
+A later, separately qualified WSL2 replay used the exact pinned baselines and,
+after one narrow evidence-local correction to the ROPgadget 7.7 banner
+authority, executed all 30 conditions, retained 180 successful process rows,
+and generated 24 normalized relations. Seventeen conditions were above that
+host's 6,361,100 ns reliable single-process floor and 13 were below it; all 12
+x64lens conditions were below it. Two Python task-path closures and coordinate
+calibration failed, so the replay was not comparison-qualified and does not
+replace the fresh unmodified Patch 061 empirical campaign.
+
 Use [`docs/sprints/sprint-11-diagnostic-campaign-guide.md`](../docs/sprints/sprint-11-diagnostic-campaign-guide.md) to install exact baselines, regenerate the corpus, run a new 30-condition campaign, verify the result tree, and interpret timer-floor, relation, coordinate, closure, and tool-native evidence. Sprint 11 is closed; all retained rows remain diagnostic, unfrozen, and publication-ineligible.
+
+## Sprint 12 behavior-change boundary
+
+Patch 062 changes accepted ELF loader structure rather than the measurement method. Sprint 11 diagnostic rows remain preserved, but new measurements after PHDR validity and extended-numbering enforcement require a distinct diagnostic campaign identity. They must not be merged with the Sprint 11 checkpoint or the later Sprint 15-frozen dataset.

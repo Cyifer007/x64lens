@@ -4,7 +4,20 @@
 
 > Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
-> The all-tools diagnostic rehearsal accounted for all 30 conditions after one narrowly qualified version-banner correction. Every x64lens condition remained below the measured reliable single-run floor, so the repository makes no x64lens single-run latency or superiority claim from those rows. Tool-native record totals remain definition-specific, and address-level comparisons remain blocked until positive coordinate anchors exist.
+> The retained cloud checkpoint accounted for 30 planned conditions: 12 x64lens
+> conditions executed and 18 pinned-baseline conditions were unavailable. A
+> later, separately qualified WSL2 replay used the exact pinned baselines and,
+> after one narrow evidence-local correction to the ROPgadget 7.7 banner
+> authority, executed all 30 conditions and retained 180 successful process
+> rows plus 24 normalized relations.
+>
+> All 12 x64lens conditions in that replay remained below the measured
+> 6,361,100 ns reliable single-process floor. This is unresolved latency, not
+> zero runtime or a speed result. Two Python baseline closures and coordinate
+> calibration failed, so the replay was not comparison-qualified and does not
+> replace the fresh unmodified Patch 061 empirical campaign. Tool-native record
+> totals remain definition-specific, and address-level comparisons remain
+> blocked until positive coordinate anchors exist.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -90,6 +103,16 @@ The current line does not implement exploit generation, payload generation, remo
 - Exploitability requires an independent vulnerability and relevant runtime conditions.
 
 See [`docs/design/metric-boundaries.md`](docs/design/metric-boundaries.md), [`docs/design/evidence-provenance-model.md`](docs/design/evidence-provenance-model.md), [`docs/design/sprint10-family-coverage.md`](docs/design/sprint10-family-coverage.md), [`docs/design/defensive-deployment-profile.md`](docs/design/defensive-deployment-profile.md), and [`docs/semantic-taxonomy.md`](docs/semantic-taxonomy.md).
+
+## Sprint 12 loader-validity checkpoint
+
+Patch 062 centralizes ordinary program-header validity before any command reports loader or mitigation facts. It validates fixed PHDR extent, alignment form, load congruence, file and virtual ranges, and nonzero executable entrypoint containment. ELF64 extended-numbering sentinels are detected before ordinary iteration: structurally valid forms return the stable unsupported status, while contradictory or unsafe forms return malformed input. Program headers remain runtime mapping authority; section-header entry zero is consulted only as the ABI-defined extended-number carrier.
+
+```bash
+make sprint12-phdr-validity-smoke
+```
+
+This patch does not change the JSON schema, CLI, candidate counts, semantic classes, scores, decoder policy, or one-worker dependency-free reference profile.
 
 ## Quick start on Ubuntu 24.04
 
@@ -373,21 +396,31 @@ identity. Runtime closure is a bounded observation of the declared path. Even a
 `complete` closure is complete only within that observation, and a Python
 version-command path may be narrower than a later analysis command.
 
-Patch 060 established the fully accounted 30-condition provisional campaign and
-generated the first task-scoped summaries and gap register. The first all-tools
-rehearsal then executed all 30 conditions and retained 180 process rows, but it
-also exposed version-banner, coordinate, runtime-closure, status-accounting, and
-transaction defects. Patch 061 corrects those defects and closes Sprint 11.
+Patch 060 first produced a cloud checkpoint that accounted for all 30 planned
+conditions while executing the 12 available x64lens conditions and retaining
+18 pinned-baseline conditions as unavailable. That checkpoint retained 72
+process rows, all 60 measured rows below the timer floor, six x64lens relation
+artifacts, two bounded x64lens closures, and coordinate status `unavailable`.
 
-Every x64lens condition in that rehearsal remained below the host's measured
-reliable single-run floor. Those process outcomes are retained, but they do not
-support a stable single-run latency comparison. The first normalized exact
-relation was absent across the selected targets, so it supplied no positive
-coordinate anchor. Baseline-native totals differed substantially and remain
-separate tool-specific populations. The gap register retains bounded Sprint 12
-loader and mitigation priorities and a Sprint 13 exact-pop semantic decision;
-decoder and concurrency remain optional Sprint 14 ablations. All Sprint 11
-results remain `diagnostic`, `frozen: false`, and `publication_eligible: false`.
+A later, separately qualified WSL2 replay used the exact pinned baselines and,
+after one narrow evidence-local correction to the ROPgadget 7.7 banner
+authority, executed 30 of 30 conditions and retained 180 successful process
+rows plus 24 normalized relations. Seventeen conditions were above that host's
+measured 6,361,100 ns reliable single-process floor and 13 were below it; all 12
+x64lens conditions were below it. Two Python task-path closures and coordinate
+calibration failed, so the replay exposed version-banner, coordinate,
+runtime-closure, status-accounting, and transaction defects rather than
+establishing a qualified comparison. Patch 061 corrects those defects and closes
+Sprint 11, but a fresh unmodified campaign remains its empirical requirement.
+
+The below-floor process outcomes do not support a stable single-run latency
+comparison. The first normalized exact relation was absent across the selected
+targets, so it supplied no positive coordinate anchor. Baseline-native totals
+differed substantially and remain separate tool-specific populations. The gap
+register retains bounded Sprint 12 loader and mitigation priorities and a Sprint
+13 exact-pop semantic decision; decoder and concurrency remain optional Sprint
+14 ablations. All Sprint 11 results remain `diagnostic`, `frozen: false`, and
+`publication_eligible: false`.
 
 ```bash
 make patch059-corrective-regression-smoke
@@ -458,9 +491,10 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 053 are later
-pre-release work. Patch 054 closes Sprint 10 without moving a release tag.
-Sprint 11 begins diagnostic measurement and a provisional corpus.
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 061 are later
+pre-release work. Patch 054 closes Sprint 10, and Patch 061 closes Sprint 11,
+without moving a release tag. Sprint 12 is active as the loader and mitigation
+precision sprint.
 
 Planned release sequence:
 
@@ -470,7 +504,7 @@ v0.1.0-rc1   research preview candidate
 v0.1.0       first research release
 ```
 
-Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, reconciles public chronology and checksum-manifest rules, and activates Sprint 11 without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
+Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

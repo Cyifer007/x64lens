@@ -1564,8 +1564,10 @@ the exact 24-comparison plus six-control pre-execution plan.
 The controlled stage-zero gates do not execute the installed-tool comparative
 campaign. Their rows and derived artifacts remain diagnostic, unfrozen, and
 publication-ineligible and cannot support performance, RSS, coverage, or
-superiority claims. Patch 060 owns the authenticated campaign, summaries, and engineering gap
-register. Patch 061 closes Sprint 11 and activates Sprint 12.
+superiority claims. Patch 060 subsequently produced the authenticated cloud
+checkpoint, summaries, and engineering gap register. Patch 061 defines the
+closeout corrections, while a fresh unmodified all-tools campaign remains an
+empirical acceptance requirement.
 
 Full acceptance still requires strict ShellCheck, a clean NASM build, all
 samples and native validation, exact 4096/4097 capacity behavior, malformed-input
@@ -1592,6 +1594,19 @@ do not block available x64lens rows. Complete native, strict ShellCheck, Docker,
 capacity, malformed-input, public-overlay, and native/container parity gates
 remain mandatory. See [Sprint 11 Patch 060 Validation](sprints/sprint-11-patch-060-validation.md).
 
+The retained cloud checkpoint accounted for all 30 conditions, executed 12
+x64lens conditions, and recorded 18 pinned-baseline conditions as unavailable.
+All 60 measured x64lens process rows were below the reliable single-process
+timer floor. A later, separately qualified WSL2 replay used the exact pinned
+baselines and one narrow evidence-local ROPgadget 7.7 banner-authority
+correction. It executed 30 of 30 conditions, retained 180 of 180 successful
+process rows, and generated 24 relation artifacts. All 12 x64lens conditions
+remained below that host's 6,361,100 ns floor, while two Python task-path
+runtime-closure failures left those closures incomplete and coordinate
+calibration failed. The replay was not comparison-qualified and did not replace
+the required fresh unmodified Patch 061 campaign. Both evidence strata remain
+diagnostic, unfrozen, and publication-ineligible.
+
 
 ## Sprint 11 Patch 061 closeout validation
 
@@ -1611,4 +1626,23 @@ make research-roadmap-consistency-smoke
 make planning-docs-check
 ```
 
-Empirical acceptance additionally requires the complete native and container aggregates and a fresh 30-condition run with the exact pinned baselines. A below-floor condition remains a successful process outcome but is excluded from single-run latency interpretation.
+Empirical acceptance additionally requires the complete native and container
+aggregates and a fresh unmodified 30-condition run with the exact pinned
+baselines. A below-floor condition remains a successful process outcome but is
+excluded from single-run latency interpretation.
+
+## Sprint 12 Patch 062 PHDR validity validation
+
+Run:
+
+```bash
+make sprint12-phdr-validity-smoke
+```
+
+Expected:
+
+```text
+sprint12-phdr-validity-smoke: ok cases=27 executions=108 ordinary_valid=5 ordinary_malformed=7 extended_unsupported=3 extended_malformed=12
+```
+
+The harness is compiler-independent and exercises every case through `info`, `mitigations`, `gadgets --format json`, and `analyze --format json`. Failure cases require exact exit class, exact diagnostic, no signal or timeout, and empty stdout.

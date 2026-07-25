@@ -331,17 +331,38 @@ calibration succeeds, and runtime closure remains a bounded observation. Patch
 060 executes the authenticated provisional campaign and produces the gap
 register. Patch 061 closes Sprint 11.
 
-## Sprint 11 Patch 060 release-gate update
+## Sprint 11 Patch 060 cloud release-gate update
 
-The Patch 060 implementation candidate completes provisional condition
-accounting without satisfying a preview or publication gate. The retained
-campaign records 30 planned conditions, 12 executed x64lens conditions, 18
-unavailable baseline conditions, 72 native rows, zero primary timing-summary
-rows, six x64lens relation artifacts, two bounded task-path closure artifacts,
-and coordinate status `unavailable`.
+The Patch 060 authenticated cloud checkpoint completes provisional condition
+accounting without satisfying a preview or publication gate. It records 30
+planned conditions, 12 executed x64lens conditions, 18 unavailable baseline
+conditions, 72 native rows, no primary timing-summary rows, six x64lens relation
+artifacts, two bounded task-path closure artifacts, and coordinate status
+`unavailable`. All 60 measured x64lens rows were retained below the timer floor;
+they are not zero timings or a speed result.
 
 These artifacts remain `diagnostic`, `frozen: false`, and
 `publication_eligible: false`. They select bounded PIE-versus-DSO and
 GNU-property work for Sprint 12 and exact-only semantic-role review for Sprint
 13. Decoder and concurrency remain deferred optional Sprint 14 ablations.
 Patch 061 performs Sprint 11 closeout and activates Sprint 12.
+
+## Sprint 11 Patch 061 release-gate update
+
+A separate WSL2 all-tools replay, qualified only for an evidence-local
+correction to the official ROPgadget 7.7 banner, executed 30/30 conditions and
+retained 180/180 successful process rows. Seventeen conditions were above the
+6,361,100 ns reliable floor and 13 were below it; all 12 x64lens conditions were
+below that floor. The replay produced 24 normalized relations, but two Python
+task-path closures failed and coordinate calibration failed. It was not
+comparison-qualified and does not replace the fresh, unmodified Patch 061
+campaign required for empirical acceptance.
+
+The cloud checkpoint and WSL2 replay remain separate diagnostic, unfrozen,
+publication-ineligible evidence strata. They do not satisfy a preview,
+publication, or release gate. Cross-tool reporting preserves tool-native
+populations and named relations; it does not define a generic gadget count.
+
+## Sprint 12 Patch 062 release-gate update
+
+The first loader-precision gate is resolved: ordinary PHDR validity and explicit ELF64 extended-numbering outcomes are deterministic and covered across all public command paths. This does not complete Sprint 12. Overlap semantics, PIE-versus-DSO identity, GNU-property IBT/SHSTK evidence, and corrected held-out diagnostic confirmation remain open before the preview gate.

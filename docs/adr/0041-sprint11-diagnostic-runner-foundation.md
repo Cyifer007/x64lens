@@ -135,7 +135,8 @@ change score policy.
 - The initial reference campaign can validate the runner and command parity, but
   it cannot establish scanner-only cost or baseline superiority.
 - Provisional corpus construction, baseline adapters, summary statistics, and
-  the Sprint 12-14 engineering gap register remain later Sprint 11 work.
+  the Sprint 12-14 engineering gap register remained later Sprint 11 work at
+  this historical decision boundary.
 
 ## Rejected alternatives
 

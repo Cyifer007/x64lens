@@ -11,6 +11,15 @@ schema version: 0.2.0
 
 Tool behavior can change while preserving the schema. Machine-readable contract changes require an explicit schema decision.
 
+## Current version and roadmap state
+
+Patch 061 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 11 is complete and Sprint 12 is the active loader and mitigation
+precision sprint. The Sprint 11 cloud checkpoint and later WSL2 replay remain
+diagnostic, unfrozen, and publication-ineligible. They have no release authority
+and do not replace the fresh, unmodified Patch 061 campaign required before any
+comparison qualification.
+
 ## Release sequence
 
 | Milestone | Version | Status |
@@ -37,7 +46,8 @@ A normal branch push does not publish a tag. Publish a release tag explicitly on
 - `0.1.0`: retained representative final-shape historical target, mitigation,
   count, primitive, gadget, score, and limitations snapshot validated through a
   versioned compatibility schema.
-- `0.2.0`: current Sprint 9 report and command identity plus bounded analysis-completeness contract.
+- `0.2.0`: report and command identity plus bounded analysis-completeness
+  contract introduced in Sprint 9 and retained as the current schema.
 - `0.2.x`: compatible per-candidate provenance, validator, and evidence additions through the first research release.
 
 The tool version remains `0.1.0-dev`; advancing the schema does not move the checkpoint tag. Do not introduce another breaking schema before `v0.1.0` unless a release-blocking correctness issue requires a documented migration and affected experiment restart.
@@ -117,12 +127,15 @@ Diagnostic evidence from Sprint 11 remains development data. It does not carry
 the release authority of a frozen Sprint 15 campaign.
 
 
-## Sprint 10 closeout version state
+## Historical Sprint 10 closeout version state
 
 Patch 054 retains tool version `0.1.0-dev` and schema `0.2.0`. No release tag
-moves. Sprint 10 is complete, Sprint 11 is the active diagnostic benchmark
-stage, and diagnostic rows have no release authority until the Sprint 15
-campaign freeze. Optional decoder or worker profiles require distinct build and
-benchmark identity even when they remain schema-compatible.
+moves. At that checkpoint, Sprint 10 was complete and Sprint 11 was the active
+diagnostic benchmark stage. Diagnostic rows had no release authority before the
+Sprint 15 campaign freeze. Optional decoder or worker profiles require distinct
+build and benchmark identity even when they remain schema-compatible.
 
-Patch 054 closes Sprint 10 without advancing the tool or schema version. Sprint 11 diagnostic artifacts retain `0.1.0-dev` and schema `0.2.0` provenance. Neither `v0.1.0-rc1` nor `v0.1.0` is created during diagnostic work; those remain evidence-gated milestones at Sprints 16 and 22.
+Patch 054 closed Sprint 10 without advancing the tool or schema version. Sprint
+11 diagnostic artifacts retain `0.1.0-dev` and schema `0.2.0` provenance.
+Neither `v0.1.0-rc1` nor `v0.1.0` is created during diagnostic work; those
+remain evidence-gated milestones at Sprints 16 and 22.

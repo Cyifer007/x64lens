@@ -93,9 +93,9 @@ runtime closure, explicit coordinate status, no generic gadget count, generated
 summaries, and a diagnostic gap register. Missing tools and below-floor rows are
 valid recorded states, not successful comparative measurements.
 
-## Authenticated provisional campaign outcome
+## Authenticated cloud checkpoint outcome
 
-The retained provisional campaign accounted for 30 planned conditions. Twelve
+The retained cloud checkpoint accounted for 30 planned conditions. Twelve
 x64lens conditions executed; 18 pinned-baseline conditions were recorded as
 `unavailable_tool` and therefore produced no native rows.
 
@@ -121,6 +121,21 @@ The engineering gap register selects exactly three priorities:
 Candidate-scoped decoding and concurrency remain deferred optional Sprint 14
 ablations, not accepted current requirements. The campaign and gap register
 remain diagnostic, mutable, unfrozen, and publication-ineligible.
+
+## Later WSL2 replay
+
+A later, separately qualified WSL2 replay used the exact pinned baselines and,
+after one narrow evidence-local correction to the ROPgadget 7.7 banner
+authority, executed 30 of 30 conditions, retained 180 of 180 successful process
+rows, and generated 24 relation artifacts. All 12 x64lens gadget and analyze
+conditions remained below that host's 6,361,100 ns reliable single-process
+floor.
+
+Two Python task-path runtime-closure failures left those closures incomplete,
+and coordinate calibration failed. The replay was therefore not
+comparison-qualified and did not replace the required fresh unmodified Patch
+061 campaign. Like the cloud checkpoint, it remains diagnostic, unfrozen, and
+publication-ineligible.
 
 ## Corrective adversarial requirements
 
@@ -155,13 +170,15 @@ make native-docker-json-parity-smoke
 
 ## Evidence interpretation
 
-Patch 060 is mutable diagnostic evidence only. Task summaries may report wall,
-CPU, RSS, output, result, and normalized relation facts under exact task scope.
-They must not claim causality from the six-target screen or support preview,
-publication, superiority, or analyst-utility conclusions.
+The Patch 060 cloud checkpoint and the later WSL2 replay are mutable diagnostic
+evidence only. Task summaries may report wall, CPU, RSS, output, result, and
+normalized relation facts under exact task scope. They must not claim causality
+from the six-target screen or support preview, publication, superiority, or
+analyst-utility conclusions.
 
 ## Next step
 
-After Patch 060 acceptance, Patch 061 closes Sprint 11 and hands the
-evidence-backed priorities to Sprint 12. It should not implement Sprint 12
-loader or mitigation changes inside the closeout patch.
+Patch 061 subsequently defined the Sprint 11 closeout corrections and preserves
+the evidence-backed priorities for Sprint 12. A fresh unmodified all-tools
+campaign remains an empirical acceptance requirement; the closeout patch does
+not implement Sprint 12 loader or mitigation changes.

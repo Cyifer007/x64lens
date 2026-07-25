@@ -165,10 +165,10 @@ Evidence archives must preserve executable and read-only modes. Extracted
 archive modes are compared with the source evidence tree before the archive is
 accepted.
 
-## Expected next step
+## Historical handoff
 
-After Patch 058 is accepted, Patch 059 may correct campaign binding and establish
-the stage-zero measurement plane while preserving normalized and native baseline
-discrepancies. Planned Patch 060 runs the provisional corpus diagnostic campaign,
-generates task-scoped development summaries, and builds the engineering gap
-register that directs Sprints 12 through 14. Planned Patch 061 closes Sprint 11.
+Patch 059 subsequently corrected campaign binding and established the stage-zero
+measurement plane while preserving normalized and native baseline
+discrepancies. Patch 060 ran the provisional corpus diagnostic campaign,
+generated task-scoped development summaries, and built the engineering gap
+register. Patch 061 closed Sprint 11 and activated Sprint 12.

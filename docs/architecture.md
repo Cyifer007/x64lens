@@ -1280,3 +1280,42 @@ targets for the analyzer, select executable regions, scan candidates, classify,
 score, or emit schema `0.2.0` runtime reports. Program headers remain executable
 authority, and raw, exact, semantic-exact, unknown, decoder-backed, and scored
 facts remain independent.
+
+## Sprint 11 Patch 061 corrective measurement-plane boundary
+
+Patch 061 keeps five campaign dimensions independent:
+
+```text
+native execution and timer-floor status
+normalization status and named relation evidence
+bounded task-path runtime-closure status
+role-controlled coordinate qualification
+final comparison_status
+```
+
+A successful or below-floor native process does not imply successful
+normalization, complete runtime closure, qualified coordinates, or a qualified
+comparison. Missing positive coordinate anchors block address intersections.
+Tool-native populations remain definition-specific, and recursive generic
+`gadget_count` authority is rejected.
+
+The retained cloud checkpoint accounted for 30 planned conditions while
+executing 12 x64lens conditions and recording 18 pinned-baseline conditions as
+unavailable. A later, separately qualified WSL2 replay used the exact pinned
+baselines and, after one narrow evidence-local ROPgadget banner-authority
+correction, executed all 30 conditions and retained 180 successful process
+rows plus 24 normalized relations. Seventeen conditions were above the
+6,361,100 ns reliable single-process floor and 13 were below it; all 12 x64lens
+conditions were below it. Two Python task-path closures and coordinate
+calibration failed, so the replay was not comparison-qualified and does not
+replace the fresh unmodified Patch 061 empirical campaign.
+
+Every retained Sprint 11 row and derived artifact remains diagnostic, unfrozen,
+and publication-ineligible. The corrective measurement plane changes external
+development evidence handling, not analyzer facts or runtime architecture.
+
+## Sprint 12 Patch 062 loader-validity boundary
+
+Patch 062 adds `x64lens_phdr_validate_loader_contract` as the shared ordinary program-header gate used by both ELF identity validation and `phdr` analysis. The helper owns fixed-table extent, `p_align`, `PT_LOAD` file/memory relationships, virtual-end overflow, offset/virtual congruence, and nonzero executable-entrypoint containment. It does not derive mitigations, select section-based scan ranges, scan candidates, classify, score, or report.
+
+`elf64.asm` owns extended-numbering detection because the sentinels live in the ELF header. It reads bounded section-header entry zero only to validate the ABI carrier fields, then returns stable unsupported for structurally valid extended numbering. Section headers remain metadata and never become runtime mapping authority.

@@ -16,12 +16,23 @@ versions, commands, and task definitions are frozen.
 Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the
 provisional high-resolution runner, reproducible 24-target corpus, normalized
 baseline task authority, matched relation and runtime-closure evidence,
-30-condition diagnostic campaign authority, generated summaries, and engineering
-gap register. The all-tools rehearsal exposed unresolved single-run timing,
-coordinate-anchor, closure-context, and tool-definition boundaries; Patch 061
-corrects the evidence plane and preserves those limitations. Sprint 12 is active
-as the loader and mitigation precision sprint. Sprint 15 freezes the
-confirmatory campaign.
+30-condition diagnostic campaign authority, generated summaries, and
+engineering gap register. The earlier cloud checkpoint accounted for all 30
+conditions while executing 12 x64lens conditions and retaining 18 baseline
+conditions as unavailable. A later WSL2 replay recorded 30/30 conditions,
+180/180 successful runner rows, and 24 relation artifacts; all 12 x64lens
+condition timings were below the 6,361,100 ns reliable single-process floor.
+Two Python task-path runtime-closure failures left those closures incomplete,
+and coordinate calibration failed, so the replay was not comparison-qualified
+and did not replace the required fresh, unmodified Patch 061 campaign.
+
+All Sprint 11 measurement evidence remains diagnostic, unfrozen, and
+publication-ineligible. Sprint 12 is active and proceeds through bounded
+program-header validity and extended-numbering outcomes,
+executable-overlap/provenance semantics, PIE-versus-DSO identity, GNU-property
+evidence, and then corrected held-out diagnostic confirmation with positive
+role-controlled coordinate anchors and complete task-path runtime closure for
+all five task paths. Sprint 15 freezes the confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must
@@ -55,7 +66,7 @@ Calendar progress does not satisfy an evidence gate.
 | 9 | Provenance and decoder-gap evidence | Schema `0.2.0`, completeness, candidate provenance, decoder decision |
 | 10 | Evidence-aware primitive expansion | Multi-pop, transfer, stack-adjust, memory effects, architectural effects, score and fixture closure |
 | 11 | Diagnostic benchmark foundation | Provisional corpus, high-resolution runner, baseline task normalization, development gap register |
-| 12 | Loader and mitigation precision | PIE versus DSO, CET IBT/SHSTK, overlap policy, PHDR validity, extended-numbering outcome |
+| 12 | Loader and mitigation precision | PHDR validity and extended numbering, overlap/provenance, PIE versus DSO, CET IBT/SHSTK, held-out diagnostic confirmation |
 | 13 | Semantic capability completion | Generic pop/syscall roles, measured bounded family additions, score-policy completion |
 | 14 | Optional profile ablations | Candidate-scoped decoder and deterministic concurrency experiments, reference-profile preservation |
 | 15 | Corpus and method freeze | Final corpus, licenses, hashes, schema, runner, baselines, commands, task definitions |
@@ -92,6 +103,8 @@ campaign.
 - bounded PHDR alignment, congruence, virtual-range, and entrypoint behavior;
 - generic exact-pop and Linux syscall-register semantic decision;
 - task-equivalent baseline definitions;
+- positive role-controlled coordinate anchors and complete runtime closure for
+  all five task paths before any diagnostic comparison qualification;
 - stable current aggregate metrics: `raw_candidate_count`,
   `exact_pattern_count`, `semantic_candidate_count`,
   `unknown_candidate_count`, and `scored_candidate_count`, with separately
@@ -146,3 +159,7 @@ See:
 - [`research-release-plan.md`](research-release-plan.md)
 - [`benchmark-methodology.md`](benchmark-methodology.md)
 - [`adr/0039-benchmark-informed-capability-roadmap.md`](adr/0039-benchmark-informed-capability-roadmap.md)
+
+## Sprint 12 Patch 062 checkpoint
+
+Patch 062 completes the ordinary PHDR-validity and explicit extended-numbering-outcome gates without changing the reference scanner or report schema. Sprint 12 remains active. Its next ordered gate is overlapping executable-segment scan, deduplication, count, and provenance semantics, followed by PIE-versus-DSO identity and bounded GNU-property IBT/SHSTK evidence.

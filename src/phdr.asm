@@ -14,7 +14,8 @@
 ;   executable runtime regions. Section headers remain useful labels later,
 ;   but they are not runtime mapping authority.
 ;
-; Current Sprint 2 export:
+; Public module exports:
+;   x64lens_phdr_validate_loader_contract(base, size, phnum)
 ;   x64lens_phdr_analyze(base, size, summary, regions, max_regions)
 ;
 ; Contract:
@@ -30,12 +31,190 @@ default rel
 %include "structs.inc"
 
 extern x64lens_bounds_range_end_valid
+extern x64lens_bounds_add_u64_checked
 extern x64lens_bounds_table_extent_valid
 extern x64lens_bounds_table_entry_offset
 extern x64lens_regions_store_from_phdr
 
 section .text
+global x64lens_phdr_validate_loader_contract
 global x64lens_phdr_analyze
+
+; x64lens_phdr_validate_loader_contract(base=rdi, file_size=rsi, phnum=rdx)
+;   -> rax=status
+;
+; Validates the ordinary program-header contract shared by ELF identity and
+; command-level PHDR analysis. Extended numbering is resolved or rejected by
+; elf64.asm before this helper is called.
+;
+; Validated facts:
+;   - the complete fixed-stride program-header table is file-backed;
+;   - every p_align is zero, one, or a power of two;
+;   - every PT_LOAD has p_filesz <= p_memsz and a bounded file range;
+;   - every PT_LOAD virtual range has a non-wrapping exclusive end;
+;   - PT_LOAD offset/vaddr congruence holds when p_align > 1; and
+;   - a nonzero ELF entrypoint lies inside an executable PT_LOAD memory range.
+;
+; The entrypoint check uses the half-open loader interval [p_vaddr,
+; p_vaddr+p_memsz). Entry at the exclusive end, in a gap, or in a non-executable
+; load is malformed. An entrypoint of zero remains an explicit no-entry value.
+x64lens_phdr_validate_loader_contract:
+    push    rbx
+    push    r12
+    push    r13
+    push    r14
+    push    r15
+    sub     rsp, 32             ; call alignment and checked-arithmetic scratch
+
+    mov     r15, rdi            ; mapped base
+    mov     r14, rsi            ; file size
+    mov     r13, rdx            ; ordinary program-header count
+    mov     r12, [r15 + E_ENTRY]
+    mov     qword [rsp + 16], 0 ; executable-entrypoint match flag
+
+    test    r13, r13
+    jnz     .loader_table
+    test    r12, r12
+    jnz     .loader_malformed
+    xor     rax, rax
+    jmp     .loader_done
+
+.loader_table:
+    cmp     word [r15 + E_PHENTSIZE], ELF64_PHDR_SIZE
+    jne     .loader_malformed
+    mov     rsi, [r15 + E_PHOFF]
+    test    rsi, rsi
+    jz      .loader_malformed
+    mov     rdi, r14
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    lea     r8, [rsp]
+    call    x64lens_bounds_table_extent_valid
+    cmp     rax, 1
+    jne     .loader_malformed
+
+    xor     rbx, rbx
+.loader_loop:
+    cmp     rbx, r13
+    jae     .loader_entrypoint_result
+
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .loader_malformed
+    mov     rax, [rsp]
+    lea     r10, [r15 + rax]
+
+    ; ELF p_align is either zero/one (no alignment requirement) or a power of
+    ; two. Rejecting the invalid form here keeps later congruence arithmetic
+    ; deterministic and bounded.
+    mov     rax, [r10 + P_ALIGN]
+    cmp     rax, 1
+    jbe     .loader_type
+    mov     rcx, rax
+    dec     rcx
+    test    rax, rcx
+    jnz     .loader_malformed
+
+.loader_type:
+    cmp     dword [r10 + P_TYPE], PT_LOAD
+    jne     .loader_next
+
+    mov     rax, [r10 + P_FILESZ]
+    cmp     rax, [r10 + P_MEMSZ]
+    ja      .loader_malformed
+
+    mov     rdi, r14
+    mov     rsi, [r10 + P_OFFSET]
+    mov     rdx, [r10 + P_FILESZ]
+    lea     rcx, [rsp]
+    call    x64lens_bounds_range_end_valid
+    cmp     rax, 1
+    jne     .loader_malformed
+
+    ; Re-form the entry pointer after calling a helper because R10 is
+    ; caller-saved under the System V ABI.
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .loader_malformed
+    mov     rax, [rsp]
+    lea     r10, [r15 + rax]
+
+    mov     rdi, [r10 + P_VADDR]
+    mov     rsi, [r10 + P_MEMSZ]
+    lea     rdx, [rsp + 8]
+    call    x64lens_bounds_add_u64_checked
+    cmp     rax, 1
+    jne     .loader_malformed
+
+    mov     rdi, r14
+    mov     rsi, [r15 + E_PHOFF]
+    mov     rdx, ELF64_PHDR_SIZE
+    mov     rcx, r13
+    mov     r8, rbx
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .loader_malformed
+    mov     rax, [rsp]
+    lea     r10, [r15 + rax]
+
+    mov     rax, [r10 + P_ALIGN]
+    cmp     rax, 1
+    jbe     .loader_entry_check
+    mov     rcx, rax
+    dec     rcx                ; alignment mask
+    mov     rax, [r10 + P_OFFSET]
+    xor     rax, [r10 + P_VADDR]
+    test    rax, rcx
+    jnz     .loader_malformed
+
+.loader_entry_check:
+    test    r12, r12
+    jz      .loader_next
+    mov     eax, [r10 + P_FLAGS]
+    test    eax, PF_X
+    jz      .loader_next
+    mov     rax, [r10 + P_VADDR]
+    cmp     r12, rax
+    jb      .loader_next
+    cmp     r12, [rsp + 8]
+    jae     .loader_next
+    mov     qword [rsp + 16], 1
+
+.loader_next:
+    inc     rbx
+    jmp     .loader_loop
+
+.loader_entrypoint_result:
+    test    r12, r12
+    jz      .loader_ok
+    cmp     qword [rsp + 16], 1
+    jne     .loader_malformed
+.loader_ok:
+    xor     rax, rax
+    jmp     .loader_done
+.loader_malformed:
+    mov     rax, EXIT_MALFORMED_ELF
+.loader_done:
+    add     rsp, 32
+    pop     r15
+    pop     r14
+    pop     r13
+    pop     r12
+    pop     rbx
+    ret
 
 ; x64lens_phdr_analyze(base=rdi, file_size=rsi, summary=rdx, regions=rcx, max_regions=r8)
 ;
@@ -50,9 +229,10 @@ global x64lens_phdr_analyze
 ;   RAX = stable x64lens status code
 ;
 ; Safety:
-;   The program-header table range is revalidated before iteration. Each
-;   PT_LOAD file range is validated before the segment contributes to region
-;   facts. This duplicate validation is intentional defense-in-depth.
+;   The shared loader contract is revalidated before iteration. Each PT_LOAD
+;   file range is also checked at the point where it contributes to region or
+;   mitigation facts. This duplicate point-of-use validation is intentional
+;   defense-in-depth.
 x64lens_phdr_analyze:
     push    rbp
     push    rbx
@@ -99,24 +279,18 @@ x64lens_phdr_analyze:
 
     movzx   rax, word [r15 + E_PHNUM]
     mov     [r13 + PHDR_SUMMARY_PHNUM], rax
-    test    rax, rax
-    je      .ok                 ; unusual but safely analyzable as no PHDRs
 
-    ; Revalidate the PHDR table before iterating. This duplicates Sprint 1
-    ; ELF validation so this module remains safe when reused by future command
-    ; paths.
-    cmp     word [r15 + E_PHENTSIZE], ELF64_PHDR_SIZE
-    jne     .malformed
-    mov     rsi, [r15 + E_PHOFF]
-    test    rsi, rsi
-    je      .malformed
-    mov     rdi, r14
-    mov     rdx, ELF64_PHDR_SIZE
-    mov     rcx, [r13 + PHDR_SUMMARY_PHNUM]
-    lea     r8, [rsp]
-    call    x64lens_bounds_table_extent_valid
-    cmp     rax, 1
-    jne     .malformed
+    ; Reapply the complete shared loader contract before the zero-PHDR fast
+    ; path. This keeps a future direct caller from accepting a nonzero entrypoint
+    ; merely because the ELF identity gate was skipped.
+    mov     rdi, r15
+    mov     rsi, r14
+    mov     rdx, [r13 + PHDR_SUMMARY_PHNUM]
+    call    x64lens_phdr_validate_loader_contract
+    test    rax, rax
+    jne     .done
+    cmp     qword [r13 + PHDR_SUMMARY_PHNUM], 0
+    je      .ok                 ; zero PHDRs are valid only with a zero entrypoint
 
     xor     rbx, rbx            ; program-header index
 .loop:

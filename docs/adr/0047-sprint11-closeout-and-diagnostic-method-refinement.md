@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted for the Patch 061 implementation candidate.
+Accepted as the Patch 061 Sprint 11 closeout design. A fresh unmodified
+all-tools campaign remains an empirical acceptance requirement.
 
 ## Context
 
@@ -11,10 +12,20 @@ corpus, task-normalized baseline adapters, matched x64lens relations, runtime-
 closure evidence, address-coordinate calibration, a 30-condition campaign
 authority, generated summaries, and an engineering gap register.
 
-The first all-tools rehearsal was useful because it exposed unresolved method
-boundaries:
+The retained cloud checkpoint accounted for 30 planned conditions while
+executing the 12 available x64lens conditions and retaining 18 pinned-baseline
+conditions as unavailable. A later, separately qualified WSL2 replay used the
+exact pinned baselines and, after one narrow evidence-local correction to the
+ROPgadget 7.7 banner authority, executed all 30 conditions and retained 180
+successful process rows plus 24 normalized relations. Two Python task-path
+closures and coordinate calibration failed, so the replay was not
+comparison-qualified and did not replace the fresh unmodified Patch 061
+campaign.
 
-- x64lens single-process timings were below the measured reliable floor;
+The WSL2 replay was useful because it exposed unresolved method boundaries:
+
+- all 12 x64lens single-process conditions were below the measured 6,361,100 ns
+  reliable floor;
 - tool-native record totals represented different populations;
 - the first normalized exact relation supplied no positive coordinate anchor;
 - Python isolated-environment context was lost in the initial closure path;
@@ -62,7 +73,8 @@ Sprint 12 begins with this order:
 2. overlapping executable-region and provenance semantics;
 3. PIE executable versus shared-object identity;
 4. bounded GNU-property IBT and SHSTK evidence;
-5. a corrected held-out diagnostic rerun with positive coordinate anchors;
+5. a corrected held-out diagnostic rerun with positive coordinate anchors and
+   five complete task-path closures;
 6. measurement refinements such as below-floor batching, RSS calibration,
    phase attribution, and bounded reporter buffering.
 
@@ -78,3 +90,5 @@ Neither becomes mandatory from generic count disagreement or unresolved timing.
 - Sprint 11 is a completed diagnostic checkpoint, not a confirmatory campaign.
 - A fresh all-tools campaign under the corrected authority remains an empirical
   acceptance requirement.
+- Every retained Sprint 11 row and artifact remains diagnostic, unfrozen, and
+  publication-ineligible.

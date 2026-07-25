@@ -490,6 +490,38 @@ def _renameat2(parent_fd: int, source_name: str, destination_name: str) -> None:
         raise ArtifactError(f"cannot publish output: {os.strerror(code)}")
 
 
+def _unlinkat_regular(
+    parent_fd: int,
+    name: str,
+    label: str,
+    expected_identity: tuple[int, int],
+) -> None:
+    """Conditionally unlink one transaction-owned regular file.
+
+    The identity comparison is inside the final removal helper. A foreign
+    replacement at the published name is preserved and the operation fails
+    closed. The Linux same-UID race boundary remains explicit because unlinkat
+    itself cannot select an inode independently of a directory entry name.
+    """
+    require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
+    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(
+        stat.S_ISREG(observed.st_mode)
+        and (observed.st_dev, observed.st_ino) == expected_identity,
+        f"{label} changed before final removal",
+    )
+    libc = ctypes.CDLL(None, use_errno=True)
+    unlinkat = getattr(libc, "unlinkat", None)
+    require(unlinkat is not None, "Linux unlinkat is required for authenticated artifact cleanup")
+    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+    unlinkat.restype = ctypes.c_int
+    if unlinkat(parent_fd, os.fsencode(name), 0) != 0:
+        code = ctypes.get_errno()
+        if code == errno.ENOENT:
+            raise FileNotFoundError(code, os.strerror(code), name)
+        raise ArtifactError(f"{label} removal failed: {os.strerror(code)}")
+
+
 def _write_all(fd: int, data: bytes) -> None:
     offset = 0
     while offset < len(data):
@@ -553,14 +585,18 @@ def atomic_publish_bytes(
                 os.close(check_fd)
             require(check_data == data, "published output bytes changed")
         except BaseException:
+            cleanup_failure: BaseException | None = None
             try:
-                current = os.stat(absolute.name, dir_fd=parent_fd, follow_symlinks=False)
-            except OSError:
+                _unlinkat_regular(parent_fd, absolute.name, "published output", temp_identity)
+                os.fsync(parent_fd)
+            except FileNotFoundError:
                 pass
-            else:
-                if (current.st_dev, current.st_ino) == temp_identity:
-                    os.unlink(absolute.name, dir_fd=parent_fd)
-                    os.fsync(parent_fd)
+            except BaseException as exc:
+                cleanup_failure = exc
+            if cleanup_failure is not None:
+                raise ArtifactError(
+                    f"post-commit authentication failed; owned-output cleanup also failed: {cleanup_failure}"
+                ) from cleanup_failure
             raise
         return {
             "path": str(parent / absolute.name),
@@ -579,7 +615,10 @@ def atomic_publish_bytes(
             except OSError:
                 pass
             else:
-                if temp_identity is not None and (metadata.st_dev, metadata.st_ino) == temp_identity:
-                    os.unlink(temporary_name, dir_fd=parent_fd)
-                    os.fsync(parent_fd)
+                if temp_identity is not None:
+                    try:
+                        _unlinkat_regular(parent_fd, temporary_name, "temporary output", temp_identity)
+                        os.fsync(parent_fd)
+                    except (FileNotFoundError, ArtifactError):
+                        pass
         os.close(parent_fd)
