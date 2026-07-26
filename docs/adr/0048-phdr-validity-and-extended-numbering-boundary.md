@@ -16,7 +16,7 @@ Patch 062 introduces one shared ordinary program-header validator used by both E
 
 For every ordinary program-header table, it requires:
 
-- a complete fixed 56-byte table;
+- a complete program-header table with fixed 56-byte entries;
 - `p_align` equal to zero, one, or a power of two;
 - `PT_LOAD.p_filesz <= p_memsz`;
 - a bounded file-backed `PT_LOAD` range;

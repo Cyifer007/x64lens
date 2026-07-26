@@ -93,6 +93,7 @@
 %define EXEC_REGION_FILESZ          16
 %define EXEC_REGION_MEMSZ           24
 %define EXEC_REGION_FLAGS           32
+%define EXEC_REGION_PHDR_INDEX      36
 %define EXEC_REGION_SECTION_NAME_PTR 40
 %define EXEC_REGION_SECTION_NAME_LEN 48
 %define EXEC_REGION_SECTION_INDEX    56
@@ -275,7 +276,11 @@
 %define CANDIDATE_EVIDENCE_FULL_SEQUENCE_STATE  24
 %define CANDIDATE_EVIDENCE_SUFFIX_OFFSET        32
 %define CANDIDATE_EVIDENCE_SUFFIX_LENGTH        40
-%define CANDIDATE_EVIDENCE_RECORD_SIZE          48
+; Sprint 12 Patch 063 maps each retained candidate back to the dense executable
+; region slots whose file and virtual coordinates justify that observation.
+; The mask is internal provenance; it does not redefine public candidate counts.
+%define CANDIDATE_EVIDENCE_REGION_MASK           48
+%define CANDIDATE_EVIDENCE_RECORD_SIZE           56
 
 ; memory_effect_record offsets
 ;

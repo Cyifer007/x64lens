@@ -2,11 +2,11 @@
 
 ## Scope
 
-Patch 062 opens Sprint 12 with ordinary program-header validity, explicit ELF64 extended-numbering outcomes, and the smallest confirmed Patch 061 diagnostic/private transaction corrections. It changes no analyzer command, schema, candidate record, score, capacity, arena, decoder, worker, or runtime dependency.
+Patch 062 opens Sprint 12 with ordinary program-header validity, explicit ELF64 extended-numbering outcomes, and Patch 061 transaction and rollback-destination identity corrections. It changes no CLI syntax or command set, schema, candidate record, score, capacity, arena, decoder, worker, or runtime dependency.
 
 ## Source precondition
 
-Apply only to the exact Patch 061 base identified by the delivery source record. The complete Git patch and public final-file overlay are mutually exclusive tracked-source application paths.
+Patch 062 is defined against Patch 061 closeout commit `1a337b3525e8bdd3cc9007959cd2450185133868`. Verify that repository identity before using this validation record.
 
 ## Focused commands
 

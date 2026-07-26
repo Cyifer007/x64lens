@@ -1646,3 +1646,34 @@ sprint12-phdr-validity-smoke: ok cases=27 executions=108 ordinary_valid=5 ordina
 ```
 
 The harness is compiler-independent and exercises every case through `info`, `mitigations`, `gadgets --format json`, and `analyze --format json`. Failure cases require exact exit class, exact diagnostic, no signal or timeout, and empty stdout.
+
+## Sprint 12 Patch 063 corrective and overlap-provenance validation
+
+Patch 063 adds two focused gates:
+
+```bash
+make patch062-corrective-regression-smoke
+make sprint12-overlap-provenance-smoke
+```
+
+The first verifies runner descriptor lifetime, foreign-object-preserving cleanup
+for runner/corpus/derived artifacts, authenticated corpus output-root continuity,
+clean aggregate corpus provisioning, and preservation of authenticated generated
+file modes across `make normalize-perms`.
+
+The second links the internal mapping materializer directly and verifies five
+representative original PHDR indexes, same-slope dense contributor masks,
+different-slope exclusion, a valid empty analysis, and fail-closed region,
+capacity, and sentinel contradictions. The 64-byte executable-region stride and
+4,096-candidate boundary remain unchanged; the candidate-evidence stride is 56
+bytes.
+
+The PHDR gate now expects:
+
+```text
+sprint12-phdr-validity-smoke: ok cases=33 executions=132 ordinary_valid=5 ordinary_malformed=9 extended_unsupported=3 extended_malformed=16
+```
+
+A diagnostic `strace` command must name a real fixture such as
+`./tests/bin/minimal_nopie`. A literal `/path/to/controlled-fixture` is an
+operator placeholder and correctly produces a file-map failure.

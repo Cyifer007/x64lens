@@ -193,33 +193,86 @@ def _unlinkat_directory(
     label: str,
     expected_identity: tuple[int, int],
 ) -> None:
-    """Conditionally remove one directory entry relative to a held parent.
+    """Move one expected directory to a private quarantine, then remove it.
 
-    Linux does not provide unlink-by-inode. The helper therefore performs the
-    final type/device/inode comparison inside the low-level removal boundary and
-    fails closed when the name was substituted. This preserves a foreign
-    replacement and leaves the displaced owned object available for evidence or
-    operator recovery. Protection against an already-hostile same-UID process
-    racing between this final comparison and ``unlinkat`` remains outside the
-    diagnostic trust model and is stated explicitly in the public contract.
+    The atomic no-replace rename is the compare-and-swap boundary.  A foreign
+    replacement at ``name`` is moved to quarantine, identified as foreign, and
+    restored without being deleted.  Only the expected creation-time inode is
+    removed from a UUID-named quarantine entry.  An already-hostile same-UID
+    process that can discover and race private quarantine names remains outside
+    the diagnostic trust model.
     """
     require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
-    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-    require(
-        stat.S_ISDIR(observed.st_mode)
-        and (observed.st_dev, observed.st_ino) == expected_identity,
-        f"{label} changed before final removal",
-    )
+    quarantine = f".{name}.remove-{uuid.uuid4().hex}"
+    moved = False
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    try:
+        _rename_noreplace_between(parent_fd, name, parent_fd, quarantine, f"{label} quarantine")
+        moved = True
+        observed = os.stat(quarantine, dir_fd=parent_fd, follow_symlinks=False)
+        if not (
+            stat.S_ISDIR(observed.st_mode)
+            and (observed.st_dev, observed.st_ino) == expected_identity
+        ):
+            try:
+                _rename_noreplace_between(
+                    parent_fd,
+                    quarantine,
+                    parent_fd,
+                    name,
+                    f"{label} foreign-object restore",
+                )
+                moved = False
+            except BaseException as restore_error:
+                raise RunnerError(
+                    f"{label} changed before final removal and the foreign object remains quarantined as "
+                    f"{quarantine}: {restore_error}"
+                ) from restore_error
+            raise RunnerError(f"{label} changed before final removal")
+        libc = ctypes.CDLL(None, use_errno=True)
+        unlinkat = getattr(libc, "unlinkat", None)
+        require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
+        unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        unlinkat.restype = ctypes.c_int
+        if unlinkat(parent_fd, os.fsencode(quarantine), AT_REMOVEDIR) != 0:
+            code = ctypes.get_errno()
+            raise RunnerError(f"{label} quarantine removal failed: {os.strerror(code)}")
+        moved = False
+        os.fsync(parent_fd)
+    except FileNotFoundError:
+        raise
+    finally:
+        restore_signal_mask_deferred(previous)
+        if moved:
+            # Preserve an unproven quarantined object rather than deleting it.
+            pass
+
+
+def _rename_noreplace_between(
+    source_fd: int,
+    source_name: str,
+    destination_fd: int,
+    destination_name: str,
+    label: str,
+) -> None:
+    """Atomically move one directory entry without replacing the destination."""
     libc = ctypes.CDLL(None, use_errno=True)
-    unlinkat = getattr(libc, "unlinkat", None)
-    require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
-    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
-    unlinkat.restype = ctypes.c_int
-    if unlinkat(parent_fd, os.fsencode(name), AT_REMOVEDIR) != 0:
+    renameat2 = getattr(libc, "renameat2", None)
+    require(renameat2 is not None, "Linux renameat2 is required for authenticated cleanup")
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    result = renameat2(
+        source_fd,
+        os.fsencode(source_name),
+        destination_fd,
+        os.fsencode(destination_name),
+        RENAME_NOREPLACE,
+    )
+    if result != 0:
         code = ctypes.get_errno()
         if code == errno.ENOENT:
-            raise FileNotFoundError(code, os.strerror(code), name)
-        raise RunnerError(f"{label} removal failed: {os.strerror(code)}")
+            raise FileNotFoundError(code, os.strerror(code), source_name)
+        raise RunnerError(f"{label} failed: {os.strerror(code)}")
 
 
 @dataclass
@@ -1075,8 +1128,8 @@ def authenticate_regular_path_nofollow(path: Path, label: str) -> AuthenticatedR
     return AuthenticatedRegularFile.open(path, label)
 
 
-def ensure_directory_nofollow(path: Path, label: str, mode: int = 0o755) -> Path:
-    """Create missing directory components while rejecting every symlink."""
+def ensure_directory_open_nofollow(path: Path, label: str, mode: int = 0o755) -> tuple[Path, int]:
+    """Create/open a directory tree and retain the authenticated final descriptor."""
     absolute = Path(os.path.abspath(path))
     flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     parts = absolute.parts
@@ -1106,11 +1159,19 @@ def ensure_directory_nofollow(path: Path, label: str, mode: int = 0o755) -> Path
             current_fd = next_fd
             metadata = os.fstat(current_fd)
             require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
-        return Path(f"/proc/self/fd/{current_fd}").resolve(strict=True)
+        return Path(f"/proc/self/fd/{current_fd}").resolve(strict=True), current_fd
     except OSError as exc:
-        raise RunnerError(f"cannot open or create {label}: {exc}") from exc
-    finally:
         os.close(current_fd)
+        raise RunnerError(f"cannot open or create {label}: {exc}") from exc
+
+
+def ensure_directory_nofollow(path: Path, label: str, mode: int = 0o755) -> Path:
+    """Create missing directory components while rejecting every symlink."""
+    resolved, directory_fd = ensure_directory_open_nofollow(path, label, mode)
+    try:
+        return resolved
+    finally:
+        os.close(directory_fd)
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -2642,20 +2703,40 @@ def build_manifest(
 
 def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | None) -> tuple[Path, int]:
     global CREATING_STAGE
-    spec_source = authenticate_regular_path_nofollow(spec_path, "campaign spec")
+    spec_source: AuthenticatedRegularFile | None = None
     runner_source_auth: AuthenticatedRegularFile | None = None
-    spec, spec_raw, spec_source_identity = parse_spec(spec_source, campaign_override)
-    spec_path = spec_source.resolved_path
-    runner_source_auth = authenticate_regular_path_nofollow(
-        Path(__file__).resolve(strict=True),
-        "diagnostic runner source",
-    )
-    runner_source = runner_source_auth.resolved_path
-    runner_source_identity = file_identity_fd(runner_source_auth.fd)
-    output_root = ensure_directory_nofollow(output_root, "campaign output root")
-    final = output_root / spec["campaign_id"]
-    require(not final.exists(), f"campaign result already exists: {final}")
-    stage_name = f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
+    output_root_fd = -1
+    try:
+        spec_source = authenticate_regular_path_nofollow(spec_path, "campaign spec")
+        spec, spec_raw, spec_source_identity = parse_spec(spec_source, campaign_override)
+        spec_path = spec_source.resolved_path
+        runner_source_auth = authenticate_regular_path_nofollow(
+            Path(__file__).resolve(strict=True),
+            "diagnostic runner source",
+        )
+        runner_source = runner_source_auth.resolved_path
+        runner_source_identity = file_identity_fd(runner_source_auth.fd)
+        output_root, output_root_fd = ensure_directory_open_nofollow(
+            output_root,
+            "campaign output root",
+        )
+        output_root_handle = Path(f"/proc/self/fd/{output_root_fd}")
+        try:
+            os.stat(spec["campaign_id"], dir_fd=output_root_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise RunnerError(f"campaign result already exists: {output_root / spec['campaign_id']}")
+        final = output_root / spec["campaign_id"]
+        stage_name = f".{spec['campaign_id']}.staging-{uuid.uuid4().hex}"
+    except BaseException:
+        if output_root_fd >= 0:
+            os.close(output_root_fd)
+        if runner_source_auth is not None:
+            runner_source_auth.close()
+        if spec_source is not None:
+            spec_source.close()
+        raise
     owned_stage: OwnedStage | None = None
     stage_registry: list[OwnedStage] = []
     tools: dict[str, dict[str, Any]] = {}
@@ -2669,13 +2750,14 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
         try:
             previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
             try:
-                owned_stage = OwnedStage.create(output_root, stage_name, stage_registry)
+                owned_stage = OwnedStage.create(output_root_handle, stage_name, stage_registry)
             finally:
                 signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
         finally:
             CREATING_STAGE = False
         if INTERRUPTED_BY is not None:
             raise RunnerInterrupted(f"interrupted by {signal.Signals(INTERRUPTED_BY).name}")
+        final = owned_stage.parent / spec["campaign_id"]
         stage = owned_stage.authoritative_path
         spec_snapshot = stage / "inputs" / "spec" / "campaign.json"
         spec_snapshot.parent.mkdir(parents=True, exist_ok=True)
@@ -2791,7 +2873,10 @@ def run_campaign(spec_path: Path, output_root: Path, campaign_override: str | No
             owned_stage.close()
         if runner_source_auth is not None:
             runner_source_auth.close()
-        spec_source.close()
+        if spec_source is not None:
+            spec_source.close()
+        if output_root_fd >= 0:
+            os.close(output_root_fd)
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

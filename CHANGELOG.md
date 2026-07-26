@@ -8,9 +8,14 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 12 Patch 063 ordinary and extended-numbering parser corrections for zero-count PHDR offsets, canonical section-header entry zero, required-zero extended carriers, and a 33-case/132-execution four-command oracle.
+- Internal executable-overlap provenance: original PHDR indexes remain in the unchanged 64-byte region record, while a dense 64-bit contributor mask is materialized per candidate before downstream effects. Scan, deduplication, public counts, and schema output remain unchanged.
+- Transaction and validation corrections for descriptor lifetime, atomic foreign-object-preserving cleanup, authenticated corpus output-root continuity, clean aggregate corpus provisioning, generated-evidence permission preservation, and corrected private rollback boundaries.
+- ADR 0049, the Patch 063 validation record, `make patch062-corrective-regression-smoke`, and `make sprint12-overlap-provenance-smoke`. Candidate capacity remains 4,096; the fixed evidence record/arena become 56 bytes and 851,968 bytes.
+
 - Sprint 12 Patch 062 shared ordinary program-header validity for fixed table extent, `p_align`, offset/virtual congruence, non-wrapping virtual ranges, and executable-entrypoint containment.
 - Explicit ELF64 `PN_XNUM`, extended section-count, and `SHN_XINDEX` detection with bounded section-header-zero validation, stable unsupported outcomes for structurally valid forms, and malformed rejection for contradictory or unsafe encodings.
-- A 27-fixture, 108-execution PHDR/extended-numbering oracle across all four public command paths, plus Patch 061 transaction/path-continuity regressions for runner, corpus, derived artifacts, and private rollback.
+- A 27-fixture, 108-execution PHDR/extended-numbering oracle across all four public command paths, plus Patch 061 transaction/path-continuity regressions for runner, corpus, derived artifacts, and rollback-destination identity.
 - ADR 0048 and the Patch 062 validation record. Overlap semantics, PIE-versus-DSO identity, and GNU-property IBT/SHSTK evidence remain later Sprint 12 work.
 
 - Sprint 11 Patch 061 closeout with corrected transaction ownership, symlink-ancestor rejection, independent native/comparison/closure/coordinate states, exact ROPgadget 7.7 version authority, isolated Python environment closure, recursive generic-count rejection, complete generator binding, stale-staging-path removal, and corrected below-floor accounting.

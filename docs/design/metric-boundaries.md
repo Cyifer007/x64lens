@@ -323,3 +323,22 @@ profiles remain separate metric strata and must preserve the reference
 profile's `raw_candidate_count`, `exact_pattern_count`,
 `semantic_candidate_count`, `unknown_candidate_count`,
 `scored_candidate_count`, and output hash.
+
+## Sprint 12 Patch 063 overlap-provenance boundary
+
+The internal executable-region contributor mask is provenance, not a count.
+It must not change or be added to:
+
+```text
+raw_candidate_count
+exact_pattern_count
+semantic_candidate_count
+unknown_candidate_count
+scored_candidate_count
+```
+
+Patch 063 deliberately retains the existing one-scan-per-executable-region
+behavior so diagnostic work can compare normalization policies later. Any future
+byte-union, region-count, scan-work, or candidate-deduplication metric requires a
+separate reviewed definition and campaign identity. Original PHDR indexes and
+dense contributor bits must remain visible to that decision.

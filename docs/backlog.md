@@ -146,8 +146,8 @@ later sprints rather than Patch 037:
 
 - [x] `p_align`, congruence, virtual-range, and executable-entrypoint behavior. Patch 062.
 - [x] Explicit ELF extended-numbering detection with structurally validated stable unsupported results. Patch 062.
-- [ ] Overlapping executable-region scan, deduplication, count, and provenance
-  semantics.
+- [x] Original executable-PHDR identity and dense candidate contributor provenance without scan/count changes. Patch 063.
+- [ ] Executable-byte-union normalization, candidate deduplication, and public count semantics after provenance measurement.
 - [ ] PIE executable versus shared-object distinction.
 - [ ] Bounded CET IBT and SHSTK GNU-property evidence.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.

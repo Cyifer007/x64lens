@@ -110,11 +110,11 @@ def main() -> int:
         "report_schema": "0.2.0",
         "pattern_count": 25,
         "gadget_record_bytes": 112,
-        "candidate_evidence_record_bytes": 48,
+        "candidate_evidence_record_bytes": 56,
         "memory_effect_record_bytes": 16,
         "candidate_effect_record_bytes": 24,
         "candidate_capacity": 4096,
-        "analysis_arena_bytes": 819200,
+        "analysis_arena_bytes": 851968,
     }
     if profile != expected_profile:
         fail(f"exact catalog reference profile mismatch: {profile!r}")

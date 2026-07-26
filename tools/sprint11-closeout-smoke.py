@@ -64,7 +64,7 @@ def main() -> int:
             "tool_version": "0.1.0-dev",
             "report_schema": "0.2.0",
             "candidate_capacity": 4096,
-            "analysis_arena_bytes": 819200,
+            "analysis_arena_bytes": 851968,
             "mandatory_decoder": False,
             "mandatory_threads": False,
         }, "reference profile changed")

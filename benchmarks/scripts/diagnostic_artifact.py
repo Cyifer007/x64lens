@@ -496,30 +496,42 @@ def _unlinkat_regular(
     label: str,
     expected_identity: tuple[int, int],
 ) -> None:
-    """Conditionally unlink one transaction-owned regular file.
+    """Atomically quarantine and remove one transaction-owned regular file.
 
-    The identity comparison is inside the final removal helper. A foreign
-    replacement at the published name is preserved and the operation fails
-    closed. The Linux same-UID race boundary remains explicit because unlinkat
-    itself cannot select an inode independently of a directory entry name.
+    Moving the directory entry before inspecting it closes the final
+    stat-by-name/unlink-by-name substitution window.  A foreign object is
+    restored to its original name when possible and is never unlinked by this
+    transaction.  An already-hostile same-UID writer that can race private UUID
+    quarantine names remains outside this development-tool trust boundary.
     """
     require(Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
-    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-    require(
-        stat.S_ISREG(observed.st_mode)
-        and (observed.st_dev, observed.st_ino) == expected_identity,
-        f"{label} changed before final removal",
-    )
-    libc = ctypes.CDLL(None, use_errno=True)
-    unlinkat = getattr(libc, "unlinkat", None)
-    require(unlinkat is not None, "Linux unlinkat is required for authenticated artifact cleanup")
-    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
-    unlinkat.restype = ctypes.c_int
-    if unlinkat(parent_fd, os.fsencode(name), 0) != 0:
-        code = ctypes.get_errno()
-        if code == errno.ENOENT:
-            raise FileNotFoundError(code, os.strerror(code), name)
-        raise ArtifactError(f"{label} removal failed: {os.strerror(code)}")
+    quarantine = f".{name}.remove-{uuid.uuid4().hex}"
+    _renameat2(parent_fd, name, quarantine)
+    try:
+        observed = os.stat(quarantine, dir_fd=parent_fd, follow_symlinks=False)
+        if not (
+            stat.S_ISREG(observed.st_mode)
+            and (observed.st_dev, observed.st_ino) == expected_identity
+        ):
+            try:
+                _renameat2(parent_fd, quarantine, name)
+            except BaseException as restore_error:
+                raise ArtifactError(
+                    f"{label} changed before final removal and the foreign object remains quarantined as "
+                    f"{quarantine}: {restore_error}"
+                ) from restore_error
+            raise ArtifactError(f"{label} changed before final removal")
+        libc = ctypes.CDLL(None, use_errno=True)
+        unlinkat = getattr(libc, "unlinkat", None)
+        require(unlinkat is not None, "Linux unlinkat is required for authenticated artifact cleanup")
+        unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        unlinkat.restype = ctypes.c_int
+        if unlinkat(parent_fd, os.fsencode(quarantine), 0) != 0:
+            code = ctypes.get_errno()
+            raise ArtifactError(f"{label} quarantine removal failed: {os.strerror(code)}")
+        os.fsync(parent_fd)
+    except BaseException:
+        raise
 
 
 def _write_all(fd: int, data: bytes) -> None:

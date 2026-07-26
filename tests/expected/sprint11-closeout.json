@@ -3,13 +3,21 @@
   "sprint": 11,
   "status": "closed",
   "closeout_patch": 61,
-  "completed_patches": [55, 56, 57, 58, 59, 60, 61],
+  "completed_patches": [
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
   "next_sprint": 12,
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
     "candidate_capacity": 4096,
-    "analysis_arena_bytes": 819200,
+    "analysis_arena_bytes": 851968,
     "mandatory_decoder": false,
     "mandatory_threads": false
   },

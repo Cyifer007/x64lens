@@ -39,6 +39,7 @@ extern x64lens_scanner_find_ret_candidates
 extern x64lens_patterns_match_exact
 extern x64lens_classifier_apply_exact
 extern x64lens_candidate_evidence_from_exact
+extern x64lens_candidate_mapping_from_regions
 extern x64lens_memory_effect_from_exact
 extern x64lens_candidate_effect_from_exact
 extern x64lens_scoring_apply
@@ -218,6 +219,18 @@ x64lens_command_analyze_with_format:
     mov     rsi, r15
     mov     rdx, r13
     call    x64lens_candidate_evidence_from_exact
+    test    rax, rax
+    jne     .error
+
+    ; Bind each candidate to the dense executable-region slots whose loader
+    ; coordinates justify the retained file/virtual observation. This adds
+    ; internal overlap provenance without changing discovery or public counts.
+    lea     rdi, [ana_gadget_summary]
+    mov     rsi, r15
+    lea     rdx, [ana_phdr_summary]
+    lea     rcx, [ana_regions]
+    mov     r8, r13
+    call    x64lens_candidate_mapping_from_regions
     test    rax, rax
     jne     .error
 

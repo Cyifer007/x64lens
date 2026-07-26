@@ -459,3 +459,13 @@ their commands, hashes, or condition counts are complete.
 ## Sprint 12 loader-validity rule
 
 Program-header parser changes must route ordinary PHDR validity through one shared policy and add deterministic valid, malformed, boundary, and unsupported fixtures. ELF extended-numbering sentinels must never reach ordinary table iteration. A structurally valid but unimplemented extended form returns the stable unsupported status; an unsafe or contradictory form returns malformed input. Neither path may emit partial stdout.
+
+## Executable-overlap provenance-before-policy rule
+
+A change that merges executable regions, deduplicates overlap observations, or
+redefines region/candidate counts must first retain original PHDR identity and
+candidate contributor provenance. Provenance work may not silently alter raw,
+exact, semantic, unknown, scored, capacity, ordering, or output facts. The
+normalization policy requires controlled same-slope and different-slope
+fixtures, global-capacity behavior, native/Docker parity, and a separately
+identified diagnostic rerun before it can become release-facing behavior.

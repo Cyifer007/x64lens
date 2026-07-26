@@ -24,16 +24,16 @@ Related documentation:
 ```text
 exact pattern IDs:                 25
 gadget_record:                    112 bytes
-candidate_evidence_record:         48 bytes
+candidate_evidence_record:         56 bytes
 memory_effect_record:              16 bytes
 candidate_effect_record:           24 bytes
 candidate capacity:              4096
-fixed command arena:           819200 bytes
+fixed command arena:           851968 bytes
 runtime decoder:                    no
 runtime worker default:             one
 ```
 
-The arena value is fixed allocation arithmetic, not measured max RSS.
+The arena value is fixed allocation arithmetic, not measured max RSS. Patch 063 adds an internal 64-bit loader-contributor mask to each evidence record; it changes no public candidate population or schema field.
 
 ## Catalog populations
 

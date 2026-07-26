@@ -114,6 +114,38 @@ make sprint12-phdr-validity-smoke
 
 This patch does not change the JSON schema, CLI, candidate counts, semantic classes, scores, decoder policy, or one-worker dependency-free reference profile.
 
+See [ADR 0048](docs/adr/0048-phdr-validity-and-extended-numbering-boundary.md) and the [Patch 062 validation record](docs/sprints/sprint-12-patch-062-validation.md).
+
+## Sprint 12 overlap-provenance checkpoint
+
+Patch 063 corrects the remaining Patch 062 parser and transaction findings,
+makes clean aggregate corpus dependencies and permission normalization
+self-consistent, and adds an internal executable-overlap provenance seam. Each
+64-byte executable-region record retains its original program-header index, and
+each candidate-evidence record carries a dense 64-bit mask of loader regions
+whose file and virtual mappings justify that candidate. Same-slope overlaps may
+contribute together; different-slope mappings remain distinct.
+
+The scanner still receives the existing loader-derived region list. Patch 063
+does not merge ranges, deduplicate candidates, change public candidate or region
+counts, change schema `0.2.0`, or add a runtime dependency. Candidate capacity
+remains 4,096. The evidence record grows from 48 to 56 bytes and the fixed
+command arena grows from 819,200 to 851,968 bytes; these are allocation facts,
+not measured RSS. See [ADR 0049](docs/adr/0049-executable-overlap-provenance-seam.md)
+and the [Patch 063 validation record](docs/sprints/sprint-12-patch-063-validation.md).
+
+For a generated corpus whose bytes still authenticate but whose modes were
+changed by an earlier permission-normalization run, use:
+
+```bash
+make provisional-corpus-repair-modes
+make provisional-corpus-verify
+```
+
+`make provisional-corpus-ready` performs this narrow recovery automatically
+after a verify failure, but it still fails closed for byte, membership,
+manifest, timestamp, or semantic drift.
+
 ## Quick start on Ubuntu 24.04
 
 Install the development tools required by the full quick-start validation
@@ -491,10 +523,9 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 061 are later
-pre-release work. Patch 054 closes Sprint 10, and Patch 061 closes Sprint 11,
-without moving a release tag. Sprint 12 is active as the loader and mitigation
-precision sprint.
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 062 are later
+pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, and
+Patch 062 begins Sprint 12 loader-precision work without moving a release tag.
 
 Planned release sequence:
 

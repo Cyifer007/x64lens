@@ -259,3 +259,24 @@ hostile-input coverage before it can emit incomplete state.
 ## Sprint 12 Patch 062 PHDR and extended-numbering safety
 
 Patch 062 extends deterministic hostile-input coverage to loader alignment, congruence, virtual-range overflow, executable-entrypoint containment, and ELF64 extended-numbering carriers. Ordinary PHDR validation uses the shared checked table/range/addition helpers before pointer or range use. Extended counts are never used as ordinary 16-bit values: section-header entry zero is first bounded and required to be `SHT_NULL`, represented counts/indexes are range checked, and structurally valid forms return `EXIT_UNSUPPORTED` before reporting. Malformed or unsupported cases emit no partial stdout across `info`, `mitigations`, `gadgets`, and `analyze`.
+
+## Sprint 12 Patch 063 parser and transaction regressions
+
+Patch 063 expands the PHDR/extended-numbering oracle from 27 to 33 fixtures and
+from 108 to 132 public-command executions. New malformed cases cover:
+
+- zero `e_phnum` with nonzero `e_phoff`;
+- noncanonical ordinary section-header entry zero;
+- noncanonical extended section-zero common fields; and
+- nonzero inactive extended-numbering carrier fields.
+
+The patch also promotes transaction races discovered during independent review
+into durable development regressions. Cleanup must remove only the object whose
+creation-time identity remains owned; a substituted foreign file or directory is
+preserved. Corpus descendant creation remains rooted in an authenticated open
+directory, and repeated invalid runner specifications must not leak file
+descriptors.
+
+Executable overlap provenance remains bounded to 64 dense region slots and the
+existing 4,096 candidate limit. It does not authorize unbounded overlap
+normalization or partial output.

@@ -45,6 +45,7 @@ x64lens CLI
 | `patterns.asm` | Exact opcode-template matching, pattern IDs, and bounded ordered structural facts | File parsing, semantic scoring, or exploitability interpretation |
 | `classifier.asm` | Semantic primitive classification plus controlled, clobbered, stack, and represented side-effect facts | Raw file I/O or score policy |
 | `candidate_evidence.asm` | Dense per-candidate raw/exact-suffix/semantic-exact provenance side-car | Scan bytes, decode instructions, score, or report |
+| `candidate_mapping.asm` | Dense per-candidate loader-region contributor provenance | Parse ELF, select/merge regions, scan, deduplicate, classify, score, or report |
 | `memory_effect.asm` | Dense per-candidate structured memory-access side-car | Parse ELF, scan candidates, decide scores, or format output |
 | `candidate_effect.asm` | Dense per-candidate architectural GPR, flag, control-flow, stack-source, and model-completeness facts | Parse ELF, scan bytes, classify, score, or format output |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
@@ -1319,3 +1320,35 @@ development evidence handling, not analyzer facts or runtime architecture.
 Patch 062 adds `x64lens_phdr_validate_loader_contract` as the shared ordinary program-header gate used by both ELF identity validation and `phdr` analysis. The helper owns fixed-table extent, `p_align`, `PT_LOAD` file/memory relationships, virtual-end overflow, offset/virtual congruence, and nonzero executable-entrypoint containment. It does not derive mitigations, select section-based scan ranges, scan candidates, classify, score, or report.
 
 `elf64.asm` owns extended-numbering detection because the sentinels live in the ELF header. It reads bounded section-header entry zero only to validate the ABI carrier fields, then returns stable unsupported for structurally valid extended numbering. Section headers remain metadata and never become runtime mapping authority.
+
+## Sprint 12 Patch 063 overlap-provenance seam
+
+Patch 063 adds no scan-normalization or reporting policy. It first preserves the
+mapping facts required to make that later decision safely:
+
+```text
+validated executable PT_LOAD records
+  -> executable_region[] with original PHDR index
+  -> existing scanner and candidate order
+  -> candidate evidence materialization
+  -> candidate_mapping.asm contributor reconciliation
+  -> memory and architectural effects
+  -> scoring and reporting
+```
+
+`executable_region` remains 64 bytes. Its original PHDR index occupies prior
+padding and remains separate from the dense executable-region slot used by the
+candidate contributor mask. `candidate_evidence_record` grows from 48 to 56
+bytes by adding one 64-bit internal mask. Candidate capacity remains 4,096 and
+the fixed command arena grows to 851,968 bytes.
+
+The mapping materializer does not parse ELF, select regions, scan bytes,
+classify, score, deduplicate, or report. It validates that each nonempty retained
+candidate has at least one loader-derived contributor whose complete file window
+and terminator virtual address agree. Same-slope overlapping regions may both
+contribute; mappings with another file-to-virtual slope remain distinct. A valid
+empty analysis remains successful.
+
+This seam preserves current public raw, exact, semantic, unknown, and scored
+counts while enabling a later measured decision about byte-union normalization,
+deduplication, contributing-PHDR reporting, and region/count semantics.

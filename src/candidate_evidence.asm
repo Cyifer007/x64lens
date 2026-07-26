@@ -125,6 +125,7 @@ x64lens_candidate_evidence_from_exact:
     mov     qword [rbx + CANDIDATE_EVIDENCE_FULL_SEQUENCE_STATE], EVIDENCE_FULL_SEQUENCE_UNKNOWN
     mov     qword [rbx + CANDIDATE_EVIDENCE_SUFFIX_OFFSET], 0
     mov     qword [rbx + CANDIDATE_EVIDENCE_SUFFIX_LENGTH], 0
+    mov     qword [rbx + CANDIDATE_EVIDENCE_REGION_MASK], 0
 
     mov     eax, [r12 + GADGET_PATTERN_ID]
     test    eax, eax

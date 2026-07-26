@@ -297,3 +297,16 @@ Sprint 15 establishes the campaign authority. Sprint 16 preview and Sprint 17
 publication rows must reference that frozen authority. Candidate-scoped decoder
 or worker-profile evidence remains additive and receives a separate profile
 identity rather than changing the reference report silently.
+
+## Sprint 12 Patch 063 loader-contributor provenance
+
+Patch 063 extends the fixed candidate-evidence side-car with an internal
+`region_contributor_mask`. Bit `N` identifies dense executable-region slot `N`;
+the original program-header index remains in that region record. The mask is
+materialized only after the normal raw/exact/semantic provenance record exists.
+
+This fact answers which loader-derived mappings justify the retained candidate.
+It is not a stronger validity tier, decoder evidence, a semantic class, a score,
+or a new aggregate population. Current `raw_only`, `exact_suffix`, and
+`semantic_exact` meanings and `full_sequence_valid:null` remain unchanged. The
+mask is not emitted in schema `0.2.0` by Patch 063.

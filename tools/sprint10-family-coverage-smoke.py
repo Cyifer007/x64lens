@@ -129,10 +129,10 @@ def main() -> int:
         "report_schema": "0.2.0",
         "candidate_capacity": 4096,
         "gadget_record_bytes": 112,
-        "candidate_evidence_record_bytes": 48,
+        "candidate_evidence_record_bytes": 56,
         "memory_effect_record_bytes": 16,
         "candidate_effect_record_bytes": 24,
-        "analysis_arena_bytes": 819200,
+        "analysis_arena_bytes": 851968,
         "mandatory_decoder": False,
         "mandatory_threads": False,
     }

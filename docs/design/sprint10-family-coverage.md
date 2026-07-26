@@ -17,15 +17,15 @@ tool version:                    0.1.0-dev
 JSON schema:                     0.2.0
 candidate capacity:              4096
 gadget_record:                   112 bytes
-candidate_evidence_record:        48 bytes
+candidate_evidence_record:        56 bytes
 memory_effect_record:             16 bytes
 candidate_effect_record:          24 bytes
-combined analysis arena:      819200 bytes
+combined analysis arena:      851968 bytes
 mandatory runtime decoder:       no
 mandatory runtime threads:       no
 ```
 
-The arena size is a fixed allocation fact, not a measured maximum-RSS result.
+The arena size is a fixed allocation fact, not a measured maximum-RSS result. Patch 063 adds an internal 64-bit loader-contributor mask to each evidence record; it changes no public candidate population or schema field.
 
 ## Implemented-family matrix
 

@@ -143,30 +143,80 @@ def _unlinkat_directory(
     label: str,
     expected_identity: tuple[int, int],
 ) -> None:
-    """Conditionally remove a directory relative to a held parent descriptor.
+    """Atomically quarantine one expected directory before removing it.
 
-    The final device/inode comparison is performed inside the low-level helper.
-    A substituted name fails closed and is preserved. Linux has no unlink-by-
-    inode operation, so an already-hostile same-UID racer remains outside the
-    builder trust model and is not represented as a solved kernel primitive.
+    A foreign replacement at the original name is restored and preserved.
+    Only the creation-time inode is removed from a UUID-named quarantine entry.
+    An already-hostile same-UID process that can discover and race private
+    quarantine names remains outside the builder trust model.
     """
     require(pathlib.Path(name).name == name and name not in {"", ".", ".."}, f"unsafe {label} name")
-    observed = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-    require(
-        stat.S_ISDIR(observed.st_mode)
-        and (observed.st_dev, observed.st_ino) == expected_identity,
-        f"{label} changed before final removal",
-    )
+    quarantine = f".{name}.remove-{uuid.uuid4().hex}"
+    moved = False
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+    try:
+        _rename_noreplace_between(parent_fd, name, parent_fd, quarantine, f"{label} quarantine")
+        moved = True
+        observed = os.stat(quarantine, dir_fd=parent_fd, follow_symlinks=False)
+        if not (
+            stat.S_ISDIR(observed.st_mode)
+            and (observed.st_dev, observed.st_ino) == expected_identity
+        ):
+            try:
+                _rename_noreplace_between(
+                    parent_fd,
+                    quarantine,
+                    parent_fd,
+                    name,
+                    f"{label} foreign-object restore",
+                )
+                moved = False
+            except BaseException as restore_error:
+                raise CorpusError(
+                    f"{label} changed before final removal and the foreign object remains quarantined as "
+                    f"{quarantine}: {restore_error}"
+                ) from restore_error
+            raise CorpusError(f"{label} changed before final removal")
+        libc = ctypes.CDLL(None, use_errno=True)
+        unlinkat = getattr(libc, "unlinkat", None)
+        require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
+        unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        unlinkat.restype = ctypes.c_int
+        if unlinkat(parent_fd, os.fsencode(quarantine), AT_REMOVEDIR) != 0:
+            code = ctypes.get_errno()
+            raise CorpusError(f"{label} quarantine removal failed: {os.strerror(code)}")
+        moved = False
+        os.fsync(parent_fd)
+    finally:
+        restore_signal_mask_deferred(previous)
+        if moved:
+            pass
+
+
+def _rename_noreplace_between(
+    source_fd: int,
+    source_name: str,
+    destination_fd: int,
+    destination_name: str,
+    label: str,
+) -> None:
     libc = ctypes.CDLL(None, use_errno=True)
-    unlinkat = getattr(libc, "unlinkat", None)
-    require(unlinkat is not None, "Linux unlinkat is required for authenticated cleanup")
-    unlinkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
-    unlinkat.restype = ctypes.c_int
-    if unlinkat(parent_fd, os.fsencode(name), AT_REMOVEDIR) != 0:
+    renameat2 = getattr(libc, "renameat2", None)
+    require(renameat2 is not None, "Linux renameat2 is required for authenticated cleanup")
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    result = renameat2(
+        source_fd,
+        os.fsencode(source_name),
+        destination_fd,
+        os.fsencode(destination_name),
+        RENAME_NOREPLACE,
+    )
+    if result != 0:
         code = ctypes.get_errno()
         if code == errno.ENOENT:
-            raise FileNotFoundError(code, os.strerror(code), name)
-        raise CorpusError(f"{label} removal failed: {os.strerror(code)}")
+            raise FileNotFoundError(code, os.strerror(code), source_name)
+        raise CorpusError(f"{label} failed: {os.strerror(code)}")
 
 
 @dataclass
@@ -612,8 +662,17 @@ def authenticate_regular_path_nofollow(path: pathlib.Path, label: str) -> pathli
         os.close(parent_fd)
 
 
-def ensure_directory_nofollow(path: pathlib.Path, label: str, mode: int = 0o755) -> pathlib.Path:
-    """Create missing directory components while rejecting every symlink."""
+def ensure_directory_open_nofollow(
+    path: pathlib.Path,
+    label: str,
+    mode: int = 0o755,
+) -> tuple[pathlib.Path, int]:
+    """Create/open a directory tree and retain its authenticated descriptor.
+
+    Callers that create transaction children must keep the returned descriptor
+    open through publication.  Returning only a resolved pathname would allow a
+    later same-path directory substitution to redirect the transaction.
+    """
     absolute = pathlib.Path(os.path.abspath(path))
     flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     parts = absolute.parts
@@ -643,11 +702,19 @@ def ensure_directory_nofollow(path: pathlib.Path, label: str, mode: int = 0o755)
             current_fd = next_fd
             metadata = os.fstat(current_fd)
             require(stat.S_ISDIR(metadata.st_mode), f"{label} component is not a directory: {component}")
-        return pathlib.Path(f"/proc/self/fd/{current_fd}").resolve(strict=True)
+        return pathlib.Path(f"/proc/self/fd/{current_fd}").resolve(strict=True), current_fd
     except OSError as exc:
-        raise CorpusError(f"cannot open or create {label}: {exc}") from exc
-    finally:
         os.close(current_fd)
+        raise CorpusError(f"cannot open or create {label}: {exc}") from exc
+
+
+def ensure_directory_nofollow(path: pathlib.Path, label: str, mode: int = 0o755) -> pathlib.Path:
+    """Create a no-follow directory tree for callers that do not create children."""
+    resolved, directory_fd = ensure_directory_open_nofollow(path, label, mode)
+    try:
+        return resolved
+    finally:
+        os.close(directory_fd)
 
 
 def write_bytes(path: pathlib.Path, data: bytes, mode: int = TEXT_MODE) -> None:
@@ -1650,9 +1717,17 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
     global _CREATING_STAGE
     spec, spec_raw, source_paths = parse_spec(spec_path, repo_root)
     corpus_id = spec["corpus_id"]
-    output_root = ensure_directory_nofollow(output_root, "corpus output root")
+    output_root_fd = -1
+    output_root, output_root_fd = ensure_directory_open_nofollow(output_root, "corpus output root")
+    output_root_handle = pathlib.Path(f"/proc/self/fd/{output_root_fd}")
+    try:
+        os.stat(corpus_id, dir_fd=output_root_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        pass
+    else:
+        os.close(output_root_fd)
+        raise CorpusError(f"corpus already exists; verify it or remove it explicitly: {output_root / corpus_id}")
     final = output_root / corpus_id
-    require(not final.exists(), f"corpus already exists; verify it or remove it explicitly: {final}")
     stage_name = f".{corpus_id}.staging.{uuid.uuid4().hex}"
     owned_stage: OwnedStage | None = None
     stage_registry: list[OwnedStage] = []
@@ -1674,13 +1749,14 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
         try:
             previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
             try:
-                owned_stage = OwnedStage.create(output_root, stage_name, stage_registry)
+                owned_stage = OwnedStage.create(output_root_handle, stage_name, stage_registry)
             finally:
                 signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
         finally:
             _CREATING_STAGE = False
         if _INTERRUPTED_BY is not None:
             raise CorpusInterrupted(_INTERRUPTED_BY)
+        final = owned_stage.parent / corpus_id
         stage = owned_stage.authoritative_path
         os.chmod(stage, DIRECTORY_MODE)
         for directory in (
@@ -1984,6 +2060,8 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
             owned_stage = stage_registry[-1]
         if owned_stage is not None:
             owned_stage.close()
+        if output_root_fd >= 0:
+            os.close(output_root_fd)
 
 
 def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
@@ -2423,6 +2501,35 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
     return manifest
 
 
+def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
+    """Repair mode-only drift after authenticating the retained corpus bytes.
+
+    This recovery path is intentionally narrow.  It verifies the internal
+    checksum manifest before modifying metadata, rejects symlinks/special or
+    multiply linked members, applies only the corpus contract's fixed modes,
+    and then runs the complete semantic verifier.  Byte, membership, manifest,
+    or timestamp drift still fails closed.
+    """
+    root_fd = open_directory_nofollow(root, "corpus mode-repair root")
+    try:
+        root = pathlib.Path(f"/proc/self/fd/{root_fd}").resolve(strict=True)
+    finally:
+        os.close(root_fd)
+    verify_checksum_manifest(root)
+    files = validate_regular_tree(root)
+    builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
+    for directory in sorted((path for path in root.rglob("*") if path.is_dir())):
+        require(not directory.is_symlink(), f"corpus contains a symlinked directory: {directory.relative_to(root)}")
+        os.chmod(directory, DIRECTORY_MODE, follow_symlinks=False)
+    os.chmod(root, DIRECTORY_MODE, follow_symlinks=False)
+    for path in files:
+        relative = pathlib.PurePosixPath(path.relative_to(root).as_posix())
+        expected_mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
+        os.chmod(path, expected_mode, follow_symlinks=False)
+    manifest = verify_corpus(root)
+    return manifest
+
+
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
     spec, _raw, _paths = parse_spec(spec_path, repo_root)
     output_root = ensure_directory_nofollow(output_root, "corpus output root")
@@ -2452,6 +2559,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     actions.add_argument("--output-root", type=pathlib.Path, help="parent directory for transactional corpus publication")
     actions.add_argument("--verify", type=pathlib.Path, help="verify an existing generated corpus")
     actions.add_argument("--clean-output-root", type=pathlib.Path, help="safely remove the spec-named generated corpus below this root")
+    actions.add_argument("--repair-modes", type=pathlib.Path, help="repair authenticated corpus mode-only drift, then fully verify")
     actions.add_argument("--platform-check", action="store_true", help="validate platform and required tools")
     actions.add_argument("--print-corpus-id", action="store_true", help="print corpus_id from the validated specification")
     return parser.parse_args(argv)
@@ -2468,6 +2576,13 @@ def main(argv: Sequence[str]) -> int:
             f"corpus={manifest['corpus_id']} targets={manifest['target_count']} "
             f"compilers={matrix['toolchains']} optimizations={matrix['optimization_profiles']} "
             f"artifacts={matrix['artifact_profiles']} hardening={matrix['hardening_profiles']}"
+        )
+        return 0
+    if args.repair_modes is not None:
+        manifest = repair_corpus_modes(args.repair_modes)
+        print(
+            "provisional-corpus-repair-modes: ok "
+            f"corpus={manifest['corpus_id']} targets={manifest['target_count']}"
         )
         return 0
     require(args.spec is not None, "--spec is required for build, clean, platform check, or corpus-id output")

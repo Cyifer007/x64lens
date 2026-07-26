@@ -154,6 +154,32 @@ x64lens_elf64_validate:
     cmp     rax, 1
     jne     .malformed
 
+    ; Section-header entry zero is the reserved SHT_NULL record.  In an
+    ; ordinary table none of its extended-numbering carrier fields is active,
+    ; so the entire record must remain the canonical all-zero null entry.
+    mov     rax, [r15 + E_SHOFF]
+    lea     r13, [r15 + rax]
+    cmp     dword [r13 + S_NAME], 0
+    jne     .malformed
+    cmp     dword [r13 + S_TYPE], SHT_NULL
+    jne     .malformed
+    cmp     qword [r13 + S_FLAGS], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ADDR], 0
+    jne     .malformed
+    cmp     qword [r13 + S_OFFSET], 0
+    jne     .malformed
+    cmp     qword [r13 + S_SIZE], 0
+    jne     .malformed
+    cmp     dword [r13 + S_LINK], 0
+    jne     .malformed
+    cmp     dword [r13 + S_INFO], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ADDRALIGN], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ENTSIZE], 0
+    jne     .malformed
+
     movzx   rax, word [r15 + E_SHSTRNDX]
     test    rax, rax
     jz      .ok
@@ -177,8 +203,39 @@ x64lens_elf64_validate:
     cmp     rax, 1
     jne     .malformed
     lea     r13, [r15 + r12]    ; bounded section-header entry zero
+    cmp     dword [r13 + S_NAME], 0
+    jne     .malformed
     cmp     dword [r13 + S_TYPE], SHT_NULL
     jne     .malformed
+    cmp     qword [r13 + S_FLAGS], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ADDR], 0
+    jne     .malformed
+    cmp     qword [r13 + S_OFFSET], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ADDRALIGN], 0
+    jne     .malformed
+    cmp     qword [r13 + S_ENTSIZE], 0
+    jne     .malformed
+
+    ; Only the carrier selected by an active sentinel may be nonzero.  This
+    ; prevents hidden contradictory counts/indexes from surviving underneath a
+    ; different extended-numbering form.
+    test    ebx, 2
+    jnz     .extended_sh0_size_ready
+    cmp     qword [r13 + S_SIZE], 0
+    jne     .malformed
+.extended_sh0_size_ready:
+    test    ebx, 4
+    jnz     .extended_sh0_link_ready
+    cmp     dword [r13 + S_LINK], 0
+    jne     .malformed
+.extended_sh0_link_ready:
+    test    ebx, 1
+    jnz     .extended_sh0_info_ready
+    cmp     dword [r13 + S_INFO], 0
+    jne     .malformed
+.extended_sh0_info_ready:
 
     ; Resolve the actual section count only for structural validation. A normal
     ; e_shnum remains authoritative when section-count extension is inactive.

@@ -74,6 +74,11 @@ x64lens_phdr_validate_loader_contract:
 
     test    r13, r13
     jnz     .loader_table
+    ; A zero program-header count has no table. Requiring e_phoff to be zero
+    ; prevents contradictory dormant-table metadata from being accepted by the
+    ; shared loader contract.
+    cmp     qword [r15 + E_PHOFF], 0
+    jne     .loader_malformed
     test    r12, r12
     jnz     .loader_malformed
     xor     rax, rax
@@ -374,6 +379,7 @@ x64lens_phdr_analyze:
     mov     rdi, r12
     mov     rsi, rax
     mov     rdx, r10
+    mov     rcx, rbx            ; preserve original PHDR table index
     call    x64lens_regions_store_from_phdr
     inc     qword [r13 + PHDR_SUMMARY_EXEC_COUNT]
     jmp     .next

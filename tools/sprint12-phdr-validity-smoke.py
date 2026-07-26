@@ -113,8 +113,32 @@ def pack_phdr(ph: ProgramHeader) -> bytes:
     )
 
 
-def pack_shdr0(*, sh_type: int = SHT_NULL, size: int = 0, link: int = 0, info: int = 0) -> bytes:
-    return struct.pack("<IIQQQQIIQQ", 0, sh_type, 0, 0, 0, size, link, info, 0, 0)
+def pack_shdr0(
+    *,
+    name: int = 0,
+    sh_type: int = SHT_NULL,
+    flags: int = 0,
+    address: int = 0,
+    offset: int = 0,
+    size: int = 0,
+    link: int = 0,
+    info: int = 0,
+    address_align: int = 0,
+    entry_size: int = 0,
+) -> bytes:
+    return struct.pack(
+        "<IIQQQQIIQQ",
+        name,
+        sh_type,
+        flags,
+        address,
+        offset,
+        size,
+        link,
+        info,
+        address_align,
+        entry_size,
+    )
 
 
 def ordinary_elf(
@@ -153,7 +177,14 @@ def ordinary_section_table(*, shnum: int, shstrndx: int) -> bytes:
     data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0()
     return bytes(data)
 
-def extended_phnum(*, actual: int = PN_XNUM, truncate: bool = False, sh_type: int = SHT_NULL) -> bytes:
+def extended_phnum(
+    *,
+    actual: int = PN_XNUM,
+    truncate: bool = False,
+    sh_type: int = SHT_NULL,
+    sh_name: int = 0,
+    inactive_size: int = 0,
+) -> bytes:
     phoff = ELF64_EHDR_SIZE
     phbytes = actual * ELF64_PHDR_SIZE
     shoff = phoff + phbytes
@@ -169,7 +200,12 @@ def extended_phnum(*, actual: int = PN_XNUM, truncate: bool = False, sh_type: in
         shstrndx=0,
     )
     if shoff + ELF64_SHDR_SIZE <= len(data):
-        data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0(sh_type=sh_type, info=actual)
+        data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0(
+            name=sh_name,
+            sh_type=sh_type,
+            size=inactive_size,
+            info=actual,
+        )
     return bytes(data)
 
 
@@ -178,6 +214,7 @@ def extended_shnum(
     actual: int = SHN_LORESERVE,
     shstrndx: int = 0,
     sh_link: int = 0,
+    inactive_info: int = 0,
     truncate: bool = False,
 ) -> bytes:
     shoff = ELF64_EHDR_SIZE
@@ -200,7 +237,11 @@ def extended_shnum(
         shstrndx=shstrndx,
     )
     if shoff + ELF64_SHDR_SIZE <= len(data):
-        data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0(size=actual, link=sh_link)
+        data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0(
+            size=actual,
+            link=sh_link,
+            info=inactive_info,
+        )
     return bytes(data)
 
 
@@ -225,6 +266,28 @@ def cases() -> list[Case]:
         ("entry-without-phdr", [], 0x401000),
     ]
     out.extend(Case(name, ordinary_elf(phs, entry=entry), EXIT_MALFORMED, MALFORMED_DIAGNOSTIC, "ordinary_malformed") for name, phs, entry in malformed)
+
+    zero_phnum_nonzero_phoff = bytearray(pack_ehdr(phoff=ELF64_EHDR_SIZE, phnum=0))
+    ordinary_nonnull_sh0 = bytearray(ordinary_section_table(shnum=1, shstrndx=0))
+    struct.pack_into("<I", ordinary_nonnull_sh0, ELF64_EHDR_SIZE + 4, 1)
+    out.extend(
+        [
+            Case(
+                "zero-phnum-nonzero-phoff",
+                bytes(zero_phnum_nonzero_phoff),
+                EXIT_MALFORMED,
+                MALFORMED_DIAGNOSTIC,
+                "ordinary_malformed",
+            ),
+            Case(
+                "ordinary-section-zero-nonnull",
+                bytes(ordinary_nonnull_sh0),
+                EXIT_MALFORMED,
+                MALFORMED_DIAGNOSTIC,
+                "ordinary_malformed",
+            ),
+        ]
+    )
 
     out.extend(
         [
@@ -260,6 +323,16 @@ def cases() -> list[Case]:
         ("extended-missing-section-zero", bytes(missing_shoff)),
         ("extended-wrong-shentsize", bytes(wrong_shentsize)),
         ("extended-section-zero-nonnull", bad_type),
+        ("extended-phnum-section-zero-name", extended_phnum(sh_name=1)),
+        ("extended-phnum-inactive-size", extended_phnum(inactive_size=1)),
+        (
+            "extended-shnum-inactive-info",
+            extended_shnum(actual=SHN_LORESERVE, inactive_info=1),
+        ),
+        (
+            "extended-shnum-inactive-link",
+            extended_shnum(actual=SHN_LORESERVE, sh_link=1),
+        ),
         ("extended-phnum-below-sentinel", too_small_info),
         ("extended-phnum-truncated", extended_phnum(truncate=True)),
         ("extended-shnum-below-reserve", small_shnum),

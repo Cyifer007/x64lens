@@ -23,8 +23,8 @@ that would otherwise corrupt corpus labels or defensive triage.
 
 - [x] Validate `p_align`, offset/virtual congruence, virtual ranges, and executable-entrypoint states. Patch 062.
 - [x] Detect ELF extended-numbering cases and return a bounded stable unsupported outcome after structural validation. Patch 062.
-- [ ] Define overlapping executable `PT_LOAD` scan, deduplication, count, and
-  provenance semantics.
+- [x] Retain original PHDR identity and dense same-slope candidate-contributor provenance without changing scan/count behavior. Patch 063.
+- [ ] Define executable-byte-union normalization, deduplication, and public count semantics after the Patch 063 provenance seam is measured.
 - [ ] Distinguish PIE executables from `ET_DYN` shared objects through bounded evidence.
 - [ ] Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
 - [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
@@ -34,17 +34,19 @@ that would otherwise corrupt corpus labels or defensive triage.
 ## Patch sequence
 
 1. **Patch 062:** shared ordinary PHDR validity, explicit extended-numbering unsupported/malformed outcomes, and Patch 061 transaction corrections.
-2. **Next:** overlapping executable-region scan, deduplication, count, and provenance semantics.
-3. **Then:** bounded PIE-versus-DSO identity.
-4. **Then:** bounded GNU-property IBT/SHSTK evidence.
-5. **Closeout:** corrected held-out diagnostic confirmation and Sprint 12 reconciliation.
+2. **Patch 063:** Patch 062 corrective hardening plus original-PHDR and dense contributor provenance; scan normalization remains deferred.
+3. **Next:** executable-byte-union normalization, deduplication, and public count semantics.
+4. **Then:** bounded PIE-versus-DSO identity.
+5. **Then:** bounded GNU-property IBT/SHSTK evidence.
+6. **Closeout:** corrected held-out diagnostic confirmation and Sprint 12 reconciliation.
 
 ## Acceptance criteria
 
 - [x] Program headers remain executable authority.
 - [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
 - [ ] PIE, DSO, IBT, and SHSTK facts have controlled positive, negative, contradictory, truncated, and duplicate cases where applicable.
-- [ ] Overlapping segments cannot silently duplicate counts under the chosen policy.
+- [x] Overlap contributors are retained internally without changing current counts. Patch 063.
+- [ ] A later chosen normalization policy prevents silent duplicate scan/count behavior and preserves contributing-PHDR evidence.
 - [ ] Positive role-controlled anchors establish address-coordinate calibration.
 - [ ] All five task paths have complete runtime-closure evidence.
 - [ ] Comparison qualification is withheld unless both calibration and closure

@@ -157,3 +157,11 @@ control-flow integrity, runtime ASLR, safety, or exploitability.
 ## Sprint 12 Patch 062 loader precondition
 
 Mitigation evidence now depends on the shared ordinary program-header validity gate. Invalid alignment, load congruence, virtual-range overflow, or a nonzero entrypoint outside executable `PT_LOAD` memory is malformed input and cannot produce mitigation output. Structurally valid ELF64 extended-numbering input is explicitly unsupported at this boundary rather than being misinterpreted as ordinary PHDR/SHDR counts. Patch 062 adds no PIE-versus-DSO or CET fact; those remain later Sprint 12 evidence paths.
+
+## Sprint 12 Patch 063 overlap-provenance boundary
+
+Patch 063 does not change a mitigation state. It retains original executable
+PHDR identity and per-candidate dense contributor provenance so later overlap
+normalization cannot silently corrupt executable-region counts or mapping
+lineage. PIE-versus-DSO and GNU-property IBT/SHSTK evidence remain separate
+Sprint 12 gates.
