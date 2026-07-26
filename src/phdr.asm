@@ -273,6 +273,13 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], 0
     mov     qword [r13 + PHDR_SUMMARY_STRIPPED_STATE], STRIPPED_STATE_UNKNOWN
+    mov     qword [r13 + PHDR_SUMMARY_INTERP_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_FLAGS1_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_FLAGS1_VALUE], 0
+    mov     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    mov     qword [r13 + PHDR_SUMMARY_SONAME_VALUE], 0
+    mov     qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], 0
+    mov     qword [r13 + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
 
     ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
     ; Shared objects are also ET_DYN, so user-facing wording must remain
@@ -326,6 +333,8 @@ x64lens_phdr_analyze:
     je      .handle_gnu_relro
     cmp     eax, PT_DYNAMIC
     je      .handle_dynamic
+    cmp     eax, PT_INTERP
+    je      .handle_interp
     jmp     .next
 
 .handle_load:
@@ -394,6 +403,39 @@ x64lens_phdr_analyze:
 
 .handle_gnu_relro:
     mov     qword [r13 + PHDR_SUMMARY_RELRO_SEEN], 1
+    jmp     .next
+
+.handle_interp:
+    ; PT_INTERP is bounded role evidence. The path must be a nonempty,
+    ; file-backed, NUL-terminated byte string within the implementation cap.
+    ; More than one carrier is retained as contradictory role evidence rather
+    ; than silently applying first- or last-wins semantics.
+    mov     rax, [r10 + P_FILESZ]
+    test    rax, rax
+    jz      .malformed
+    cmp     rax, [r10 + P_MEMSZ]
+    ja      .malformed
+    cmp     rax, INTERP_PATH_SCAN_MAX
+    ja      .unsupported
+    mov     [rsp + 48], rax
+    mov     rax, [r10 + P_OFFSET]
+    mov     [rsp + 40], rax
+
+    mov     rdi, r14
+    mov     rsi, [rsp + 40]
+    mov     rdx, [rsp + 48]
+    lea     rcx, [rsp]
+    call    x64lens_bounds_range_end_valid
+    cmp     rax, 1
+    jne     .malformed
+
+    mov     rax, [rsp + 40]
+    add     rax, [rsp + 48]
+    jc      .malformed
+    dec     rax
+    cmp     byte [r15 + rax], 0
+    jne     .malformed
+    inc     qword [r13 + PHDR_SUMMARY_INTERP_COUNT]
     jmp     .next
 
 .handle_dynamic:
@@ -479,6 +521,8 @@ x64lens_phdr_analyze:
     je      .dynamic_flags
     cmp     rax, DT_FLAGS_1
     je      .dynamic_flags_1
+    cmp     rax, DT_SONAME
+    je      .dynamic_soname
     jmp     .dynamic_advance
 
 .dynamic_strtab:
@@ -515,9 +559,35 @@ x64lens_phdr_analyze:
 
 .dynamic_flags_1:
     mov     rax, [rdx + D_UN]
+    cmp     qword [r13 + PHDR_SUMMARY_FLAGS1_COUNT], 0
+    je      .dynamic_flags_1_first
+    cmp     [r13 + PHDR_SUMMARY_FLAGS1_VALUE], rax
+    je      .dynamic_flags_1_accumulate
+    or      qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], ROLE_EVIDENCE_CONFLICT_FLAGS1
+.dynamic_flags_1_accumulate:
+    or      [r13 + PHDR_SUMMARY_FLAGS1_VALUE], rax
+    jmp     .dynamic_flags_1_count
+.dynamic_flags_1_first:
+    mov     [r13 + PHDR_SUMMARY_FLAGS1_VALUE], rax
+.dynamic_flags_1_count:
+    inc     qword [r13 + PHDR_SUMMARY_FLAGS1_COUNT]
     test    rax, DF_1_NOW
     jz      .dynamic_advance
     mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
+    jmp     .dynamic_advance
+
+.dynamic_soname:
+    mov     rax, [rdx + D_UN]
+    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    je      .dynamic_soname_first
+    cmp     [r13 + PHDR_SUMMARY_SONAME_VALUE], rax
+    je      .dynamic_soname_count
+    or      qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], ROLE_EVIDENCE_CONFLICT_SONAME
+    jmp     .dynamic_soname_count
+.dynamic_soname_first:
+    mov     [r13 + PHDR_SUMMARY_SONAME_VALUE], rax
+.dynamic_soname_count:
+    inc     qword [r13 + PHDR_SUMMARY_SONAME_COUNT]
     jmp     .dynamic_advance
 
 .dynamic_null:
@@ -539,9 +609,17 @@ x64lens_phdr_analyze:
     ; table reference must resolve to a file-backed PT_LOAD range before it is
     ; searched for an exact "__stack_chk_fail" string.
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRTAB_SEEN], 0
-    je      .ok
+    jne     .dynamic_strtab_present
+    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    jne     .malformed
+    jmp     .ok
+.dynamic_strtab_present:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
-    je      .ok
+    jne     .dynamic_string_table_present
+    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    jne     .malformed
+    jmp     .ok
+.dynamic_string_table_present:
 
     mov     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     cmp     rax, DYNAMIC_STRING_SCAN_MAX
@@ -602,6 +680,33 @@ x64lens_phdr_analyze:
     cmp     rax, 1
     jne     .malformed
 
+    ; DT_SONAME is role evidence only after its string-table index resolves to
+    ; a nonempty NUL-terminated string inside the bounded dynamic string table.
+    ; Raw tag presence alone is insufficient to classify an ET_DYN object.
+    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    je      .canary_string_scan
+    mov     rax, [r13 + PHDR_SUMMARY_SONAME_VALUE]
+    cmp     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
+    jae     .malformed
+    mov     rcx, [rsp + 48]
+    add     rcx, rax
+    jc      .malformed
+    cmp     byte [r15 + rcx], 0
+    je      .malformed
+    mov     rdx, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
+    sub     rdx, rax
+    xor     r8, r8
+.soname_terminator_loop:
+    cmp     r8, rdx
+    jae     .malformed
+    cmp     byte [r15 + rcx + r8], 0
+    je      .soname_validated
+    inc     r8
+    jmp     .soname_terminator_loop
+.soname_validated:
+    or      qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], ROLE_EVIDENCE_DT_SONAME
+
+.canary_string_scan:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], CANARY_SYMBOL_LEN_WITH_NUL
     jb      .ok
 

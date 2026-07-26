@@ -795,3 +795,12 @@ optimization, linkage, or hardening factors. Below-floor single-process rows
 remain excluded from primary timing summaries until a reviewed larger-target or
 whole-batch protocol is executed. Patch 060 evidence is diagnostic and cannot be
 merged into the Sprint 15-frozen campaign.
+
+## Sprint 12 overlap-normalization diagnostic gate
+
+The Patch 063 overlap survey is a capability-decision measurement, not a runtime
+benchmark. It records target counts, executable bytes, overlap incidence,
+repeated same-slope bytes, repeated exact identities, and candidate-capacity
+consequences. Patch 064 defers normalization because neither activation
+threshold was met. The result supports no timing, RSS, or population-wide
+claim, and it is not merged into the Sprint 15-frozen confirmatory campaign.

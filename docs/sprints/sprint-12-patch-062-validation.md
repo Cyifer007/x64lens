@@ -1,5 +1,14 @@
 # Sprint 12 Patch 062 Validation
 
+## Status
+
+Historical record for the exact Patch 062 source. Its 27-fixture/108-execution
+banner applies only to that source boundary. Patch 063 expands the same PHDR
+gate to 33 fixtures and 132 executions; use the
+[Patch 063 validation record](sprint-12-patch-063-validation.md) for the current
+corrective expectations. See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
+for the Patch 062 design boundary.
+
 ## Scope
 
 Patch 062 opens Sprint 12 with ordinary program-header validity, explicit ELF64 extended-numbering outcomes, and Patch 061 transaction and rollback-destination identity corrections. It changes no CLI syntax or command set, schema, candidate record, score, capacity, arena, decoder, worker, or runtime dependency.
@@ -20,7 +29,7 @@ make research-stage-gates-smoke
 make planning-docs-check
 ```
 
-Expected new analyzer oracle:
+Historical Patch 062 analyzer oracle:
 
 ```text
 sprint12-phdr-validity-smoke: ok cases=27 executions=108 ordinary_valid=5 ordinary_malformed=7 extended_unsupported=3 extended_malformed=12

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "decision_id": "s12-p064-overlap-normalization-gate-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "decision": "defer_normalization_preserve_provenance",
+  "scope": {
+    "authenticated_provisional_targets": 24,
+    "unique_inode_system_targets": 3091,
+    "combined_targets": 3115,
+    "combined_executable_targets": 3106,
+    "combined_executable_bytes": 1403074388
+  },
+  "observations": {
+    "overlap_targets": 0,
+    "same_slope_repeated_bytes": 0,
+    "same_slope_repeated_byte_fraction": 0.0,
+    "repeated_exact_identities": 0,
+    "candidate_observations_before_capacity": 7860202,
+    "targets_exceeding_candidate_capacity": 169,
+    "capacity_slots_recovered_by_overlap_normalization": 0,
+    "capacity_outcomes_changed": 0
+  },
+  "activation_thresholds": {
+    "minimum_same_slope_repeated_byte_fraction": 0.05,
+    "minimum_repeated_exact_identities": 41,
+    "minimum_targets_meeting_a_threshold": 2
+  },
+  "reopen_rule": "Reopen only when a newly admitted non-fixture corpus meets either activation threshold on at least two targets.",
+  "retained_architecture": {
+    "loader_authority": "program_headers",
+    "region_provenance": "retained",
+    "candidate_contributor_mask": "retained",
+    "scan_unioning": "not_implemented",
+    "candidate_identity_deduplication": "not_implemented",
+    "candidate_order": "unchanged",
+    "candidate_capacity": 4096
+  },
+  "source_evidence": [
+    {
+      "artifact": "p063-overlap-survey.json",
+      "sha256": "3f901cc61562f7397fe4a6e5e5178bef9e50155fc5a0f37162a38961576323ed"
+    },
+    {
+      "artifact": "p063-overlap-survey.tsv",
+      "sha256": "13bea3edffd9070f673148a447ff6141a39c4e27ae66ca753e7779b02ef8e7d8"
+    },
+    {
+      "artifact": "controlled-overlap-results-summary.json",
+      "sha256": "a7f0300c4d5b0758c63af6f7a6e21b4eef7c9f4274992c4d897fbf56bca90e49"
+    }
+  ],
+  "limitations": [
+    "The system sample is one WSL2 snapshot and is not a population-wide estimate.",
+    "The provisional corpus is diagnostic and unfrozen.",
+    "No timing, RSS, Docker, or publication claim follows from this decision.",
+    "Different-slope overlaps remain distinct loader mappings even when file bytes coincide."
+  ]
+}

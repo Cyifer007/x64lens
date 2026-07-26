@@ -8,10 +8,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 063 ordinary and extended-numbering parser corrections for zero-count PHDR offsets, canonical section-header entry zero, required-zero extended carriers, and a 33-case/132-execution four-command oracle.
+- Sprint 12 Patch 064 private binary-role evidence over ELF type, entrypoint, bounded `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME`, with explicit unknown, executable-like, shared-object-like, ambiguous, and contradictory states. The public ET_DYN-derived PIE indicator and schema `0.2.0` remain unchanged.
+- A measured overlap-normalization decision authority: 3,115 diagnostic targets produced zero executable overlaps, repeated same-slope bytes, or repeated exact identities, so Patch 063 provenance is retained while scan unioning and candidate deduplication remain deferred.
+- ADR 0050, the Patch 064 validation record, `make patch063-corrective-regression-smoke`, `make sprint12-overlap-decision-smoke`, and `make sprint12-binary-role-smoke`.
+
 - Internal executable-overlap provenance: original PHDR indexes remain in the unchanged 64-byte region record, while a dense 64-bit contributor mask is materialized per candidate before downstream effects. Scan, deduplication, public counts, and schema output remain unchanged.
-- Transaction and validation corrections for descriptor lifetime, atomic foreign-object-preserving cleanup, authenticated corpus output-root continuity, clean aggregate corpus provisioning, generated-evidence permission preservation, and corrected private rollback boundaries.
-- ADR 0049, the Patch 063 validation record, `make patch062-corrective-regression-smoke`, and `make sprint12-overlap-provenance-smoke`. Candidate capacity remains 4,096; the fixed evidence record/arena become 56 bytes and 851,968 bytes.
+- ADR 0049, the Patch 063 validation record, `make patch062-corrective-regression-smoke`, and `make sprint12-overlap-provenance-smoke`. Candidate capacity remains 4,096; the candidate-evidence record grows to 56 bytes and the fixed command arena grows to 851,968 bytes.
 
 - Sprint 12 Patch 062 shared ordinary program-header validity for fixed table extent, `p_align`, offset/virtual congruence, non-wrapping virtual ranges, and executable-entrypoint containment.
 - Explicit ELF64 `PN_XNUM`, extended section-count, and `SHN_XINDEX` detection with bounded section-header-zero validation, stable unsupported outcomes for structurally valid forms, and malformed rejection for contradictory or unsafe encodings.
@@ -342,6 +344,9 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Sprint 12 Patch 063 ordinary and extended-numbering parser corrections for zero-count PHDR offsets, canonical ordinary section-header entry zero when a table is present, required-zero extended carriers, and a 33-case/132-execution four-command oracle.
+- Patch 063 transaction and validation corrections for descriptor lifetime, atomic foreign-object-preserving cleanup, authenticated corpus output-root continuity, clean aggregate corpus provisioning, and generated-evidence permission preservation.
 
 - Corrected the Patch 055 diagnostic runner's resource-scope wording, explicit publication-eligibility requirement, spawn-window signal cleanup, immutable execution-input handling, and final retained-artifact reconciliation.
 - Excluded root-level patch-application artifacts and Windows alternate-data-stream copies from source tracking, Docker contexts, and ordinary public bundles.

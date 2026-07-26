@@ -165,3 +165,17 @@ PHDR identity and per-candidate dense contributor provenance so later overlap
 normalization cannot silently corrupt executable-region counts or mapping
 lineage. PIE-versus-DSO and GNU-property IBT/SHSTK evidence remain separate
 Sprint 12 gates.
+
+## Sprint 12 Patch 064 private role evidence
+
+Patch 064 does not change the public `PIE indicator`. It adds bounded internal
+facts for ELF type, entrypoint, `PT_INTERP`, `DT_FLAGS_1 & DF_1_PIE`, and
+`DT_SONAME`, then classifies the evidence as unknown, executable-like,
+shared-object-like, ambiguous, or contradictory. `ET_DYN` alone remains unknown
+in this private lattice.
+
+Duplicate or conflicting role carriers are contradictory rather than
+first-wins or last-wins. `PT_INTERP` is capped, file-backed, nonempty, and
+NUL-terminated. Dynamic role tags use the existing bounded `PT_DYNAMIC` view.
+No new public mitigation field is emitted, and GNU-property IBT/SHSTK evidence
+remains a separate Sprint 12 parser gate.

@@ -1573,11 +1573,16 @@ def normalize_tree_metadata(root: pathlib.Path) -> None:
 
 def validate_tree_metadata(root: pathlib.Path) -> None:
     root_metadata = root_directory_metadata(root, "corpus root")
+    expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
     require(stat.S_IMODE(root_metadata.st_mode) == DIRECTORY_MODE, "corpus root mode changed")
     require(root_metadata.st_mtime_ns == 0, "corpus root mtime changed")
     for directory in (path for path in root.rglob("*") if path.is_dir()):
         metadata = directory.lstat()
         require(stat.S_ISDIR(metadata.st_mode), f"corpus directory metadata changed: {directory}")
+        require(
+            (metadata.st_uid, metadata.st_gid) == expected_owner,
+            f"corpus directory ownership changed: {directory.relative_to(root)}",
+        )
         require(stat.S_IMODE(metadata.st_mode) == DIRECTORY_MODE, f"corpus directory mode changed: {directory.relative_to(root)}")
         require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {directory.relative_to(root)}")
 
@@ -1585,13 +1590,22 @@ def validate_tree_metadata(root: pathlib.Path) -> None:
 def validate_regular_tree(root: pathlib.Path) -> list[pathlib.Path]:
     root_metadata = root_directory_metadata(root, "corpus root")
     require(stat.S_ISDIR(root_metadata.st_mode), "corpus root is not a real directory")
+    expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
     files: list[pathlib.Path] = []
     for path in sorted(root.rglob("*")):
         metadata = path.lstat()
         if stat.S_ISDIR(metadata.st_mode):
+            require(
+                (metadata.st_uid, metadata.st_gid) == expected_owner,
+                f"corpus directory ownership changed: {path.relative_to(root)}",
+            )
             continue
         require(stat.S_ISREG(metadata.st_mode), f"corpus contains a non-regular member: {path.relative_to(root)}")
         require(metadata.st_nlink == 1, f"corpus contains a multiply linked file: {path.relative_to(root)}")
+        require(
+            (metadata.st_uid, metadata.st_gid) == expected_owner,
+            f"corpus file ownership changed: {path.relative_to(root)}",
+        )
         files.append(path)
     return files
 
@@ -2065,11 +2079,18 @@ def build_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: 
 
 
 def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
-    root_fd = open_directory_nofollow(root, "corpus result")
+    """Verify one corpus through a continuously authenticated root descriptor."""
+    absolute = pathlib.Path(os.path.abspath(root))
+    expected_root_name = absolute.name
+    root_fd = open_directory_nofollow(absolute, "corpus result")
     try:
-        root = pathlib.Path(f"/proc/self/fd/{root_fd}").resolve(strict=True)
+        bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
+        return _verify_corpus_bound(bound_root, expected_root_name)
     finally:
         os.close(root_fd)
+
+
+def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str) -> dict[str, Any]:
     verify_checksum_manifest(root)
     validate_tree_metadata(root)
     manifest_path = root / "corpus-manifest.json"
@@ -2086,7 +2107,7 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
     }, "corpus manifest fields do not match schema version 1")
     require(manifest.get("schema_version") == 1, "unsupported corpus manifest schema")
     corpus_id = safe_id(manifest.get("corpus_id"), "manifest.corpus_id")
-    require(root.name == corpus_id, "corpus directory name does not match corpus_id")
+    require(expected_root_name == corpus_id, "corpus directory name does not match corpus_id")
     require(manifest.get("evidence_class") == "diagnostic", "corpus evidence class is not diagnostic")
     require(manifest.get("frozen") is False, "provisional corpus must remain frozen=false")
     require(manifest.get("publication_eligible") is False, "provisional corpus must remain publication_eligible=false")
@@ -2502,32 +2523,35 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
 
 
 def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
-    """Repair mode-only drift after authenticating the retained corpus bytes.
+    """Repair authenticated mode-only drift under one retained root descriptor.
 
-    This recovery path is intentionally narrow.  It verifies the internal
-    checksum manifest before modifying metadata, rejects symlinks/special or
-    multiply linked members, applies only the corpus contract's fixed modes,
-    and then runs the complete semantic verifier.  Byte, membership, manifest,
-    or timestamp drift still fails closed.
+    Bytes, membership, ownership, link count, timestamps, and manifests are
+    authenticated before chmod. The original root pathname may be replaced by
+    another same-UID object without redirecting this repair; all traversal stays
+    rooted at the retained descriptor.
     """
-    root_fd = open_directory_nofollow(root, "corpus mode-repair root")
+    absolute = pathlib.Path(os.path.abspath(root))
+    expected_root_name = absolute.name
+    root_fd = open_directory_nofollow(absolute, "corpus mode-repair root")
     try:
-        root = pathlib.Path(f"/proc/self/fd/{root_fd}").resolve(strict=True)
+        bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
+        verify_checksum_manifest(bound_root)
+        files = validate_regular_tree(bound_root)
+        builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
+        for directory in sorted((path for path in bound_root.rglob("*") if path.is_dir())):
+            require(
+                not directory.is_symlink(),
+                f"corpus contains a symlinked directory: {directory.relative_to(bound_root)}",
+            )
+            os.chmod(directory, DIRECTORY_MODE, follow_symlinks=False)
+        os.fchmod(root_fd, DIRECTORY_MODE)
+        for path in files:
+            relative = pathlib.PurePosixPath(path.relative_to(bound_root).as_posix())
+            expected_mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
+            os.chmod(path, expected_mode, follow_symlinks=False)
+        return _verify_corpus_bound(bound_root, expected_root_name)
     finally:
         os.close(root_fd)
-    verify_checksum_manifest(root)
-    files = validate_regular_tree(root)
-    builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
-    for directory in sorted((path for path in root.rglob("*") if path.is_dir())):
-        require(not directory.is_symlink(), f"corpus contains a symlinked directory: {directory.relative_to(root)}")
-        os.chmod(directory, DIRECTORY_MODE, follow_symlinks=False)
-    os.chmod(root, DIRECTORY_MODE, follow_symlinks=False)
-    for path in files:
-        relative = pathlib.PurePosixPath(path.relative_to(root).as_posix())
-        expected_mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
-        os.chmod(path, expected_mode, follow_symlinks=False)
-    manifest = verify_corpus(root)
-    return manifest
 
 
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:

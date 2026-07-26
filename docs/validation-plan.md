@@ -1677,3 +1677,31 @@ sprint12-phdr-validity-smoke: ok cases=33 executions=132 ordinary_valid=5 ordina
 A diagnostic `strace` command must name a real fixture such as
 `./tests/bin/minimal_nopie`. A literal `/path/to/controlled-fixture` is an
 operator placeholder and correctly produces a file-map failure.
+
+## Sprint 12 Patch 064 corrective, overlap-decision, and role validation
+
+Run:
+
+```bash
+make patch063-corrective-regression-smoke
+make sprint12-phdr-validity-smoke
+make sprint12-overlap-provenance-smoke
+make sprint12-overlap-decision-smoke
+make sprint12-binary-role-smoke
+MALFORMED_TIMEOUT=2 make section-label-smoke
+```
+
+Expected:
+
+```text
+patch063-corrective-regression-smoke: ok mode_root_continuity=1 owner_drift=1 section_zero=1
+sprint12-phdr-validity-smoke: ok cases=49 executions=196 ordinary_valid=5 ordinary_malformed=18 extended_unsupported=4 extended_malformed=22
+sprint12-overlap-provenance-smoke: ok phdr_indexes=5 dense_masks=1 empty=1 rejected=9 region_stride=64 evidence_stride=56
+sprint12-overlap-decision-smoke: ok targets=3115 executable=3106 overlaps=0 repeated_bytes=0 repeated_identities=0 normalization=deferred provenance=retained
+sprint12-binary-role-smoke: ok cases=17 states=5 malformed=4 unsupported=1 summary_bytes=200 public_output=unchanged
+```
+
+The binary-role harness validates bounded raw evidence and all five private
+states. It is not a public report oracle. The unchanged public JSON paths remain
+covered by schema, focused, integrated, native/container parity, and full
+aggregate validation.

@@ -17,6 +17,7 @@ x64lens CLI
   -> pattern matcher and ordered structural facts
   -> semantic primitive classifier and explicit effects
   -> candidate evidence side-car materializer
+  -> loader-region contributor reconciliation
   -> memory-effect side-car materializer
   -> architectural-effect side-car materializer
   -> scoring engine
@@ -37,7 +38,8 @@ x64lens CLI
 | `arena.asm` | Command-lifetime mmap-backed allocation for analysis records | Interpret binary format or emit reports |
 | `bounds.asm` | Offset, size, and overflow checks | Print user reports |
 | `elf64.asm` | ELF64 header validation and metadata | Scan gadgets |
-| `phdr.asm` | Program header parsing | Section label formatting |
+| `phdr.asm` | Program header parsing and bounded raw loader/dynamic role facts | Section label formatting or public role policy |
+| `binary_role.asm` | Private fact-first executable/shared-object role lattice | Parse tables, change public PIE output, scan, classify gadgets, score, or report |
 | `shdr.asm` | Section header metadata, stripped indicator, and section-label annotations | Runtime mapping authority |
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
@@ -1352,3 +1354,41 @@ empty analysis remains successful.
 This seam preserves current public raw, exact, semantic, unknown, and scored
 counts while enabling a later measured decision about byte-union normalization,
 deduplication, contributing-PHDR reporting, and region/count semantics.
+
+## Sprint 12 Patch 064 fact-first binary-role seam
+
+Patch 064 retains Patch 063 executable-region and contributor provenance but
+records the measured decision not to normalize executable overlap in the
+current diagnostic sample. No scan range is unioned and no candidate identity,
+order, count, or capacity outcome changes.
+
+`phdr.asm` now acquires bounded internal role evidence:
+
+```text
+ELF type and entrypoint
+PT_INTERP count
+DT_FLAGS_1 count and combined value
+DT_SONAME count and value
+duplicate and conflicting carrier state
+```
+
+`binary_role.asm` consumes those completed facts and writes one private state:
+
+```text
+unknown
+executable_like
+shared_object_like
+ambiguous
+contradictory
+```
+
+This module is downstream of bounded ELF/PHDR parsing and upstream of later
+policy. It does not parse tables, select executable regions, scan bytes,
+classify gadgets, score candidates, or format reports. `ET_DYN` alone is not a
+resolved role. The existing public PIE indicator remains unchanged until a
+separate output and schema decision.
+
+The `phdr_summary` record grows from 144 to 200 bytes. This fixed 56-byte growth
+is internal command state, not a runtime RSS measurement. The reference binary
+remains freestanding, dependency-free, decoder-free, one-worker, bounded, and
+deterministic.

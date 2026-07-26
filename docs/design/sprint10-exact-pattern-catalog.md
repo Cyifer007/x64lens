@@ -18,6 +18,8 @@ Related documentation:
 - [Scoring Model](../scoring-model.md)
 - [Patch 051 Validation](../sprints/sprint-10-patch-051-validation.md)
 - [Patch 052 Validation](../sprints/sprint-10-patch-052-validation.md)
+- [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md)
+- [Patch 063 Validation](../sprints/sprint-12-patch-063-validation.md)
 
 ## Reference profile
 

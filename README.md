@@ -14,10 +14,11 @@
 > All 12 x64lens conditions in that replay remained below the measured
 > 6,361,100 ns reliable single-process floor. This is unresolved latency, not
 > zero runtime or a speed result. Two Python baseline closures and coordinate
-> calibration failed, so the replay was not comparison-qualified and does not
-> replace the fresh unmodified Patch 061 empirical campaign. Tool-native record
-> totals remain definition-specific, and address-level comparisons remain
-> blocked until positive coordinate anchors exist.
+> calibration failed, so the replay was not comparison-qualified and did not
+> qualify the Patch 061 evidence stratum. Measurements after Patch 063 require
+> a distinct diagnostic campaign identity. Tool-native record totals remain
+> definition-specific, and address-level comparisons remain blocked until
+> positive coordinate anchors exist.
 >
 > Tool version: `0.1.0-dev`
 >
@@ -49,6 +50,7 @@ read-only file mapping
   -> exact suffix pattern IDs and ordered structural facts
   -> conservative semantic classes and explicit effects
   -> candidate-indexed raw, exact-suffix, and semantic-exact evidence
+  -> candidate-indexed loader-region contributor reconciliation
   -> candidate-indexed structured memory effects
   -> candidate-indexed architectural register, flag, control-flow, and stack-source effects
   -> heuristic scores
@@ -118,7 +120,7 @@ See [ADR 0048](docs/adr/0048-phdr-validity-and-extended-numbering-boundary.md) a
 
 ## Sprint 12 overlap-provenance checkpoint
 
-Patch 063 corrects the remaining Patch 062 parser and transaction findings,
+Patch 063 addresses the remaining Patch 062 parser and transaction findings,
 makes clean aggregate corpus dependencies and permission normalization
 self-consistent, and adds an internal executable-overlap provenance seam. Each
 64-byte executable-region record retains its original program-header index, and
@@ -144,7 +146,31 @@ make provisional-corpus-verify
 
 `make provisional-corpus-ready` performs this narrow recovery automatically
 after a verify failure, but it still fails closed for byte, membership,
-manifest, timestamp, or semantic drift.
+ownership, manifest, timestamp, or semantic drift.
+
+## Sprint 12 overlap decision and binary-role checkpoint
+
+Patch 064 retains the Patch 063 contributor-provenance seam but defers overlap
+normalization after a bounded diagnostic survey found no overlapping executable
+targets, repeated same-slope bytes, or repeated exact identities in 3,115
+targets. Scanner ordering, candidate identity, count tiers, and the 4,096-record
+capacity contract remain unchanged.
+
+The patch also adds a private fact-first object-role lattice over ELF type,
+entrypoint, bounded `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME` evidence. Internal
+states distinguish unknown, executable-like, shared-object-like, ambiguous, and
+contradictory evidence. `ET_DYN` alone remains unknown in this lattice. The
+current public PIE indicator, CLI, text output, JSON schema `0.2.0`, semantic
+classes, and scores do not change.
+
+```bash
+make patch063-corrective-regression-smoke
+make sprint12-overlap-decision-smoke
+make sprint12-binary-role-smoke
+```
+
+See [ADR 0050](docs/adr/0050-fact-first-binary-role-lattice.md) and the
+[Patch 064 validation record](docs/sprints/sprint-12-patch-064-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -523,9 +549,10 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 062 are later
-pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, and
-Patch 062 begins Sprint 12 loader-precision work without moving a release tag.
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 063 are later
+pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
+062 begins Sprint 12 loader-precision work, and Patch 063 adds corrective
+hardening plus internal overlap provenance without moving a release tag.
 
 Planned release sequence:
 
@@ -536,6 +563,10 @@ v0.1.0       first research release
 ```
 
 Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
+
+Patches 062 and 063 preserve schema `0.2.0`: Patch 062 adds shared PHDR
+validity, and Patch 063 adds parser/transaction hardening plus internal
+loader-contributor provenance without adding a schema field.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

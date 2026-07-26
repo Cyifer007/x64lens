@@ -163,3 +163,12 @@ See:
 ## Sprint 12 Patch 062 checkpoint
 
 Patch 062 completes the ordinary PHDR-validity and explicit extended-numbering-outcome gates without changing the reference scanner or report schema. Sprint 12 remains active. Its next ordered gate is overlapping executable-segment scan, deduplication, count, and provenance semantics, followed by PIE-versus-DSO identity and bounded GNU-property IBT/SHSTK evidence.
+
+## Sprint 12 Patch 063-064 checkpoint
+
+Patch 063 retains lossless overlap provenance. Patch 064 records the measured
+decision to defer executable-range normalization because the bounded diagnostic
+sample produced no overlap activation, then adds a private fact-first
+PIE-versus-DSO role lattice without changing public output. Sprint 12 remains
+active. The next ordered gates are a release-facing role policy and bounded GNU
+property IBT/SHSTK parsing, followed by held-out diagnostic confirmation.

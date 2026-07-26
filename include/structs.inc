@@ -60,7 +60,40 @@
 %define PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN 120
 %define PHDR_SUMMARY_DYNAMIC_STRSZ  128
 %define PHDR_SUMMARY_STRIPPED_STATE 136
-%define PHDR_SUMMARY_RECORD_SIZE    144
+
+; Sprint 12 internal binary-role evidence. These fields preserve raw loader and
+; dynamic-table facts without changing the public PIE indicator or schema. The
+; binary_role module classifies the bounded evidence after PHDR analysis.
+%define PHDR_SUMMARY_INTERP_COUNT    144
+%define PHDR_SUMMARY_FLAGS1_COUNT    152
+%define PHDR_SUMMARY_FLAGS1_VALUE    160
+%define PHDR_SUMMARY_SONAME_COUNT    168
+%define PHDR_SUMMARY_SONAME_VALUE    176
+%define PHDR_SUMMARY_ROLE_EVIDENCE   184
+%define PHDR_SUMMARY_ROLE_STATE      192
+%define PHDR_SUMMARY_RECORD_SIZE     200
+
+; Internal binary-role lattice. These facts are intentionally not public output
+; yet; ET_DYN alone remains insufficient to distinguish PIE from a shared object.
+%define BINARY_ROLE_UNKNOWN           0
+%define BINARY_ROLE_EXECUTABLE_LIKE   1
+%define BINARY_ROLE_SHARED_OBJECT_LIKE 2
+%define BINARY_ROLE_AMBIGUOUS         3
+%define BINARY_ROLE_CONTRADICTORY     4
+
+; Evidence and contradiction bits retained in PHDR_SUMMARY_ROLE_EVIDENCE.
+%define ROLE_EVIDENCE_ET_EXEC          (1 << 0)
+%define ROLE_EVIDENCE_ET_DYN           (1 << 1)
+%define ROLE_EVIDENCE_ENTRY_NONZERO    (1 << 2)
+%define ROLE_EVIDENCE_PT_INTERP        (1 << 3)
+%define ROLE_EVIDENCE_DF_1_PIE         (1 << 4)
+%define ROLE_EVIDENCE_DT_SONAME        (1 << 5)
+%define ROLE_EVIDENCE_DUP_INTERP       (1 << 6)
+%define ROLE_EVIDENCE_DUP_FLAGS1       (1 << 7)
+%define ROLE_EVIDENCE_DUP_SONAME       (1 << 8)
+%define ROLE_EVIDENCE_CONFLICT_FLAGS1  (1 << 9)
+%define ROLE_EVIDENCE_CONFLICT_SONAME  (1 << 10)
+%define ROLE_EVIDENCE_PARSE_MASK       (ROLE_EVIDENCE_DT_SONAME | ROLE_EVIDENCE_CONFLICT_FLAGS1 | ROLE_EVIDENCE_CONFLICT_SONAME)
 
 ; Canary indicator states. This is an evidence-qualified static indicator,
 ; not proof that every function in the target is stack-protected.
@@ -82,6 +115,7 @@
 %define DYNAMIC_ENTRY_MAX            4096
 %define DYNAMIC_STRING_SCAN_MAX      1048576
 %define CANARY_SYMBOL_LEN_WITH_NUL   17
+%define INTERP_PATH_SCAN_MAX          4096
 
 ; executable_region record offsets
 ;

@@ -26,6 +26,8 @@ mandatory runtime threads:       no
 ```
 
 The arena size is a fixed allocation fact, not a measured maximum-RSS result. Patch 063 adds an internal 64-bit loader-contributor mask to each evidence record; it changes no public candidate population or schema field.
+See [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md) and the
+[Patch 063 validation record](../sprints/sprint-12-patch-063-validation.md).
 
 ## Implemented-family matrix
 

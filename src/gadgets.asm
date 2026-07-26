@@ -27,6 +27,7 @@ extern x64lens_file_map
 extern x64lens_file_unmap
 extern x64lens_elf64_validate
 extern x64lens_phdr_analyze
+extern x64lens_binary_role_classify
 extern x64lens_shdr_classify_stripped
 extern x64lens_shdr_annotate_gadgets
 extern x64lens_scanner_find_ret_candidates
@@ -119,6 +120,14 @@ x64lens_command_gadgets_with_format:
     lea     rcx, [gad_regions]
     mov     r8, EXEC_REGION_MAX
     call    x64lens_phdr_analyze
+    test    rax, rax
+    jne     .error
+
+    ; Classify bounded internal executable/shared-object role evidence. This
+    ; does not alter the public ET_DYN-derived PIE indicator or report schema.
+    mov     rdi, [gad_mapped_file + FILEMAP_ADDR]
+    lea     rsi, [gad_phdr_summary]
+    call    x64lens_binary_role_classify
     test    rax, rax
     jne     .error
 

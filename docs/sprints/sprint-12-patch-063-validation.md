@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Patch 063 closes the confirmed Patch 062 parser, transaction, Make, private
-rollback, and delivery defects, then adds the internal executable-overlap
+Patch 063 addresses the confirmed Patch 062 parser, transaction, and Make
+validation defects, then adds the internal executable-overlap
 provenance seam required before any scan/deduplication policy changes.
 
 ## Source boundary
@@ -14,22 +14,25 @@ Patch 063 is generated against exact Patch 062 commit:
 7c45022bf2857eca12515d1cd5d12ce331319ce5
 ```
 
+Until the gates below pass, this document records required outcomes rather than
+an acceptance result.
+
 The patch changes no public command, exit-code meaning, schema field, semantic
 class, score, decoder profile, worker profile, or candidate limit.
 
 ## Corrective requirements
 
 - zero PHDR count requires both zero entrypoint and zero `e_phoff`;
-- ordinary section-header entry zero is canonical `SHT_NULL`;
+- an ordinary section table, when present, has a canonical all-zero `SHT_NULL`
+  entry zero;
 - extended-numbering section zero rejects noncanonical common fields and
   inactive carriers;
 - invalid runner specifications release all authenticated descriptors;
-- runner, corpus, derived-artifact, and private rollback cleanup cannot remove a
+- runner, corpus, and derived-artifact cleanup cannot remove a
   substituted foreign object;
 - corpus publication retains authenticated output-root descriptor authority;
 - a clean validation aggregate builds a missing standard corpus before use;
 - permission normalization does not mutate authenticated generated evidence;
-- delivery paths, hashes, modes, ledgers, and checksum siblings reconcile.
 
 ## Overlap-provenance requirements
 
@@ -109,7 +112,6 @@ strace -f -e trace=openat,mmap,mprotect,munmap,close,write \
 ## Acceptance boundary
 
 Patch 063 is acceptable only when the new assembly is built and all focused,
-native, Docker, capacity, malformed-input, no-partial-output, parity, private
-package, and delivery-authentication gates pass. Cloud static review and
-artifact-backed older analyzer runs do not validate the new PHDR or overlap
-implementation.
+native, Docker, capacity, malformed-input, no-partial-output, and parity gates
+pass. Static review and analyzer runs from earlier patches do not validate the
+new PHDR or overlap implementation.

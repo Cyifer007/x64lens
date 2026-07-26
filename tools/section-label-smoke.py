@@ -158,7 +158,7 @@ def build_fixture(
     image[code_offset : code_offset + len(code)] = code
     image[shstr_offset : shstr_offset + len(shstr)] = shstr
 
-    shdrs = [pack_shdr()]
+    shdrs = [pack_shdr(addralign=0)]
     shdrs.append(
         pack_shdr(
             name=offsets[b".shstrtab"],

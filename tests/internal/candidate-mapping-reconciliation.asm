@@ -8,7 +8,7 @@
 ;   Prove original PHDR indexes are retained without changing the 64-byte
 ;   executable-region stride, contributor bits use dense region slots, same-
 ;   slope overlaps contribute together, different-slope overlaps do not, and
-;   contradictory count/coordinate/index states fail closed.
+;   contradictory capacity/count/PHDR-index states fail closed.
 ;
 ; This harness is linked only for development validation.
 
@@ -28,7 +28,7 @@ global _start
 %endif
 
 section .rodata
-ok_message: db "sprint12-overlap-provenance-smoke: ok phdr_indexes=5 dense_masks=1 empty=1 rejected=4 region_stride=64 evidence_stride=56", 10
+ok_message: db "sprint12-overlap-provenance-smoke: ok phdr_indexes=5 dense_masks=1 empty=1 rejected=9 region_stride=64 evidence_stride=56", 10
 ok_message_len: equ $ - ok_message
 phdr_indexes: dd 0, 63, 64, 255, 65533
 
@@ -67,15 +67,103 @@ _start:
     jmp     .index_loop
 
 .mapping_setup:
-    ; Empty analysis is valid when no executable region and no candidate exists.
+    ; Empty analysis is valid when the PHDR and executable-region counts are zero.
     call    clear_mapping_state
     call    run_mapping
     test    eax, eax
     jne     .fail
 
+    call    setup_positive_mapping
+    call    run_mapping
+    test    eax, eax
+    jne     .fail
+    cmp     qword [evidence + CANDIDATE_EVIDENCE_REGION_MASK], 3
+    jne     .fail
+
+    ; 1. Different virtual slope only: no justified contributor.
+    mov     qword [gadgets + GADGET_VIRTUAL_ADDRESS], 0x600123
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 2. More than the fixed 64 dense region slots cannot be represented.
+    call    setup_positive_mapping
+    mov     qword [phsummary + PHDR_SUMMARY_EXEC_COUNT], 65
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 3. Candidate count remains globally bounded at 4096.
+    call    setup_positive_mapping
+    mov     qword [summary + GADGET_SUMMARY_COUNT], 4097
+    mov     qword [summary + GADGET_SUMMARY_CAPACITY], 4097
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 4. Capacity itself is a fixed contract even when count is small.
+    call    setup_positive_mapping
+    mov     qword [summary + GADGET_SUMMARY_CAPACITY], 4097
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 5. A retained original index equal to PHNUM is outside the table.
+    call    setup_positive_mapping
+    mov     qword [phsummary + PHDR_SUMMARY_PHNUM], 255
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 6. The largest ordinary count 65534 still permits only indexes <=65533.
+    call    setup_positive_mapping
+    mov     qword [phsummary + PHDR_SUMMARY_PHNUM], 65534
+    mov     dword [regions + (EXEC_REGION_RECORD_SIZE * 2) + EXEC_REGION_PHDR_INDEX], 65534
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 7. Duplicate original indexes make contributor identity ambiguous.
+    call    setup_positive_mapping
+    mov     dword [regions + EXEC_REGION_RECORD_SIZE + EXEC_REGION_PHDR_INDEX], 63
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 8. Retained regions must remain in original PHDR order.
+    call    setup_positive_mapping
+    mov     dword [regions + EXEC_REGION_PHDR_INDEX], 64
+    mov     dword [regions + EXEC_REGION_RECORD_SIZE + EXEC_REGION_PHDR_INDEX], 63
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    ; 9. PN_XNUM is a sentinel, not an ordinary PHDR count.
+    call    setup_positive_mapping
+    mov     qword [phsummary + PHDR_SUMMARY_PHNUM], PN_XNUM
+    call    run_mapping
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
+    mov     eax, 1
+    mov     edi, 1
+    lea     rsi, [ok_message]
+    mov     edx, ok_message_len
+    syscall
+    xor     edi, edi
+    mov     eax, 60
+    syscall
+
+.fail:
+    mov     edi, 1
+    mov     eax, 60
+    syscall
+
+setup_positive_mapping:
     call    clear_mapping_state
     mov     qword [summary + GADGET_SUMMARY_COUNT], 1
     mov     qword [summary + GADGET_SUMMARY_CAPACITY], 1
+    mov     qword [phsummary + PHDR_SUMMARY_PHNUM], 256
     mov     qword [phsummary + PHDR_SUMMARY_EXEC_COUNT], 3
 
     ; Region 0 and region 1 overlap with the same file-to-virtual slope.
@@ -105,55 +193,7 @@ _start:
     mov     qword [gadgets + GADGET_BYTE_LEN], 4
     mov     qword [gadgets + GADGET_FILE_OFFSET], 0x123
     mov     qword [gadgets + GADGET_VIRTUAL_ADDRESS], 0x400123
-
-    call    run_mapping
-    test    eax, eax
-    jne     .fail
-    cmp     qword [evidence + CANDIDATE_EVIDENCE_REGION_MASK], 3
-    jne     .fail
-
-    ; Different virtual slope only: no justified contributor.
-    mov     qword [gadgets + GADGET_VIRTUAL_ADDRESS], 0x600123
-    call    run_mapping
-    cmp     eax, EXIT_BOUNDS
-    jne     .fail
-
-    ; More than the fixed 64 dense region slots cannot be represented.
-    mov     qword [gadgets + GADGET_VIRTUAL_ADDRESS], 0x400123
-    mov     qword [phsummary + PHDR_SUMMARY_EXEC_COUNT], 65
-    call    run_mapping
-    cmp     eax, EXIT_BOUNDS
-    jne     .fail
-
-    ; Candidate count remains globally bounded at 4096.
-    mov     qword [phsummary + PHDR_SUMMARY_EXEC_COUNT], 3
-    mov     qword [summary + GADGET_SUMMARY_COUNT], 4097
-    mov     qword [summary + GADGET_SUMMARY_CAPACITY], 4097
-    call    run_mapping
-    cmp     eax, EXIT_BOUNDS
-    jne     .fail
-
-    ; PN_XNUM is a sentinel, not a valid retained ordinary PHDR index.
-    mov     qword [summary + GADGET_SUMMARY_COUNT], 1
-    mov     qword [summary + GADGET_SUMMARY_CAPACITY], 1
-    mov     dword [regions + EXEC_REGION_PHDR_INDEX], PN_XNUM
-    call    run_mapping
-    cmp     eax, EXIT_BOUNDS
-    jne     .fail
-
-    mov     eax, 1
-    mov     edi, 1
-    lea     rsi, [ok_message]
-    mov     edx, ok_message_len
-    syscall
-    xor     edi, edi
-    mov     eax, 60
-    syscall
-
-.fail:
-    mov     edi, 1
-    mov     eax, 60
-    syscall
+    ret
 
 run_mapping:
     lea     rdi, [summary]

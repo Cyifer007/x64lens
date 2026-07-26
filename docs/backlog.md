@@ -147,8 +147,9 @@ later sprints rather than Patch 037:
 - [x] `p_align`, congruence, virtual-range, and executable-entrypoint behavior. Patch 062.
 - [x] Explicit ELF extended-numbering detection with structurally validated stable unsupported results. Patch 062.
 - [x] Original executable-PHDR identity and dense candidate contributor provenance without scan/count changes. Patch 063.
-- [ ] Executable-byte-union normalization, candidate deduplication, and public count semantics after provenance measurement.
-- [ ] PIE executable versus shared-object distinction.
+- [ ] Measure executable-overlap incidence and redundant scan work, then decide whether executable-byte-union normalization should proceed.
+- [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
+- [ ] PIE executable versus shared-object distinction. Patch 064 completes the private fact lattice; public policy and schema remain pending.
 - [ ] Bounded CET IBT and SHSTK GNU-property evidence.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
 - [ ] Corrected held-out diagnostic confirmation under a new campaign identity,
@@ -611,10 +612,11 @@ Patch 061 campaign. The checkpoint, replay, summaries, and gap register remain
 diagnostic, unfrozen, and publication-ineligible.
 
 Evidence-backed Sprint 12 work proceeds in this order: bounded program-header
-validity and extended-numbering outcomes; executable-overlap/provenance
-semantics; PIE-versus-DSO identity; GNU-property evidence; and corrected
-held-out diagnostic confirmation with positive role-controlled coordinate
-anchors and complete task-path runtime closure for all five task paths.
+validity and extended-numbering outcomes; lossless executable-overlap
+provenance; a measured decision on normalization and count policy;
+PIE-versus-DSO identity; GNU-property evidence; and corrected held-out
+diagnostic confirmation with positive role-controlled coordinate anchors and
+complete task-path runtime closure for all five task paths.
 Exact-only semantic-role decisions follow in Sprint 13. Candidate-scoped
 decoding and concurrency remain deferred Sprint 14 ablations because the
 diagnostic evidence does not justify making either profile mandatory. Patch 061

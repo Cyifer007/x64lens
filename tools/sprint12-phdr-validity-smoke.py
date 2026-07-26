@@ -268,26 +268,41 @@ def cases() -> list[Case]:
     out.extend(Case(name, ordinary_elf(phs, entry=entry), EXIT_MALFORMED, MALFORMED_DIAGNOSTIC, "ordinary_malformed") for name, phs, entry in malformed)
 
     zero_phnum_nonzero_phoff = bytearray(pack_ehdr(phoff=ELF64_EHDR_SIZE, phnum=0))
-    ordinary_nonnull_sh0 = bytearray(ordinary_section_table(shnum=1, shstrndx=0))
-    struct.pack_into("<I", ordinary_nonnull_sh0, ELF64_EHDR_SIZE + 4, 1)
-    out.extend(
-        [
-            Case(
-                "zero-phnum-nonzero-phoff",
-                bytes(zero_phnum_nonzero_phoff),
-                EXIT_MALFORMED,
-                MALFORMED_DIAGNOSTIC,
-                "ordinary_malformed",
-            ),
-            Case(
-                "ordinary-section-zero-nonnull",
-                bytes(ordinary_nonnull_sh0),
-                EXIT_MALFORMED,
-                MALFORMED_DIAGNOSTIC,
-                "ordinary_malformed",
-            ),
-        ]
+    out.append(
+        Case(
+            "zero-phnum-nonzero-phoff",
+            bytes(zero_phnum_nonzero_phoff),
+            EXIT_MALFORMED,
+            MALFORMED_DIAGNOSTIC,
+            "ordinary_malformed",
+        )
     )
+    ordinary_sh0_fields = {
+        "name": 1,
+        "sh_type": 1,
+        "flags": 1,
+        "address": 1,
+        "offset": 1,
+        "size": 1,
+        "link": 1,
+        "info": 1,
+        "address_align": 1,
+        "entry_size": 1,
+    }
+    for field, value in ordinary_sh0_fields.items():
+        shoff = ELF64_EHDR_SIZE
+        data = bytearray(shoff + ELF64_SHDR_SIZE)
+        data[:ELF64_EHDR_SIZE] = pack_ehdr(shoff=shoff, shnum=1, shstrndx=0)
+        data[shoff : shoff + ELF64_SHDR_SIZE] = pack_shdr0(**{field: value})
+        out.append(
+            Case(
+                f"ordinary-sh0-{field.replace('_', '-')}",
+                bytes(data),
+                EXIT_MALFORMED,
+                MALFORMED_DIAGNOSTIC,
+                "ordinary_malformed",
+            )
+        )
 
     out.extend(
         [
@@ -314,6 +329,47 @@ def cases() -> list[Case]:
     shstr_low = extended_shnum(actual=SHN_LORESERVE + 1, shstrndx=SHN_XINDEX, sh_link=1)
     shstr_oob = extended_shnum(actual=SHN_LORESERVE + 1, shstrndx=SHN_XINDEX, sh_link=SHN_LORESERVE + 1)
     huge_shnum = extended_shnum(actual=0xFFFFFFFFFFFFFFFF)
+    extended_common_fields: list[tuple[str, bytes]] = []
+    for field, offset, fmt in (
+        ("flags", 8, "<Q"),
+        ("address", 16, "<Q"),
+        ("offset", 24, "<Q"),
+        ("link", 40, "<I"),
+        ("address-align", 48, "<Q"),
+        ("entry-size", 56, "<Q"),
+    ):
+        data = bytearray(extended_phnum())
+        section_zero = struct.unpack_from("<Q", data, 40)[0]
+        struct.pack_into(fmt, data, section_zero + offset, 1)
+        extended_common_fields.append((f"extended-phnum-sh0-{field}", bytes(data)))
+
+    actual_phnum = PN_XNUM
+    actual_shnum = SHN_LORESERVE + 1
+    combined_phoff = ELF64_EHDR_SIZE
+    combined_shoff = combined_phoff + actual_phnum * ELF64_PHDR_SIZE
+    combined = bytearray(combined_shoff + actual_shnum * ELF64_SHDR_SIZE)
+    combined[:ELF64_EHDR_SIZE] = pack_ehdr(
+        phoff=combined_phoff,
+        phnum=PN_XNUM,
+        shoff=combined_shoff,
+        shnum=0,
+        shstrndx=SHN_XINDEX,
+    )
+    combined[combined_shoff : combined_shoff + ELF64_SHDR_SIZE] = pack_shdr0(
+        size=actual_shnum,
+        link=SHN_LORESERVE,
+        info=actual_phnum,
+    )
+    out.append(
+        Case(
+            "combined-extended-valid",
+            bytes(combined),
+            EXIT_UNSUPPORTED,
+            UNSUPPORTED_DIAGNOSTIC,
+            "extended_unsupported",
+        )
+    )
+
     malformed_ext = [
         ("ordinary-reserved-shnum", ordinary_section_table(shnum=SHN_LORESERVE, shstrndx=0)),
         (
@@ -341,6 +397,7 @@ def cases() -> list[Case]:
         ("extended-shstr-below-reserve", shstr_low),
         ("extended-shstr-out-of-range", shstr_oob),
     ]
+    malformed_ext.extend(extended_common_fields)
     out.extend(Case(name, data, EXIT_MALFORMED, MALFORMED_DIAGNOSTIC, "extended_malformed") for name, data in malformed_ext)
     return out
 

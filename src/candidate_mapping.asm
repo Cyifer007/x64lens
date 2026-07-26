@@ -78,25 +78,57 @@ x64lens_candidate_mapping_from_regions:
     mov     r15, rcx            ; executable_region[]
     mov     rbp, r8             ; candidate_evidence_record[]
 
-    mov     rax, [r12 + GADGET_SUMMARY_COUNT]
-    cmp     rax, [r12 + GADGET_SUMMARY_CAPACITY]
-    ja      .bounds
+    mov     rax, [r12 + GADGET_SUMMARY_CAPACITY]
     cmp     rax, GADGET_RECORD_MAX
     ja      .bounds
+    mov     rcx, [r12 + GADGET_SUMMARY_COUNT]
+    cmp     rcx, rax
+    ja      .bounds
+    cmp     rcx, GADGET_RECORD_MAX
+    ja      .bounds
 
+    mov     rcx, [r14 + PHDR_SUMMARY_PHNUM]
+    cmp     rcx, PN_XNUM
+    jae     .bounds
     mov     rax, [r14 + PHDR_SUMMARY_EXEC_COUNT]
     cmp     rax, EXEC_REGION_MAX
     ja      .bounds
     cmp     rax, 64
     ja      .bounds
+    cmp     rax, rcx
+    ja      .bounds
+
+    ; The executable-region array is retained in original program-header order.
+    ; Every original index must be inside the ordinary PHDR table and strictly
+    ; increasing. This rejects duplicate or reordered mapping identities before
+    ; they can become an ambiguous dense contributor mask.
+    xor     rbx, rbx
+    mov     r11d, 0xffffffff
+.region_index_contract:
+    cmp     rbx, [r14 + PHDR_SUMMARY_EXEC_COUNT]
+    jae     .region_index_contract_done
+    mov     rax, rbx
+    imul    rax, rax, EXEC_REGION_RECORD_SIZE
+    mov     esi, [r15 + rax + EXEC_REGION_PHDR_INDEX]
+    cmp     rsi, rcx
+    jae     .bounds
+    test    rbx, rbx
+    jz      .region_index_first
+    cmp     esi, r11d
+    jbe     .bounds
+.region_index_first:
+    mov     r11d, esi
+    inc     rbx
+    jmp     .region_index_contract
+.region_index_contract_done:
 
     ; A valid ELF may have no executable regions and therefore no candidates.
     ; Preserve that historical complete-empty result. Only a nonzero candidate
     ; set requires at least one loader-derived executable contributor.
     cmp     qword [r12 + GADGET_SUMMARY_COUNT], 0
     je      .ok
-    test    rax, rax
-    jz      .bounds
+    cmp     qword [r14 + PHDR_SUMMARY_EXEC_COUNT], 0
+    je      .bounds
 
     xor     rbx, rbx            ; candidate index
 .candidate_loop:

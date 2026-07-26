@@ -23,7 +23,7 @@ overlap cases. Sprint 12 therefore separates provenance from policy.
 Patch 063 adds an internal-only overlap-provenance seam:
 
 1. Each 64-byte `executable_region` retains the original program-header index
-   in existing padding. The public region stride does not grow.
+   in existing padding. The existing internal region stride does not grow.
 2. Each candidate-evidence record gains one 64-bit dense-region contributor
    mask. Bit `N` names executable-region slot `N`; it does not encode the
    original program-header index.

@@ -465,3 +465,17 @@ changed behavior receives a new diagnostic campaign identity.
 ## Sprint 12 Patch 062 research checkpoint
 
 Patch 062 resolves the first loader-precision tranche: ordinary program-header alignment, congruence, file/virtual ranges, executable-entrypoint containment, and explicit structurally validated unsupported outcomes for ELF64 extended numbering. The next evidence risk is overlapping executable-segment scan/count/provenance semantics, followed by PIE-versus-DSO and GNU-property indicators.
+
+## Sprint 12 Patch 063-064 overlap and role decision
+
+Patch 063 established lossless original-PHDR and candidate contributor
+provenance. The subsequent diagnostic survey found zero executable overlaps,
+repeated same-slope bytes, and repeated exact identities across 3,115 sampled
+targets. Patch 064 therefore defers normalization, preserves current ordering,
+counts, capacity, and output, and records explicit reopening thresholds rather
+than implementing a high-risk semantic change without measured value.
+
+Patch 064 then begins the PIE-versus-DSO gate with a private fact lattice over
+ELF type, entrypoint, `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME`. The public
+ET_DYN indicator remains unchanged. The next Sprint 12 decision is the public
+role policy, followed by independently bounded GNU-property IBT/SHSTK evidence.

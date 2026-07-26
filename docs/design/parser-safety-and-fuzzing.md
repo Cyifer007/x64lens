@@ -280,3 +280,22 @@ descriptors.
 Executable overlap provenance remains bounded to 64 dense region slots and the
 existing 4,096 candidate limit. It does not authorize unbounded overlap
 normalization or partial output.
+
+## Sprint 12 Patch 064 role and corpus-integrity safety
+
+Patch 064 expands the four-command PHDR oracle to 49 fixtures and 196
+executions. Ordinary section-header entry zero is mutated across every fixed
+field. Extended section-zero common and inactive fields are independently
+covered, and a structurally valid combined extended-numbering carrier remains a
+stable unsupported result.
+
+The new `PT_INTERP` reader requires a nonempty bounded file range, a 4,096-byte
+implementation cap, and a terminating NUL inside the checked range. `DT_FLAGS_1`
+and `DT_SONAME` are read only through the existing bounded dynamic-table loop.
+Duplicate and conflicting carriers remain explicit internal contradiction
+facts; they are never silently merged into a public PIE claim.
+
+Generated corpus verification now treats UID/GID consistency as authenticated
+metadata. Mode-only repair keeps the root descriptor open through checksum
+verification, traversal, chmod, and complete semantic reverification, so a
+replacement at the caller-visible pathname is not modified.

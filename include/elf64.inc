@@ -140,11 +140,13 @@
 %define DT_SYMTAB           6
 %define DT_STRSZ            10
 %define DT_SYMENT           11
+%define DT_SONAME           14
 %define DT_BIND_NOW         24
 %define DT_FLAGS            30
 %define DT_FLAGS_1          0x6ffffffb
 
 %define DF_BIND_NOW         0x8
 %define DF_1_NOW            0x1
+%define DF_1_PIE            0x08000000
 
 %endif

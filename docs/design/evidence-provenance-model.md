@@ -19,8 +19,10 @@ These layers are additive. A decoded record does not erase the raw candidate or 
 ## Implemented side-car record
 
 Patch 041 implements a dense fixed-size evidence array keyed implicitly by the
-matching `gadget_record[]` index. The index is not duplicated inside the record,
-so array position cannot disagree with a stored key.
+matching `gadget_record[]` index. Patch 063 extends that internal record to 56
+bytes with loader-region contributor provenance. The candidate index is not
+duplicated inside the record, so array position cannot disagree with a stored
+key.
 
 Implemented fields:
 
@@ -32,6 +34,7 @@ candidate_evidence_record:
   full_sequence_state
   matched_suffix_offset
   matched_suffix_length
+  region_contributor_mask  # internal; not emitted in schema 0.2.0
 ```
 
 The implemented record contains no decoded instruction sequence. Future
@@ -310,3 +313,17 @@ It is not a stronger validity tier, decoder evidence, a semantic class, a score,
 or a new aggregate population. Current `raw_only`, `exact_suffix`, and
 `semantic_exact` meanings and `full_sequence_valid:null` remain unchanged. The
 mask is not emitted in schema `0.2.0` by Patch 063.
+
+## Sprint 12 Patch 064 role evidence and overlap decision
+
+The overlap survey is diagnostic provenance, not a new candidate population.
+Its decision authority preserves the Patch 063 `region_contributor_mask` and
+records that scan unioning and candidate identity deduplication remain
+unimplemented under the measured activation thresholds.
+
+Binary-role evidence is command-level loader metadata in `phdr_summary`, not
+candidate validity evidence. ELF type, entrypoint, `PT_INTERP`, `DF_1_PIE`, and
+`DT_SONAME` facts produce a private unknown/executable-like/shared-like/
+ambiguous/contradictory state. They do not upgrade raw, exact-suffix,
+semantic-exact, decoder, unknown-candidate, or scored evidence and are not
+emitted in schema `0.2.0` by Patch 064.
