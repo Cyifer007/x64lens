@@ -1406,22 +1406,23 @@ deterministic.
 
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
-Patch 065 inserted `gnu_property.asm`; the current Patch 066 candidate corrects its alignment and overlap boundaries while retaining it after
-bounded program-header acquisition and before public reporting. The module
-canonicalizes exact duplicate physical note
-carriers while retaining each original PHDR index/type contributor in a bounded
-command-lifetime context. It parses only checked ELF note and GNU property
-records and materializes private IBT/SHSTK states. It does not alter executable
-regions, candidate discovery, semantics, scores, or reporters.
+Patch 065 inserted `gnu_property.asm`; the current Patch 067 candidate preserves the corrected
+its alignment and overlap boundaries while retaining it after bounded
+program-header acquisition and before public reporting. The module canonicalizes
+exact duplicate physical note carriers while retaining each original PHDR
+index/type contributor in a bounded command-lifetime context. It parses only
+checked ELF note and GNU property records and materializes private IBT/SHSTK
+states. It does not alter executable regions, candidate discovery, semantics,
+scores, or reporters.
 
 The command-lifetime context is 3,160 bytes and the `phdr_summary` is 264 bytes.
 These are fixed allocation facts, not measured RSS. The candidate adds no public
 text or JSON report field, keeps schema `0.2.0`, and requires byte-identical
 public output when controlled inputs differ only in private feature facts.
-Partially overlapping carrier views remain separate and counted; partially
-overlapping recognized GNU-note ranges are malformed rather than merged. Any
-later public-policy decision follows held-out evidence, bounded external
-reconciliation, and native/container parity.
+Only exact-range carrier aliases share a canonical view. Any other physical
+carrier overlap increments the private failure fact and is rejected as malformed
+before property parsing or reporting. Any later public-policy decision follows
+held-out evidence, bounded external reconciliation, and native/container parity.
 
 ### Patch 066 development-only role/property fact probe
 
@@ -1430,3 +1431,10 @@ module. It maps one controlled object read-only, invokes the existing ELF, PHDR,
 GNU-property, and binary-role routines, and emits compact private facts for the
 28-object metamorphic preflight. It must not enter the production link, define
 public report policy, or become loader authority.
+
+Patch 067 binds that test-only C/assembly boundary through
+`role-property-layout-authority.asm`. The assembly object emits a fixed
+magic/version/field-count descriptor from `include/structs.inc`; an independent C
+contract reconciles all consumed offsets and sizes before the probe allocates or
+interprets records. The descriptor object is linked only into development
+harnesses, never into `build/x64lens`.

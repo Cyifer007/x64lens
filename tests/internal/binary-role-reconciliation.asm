@@ -446,7 +446,12 @@ setup_valid_soname_entries:
 
 run_phdr:
     ; SysV AMD64 requires RSP to be 16-byte aligned before a nested call.
+    ; The canary turns removal of both adjustments into a deterministic harness
+    ; failure instead of allowing a source-shape oracle to false-pass.
     sub     rsp, 8
+    call    assert_callee_entry_alignment
+    test    eax, eax
+    jne     .return
     lea     rdi, [image]
     mov     rsi, IMAGE_SIZE
     lea     rdx, [summary]
@@ -454,7 +459,19 @@ run_phdr:
     mov     r8, 4
     lea     r9, [property_context]
     call    x64lens_phdr_analyze
+.return:
     add     rsp, 8
+    ret
+
+assert_callee_entry_alignment:
+    mov     rax, rsp
+    and     eax, 15
+    cmp     eax, 8
+    je      .aligned
+    mov     eax, EXIT_BOUNDS
+    ret
+.aligned:
+    xor     eax, eax
     ret
 
 run_role:

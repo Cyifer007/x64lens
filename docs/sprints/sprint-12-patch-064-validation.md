@@ -2,10 +2,12 @@
 
 ## Status
 
-Historical validation record for the exact Patch 064 source. Patch 064 was
-rejected as delivered; this document preserves its required outcomes rather than
-an acceptance result. The current corrective and GNU-property candidate is
-covered by the [Patch 065 validation plan](sprint-12-patch-065-validation.md).
+Historical validation record for the exact Patch 064 source. Patch 064 did not
+pass validation; this document preserves its required outcomes rather than an
+acceptance result. The current corrective and GNU-property candidate is
+covered by the [Patch 066 validation plan](sprint-12-patch-066-validation.md);
+the [Patch 065 validation record](sprint-12-patch-065-validation.md) preserves
+the intervening historical boundary.
 
 ## Purpose
 
@@ -45,7 +47,7 @@ bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated `DT_SONAME` string
 evidence. A raw SONAME tag or index is insufficient until it resolves to a
 bounded, nonempty, in-range, NUL-terminated string. `ET_DYN` alone remains
 unknown. The current public PIE indicator and schema `0.2.0` remain unchanged.
-The current Patch 066 candidate carries these facts forward with the reviewed
+The current Patch 067 candidate carries these facts forward with the reviewed
 corrections and the separate bounded GNU-property IBT/SHSTK gate.
 
 ## Focused validation
@@ -131,7 +133,7 @@ worker profile:           one-worker reference unchanged
 ## Known limitations
 
 - The internal role state is not a public PIE/DSO conclusion.
-- GNU-property IBT/SHSTK evidence is carried by the current Patch 066 candidate;
+- GNU-property IBT/SHSTK evidence is carried by the current Patch 067 candidate;
   this historical Patch 064 source did not include it.
 - The overlap incidence measurement is one diagnostic corpus plus one system
   snapshot, not a population-wide estimate.

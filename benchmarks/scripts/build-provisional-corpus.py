@@ -2594,6 +2594,119 @@ def read_fd_bytes(fd: int, maximum: int) -> bytes:
     return bytes(data)
 
 
+def open_named_directory_nofollow(path: pathlib.Path, label: str) -> tuple[int, int, str]:
+    """Retain both the parent directory and one no-follow child binding.
+
+    A descriptor for the child directory proves object identity, but it does
+    not prove that the caller-supplied pathname still names that object. Mode
+    repair needs both facts, so the parent descriptor remains open until the
+    transaction completes.
+    """
+
+    absolute = pathlib.Path(os.path.abspath(path))
+    name = absolute.name
+    require(name not in {"", ".", ".."}, f"{label} has an unsafe final component")
+    parent_fd = open_directory_nofollow(absolute.parent, f"{label} parent")
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        child_fd = os.open(name, flags, dir_fd=parent_fd)
+        metadata = os.fstat(child_fd)
+        require(stat.S_ISDIR(metadata.st_mode), f"{label} is not a directory")
+        return parent_fd, child_fd, name
+    except BaseException:
+        os.close(parent_fd)
+        raise
+
+
+def reauthenticate_named_directory(
+    parent_fd: int,
+    name: str,
+    expected: os.stat_result,
+    label: str,
+) -> None:
+    """Require the retained parent/name pair to resolve to the expected inode."""
+
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    current_fd = os.open(name, flags, dir_fd=parent_fd)
+    try:
+        current = os.fstat(current_fd)
+        require(
+            (current.st_dev, current.st_ino) == (expected.st_dev, expected.st_ino),
+            f"{label} pathname was substituted",
+        )
+    finally:
+        os.close(current_fd)
+
+
+def bound_tree_identity(root_fd: int) -> dict[pathlib.PurePosixPath, tuple[bool, int, int]]:
+    """Return an exact descriptor-rooted membership and inode snapshot."""
+
+    result: dict[pathlib.PurePosixPath, tuple[bool, int, int]] = {}
+
+    def walk(directory_fd: int, prefix: pathlib.PurePosixPath) -> None:
+        for name in sorted(os.listdir(directory_fd)):
+            require(name not in {"", ".", ".."} and "/" not in name, "unsafe corpus directory member")
+            metadata = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+            relative = prefix / name if prefix.parts else pathlib.PurePosixPath(name)
+            if stat.S_ISDIR(metadata.st_mode):
+                child_fd = os.open(
+                    name,
+                    os.O_RDONLY
+                    | os.O_DIRECTORY
+                    | getattr(os, "O_CLOEXEC", 0)
+                    | getattr(os, "O_NOFOLLOW", 0),
+                    dir_fd=directory_fd,
+                )
+                try:
+                    opened = os.fstat(child_fd)
+                    require(
+                        (opened.st_dev, opened.st_ino) == (metadata.st_dev, metadata.st_ino),
+                        f"corpus directory changed while enumerating: {relative}",
+                    )
+                    result[relative] = (True, opened.st_dev, opened.st_ino)
+                    walk(child_fd, relative)
+                finally:
+                    os.close(child_fd)
+            elif stat.S_ISREG(metadata.st_mode):
+                child_fd = os.open(
+                    name,
+                    os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                    dir_fd=directory_fd,
+                )
+                try:
+                    opened = os.fstat(child_fd)
+                    require(
+                        (opened.st_dev, opened.st_ino) == (metadata.st_dev, metadata.st_ino),
+                        f"corpus file changed while enumerating: {relative}",
+                    )
+                    result[relative] = (False, opened.st_dev, opened.st_ino)
+                finally:
+                    os.close(child_fd)
+            else:
+                raise CorpusError(f"corpus contains a non-regular member: {relative}")
+
+    walk(root_fd, pathlib.PurePosixPath())
+    return result
+
+
+def reauthenticate_bound_tree(
+    root_fd: int,
+    opened: Sequence[tuple[int, pathlib.PurePosixPath, bool, int, os.stat_result]],
+    label: str,
+) -> None:
+    """Require exact membership, type, and inode identity for a retained tree."""
+
+    expected = {
+        relative: (is_directory, metadata.st_dev, metadata.st_ino)
+        for _fd, relative, is_directory, _mode, metadata in opened
+    }
+    current = bound_tree_identity(root_fd)
+    require(
+        current == expected,
+        f"{label} membership or identity changed",
+    )
+
+
 def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
     """Repair only mode drift after descriptor-bound corpus authentication.
 
@@ -2605,8 +2718,11 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
 
     absolute = pathlib.Path(os.path.abspath(root))
     expected_root_name = absolute.name
-    root_fd = open_directory_nofollow(absolute, "corpus mode-repair root")
+    parent_fd, root_fd, expected_root_name = open_named_directory_nofollow(
+        absolute, "corpus mode-repair root"
+    )
     opened: list[tuple[int, pathlib.PurePosixPath, bool, int, os.stat_result]] = []
+    modes_changed = False
     try:
         bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
         root_metadata = os.fstat(root_fd)
@@ -2649,6 +2765,13 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
         require((root_after.st_dev, root_after.st_ino, root_after.st_uid, root_after.st_gid, root_after.st_mtime_ns)
                 == (root_metadata.st_dev, root_metadata.st_ino, root_metadata.st_uid, root_metadata.st_gid, root_metadata.st_mtime_ns),
                 "corpus root changed before mode repair")
+        reauthenticate_named_directory(
+            parent_fd,
+            expected_root_name,
+            root_metadata,
+            "corpus mode-repair root",
+        )
+        reauthenticate_bound_tree(root_fd, opened, "corpus mode-repair tree")
 
         # Reconcile each retained descriptor with its current pathname and the
         # pre-verification checksum authority before performing any mutation.
@@ -2678,15 +2801,52 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 require(sha256_fd(fd) == expected_digest,
                         f"corpus file bytes changed after authenticated preflight: {relative}")
 
-        os.fchmod(root_fd, DIRECTORY_MODE)
-        for fd, _relative, _directory, mode, _initial in opened:
-            os.fchmod(fd, mode)
+        # The semantic verifier and every per-member reauthentication above can
+        # run for long enough that complete membership and the caller-visible
+        # root binding must be rechecked at the mutation boundary itself.
+        reauthenticate_named_directory(
+            parent_fd,
+            expected_root_name,
+            root_metadata,
+            "corpus mode-repair root",
+        )
+        reauthenticate_bound_tree(root_fd, opened, "corpus mode-repair tree")
 
-        return _verify_corpus_bound(bound_root, expected_root_name)
+        try:
+            os.fchmod(root_fd, DIRECTORY_MODE)
+            modes_changed = True
+            for fd, _relative, _directory, mode, _initial in opened:
+                os.fchmod(fd, mode)
+
+            verified = _verify_corpus_bound(bound_root, expected_root_name)
+            reauthenticate_named_directory(
+                parent_fd,
+                expected_root_name,
+                root_metadata,
+                "corpus mode-repair root",
+            )
+            reauthenticate_bound_tree(root_fd, opened, "corpus mode-repair tree")
+            return verified
+        except BaseException:
+            if modes_changed:
+                # Mode-only repair is transactional for every retained object.
+                # A late membership/path change may cause the final verifier to
+                # reject, but it must not leave authenticated members modified.
+                for fd, _relative, _directory, _mode, initial in reversed(opened):
+                    try:
+                        os.fchmod(fd, stat.S_IMODE(initial.st_mode))
+                    except OSError:
+                        pass
+                try:
+                    os.fchmod(root_fd, stat.S_IMODE(root_metadata.st_mode))
+                except OSError:
+                    pass
+            raise
     finally:
         for fd, _relative, _directory, _mode, _initial in reversed(opened):
             os.close(fd)
         os.close(root_fd)
+        os.close(parent_fd)
 
 
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:

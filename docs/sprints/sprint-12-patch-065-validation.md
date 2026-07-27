@@ -1,24 +1,25 @@
-# Sprint 12 Patch 065 Validation Plan
+# Sprint 12 Patch 065 Validation
 
 ## Status
 
-Historical implementation-candidate validation record. Patch 065 was committed
-locally but independent validation required a corrective patch. Patch 066
-preserves the accepted private-fact architecture and owns the current corrected
-commands, expected banners, and acceptance decision.
+Historical implementation-candidate validation record. Patch 065 did not pass
+independent validation and required a corrective patch. The Patch 066 validation
+plan contains the current corrected commands and expected banners; Patch 066
+remains pending acceptance.
 
 ## Review outcome
 
 Patch 065 did not pass acceptance. Review confirmed descriptor-relative GNU
 property alignment, non-identical carrier-overlap rejection, corpus repair
-identity/byte continuity, private-backup signal safety, binary-role harness ABI
-alignment, and copied-read-only regression-fixture defects. See the
+identity/byte continuity, binary-role harness ABI alignment, copied-read-only
+regression-fixture behavior, and oracle defects. See the
 [Patch 066 validation plan](sprint-12-patch-066-validation.md).
 
 ## Purpose
 
 Validate the Patch 064 corrective work and the bounded private GNU-property
-IBT/SHSTK evidence layer without changing public output or schema `0.2.0`.
+IBT/SHSTK evidence layer without adding public report fields or changing schema
+`0.2.0`.
 
 ## Source contract
 
@@ -145,7 +146,7 @@ Docker are separate environment strata.
 
 GNU-property facts remain private development evidence. They do not prove that
 CET is enabled at runtime, that every indirect branch is protected, or that a
-binary is safe or exploitable. After Patch 066 acceptance, held-out role/property
+binary is safe or exploitable. After Patch 067 acceptance, held-out role/property
 confirmation remains diagnostic, unfrozen, and publication-ineligible. Bounded
 `readelf -n` reconciliation and native/container fact parity must follow before
 a separate review decides whether compatible public `0.2.x` indicators are

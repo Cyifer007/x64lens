@@ -174,14 +174,16 @@ Patch 063 retains lossless overlap provenance. The reviewed Patch 064 source
 records the measured decision to defer executable-range normalization because
 the bounded diagnostic sample produced no overlap activation, then adds an
 internal-only fact-first PIE-versus-DSO role lattice without changing public
-output. Patch 064 was rejected as delivered; its decision and required
-corrections were carried through Patch 065 and are corrected by the current Patch 066 candidate.
+output. Patch 064 did not pass validation; its decision and required corrections
+were carried through Patch 065. The current Patch 067 candidate
+corrects the later Patch 065 findings.
 
 ## Sprint 12 Patch 065-066 checkpoint
 
 Patch 065 added bounded private GNU-property evidence but required correction.
 Patch 066 fixes the parser and custody defects and adds the controlled 28-object
-role/property metamorphic preflight. Public mitigation output and schema `0.2.0`
-remain unchanged. Sprint 12 still requires broader held-out confirmation,
-bounded `readelf -n` reconciliation, and native/container fact parity before a
-separate public-policy review or Sprint 13 handoff.
+role/property metamorphic preflight. Public mitigation fields and schema `0.2.0`
+remain unchanged; malformed non-identical carrier overlap now fails before
+output. Sprint 12 still requires broader held-out confirmation, bounded
+`readelf -n` reconciliation, and native/container fact parity before a separate
+public-policy review or Sprint 13 handoff.

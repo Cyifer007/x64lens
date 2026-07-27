@@ -45,6 +45,30 @@ def copy_corpus(parent: Path) -> Path:
     return destination
 
 
+def validate_role_harness_shape(role_harness: str) -> None:
+    start = role_harness.find("run_phdr:")
+    end = role_harness.find("\nrun_role:", start)
+    require(start >= 0 and end > start, "binary-role harness run_phdr block is missing")
+    block = role_harness[start:end]
+    required_in_order = [
+        "sub     rsp, 8",
+        "call    assert_callee_entry_alignment",
+        "test    eax, eax",
+        "call    x64lens_phdr_analyze",
+        ".return:",
+        "add     rsp, 8",
+        "ret",
+        "assert_callee_entry_alignment:",
+        "cmp     eax, 8",
+        "mov     eax, EXIT_BOUNDS",
+    ]
+    cursor = 0
+    for token in required_in_order:
+        index = block.find(token, cursor)
+        require(index >= 0, f"binary-role harness ABI token is missing: {token}")
+        cursor = index + len(token)
+
+
 def source_shape_probe() -> None:
     gnu = (ROOT / "src/gnu_property.asm").read_text(encoding="utf-8")
     role_harness = (ROOT / "tests/internal/binary-role-reconciliation.asm").read_text(encoding="utf-8")
@@ -58,10 +82,7 @@ def source_shape_probe() -> None:
             "independent GNU-property oracle repeats absolute-offset alignment")
     require("partially overlapping GNU-property carriers" in oracle,
             "independent GNU-property oracle omits partial-overlap rejection")
-    require("run_phdr:\n    ; SysV AMD64 requires" in role_harness and
-            "run_role:\n    sub     rsp, 8" in role_harness and
-            ".return:\n    add     rsp, 8\n    ret" in role_harness,
-            "binary-role harness does not preserve SysV nested-call alignment")
+    validate_role_harness_shape(role_harness)
 
 
 def copied_readonly_oracle_probe() -> None:

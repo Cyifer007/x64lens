@@ -3,14 +3,14 @@
 ## Status
 
 Current implementation-candidate validation plan. Patch 066 is not accepted
-until clean native, Docker, parity, delivery, and independent Lane A validation
-complete against the exact source.
+until clean native, Docker, parity, and independent validation complete against
+the exact source.
 
 ## Purpose
 
-Correct the Patch 065 parser, corpus-repair, test-oracle, ABI, private-backup,
-and evidence-delivery findings, then run the bounded 28-object private
-role/GNU-property metamorphic preflight without changing public output.
+Correct the Patch 065 parser, corpus-repair, test-oracle, and ABI findings, then
+run the bounded 28-object private role/GNU-property metamorphic preflight without
+adding public report fields or changing schema `0.2.0`.
 
 ## Source contract
 
@@ -32,21 +32,15 @@ Expected focused correction:
 patch065-corrective-regression-smoke: ok readonly_fixture=1 descriptor_alignment=1 partial_overlap=1 abi_alignment=1 directory_identity=1 post_preflight_bytes=1
 ```
 
-The gate proves that:
+The gate requires that:
 
-- copied read-only corpus authorities are made writable only inside the private
+- copied read-only corpus authorities are made writable only inside the isolated
   mutation fixture;
 - GNU property entry alignment is descriptor-relative;
 - non-identical carrier overlap is malformed;
 - the binary-role harness obeys the SysV nested-call stack rule;
 - a substituted corpus directory is not chmoded;
 - bytes changed after semantic preflight are rejected before mode repair.
-
-The corrected private package separately requires:
-
-```text
-private-overlay-manager-smoke: ok ... signal_inventory=1 backup_signal=1
-```
 
 ## GNU-property gates
 

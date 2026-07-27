@@ -52,6 +52,42 @@ def require(condition: bool, message: str) -> None:
         raise RuntimeError(message)
 
 
+PRIVATE_PUBLIC_KEYS = {
+    "binary_role",
+    "role_state",
+    "role_evidence",
+    "ibt",
+    "ibt_state",
+    "shstk",
+    "shstk_state",
+    "gnu_property",
+    "gnu_properties",
+}
+
+
+def private_public_key(key: str) -> bool:
+    normalized = key.lower()
+    return (
+        normalized in PRIVATE_PUBLIC_KEYS
+        or normalized.startswith("property_")
+        or normalized.startswith("gnu_property")
+        or normalized.startswith("ibt_")
+        or normalized.startswith("shstk_")
+    )
+
+
+def assert_no_private_public_fields(value: Any) -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            require(isinstance(key, str), "public JSON contains a non-string object key")
+            require(not private_public_key(key),
+                    f"private role/property fact leaked into public JSON: {key}")
+            assert_no_private_public_fields(child)
+    elif isinstance(value, list):
+        for child in value:
+            assert_no_private_public_fields(child)
+
+
 def load_property_helpers() -> Any:
     path = ROOT / "tools/sprint12-gnu-property-smoke.py"
     spec = importlib.util.spec_from_file_location("p066_property_helpers", path)
@@ -156,16 +192,7 @@ def validate_public(analyzer: Path, target: Path) -> int:
             report = json.loads(cp.stdout)
             require(report.get("schema_version") == "0.2.0", "metamorphic report changed schema")
             require(report.get("command") == command[1], "metamorphic report changed command identity")
-            forbidden = {"binary_role", "ibt", "shstk", "gnu_property", "gnu_properties"}
-            def walk(value: Any) -> None:
-                if isinstance(value, dict):
-                    require(not (set(value) & forbidden), "private role/property facts leaked into public JSON")
-                    for child in value.values():
-                        walk(child)
-                elif isinstance(value, list):
-                    for child in value:
-                        walk(child)
-            walk(report)
+            assert_no_private_public_fields(report)
         count += 1
     return count
 

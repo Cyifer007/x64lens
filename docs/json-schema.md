@@ -157,7 +157,9 @@ Future decoder-validity metrics will be additive.
 - Pattern labels describe exact suffix evidence, not complete decoded windows.
 - Per-candidate raw, exact-suffix, and semantic-exact provenance is emitted;
   decoder validity is not yet implemented.
-- CET and IBT indicators are not complete.
+- Schema `0.2.0` exposes the existing coarse Boolean `mitigations.pie`, but no
+  public PIE-versus-DSO role, IBT, or SHSTK fields. Private static GNU-property
+  facts do not establish runtime CET enforcement.
 - Canary and stripped values are evidence-qualified indicators.
 - Scores are heuristic and are not exploitability verdicts.
 
@@ -396,3 +398,11 @@ validation additionally requires:
 
 These are correctness constraints on current reports, not a structural schema
 transition.
+
+
+## Sprint 12 Patch 067 schema boundary
+
+Patch 067 keeps schema `0.2.0` unchanged. The private role/property layout
+descriptor is development-only ABI evidence and is not a report field. The
+metamorphic public-output oracle recursively rejects the actual private state and
+`property_*` key vocabulary from current JSON reports.

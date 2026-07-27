@@ -2,14 +2,14 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 066 implementation candidate.
-Patch acceptance remains governed by the native, Docker, and independent
-validation plan.
+Accepted architecture introduced by Sprint 12 Patch 066 and carried by the
+Patch 067 corrective candidate. Patch acceptance remains governed by native,
+Docker, and independent validation.
 
 ## Context
 
 Patch 065 introduced private binary-role and x86 GNU-property evidence, but its
-review found two parser defects and several transaction/oracle defects:
+review found parser, corpus-repair, ABI, and oracle defects:
 
 - GNU property entries were aligned from the absolute file offset instead of
   relative to the property descriptor;
@@ -18,8 +18,6 @@ review found two parser defects and several transaction/oracle defects:
   before exercising its intended mutation;
 - corpus mode repair did not retain directory identity and manifest-authorized
   bytes through mutation;
-- private backup creation could be interrupted before an authenticated rollback
-  record existed;
 - one internal role harness violated nested-call stack alignment.
 
 The same review recommended a small metamorphic fact preflight before the wider
@@ -27,8 +25,9 @@ held-out corpus or any public role/CET policy decision.
 
 ## Decision
 
-Patch 066 first corrects the complete Patch 065 acceptance surface. It then adds
-one development-only 28-object metamorphic preflight:
+Patch 066 first corrects the reviewed Patch 065 parser, corpus-repair, ABI, and
+oracle defects. It then adds one development-only 28-object metamorphic
+preflight:
 
 ```text
 three role constructions
@@ -75,17 +74,12 @@ before a property state can reach a reporter. Valid four-byte-aligned `PT_NOTE`
 streams and partial-overlap failures are covered by both the independent byte
 oracle and the internal assembly reconciliation harness.
 
-## Transaction corrections
+## Corpus-repair corrections
 
 Corpus mode repair opens and retains the checksum authority and every member
 before semantic verification. It reauthenticates current path identity,
 ownership, timestamps, link counts, sizes, and manifest-authorized bytes before
-using descriptor-relative `fchmod`.
-
-Private rollback backup creation defers ordinary termination through a temporary
-main-thread signal handler until the rollback manifest and authorization record
-are complete. A retained interrupted backup is therefore authenticated and
-recoverable rather than unexplained residue.
+using descriptor-bound `fchmod`.
 
 ## Boundaries
 
@@ -99,7 +93,8 @@ Patch 066 does not:
 - freeze the wider held-out campaign;
 - add a runtime dependency.
 
-The broader 96-object held-out confirmation, bounded `readelf -n`
+Patch 067 adds C/NASM layout attestation and corrects the remaining custody and
+oracle defects. The broader 96-object held-out confirmation, bounded `readelf -n`
 reconciliation, and native/container fact-parity gate remain subsequent work.
 Whole-batch timing and process-tree RSS also remain separate measurement gates.
 

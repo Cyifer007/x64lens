@@ -8,9 +8,12 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 066 corrective hardening for descriptor-relative GNU-property entry alignment, fail-closed non-identical note-carrier overlap, descriptor-bound corpus mode repair, SysV internal-harness alignment, copied-read-only regression fixtures, and signal-safe authenticated private backup creation.
+- Sprint 12 Patch 067 corpus mode-repair custody now reauthenticates exact tree membership and caller-visible root identity immediately before descriptor-bound mode mutation, and restores original modes after any late verification failure.
+- A development-only C/NASM private fact-probe ABI descriptor, reconciliation harness, dynamic callee-alignment canary, and exact private-field public-output rejection gate. Public text, JSON schema `0.2.0`, candidate metrics, semantic classes, scores, and runtime dependencies remain unchanged.
+- ADR 0053, `make patch066-corrective-regression-smoke`, `make sprint12-role-property-layout-smoke`, and the Patch 067 validation plan.
+
 - A development-only 28-object binary-role/GNU-property metamorphic preflight covering three role constructions, four IBT/SHSTK states, canonical and exact-dual carrier encodings, deterministic repeated facts, and four single-axis mutants without changing public schema or runtime dependencies.
-- ADR 0052, `make patch065-corrective-regression-smoke`, `make sprint12-role-property-metamorphic-smoke`, and the Patch 066 validation record.
+- ADR 0052, `make patch065-corrective-regression-smoke`, `make sprint12-role-property-metamorphic-smoke`, and the Patch 066 validation plan.
 
 - Patch 065 introduced bounded private GNU-property evidence over canonical `PT_NOTE`/`PT_GNU_PROPERTY` views, original PHDR contributors, x86 FEATURE_1 AND facts, and explicit IBT/SHSTK unknown, absent, present, and contradictory states. Public text and JSON report fields, schema `0.2.0`, candidate metrics, and the historical PIE indicator remain unchanged; these static metadata facts do not establish runtime CET enforcement.
 - ADR 0051, the Patch 065 validation record, `make patch064-corrective-regression-smoke`, and `make sprint12-gnu-property-smoke`.
@@ -352,7 +355,13 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- The Patch 065 candidate corrects the Patch 064 NASM effective-address and immediate-width build errors; validates empty/interior-NUL `PT_INTERP` and every `DT_SONAME` carrier; enforces summary-only role classification; authenticates corpus semantics, timestamps, ownership, and inode identity before mode repair; prevents permission-normalization symlink traversal; and corrects the reviewed private transaction rollback defect.
+- Sprint 12 Patch 066 corrects descriptor-relative GNU-property entry alignment,
+  rejects non-identical note-carrier overlap before reporting, keeps corpus mode
+  repair descriptor-bound through reauthentication, restores SysV
+  internal-harness alignment, and makes copied-read-only regression fixtures
+  reach their intended mutation.
+
+- Sprint 12 Patch 065 corrected the Patch 064 NASM effective-address and immediate-width build errors; validated empty/interior-NUL `PT_INTERP` and every `DT_SONAME` carrier; enforced summary-only role classification; authenticated corpus semantics, timestamps, ownership, and inode identity before mode repair; and prevented permission-normalization symlink traversal. Patch 066 carries those corrections forward.
 
 - Sprint 12 Patch 064 corpus root/ownership continuity, canonical section-zero fixture generation, candidate-capacity and PHDR-index reconciliation, and a 49-case/196-execution PHDR oracle.
 

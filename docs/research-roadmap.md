@@ -479,17 +479,28 @@ semantic change without measured value.
 The reviewed Patch 064 source began the PIE-versus-DSO gate with an internal fact lattice over
 ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated
 `DT_SONAME` string evidence. The public `ET_DYN` indicator remains unchanged.
-Patch 064 was rejected as delivered; its role decision and corrections are
-carried through Patch 065 and corrected by the current Patch 066 candidate together with the
-independently bounded GNU-property IBT/SHSTK gate.
+Patch 064 did not pass validation. Patch 065 carried its role decision forward,
+corrected the reviewed Patch 064 findings, and added the independently
+bounded GNU-property IBT/SHSTK gate. The current Patch 067 candidate preserves the corrected
+later Patch 065 findings.
+
+## Sprint 12 Patch 067 research checkpoint
+
+Patch 067 does not broaden public mitigation reporting. It closes remaining
+Patch 066 evidence-custody and oracle defects, makes corpus mode repair
+transactional across exact membership and root-name continuity, and adds an
+assembly-emitted private fact-probe ABI descriptor reconciled by an independent C
+contract. This attestation is the prerequisite for the larger held-out
+role/property confirmation. Diagnostic campaign rows remain unfrozen and cannot
+support performance, RSS, coverage, or runtime-CET claims.
 
 ## Sprint 12 Patch 065-066 research checkpoint
 
 Patch 065 established the bounded private GNU-property fact path for x86 IBT and
-SHSTK but did not pass independent acceptance. Patch 066 corrects descriptor
-alignment, overlap, corpus custody, private rollback, ABI, and oracle defects,
+SHSTK but did not pass validation. Patch 066 corrects descriptor
+alignment, overlap, corpus custody, ABI, and oracle defects,
 then adds a 28-object role/property metamorphic preflight. The preflight is
-controlled diagnostic evidence, remains unfrozen and publication-ineligible,
+controlled development evidence, remains unfrozen and publication-ineligible,
 and changes no public report field. Broader held-out confirmation, bounded
 `readelf -n` reconciliation, and native/container fact parity must follow before
 any compatible public `0.2.x` indicator is considered.

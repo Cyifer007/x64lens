@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted architecture for Sprint 12. The Patch 064 implementation was rejected
-as delivered; the current Patch 066 candidate carries the decision forward with
+Accepted architecture for Sprint 12. The Patch 064 implementation did not pass
+validation; the current Patch 067 candidate carries the decision forward with
 the reviewed corrections.
 
 ## Context
@@ -61,7 +61,8 @@ state, not measured RSS.
 
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
-corrects the earlier implementation that reread mapped ELF bytes:
+corrected the earlier implementation that reread mapped ELF bytes, and Patch 066
+carries that boundary forward:
 
 ```text
 unknown
@@ -98,8 +99,8 @@ carrier is validated, and each retained string-table index must resolve to a
 bounded, nonempty, NUL-terminated string before it becomes shared-object
 evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
-outcomes remain fail-closed before report output. Patch 065 corrects these
-string-validation requirements for the current candidate.
+outcomes remain fail-closed before report output. Patch 065 introduced these
+string-validation corrections, and Patch 066 carries them forward.
 
 ## Consequences
 
@@ -109,8 +110,8 @@ string-validation requirements for the current candidate.
 - Loader-role evidence becomes explicit without overstating `ET_DYN`.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
-- GNU-property IBT/SHSTK parsing remains an independent downstream gate in the
-  Patch 065 candidate.
+- GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
+  remains separate from public report policy in the Patch 066 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

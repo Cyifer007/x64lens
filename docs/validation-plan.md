@@ -1149,7 +1149,7 @@ argument-control candidates and two conservative single-pop fallbacks. Both
 `gadgets` and `analyze` JSON must validate under schema `0.2.0` and compare equal
 after removing only command identity.
 
-Historical Patch 064 expected results:
+Expected:
 
 ```text
 sprint10-primitive-smoke: ok candidates=5 multi_pop=3 fallback=2 scored=2
@@ -1708,9 +1708,10 @@ conflicting carriers force the contradictory state. This is not a public report
 oracle. The unchanged public JSON paths remain covered by schema, focused,
 integrated, native/container parity, and full aggregate validation.
 
-## Sprint 12 Patch 065 corrective, role, and GNU-property validation
+## Historical Sprint 12 Patch 065 corrective, role, and GNU-property validation
 
-Patch 065 introduced four focused targets; Patch 066 corrects and extends their current validation:
+Patch 065 introduced four focused targets. This section preserves that
+historical candidate boundary; Patch 066 corrects and extends it below.
 
 ```bash
 make patch064-corrective-regression-smoke
@@ -1719,7 +1720,7 @@ make sprint12-gnu-property-oracle-smoke
 make sprint12-gnu-property-smoke
 ```
 
-Expected candidate results:
+Historical Patch 065 expected results:
 
 ```text
 patch064-corrective-regression-smoke: ok assembly=2 interp=2 soname=2 module_boundary=1 property_layout=5 corpus_preflight=2 corpus_hardlink=1 normalize_nofollow=3
@@ -1746,8 +1747,8 @@ Malformed property inputs return exit code 5 before stdout; explicit cap
 exhaustion returns exit code 6 before stdout. The 4,096-candidate complete result
 and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
-Native and container results must agree before acceptance. After acceptance,
-held-out role/property evidence remains diagnostic, unfrozen, and
+Native and container results must agree before acceptance. After Patch 066
+acceptance, held-out role/property evidence remains diagnostic, unfrozen, and
 publication-ineligible; bounded `readelf -n` reconciliation and
 native/container fact parity precede any decision about compatible public
 `0.2.x` indicators.
@@ -1762,9 +1763,37 @@ make sprint12-gnu-property-smoke
 make sprint12-role-property-metamorphic-smoke
 ```
 
+Expected current candidate results:
+
+```text
+patch065-corrective-regression-smoke: ok readonly_fixture=1 descriptor_alignment=1 partial_overlap=1 abi_alignment=1 directory_identity=1 post_preflight_bytes=1
+sprint12-gnu-property-oracle-smoke: ok cases=9 malformed=10 canonical_duplicates=1
+sprint12-gnu-property-internal: ok cases=26 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=3160 alignments=2 ordering=1
+sprint12-gnu-property-smoke: ok private_cases=26 oracle_cases=9 public_pairs=3 malformed=9 unsupported=2 schema=unchanged alignments=2 ordering=1
+sprint12-role-property-metamorphic-smoke: ok objects=28 pairs=12 mutants=4 roles=3 property_states=4 deterministic=28 public_commands=84 schema=unchanged
+```
+
 The corrective target covers the copied-read-only fixture, descriptor-relative
 property alignment, partial carrier overlap, nested-call ABI alignment, corpus
 directory identity, and post-preflight byte custody. The metamorphic target runs
 28 controlled objects, 12 canonical/dual pairs, four mutants, deterministic
 repeats, and all three public report commands while keeping schema `0.2.0`
 unchanged.
+
+
+## Sprint 12 Patch 067 corpus and private-probe validation
+
+Patch 067 adds two focused gates:
+
+```bash
+make patch066-corrective-regression-smoke
+make sprint12-role-property-layout-smoke
+```
+
+The first proves exact corpus membership and root-name continuity immediately
+before mode mutation, transactional mode rollback after late failure, actual
+private-field rejection in public JSON, and ABI-oracle mutation detection. The
+second reconciles 21 private record fields plus descriptor magic/version/count
+across NASM and C and rejects version and offset mutations. Both remain
+development validation; native and Docker aggregates must still pass before
+acceptance.

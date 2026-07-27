@@ -152,13 +152,15 @@ later sprints rather than Patch 037:
 - [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
   executable-like, shared-object-like, ambiguous, and contradictory states. The
   implementation and Patch 065 corrections are carried by the Patch 066 candidate.
-- [ ] Accept bounded private IBT and SHSTK GNU-property evidence with public
-  output unchanged. The corrected implementation is carried by Patch 066.
+- [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
+  public report fields or changing schema `0.2.0`. The corrected implementation
+  is carried by Patch 066.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
-  Implemented in the Patch 066 candidate.
+  Corrected and carried by the Patch 067 candidate.
+- [ ] Accept exact C/NASM private fact-probe layout attestation before admitting the wider held-out role/property corpus. Implemented in Patch 067.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [ ] After Patch 066 acceptance, run corrected held-out diagnostic PIE/DSO and
+- [ ] After Patch 067 acceptance, run corrected held-out diagnostic PIE/DSO and
   IBT/SHSTK confirmation under a new campaign identity, with positive
   role-controlled coordinate anchors and complete task-path runtime closure for
   all five task paths.

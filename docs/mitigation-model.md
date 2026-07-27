@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the current Patch 066 candidate; acceptance is pending and there is no public indicator. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the current Patch 067 candidate; acceptance is pending and there is no public indicator. |
 
 ## Evidence and confidence
 
@@ -185,9 +185,9 @@ the corrected role facts into a separate GNU-property parser gate.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
-Patch 065 added bounded internal acquisition; the current Patch 066 candidate corrects and validates
-for x86 IBT and SHSTK GNU property facts without publishing a new mitigation
-field. Exact duplicate
+Patch 065 added bounded internal acquisition of x86 IBT and SHSTK GNU-property
+facts; the current Patch 067 candidate preserves the corrected alignment and overlap
+boundaries without publishing a new mitigation field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
 produce private unknown, absent, present, or contradictory feature states.
@@ -210,3 +210,11 @@ requires private role and IBT/SHSTK states to remain invariant across canonical
 and exact-dual carrier encodings, preserves exact contributor differences, and
 exercises unknown, conflicting, ordering, and role-contradiction mutants. This
 is a development gate, not evidence of runtime CET enforcement.
+
+
+## Sprint 12 Patch 067 private-fact attestation boundary
+
+Patch 067 changes no public mitigation indicator. It attests the development
+probe layout used to inspect private PIE/DSO and GNU-property states and hardens
+corpus custody and public-field leakage oracles. Static IBT/SHSTK property facts
+remain private evidence and do not establish runtime CET enforcement.

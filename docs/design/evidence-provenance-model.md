@@ -347,6 +347,17 @@ header, property, descriptor, and span caps remain part of the evidence status.
 
 Binary-role and GNU-property facts remain private metadata evidence outside the
 candidate provenance tiers. The metamorphic preflight preserves canonical
-physical views and original PHDR contributors separately. Exact-dual carrier
-encodings may add a contributor without changing the logical role or feature
-state. Non-identical carrier overlap is malformed rather than normalized.
+physical views and original PHDR contributors separately. In each controlled
+canonical/dual pair, the dual encoding retains two original PHDR contributors,
+exactly one more than the canonical encoding, without changing the logical role
+or feature state. Non-identical carrier overlap is malformed rather than
+normalized.
+
+
+## Sprint 12 Patch 067 private-probe ABI evidence
+
+Private binary-role and GNU-property development facts are not public candidate
+provenance. Before a C probe may consume those assembly records, Patch 067
+requires a NASM-emitted layout descriptor and an independent C reconciliation
+gate. This proves record interpretation identity for the diagnostic probe without
+adding a runtime provenance tier or changing schema `0.2.0`.

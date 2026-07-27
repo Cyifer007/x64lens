@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted fact-acquisition architecture. The original Patch 065 delivery was
-not accepted; Patch 066 preserves this boundary while correcting the reviewed
-parser, transaction, ABI, and oracle defects.
+Accepted fact-acquisition architecture. The original Patch 065 implementation
+did not pass validation; Patch 066 preserves this boundary while correcting the
+reviewed parser, corpus-repair, ABI, and oracle defects.
 
 ## Context
 
@@ -15,11 +15,11 @@ notes may overlap, and duplicate feature records may agree or conflict. Treating
 one program header or one external-tool label as authoritative would lose
 provenance and could overstate control-flow protection.
 
-Patch 064 also introduced a private PIE/DSO role lattice. The Patch 065 candidate
-first corrects the Patch 064 build and parser errors, restores the summary-only
-classifier boundary, authenticates corpus repair before mutation, and prevents
-permission normalization from following links into generated evidence. These
-corrections precede the new metadata parser in the candidate pipeline.
+Patch 064 also introduced a private PIE/DSO role lattice. Patch 065 corrected the
+Patch 064 build and parser errors, restored the summary-only classifier boundary,
+authenticated corpus repair before mutation, and prevented permission
+normalization from following links into generated evidence before inserting the
+new metadata parser. Patch 066 carries those role corrections forward.
 
 ## Decision
 
@@ -95,4 +95,4 @@ mapped ELF header or dynamic/string bytes.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Native and Docker validation must prove identical facts and unchanged public
-  output before Patch 065 is accepted.
+  report fields before Patch 066 is accepted.

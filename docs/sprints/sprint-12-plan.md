@@ -3,8 +3,9 @@
 ## Status
 
 Active loader and mitigation precision sprint after Sprint 11 Patch 061
-closeout. Patch 064 was rejected as delivered; Patch 065 is the current
-implementation candidate pending acceptance validation.
+closeout. Patch 064 did not pass validation, and Patch 065 required a further
+correction. Patch 066 is the current implementation candidate pending acceptance
+validation.
 
 Related implementation records:
 
@@ -14,7 +15,12 @@ Related implementation records:
 - [Patch 063 validation](sprint-12-patch-063-validation.md)
 - [ADR 0050](../adr/0050-fact-first-binary-role-lattice.md)
 - [Patch 064 validation](sprint-12-patch-064-validation.md)
+- [ADR 0051](../adr/0051-bounded-private-gnu-property-evidence.md)
 - [Patch 065 validation](sprint-12-patch-065-validation.md)
+- [ADR 0052](../adr/0052-role-property-metamorphic-preflight.md)
+- [Patch 066 validation](sprint-12-patch-066-validation.md)
+- [ADR 0053](../adr/0053-corpus-custody-and-private-layout-attestation.md)
+- [Patch 067 validation](sprint-12-patch-067-validation.md)
 
 ## Sprint goal
 
@@ -28,12 +34,13 @@ that would otherwise corrupt corpus labels or defensive triage.
 3. Measure overlap incidence and redundant scan work, then decide whether executable-byte-union normalization should proceed.
 4. Add bounded internal PIE-versus-shared-object evidence without changing the public PIE indicator.
 5. Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
-6. After Patch 066 acceptance, run corrected held-out diagnostic role/property
+6. Accept Patch 067 corpus custody, public/private oracle, ABI, and private fact-probe layout attestation.
+7. After Patch 067 acceptance, run corrected held-out diagnostic role/property
    confirmation under a new identifier, using positive role-controlled
    coordinate anchors and complete runtime closure for all five task paths.
-7. Reconcile the private facts against bounded `readelf -n` evidence and prove
+8. Reconcile the private facts against bounded `readelf -n` evidence and prove
    native/container fact parity.
-8. Only then review whether compatible public `0.2.x` role or GNU-property
+9. Only then review whether compatible public `0.2.x` role or GNU-property
    indicators are justified.
 
 ## Planned deliverables
@@ -46,10 +53,10 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [ ] Accept an internal role-evidence lattice that keeps `ET_DYN` alone unknown
   and preserves unknown, executable-like, shared-object-like, ambiguous, and
   contradictory states. The reviewed Patch 064 design is carried by the current
-  Patch 065 candidate.
+  Patch 066 candidate.
 - [ ] Accept bounded private GNU property-note evidence for x86 IBT and SHSTK
-  while leaving public output unchanged. Corrected in the current Patch 066
-  candidate.
+  without adding public report fields or changing schema `0.2.0`. Corrected in
+  the current Patch 067 candidate.
 - [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
 - [ ] Run the corrected held-out diagnostic confirmation under a new campaign
   identity and record its facts separately from Sprint 11 rows and replays.
@@ -62,22 +69,24 @@ that would otherwise corrupt corpus labels or defensive triage.
 
 1. **Patch 062:** shared ordinary PHDR validity, explicit extended-numbering unsupported/malformed outcomes, and Patch 061 transaction corrections.
 2. **Patch 063:** Patch 062 corrective hardening plus original-PHDR and dense contributor provenance; scan normalization remains deferred.
-3. **Patch 064:** rejected intermediate source containing Patch 063 corrective hardening, a measured decision to defer normalization, and an internal-only role-evidence lattice with public output unchanged.
-4. **Patch 065:** current implementation candidate carrying Patch 064 corrective hardening plus bounded private GNU-property IBT/SHSTK facts with canonical carrier views and contributor provenance.
-5. **Conditional:** reopen executable-byte-union normalization, deduplication, and public count semantics only when the recorded activation thresholds are crossed.
-6. **After acceptance:** corrected held-out diagnostic role/property confirmation.
-7. **Reconciliation:** bounded `readelf -n` comparison and native/container fact parity.
-8. **Later policy gate:** decide whether compatible public `0.2.x` role or GNU-property indicators are justified.
-9. **Closeout:** Sprint 12 reconciliation.
+3. **Patch 064:** intermediate source that did not pass validation, containing Patch 063 corrective hardening, a measured decision to defer normalization, and an internal-only role-evidence lattice with public output unchanged.
+4. **Patch 065:** intermediate candidate that required correction, carrying the Patch 064 corrections plus bounded private GNU-property IBT/SHSTK facts with canonical carrier views and contributor provenance.
+5. **Patch 066:** controlled 28-object role/property metamorphic preflight, with no new public report field or schema change; review required further correction.
+6. **Patch 067:** corpus and private-transaction correction plus exact public/private oracle, ABI canary, and C/NASM fact-probe layout attestation.
+7. **Conditional:** reopen executable-byte-union normalization, deduplication, and public count semantics only when the recorded activation thresholds are crossed.
+8. **After acceptance:** corrected held-out diagnostic role/property confirmation.
+9. **Reconciliation:** bounded `readelf -n` comparison and native/container fact parity.
+10. **Later policy gate:** decide whether compatible public `0.2.x` role or GNU-property indicators are justified.
+11. **Closeout:** Sprint 12 reconciliation.
 
 ## Acceptance criteria
 
 - [x] Program headers remain executable authority.
 - [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
-- [ ] The Patch 065 candidate's internal PIE-versus-shared-object lattice passes
+- [ ] The Patch 066 candidate's internal PIE-versus-shared-object lattice passes
   controlled unknown, executable-like, shared-object-like, ambiguous,
   contradictory, duplicate, malformed, and unsupported cases.
-- [ ] The Patch 065 candidate's private IBT and SHSTK facts pass controlled
+- [ ] The Patch 066 candidate's private IBT and SHSTK facts pass controlled
   positive, negative, contradictory, truncated, duplicate, overlap, cap, and
   unknown-property cases.
 - [x] Overlap contributors are retained internally without changing current counts. Patch 063.
@@ -101,5 +110,15 @@ loader and mitigation facts.
 ## Patch 066 boundary
 
 Patch 066 corrects Patch 065 acceptance defects and adds the 28-object private
-role/property metamorphic preflight. It does not publish role or CET fields and
-does not complete the wider held-out or public-policy gates.
+role/property metamorphic preflight. It adds no public role, IBT, or SHSTK field,
+does not change schema `0.2.0`, and does not complete the wider held-out or
+public-policy gates.
+
+
+## Patch 067 boundary
+
+Patch 067 adds no public role or property field and does not widen the corpus. It
+closes Patch 066 corpus/private custody and oracle defects, then attests every
+private fact-probe offset and size through a NASM-emitted descriptor and an
+independent C contract. The larger held-out role/property confirmation remains
+subsequent diagnostic work.

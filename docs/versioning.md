@@ -13,23 +13,26 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-The current Patch 066 implementation candidate retains tool version `0.1.0-dev`
+The current Patch 067 corrective implementation candidate retains tool version `0.1.0-dev`
 and schema `0.2.0`; no release tag moves. Sprint 11 is complete and Sprint 12 is
 the active loader and mitigation
 precision sprint. The Sprint 11 cloud checkpoint and later WSL2 replay remain
 diagnostic, unfrozen, and publication-ineligible. They have no release authority
 and do not replace the fresh, unmodified Patch 061 campaign required to qualify
 that evidence stratum. Patch 064 records a bounded diagnostic overlap decision
-and an internal-only role-evidence lattice. Patch 065 introduced the private facts; Patch 066 corrects the
-reviewed Patch 064 findings and adds private GNU-property facts without a public
-field or schema change. Measurements after Patch 066 require a distinct
-diagnostic campaign identity and remain separate from Sprint 11 rows.
+and an internal-only role-evidence lattice. Patch 065 carried the reviewed Patch
+064 corrections and introduced the private GNU-property facts. Patch 066
+adds the controlled metamorphic preflight. Patch 067 corrects its corpus-custody
+and oracle findings and attests the private C/NASM fact-probe layout without a
+public field or schema change. Measurements after Patch 067
+require a distinct diagnostic campaign identity and remain separate from Sprint
+11 rows.
 
 ## Release sequence
 
 | Milestone | Version | Status |
 |---|---|---|
-| Integrated development checkpoint | `v0.1.0-dev` | Completed after Sprint 6 Patch 023. Local unless explicitly pushed. |
+| Integrated development checkpoint | `v0.1.0-dev` | Completed after Sprint 6 Patch 023. |
 | Research preview candidate | `v0.1.0-rc1` | Planned after Sprint 16 preview gates. |
 | First research release | `v0.1.0` | Planned after Sprint 22 release gates. |
 
