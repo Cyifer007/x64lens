@@ -149,13 +149,23 @@ later sprints rather than Patch 037:
 - [x] Original executable-PHDR identity and dense candidate contributor provenance without scan/count changes. Patch 063.
 - [x] Measure executable-overlap incidence and redundant scan work, then record the diagnostic decision to defer executable-byte-union normalization. Patch 064.
 - [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
-- [x] Internal PIE-versus-shared-object evidence lattice with unknown, executable-like, shared-object-like, ambiguous, and contradictory states. Patch 064.
-- [x] Bounded private CET IBT and SHSTK GNU-property evidence with public output unchanged. Patch 065.
-- [ ] Release-facing PIE-versus-shared-object policy and schema review after the remaining bounded loader-evidence gates.
+- [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
+  executable-like, shared-object-like, ambiguous, and contradictory states. The
+  implementation and Patch 065 corrections are carried by the Patch 066 candidate.
+- [ ] Accept bounded private IBT and SHSTK GNU-property evidence with public
+  output unchanged. The corrected implementation is carried by Patch 066.
+- [ ] Accept the 28-object controlled role/property metamorphic preflight with
+  deterministic state invariance, exact contributor deltas, and four mutants.
+  Implemented in the Patch 066 candidate.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [ ] Corrected held-out diagnostic confirmation under a new campaign identity,
-  with positive role-controlled coordinate anchors and complete task-path
-  runtime closure for all five task paths.
+- [ ] After Patch 066 acceptance, run corrected held-out diagnostic PIE/DSO and
+  IBT/SHSTK confirmation under a new campaign identity, with positive
+  role-controlled coordinate anchors and complete task-path runtime closure for
+  all five task paths.
+- [ ] Reconcile the held-out private facts against bounded `readelf -n` evidence
+  and prove native/container fact parity.
+- [ ] Only then decide whether compatible public `0.2.x` PIE-versus-shared-object
+  or GNU-property indicators are justified.
 
 ### Sprint 13: semantic capability completion
 
@@ -445,7 +455,8 @@ Patch 050 completes current-family side-effect and clobber facts, reconciles the
 Before Sprint 11 begins, Patch 053 must perform the planned architecture and capability reassessment. Required review items include:
 
 - [ ] distinguish PIE executables from shared objects without overstating `ET_DYN`;
-- [x] add bounded private GNU property evidence for CET/IBT/SHSTK; Patch 065 retains public-policy review as a later gate;
+- [ ] add bounded private GNU property evidence for CET/IBT/SHSTK; this Patch 053
+  reassessment item was deferred to the active Sprint 12 checklist above;
 - [ ] define count semantics for overlapping executable `PT_LOAD` ranges;
 - [ ] review all current-family score candidates using completed effect facts;
 - [ ] reconcile the capability snapshot with the pre-`v0.1.0` release scope;

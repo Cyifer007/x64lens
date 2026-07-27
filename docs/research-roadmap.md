@@ -476,18 +476,20 @@ normalization, preserves current ordering, counts, capacity, and output, and
 records explicit reopening thresholds rather than implementing a high-risk
 semantic change without measured value.
 
-Patch 064 then begins the PIE-versus-DSO gate with an internal fact lattice over
+The reviewed Patch 064 source began the PIE-versus-DSO gate with an internal fact lattice over
 ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated
 `DT_SONAME` string evidence. The public `ET_DYN` indicator remains unchanged.
-The next Sprint 12 implementation gate is independently bounded GNU-property
-IBT/SHSTK evidence. A release-facing role policy and schema decision remain a
-later, separately reviewed gate.
+Patch 064 was rejected as delivered; its role decision and corrections are
+carried through Patch 065 and corrected by the current Patch 066 candidate together with the
+independently bounded GNU-property IBT/SHSTK gate.
 
-## Sprint 12 Patch 065 research checkpoint
+## Sprint 12 Patch 065-066 research checkpoint
 
-Patch 065 closes the Patch 064 correctness findings and implements the bounded
-private GNU-property fact gate for x86 IBT and SHSTK. It preserves canonical
-physical views, original PHDR contributors, unknowns, duplicates, conflicts,
-and malformed/cap outcomes while leaving public output unchanged. The next
-research decision is held-out confirmation and a non-reinterpretive public
-policy gate, not automatic publication of a CET label.
+Patch 065 established the bounded private GNU-property fact path for x86 IBT and
+SHSTK but did not pass independent acceptance. Patch 066 corrects descriptor
+alignment, overlap, corpus custody, private rollback, ABI, and oracle defects,
+then adds a 28-object role/property metamorphic preflight. The preflight is
+controlled diagnostic evidence, remains unfrozen and publication-ineligible,
+and changes no public report field. Broader held-out confirmation, bounded
+`readelf -n` reconciliation, and native/container fact parity must follow before
+any compatible public `0.2.x` indicator is considered.

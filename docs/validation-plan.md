@@ -1149,7 +1149,7 @@ argument-control candidates and two conservative single-pop fallbacks. Both
 `gadgets` and `analyze` JSON must validate under schema `0.2.0` and compare equal
 after removing only command identity.
 
-Expected:
+Historical Patch 064 expected results:
 
 ```text
 sprint10-primitive-smoke: ok candidates=5 multi_pop=3 fallback=2 scored=2
@@ -1708,20 +1708,63 @@ conflicting carriers force the contradictory state. This is not a public report
 oracle. The unchanged public JSON paths remain covered by schema, focused,
 integrated, native/container parity, and full aggregate validation.
 
-## Sprint 12 Patch 065 GNU-property and corrective validation
+## Sprint 12 Patch 065 corrective, role, and GNU-property validation
 
-Patch 065 adds two focused gates:
+Patch 065 introduced four focused targets; Patch 066 corrects and extends their current validation:
 
 ```bash
 make patch064-corrective-regression-smoke
+make sprint12-binary-role-smoke
+make sprint12-gnu-property-oracle-smoke
 make sprint12-gnu-property-smoke
+```
+
+Expected candidate results:
+
+```text
+patch064-corrective-regression-smoke: ok assembly=2 interp=2 soname=2 module_boundary=1 property_layout=5 corpus_preflight=2 corpus_hardlink=1 normalize_nofollow=3
+sprint12-binary-role-smoke: ok cases=21 states=5 malformed=7 unsupported=1 summary_bytes=264 classifier_bounds=1
+sprint12-gnu-property-oracle-smoke: ok cases=8 malformed=9 canonical_duplicates=1
+sprint12-gnu-property-internal: ok cases=25 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=3160 alignments=2 ordering=1
+sprint12-gnu-property-smoke: ok private_cases=25 oracle_cases=8 public_pairs=3 malformed=8 unsupported=2 schema=unchanged alignments=2 ordering=1
 ```
 
 The corrective gate covers source-level NASM regressions, complete bounded
 `PT_INTERP` and `DT_SONAME` validation, summary-only role classification,
 pre-mutation corpus authentication, hard-link substitution, and no-follow
-permission normalization. The GNU-property gate combines a development-only C
-harness linked to the NASM parser with an independent standard-library ELF
-oracle. It requires controlled positive, negative, unknown, duplicate,
-conflicting, malformed, overlap, and cap outcomes and byte-identical public text
-and JSON when only private feature facts change.
+permission normalization. `PT_INTERP` must contain a non-NUL byte, have no
+interior NUL, and end in a bounded terminal NUL; every `DT_SONAME` carrier is
+validated. The GNU-property gate combines a development-only C harness linked to
+the NASM parser with an independent standard-library ELF oracle. It requires
+controlled positive, negative, unknown, duplicate, conflicting, malformed,
+overlap, padding, ordering, and cap outcomes and byte-identical public text and
+JSON when only private feature facts change.
+
+The internal `phdr_summary` is 264 bytes and the command-lifetime property
+context is 3,160 bytes. These are fixed allocation facts, not measured RSS.
+Malformed property inputs return exit code 5 before stdout; explicit cap
+exhaustion returns exit code 6 before stdout. The 4,096-candidate complete result
+and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
+
+Native and container results must agree before acceptance. After acceptance,
+held-out role/property evidence remains diagnostic, unfrozen, and
+publication-ineligible; bounded `readelf -n` reconciliation and
+native/container fact parity precede any decision about compatible public
+`0.2.x` indicators.
+
+
+## Sprint 12 Patch 066 corrective and metamorphic validation
+
+```bash
+make patch065-corrective-regression-smoke
+make sprint12-gnu-property-oracle-smoke
+make sprint12-gnu-property-smoke
+make sprint12-role-property-metamorphic-smoke
+```
+
+The corrective target covers the copied-read-only fixture, descriptor-relative
+property alignment, partial carrier overlap, nested-call ABI alignment, corpus
+directory identity, and post-preflight byte custody. The metamorphic target runs
+28 controlled objects, 12 canonical/dual pairs, four mutants, deterministic
+repeats, and all three public report commands while keeping schema `0.2.0`
+unchanged.

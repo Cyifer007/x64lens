@@ -378,15 +378,15 @@ int main(void) {
     if (register_one(f, 65, PT_NOTE, off, 0) != EXIT_UNSUPPORTED)
         fail("contributor-cap", "expected contributor cap");
 
-    /* 17. Partial physical overlap remains distinct and visible. */
+    /* 17. Partial physical overlap is ambiguous and fails at registration. */
     reset(f);
     values[0] = 3;
     note_size = make_property_note(f->image + off, values, 1, 0, 0, 0, 0, 0);
-    if (register_one(f, 0, PT_NOTE, off, note_size) != EXIT_OK ||
-        register_one(f, 1, PT_NOTE, off + note_size - 4, 8) != EXIT_OK)
-        fail("partial-overlap", "registration failed");
+    if (register_one_align(f, 0, PT_NOTE, off, note_size, 4) != EXIT_OK ||
+        register_one_align(f, 1, PT_NOTE, off + note_size - 4, 12, 4) != EXIT_MALFORMED_ELF)
+        fail("partial-overlap", "partially overlapping carrier was not malformed");
     expect_u64("partial-overlap", "overlap", qword(f->context, CTX_OVERLAP_COUNT), 1);
-    expect_u64("partial-overlap", "views", qword(f->context, CTX_CARRIER_COUNT), 2);
+    expect_u64("partial-overlap", "views", qword(f->context, CTX_CARRIER_COUNT), 1);
 
     /* 18. Structural range failure takes precedence over the carrier byte cap. */
     reset(f);
@@ -419,19 +419,29 @@ int main(void) {
     expect_states("aligned-note-stream", f,
                   GNU_PROPERTY_STATE_PRESENT, GNU_PROPERTY_STATE_PRESENT);
 
-    /* 22. Outer note alignment padding is authenticated, not skipped. */
+    /* 22. Four-byte PT_NOTE alignment keeps property entries descriptor-relative. */
+    reset(f);
+    prefix_size = make_unknown_note(f->image + off, 4, 0);
+    note_size = make_property_note(f->image + off + prefix_size, values, 1, 0, 0, 0, 0, 0);
+    if (register_one_align(f, 0, PT_NOTE, off, prefix_size + note_size, 4) != EXIT_OK ||
+        parse(f) != EXIT_OK)
+        fail("aligned4-note-stream", "descriptor-relative property alignment was rejected");
+    expect_states("aligned4-note-stream", f,
+                  GNU_PROPERTY_STATE_PRESENT, GNU_PROPERTY_STATE_PRESENT);
+
+    /* 23. Outer note alignment padding is authenticated, not skipped. */
     reset(f);
     prefix_size = make_unknown_note(f->image + off, 8, 1);
     if (register_one(f, 0, PT_NOTE, off, prefix_size) != EXIT_OK ||
         parse(f) != EXIT_MALFORMED_ELF)
         fail("outer-note-padding", "nonzero note padding was not malformed");
 
-    /* 23. Unrepresented PT_NOTE alignment is a stable unsupported feature. */
+    /* 24. Unrepresented PT_NOTE alignment is a stable unsupported feature. */
     reset(f);
     if (register_one_align(f, 0, PT_NOTE, off, 0, 16) != EXIT_UNSUPPORTED)
         fail("note-align-cap", "unsupported PT_NOTE alignment was accepted");
 
-    /* 24. GNU property records are ordered monotonically by type. */
+    /* 25. GNU property records are ordered monotonically by type. */
     reset(f);
     values[0] = 3;
     note_size = make_property_note(f->image + off, values, 1, 1, 0, 0, 0, 0);
@@ -439,14 +449,14 @@ int main(void) {
         parse(f) != EXIT_MALFORMED_ELF)
         fail("property-order", "descending property type was not malformed");
 
-    /* 25. A recognized GNU property descriptor contains at least one header. */
+    /* 26. A recognized GNU property descriptor contains at least one header. */
     reset(f);
     note_size = make_property_note(f->image + off, values, 0, 0, 0, 0, 0, 0);
     if (register_one(f, 0, PT_NOTE, off, note_size) != EXIT_OK ||
         parse(f) != EXIT_MALFORMED_ELF)
         fail("empty-property-desc", "empty recognized descriptor was not malformed");
 
-    printf("sprint12-gnu-property-internal: ok cases=25 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=%d alignments=2 ordering=1\n",
+    printf("sprint12-gnu-property-internal: ok cases=26 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=%d alignments=2 ordering=1\n",
            GNU_PROPERTY_CONTEXT_SIZE);
     free(f);
     return 0;

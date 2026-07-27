@@ -5,8 +5,10 @@
 Historical record for the exact Patch 063 source. Its 33-fixture/132-execution
 PHDR banner and four rejected mapping cases apply only to that source boundary.
 Patch 064 expands the same gates to 49 fixtures/196 executions and nine rejected
-mapping cases; use the
-[Patch 064 validation record](sprint-12-patch-064-validation.md) for the current
+mapping cases, but was rejected as delivered. Use the
+[Patch 064 validation record](sprint-12-patch-064-validation.md) for that
+intermediate boundary and the
+[Patch 065 validation plan](sprint-12-patch-065-validation.md) for current
 candidate expectations.
 
 ## Purpose

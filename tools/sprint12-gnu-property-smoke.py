@@ -117,6 +117,7 @@ def independent_features(
     feature_values: list[int] = []
     unknown = 0
     seen_notes: set[tuple[int, int]] = set()
+    canonical_carriers: list[tuple[int, int]] = []
     for carrier in carriers:
         ptype, off, data, palign = carrier_parts(carrier)
         if ptype == PT_GNU_PROPERTY and palign != 8:
@@ -131,6 +132,13 @@ def independent_features(
         else:
             note_align = 8
         end = off + len(data)
+        for prior_off, prior_end in canonical_carriers:
+            if (off, end) == (prior_off, prior_end):
+                break
+            if len(data) and prior_end > prior_off and off < prior_end and prior_off < end:
+                raise ValueError("partially overlapping GNU-property carriers")
+        else:
+            canonical_carriers.append((off, end))
         cursor = off
         while cursor < end:
             if end - cursor < 12:
@@ -164,7 +172,7 @@ def independent_features(
                         last_type = ptype
                         data_start = pos + 8
                         data_end = data_start + datasz
-                        next_prop = align(data_end, 8)
+                        next_prop = desc_start + align(data_end - desc_start, 8)
                         if next_prop > desc_end:
                             raise ValueError("truncated property")
                         if any(blob[data_end:next_prop]):
@@ -246,6 +254,13 @@ def oracle_selftest() -> tuple[int, int]:
         [(PT_NOTE, 0x300, aligned_stream, 8)],
         (IBT | SHSTK, IBT | SHSTK, 0),
     ))
+    # The second note's descriptor begins at absolute offset mod 8 == 4.
+    # Property alignment is nevertheless valid because it is descriptor-relative.
+    aligned4_stream = unknown_note(note_align=4) + property_note([IBT | SHSTK])
+    cases.append((
+        [(PT_NOTE, 0x300, aligned4_stream, 4)],
+        (IBT | SHSTK, IBT | SHSTK, 0),
+    ))
     for carriers, expected in cases:
         blob = elf_with_carriers(carriers)
         observed = independent_features(blob, carriers)
@@ -298,6 +313,13 @@ def oracle_selftest() -> tuple[int, int]:
         elf_with_carriers([(PT_NOTE, 0x300, empty_desc)]),
         [(PT_NOTE, 0x300, empty_desc)],
     ))
+    overlap_note = property_note([IBT | SHSTK])
+    overlap_tail = b"\0" * 12
+    overlap_carriers = [
+        (PT_NOTE, 0x300, overlap_note, 4),
+        (PT_NOTE, 0x300 + len(overlap_note) - 4, overlap_tail, 4),
+    ]
+    malformed.append((elf_with_carriers(overlap_carriers), overlap_carriers))
     for blob, carriers in malformed:
         try:
             independent_features(blob, carriers)
@@ -325,7 +347,7 @@ def main() -> int:
         parser.error("--analyzer and --internal-harness are required unless --oracle-only is used")
 
     harness = run([str(args.internal_harness)], expected=0)
-    expected_banner = b"sprint12-gnu-property-internal: ok cases=25 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=3160 alignments=2 ordering=1\n"
+    expected_banner = b"sprint12-gnu-property-internal: ok cases=26 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=3160 alignments=2 ordering=1\n"
     if harness.stdout != expected_banner:
         raise RuntimeError(f"unexpected internal harness output: {harness.stdout!r}")
 
@@ -383,6 +405,11 @@ def main() -> int:
         malformed.append(elf_with_carriers([
             (PT_NOTE, 0x300, property_note([]), 8)
         ]))
+        overlap_note = property_note([IBT | SHSTK])
+        malformed.append(elf_with_carriers([
+            (PT_NOTE, 0x300, overlap_note, 4),
+            (PT_NOTE, 0x300 + len(overlap_note) - 4, b"\0" * 12, 4),
+        ]))
 
         for index, blob in enumerate(malformed):
             target.write_bytes(blob)
@@ -408,8 +435,8 @@ def main() -> int:
                 raise RuntimeError(f"unsupported GNU-property case emitted stdout: {command!r}")
 
     print(
-        "sprint12-gnu-property-smoke: ok private_cases=25 oracle_cases=8 "
-        "public_pairs=3 malformed=8 unsupported=2 schema=unchanged alignments=2 ordering=1"
+        "sprint12-gnu-property-smoke: ok private_cases=26 oracle_cases=9 "
+        "public_pairs=3 malformed=9 unsupported=2 schema=unchanged alignments=2 ordering=1"
     )
     return 0
 

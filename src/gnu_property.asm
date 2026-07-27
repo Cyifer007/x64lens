@@ -3,8 +3,8 @@
 ; Purpose:
 ;   Collect and parse bounded ELF64 GNU property-note evidence without changing
 ;   public text output or schema 0.2.0. The module canonicalizes exact duplicate
-;   physical carriers, retains every original PHDR contributor, records partial
-;   carrier overlap, and derives private x86 IBT/SHSTK indicator states.
+;   physical carriers, retains every original PHDR contributor, rejects
+;   non-identical carrier overlap, and derives private x86 IBT/SHSTK states.
 ;
 ; Public symbols:
 ;   x64lens_gnu_property_context_init
@@ -66,8 +66,8 @@ x64lens_gnu_property_context_init:
 ;   -> rax=status
 ;
 ; Exact duplicate physical ranges share a canonical carrier slot. Every original
-; PHDR index/type still receives its own contributor record. Partial overlaps are
-; retained as distinct carrier views and counted for later diagnostic review.
+; PHDR index/type still receives its own contributor record. Non-identical physical
+; overlap is counted for diagnostics and rejected as malformed before reporting.
 x64lens_gnu_property_register_carrier:
     push    rbp
     push    rbx
@@ -183,6 +183,10 @@ x64lens_gnu_property_register_carrier:
     cmp     r8, [rsp + 32]
     jae     .carrier_find_next
     inc     qword [r13 + GNU_PROPERTY_CTX_OVERLAP_COUNT]
+    ; Partially overlapping note carriers are ambiguous evidence. Exact-range
+    ; aliases are canonicalized above; any other overlap fails before facts can
+    ; reach a reporter.
+    jmp     .carrier_malformed
 .carrier_find_next:
     inc     rcx
     jmp     .carrier_find_loop
@@ -513,9 +517,18 @@ x64lens_gnu_property_parse:
     cmp     rax, [rsp + 80]
     ja      .parse_malformed
     mov     r11, rax             ; data end
-    add     rax, 7
+    ; GNU property entry alignment is relative to the descriptor origin, not
+    ; the absolute file offset. A descriptor beginning at file-offset mod 8 == 4
+    ; is valid when each entry is aligned within that descriptor.
+    mov     rdx, rax
+    sub     rdx, [rsp + 72]
     jc      .parse_malformed
-    and     rax, -8
+    add     rdx, 7
+    jc      .parse_malformed
+    and     rdx, -8
+    mov     rax, [rsp + 72]
+    add     rax, rdx
+    jc      .parse_malformed
     cmp     rax, [rsp + 80]
     ja      .parse_malformed
     mov     [rsp + 96], rax      ; next property cursor

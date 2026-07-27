@@ -445,6 +445,8 @@ setup_valid_soname_entries:
     ret
 
 run_phdr:
+    ; SysV AMD64 requires RSP to be 16-byte aligned before a nested call.
+    sub     rsp, 8
     lea     rdi, [image]
     mov     rsi, IMAGE_SIZE
     lea     rdx, [summary]
@@ -452,13 +454,16 @@ run_phdr:
     mov     r8, 4
     lea     r9, [property_context]
     call    x64lens_phdr_analyze
+    add     rsp, 8
     ret
 
 run_role:
+    sub     rsp, 8
     call    run_phdr
     test    eax, eax
     jne     .return
     lea     rdi, [summary]
     call    x64lens_binary_role_classify
 .return:
+    add     rsp, 8
     ret

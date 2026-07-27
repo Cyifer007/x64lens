@@ -162,22 +162,26 @@ See:
 
 ## Sprint 12 Patch 062 checkpoint
 
-Patch 062 completes the ordinary PHDR-validity and explicit extended-numbering-outcome gates without changing the reference scanner or report schema. Sprint 12 remains active. Its next ordered gate is overlapping executable-segment scan, deduplication, count, and provenance semantics, followed by PIE-versus-DSO identity and bounded GNU-property IBT/SHSTK evidence.
+Patch 062 completes the ordinary PHDR-validity and explicit
+extended-numbering-outcome gates without changing the reference scanner or
+report schema. Its subsequent ordered gates were executable-overlap provenance,
+PIE-versus-DSO evidence, and bounded GNU-property IBT/SHSTK evidence; the current
+Sprint 12 status is recorded below.
 
 ## Sprint 12 Patch 063-064 checkpoint
 
-Patch 063 retains lossless overlap provenance. Patch 064 records the measured
-decision to defer executable-range normalization because the bounded diagnostic
-sample produced no overlap activation, then adds an internal-only fact-first
-PIE-versus-DSO role lattice without changing public output. Sprint 12 remains
-active. The next ordered gate is bounded GNU-property IBT/SHSTK parsing. A
-release-facing role policy remains separately evidence- and schema-gated before
-held-out diagnostic confirmation.
+Patch 063 retains lossless overlap provenance. The reviewed Patch 064 source
+records the measured decision to defer executable-range normalization because
+the bounded diagnostic sample produced no overlap activation, then adds an
+internal-only fact-first PIE-versus-DSO role lattice without changing public
+output. Patch 064 was rejected as delivered; its decision and required
+corrections were carried through Patch 065 and are corrected by the current Patch 066 candidate.
 
-## Sprint 12 Patch 065 checkpoint
+## Sprint 12 Patch 065-066 checkpoint
 
-Patch 065 establishes bounded private GNU-property evidence for x86 IBT and
-SHSTK after correcting the Patch 064 build, parser, corpus-repair, permission,
-and private-delivery findings. Public mitigation output and schema remain
-unchanged. Sprint 12 continues with held-out role/property confirmation and the
-remaining closeout reconciliation before Sprint 13 semantic work.
+Patch 065 added bounded private GNU-property evidence but required correction.
+Patch 066 fixes the parser and custody defects and adds the controlled 28-object
+role/property metamorphic preflight. Public mitigation output and schema `0.2.0`
+remain unchanged. Sprint 12 still requires broader held-out confirmation,
+bounded `readelf -n` reconciliation, and native/container fact parity before a
+separate public-policy review or Sprint 13 handoff.

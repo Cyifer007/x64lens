@@ -1363,7 +1363,7 @@ records the measured decision not to normalize executable overlap in the
 current diagnostic sample. No scan range is unioned and no candidate identity,
 order, count, or capacity outcome changes.
 
-`phdr.asm` now acquires bounded internal role evidence:
+At the Patch 064 boundary, `phdr.asm` acquired bounded internal role evidence:
 
 ```text
 ELF type and entrypoint
@@ -1374,7 +1374,9 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-`binary_role.asm` consumes those completed facts and writes one internal state:
+The Patch 066 candidate preserves and corrects this seam so `binary_role.asm` consumes only
+those completed summary facts, including copied ELF type and entrypoint, and
+writes one internal state:
 
 ```text
 unknown
@@ -1392,22 +1394,39 @@ index resolves to a bounded, nonempty, in-range, NUL-terminated string. For
 `ET_DYN`, a validated SONAME with a zero entrypoint and no strong executable
 carrier is shared-object-like, while a nonzero entrypoint without `PT_INTERP` or
 `DF_1_PIE` evidence is ambiguous. The existing public PIE indicator remains
-unchanged until a separate output and schema decision.
+unchanged until a separate output and schema decision. Patch 065 also requires
+the bounded `PT_INTERP` path to contain a non-NUL byte, have no interior NUL, and
+end in exactly one bounded terminal NUL; every `DT_SONAME` carrier is validated.
 
-The `phdr_summary` record grows from 144 to 200 bytes. This fixed 56-byte growth
-is internal command state, not a runtime RSS measurement. The reference binary
+At the Patch 064 boundary, the `phdr_summary` record grew from 144 to 200 bytes.
+This fixed 56-byte growth is internal command state, not a runtime RSS
+measurement. The reference binary
 remains freestanding, dependency-free, decoder-free, one-worker, bounded, and
 deterministic.
 
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
-Patch 065 inserts `gnu_property.asm` after bounded program-header acquisition and
-before public reporting. The module canonicalizes exact duplicate physical note
+Patch 065 inserted `gnu_property.asm`; the current Patch 066 candidate corrects its alignment and overlap boundaries while retaining it after
+bounded program-header acquisition and before public reporting. The module
+canonicalizes exact duplicate physical note
 carriers while retaining each original PHDR index/type contributor in a bounded
 command-lifetime context. It parses only checked ELF note and GNU property
 records and materializes private IBT/SHSTK states. It does not alter executable
 regions, candidate discovery, semantics, scores, or reporters.
 
 The command-lifetime context is 3,160 bytes and the `phdr_summary` is 264 bytes.
-These are fixed allocation facts, not measured RSS. Public text and schema
-`0.2.0` remain unchanged until a separate policy gate accepts held-out evidence.
+These are fixed allocation facts, not measured RSS. The candidate adds no public
+text or JSON report field, keeps schema `0.2.0`, and requires byte-identical
+public output when controlled inputs differ only in private feature facts.
+Partially overlapping carrier views remain separate and counted; partially
+overlapping recognized GNU-note ranges are malformed rather than merged. Any
+later public-policy decision follows held-out evidence, bounded external
+reconciliation, and native/container parity.
+
+### Patch 066 development-only role/property fact probe
+
+`tests/internal/role-property-fact-probe.c` is a validation adapter, not a runtime
+module. It maps one controlled object read-only, invokes the existing ELF, PHDR,
+GNU-property, and binary-role routines, and emits compact private facts for the
+28-object metamorphic preflight. It must not enter the production link, define
+public report policy, or become loader authority.

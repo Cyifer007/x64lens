@@ -144,7 +144,8 @@
 
 ; Canonical carrier: exact physical offset/size plus carrier-kind and note-
 ; alignment masks. Exact duplicate PT_NOTE/PT_GNU_PROPERTY carriers share one
-; record; partial overlaps remain distinct and increment the overlap fact.
+; record. Partial overlaps increment the overlap fact and fail malformed before
+; any property state reaches a reporter.
 ;
 ; ELF note alignment is a carrier property. PT_GNU_PROPERTY requires the
 ; native ELF64 eight-byte note alignment. PT_NOTE may carry either ordinary

@@ -2,7 +2,9 @@
 
 ## Status
 
-Active loader and mitigation precision sprint after Sprint 11 Patch 061 closeout.
+Active loader and mitigation precision sprint after Sprint 11 Patch 061
+closeout. Patch 064 was rejected as delivered; Patch 065 is the current
+implementation candidate pending acceptance validation.
 
 Related implementation records:
 
@@ -26,10 +28,13 @@ that would otherwise corrupt corpus labels or defensive triage.
 3. Measure overlap incidence and redundant scan work, then decide whether executable-byte-union normalization should proceed.
 4. Add bounded internal PIE-versus-shared-object evidence without changing the public PIE indicator.
 5. Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
-6. Review release-facing role policy and schema only after the bounded loader-evidence gates.
-7. Run a corrected held-out diagnostic confirmation under a new identifier
-   after behavior changes, using positive role-controlled coordinate anchors
-   and complete runtime closure for all five task paths.
+6. After Patch 066 acceptance, run corrected held-out diagnostic role/property
+   confirmation under a new identifier, using positive role-controlled
+   coordinate anchors and complete runtime closure for all five task paths.
+7. Reconcile the private facts against bounded `readelf -n` evidence and prove
+   native/container fact parity.
+8. Only then review whether compatible public `0.2.x` role or GNU-property
+   indicators are justified.
 
 ## Planned deliverables
 
@@ -38,29 +43,43 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Retain original PHDR identity and dense same-slope candidate-contributor provenance without changing scan/count behavior. Patch 063.
 - [x] Measure executable-overlap incidence and redundant scan work, then record the diagnostic decision to defer executable-byte-union normalization. Patch 064.
 - [ ] If normalization is selected, define deduplication and public count semantics while preserving Patch 063 contributor provenance.
-- [x] Add an internal role-evidence lattice that keeps `ET_DYN` alone unknown and preserves unknown, executable-like, shared-object-like, ambiguous, and contradictory states. Patch 064.
-- [x] Parse bounded private GNU property notes for x86 IBT and SHSTK evidence while leaving public output unchanged. Patch 065.
-- [ ] Review release-facing PIE-versus-shared-object policy and schema after the remaining bounded loader-evidence gates.
+- [ ] Accept an internal role-evidence lattice that keeps `ET_DYN` alone unknown
+  and preserves unknown, executable-like, shared-object-like, ambiguous, and
+  contradictory states. The reviewed Patch 064 design is carried by the current
+  Patch 065 candidate.
+- [ ] Accept bounded private GNU property-note evidence for x86 IBT and SHSTK
+  while leaving public output unchanged. Corrected in the current Patch 066
+  candidate.
 - [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
 - [ ] Run the corrected held-out diagnostic confirmation under a new campaign
   identity and record its facts separately from Sprint 11 rows and replays.
+- [ ] Reconcile the private facts against bounded `readelf -n` evidence and prove
+  native/container fact parity.
+- [ ] Only then review whether compatible public `0.2.x` role or GNU-property
+  indicators are justified.
 
 ## Patch sequence
 
 1. **Patch 062:** shared ordinary PHDR validity, explicit extended-numbering unsupported/malformed outcomes, and Patch 061 transaction corrections.
 2. **Patch 063:** Patch 062 corrective hardening plus original-PHDR and dense contributor provenance; scan normalization remains deferred.
-3. **Patch 064:** Patch 063 corrective hardening, a measured decision to defer normalization, and an internal-only role-evidence lattice with public output unchanged.
-4. **Patch 065:** Patch 064 corrective hardening plus bounded private GNU-property IBT/SHSTK facts with canonical carrier views and contributor provenance.
+3. **Patch 064:** rejected intermediate source containing Patch 063 corrective hardening, a measured decision to defer normalization, and an internal-only role-evidence lattice with public output unchanged.
+4. **Patch 065:** current implementation candidate carrying Patch 064 corrective hardening plus bounded private GNU-property IBT/SHSTK facts with canonical carrier views and contributor provenance.
 5. **Conditional:** reopen executable-byte-union normalization, deduplication, and public count semantics only when the recorded activation thresholds are crossed.
-6. **Later policy gate:** release-facing PIE-versus-shared-object and GNU-property output/schema review after held-out evidence.
-7. **Closeout:** corrected held-out diagnostic confirmation and Sprint 12 reconciliation.
+6. **After acceptance:** corrected held-out diagnostic role/property confirmation.
+7. **Reconciliation:** bounded `readelf -n` comparison and native/container fact parity.
+8. **Later policy gate:** decide whether compatible public `0.2.x` role or GNU-property indicators are justified.
+9. **Closeout:** Sprint 12 reconciliation.
 
 ## Acceptance criteria
 
 - [x] Program headers remain executable authority.
 - [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
-- [x] The internal PIE-versus-shared-object lattice has controlled unknown, executable-like, shared-object-like, ambiguous, contradictory, duplicate, malformed, and unsupported cases. Patch 064.
-- [x] Private IBT and SHSTK facts have controlled positive, negative, contradictory, truncated, duplicate, overlap, cap, and unknown-property cases. Patch 065.
+- [ ] The Patch 065 candidate's internal PIE-versus-shared-object lattice passes
+  controlled unknown, executable-like, shared-object-like, ambiguous,
+  contradictory, duplicate, malformed, and unsupported cases.
+- [ ] The Patch 065 candidate's private IBT and SHSTK facts pass controlled
+  positive, negative, contradictory, truncated, duplicate, overlap, cap, and
+  unknown-property cases.
 - [x] Overlap contributors are retained internally without changing current counts. Patch 063.
 - [x] A measured decision records that executable-byte-union normalization remains deferred under explicit reopening thresholds. Patch 064.
 - [ ] If selected, the normalization policy prevents silent duplicate scan/count behavior and preserves contributing-PHDR evidence.
@@ -77,3 +96,10 @@ that would otherwise corrupt corpus labels or defensive triage.
 
 Sprint 13 completes the release-facing semantic surface using the corrected
 loader and mitigation facts.
+
+
+## Patch 066 boundary
+
+Patch 066 corrects Patch 065 acceptance defects and adds the 28-object private
+role/property metamorphic preflight. It does not publish role or CET fields and
+does not complete the wider held-out or public-policy gates.

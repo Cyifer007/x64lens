@@ -1624,11 +1624,15 @@ def write_checksum_manifest(root: pathlib.Path) -> None:
     write_text(checksum_path, "\n".join(lines) + "\n")
 
 
-def parse_checksum_manifest(root: pathlib.Path) -> dict[str, str]:
-    path = root / "SHA256SUMS.txt"
-    require(path.is_file() and not path.is_symlink(), "missing SHA256SUMS.txt")
+def parse_checksum_manifest_bytes(data: bytes) -> dict[str, str]:
+    """Parse checksum authority bytes without reopening a mutable pathname."""
+
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise CorpusError("checksum manifest is not valid UTF-8") from exc
     records: dict[str, str] = {}
-    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    for line_number, line in enumerate(text.splitlines(), 1):
         require(len(line) >= 67 and line[64:66] == "  ", f"invalid checksum line {line_number}")
         digest = require_sha256(line[:64], f"checksum line {line_number}")
         name = line[66:]
@@ -1638,6 +1642,12 @@ def parse_checksum_manifest(root: pathlib.Path) -> dict[str, str]:
         records[name] = digest
     require(records, "checksum manifest is empty")
     return records
+
+
+def parse_checksum_manifest(root: pathlib.Path) -> dict[str, str]:
+    path = root / "SHA256SUMS.txt"
+    require(path.is_file() and not path.is_symlink(), "missing SHA256SUMS.txt")
+    return parse_checksum_manifest_bytes(path.read_bytes())
 
 
 def verify_checksum_manifest(root: pathlib.Path) -> dict[str, str]:
@@ -2567,87 +2577,114 @@ def sha256_fd(fd: int) -> str:
     return digest.hexdigest()
 
 
-def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
-    """Repair only authenticated mode drift through retained member descriptors.
+def read_fd_bytes(fd: int, maximum: int) -> bytes:
+    """Read one retained regular file descriptor with an explicit bound."""
 
-    Complete corpus semantics, hashes, membership, ownership, link counts, and
-    timestamps are verified before any mutation. Every directory and file is
-    then reopened component-by-component beneath the retained root descriptor,
-    reauthenticated, held open, and changed only with fchmod. A hard-link or
-    pathname substitution therefore cannot redirect chmod to a foreign inode.
+    metadata = os.fstat(fd)
+    require(stat.S_ISREG(metadata.st_mode), "retained corpus member is not regular")
+    require(metadata.st_size <= maximum, "retained corpus member exceeds the repair bound")
+    os.lseek(fd, 0, os.SEEK_SET)
+    data = bytearray()
+    while len(data) < metadata.st_size:
+        chunk = os.read(fd, min(1024 * 1024, metadata.st_size - len(data)))
+        require(chunk, "retained corpus member changed while being read")
+        data.extend(chunk)
+    require(not os.read(fd, 1), "retained corpus member grew while being read")
+    os.lseek(fd, 0, os.SEEK_SET)
+    return bytes(data)
+
+
+def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
+    """Repair only mode drift after descriptor-bound corpus authentication.
+
+    The checksum authority, every file, and every directory are opened and held
+    before semantic verification. After verification, path identities, owner,
+    timestamps, link counts, sizes, and manifest-authorized file hashes are
+    rechecked through those descriptors. Only then may fchmod change modes.
     """
+
     absolute = pathlib.Path(os.path.abspath(root))
     expected_root_name = absolute.name
     root_fd = open_directory_nofollow(absolute, "corpus mode-repair root")
-    opened: list[tuple[int, pathlib.PurePosixPath, bool, int]] = []
+    opened: list[tuple[int, pathlib.PurePosixPath, bool, int, os.stat_result]] = []
     try:
         bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
-        # This is the full verifier with only actual filesystem mode comparisons
-        # relaxed. Manifest-declared modes remain exact.
-        _verify_corpus_bound(bound_root, expected_root_name, allow_mode_drift=True)
         root_metadata = os.fstat(root_fd)
         expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
         require(root_metadata.st_mtime_ns == 0, "corpus root mtime changed")
 
-        directories: list[pathlib.PurePosixPath] = []
-        files: list[pathlib.PurePosixPath] = []
-        expected_files: dict[pathlib.PurePosixPath, dict[str, Any]] = {}
+        # Open and retain the complete pathname tree before the semantic verifier
+        # runs. Directory inode substitutions and post-preflight byte changes are
+        # thereby observable even when replacement metadata looks plausible.
         for path in sorted(bound_root.rglob("*")):
-            metadata = path.lstat()
+            path_metadata = path.lstat()
             relative = pathlib.PurePosixPath(path.relative_to(bound_root).as_posix())
-            if stat.S_ISDIR(metadata.st_mode):
-                require((metadata.st_uid, metadata.st_gid) == expected_owner, f"corpus directory ownership changed: {relative}")
-                require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {relative}")
-                directories.append(relative)
-                continue
-            require(stat.S_ISREG(metadata.st_mode), f"corpus contains a non-regular member: {relative}")
-            require(metadata.st_nlink == 1, f"corpus contains a multiply linked file: {relative}")
-            require((metadata.st_uid, metadata.st_gid) == expected_owner, f"corpus file ownership changed: {relative}")
-            require(metadata.st_mtime_ns == 0, f"corpus file mtime changed: {relative}")
-            files.append(relative)
-            expected_files[relative] = {
-                "dev": metadata.st_dev,
-                "ino": metadata.st_ino,
-                "uid": metadata.st_uid,
-                "gid": metadata.st_gid,
-                "size": metadata.st_size,
-                "mtime_ns": metadata.st_mtime_ns,
-                "sha256": sha256_file(path),
-            }
+            if stat.S_ISDIR(path_metadata.st_mode):
+                fd = open_relative_member_nofollow(root_fd, relative, directory=True)
+                mode = DIRECTORY_MODE
+                is_directory = True
+            else:
+                require(stat.S_ISREG(path_metadata.st_mode), f"corpus contains a non-regular member: {relative}")
+                fd = open_relative_member_nofollow(root_fd, relative, directory=False)
+                mode = SCRIPT_MODE if relative == pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py") else TEXT_MODE
+                is_directory = False
+            retained = os.fstat(fd)
+            require((retained.st_dev, retained.st_ino) == (path_metadata.st_dev, path_metadata.st_ino),
+                    f"corpus member changed while opening: {relative}")
+            opened.append((fd, relative, is_directory, mode, retained))
 
-        # Open and retain every object before changing any mode. The descriptors
-        # are reauthenticated against the just-verified semantic snapshot.
-        for relative in directories:
-            fd = open_relative_member_nofollow(root_fd, relative, directory=True)
-            metadata = os.fstat(fd)
-            require((metadata.st_uid, metadata.st_gid) == expected_owner and metadata.st_mtime_ns == 0,
-                    f"corpus directory changed before mode repair: {relative}")
-            opened.append((fd, relative, True, DIRECTORY_MODE))
-        builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
-        for relative in files:
-            fd = open_relative_member_nofollow(root_fd, relative, directory=False)
-            metadata = os.fstat(fd)
-            expected = expected_files[relative]
-            require(
-                (metadata.st_dev, metadata.st_ino, metadata.st_uid, metadata.st_gid,
-                 metadata.st_size, metadata.st_mtime_ns, metadata.st_nlink)
-                == (expected["dev"], expected["ino"], expected["uid"], expected["gid"],
-                    expected["size"], expected["mtime_ns"], 1),
-                f"corpus file changed before mode repair: {relative}",
-            )
-            require(sha256_fd(fd) == expected["sha256"], f"corpus file bytes changed before mode repair: {relative}")
-            mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
-            opened.append((fd, relative, False, mode))
+        checksum_record = next((item for item in opened if item[1] == pathlib.PurePosixPath("SHA256SUMS.txt") and not item[2]), None)
+        require(checksum_record is not None, "missing SHA256SUMS.txt")
+        checksum_bytes = read_fd_bytes(checksum_record[0], 16 * 1024 * 1024)
+        checksum_records = parse_checksum_manifest_bytes(checksum_bytes)
+        retained_files = {relative.as_posix() for _fd, relative, is_directory, _mode, _meta in opened if not is_directory}
+        require(retained_files == set(checksum_records) | {"SHA256SUMS.txt"},
+                "retained corpus file membership disagrees with SHA256SUMS.txt")
+
+        # Full semantic verification relaxes only actual filesystem modes. All
+        # manifest-declared modes and every other corpus fact remain exact.
+        _verify_corpus_bound(bound_root, expected_root_name, allow_mode_drift=True)
+
+        root_after = os.fstat(root_fd)
+        require((root_after.st_dev, root_after.st_ino, root_after.st_uid, root_after.st_gid, root_after.st_mtime_ns)
+                == (root_metadata.st_dev, root_metadata.st_ino, root_metadata.st_uid, root_metadata.st_gid, root_metadata.st_mtime_ns),
+                "corpus root changed before mode repair")
+
+        # Reconcile each retained descriptor with its current pathname and the
+        # pre-verification checksum authority before performing any mutation.
+        for fd, relative, is_directory, _mode, initial in opened:
+            current = os.fstat(fd)
+            require((current.st_dev, current.st_ino) == (initial.st_dev, initial.st_ino),
+                    f"retained corpus member identity changed: {relative}")
+            require((current.st_uid, current.st_gid) == expected_owner,
+                    f"corpus member ownership changed: {relative}")
+            require(current.st_mtime_ns == 0, f"corpus member mtime changed: {relative}")
+            fresh_fd = open_relative_member_nofollow(root_fd, relative, directory=is_directory)
+            try:
+                fresh = os.fstat(fresh_fd)
+                require((fresh.st_dev, fresh.st_ino) == (current.st_dev, current.st_ino),
+                        f"corpus pathname was substituted before mode repair: {relative}")
+            finally:
+                os.close(fresh_fd)
+            if is_directory:
+                continue
+            require(current.st_nlink == 1, f"corpus contains a multiply linked file: {relative}")
+            if relative == pathlib.PurePosixPath("SHA256SUMS.txt"):
+                require(read_fd_bytes(fd, 16 * 1024 * 1024) == checksum_bytes,
+                        "checksum manifest bytes changed before mode repair")
+            else:
+                expected_digest = checksum_records.get(relative.as_posix())
+                require(expected_digest is not None, f"checksum authority omitted corpus member: {relative}")
+                require(sha256_fd(fd) == expected_digest,
+                        f"corpus file bytes changed after authenticated preflight: {relative}")
 
         os.fchmod(root_fd, DIRECTORY_MODE)
-        for fd, _relative, _directory, mode in opened:
+        for fd, _relative, _directory, mode, _initial in opened:
             os.fchmod(fd, mode)
 
-        # Strict verification proves that the pathname tree still refers to the
-        # authenticated objects and that only the intended modes changed.
         return _verify_corpus_bound(bound_root, expected_root_name)
     finally:
-        for fd, _relative, _directory, _mode in reversed(opened):
+        for fd, _relative, _directory, _mode, _initial in reversed(opened):
             os.close(fd)
         os.close(root_fd)
 

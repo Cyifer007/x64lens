@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint; the confirmatory corpus and method remain unfrozen until Sprint 15.
+> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 066 as the current implementation candidate; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
 > The retained cloud checkpoint accounted for 30 planned conditions: 12 x64lens
 > conditions executed and 18 pinned-baseline conditions were unavailable. A
@@ -176,26 +176,38 @@ See [ADR 0050](docs/adr/0050-fact-first-binary-role-lattice.md) and the
 [Patch 064 validation record](docs/sprints/sprint-12-patch-064-validation.md).
 
 
-## Sprint 12 private GNU-property checkpoint
+## Sprint 12 private role and GNU-property checkpoint
 
-Patch 065 adds a bounded internal parser for exact physical `PT_NOTE` and
-`PT_GNU_PROPERTY` carrier views. It retains every original program-header
-contributor, parses GNU property records under explicit caps, and records private
-x86 IBT/SHSTK states as unknown, absent, present, or contradictory. Exact
-duplicate carriers are canonicalized without erasing provenance; partial
-overlap, unknown properties, duplicate/conflicting feature records, truncation,
-and cap exhaustion remain explicit.
+Patch 065 established the first bounded private binary-role and x86 GNU-property
+fact paths, but independent validation found descriptor-alignment, overlapping-
+carrier, corpus-repair, private-backup, ABI, and oracle defects. Patch 066
+preserves the accepted architecture and corrects those defects before expanding
+the evidence surface.
 
-The patch changes no public text field or JSON schema field. Run:
+GNU property entries are now aligned relative to the property descriptor. Exact
+duplicate physical carriers remain canonicalized, while any non-identical
+carrier overlap fails as malformed before public output. Corpus mode repair
+retains the checksum authority plus every file and directory descriptor through
+semantic verification, then reauthenticates pathname identity and manifest-
+authorized bytes before `fchmod`. The private installer also retains ordinary
+termination requests until a complete authenticated rollback record exists.
+
+Patch 066 adds a development-only 28-object metamorphic preflight over three
+role constructions, four IBT/SHSTK states, canonical and exact-dual carrier
+encodings, and four single-axis mutants. The fact probe is not linked into the
+freestanding product. Public CLI behavior and schema `0.2.0` remain unchanged.
 
 ```bash
-make patch064-corrective-regression-smoke
+make patch065-corrective-regression-smoke
 make sprint12-binary-role-smoke
 make sprint12-gnu-property-smoke
+make sprint12-role-property-metamorphic-smoke
 ```
 
-See [ADR 0051](docs/adr/0051-bounded-private-gnu-property-evidence.md) and the
-[Patch 065 validation record](docs/sprints/sprint-12-patch-065-validation.md).
+See [ADR 0051](docs/adr/0051-bounded-private-gnu-property-evidence.md),
+[ADR 0052](docs/adr/0052-role-property-metamorphic-preflight.md), the
+[Patch 065 validation record](docs/sprints/sprint-12-patch-065-validation.md),
+and the [Patch 066 validation record](docs/sprints/sprint-12-patch-066-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -574,12 +586,13 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 064 are later
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 065 are later
 pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
 062 begins Sprint 12 loader-precision work, Patch 063 adds corrective hardening
 plus internal overlap provenance, and Patch 064 records the measured
-normalization deferral plus an internal role-evidence lattice without moving a
-release tag.
+normalization deferral plus an internal role-evidence lattice. The current Patch
+065 candidate corrects the reviewed Patch 064 findings and adds private bounded
+GNU-property facts without moving a release tag.
 
 Planned release sequence:
 
@@ -591,10 +604,11 @@ v0.1.0       first research release
 
 Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
-Patches 062 through 064 preserve schema `0.2.0`: Patch 062 adds shared PHDR
+Patches 062 through 065 preserve schema `0.2.0`: Patch 062 adds shared PHDR
 validity, Patch 063 adds parser/transaction hardening plus internal
 loader-contributor provenance, and Patch 064 adds only an internal role-evidence
-lattice and a diagnostic overlap decision. None adds a public schema field.
+lattice and a diagnostic overlap decision. The Patch 065 candidate adds private
+GNU-property facts without a public schema field.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

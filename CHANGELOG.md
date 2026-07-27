@@ -8,7 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Bounded private GNU-property evidence over canonical `PT_NOTE`/`PT_GNU_PROPERTY` views, original PHDR contributors, x86 FEATURE_1 AND facts, and explicit IBT/SHSTK unknown, absent, present, and contradictory states. Public text, JSON schema `0.2.0`, candidate metrics, and the historical PIE indicator remain unchanged.
+- Sprint 12 Patch 066 corrective hardening for descriptor-relative GNU-property entry alignment, fail-closed non-identical note-carrier overlap, descriptor-bound corpus mode repair, SysV internal-harness alignment, copied-read-only regression fixtures, and signal-safe authenticated private backup creation.
+- A development-only 28-object binary-role/GNU-property metamorphic preflight covering three role constructions, four IBT/SHSTK states, canonical and exact-dual carrier encodings, deterministic repeated facts, and four single-axis mutants without changing public schema or runtime dependencies.
+- ADR 0052, `make patch065-corrective-regression-smoke`, `make sprint12-role-property-metamorphic-smoke`, and the Patch 066 validation record.
+
+- Patch 065 introduced bounded private GNU-property evidence over canonical `PT_NOTE`/`PT_GNU_PROPERTY` views, original PHDR contributors, x86 FEATURE_1 AND facts, and explicit IBT/SHSTK unknown, absent, present, and contradictory states. Public text and JSON report fields, schema `0.2.0`, candidate metrics, and the historical PIE indicator remain unchanged; these static metadata facts do not establish runtime CET enforcement.
 - ADR 0051, the Patch 065 validation record, `make patch064-corrective-regression-smoke`, and `make sprint12-gnu-property-smoke`.
 
 - Sprint 12 Patch 064 internal-only binary-role evidence over ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated `DT_SONAME` string evidence, with explicit unknown, executable-like, shared-object-like, ambiguous, and contradictory states. The public `ET_DYN`-derived PIE indicator and schema `0.2.0` remain unchanged.
@@ -348,7 +352,7 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Sprint 12 Patch 065 closes the Patch 064 NASM effective-address and immediate-width build errors; validates empty/interior-NUL `PT_INTERP` and every `DT_SONAME` carrier; enforces summary-only role classification; authenticates corpus semantics, timestamps, ownership, and inode identity before mode repair; prevents permission-normalization symlink traversal; and makes private created-directory rollback inventory durable before file commits.
+- The Patch 065 candidate corrects the Patch 064 NASM effective-address and immediate-width build errors; validates empty/interior-NUL `PT_INTERP` and every `DT_SONAME` carrier; enforces summary-only role classification; authenticates corpus semantics, timestamps, ownership, and inode identity before mode repair; prevents permission-normalization symlink traversal; and corrects the reviewed private transaction rollback defect.
 
 - Sprint 12 Patch 064 corpus root/ownership continuity, canonical section-zero fixture generation, candidate-capacity and PHDR-index reconciliation, and a 49-case/196-execution PHDR oracle.
 

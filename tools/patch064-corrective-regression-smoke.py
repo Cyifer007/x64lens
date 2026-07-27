@@ -44,6 +44,13 @@ def copy_corpus(parent: Path) -> Path:
     parent.mkdir(parents=True, exist_ok=True)
     destination = parent / CORPUS.name
     shutil.copytree(CORPUS, destination, copy_function=shutil.copy2)
+    # The authenticated source corpus is intentionally retained read-only. This
+    # private test copy must make only the two files it deliberately rewrites
+    # owner-writable; otherwise the oracle fails on permissions before it can
+    # exercise semantic and checksum rejection.
+    for relative in ("corpus-manifest.json", "SHA256SUMS.txt"):
+        path = destination / relative
+        os.chmod(path, stat.S_IMODE(path.stat().st_mode) | stat.S_IWUSR)
     return destination
 
 

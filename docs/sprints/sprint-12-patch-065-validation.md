@@ -1,5 +1,20 @@
 # Sprint 12 Patch 065 Validation Plan
 
+## Status
+
+Historical implementation-candidate validation record. Patch 065 was committed
+locally but independent validation required a corrective patch. Patch 066
+preserves the accepted private-fact architecture and owns the current corrected
+commands, expected banners, and acceptance decision.
+
+## Review outcome
+
+Patch 065 did not pass acceptance. Review confirmed descriptor-relative GNU
+property alignment, non-identical carrier-overlap rejection, corpus repair
+identity/byte continuity, private-backup signal safety, binary-role harness ABI
+alignment, and copied-read-only regression-fixture defects. See the
+[Patch 066 validation plan](sprint-12-patch-066-validation.md).
+
 ## Purpose
 
 Validate the Patch 064 corrective work and the bounded private GNU-property
@@ -7,9 +22,8 @@ IBT/SHSTK evidence layer without changing public output or schema `0.2.0`.
 
 ## Source contract
 
-Patch 065 applies to committed Patch 064 source. Application must start from the
-exact base named by the delivery source-identity record and a clean tracked
-worktree.
+Patch 065 is defined against exact committed Patch 064 source
+`d9b73dce2b34bebc1230171115d307206d33dead`.
 
 ## Corrective gates
 
@@ -25,16 +39,9 @@ immediate-to-memory overflow forms, requires complete `PT_INTERP` and
 requires the GNU-property parser to revalidate each canonical carrier's retained
 offset and size before reading it, authenticates all non-mode corpus facts before
 repair, prevents hard-link chmod redirection, and proves permission normalization
-does not follow links into generated evidence trees.
-
-The corrected private overlay-manager smoke additionally requires:
-
-```text
-signal_inventory=1
-```
-
-This proves manager-created directories are durably authenticated before file
-commits and remain removable after an interrupted application.
+does not follow links into generated evidence trees. The corrected public-output
+oracle invokes the relevant analyzer commands and compares retained text and JSON
+bytes rather than inferring reporter parity from internal facts.
 
 ## Binary-role gate
 
@@ -138,5 +145,8 @@ Docker are separate environment strata.
 
 GNU-property facts remain private development evidence. They do not prove that
 CET is enabled at runtime, that every indirect branch is protected, or that a
-binary is safe or exploitable. Public indicators require a later reviewed
-policy and held-out confirmation.
+binary is safe or exploitable. After Patch 066 acceptance, held-out role/property
+confirmation remains diagnostic, unfrozen, and publication-ineligible. Bounded
+`readelf -n` reconciliation and native/container fact parity must follow before
+a separate review decides whether compatible public `0.2.x` indicators are
+justified.

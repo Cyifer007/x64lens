@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted for Sprint 12 Patch 065.
+Accepted fact-acquisition architecture. The original Patch 065 delivery was
+not accepted; Patch 066 preserves this boundary while correcting the reviewed
+parser, transaction, ABI, and oracle defects.
 
 ## Context
 
@@ -13,12 +15,11 @@ notes may overlap, and duplicate feature records may agree or conflict. Treating
 one program header or one external-tool label as authoritative would lose
 provenance and could overstate control-flow protection.
 
-Patch 064 also introduced a private PIE/DSO role lattice. Review found two build
-errors, incomplete `PT_INTERP` and `DT_SONAME` validation, a classifier that
-re-read mapped ELF bytes, corpus mode-repair races, symlink-following permission
-normalization, and an interrupted private-overlay directory-inventory gap. Those
-correctness issues must be closed before another metadata parser becomes an
-evidence authority.
+Patch 064 also introduced a private PIE/DSO role lattice. The Patch 065 candidate
+first corrects the Patch 064 build and parser errors, restores the summary-only
+classifier boundary, authenticates corpus repair before mutation, and prevents
+permission normalization from following links into generated evidence. These
+corrections precede the new metadata parser in the candidate pipeline.
 
 ## Decision
 
@@ -39,7 +40,8 @@ The implementation:
 - accepts file-backed `PT_NOTE` and `PT_GNU_PROPERTY` carriers;
 - canonicalizes only exact duplicate offset/size ranges;
 - retains every original PHDR index and type as a contributor;
-- records partial carrier overlap instead of merging it;
+- increments the private overlap fact and rejects every non-identical physical
+  carrier overlap as malformed before property facts reach a reporter;
 - requires bounded ELF note headers, names, descriptors, alignment, and padding;
 - preserves the carrier note-alignment policy: represented `PT_NOTE` streams
   use four- or eight-byte alignment, while ELF64 `PT_GNU_PROPERTY` requires
@@ -51,16 +53,25 @@ The implementation:
 - rejects malformed recognized records before public output;
 - returns stable unsupported status when explicit caps are exceeded.
 
+The fixed caps are 32 canonical carriers, 64 original contributors, 32 retained
+recognized notes, 256 scanned note headers, 256 property entries, a 65,536-byte
+property descriptor, and a 1 MiB carrier span. Canonical note-name,
+note-descriptor, property, and tail padding bytes must be zero.
+
 The fixed command-lifetime property context is 3,160 bytes. The internal
 `phdr_summary` grows from 200 to 264 bytes. Neither value is a measured RSS
 result.
 
 ## Public-output boundary
 
-Patch 065 does not change text output, JSON schema `0.2.0`, the historical PIE
-indicator, candidate counts, semantic classes, or scores. The new facts remain
-private until positive, negative, unknown, duplicate, conflicting, malformed,
-and held-out system cases justify a separate public-policy decision.
+Patch 065 does not add a public text or JSON report field, change schema `0.2.0`,
+change the historical `mitigations.pie` indicator, alter candidate counts,
+semantic classes, or scores, or publish IBT/SHSTK indicators. Controlled inputs
+that differ only in private feature facts must produce byte-identical public text
+and JSON. The new facts remain private until positive, negative, unknown,
+duplicate, conflicting, malformed, and held-out system cases, bounded external
+reconciliation, and native/container parity justify a separate public-policy
+decision.
 
 ## Module boundary
 
@@ -77,7 +88,10 @@ mapped ELF header or dynamic/string bytes.
 - Program headers remain loader and executable-region authority.
 - Exact duplicate physical carriers do not double-count one note.
 - Original PHDR provenance is not lost through canonicalization.
-- Partial overlap and conflicting feature records remain visible.
+- Partial carrier overlap remains observable as a failure fact and is rejected
+  before any property state reaches a reporter.
+- Conflicting feature records produce private contradictory states rather than
+  being silently collapsed or treated as parser errors.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Native and Docker validation must prove identical facts and unchanged public

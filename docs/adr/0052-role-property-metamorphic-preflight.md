@@ -1,0 +1,114 @@
+# ADR 0052: Role and GNU-Property Metamorphic Preflight
+
+## Status
+
+Accepted architecture for the Sprint 12 Patch 066 implementation candidate.
+Patch acceptance remains governed by the native, Docker, and independent
+validation plan.
+
+## Context
+
+Patch 065 introduced private binary-role and x86 GNU-property evidence, but its
+review found two parser defects and several transaction/oracle defects:
+
+- GNU property entries were aligned from the absolute file offset instead of
+  relative to the property descriptor;
+- partially overlapping note carriers could reach public reporting;
+- copied read-only corpus authorities caused the corrective oracle to fail
+  before exercising its intended mutation;
+- corpus mode repair did not retain directory identity and manifest-authorized
+  bytes through mutation;
+- private backup creation could be interrupted before an authenticated rollback
+  record existed;
+- one internal role harness violated nested-call stack alignment.
+
+The same review recommended a small metamorphic fact preflight before the wider
+held-out corpus or any public role/CET policy decision.
+
+## Decision
+
+Patch 066 first corrects the complete Patch 065 acceptance surface. It then adds
+one development-only 28-object metamorphic preflight:
+
+```text
+three role constructions
+  ET_EXEC executable-like
+  ET_DYN + PT_INTERP executable-like
+  ET_DYN + validated DT_SONAME shared-object-like
+
+x four property states
+  absent
+  IBT
+  SHSTK
+  IBT + SHSTK
+
+x two carrier encodings
+  canonical PT_NOTE
+  exact-dual PT_NOTE + PT_GNU_PROPERTY
+
+plus four single-axis mutants
+  unknown feature bit
+  conflicting feature records
+  descending property order
+  contradictory executable/shared role evidence
+```
+
+A development-only C fact probe maps each object read-only and invokes the same
+bounded assembly validators and classifiers used by x64lens. The probe is not
+linked into the freestanding product and does not define report policy.
+
+For every logical pair, the preflight requires:
+
+- deterministic repeated facts;
+- invariant role and IBT/SHSTK states;
+- one canonical physical property view;
+- exactly one additional original contributor in the dual encoding;
+- unchanged schema `0.2.0` and no private role/property fields in public JSON;
+- successful public command execution, or malformed failure before stdout for
+  the ordering mutant.
+
+## Parser corrections
+
+GNU property entry alignment is descriptor-relative. Exact duplicate carrier
+ranges remain canonicalized, but any non-identical physical overlap is malformed
+before a property state can reach a reporter. Valid four-byte-aligned `PT_NOTE`
+streams and partial-overlap failures are covered by both the independent byte
+oracle and the internal assembly reconciliation harness.
+
+## Transaction corrections
+
+Corpus mode repair opens and retains the checksum authority and every member
+before semantic verification. It reauthenticates current path identity,
+ownership, timestamps, link counts, sizes, and manifest-authorized bytes before
+using descriptor-relative `fchmod`.
+
+Private rollback backup creation defers ordinary termination through a temporary
+main-thread signal handler until the rollback manifest and authorization record
+are complete. A retained interrupted backup is therefore authenticated and
+recoverable rather than unexplained residue.
+
+## Boundaries
+
+Patch 066 does not:
+
+- add public PIE/DSO, IBT, or SHSTK fields;
+- change schema `0.2.0`;
+- infer runtime CET enforcement;
+- change executable-region authority, scanner behavior, candidate identity,
+  capacity, semantic classes, or scores;
+- freeze the wider held-out campaign;
+- add a runtime dependency.
+
+The broader 96-object held-out confirmation, bounded `readelf -n`
+reconciliation, and native/container fact-parity gate remain subsequent work.
+Whole-batch timing and process-tree RSS also remain separate measurement gates.
+
+## Consequences
+
+- The Patch 065 private facts receive a discriminating, deterministic state
+  preflight rather than fixture-only confidence.
+- Original carrier provenance remains visible without accepting ambiguous
+  overlap.
+- The dependency-free, decoder-free, one-worker product profile remains intact.
+- Public indicators remain blocked until wider held-out evidence justifies a
+  separate compatible-output decision.

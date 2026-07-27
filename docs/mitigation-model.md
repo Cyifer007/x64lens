@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented internally in Patch 065; no public indicator yet. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the current Patch 066 candidate; acceptance is pending and there is no public indicator. |
 
 ## Evidence and confidence
 
@@ -174,26 +174,39 @@ validated `DT_SONAME` string evidence, then classifies the evidence as unknown,
 executable-like, shared-object-like, ambiguous, or contradictory. `ET_DYN`
 alone remains unknown in this internal lattice. A raw SONAME tag or index is not
 role evidence until it resolves to a bounded, nonempty, in-range,
-NUL-terminated string.
+NUL-terminated string. Patch 065 further requires the bounded `PT_INTERP` path
+to contain a non-NUL byte, have no interior NUL, and end in a terminal NUL, and
+validates every `DT_SONAME` carrier.
 
 Duplicate or conflicting role carriers are contradictory rather than
-first-wins or last-wins. The `PT_INTERP` span must have nonzero length, be
-file-backed, stay within the 4,096-byte cap, and end in NUL. Dynamic role tags
-use the existing bounded `PT_DYNAMIC` view. No new public mitigation field is
-emitted, and GNU-property IBT/SHSTK evidence remains a separate Sprint 12 parser
-gate.
+first-wins or last-wins. Dynamic role tags use the existing bounded `PT_DYNAMIC`
+view. No new public mitigation field is emitted; the Patch 066 candidate carries
+the corrected role facts into a separate GNU-property parser gate.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
-Patch 065 implements bounded internal acquisition for x86 IBT and SHSTK GNU
-property facts without publishing a new mitigation field. Exact duplicate
+Patch 065 added bounded internal acquisition; the current Patch 066 candidate corrects and validates
+for x86 IBT and SHSTK GNU property facts without publishing a new mitigation
+field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
 produce private unknown, absent, present, or contradictory feature states.
-Unknown property types and feature bits remain bounded facts; malformed,
-truncated, conflicting, and over-cap structures fail closed.
+No recognized feature record yields unknown; a missing bit in the OR aggregate
+yields absent; a bit in the AND aggregate yields present; and a bit present in
+OR but absent from AND yields contradictory. Unknown property types and feature
+bits remain bounded facts. Malformed or truncated structures fail with exit 5
+before stdout, while explicit cap exhaustion fails with exit 6 before stdout.
 
 These facts do not prove runtime CET enforcement, full control-flow integrity,
 safety, or exploitability. A later public-policy gate must preserve evidence,
 unknowns, duplicates, conflicts, and held-out confirmation before changing text
 or JSON output.
+
+
+## Sprint 12 Patch 066 metamorphic evidence gate
+
+Patch 066 adds no public mitigation indicator. Its 28-object controlled preflight
+requires private role and IBT/SHSTK states to remain invariant across canonical
+and exact-dual carrier encodings, preserves exact contributor differences, and
+exercises unknown, conflicting, ordering, and role-contradiction mutants. This
+is a development gate, not evidence of runtime CET enforcement.

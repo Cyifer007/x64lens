@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted for Sprint 12 Patch 064.
+Accepted architecture for Sprint 12. The Patch 064 implementation was rejected
+as delivered; the current Patch 066 candidate carries the decision forward with
+the reviewed corrections.
 
 ## Context
 
@@ -57,8 +59,9 @@ This is a measured deferral, not a claim that executable overlap never occurs.
 The summary grows from 144 to 200 bytes. The added 56 bytes are fixed command
 state, not measured RSS.
 
-`src/binary_role.asm` consumes the validated ELF header and completed PHDR
-summary and assigns exactly one internal state:
+`src/binary_role.asm` consumes only completed PHDR-summary facts, including the
+copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
+corrects the earlier implementation that reread mapped ELF bytes:
 
 ```text
 unknown
@@ -88,13 +91,15 @@ public PIE/DSO claim.
 
 ### Bound the new parser inputs
 
-The `PT_INTERP` file span must have nonzero length, be file-backed, be no larger
-than 4,096 bytes, and end in NUL inside its checked range. Raw `DT_SONAME`
-presence is insufficient: its retained string-table index must resolve to a
+The `PT_INTERP` file span must contain at least one non-NUL path byte, be
+file-backed, be no larger than 4,096 bytes, have no interior NUL, and end in one
+NUL inside its checked range. Raw `DT_SONAME` presence is insufficient: every
+carrier is validated, and each retained string-table index must resolve to a
 bounded, nonempty, NUL-terminated string before it becomes shared-object
 evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
-outcomes remain fail-closed before report output.
+outcomes remain fail-closed before report output. Patch 065 corrects these
+string-validation requirements for the current candidate.
 
 ## Consequences
 
@@ -104,7 +109,8 @@ outcomes remain fail-closed before report output.
 - Loader-role evidence becomes explicit without overstating `ET_DYN`.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
-- GNU-property IBT/SHSTK parsing can remain an independent Patch 065 gate.
+- GNU-property IBT/SHSTK parsing remains an independent downstream gate in the
+  Patch 065 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

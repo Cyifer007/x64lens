@@ -336,4 +336,17 @@ GNU-property facts use a private metadata provenance layer separate from gadget
 candidate provenance. A canonical physical carrier or note does not erase the
 original PHDR index/type contributors that exposed it. IBT/SHSTK states remain
 internal and do not upgrade raw, exact-suffix, semantic-exact, unknown, or scored
-candidate evidence.
+candidate evidence. Exact duplicate offset/size carrier views are canonicalized. Any non-identical
+carrier overlap is retained as a failure fact and rejected before property
+evidence reaches reporting. Canonical note and
+property padding must be zero, and the explicit carrier, contributor, note,
+header, property, descriptor, and span caps remain part of the evidence status.
+
+
+## Sprint 12 Patch 066 private metadata provenance
+
+Binary-role and GNU-property facts remain private metadata evidence outside the
+candidate provenance tiers. The metamorphic preflight preserves canonical
+physical views and original PHDR contributors separately. Exact-dual carrier
+encodings may add a contributor without changing the logical role or feature
+state. Non-identical carrier overlap is malformed rather than normalized.

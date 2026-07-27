@@ -289,13 +289,15 @@ field. Extended section-zero common and inactive fields are independently
 covered, and a structurally valid combined extended-numbering carrier remains a
 stable unsupported result.
 
-The new `PT_INTERP` reader requires a nonzero-length bounded file range, a
-4,096-byte implementation cap, and NUL as the final byte of the checked range.
-`DT_FLAGS_1` and `DT_SONAME` are read only through the existing bounded
-dynamic-table loop. Raw SONAME presence becomes role evidence only after its
-string-table index resolves to a bounded, nonempty, in-range, NUL-terminated
-string. Duplicate and conflicting carriers remain explicit internal
-contradiction facts; they are never silently merged into a public PIE claim.
+The corrected `PT_INTERP` reader requires a bounded file range containing at
+least one non-NUL path byte, a 4,096-byte implementation cap, no interior NUL,
+and NUL as the final byte of the checked range. `DT_FLAGS_1` and every
+`DT_SONAME` carrier are read through the existing bounded dynamic-table loop.
+Raw SONAME presence becomes role evidence only after each string-table index
+resolves to a bounded, nonempty, in-range, NUL-terminated string. Duplicate and
+conflicting carriers remain explicit internal contradiction facts; they are
+never silently merged into a public PIE claim. Patch 065 carries these
+corrections over the Patch 064 source boundary.
 
 Generated corpus verification now treats UID/GID consistency as authenticated
 metadata. Mode-only repair keeps the root descriptor open through checksum
@@ -304,12 +306,26 @@ replacement at the caller-visible pathname is not modified.
 
 ## Sprint 12 Patch 065 GNU-property parser safety
 
-GNU property evidence is consumed only from checked file-backed `PT_NOTE` and
+The Patch 066 candidate consumes GNU property evidence only from checked file-backed `PT_NOTE` and
 `PT_GNU_PROPERTY` carriers. The parser bounds carrier bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
 the ELF64 `PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
 property counts, descriptor size, canonical views, contributors, and recognized
-notes before dereference. Malformed recognized structures return exit code 5
+notes before dereference; it requires monotonic property ordering and zero note
+and property padding. Malformed recognized structures return exit code 5
 without stdout; explicit implementation-cap exhaustion returns exit code 6.
-Exact duplicate carriers are canonicalized, partial overlap is retained, and
-original PHDR contributors remain independently recorded.
+Exact duplicate carriers are canonicalized and original PHDR contributors remain
+independently recorded. Any non-identical carrier overlap increments the private
+overlap fact and fails malformed before reporting. Duplicate feature records preserve AND/OR aggregates; differing
+values produce private contradictory states, while unknown property types and
+feature bits remain bounded facts.
+
+
+## Sprint 12 Patch 066 GNU-property and repair regressions
+
+Patch 066 adds a valid four-byte-aligned `PT_NOTE` case whose property entries
+are aligned relative to a descriptor beginning at absolute offset modulo eight
+equal to four. It also adds malformed partial-carrier overlap across public
+command paths. Corpus mode repair retains descriptor identity and checksum-
+authorized bytes through preflight and rejects directory substitution or
+post-preflight byte mutation before any chmod.
