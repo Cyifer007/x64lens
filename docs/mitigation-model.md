@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK indicators | validated GNU property-note evidence with bounded parsing and controlled fixtures | Planned for Sprint 12 before the research preview. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented internally in Patch 065; no public indicator yet. |
 
 ## Evidence and confidence
 
@@ -166,16 +166,34 @@ normalization cannot silently corrupt executable-region counts or mapping
 lineage. PIE-versus-DSO and GNU-property IBT/SHSTK evidence remain separate
 Sprint 12 gates.
 
-## Sprint 12 Patch 064 private role evidence
+## Sprint 12 Patch 064 internal role evidence
 
 Patch 064 does not change the public `PIE indicator`. It adds bounded internal
 facts for ELF type, entrypoint, `PT_INTERP`, `DT_FLAGS_1 & DF_1_PIE`, and
-`DT_SONAME`, then classifies the evidence as unknown, executable-like,
-shared-object-like, ambiguous, or contradictory. `ET_DYN` alone remains unknown
-in this private lattice.
+validated `DT_SONAME` string evidence, then classifies the evidence as unknown,
+executable-like, shared-object-like, ambiguous, or contradictory. `ET_DYN`
+alone remains unknown in this internal lattice. A raw SONAME tag or index is not
+role evidence until it resolves to a bounded, nonempty, in-range,
+NUL-terminated string.
 
 Duplicate or conflicting role carriers are contradictory rather than
-first-wins or last-wins. `PT_INTERP` is capped, file-backed, nonempty, and
-NUL-terminated. Dynamic role tags use the existing bounded `PT_DYNAMIC` view.
-No new public mitigation field is emitted, and GNU-property IBT/SHSTK evidence
-remains a separate Sprint 12 parser gate.
+first-wins or last-wins. The `PT_INTERP` span must have nonzero length, be
+file-backed, stay within the 4,096-byte cap, and end in NUL. Dynamic role tags
+use the existing bounded `PT_DYNAMIC` view. No new public mitigation field is
+emitted, and GNU-property IBT/SHSTK evidence remains a separate Sprint 12 parser
+gate.
+
+## Sprint 12 Patch 065 private GNU-property evidence
+
+Patch 065 implements bounded internal acquisition for x86 IBT and SHSTK GNU
+property facts without publishing a new mitigation field. Exact duplicate
+`PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
+every original PHDR contributor remains retained. Recognized GNU property notes
+produce private unknown, absent, present, or contradictory feature states.
+Unknown property types and feature bits remain bounded facts; malformed,
+truncated, conflicting, and over-cap structures fail closed.
+
+These facts do not prove runtime CET enforcement, full control-flow integrity,
+safety, or exploitability. A later public-policy gate must preserve evidence,
+unknowns, duplicates, conflicts, and held-out confirmation before changing text
+or JSON output.

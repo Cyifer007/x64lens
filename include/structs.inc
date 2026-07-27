@@ -71,7 +71,22 @@
 %define PHDR_SUMMARY_SONAME_VALUE    176
 %define PHDR_SUMMARY_ROLE_EVIDENCE   184
 %define PHDR_SUMMARY_ROLE_STATE      192
-%define PHDR_SUMMARY_RECORD_SIZE     200
+
+; Completed ELF header facts consumed by the role classifier. Keeping these in
+; the summary prevents binary_role.asm from reaching back into mapped bytes.
+%define PHDR_SUMMARY_ELF_TYPE         200
+%define PHDR_SUMMARY_ELF_ENTRY        208
+
+; Private bounded GNU-property evidence. These facts are intentionally not part
+; of public schema 0.2.0 yet. The parser records canonical carrier/note views in
+; GNU_PROPERTY_CONTEXT and emits only bounded aggregate facts here.
+%define PHDR_SUMMARY_GNU_PROPERTY_VIEW_COUNT        216
+%define PHDR_SUMMARY_GNU_PROPERTY_CONTRIBUTOR_COUNT 224
+%define PHDR_SUMMARY_GNU_PROPERTY_NOTE_COUNT        232
+%define PHDR_SUMMARY_GNU_PROPERTY_FEATURE1_COUNT    240
+%define PHDR_SUMMARY_GNU_PROPERTY_FEATURE1_AND      248
+%define PHDR_SUMMARY_GNU_PROPERTY_FEATURE1_OR       256
+%define PHDR_SUMMARY_RECORD_SIZE                     264
 
 ; Internal binary-role lattice. These facts are intentionally not public output
 ; yet; ET_DYN alone remains insufficient to distinguish PIE from a shared object.
@@ -94,6 +109,73 @@
 %define ROLE_EVIDENCE_CONFLICT_FLAGS1  (1 << 9)
 %define ROLE_EVIDENCE_CONFLICT_SONAME  (1 << 10)
 %define ROLE_EVIDENCE_PARSE_MASK       (ROLE_EVIDENCE_DT_SONAME | ROLE_EVIDENCE_CONFLICT_FLAGS1 | ROLE_EVIDENCE_CONFLICT_SONAME)
+
+
+; Private GNU-property indicator states. ABSENT is justified only after at least
+; one bounded GNU property note was parsed and the named bit was absent from the
+; canonical AND evidence. UNKNOWN means no qualifying bounded property evidence.
+%define GNU_PROPERTY_STATE_UNKNOWN        0
+%define GNU_PROPERTY_STATE_ABSENT         1
+%define GNU_PROPERTY_STATE_PRESENT        2
+%define GNU_PROPERTY_STATE_CONTRADICTORY  3
+
+; Bounded canonical-view context used only during one command. Original PHDR
+; contributor identity is retained separately from canonical physical ranges.
+%define GNU_PROPERTY_CARRIER_MAX          32
+%define GNU_PROPERTY_CONTRIBUTOR_MAX      64
+%define GNU_PROPERTY_NOTE_MAX             32
+%define GNU_PROPERTY_NOTE_SCAN_MAX        256
+%define GNU_PROPERTY_ENTRY_MAX            256
+%define GNU_PROPERTY_DESC_SCAN_MAX        65536
+%define GNU_PROPERTY_CARRIER_SCAN_MAX     1048576
+
+%define GNU_PROPERTY_CTX_CARRIER_COUNT      0
+%define GNU_PROPERTY_CTX_CONTRIBUTOR_COUNT  8
+%define GNU_PROPERTY_CTX_NOTE_COUNT         16
+%define GNU_PROPERTY_CTX_UNKNOWN_COUNT      24
+%define GNU_PROPERTY_CTX_FEATURE1_COUNT     32
+%define GNU_PROPERTY_CTX_CONFLICT_COUNT     40
+%define GNU_PROPERTY_CTX_OVERLAP_COUNT      48
+%define GNU_PROPERTY_CTX_FEATURE1_AND       56
+%define GNU_PROPERTY_CTX_FEATURE1_OR        64
+%define GNU_PROPERTY_CTX_IBT_STATE          72
+%define GNU_PROPERTY_CTX_SHSTK_STATE        80
+%define GNU_PROPERTY_CTX_HEADER_SIZE        88
+
+; Canonical carrier: exact physical offset/size plus carrier-kind and note-
+; alignment masks. Exact duplicate PT_NOTE/PT_GNU_PROPERTY carriers share one
+; record; partial overlaps remain distinct and increment the overlap fact.
+;
+; ELF note alignment is a carrier property. PT_GNU_PROPERTY requires the
+; native ELF64 eight-byte note alignment. PT_NOTE may carry either ordinary
+; four-byte note streams or eight-byte GNU-property streams. Exact duplicate
+; physical views OR the masks so the canonical parser applies the strongest
+; represented alignment once without losing the original contributors.
+%define GNU_PROPERTY_CARRIER_OFFSET         0
+%define GNU_PROPERTY_CARRIER_SIZE           8
+%define GNU_PROPERTY_CARRIER_KIND_MASK      16
+%define GNU_PROPERTY_CARRIER_ALIGN_MASK     24
+%define GNU_PROPERTY_CARRIER_RECORD_SIZE    32
+%define GNU_PROPERTY_CARRIER_KIND_NOTE      (1 << 0)
+%define GNU_PROPERTY_CARRIER_KIND_PROPERTY  (1 << 1)
+%define GNU_PROPERTY_CARRIER_ALIGN_4         (1 << 0)
+%define GNU_PROPERTY_CARRIER_ALIGN_8         (1 << 1)
+
+%define GNU_PROPERTY_CONTRIB_PHDR_INDEX     0
+%define GNU_PROPERTY_CONTRIB_PHDR_TYPE      8
+%define GNU_PROPERTY_CONTRIB_CARRIER_SLOT   16
+%define GNU_PROPERTY_CONTRIB_RECORD_SIZE    24
+
+; Canonical recognized GNU property note view. Exact duplicate note bytes found
+; through overlapping/exact-duplicate carriers are represented once.
+%define GNU_PROPERTY_NOTE_OFFSET            0
+%define GNU_PROPERTY_NOTE_SIZE              8
+%define GNU_PROPERTY_NOTE_RECORD_SIZE       16
+
+%define GNU_PROPERTY_CTX_CARRIERS           GNU_PROPERTY_CTX_HEADER_SIZE
+%define GNU_PROPERTY_CTX_CONTRIBUTORS       (GNU_PROPERTY_CTX_CARRIERS + (GNU_PROPERTY_CARRIER_MAX * GNU_PROPERTY_CARRIER_RECORD_SIZE))
+%define GNU_PROPERTY_CTX_NOTES              (GNU_PROPERTY_CTX_CONTRIBUTORS + (GNU_PROPERTY_CONTRIBUTOR_MAX * GNU_PROPERTY_CONTRIB_RECORD_SIZE))
+%define GNU_PROPERTY_CONTEXT_SIZE           (GNU_PROPERTY_CTX_NOTES + (GNU_PROPERTY_NOTE_MAX * GNU_PROPERTY_NOTE_RECORD_SIZE))
 
 ; Canary indicator states. This is an evidence-qualified static indicator,
 ; not proof that every function in the target is stack-protected.

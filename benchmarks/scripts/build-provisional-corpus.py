@@ -1571,10 +1571,11 @@ def normalize_tree_metadata(root: pathlib.Path) -> None:
         os.utime(path, (FIXED_MTIME, FIXED_MTIME), follow_symlinks=False)
 
 
-def validate_tree_metadata(root: pathlib.Path) -> None:
+def validate_tree_metadata(root: pathlib.Path, *, allow_mode_drift: bool = False) -> None:
     root_metadata = root_directory_metadata(root, "corpus root")
     expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
-    require(stat.S_IMODE(root_metadata.st_mode) == DIRECTORY_MODE, "corpus root mode changed")
+    if not allow_mode_drift:
+        require(stat.S_IMODE(root_metadata.st_mode) == DIRECTORY_MODE, "corpus root mode changed")
     require(root_metadata.st_mtime_ns == 0, "corpus root mtime changed")
     for directory in (path for path in root.rglob("*") if path.is_dir()):
         metadata = directory.lstat()
@@ -1583,7 +1584,8 @@ def validate_tree_metadata(root: pathlib.Path) -> None:
             (metadata.st_uid, metadata.st_gid) == expected_owner,
             f"corpus directory ownership changed: {directory.relative_to(root)}",
         )
-        require(stat.S_IMODE(metadata.st_mode) == DIRECTORY_MODE, f"corpus directory mode changed: {directory.relative_to(root)}")
+        if not allow_mode_drift:
+            require(stat.S_IMODE(metadata.st_mode) == DIRECTORY_MODE, f"corpus directory mode changed: {directory.relative_to(root)}")
         require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {directory.relative_to(root)}")
 
 
@@ -1660,13 +1662,15 @@ def corpus_member(root: pathlib.Path, raw: Any, name: str) -> pathlib.Path:
     return path
 
 
-def verify_manifest_identity(root: pathlib.Path, record: Any, name: str, expected_mode: int) -> pathlib.Path:
+def verify_manifest_identity(root: pathlib.Path, record: Any, name: str, expected_mode: int, *, allow_mode_drift: bool = False) -> pathlib.Path:
     require(isinstance(record, dict), f"{name} must be an object")
     path = corpus_member(root, record.get("snapshot_path"), f"{name}.snapshot_path")
     identity = file_identity(path)
     require(identity["size_bytes"] == require_int(record.get("size_bytes"), f"{name}.size_bytes"), f"{name} size mismatch")
     require(identity["sha256"] == require_sha256(record.get("sha256"), f"{name}.sha256"), f"{name} hash mismatch")
-    require(identity["mode"] == f"{expected_mode:04o}" and record.get("mode") == f"{expected_mode:04o}", f"{name} mode mismatch")
+    require(record.get("mode") == f"{expected_mode:04o}", f"{name} manifest mode mismatch")
+    if not allow_mode_drift:
+        require(identity["mode"] == f"{expected_mode:04o}", f"{name} mode mismatch")
     return path
 
 
@@ -2090,9 +2094,9 @@ def verify_corpus(root: pathlib.Path) -> dict[str, Any]:
         os.close(root_fd)
 
 
-def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str) -> dict[str, Any]:
+def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str, *, allow_mode_drift: bool = False) -> dict[str, Any]:
     verify_checksum_manifest(root)
-    validate_tree_metadata(root)
+    validate_tree_metadata(root, allow_mode_drift=allow_mode_drift)
     manifest_path = root / "corpus-manifest.json"
     require(manifest_path.stat().st_size <= MAX_MANIFEST_BYTES, "corpus manifest is too large")
     try:
@@ -2132,10 +2136,10 @@ def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str) -> dict[st
             and set(inputs[input_name]) == {"source_path", "snapshot_path", "size_bytes", "sha256", "mode"},
             f"corpus {input_name} input record is malformed",
         )
-    spec_snapshot = verify_manifest_identity(root, inputs["spec"], "inputs.spec", INPUT_MODE)
-    source_snapshot = verify_manifest_identity(root, inputs["source"], "inputs.source", INPUT_MODE)
-    license_snapshot = verify_manifest_identity(root, inputs["license"], "inputs.license", INPUT_MODE)
-    builder_snapshot = verify_manifest_identity(root, inputs["builder"], "inputs.builder", SCRIPT_MODE)
+    spec_snapshot = verify_manifest_identity(root, inputs["spec"], "inputs.spec", INPUT_MODE, allow_mode_drift=allow_mode_drift)
+    source_snapshot = verify_manifest_identity(root, inputs["source"], "inputs.source", INPUT_MODE, allow_mode_drift=allow_mode_drift)
+    license_snapshot = verify_manifest_identity(root, inputs["license"], "inputs.license", INPUT_MODE, allow_mode_drift=allow_mode_drift)
+    builder_snapshot = verify_manifest_identity(root, inputs["builder"], "inputs.builder", SCRIPT_MODE, allow_mode_drift=allow_mode_drift)
     try:
         snapshot_spec = json.loads(spec_snapshot.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
@@ -2434,7 +2438,9 @@ def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str) -> dict[st
         path = corpus_member(root, target.get("relative_path"), f"targets[{index}].relative_path")
         require(path.parent == root / "targets", f"target path escaped the targets directory: {target_id}")
         identity = file_identity(path)
-        require(identity["mode"] == f"{TARGET_MODE:04o}" and target.get("mode") == f"{TARGET_MODE:04o}", f"target mode changed: {target_id}")
+        require(target.get("mode") == f"{TARGET_MODE:04o}", f"target manifest mode changed: {target_id}")
+        if not allow_mode_drift:
+            require(identity["mode"] == f"{TARGET_MODE:04o}", f"target mode changed: {target_id}")
         require(identity["size_bytes"] == target.get("size_bytes"), f"target size mismatch: {target_id}")
         require(identity["size_bytes"] <= maximum_output_bytes, f"target exceeds retained maximum_output_bytes: {target_id}")
         require(identity["sha256"] == target.get("sha256"), f"target hash mismatch: {target_id}")
@@ -2517,40 +2523,132 @@ def _verify_corpus_bound(root: pathlib.Path, expected_root_name: str) -> dict[st
     for path in validate_regular_tree(root):
         metadata = path.lstat()
         expected_mode = SCRIPT_MODE if path == builder_snapshot else TEXT_MODE
-        require(stat.S_IMODE(metadata.st_mode) == expected_mode, f"corpus file mode changed: {path.relative_to(root)}")
+        if not allow_mode_drift:
+            require(stat.S_IMODE(metadata.st_mode) == expected_mode, f"corpus file mode changed: {path.relative_to(root)}")
         require(metadata.st_mtime_ns == 0, f"corpus file mtime changed: {path.relative_to(root)}")
     return manifest
 
 
-def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
-    """Repair authenticated mode-only drift under one retained root descriptor.
+def open_relative_member_nofollow(root_fd: int, relative: pathlib.PurePosixPath, *, directory: bool) -> int:
+    """Open one corpus member beneath a retained root descriptor.
 
-    Bytes, membership, ownership, link count, timestamps, and manifests are
-    authenticated before chmod. The original root pathname may be replaced by
-    another same-UID object without redirecting this repair; all traversal stays
-    rooted at the retained descriptor.
+    Every component is opened with O_NOFOLLOW. The returned descriptor remains
+    bound to the authenticated inode even if a same-UID actor later substitutes
+    the pathname.
+    """
+    require(relative.parts and not relative.is_absolute() and ".." not in relative.parts, "unsafe corpus member path")
+    current_fd = os.dup(root_fd)
+    try:
+        for index, component in enumerate(relative.parts):
+            final = index == len(relative.parts) - 1
+            flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+            if not final or directory:
+                flags |= os.O_DIRECTORY
+            next_fd = os.open(component, flags, dir_fd=current_fd)
+            os.close(current_fd)
+            current_fd = next_fd
+        metadata = os.fstat(current_fd)
+        require(stat.S_ISDIR(metadata.st_mode) if directory else stat.S_ISREG(metadata.st_mode), f"corpus member type changed: {relative}")
+        return current_fd
+    except BaseException:
+        os.close(current_fd)
+        raise
+
+
+def sha256_fd(fd: int) -> str:
+    digest = hashlib.sha256()
+    os.lseek(fd, 0, os.SEEK_SET)
+    while True:
+        chunk = os.read(fd, 1024 * 1024)
+        if not chunk:
+            break
+        digest.update(chunk)
+    os.lseek(fd, 0, os.SEEK_SET)
+    return digest.hexdigest()
+
+
+def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
+    """Repair only authenticated mode drift through retained member descriptors.
+
+    Complete corpus semantics, hashes, membership, ownership, link counts, and
+    timestamps are verified before any mutation. Every directory and file is
+    then reopened component-by-component beneath the retained root descriptor,
+    reauthenticated, held open, and changed only with fchmod. A hard-link or
+    pathname substitution therefore cannot redirect chmod to a foreign inode.
     """
     absolute = pathlib.Path(os.path.abspath(root))
     expected_root_name = absolute.name
     root_fd = open_directory_nofollow(absolute, "corpus mode-repair root")
+    opened: list[tuple[int, pathlib.PurePosixPath, bool, int]] = []
     try:
         bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
-        verify_checksum_manifest(bound_root)
-        files = validate_regular_tree(bound_root)
-        builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
-        for directory in sorted((path for path in bound_root.rglob("*") if path.is_dir())):
-            require(
-                not directory.is_symlink(),
-                f"corpus contains a symlinked directory: {directory.relative_to(bound_root)}",
-            )
-            os.chmod(directory, DIRECTORY_MODE, follow_symlinks=False)
-        os.fchmod(root_fd, DIRECTORY_MODE)
-        for path in files:
+        # This is the full verifier with only actual filesystem mode comparisons
+        # relaxed. Manifest-declared modes remain exact.
+        _verify_corpus_bound(bound_root, expected_root_name, allow_mode_drift=True)
+        root_metadata = os.fstat(root_fd)
+        expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
+        require(root_metadata.st_mtime_ns == 0, "corpus root mtime changed")
+
+        directories: list[pathlib.PurePosixPath] = []
+        files: list[pathlib.PurePosixPath] = []
+        expected_files: dict[pathlib.PurePosixPath, dict[str, Any]] = {}
+        for path in sorted(bound_root.rglob("*")):
+            metadata = path.lstat()
             relative = pathlib.PurePosixPath(path.relative_to(bound_root).as_posix())
-            expected_mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
-            os.chmod(path, expected_mode, follow_symlinks=False)
+            if stat.S_ISDIR(metadata.st_mode):
+                require((metadata.st_uid, metadata.st_gid) == expected_owner, f"corpus directory ownership changed: {relative}")
+                require(metadata.st_mtime_ns == 0, f"corpus directory mtime changed: {relative}")
+                directories.append(relative)
+                continue
+            require(stat.S_ISREG(metadata.st_mode), f"corpus contains a non-regular member: {relative}")
+            require(metadata.st_nlink == 1, f"corpus contains a multiply linked file: {relative}")
+            require((metadata.st_uid, metadata.st_gid) == expected_owner, f"corpus file ownership changed: {relative}")
+            require(metadata.st_mtime_ns == 0, f"corpus file mtime changed: {relative}")
+            files.append(relative)
+            expected_files[relative] = {
+                "dev": metadata.st_dev,
+                "ino": metadata.st_ino,
+                "uid": metadata.st_uid,
+                "gid": metadata.st_gid,
+                "size": metadata.st_size,
+                "mtime_ns": metadata.st_mtime_ns,
+                "sha256": sha256_file(path),
+            }
+
+        # Open and retain every object before changing any mode. The descriptors
+        # are reauthenticated against the just-verified semantic snapshot.
+        for relative in directories:
+            fd = open_relative_member_nofollow(root_fd, relative, directory=True)
+            metadata = os.fstat(fd)
+            require((metadata.st_uid, metadata.st_gid) == expected_owner and metadata.st_mtime_ns == 0,
+                    f"corpus directory changed before mode repair: {relative}")
+            opened.append((fd, relative, True, DIRECTORY_MODE))
+        builder_relative = pathlib.PurePosixPath("inputs/builder/build-provisional-corpus.py")
+        for relative in files:
+            fd = open_relative_member_nofollow(root_fd, relative, directory=False)
+            metadata = os.fstat(fd)
+            expected = expected_files[relative]
+            require(
+                (metadata.st_dev, metadata.st_ino, metadata.st_uid, metadata.st_gid,
+                 metadata.st_size, metadata.st_mtime_ns, metadata.st_nlink)
+                == (expected["dev"], expected["ino"], expected["uid"], expected["gid"],
+                    expected["size"], expected["mtime_ns"], 1),
+                f"corpus file changed before mode repair: {relative}",
+            )
+            require(sha256_fd(fd) == expected["sha256"], f"corpus file bytes changed before mode repair: {relative}")
+            mode = SCRIPT_MODE if relative == builder_relative else TEXT_MODE
+            opened.append((fd, relative, False, mode))
+
+        os.fchmod(root_fd, DIRECTORY_MODE)
+        for fd, _relative, _directory, mode in opened:
+            os.fchmod(fd, mode)
+
+        # Strict verification proves that the pathname tree still refers to the
+        # authenticated objects and that only the intended modes changed.
         return _verify_corpus_bound(bound_root, expected_root_name)
     finally:
+        for fd, _relative, _directory, _mode in reversed(opened):
+            os.close(fd)
         os.close(root_fd)
 
 

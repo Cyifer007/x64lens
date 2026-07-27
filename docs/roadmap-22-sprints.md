@@ -168,7 +168,16 @@ Patch 062 completes the ordinary PHDR-validity and explicit extended-numbering-o
 
 Patch 063 retains lossless overlap provenance. Patch 064 records the measured
 decision to defer executable-range normalization because the bounded diagnostic
-sample produced no overlap activation, then adds a private fact-first
+sample produced no overlap activation, then adds an internal-only fact-first
 PIE-versus-DSO role lattice without changing public output. Sprint 12 remains
-active. The next ordered gates are a release-facing role policy and bounded GNU
-property IBT/SHSTK parsing, followed by held-out diagnostic confirmation.
+active. The next ordered gate is bounded GNU-property IBT/SHSTK parsing. A
+release-facing role policy remains separately evidence- and schema-gated before
+held-out diagnostic confirmation.
+
+## Sprint 12 Patch 065 checkpoint
+
+Patch 065 establishes bounded private GNU-property evidence for x86 IBT and
+SHSTK after correcting the Patch 064 build, parser, corpus-repair, permission,
+and private-delivery findings. Public mitigation output and schema remain
+unchanged. Sprint 12 continues with held-out role/property confirmation and the
+remaining closeout reconciliation before Sprint 13 semantic work.

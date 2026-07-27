@@ -322,8 +322,18 @@ records that scan unioning and candidate identity deduplication remain
 unimplemented under the measured activation thresholds.
 
 Binary-role evidence is command-level loader metadata in `phdr_summary`, not
-candidate validity evidence. ELF type, entrypoint, `PT_INTERP`, `DF_1_PIE`, and
-`DT_SONAME` facts produce a private unknown/executable-like/shared-like/
-ambiguous/contradictory state. They do not upgrade raw, exact-suffix,
-semantic-exact, decoder, unknown-candidate, or scored evidence and are not
-emitted in schema `0.2.0` by Patch 064.
+candidate validity evidence. ELF type, entrypoint, a bounded `PT_INTERP`
+carrier, `DF_1_PIE`, and validated `DT_SONAME` string evidence produce one
+internal unknown/executable-like/shared-object-like/ambiguous/contradictory
+state. A raw SONAME tag or retained string-table index is insufficient until it
+resolves to a bounded, nonempty, in-range, NUL-terminated string. These facts do
+not upgrade raw, exact-suffix, semantic-exact, decoder, unknown-candidate, or
+scored evidence and are not emitted in schema `0.2.0` by Patch 064.
+
+## Sprint 12 Patch 065 mitigation-metadata provenance
+
+GNU-property facts use a private metadata provenance layer separate from gadget
+candidate provenance. A canonical physical carrier or note does not erase the
+original PHDR index/type contributors that exposed it. IBT/SHSTK states remain
+internal and do not upgrade raw, exact-suffix, semantic-exact, unknown, or scored
+candidate evidence.

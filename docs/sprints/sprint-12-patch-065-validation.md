@@ -1,0 +1,142 @@
+# Sprint 12 Patch 065 Validation Plan
+
+## Purpose
+
+Validate the Patch 064 corrective work and the bounded private GNU-property
+IBT/SHSTK evidence layer without changing public output or schema `0.2.0`.
+
+## Source contract
+
+Patch 065 applies to committed Patch 064 source. Application must start from the
+exact base named by the delivery source-identity record and a clean tracked
+worktree.
+
+## Corrective gates
+
+```bash
+make patch064-corrective-regression-smoke
+make provisional-corpus-ready
+make provisional-corpus-verify
+```
+
+The corrective smoke rejects the unencodable PHDR address form and qword
+immediate-to-memory overflow forms, requires complete `PT_INTERP` and
+`DT_SONAME` validation, enforces the binary-role summary-only boundary and the 64-byte summary-growth ceiling,
+requires the GNU-property parser to revalidate each canonical carrier's retained
+offset and size before reading it, authenticates all non-mode corpus facts before
+repair, prevents hard-link chmod redirection, and proves permission normalization
+does not follow links into generated evidence trees.
+
+The corrected private overlay-manager smoke additionally requires:
+
+```text
+signal_inventory=1
+```
+
+This proves manager-created directories are durably authenticated before file
+commits and remain removable after an interrupted application.
+
+## Binary-role gate
+
+```bash
+make sprint12-binary-role-smoke
+```
+
+Expected result:
+
+```text
+sprint12-binary-role-smoke: ok cases=21 states=5 malformed=7 unsupported=1 summary_bytes=264 classifier_bounds=1
+```
+
+The gate covers empty and interior-NUL interpreter paths, every SONAME carrier,
+duplicate/conflicting role evidence, classifier bounds, and all five private
+role states.
+
+## GNU-property gate
+
+```bash
+make sprint12-gnu-property-oracle-smoke
+make sprint12-gnu-property-smoke
+```
+
+Expected results:
+
+```text
+sprint12-gnu-property-oracle-smoke: ok cases=8 malformed=9 canonical_duplicates=1
+sprint12-gnu-property-internal: ok cases=25 states=4 carriers=32 contributors=64 summary_bytes=264 context_bytes=3160 alignments=2 ordering=1
+sprint12-gnu-property-smoke: ok private_cases=25 oracle_cases=8 public_pairs=3 malformed=8 unsupported=2 schema=unchanged alignments=2 ordering=1
+```
+
+The internal harness covers:
+
+- no evidence;
+- IBT-only and IBT+SHSTK facts;
+- exact duplicate carriers and original contributor identity;
+- unknown properties and feature bits;
+- identical and conflicting duplicates;
+- wrong owner and wrong note type;
+- four- and eight-byte note-stream alignment, the ELF64
+  `PT_GNU_PROPERTY` eight-byte requirement, and exact-duplicate alignment
+  reconciliation;
+- truncation, bad widths, inner and outer padding, overlap,
+  descriptor size and property ordering, range-versus-cap precedence, note floods, and all implementation caps.
+
+The independent standard-library oracle authors controlled ELF64 inputs,
+executes `mitigations`, `gadgets --format json`, and `analyze --format json`, and
+requires byte-identical public output when only private feature bits change.
+Malformed and unsupported cases emit no partial stdout.
+
+## Full native validation
+
+```bash
+SHELLCHECK_STRICT=1 make shellcheck-smoke
+make clean
+make
+make samples
+make test
+make sprint12-phdr-validity-smoke
+make sprint12-overlap-provenance-smoke
+make sprint12-overlap-decision-smoke
+make sprint12-binary-role-smoke
+make sprint12-gnu-property-smoke
+make capacity-smoke
+MALFORMED_TIMEOUT=2 make malformed-smoke
+MALFORMED_TIMEOUT=2 make mitigation-matrix-smoke
+MALFORMED_TIMEOUT=2 make section-label-smoke
+make readelf-comparison-smoke
+make optional-tool-comparison-smoke
+make system-smoke
+MALFORMED_TIMEOUT=2 make validation-smoke
+make sprint-closeout-smoke
+```
+
+## Docker and parity
+
+Record the selected Docker context and daemon before validation, then run:
+
+```bash
+make docker-build
+make docker-test
+MALFORMED_TIMEOUT=2 make docker-validation-smoke
+make native-docker-json-parity-smoke
+```
+
+Native and container results must agree. Docker Desktop and native Ubuntu
+Docker are separate environment strata.
+
+## Preserved contracts
+
+- candidate capacity remains 4,096;
+- candidate 4,097 fails before stdout with exit code 6;
+- malformed parser failures emit no partial stdout;
+- program headers remain executable authority;
+- raw, exact, semantic-exact, unknown, and scored counts retain their meanings;
+- no public JSON or text field changes;
+- no new mandatory runtime dependency, decoder, or worker profile is added.
+
+## Known limitations
+
+GNU-property facts remain private development evidence. They do not prove that
+CET is enabled at runtime, that every indirect branch is protected, or that a
+binary is safe or exploitable. Public indicators require a later reviewed
+policy and held-out confirmation.

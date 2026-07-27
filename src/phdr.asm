@@ -16,7 +16,7 @@
 ;
 ; Public module exports:
 ;   x64lens_phdr_validate_loader_contract(base, size, phnum)
-;   x64lens_phdr_analyze(base, size, summary, regions, max_regions)
+;   x64lens_phdr_analyze(base, size, summary, regions, max_regions, property_context)
 ;
 ; Contract:
 ;   Do not print, parse CLI arguments, or classify gadgets here. This module
@@ -35,6 +35,9 @@ extern x64lens_bounds_add_u64_checked
 extern x64lens_bounds_table_extent_valid
 extern x64lens_bounds_table_entry_offset
 extern x64lens_regions_store_from_phdr
+extern x64lens_gnu_property_context_init
+extern x64lens_gnu_property_register_carrier
+extern x64lens_gnu_property_parse
 
 section .text
 global x64lens_phdr_validate_loader_contract
@@ -221,7 +224,8 @@ x64lens_phdr_validate_loader_contract:
     pop     rbx
     ret
 
-; x64lens_phdr_analyze(base=rdi, file_size=rsi, summary=rdx, regions=rcx, max_regions=r8)
+; x64lens_phdr_analyze(base=rdi, file_size=rsi, summary=rdx, regions=rcx,
+;                        max_regions=r8, property_context=r9)
 ;
 ; Inputs:
 ;   RDI = mmap base for an already ELF64-validated target
@@ -229,6 +233,7 @@ x64lens_phdr_validate_loader_contract:
 ;   RDX = writable phdr_summary record
 ;   RCX = writable executable_region[] buffer
 ;   R8  = max executable-region records available
+;   R9  = writable GNU_PROPERTY_CONTEXT_SIZE command-lifetime buffer
 ;
 ; Output:
 ;   RAX = stable x64lens status code
@@ -245,8 +250,9 @@ x64lens_phdr_analyze:
     push    r13
     push    r14
     push    r15
-    sub     rsp, 56             ; align calls and reserve parser scratch slots
+    sub     rsp, 88             ; align calls and reserve parser scratch slots
 
+    mov     [rsp + 56], r9      ; private GNU-property context
     mov     r15, rdi            ; mapped base
     mov     r14, rsi            ; file size
     mov     r13, rdx            ; phdr_summary record
@@ -280,6 +286,16 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_SONAME_VALUE], 0
     mov     qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], 0
     mov     qword [r13 + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
+    movzx   rax, word [r15 + E_TYPE]
+    mov     [r13 + PHDR_SUMMARY_ELF_TYPE], rax
+    mov     rax, [r15 + E_ENTRY]
+    mov     [r13 + PHDR_SUMMARY_ELF_ENTRY], rax
+
+    mov     rdi, [rsp + 56]
+    mov     rsi, r13
+    call    x64lens_gnu_property_context_init
+    test    rax, rax
+    jne     .done
 
     ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
     ; Shared objects are also ET_DYN, so user-facing wording must remain
@@ -302,7 +318,7 @@ x64lens_phdr_analyze:
     test    rax, rax
     jne     .done
     cmp     qword [r13 + PHDR_SUMMARY_PHNUM], 0
-    je      .ok                 ; zero PHDRs are valid only with a zero entrypoint
+    je      .finalize_gnu_property ; zero PHDRs imply an empty property view
 
     xor     rbx, rbx            ; program-header index
 .loop:
@@ -335,6 +351,10 @@ x64lens_phdr_analyze:
     je      .handle_dynamic
     cmp     eax, PT_INTERP
     je      .handle_interp
+    cmp     eax, PT_NOTE
+    je      .handle_property_carrier
+    cmp     eax, PT_GNU_PROPERTY
+    je      .handle_property_carrier
     jmp     .next
 
 .handle_load:
@@ -430,12 +450,37 @@ x64lens_phdr_analyze:
     jne     .malformed
 
     mov     rax, [rsp + 40]
-    add     rax, [rsp + 48]
-    jc      .malformed
-    dec     rax
-    cmp     byte [r15 + rax], 0
+    lea     rdx, [r15 + rax]    ; bounded interpreter bytes
+    cmp     byte [rdx], 0       ; reject NUL-only/empty represented path
+    je      .malformed
+    mov     rcx, [rsp + 48]
+    dec     rcx
+    cmp     byte [rdx + rcx], 0
     jne     .malformed
+    xor     r8, r8
+.interp_interior_loop:
+    cmp     r8, rcx
+    jae     .interp_valid
+    cmp     byte [rdx + r8], 0
+    je      .malformed
+    inc     r8
+    jmp     .interp_interior_loop
+.interp_valid:
     inc     qword [r13 + PHDR_SUMMARY_INTERP_COUNT]
+    jmp     .next
+
+.handle_property_carrier:
+    ; PT_NOTE and PT_GNU_PROPERTY are bounded metadata carriers. Exact duplicate
+    ; physical ranges share one canonical view while each original PHDR index
+    ; remains visible through a contributor record.
+    mov     rdi, r15
+    mov     rsi, r14
+    mov     rdx, [rsp + 56]
+    mov     rcx, rbx
+    mov     r8, r10
+    call    x64lens_gnu_property_register_carrier
+    test    rax, rax
+    jne     .done
     jmp     .next
 
 .handle_dynamic:
@@ -612,13 +657,13 @@ x64lens_phdr_analyze:
     jne     .dynamic_strtab_present
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
     jne     .malformed
-    jmp     .ok
+    jmp     .finalize_gnu_property
 .dynamic_strtab_present:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
     jne     .dynamic_string_table_present
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
     jne     .malformed
-    jmp     .ok
+    jmp     .finalize_gnu_property
 .dynamic_string_table_present:
 
     mov     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
@@ -680,49 +725,83 @@ x64lens_phdr_analyze:
     cmp     rax, 1
     jne     .malformed
 
-    ; DT_SONAME is role evidence only after its string-table index resolves to
-    ; a nonempty NUL-terminated string inside the bounded dynamic string table.
-    ; Raw tag presence alone is insufficient to classify an ET_DYN object.
+    ; Every DT_SONAME carrier must resolve to a nonempty NUL-terminated string
+    ; inside the bounded table. Validating only the first index would allow a
+    ; later malformed duplicate to be hidden by a valid first carrier.
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
     je      .canary_string_scan
-    mov     rax, [r13 + PHDR_SUMMARY_SONAME_VALUE]
+    mov     qword [rsp + 64], 0
+.soname_second_pass:
+    mov     rax, [rsp + 64]
+    cmp     rax, [rsp + 24]
+    jae     .soname_all_validated
+    mov     rdi, r14
+    mov     rsi, [rsp + 16]
+    mov     rdx, ELF64_DYN_SIZE
+    mov     rcx, [rsp + 24]
+    mov     r8, rax
+    lea     r9, [rsp]
+    call    x64lens_bounds_table_entry_offset
+    cmp     rax, 1
+    jne     .malformed
+    mov     rax, [rsp]
+    lea     rdx, [r15 + rax]
+    mov     rax, [rdx + D_TAG]
+    cmp     rax, DT_NULL
+    je      .soname_all_validated
+    cmp     rax, DT_SONAME
+    jne     .soname_second_advance
+
+    mov     rax, [rdx + D_UN]
     cmp     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     jae     .malformed
     mov     rcx, [rsp + 48]
     add     rcx, rax
     jc      .malformed
-    cmp     byte [r15 + rcx], 0
+    lea     rdx, [r15 + rcx]
+    cmp     byte [rdx], 0
     je      .malformed
-    mov     rdx, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
-    sub     rdx, rax
+    mov     rcx, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
+    sub     rcx, rax
     xor     r8, r8
-.soname_terminator_loop:
-    cmp     r8, rdx
+.soname_second_terminator:
+    cmp     r8, rcx
     jae     .malformed
-    cmp     byte [r15 + rcx + r8], 0
-    je      .soname_validated
+    cmp     byte [rdx + r8], 0
+    je      .soname_second_advance
     inc     r8
-    jmp     .soname_terminator_loop
-.soname_validated:
+    jmp     .soname_second_terminator
+.soname_second_advance:
+    inc     qword [rsp + 64]
+    jmp     .soname_second_pass
+.soname_all_validated:
     or      qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], ROLE_EVIDENCE_DT_SONAME
 
 .canary_string_scan:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], CANARY_SYMBOL_LEN_WITH_NUL
-    jb      .ok
+    jb      .finalize_gnu_property
 
     mov     rax, [rsp + 48]
     lea     rdi, [r15 + rax]
     mov     rsi, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     call    .scan_canary_string_table
     cmp     rax, 1
-    jne     .ok
+    jne     .finalize_gnu_property
     mov     qword [r13 + PHDR_SUMMARY_CANARY_STATE], CANARY_STATE_PRESENT
-    jmp     .ok
+    jmp     .finalize_gnu_property
 
 .strtab_next_load:
     inc     rbx
     jmp     .strtab_load_loop
 
+.finalize_gnu_property:
+    mov     rdi, r15
+    mov     rsi, r14
+    mov     rdx, [rsp + 56]
+    mov     rcx, r13
+    call    x64lens_gnu_property_parse
+    test    rax, rax
+    jne     .done
 .ok:
     xor     rax, rax
     jmp     .done
@@ -732,7 +811,7 @@ x64lens_phdr_analyze:
 .unsupported:
     mov     rax, EXIT_UNSUPPORTED
 .done:
-    add     rsp, 56
+    add     rsp, 88
     pop     r15
     pop     r14
     pop     r13

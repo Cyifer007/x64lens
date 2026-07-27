@@ -4,10 +4,12 @@
 
 Historical record for the exact Patch 062 source. Its 27-fixture/108-execution
 banner applies only to that source boundary. Patch 063 expands the same PHDR
-gate to 33 fixtures and 132 executions; use the
-[Patch 063 validation record](sprint-12-patch-063-validation.md) for the current
-corrective expectations. See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
-for the Patch 062 design boundary.
+gate to 33 fixtures and 132 executions, and Patch 064 expands it to 49 fixtures
+and 196 executions. Use the [Patch 064 validation record](sprint-12-patch-064-validation.md)
+for the current candidate expectations. See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
+for the Patch 062 design boundary and the
+[Patch 063 validation record](sprint-12-patch-063-validation.md) for the
+intermediate source boundary.
 
 ## Scope
 

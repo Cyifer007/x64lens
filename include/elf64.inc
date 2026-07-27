@@ -124,6 +124,23 @@
 %define PT_GNU_EH_FRAME      0x6474e550
 %define PT_GNU_STACK         0x6474e551
 %define PT_GNU_RELRO         0x6474e552
+%define PT_GNU_PROPERTY      0x6474e553
+
+; ELF64 note and GNU property-note fields. The carrier alignment determines
+; the descriptor and next-note offsets: represented PT_NOTE streams use four
+; or eight bytes, and PT_GNU_PROPERTY requires native ELF64 eight-byte
+; alignment. GNU property payload records are independently eight-byte aligned.
+%define ELF64_NHDR_SIZE       12
+%define N_NAMESZ              0x00
+%define N_DESCSZ              0x04
+%define N_TYPE                0x08
+%define NT_GNU_PROPERTY_TYPE_0 5
+%define GNU_NOTE_NAME_SIZE    4
+%define GNU_NOTE_NAME_DWORD   0x00554e47 ; "GNU\0" little-endian
+%define GNU_PROPERTY_ENTRY_HEADER_SIZE 8
+%define GNU_PROPERTY_X86_FEATURE_1_AND 0xc0000002
+%define GNU_PROPERTY_X86_FEATURE_1_IBT   (1 << 0)
+%define GNU_PROPERTY_X86_FEATURE_1_SHSTK (1 << 1)
 
 ; Program header flags
 %define PF_X                 0x1

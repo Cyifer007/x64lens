@@ -39,7 +39,8 @@ x64lens CLI
 | `bounds.asm` | Offset, size, and overflow checks | Print user reports |
 | `elf64.asm` | ELF64 header validation and metadata | Scan gadgets |
 | `phdr.asm` | Program header parsing and bounded raw loader/dynamic role facts | Section label formatting or public role policy |
-| `binary_role.asm` | Private fact-first executable/shared-object role lattice | Parse tables, change public PIE output, scan, classify gadgets, score, or report |
+| `binary_role.asm` | Internal-only fact-first executable/shared-object role lattice | Parse tables, change public PIE output, scan, classify gadgets, score, or report |
+| `gnu_property.asm` | Bounded canonical GNU-property carrier, note, contributor, and x86 feature facts | Map files, choose executable regions, scan candidates, score, or report |
 | `shdr.asm` | Section header metadata, stripped indicator, and section-label annotations | Runtime mapping authority |
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
@@ -1366,13 +1367,14 @@ order, count, or capacity outcome changes.
 
 ```text
 ELF type and entrypoint
-PT_INTERP count
+PT_INTERP count after bounded file-span validation
 DT_FLAGS_1 count and combined value
-DT_SONAME count and value
-duplicate and conflicting carrier state
+DT_SONAME count and retained string-table index
+validated SONAME string evidence
+duplicate and conflicting carrier evidence
 ```
 
-`binary_role.asm` consumes those completed facts and writes one private state:
+`binary_role.asm` consumes those completed facts and writes one internal state:
 
 ```text
 unknown
@@ -1385,10 +1387,27 @@ contradictory
 This module is downstream of bounded ELF/PHDR parsing and upstream of later
 policy. It does not parse tables, select executable regions, scan bytes,
 classify gadgets, score candidates, or format reports. `ET_DYN` alone is not a
-resolved role. The existing public PIE indicator remains unchanged until a
-separate output and schema decision.
+resolved role. A raw `DT_SONAME` carrier is not shared-object evidence until its
+index resolves to a bounded, nonempty, in-range, NUL-terminated string. For
+`ET_DYN`, a validated SONAME with a zero entrypoint and no strong executable
+carrier is shared-object-like, while a nonzero entrypoint without `PT_INTERP` or
+`DF_1_PIE` evidence is ambiguous. The existing public PIE indicator remains
+unchanged until a separate output and schema decision.
 
 The `phdr_summary` record grows from 144 to 200 bytes. This fixed 56-byte growth
 is internal command state, not a runtime RSS measurement. The reference binary
 remains freestanding, dependency-free, decoder-free, one-worker, bounded, and
 deterministic.
+
+## Sprint 12 Patch 065 GNU-property evidence seam
+
+Patch 065 inserts `gnu_property.asm` after bounded program-header acquisition and
+before public reporting. The module canonicalizes exact duplicate physical note
+carriers while retaining each original PHDR index/type contributor in a bounded
+command-lifetime context. It parses only checked ELF note and GNU property
+records and materializes private IBT/SHSTK states. It does not alter executable
+regions, candidate discovery, semantics, scores, or reporters.
+
+The command-lifetime context is 3,160 bytes and the `phdr_summary` is 264 bytes.
+These are fixed allocation facts, not measured RSS. Public text and schema
+`0.2.0` remain unchanged until a separate policy gate accepts held-out evidence.

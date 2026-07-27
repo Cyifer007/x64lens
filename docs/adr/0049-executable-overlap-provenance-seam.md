@@ -98,9 +98,10 @@ Costs and limits:
 The normal malformed, capacity, native, Docker, and native/container parity
 contracts remain required.
 
-## Next decision
+## Subsequent decision
 
-A later Sprint 12 patch may define executable-byte-union normalization,
-deduplication, public region counts, and contributing-PHDR reporting only after
-controlled overlap fixtures and diagnostic evidence compare the available
-policies.
+[ADR 0050](0050-fact-first-binary-role-lattice.md) records the bounded
+diagnostic decision to retain this provenance and defer executable-byte-union
+normalization, deduplication, and public count changes. The decision does not
+claim that overlap never occurs; it records explicit non-fixture corpus
+thresholds for reopening the policy.

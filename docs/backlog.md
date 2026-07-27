@@ -147,10 +147,11 @@ later sprints rather than Patch 037:
 - [x] `p_align`, congruence, virtual-range, and executable-entrypoint behavior. Patch 062.
 - [x] Explicit ELF extended-numbering detection with structurally validated stable unsupported results. Patch 062.
 - [x] Original executable-PHDR identity and dense candidate contributor provenance without scan/count changes. Patch 063.
-- [ ] Measure executable-overlap incidence and redundant scan work, then decide whether executable-byte-union normalization should proceed.
+- [x] Measure executable-overlap incidence and redundant scan work, then record the diagnostic decision to defer executable-byte-union normalization. Patch 064.
 - [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
-- [ ] PIE executable versus shared-object distinction. Patch 064 completes the private fact lattice; public policy and schema remain pending.
-- [ ] Bounded CET IBT and SHSTK GNU-property evidence.
+- [x] Internal PIE-versus-shared-object evidence lattice with unknown, executable-like, shared-object-like, ambiguous, and contradictory states. Patch 064.
+- [x] Bounded private CET IBT and SHSTK GNU-property evidence with public output unchanged. Patch 065.
+- [ ] Release-facing PIE-versus-shared-object policy and schema review after the remaining bounded loader-evidence gates.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
 - [ ] Corrected held-out diagnostic confirmation under a new campaign identity,
   with positive role-controlled coordinate anchors and complete task-path
@@ -444,7 +445,7 @@ Patch 050 completes current-family side-effect and clobber facts, reconciles the
 Before Sprint 11 begins, Patch 053 must perform the planned architecture and capability reassessment. Required review items include:
 
 - [ ] distinguish PIE executables from shared objects without overstating `ET_DYN`;
-- [ ] add or explicitly defer bounded GNU property evidence for CET/IBT/SHSTK;
+- [x] add bounded private GNU property evidence for CET/IBT/SHSTK; Patch 065 retains public-policy review as a later gate;
 - [ ] define count semantics for overlapping executable `PT_LOAD` ranges;
 - [ ] review all current-family score candidates using completed effect facts;
 - [ ] reconcile the capability snapshot with the pre-`v0.1.0` release scope;

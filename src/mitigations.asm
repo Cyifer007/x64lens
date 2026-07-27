@@ -36,6 +36,7 @@ extern x64lens_error_print_status
 section .bss
 mit_mapped_file:  resb FILEMAP_RECORD_SIZE
 mit_summary:      resb PHDR_SUMMARY_RECORD_SIZE
+mit_property_context: resb GNU_PROPERTY_CONTEXT_SIZE
 mit_regions:      resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 
 section .text
@@ -73,14 +74,14 @@ x64lens_command_mitigations:
     lea     rdx, [mit_summary]
     lea     rcx, [mit_regions]
     mov     r8, EXEC_REGION_MAX
+    lea     r9, [mit_property_context]
     call    x64lens_phdr_analyze
     test    rax, rax
     jne     .error
 
     ; Classify bounded internal executable/shared-object role evidence. This
     ; does not alter the public ET_DYN-derived PIE indicator or report schema.
-    mov     rdi, [mit_mapped_file + FILEMAP_ADDR]
-    lea     rsi, [mit_summary]
+    lea     rdi, [mit_summary]
     call    x64lens_binary_role_classify
     test    rax, rax
     jne     .error

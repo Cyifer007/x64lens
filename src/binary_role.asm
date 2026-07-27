@@ -9,7 +9,8 @@
 ;   x64lens_binary_role_classify
 ;
 ; Inputs and outputs:
-;   Consumes the validated ELF64 header and completed phdr_summary raw facts.
+;   Consumes only completed phdr_summary raw facts, including the validated ELF
+;   type and entrypoint copied by phdr.asm. It never rereads mapped target bytes.
 ;   Writes PHDR_SUMMARY_ROLE_EVIDENCE and PHDR_SUMMARY_ROLE_STATE.
 ;
 ; Boundary:
@@ -28,21 +29,21 @@ default rel
 section .text
 global x64lens_binary_role_classify
 
-; x64lens_binary_role_classify(mapped_base=rdi, phdr_summary=rsi) -> rax=status
+; x64lens_binary_role_classify(phdr_summary=rdi) -> rax=status
 ;
 ; The lattice preserves unknown, ambiguous, and contradictory states. Duplicate
 ; singleton-style role evidence is contradictory rather than last-wins.
 x64lens_binary_role_classify:
     test    rdi, rdi
     jz      .bounds
-    test    rsi, rsi
-    jz      .bounds
 
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
-    mov     r11, [rsi + PHDR_SUMMARY_ROLE_EVIDENCE]
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
+    mov     r11, [rdi + PHDR_SUMMARY_ROLE_EVIDENCE]
     and     r11, ROLE_EVIDENCE_PARSE_MASK
 
-    movzx   eax, word [rdi + E_TYPE]
+    mov     rax, [rdi + PHDR_SUMMARY_ELF_TYPE]
+    cmp     rax, 0xffff
+    ja      .bounds
     cmp     eax, ET_EXEC
     jne     .check_et_dyn
     or      r11, ROLE_EVIDENCE_ET_EXEC
@@ -53,15 +54,15 @@ x64lens_binary_role_classify:
     or      r11, ROLE_EVIDENCE_ET_DYN
 
 .entry_fact:
-    cmp     qword [rdi + E_ENTRY], 0
+    cmp     qword [rdi + PHDR_SUMMARY_ELF_ENTRY], 0
     je      .interp_facts
     or      r11, ROLE_EVIDENCE_ENTRY_NONZERO
 
 .interp_facts:
-    mov     rcx, [rsi + PHDR_SUMMARY_PHNUM]
+    mov     rcx, [rdi + PHDR_SUMMARY_PHNUM]
     cmp     rcx, PN_XNUM
     jae     .bounds
-    mov     rdx, [rsi + PHDR_SUMMARY_INTERP_COUNT]
+    mov     rdx, [rdi + PHDR_SUMMARY_INTERP_COUNT]
     cmp     rdx, rcx
     ja      .bounds
     test    rdx, rdx
@@ -72,38 +73,38 @@ x64lens_binary_role_classify:
     or      r11, ROLE_EVIDENCE_DUP_INTERP
 
 .dynamic_facts:
-    mov     rcx, [rsi + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
+    mov     rcx, [rdi + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
 
-    mov     rdx, [rsi + PHDR_SUMMARY_FLAGS1_COUNT]
+    mov     rdx, [rdi + PHDR_SUMMARY_FLAGS1_COUNT]
     cmp     rdx, rcx
     ja      .bounds
     test    rdx, rdx
     jnz     .flags1_present
-    cmp     qword [rsi + PHDR_SUMMARY_FLAGS1_VALUE], 0
+    cmp     qword [rdi + PHDR_SUMMARY_FLAGS1_VALUE], 0
     jne     .bounds
     jmp     .soname_facts
 .flags1_present:
-    cmp     qword [rsi + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    cmp     qword [rdi + PHDR_SUMMARY_DYNAMIC_SEEN], 0
     je      .bounds
     cmp     rdx, 1
     jbe     .flags1_value
     or      r11, ROLE_EVIDENCE_DUP_FLAGS1
 .flags1_value:
-    test    qword [rsi + PHDR_SUMMARY_FLAGS1_VALUE], DF_1_PIE
+    test    qword [rdi + PHDR_SUMMARY_FLAGS1_VALUE], DF_1_PIE
     jz      .soname_facts
     or      r11, ROLE_EVIDENCE_DF_1_PIE
 
 .soname_facts:
-    mov     rdx, [rsi + PHDR_SUMMARY_SONAME_COUNT]
+    mov     rdx, [rdi + PHDR_SUMMARY_SONAME_COUNT]
     cmp     rdx, rcx
     ja      .bounds
     test    rdx, rdx
     jnz     .soname_present
-    cmp     qword [rsi + PHDR_SUMMARY_SONAME_VALUE], 0
+    cmp     qword [rdi + PHDR_SUMMARY_SONAME_VALUE], 0
     jne     .bounds
     jmp     .classify
 .soname_present:
-    cmp     qword [rsi + PHDR_SUMMARY_DYNAMIC_SEEN], 0
+    cmp     qword [rdi + PHDR_SUMMARY_DYNAMIC_SEEN], 0
     je      .bounds
     test    r11, ROLE_EVIDENCE_DT_SONAME
     jz      .bounds
@@ -112,14 +113,14 @@ x64lens_binary_role_classify:
     or      r11, ROLE_EVIDENCE_DUP_SONAME
 
 .classify:
-    mov     [rsi + PHDR_SUMMARY_ROLE_EVIDENCE], r11
+    mov     [rdi + PHDR_SUMMARY_ROLE_EVIDENCE], r11
 
     ; Duplicate or conflicting role carriers are explicit contradictory state.
     mov     rax, ROLE_EVIDENCE_DUP_INTERP | ROLE_EVIDENCE_DUP_FLAGS1 | ROLE_EVIDENCE_DUP_SONAME | ROLE_EVIDENCE_CONFLICT_FLAGS1 | ROLE_EVIDENCE_CONFLICT_SONAME
     test    r11, rax
     jnz     .contradictory
 
-    movzx   eax, word [rdi + E_TYPE]
+    mov     rax, [rdi + PHDR_SUMMARY_ELF_TYPE]
     cmp     eax, ET_EXEC
     je      .classify_exec
     cmp     eax, ET_DYN
@@ -138,7 +139,7 @@ x64lens_binary_role_classify:
     mov     rax, ROLE_EVIDENCE_DF_1_PIE | ROLE_EVIDENCE_DT_SONAME
     test    r11, rax
     jnz     .contradictory
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_EXECUTABLE_LIKE
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_EXECUTABLE_LIKE
     jmp     .ok
 
 .classify_dyn:
@@ -151,7 +152,7 @@ x64lens_binary_role_classify:
     jz      .dyn_no_strong_exec
     test    r9, r9
     jnz     .contradictory
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_EXECUTABLE_LIKE
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_EXECUTABLE_LIKE
     jmp     .ok
 
 .dyn_no_strong_exec:
@@ -159,7 +160,7 @@ x64lens_binary_role_classify:
     jz      .dyn_no_soname
     test    r11, ROLE_EVIDENCE_ENTRY_NONZERO
     jnz     .ambiguous
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_SHARED_OBJECT_LIKE
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_SHARED_OBJECT_LIKE
     jmp     .ok
 
 .dyn_no_soname:
@@ -168,13 +169,13 @@ x64lens_binary_role_classify:
     jmp     .unknown
 
 .ambiguous:
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_AMBIGUOUS
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_AMBIGUOUS
     jmp     .ok
 .contradictory:
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_CONTRADICTORY
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_CONTRADICTORY
     jmp     .ok
 .unknown:
-    mov     qword [rsi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
+    mov     qword [rdi + PHDR_SUMMARY_ROLE_STATE], BINARY_ROLE_UNKNOWN
 .ok:
     mov     eax, EXIT_OK
     ret

@@ -57,6 +57,7 @@ extern x64lens_arena_destroy
 section .bss
 ana_mapped_file:     resb FILEMAP_RECORD_SIZE
 ana_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
+ana_property_context: resb GNU_PROPERTY_CONTEXT_SIZE
 ana_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 ana_gadget_summary:  resb GADGET_SUMMARY_RECORD_SIZE
 ana_analysis_summary: resb ANALYSIS_SUMMARY_RECORD_SIZE
@@ -124,14 +125,14 @@ x64lens_command_analyze_with_format:
     lea     rdx, [ana_phdr_summary]
     lea     rcx, [ana_regions]
     mov     r8, EXEC_REGION_MAX
+    lea     r9, [ana_property_context]
     call    x64lens_phdr_analyze
     test    rax, rax
     jne     .error
 
     ; Classify bounded internal executable/shared-object role evidence. This
     ; does not alter the public ET_DYN-derived PIE indicator or report schema.
-    mov     rdi, [ana_mapped_file + FILEMAP_ADDR]
-    lea     rsi, [ana_phdr_summary]
+    lea     rdi, [ana_phdr_summary]
     call    x64lens_binary_role_classify
     test    rax, rax
     jne     .error

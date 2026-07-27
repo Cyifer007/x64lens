@@ -469,13 +469,25 @@ Patch 062 resolves the first loader-precision tranche: ordinary program-header a
 ## Sprint 12 Patch 063-064 overlap and role decision
 
 Patch 063 established lossless original-PHDR and candidate contributor
-provenance. The subsequent diagnostic survey found zero executable overlaps,
-repeated same-slope bytes, and repeated exact identities across 3,115 sampled
-targets. Patch 064 therefore defers normalization, preserves current ordering,
-counts, capacity, and output, and records explicit reopening thresholds rather
-than implementing a high-risk semantic change without measured value.
+provenance. The subsequent diagnostic survey found no target with
+executable-region overlap, same-slope repeated executable bytes, or repeated
+exact identities across 3,115 sampled targets. Patch 064 therefore defers
+normalization, preserves current ordering, counts, capacity, and output, and
+records explicit reopening thresholds rather than implementing a high-risk
+semantic change without measured value.
 
-Patch 064 then begins the PIE-versus-DSO gate with a private fact lattice over
-ELF type, entrypoint, `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME`. The public
-ET_DYN indicator remains unchanged. The next Sprint 12 decision is the public
-role policy, followed by independently bounded GNU-property IBT/SHSTK evidence.
+Patch 064 then begins the PIE-versus-DSO gate with an internal fact lattice over
+ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated
+`DT_SONAME` string evidence. The public `ET_DYN` indicator remains unchanged.
+The next Sprint 12 implementation gate is independently bounded GNU-property
+IBT/SHSTK evidence. A release-facing role policy and schema decision remain a
+later, separately reviewed gate.
+
+## Sprint 12 Patch 065 research checkpoint
+
+Patch 065 closes the Patch 064 correctness findings and implements the bounded
+private GNU-property fact gate for x86 IBT and SHSTK. It preserves canonical
+physical views, original PHDR contributors, unknowns, duplicates, conflicts,
+and malformed/cap outcomes while leaving public output unchanged. The next
+research decision is held-out confirmation and a non-reinterpretive public
+policy gate, not automatic publication of a CET label.

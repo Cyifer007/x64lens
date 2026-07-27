@@ -8,8 +8,11 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 064 private binary-role evidence over ELF type, entrypoint, bounded `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME`, with explicit unknown, executable-like, shared-object-like, ambiguous, and contradictory states. The public ET_DYN-derived PIE indicator and schema `0.2.0` remain unchanged.
-- A measured overlap-normalization decision authority: 3,115 diagnostic targets produced zero executable overlaps, repeated same-slope bytes, or repeated exact identities, so Patch 063 provenance is retained while scan unioning and candidate deduplication remain deferred.
+- Bounded private GNU-property evidence over canonical `PT_NOTE`/`PT_GNU_PROPERTY` views, original PHDR contributors, x86 FEATURE_1 AND facts, and explicit IBT/SHSTK unknown, absent, present, and contradictory states. Public text, JSON schema `0.2.0`, candidate metrics, and the historical PIE indicator remain unchanged.
+- ADR 0051, the Patch 065 validation record, `make patch064-corrective-regression-smoke`, and `make sprint12-gnu-property-smoke`.
+
+- Sprint 12 Patch 064 internal-only binary-role evidence over ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated `DT_SONAME` string evidence, with explicit unknown, executable-like, shared-object-like, ambiguous, and contradictory states. The public `ET_DYN`-derived PIE indicator and schema `0.2.0` remain unchanged.
+- A measured overlap-normalization decision authority: across 3,115 diagnostic targets, including 3,106 with executable regions, no target had executable-region overlap, same-slope repeated executable bytes, or repeated exact identities. Patch 063 provenance is retained while scan unioning and candidate deduplication remain deferred.
 - ADR 0050, the Patch 064 validation record, `make patch063-corrective-regression-smoke`, `make sprint12-overlap-decision-smoke`, and `make sprint12-binary-role-smoke`.
 
 - Internal executable-overlap provenance: original PHDR indexes remain in the unchanged 64-byte region record, while a dense 64-bit contributor mask is materialized per candidate before downstream effects. Scan, deduplication, public counts, and schema output remain unchanged.
@@ -344,6 +347,10 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Sprint 12 Patch 065 closes the Patch 064 NASM effective-address and immediate-width build errors; validates empty/interior-NUL `PT_INTERP` and every `DT_SONAME` carrier; enforces summary-only role classification; authenticates corpus semantics, timestamps, ownership, and inode identity before mode repair; prevents permission-normalization symlink traversal; and makes private created-directory rollback inventory durable before file commits.
+
+- Sprint 12 Patch 064 corpus root/ownership continuity, canonical section-zero fixture generation, candidate-capacity and PHDR-index reconciliation, and a 49-case/196-execution PHDR oracle.
 
 - Sprint 12 Patch 063 ordinary and extended-numbering parser corrections for zero-count PHDR offsets, canonical ordinary section-header entry zero when a table is present, required-zero extended carriers, and a 33-case/132-execution four-command oracle.
 - Patch 063 transaction and validation corrections for descriptor lifetime, atomic foreign-object-preserving cleanup, authenticated corpus output-root continuity, clean aggregate corpus provisioning, and generated-evidence permission preservation.

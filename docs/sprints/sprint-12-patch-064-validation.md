@@ -1,8 +1,13 @@
 # Sprint 12 Patch 064 Validation
 
+## Status
+
+Candidate validation record. This document states required outcomes for the
+Patch 064 source; it does not by itself establish acceptance.
+
 ## Purpose
 
-Patch 064 resolves the Patch 063 acceptance findings, closes the measured
+Patch 064 addresses the Patch 063 acceptance findings, records the measured
 executable-overlap normalization gate as a diagnostic deferral, and adds a
 bounded internal PIE-versus-DSO role-evidence lattice without changing public
 output.
@@ -20,23 +25,25 @@ The patch:
 - reconciles executable-region PHDR indexes with ordinary `e_phnum`, requiring
   in-range, strictly increasing, unique indexes;
 - expands the ordinary and extended section-zero field oracle;
-- regenerates private-package, command-ledger, evidence, and checksum
-  inventories from one final artifact set.
 
 ## Roadmap scope
 
-The measured overlap survey observed zero executable overlaps, repeated bytes,
-or repeated exact identities in the bounded diagnostic sample. Patch 064 keeps
-Patch 063 contributor provenance and defers range unioning and candidate
-identity deduplication. The decision is validated by:
+The measured overlap survey observed no target with executable-region overlap,
+no same-slope repeated executable bytes, and no repeated exact identities in
+the bounded diagnostic sample. Patch 064 keeps Patch 063 contributor provenance
+and defers range unioning and candidate identity deduplication. The decision is
+validated by:
 
 ```bash
 make sprint12-overlap-decision-smoke
 ```
 
-The next bounded loader capability is an internal role lattice over ELF type,
-entrypoint, `PT_INTERP`, `DF_1_PIE`, and `DT_SONAME`. `ET_DYN` alone remains
+Patch 064 also adds an internal role lattice over ELF type, entrypoint, a
+bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated `DT_SONAME` string
+evidence. A raw SONAME tag or index is insufficient until it resolves to a
+bounded, nonempty, in-range, NUL-terminated string. `ET_DYN` alone remains
 unknown. The current public PIE indicator and schema `0.2.0` remain unchanged.
+Bounded GNU-property IBT/SHSTK evidence is the next separate loader gate.
 
 ## Focused validation
 
@@ -98,14 +105,12 @@ MALFORMED_TIMEOUT=2 make docker-validation-smoke
 make native-docker-json-parity-smoke
 ```
 
-## Make failure interpretation
+## Aggregate failure interpretation
 
-The four reported aggregate failures were not four independent product defects.
-The focused section-label target used a noncanonical section-zero fixture; that
-failure then propagated through native validation, sprint closeout, and Docker
-validation. Generated corpus verification also exposed mode-repair and ownership
-integrity gaps. Patch 064 corrects those causes and keeps the aggregate targets
-fail-fast.
+`section-label-smoke` is the focused dependency for section-label behavior. A
+failure there propagates through native validation, sprint closeout, and Docker
+validation, so diagnose that focused result before interpreting the aggregates.
+Generated-corpus mode and ownership verification are separate integrity gates.
 
 ## Preserved contracts
 
@@ -124,7 +129,7 @@ worker profile:           one-worker reference unchanged
 
 - The internal role state is not a public PIE/DSO conclusion.
 - GNU-property IBT/SHSTK evidence remains a separate Sprint 12 patch.
-- The overlap incidence measurement is one diagnostic corpus plus one WSL2
-  system snapshot, not a population-wide estimate.
-- Cloud validation without NASM, ShellCheck, Docker, and the pinned baseline
-  tools cannot substitute for the WSL2 acceptance matrix.
+- The overlap incidence measurement is one diagnostic corpus plus one system
+  snapshot, not a population-wide estimate.
+- Toolchain-limited static review does not substitute for the required native,
+  strict-lint, Docker, and pinned-baseline gates.

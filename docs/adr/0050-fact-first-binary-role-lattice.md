@@ -14,12 +14,12 @@ changing scanner ordering or count semantics.
 
 The diagnostic survey covered the authenticated 24-target provisional corpus
 and 3,091 unique-inode system targets. Across 3,115 targets and 1,403,074,388
-executable bytes, it observed no overlapping executable targets, repeated
-same-slope bytes, or repeated exact candidate identities. Normalization would
-have recovered no candidate slots and changed no capacity outcome in this
-sample. Controlled overlap fixtures also showed that identity deduplication can
-change ordering, candidate windows, count tiers, and the fail-closed 4,096
-capacity result.
+executable bytes, it observed no target with executable-region overlap,
+same-slope repeated executable bytes, or repeated exact candidate identities.
+Normalization would have recovered no candidate slots and changed no capacity
+outcome in this sample. Controlled overlap fixtures also showed that identity
+deduplication can change ordering, candidate windows, count tiers, and the
+fail-closed 4,096 capacity result.
 
 The more material remaining loader ambiguity is the public PIE indicator. The
 current field is derived from `ET_DYN`, but shared objects also use `ET_DYN`.
@@ -48,7 +48,9 @@ This is a measured deferral, not a claim that executable overlap never occurs.
 
 - `PT_INTERP` carrier count;
 - `DT_FLAGS_1` carrier count and combined value;
-- `DT_SONAME` carrier count and value;
+- `DT_SONAME` carrier count and retained string-table index;
+- bounded evidence that the retained SONAME index resolves to a nonempty,
+  in-range, NUL-terminated string;
 - evidence and contradiction bits; and
 - one internal role state.
 
@@ -71,8 +73,10 @@ The lattice uses these rules:
 - `ET_DYN` alone remains `unknown`.
 - `ET_DYN` plus `PT_INTERP` or `DF_1_PIE` is executable-like unless shared
   evidence conflicts.
-- `ET_DYN` plus `DT_SONAME` and no executable-like evidence is shared-like.
-- A nonzero entrypoint without stronger role evidence is ambiguous.
+- `ET_DYN` plus validated `DT_SONAME` string evidence, no strong executable
+  evidence, and a zero entrypoint is shared-object-like.
+- `ET_DYN` plus a nonzero entrypoint but no `PT_INTERP` or `DF_1_PIE` evidence
+  is ambiguous, including when validated SONAME evidence is also present.
 - Strong executable and shared evidence together is contradictory.
 - Duplicate or conflicting role carriers are contradictory, not last-wins.
 - `ET_EXEC` remains executable-like unless incompatible dynamic role evidence
@@ -84,9 +88,12 @@ public PIE/DSO claim.
 
 ### Bound the new parser inputs
 
-`PT_INTERP` must be nonempty, file-backed, no larger than 4,096 bytes, and
-NUL-terminated inside its checked range. Dynamic role tags are consumed only
-through the existing bounded `PT_DYNAMIC` iterator. All malformed or unsupported
+The `PT_INTERP` file span must have nonzero length, be file-backed, be no larger
+than 4,096 bytes, and end in NUL inside its checked range. Raw `DT_SONAME`
+presence is insufficient: its retained string-table index must resolve to a
+bounded, nonempty, NUL-terminated string before it becomes shared-object
+evidence. Dynamic role tags are consumed only through the existing bounded
+`PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output.
 
 ## Consequences
@@ -95,7 +102,8 @@ outcomes remain fail-closed before report output.
 
 - The scanner and all public count meanings remain stable.
 - Loader-role evidence becomes explicit without overstating `ET_DYN`.
-- Unknown, ambiguous, contradictory, and duplicate states remain visible.
+- Unknown, ambiguous, and contradictory states remain explicit internally;
+  duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing can remain an independent Patch 065 gate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 

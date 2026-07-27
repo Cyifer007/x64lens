@@ -1701,7 +1701,27 @@ sprint12-overlap-decision-smoke: ok targets=3115 executable=3106 overlaps=0 repe
 sprint12-binary-role-smoke: ok cases=17 states=5 malformed=4 unsupported=1 summary_bytes=200 public_output=unchanged
 ```
 
-The binary-role harness validates bounded raw evidence and all five private
-states. It is not a public report oracle. The unchanged public JSON paths remain
-covered by schema, focused, integrated, native/container parity, and full
-aggregate validation.
+The binary-role harness validates bounded raw evidence and all five internal
+states. Raw `DT_SONAME` presence is insufficient until its string-table index
+resolves to a bounded, nonempty, in-range, NUL-terminated string; duplicate or
+conflicting carriers force the contradictory state. This is not a public report
+oracle. The unchanged public JSON paths remain covered by schema, focused,
+integrated, native/container parity, and full aggregate validation.
+
+## Sprint 12 Patch 065 GNU-property and corrective validation
+
+Patch 065 adds two focused gates:
+
+```bash
+make patch064-corrective-regression-smoke
+make sprint12-gnu-property-smoke
+```
+
+The corrective gate covers source-level NASM regressions, complete bounded
+`PT_INTERP` and `DT_SONAME` validation, summary-only role classification,
+pre-mutation corpus authentication, hard-link substitution, and no-follow
+permission normalization. The GNU-property gate combines a development-only C
+harness linked to the NASM parser with an independent standard-library ELF
+oracle. It requires controlled positive, negative, unknown, duplicate,
+conflicting, malformed, overlap, and cap outcomes and byte-identical public text
+and JSON when only private feature facts change.

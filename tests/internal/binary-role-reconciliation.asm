@@ -29,12 +29,12 @@ global _start
 %define STRTAB_OFF 896
 %define STRTAB_SIZE 32
 
-%if PHDR_SUMMARY_RECORD_SIZE != 200
-    %error "binary-role evidence must keep the contracted 200-byte phdr_summary"
+%if PHDR_SUMMARY_RECORD_SIZE != 264
+    %error "Patch 065 binary-role and GNU-property facts require a 264-byte phdr_summary"
 %endif
 
 section .rodata
-ok_message: db "sprint12-binary-role-smoke: ok cases=17 states=5 malformed=4 unsupported=1 summary_bytes=200 public_output=unchanged", 10
+ok_message: db "sprint12-binary-role-smoke: ok cases=21 states=5 malformed=7 unsupported=1 summary_bytes=264 classifier_bounds=1", 10
 ok_message_len: equ $ - ok_message
 
 section .bss
@@ -42,6 +42,7 @@ align 16
 image:    resb IMAGE_SIZE
 summary:  resb PHDR_SUMMARY_RECORD_SIZE
 regions:  resb EXEC_REGION_RECORD_SIZE * 4
+property_context: resb GNU_PROPERTY_CONTEXT_SIZE
 
 section .text
 %macro EXPECT_ROLE 1
@@ -263,7 +264,8 @@ _start:
     mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 2) + D_TAG], DT_SONAME
     mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 2) + D_UN], 1
     mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 3) + D_TAG], DT_NULL
-    mov     qword [image + STRTAB_OFF], 0x7878787878787800
+    mov     rax, 0x7878787878787800
+    mov     [image + STRTAB_OFF], rax
     EXPECT_PHDR_STATUS EXIT_MALFORMED_ELF
 
     ; 17. Identical duplicate SONAME carriers remain explicit contradiction.
@@ -287,6 +289,55 @@ _start:
     mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 4) + D_TAG], DT_NULL
     EXPECT_ROLE BINARY_ROLE_CONTRADICTORY
 
+    ; 18. A NUL-only PT_INTERP path is malformed, not executable evidence.
+    call    setup_base
+    mov     word [image + E_TYPE], ET_DYN
+    mov     word [image + E_PHNUM], 1
+    call    setup_interp_ph0
+    mov     byte [image + INTERP_OFF], 0
+    EXPECT_PHDR_STATUS EXIT_MALFORMED_ELF
+
+    ; 19. An embedded NUL before the final terminator is malformed.
+    call    setup_base
+    mov     word [image + E_TYPE], ET_DYN
+    mov     word [image + E_PHNUM], 1
+    call    setup_interp_ph0
+    mov     byte [image + INTERP_OFF + 2], 0
+    EXPECT_PHDR_STATUS EXIT_MALFORMED_ELF
+
+    ; 20. Every SONAME carrier is validated. A valid first index cannot hide a
+    ; malformed second index at the string-table end.
+    call    setup_base
+    mov     word [image + E_TYPE], ET_DYN
+    mov     word [image + E_PHNUM], 2
+    mov     rdi, PH0
+    call    setup_dyn_load_phdr
+    mov     rdi, PH1
+    mov     rsi, 5
+    call    setup_dynamic_phdr
+    call    setup_soname_table
+    mov     qword [image + DYNAMIC_OFF + D_TAG], DT_STRTAB
+    mov     qword [image + DYNAMIC_OFF + D_UN], STRTAB_OFF
+    mov     qword [image + DYNAMIC_OFF + ELF64_DYN_SIZE + D_TAG], DT_STRSZ
+    mov     qword [image + DYNAMIC_OFF + ELF64_DYN_SIZE + D_UN], STRTAB_SIZE
+    mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 2) + D_TAG], DT_SONAME
+    mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 2) + D_UN], 1
+    mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 3) + D_TAG], DT_SONAME
+    mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 3) + D_UN], STRTAB_SIZE
+    mov     qword [image + DYNAMIC_OFF + (ELF64_DYN_SIZE * 4) + D_TAG], DT_NULL
+    EXPECT_PHDR_STATUS EXIT_MALFORMED_ELF
+
+    ; 21. The classifier rejects impossible completed-summary relationships
+    ; without reading mapped bytes.
+    call    setup_base
+    mov     qword [summary + PHDR_SUMMARY_ELF_TYPE], ET_DYN
+    mov     qword [summary + PHDR_SUMMARY_PHNUM], 0
+    mov     qword [summary + PHDR_SUMMARY_INTERP_COUNT], 1
+    lea     rdi, [summary]
+    call    x64lens_binary_role_classify
+    cmp     eax, EXIT_BOUNDS
+    jne     .fail
+
     mov     eax, 1
     mov     edi, 1
     lea     rsi, [ok_message]
@@ -302,9 +353,18 @@ _start:
     syscall
 
 setup_base:
-    lea     rdi, [image]
     xor     eax, eax
-    mov     ecx, (IMAGE_SIZE + PHDR_SUMMARY_RECORD_SIZE + (EXEC_REGION_RECORD_SIZE * 4)) / 8
+    lea     rdi, [image]
+    mov     ecx, IMAGE_SIZE / 8
+    rep stosq
+    lea     rdi, [summary]
+    mov     ecx, PHDR_SUMMARY_RECORD_SIZE / 8
+    rep stosq
+    lea     rdi, [regions]
+    mov     ecx, (EXEC_REGION_RECORD_SIZE * 4) / 8
+    rep stosq
+    lea     rdi, [property_context]
+    mov     ecx, GNU_PROPERTY_CONTEXT_SIZE / 8
     rep stosq
     mov     qword [image + E_PHOFF], 0
     mov     word [image + E_PHENTSIZE], ELF64_PHDR_SIZE
@@ -362,9 +422,11 @@ setup_exec_load_phdr:
     ret
 
 setup_soname_table:
-    mov     qword [image + STRTAB_OFF], 0x6f732e7862696c00 ; NUL + "libx.so"
+    mov     rax, 0x6f732e7862696c00 ; NUL + "libx.so"
+    mov     [image + STRTAB_OFF], rax
     mov     byte [image + STRTAB_OFF + 8], 0
-    mov     qword [image + STRTAB_OFF + 9], 0x6f732e7962696c00 ; NUL + "liby.so"
+    mov     rax, 0x6f732e7962696c00 ; NUL + "liby.so"
+    mov     [image + STRTAB_OFF + 9], rax
     mov     byte [image + STRTAB_OFF + 17], 0
     ret
 
@@ -388,6 +450,7 @@ run_phdr:
     lea     rdx, [summary]
     lea     rcx, [regions]
     mov     r8, 4
+    lea     r9, [property_context]
     call    x64lens_phdr_analyze
     ret
 
@@ -395,8 +458,7 @@ run_role:
     call    run_phdr
     test    eax, eax
     jne     .return
-    lea     rdi, [image]
-    lea     rsi, [summary]
+    lea     rdi, [summary]
     call    x64lens_binary_role_classify
 .return:
     ret

@@ -1,5 +1,14 @@
 # Sprint 12 Patch 063 Validation
 
+## Status
+
+Historical record for the exact Patch 063 source. Its 33-fixture/132-execution
+PHDR banner and four rejected mapping cases apply only to that source boundary.
+Patch 064 expands the same gates to 49 fixtures/196 executions and nine rejected
+mapping cases; use the
+[Patch 064 validation record](sprint-12-patch-064-validation.md) for the current
+candidate expectations.
+
 ## Purpose
 
 Patch 063 addresses the confirmed Patch 062 parser, transaction, and Make
