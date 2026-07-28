@@ -1,28 +1,21 @@
 {
+  "acceptance": {
+    "all_authorities_consumed": true,
+    "exact_vector_match_count": 96,
+    "natural_unique_identity_count": 48,
+    "object_count": 96,
+    "parser_visible_edge_layout_count": 24,
+    "probe_run_count": 288,
+    "provisional_overlap_count": 0,
+    "provisional_target_count": 24,
+    "public_command_count": 384,
+    "retained_fact_field_count": 18,
+    "strata_close_independently": true
+  },
   "authority_id": "sprint12-role-property-heldout-v1",
   "evidence_class": "diagnostic",
   "frozen": false,
-  "publication_eligible": false,
-  "purpose": "Confirm private binary-role and GNU-property facts before any public-policy or schema decision.",
-  "natural_stratum": {
-    "object_count": 48,
-    "compiler_count": 2,
-    "compilers": ["gcc", "clang"],
-    "source_variants_per_compiler": 2,
-    "role_constructions": ["ET_EXEC", "PIE-like ET_DYN", "shared-object-like ET_DYN"],
-    "property_states": ["none", "IBT", "SHSTK", "IBT+SHSTK"],
-    "requirements": [
-      "48 unique SHA-256 identities",
-      "zero SHA-256 overlap with the authenticated provisional corpus",
-      "exact independently authored fact vectors",
-      "three byte-identical fact-probe repetitions per object"
-    ]
-  },
   "metamorphic_stratum": {
-    "object_count": 48,
-    "positive_pair_objects": 24,
-    "edge_objects": 24,
-    "positive_pairs": 12,
     "edge_families": [
       "unknown feature bit",
       "conflicting feature properties",
@@ -31,24 +24,60 @@
       "invalid feature width",
       "nonzero property padding"
     ],
+    "edge_objects": 24,
+    "object_count": 48,
+    "positive_pair_objects": 24,
+    "positive_pairs": 12,
     "requirements": [
       "logical fact invariants across canonical and exact-alias carrier pairs",
       "contributor-count deltas remain explicit",
       "unknown, contradictory, malformed, and unsupported states remain distinct",
-      "three byte-identical fact-probe repetitions per object"
+      "three byte-identical fact-probe repetitions per object",
+      "all 24 edge variants differ in bytes consumed through file-backed program-header ranges",
+      "all 18 expected and observed fact fields are retained per object"
     ]
   },
-  "public_boundary": {
-    "schema_version": "0.2.0",
-    "private_fields_exposed": false,
-    "public_policy_decision_authorized": false
+  "natural_stratum": {
+    "compiler_count": 2,
+    "compilers": [
+      "gcc",
+      "clang"
+    ],
+    "object_count": 48,
+    "property_states": [
+      "none",
+      "IBT",
+      "SHSTK",
+      "IBT+SHSTK"
+    ],
+    "requirements": [
+      "48 unique SHA-256 identities",
+      "zero SHA-256 overlap with the authenticated provisional corpus",
+      "exact independently authored fact vectors",
+      "three byte-identical fact-probe repetitions per object",
+      "authenticated 24-target provisional corpus is required and verified before overlap comparison",
+      "all four public command paths execute against every object under the supplied analyzer and schema authorities"
+    ],
+    "role_constructions": [
+      "ET_EXEC",
+      "PIE-like ET_DYN",
+      "shared-object-like ET_DYN"
+    ],
+    "source_variants_per_compiler": 2
   },
-  "acceptance": {
-    "object_count": 96,
-    "probe_run_count": 288,
-    "exact_vector_match_count": 96,
-    "natural_unique_identity_count": 48,
-    "provisional_overlap_count": 0,
-    "strata_close_independently": true
-  }
+  "public_boundary": {
+    "commands": [
+      "info",
+      "mitigations",
+      "gadgets --format json",
+      "analyze --format json"
+    ],
+    "formal_schema_authority_consumed": true,
+    "private_fields_exposed": false,
+    "public_policy_decision_authorized": false,
+    "schema_version": "0.2.0",
+    "stdout_and_stderr_private_leak_scan": true
+  },
+  "publication_eligible": false,
+  "purpose": "Confirm private binary-role and GNU-property facts before any public-policy or schema decision."
 }

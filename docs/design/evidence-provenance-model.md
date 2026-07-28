@@ -364,13 +364,27 @@ without adding a runtime provenance tier or changing schema `0.2.0`. It does not
 parser or classifier facts, analyzer behavior, runtime enforcement, or
 publication claims.
 
-## Sprint 12 Patch 068 held-out fact provenance
+## Sprint 12 Patch 068 diagnostic-matrix fact provenance
 
 Patch 068 keeps natural and metamorphic role/property evidence as separate
-strata. Each retained object is identified by SHA-256, an independently authored
-private fact vector, and three byte-identical fact-probe outputs. Natural objects
-must have unique identities and no identity overlap with the provisional corpus.
+strata. Each matrix object is identified by SHA-256, an independently authored
+private fact vector, and three byte-identical fact-probe outputs. Held-out
+natural objects must have unique identities and no identity overlap with the
+authenticated, verified provisional corpus.
 Metamorphic pairs preserve logical facts while changing exact carrier
-provenance, and edge objects preserve unknown, contradictory, malformed, and
-unsupported outcomes. These development facts do not become candidate evidence,
+provenance, and edge objects preserve unknown, contradictory, and malformed
+outcomes. These development facts do not become candidate evidence,
 public mitigation fields, or publication rows.
+
+## Sprint 12 Patch 069 external reconciliation provenance
+
+Patch 069 binds each private role/property fact vector to its object, authority,
+analyzer, schema, fact probe, authenticated provisional corpus, and raw public
+command outputs. A separate comparator artifact binds the same object to exact
+GNU `readelf -hW/-lW/-dW/-nW` commands, executable identity, raw outputs, and a
+field-specific eligibility classification.
+
+Direct and reproducibly derived matches are not merged with ambiguous,
+unavailable, corrupt, malformed, or inapplicable states. These metadata facts do
+not create a candidate provenance tier, a public mitigation field, or runtime-
+CET evidence.

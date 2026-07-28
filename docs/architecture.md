@@ -1303,16 +1303,16 @@ comparison. Missing positive coordinate anchors block address intersections.
 Tool-native populations remain definition-specific, and recursive generic
 `gadget_count` authority is rejected.
 
-The retained cloud checkpoint accounted for 30 planned conditions while
+The initial partial-tool diagnostic checkpoint accounted for 30 planned conditions while
 executing 12 x64lens conditions and recording 18 pinned-baseline conditions as
-unavailable. A later, separately qualified WSL2 replay used the exact pinned
-baselines and, after one narrow evidence-local ROPgadget banner-authority
+unavailable. A later, separately qualified all-tools diagnostic replay used the
+exact pinned baselines and, after one narrow evidence-local ROPgadget banner-authority
 correction, executed all 30 conditions and retained 180 successful process
 rows plus 24 normalized relations. Seventeen conditions were above the
 6,361,100 ns reliable single-process floor and 13 were below it; all 12 x64lens
 conditions were below it. Two Python task-path closures and coordinate
 calibration failed, so the replay was not comparison-qualified and does not
-replace the fresh unmodified Patch 061 empirical campaign.
+cross the preregistered Patch 061 campaign boundary.
 
 Every retained Sprint 11 row and derived artifact remains diagnostic, unfrozen,
 and publication-ineligible. The corrective measurement plane changes external
@@ -1422,7 +1422,8 @@ public output when controlled inputs differ only in private feature facts.
 Only exact-range carrier aliases share a canonical view. Any other physical
 carrier overlap increments the private failure fact and is rejected as malformed
 before property parsing or reporting. Any later public-policy decision follows
-held-out evidence, bounded external reconciliation, and native/container parity.
+the separate natural/metamorphic diagnostic matrix, bounded external
+reconciliation, and native/container private-fact parity.
 
 ### Patch 066 development-only role/property fact probe
 
@@ -1443,20 +1444,41 @@ harnesses, never into `build/x64lens`. This reconciliation attests the probe's
 record-layout interpretation; it does not establish parser or classifier
 correctness, analyzer behavior, or public report policy.
 
-## Sprint 12 Patch 068 held-out private fact confirmation
+## Sprint 12 Patch 068 private fact diagnostic agreement gate
 
 Patch 068 changes no runtime module boundary. It hardens the development corpus
-transaction and adds a test-only held-out confirmation path:
+transaction and adds a test-only diagnostic agreement path:
 
 ```text
-natural compiler/linker targets + metamorphic ELF targets
+held-out natural toolchain-produced targets + controlled metamorphic ELF targets
   -> independent standard-library fact-vector oracle
   -> C/NASM private fact probe
   -> exact three-repeat reconciliation
 ```
 
-The held-out tool does not parse targets on behalf of the product, select scan
-regions, discover candidates, classify semantics, assign scores, or emit public
-reports. `binary_role.asm` and `gnu_property.asm` continue to consume bounded
-PHDR/dynamic/note facts, and public reporters remain unaware of their private
-states. The matrix is diagnostic and is not linked into `build/x64lens`.
+The diagnostic-matrix harness does not parse targets on behalf of the product,
+select scan regions, discover candidates, classify semantics, assign scores, or
+emit public reports. `binary_role.asm` and `gnu_property.asm` continue to consume
+bounded PHDR/dynamic/note facts, and public reporters remain unaware of their
+private states. The matrix is diagnostic and is not linked into `build/x64lens`.
+The natural and metamorphic strata remain separate, unfrozen, and
+publication-ineligible; neither is toolchain-prevalence evidence.
+
+## Sprint 12 Patch 069 authenticated external-reconciliation seam
+
+Patch 069 changes no runtime module boundary. It corrects the development corpus
+transaction and strengthens the existing private fact matrix, then adds a
+comparison-only path:
+
+```text
+authenticated private fact result
+  -> authenticated readelf executable and exact commands
+  -> retained header/program/dynamic/note text
+  -> field-scoped direct, derived, ambiguous, unavailable, or inapplicable status
+```
+
+The comparator cannot write analyzer records, select executable regions,
+classify candidates, assign scores, or format public output. Program headers
+remain x64lens mapping authority. `readelf` output is retained external evidence,
+not an imported parser result. Private field reconciliation remains outside
+candidate provenance, public mitigation output, and schema `0.2.0`.

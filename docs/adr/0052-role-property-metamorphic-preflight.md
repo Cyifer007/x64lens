@@ -3,13 +3,13 @@
 ## Status
 
 Accepted architecture introduced by Sprint 12 Patch 066 and carried by the
-Patch 067 corrective candidate. Patch acceptance remains governed by native,
-Docker, and independent validation.
+current Patch 068 candidate after Patch 067 layout attestation. Product and
+delivery acceptance remain governed by separate validation.
 
 ## Context
 
-Patch 065 introduced private binary-role and x86 GNU-property evidence, but its
-review found parser, corpus-repair, ABI, and oracle defects:
+Patch 065 introduced private binary-role and x86 GNU-property evidence, but
+subsequent validation identified parser, corpus-repair, ABI, and oracle defects:
 
 - GNU property entries were aligned from the absolute file offset instead of
   relative to the property descriptor;
@@ -20,12 +20,13 @@ review found parser, corpus-repair, ABI, and oracle defects:
   bytes through mutation;
 - one internal role harness violated nested-call stack alignment.
 
-The same review recommended a small metamorphic fact preflight before the wider
-held-out corpus or any public role/CET policy decision.
+The remaining evidence gap called for a small metamorphic fact preflight before
+the separate natural/metamorphic diagnostic matrix or any public role/CET policy
+decision.
 
 ## Decision
 
-Patch 066 first corrects the reviewed Patch 065 parser, corpus-repair, ABI, and
+Patch 066 first corrects the Patch 065 parser, corpus-repair, ABI, and
 oracle defects. It then adds one development-only 28-object metamorphic
 preflight:
 
@@ -90,13 +91,15 @@ Patch 066 does not:
 - infer runtime CET enforcement;
 - change executable-region authority, scanner behavior, candidate identity,
   capacity, semantic classes, or scores;
-- freeze the wider held-out campaign;
+- freeze the later natural/metamorphic diagnostic matrix;
 - add a runtime dependency.
 
-Patch 067 adds C/NASM layout attestation and corrects the remaining custody and
-oracle defects. The broader 96-object held-out confirmation, bounded `readelf -n`
-reconciliation, and native/container fact-parity gate remain subsequent work.
-Whole-batch timing and process-tree RSS also remain separate measurement gates.
+Patch 067 adds C/NASM layout attestation. Patch 068 corrects its remaining
+custody boundary and defines a separate 96-object diagnostic agreement matrix:
+48 held-out natural toolchain-produced objects plus 48 controlled metamorphic
+objects. Bounded external ELF reconciliation (`readelf -h -l -d -n`) and
+native/container private-fact parity remain subsequent work. Whole-batch timing
+and process-tree RSS also remain separate measurement gates.
 
 ## Consequences
 
@@ -106,5 +109,5 @@ Whole-batch timing and process-tree RSS also remain separate measurement gates.
 - Original carrier provenance remains visible without accepting ambiguous
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
-- Public indicators remain blocked until wider held-out evidence justifies a
-  separate compatible-output decision.
+- Public indicators remain blocked until the diagnostic agreement, external
+  reconciliation, and parity gates justify a separate compatible-output decision.

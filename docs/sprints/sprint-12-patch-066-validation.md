@@ -3,8 +3,10 @@
 ## Status
 
 Historical implementation-candidate validation plan. Patch 066 required the
-current Patch 067 corrective candidate, whose expectations are recorded in the
-[Patch 067 validation plan](sprint-12-patch-067-validation.md).
+Patch 067 corrective candidate, which subsequently required Patch 068. The
+[Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
+historical boundary; current expectations are in the
+[Patch 068 validation plan](sprint-12-patch-068-validation.md).
 
 ## Purpose
 
@@ -142,8 +144,9 @@ native and container strata.
 ## Known limitations and next gate
 
 The 28-object preflight is controlled development evidence, not the wider
-held-out confirmation and not publication evidence. After Patch 067 acceptance,
-the next role/property gate should use the larger held-out matrix, bounded
-`readelf -n` comparison, and native/container fact parity. Whole-batch workload
-ladders and process-tree RSS calibration remain separate benchmark-method
-decisions.
+natural/metamorphic diagnostic matrix and not publication evidence. Patch 068
+adds that separate gate for 48 held-out natural objects and 48 controlled
+metamorphic objects. Bounded external ELF reconciliation
+(`readelf -h -l -d -n`) and native/container private-fact parity remain open.
+Whole-batch workload ladders and process-tree RSS calibration remain separate
+benchmark-method decisions.

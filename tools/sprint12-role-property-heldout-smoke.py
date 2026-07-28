@@ -417,8 +417,10 @@ def natural_objects(root: Path) -> list[tuple[str, bytes, dict[str, Any]]]:
 
 
 def metamorphic_objects(root: Path) -> list[tuple[str, bytes, dict[str, Any]]]:
-    meta = load_module("p068_meta", "tools/sprint12-role-property-metamorphic-smoke.py")
-    prop = load_module("p068_prop", "tools/sprint12-gnu-property-smoke.py")
+    """Create 48 metamorphic objects with parser-visible identity differences."""
+
+    meta = load_module("p069_meta", "tools/sprint12-role-property-metamorphic-smoke.py")
+    prop = load_module("p069_prop", "tools/sprint12-gnu-property-smoke.py")
     result: list[tuple[str, bytes, dict[str, Any]]] = []
     for role in ("exec", "pie", "shared"):
         for state, bits in (("none", 0), ("ibt", IBT), ("shstk", SHSTK), ("both", IBT | SHSTK)):
@@ -429,53 +431,276 @@ def metamorphic_objects(root: Path) -> list[tuple[str, bytes, dict[str, Any]]]:
                                {"stratum": "metamorphic", "family": "positive", "role": role,
                                 "property_state": state, "encoding": encoding}))
 
-    edge_builders = (
-        ("unknown-bit", lambda: meta.build_object("exec", prop.property_note([IBT | 0x80]))),
-        ("conflict", lambda: meta.build_object("pie", prop.property_note([IBT, 0]))),
-        ("descending-order", lambda: meta.build_object("shared", prop.property_note([IBT], extra_type=1))),
-        ("role-contradiction", lambda: meta.build_object("contradictory", prop.property_note([IBT | SHSTK]))),
-        ("bad-feature-width", lambda: meta.build_object("exec", prop.property_note([IBT], bad_size=True))),
-        ("nonzero-padding", lambda: meta.build_object("exec", prop.property_note([IBT], nonzero_padding=True))),
-    )
-    for family, builder in edge_builders:
-        for variant in range(4):
-            blob = bytearray(builder())
-            blob[0x6F0 + variant] = 0x40 + variant
-            name = f"metamorphic-edge-{family}-v{variant}.elf"
-            result.append((name, bytes(blob), {"stratum": "metamorphic", "family": family,
-                                               "variant": variant}))
+    edge_objects: list[tuple[str, bytes]] = []
+    for variant in range(4):
+        edge_objects.append((
+            "unknown-bit",
+            meta.build_object("exec", prop.property_note([IBT | (0x80 << variant)])),
+        ))
+        edge_objects.append((
+            "conflict",
+            meta.build_object(
+                "pie",
+                prop.property_note([IBT | (0x80 << variant), SHSTK if variant & 1 else 0]),
+            ),
+        ))
+        edge_objects.append((
+            "descending-order",
+            meta.build_object("shared", prop.property_note([IBT], extra_type=1 + variant)),
+        ))
+        edge_objects.append((
+            "role-contradiction",
+            meta.build_object(
+                "contradictory",
+                prop.property_note([IBT | SHSTK | (0x80 << variant)]),
+            ),
+        ))
+
+        bad_width = bytearray(prop.property_note([IBT], bad_size=True))
+        # Descriptor starts at byte 16; property data starts at byte 24.  The
+        # eight-byte width is invalid, and the varied data byte remains inside
+        # the bounded property record consumed by both parsers.
+        bad_width[24 + variant] = 0x40 + variant
+        edge_objects.append(("bad-feature-width", meta.build_object("exec", bytes(bad_width))))
+
+        bad_padding = bytearray(prop.property_note([IBT], nonzero_padding=True))
+        # Four descriptor-relative padding bytes follow the four-byte feature
+        # value. Vary one nonzero byte per object so the parser-visible layouts
+        # are independent rather than SHA-only aliases outside all PHDRs.
+        bad_padding[28 + variant] = 0xB0 + variant
+        edge_objects.append(("nonzero-padding", meta.build_object("exec", bytes(bad_padding))))
+
+    family_counts: dict[str, int] = {}
+    for family, blob in edge_objects:
+        variant = family_counts.get(family, 0)
+        family_counts[family] = variant + 1
+        name = f"metamorphic-edge-{family}-v{variant}.elf"
+        result.append((name, blob, {"stratum": "metamorphic", "family": family,
+                                   "variant": variant}))
+    require(family_counts == {name: 4 for name in (
+        "unknown-bit", "conflict", "descending-order", "role-contradiction",
+        "bad-feature-width", "nonzero-padding",
+    )}, "metamorphic edge-family accounting changed")
     return result
 
 
-def corpus_hashes() -> set[str]:
-    root = ROOT / "benchmarks/corpus/generated/s11-p056-provisional-v1/targets"
-    if not root.is_dir():
-        return set()
-    return {sha256_bytes(path.read_bytes()) for path in root.iterdir() if path.is_file()}
+def identity(path: Path, label: str, *, executable: bool = False) -> dict[str, Any]:
+    absolute = Path(os.path.abspath(path))
+    metadata = absolute.lstat()
+    require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file: {absolute}")
+    require(not absolute.is_symlink(), f"{label} may not be a symlink: {absolute}")
+    if executable:
+        require(os.access(absolute, os.X_OK), f"{label} is not executable: {absolute}")
+    data = absolute.read_bytes()
+    return {
+        "path": str(absolute),
+        "size_bytes": len(data),
+        "sha256": sha256_bytes(data),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+    }
+
+
+def load_authority(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    authority_identity = identity(path, "held-out authority")
+    value = json.loads(path.read_text(encoding="utf-8"))
+    require(isinstance(value, dict), "held-out authority must be an object")
+    require(set(value) == {
+        "authority_id", "evidence_class", "frozen", "publication_eligible", "purpose",
+        "natural_stratum", "metamorphic_stratum", "public_boundary", "acceptance",
+    }, "held-out authority fields changed")
+    require(value["authority_id"] == "sprint12-role-property-heldout-v1", "held-out authority id changed")
+    require(value["evidence_class"] == "diagnostic", "held-out evidence class changed")
+    require(value["frozen"] is False, "held-out authority must remain frozen=false")
+    require(value["publication_eligible"] is False,
+            "held-out authority must remain publication_eligible=false")
+    natural = value["natural_stratum"]
+    metamorphic = value["metamorphic_stratum"]
+    boundary = value["public_boundary"]
+    acceptance = value["acceptance"]
+    require(isinstance(natural, dict) and natural.get("object_count") == 48,
+            "held-out natural stratum changed")
+    require(isinstance(metamorphic, dict) and metamorphic.get("object_count") == 48,
+            "held-out metamorphic stratum changed")
+    require(isinstance(boundary, dict) and boundary.get("schema_version") == "0.2.0"
+            and boundary.get("private_fields_exposed") is False
+            and boundary.get("public_policy_decision_authorized") is False
+            and boundary.get("commands") == [
+                "info", "mitigations", "gadgets --format json", "analyze --format json"
+            ]
+            and boundary.get("stdout_and_stderr_private_leak_scan") is True
+            and boundary.get("formal_schema_authority_consumed") is True,
+            "held-out public boundary changed")
+    require(isinstance(acceptance, dict) and acceptance.get("object_count") == 96
+            and acceptance.get("probe_run_count") == 288
+            and acceptance.get("exact_vector_match_count") == 96
+            and acceptance.get("natural_unique_identity_count") == 48
+            and acceptance.get("provisional_overlap_count") == 0
+            and acceptance.get("strata_close_independently") is True
+            and acceptance.get("public_command_count") == 384
+            and acceptance.get("retained_fact_field_count") == 18
+            and acceptance.get("parser_visible_edge_layout_count") == 24
+            and acceptance.get("provisional_target_count") == 24
+            and acceptance.get("all_authorities_consumed") is True,
+            "held-out acceptance authority changed")
+    return value, authority_identity
+
+
+def verify_provisional_corpus(root: Path) -> tuple[dict[str, Any], set[str], dict[str, Any]]:
+    require(root.is_dir(), f"authenticated provisional corpus is missing: {root}")
+    builder = load_module("p069_corpus_builder", "benchmarks/scripts/build-provisional-corpus.py")
+    manifest = builder.verify_corpus(root)
+    require(manifest.get("corpus_id") == root.name, "provisional corpus id changed")
+    require(manifest.get("target_count") == 24, "provisional corpus target count changed")
+    require(manifest.get("evidence_class") == "diagnostic"
+            and manifest.get("frozen") is False
+            and manifest.get("publication_eligible") is False,
+            "provisional corpus authority changed")
+    targets = root / "targets"
+    paths = sorted(path for path in targets.iterdir() if path.is_file())
+    require(len(paths) == 24, "provisional corpus targets are incomplete")
+    hashes = {sha256_bytes(path.read_bytes()) for path in paths}
+    require(len(hashes) == 24, "provisional corpus target identities are not unique")
+    return manifest, hashes, identity(root / "corpus-manifest.json", "provisional corpus manifest")
+
+
+def parser_visible_digest(blob: bytes) -> str:
+    _etype, _entry, records = phdrs(blob)
+    visible = bytearray(blob[:64 + len(records) * 56])
+    for _ptype, _flags, off, _vaddr, _paddr, filesz, _memsz, _align in records:
+        require(off + filesz <= len(blob), "parser-visible PHDR range exceeds object")
+        visible.extend(struct.pack("<QQ", off, filesz))
+        visible.extend(blob[off:off + filesz])
+    return sha256_bytes(bytes(visible))
+
+
+def validate_edge_diversity(objects: list[tuple[str, bytes, dict[str, Any]]]) -> None:
+    groups: dict[str, set[str]] = {}
+    for name, blob, metadata in objects:
+        if not name.startswith("metamorphic-edge-"):
+            continue
+        family = str(metadata["family"])
+        groups.setdefault(family, set()).add(parser_visible_digest(blob))
+    require(len(groups) == 6, "metamorphic edge-family count changed")
+    require(all(len(values) == 4 for values in groups.values()),
+            "metamorphic edge variants are not parser-visible independent layouts")
+
+
+def validate_formal_schema(schema: dict[str, Any], report: dict[str, Any], label: str) -> None:
+    try:
+        import jsonschema
+    except ImportError as exc:
+        raise HeldoutError("python3-jsonschema is required for held-out schema validation") from exc
+    validator = jsonschema.Draft202012Validator(schema)
+    errors = sorted(validator.iter_errors(report), key=lambda error: list(error.absolute_path))
+    require(not errors, f"formal schema rejected {label}: {errors[0].message if errors else ''}")
+
+
+def public_commands(
+    analyzer: Path,
+    target: Path,
+    expected: dict[str, int],
+    schema: dict[str, Any],
+) -> list[dict[str, Any]]:
+    meta = load_module("p069_public_boundary", "tools/sprint12-role-property-metamorphic-smoke.py")
+    commands = [
+        ("info", [str(analyzer), "info", str(target)]),
+        ("mitigations", [str(analyzer), "mitigations", str(target)]),
+        ("gadgets", [str(analyzer), "gadgets", "--format", "json", "--max-depth", "4", str(target)]),
+        ("analyze", [str(analyzer), "analyze", "--format", "json", "--max-depth", "4", str(target)]),
+    ]
+    malformed = expected["status"] == EXIT_MALFORMED
+    records: list[dict[str, Any]] = []
+    for command_id, command in commands:
+        expected_exit = 0 if not malformed or command_id == "info" else EXIT_MALFORMED
+        cp = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            check=False, timeout=10.0)
+        require(cp.returncode == expected_exit,
+                f"public command {command_id} returned {cp.returncode}, expected {expected_exit}: {target.name}")
+        meta.assert_no_private_public_text(cp.stdout)
+        meta.assert_no_private_public_text(cp.stderr)
+        if expected_exit == 0:
+            require(cp.stdout, f"public command emitted empty stdout: {command_id}/{target.name}")
+        else:
+            require(not cp.stdout, f"malformed object emitted partial stdout: {command_id}/{target.name}")
+        if command_id in {"gadgets", "analyze"} and expected_exit == 0:
+            report = json.loads(cp.stdout)
+            require(report.get("schema_version") == "0.2.0", "held-out report schema changed")
+            require(report.get("command") == command_id, "held-out report command identity changed")
+            meta.assert_no_private_public_fields(report)
+            validate_formal_schema(schema, report, f"{target.name}/{command_id}")
+        records.append({
+            "command_id": command_id,
+            "argv": command,
+            "exit_code": cp.returncode,
+            "stdout": cp.stdout,
+            "stderr": cp.stderr,
+            "stdout_sha256": sha256_bytes(cp.stdout),
+            "stderr_sha256": sha256_bytes(cp.stderr),
+        })
+    return records
 
 
 def render_tsv(rows: list[dict[str, Any]]) -> str:
-    fields = ["name", "stratum", "sha256", "size_bytes", "status", "role_state",
-              "role_evidence", "ibt_state", "shstk_state", "property_view_count",
-              "property_contributor_count", "property_feature_count", "repeat_sha256"]
+    fields = ["name", "stratum", "family", "sha256", "size_bytes", "parser_visible_sha256",
+              "repeat_sha256", "public_command_count"]
+    fields += [f"expected_{field}" for field in FACT_FIELDS]
+    fields += [f"observed_{field}" for field in FACT_FIELDS]
     lines = ["\t".join(fields)]
     for row in rows:
-        lines.append("\t".join(str(row[field]) for field in fields))
+        values = [str(row.get(field, "")) for field in fields]
+        lines.append("\t".join(values))
     return "\n".join(lines) + "\n"
 
 
-def write_result(result_dir: Path, objects: list[tuple[str, bytes, dict[str, Any]]], rows: list[dict[str, Any]]) -> None:
+def write_result(
+    result_dir: Path,
+    objects: list[tuple[str, bytes, dict[str, Any]]],
+    rows: list[dict[str, Any]],
+    public: dict[str, list[dict[str, Any]]],
+    identities: dict[str, Any],
+    authority: dict[str, Any],
+    provisional_manifest: dict[str, Any],
+) -> None:
     require(not result_dir.exists(), f"result directory already exists: {result_dir}")
     result_dir.mkdir(parents=True)
     object_dir = result_dir / "objects"
+    facts_dir = result_dir / "facts"
+    public_dir = result_dir / "public"
     object_dir.mkdir()
+    facts_dir.mkdir()
+    public_dir.mkdir()
+    metadata_by_name = {name: metadata for name, _blob, metadata in objects}
     for name, blob, _metadata in objects:
         path = object_dir / name
         path.write_bytes(blob)
         path.chmod(0o444)
+    for row in rows:
+        name = str(row["name"])
+        expected = {field: row[f"expected_{field}"] for field in FACT_FIELDS}
+        observed = {field: row[f"observed_{field}"] for field in FACT_FIELDS}
+        (facts_dir / f"{name}.expected.json").write_text(
+            json.dumps(expected, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        (facts_dir / f"{name}.observed.json").write_text(
+            json.dumps(observed, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        (facts_dir / f"{name}.metadata.json").write_text(
+            json.dumps(metadata_by_name[name], indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        target_public = public_dir / name
+        target_public.mkdir()
+        for record in public[name]:
+            command_id = record["command_id"]
+            (target_public / f"{command_id}.stdout").write_bytes(record["stdout"])
+            (target_public / f"{command_id}.stderr").write_bytes(record["stderr"])
+            retained = {key: value for key, value in record.items() if key not in {"stdout", "stderr"}}
+            (target_public / f"{command_id}.json").write_text(
+                json.dumps(retained, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
     (result_dir / "facts.tsv").write_text(render_tsv(rows), encoding="utf-8")
     manifest = {
-        "format": "x64lens-sprint12-role-property-heldout-v1",
+        "format": "x64lens-sprint12-role-property-heldout-v2",
+        "authority_id": authority["authority_id"],
         "evidence_class": "diagnostic",
         "frozen": False,
         "publication_eligible": False,
@@ -483,33 +708,51 @@ def write_result(result_dir: Path, objects: list[tuple[str, bytes, dict[str, Any
         "natural_count": sum(row["stratum"] == "natural" for row in rows),
         "metamorphic_count": sum(row["stratum"] == "metamorphic" for row in rows),
         "probe_repeats": 3,
+        "probe_run_count": len(objects) * 3,
+        "public_command_count": sum(len(value) for value in public.values()),
         "fact_fields": list(FACT_FIELDS),
+        "expected_vectors_retained": True,
+        "observed_vectors_retained": True,
+        "provisional_corpus_id": provisional_manifest["corpus_id"],
+        "provisional_target_count": provisional_manifest["target_count"],
+        "identities": identities,
         "rows_sha256": sha256_bytes((result_dir / "facts.tsv").read_bytes()),
     }
     (result_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     files = sorted(path for path in result_dir.rglob("*") if path.is_file())
     checksum_lines = [f"{sha256_bytes(path.read_bytes())}  {path.relative_to(result_dir).as_posix()}" for path in files]
     (result_dir / "SHA256SUMS.txt").write_text("\n".join(checksum_lines) + "\n", encoding="utf-8")
-    for path in result_dir.rglob("*"):
+    for path in sorted(result_dir.rglob("*"), reverse=True):
         if path.is_dir():
             path.chmod(0o555)
-        elif path.name != "SHA256SUMS.txt":
+        else:
             path.chmod(0o444)
-    (result_dir / "SHA256SUMS.txt").chmod(0o444)
     result_dir.chmod(0o555)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--authority", type=Path, required=True)
+    parser.add_argument("--analyzer", type=Path, required=True)
+    parser.add_argument("--schema", type=Path, required=True)
+    parser.add_argument("--provisional-corpus", type=Path, required=True)
     parser.add_argument("--fact-probe", type=Path, required=True)
     parser.add_argument("--result-dir", type=Path)
     args = parser.parse_args()
-    require(args.fact_probe.is_file() and os.access(args.fact_probe, os.X_OK), "fact probe is unavailable")
+
+    authority, authority_identity = load_authority(args.authority)
+    analyzer_identity = identity(args.analyzer, "analyzer", executable=True)
+    schema_identity = identity(args.schema, "public JSON schema")
+    probe_identity = identity(args.fact_probe, "private fact probe", executable=True)
+    schema = json.loads(args.schema.read_text(encoding="utf-8"))
+    require(isinstance(schema, dict) and schema.get("$schema") is not None,
+            "public JSON schema authority is malformed")
+    provisional_manifest, provisional_hashes, provisional_identity = verify_provisional_corpus(
+        args.provisional_corpus
+    )
 
     with tempfile.TemporaryDirectory(prefix="x64lens-role-property-heldout-") as raw:
         root = Path(raw)
-        objects = natural_objects(root / "natural") if False else []
-        # natural_objects expects its work directory to exist.
         natural_root = root / "natural"
         natural_root.mkdir()
         objects = natural_objects(natural_root)
@@ -517,17 +760,20 @@ def main() -> int:
         metamorphic_root.mkdir()
         objects += metamorphic_objects(metamorphic_root)
         require(len(objects) == 96, f"held-out object count is {len(objects)}, expected 96")
+        validate_edge_diversity(objects)
 
         hashes = [sha256_bytes(blob) for _name, blob, _metadata in objects]
         require(len(set(hashes)) == 96, "held-out object identities are not unique")
         natural_hashes = set(hashes[:48])
-        overlap = natural_hashes & corpus_hashes()
+        overlap = natural_hashes & provisional_hashes
         require(not overlap, "natural held-out objects overlap the provisional corpus")
 
         rows: list[dict[str, Any]] = []
+        public: dict[str, list[dict[str, Any]]] = {}
+        executions = root / "executions"
+        executions.mkdir()
         for name, blob, metadata in objects:
-            target = root / "executions" / name
-            target.parent.mkdir(exist_ok=True)
+            target = executions / name
             target.write_bytes(blob)
             expected = independent_vector(blob)
             repeats = [probe_fact(args.fact_probe, target) for _ in range(3)]
@@ -535,34 +781,44 @@ def main() -> int:
             observed = repeats[0][1]
             require(observed == expected,
                     f"private fact mismatch for {name}:\nexpected={expected}\nobserved={observed}")
-            rows.append({
+            command_records = public_commands(args.analyzer, target, expected, schema)
+            public[name] = command_records
+            row: dict[str, Any] = {
                 "name": name,
                 "stratum": metadata["stratum"],
+                "family": metadata.get("family", "natural"),
                 "sha256": sha256_bytes(blob),
                 "size_bytes": len(blob),
-                "status": observed["status"],
-                "role_state": observed["role_state"],
-                "role_evidence": observed["role_evidence"],
-                "ibt_state": observed["ibt_state"],
-                "shstk_state": observed["shstk_state"],
-                "property_view_count": observed["property_view_count"],
-                "property_contributor_count": observed["property_contributor_count"],
-                "property_feature_count": observed["property_feature_count"],
+                "parser_visible_sha256": parser_visible_digest(blob),
                 "repeat_sha256": sha256_bytes(repeats[0][0]),
-            })
+                "public_command_count": len(command_records),
+            }
+            row.update({f"expected_{field}": expected[field] for field in FACT_FIELDS})
+            row.update({f"observed_{field}": observed[field] for field in FACT_FIELDS})
+            rows.append(row)
 
         natural = [row for row in rows if row["stratum"] == "natural"]
         metamorphic = [row for row in rows if row["stratum"] == "metamorphic"]
         require(len(natural) == 48 and len(metamorphic) == 48, "held-out strata are incomplete")
-        malformed = sum(row["status"] == EXIT_MALFORMED for row in rows)
+        malformed = sum(row["observed_status"] == EXIT_MALFORMED for row in rows)
         require(malformed == 12, f"malformed held-out count is {malformed}, expected 12")
+        require(sum(row["public_command_count"] for row in rows) == 384,
+                "held-out public-command accounting changed")
         if args.result_dir is not None:
-            write_result(args.result_dir, objects, rows)
+            identities = {
+                "authority": authority_identity,
+                "analyzer": analyzer_identity,
+                "schema": schema_identity,
+                "fact_probe": probe_identity,
+                "provisional_corpus_manifest": provisional_identity,
+            }
+            write_result(args.result_dir, objects, rows, public, identities, authority, provisional_manifest)
 
     print(
         "sprint12-role-property-heldout-smoke: ok "
-        "objects=96 natural=48 metamorphic=48 probe_runs=288 unique_natural=48 "
-        "provisional_overlap=0 malformed=12 schema=unchanged"
+        "objects=96 natural=48 metamorphic=48 probe_runs=288 public_commands=384 "
+        "fact_fields=18 expected_vectors=96 observed_vectors=96 unique_natural=48 "
+        "provisional_targets=24 provisional_overlap=0 edge_layouts=24 malformed=12 schema=0.2.0"
     )
     return 0
 

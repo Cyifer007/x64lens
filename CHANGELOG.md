@@ -8,15 +8,25 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 068 held-out private role/GNU-property confirmation over 48
-  natural compiler/linker outputs and 48 metamorphic objects, with independent
-  exact fact vectors, three byte-identical probe repetitions per object, unique
-  natural identities, and zero natural-object overlap with the provisional
-  corpus. The evidence remains diagnostic and does not add public fields.
-- Patch 067 corrective hardening for the corpus mutation boundary, complete
-  caller-visible path reauthentication, verified rollback retries, the stale
-  displaced-root oracle, the role/property layout Make dependency, executable
-  ABI-source validation, and all four public command paths.
+- Sprint 12 Patch 069 corrects the remaining Patch 068 corpus-repair and private-fact matrix custody defects, including descriptor-authoritative semantic verification, signal-safe mode rollback, directory identity/size continuity, mandatory analyzer/schema/corpus authority consumption, complete 18-field expected/observed vectors, and 24 distinct parser-visible edge layouts.
+- An authenticated development-only GNU `readelf -hW/-lW/-dW/-nW` reconciliation over the 96-object matrix. The retained result accounts for 1,728 field dispositions: 1,224 eligible matches, zero unexplained eligible mismatches, 96 ambiguous cells, 288 unavailable cells, and 120 inapplicable cells. Public output and schema `0.2.0` remain unchanged.
+- ADR 0055, `make patch068-corrective-regression-smoke`, `make sprint12-role-property-readelf-smoke`, and the Patch 069 validation record.
+
+- Sprint 12 Patch 068 adds a 96-object private role/GNU-property diagnostic
+  agreement gate: 48 held-out natural toolchain-produced ELF objects built
+  from GCC/Clang object inputs linked by `ld.bfd`, plus 48 controlled metamorphic
+  objects. The gate requires independent exact fact vectors, three byte-identical
+  probe runs per object, 48 distinct held-out SHA-256 identities, and zero
+  intersection with an authenticated, verified provisional-corpus inventory.
+  The two strata remain separate, unfrozen, publication-ineligible, and absent
+  from public output; schema `0.2.0` does not change.
+- Patch 068 correction of the Patch 067 corpus mutation boundary: complete
+  caller-visible path and exact-member reauthentication before mode changes,
+  bounded descriptor-bound restoration of original modes, fail-closed handling
+  when the caller-visible root is displaced, private-layout rebuilds after
+  structure-definition changes, executable ABI-source validation, and
+  private-field leakage checks across `info`, `mitigations`, `gadgets`, and
+  `analyze`.
 - ADR 0054, `make patch067-corrective-regression-smoke`,
   `make sprint12-role-property-heldout-smoke`, and the Patch 068 validation plan.
 
@@ -44,23 +54,29 @@ The project follows semantic versioning once the first public release is cut.
 
 - Sprint 11 Patch 061 closeout with corrected transaction ownership, symlink-ancestor rejection, independent native/comparison/closure/coordinate states, exact ROPgadget 7.7 version authority, isolated Python environment closure, recursive generic-count rejection, complete generator binding, stale-staging-path removal, and corrected below-floor accounting.
 - A preregistered whole-batch measurement policy for unresolved below-floor conditions, a campaign operator and interpretation guide, ADR 0047, the Patch 061 validation record, the Sprint 11 retrospective, and a machine-readable Sprint 11 closeout authority.
-- Sprint 12 activation with program-header validity and extended numbering first, followed by executable-overlap/provenance, PIE-versus-DSO identity, bounded GNU-property evidence, and a corrected held-out diagnostic confirmation with positive coordinate anchors and five complete task-path closures. Sprint 11 remains diagnostic and supplies no release-facing speed, RSS, coverage, or superiority claim.
+- Sprint 12 activation with program-header validity and extended numbering first,
+  followed by executable-overlap/provenance, PIE-versus-DSO identity, bounded
+  GNU-property evidence, and a private-fact diagnostic matrix. Positive
+  coordinate anchors and five complete task-path closures belong to a separate
+  comparison-qualification campaign. Sprint 11 remains diagnostic and supplies
+  no release-facing speed, RSS, coverage, or superiority claim.
 
-- Sprint 11 Patch 060 cloud checkpoint with complete
+- Sprint 11 Patch 060 partial-tool diagnostic checkpoint with complete
   24-comparison plus six-control condition accounting: 12 available x64lens
   conditions executed, 18 baseline conditions remained unavailable, 72 native
   rows were retained, and all 60 measured rows remained below the timer floor
   and outside primary summaries. The campaign generated six relation artifacts,
   two bounded task-path closure artifacts, an explicit coordinate-unavailable
   result, task-scoped summaries, and an engineering gap register.
-- A later, separately qualified WSL2 replay used the exact pinned baselines and,
+- A later, separately qualified all-tools diagnostic replay used the exact pinned
+  baselines and,
   after one narrow evidence-local ROPgadget banner-authority correction,
   executed all 30 conditions, retained 180 successful process rows, and
   generated 24 normalized relations. Seventeen conditions were above the
   6,361,100 ns reliable single-process floor and 13 were below it; all 12
   x64lens conditions were below it. Two Python task-path closures and coordinate
   calibration failed. The replay was not comparison-qualified and does not
-  replace the fresh unmodified Patch 061 empirical campaign.
+  cross the preregistered Patch 061 campaign boundary.
 - Patch 060 corrective integrity hardening for the remaining Patch 059 findings:
   authority-bound version commands, no-follow artifact ancestry, relation
   reproduction from retained native evidence, task-snapshot runtime closure,
@@ -367,13 +383,13 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Sprint 12 Patch 067 reauthenticates exact corpus membership and caller-visible
-  root identity immediately before descriptor-bound mode mutation. Late failure
-  enters descriptor-bound rollback, and the controlled injected-failure case
-  requires root and affected-member mode restoration. The patch also tightens
-  the binary-role ABI mutation oracle and recursive public-JSON private-key
-  checks. Public report fields, schema `0.2.0`, candidate metrics, semantic
-  classes, scores, and runtime dependencies remain unchanged.
+- Sprint 12 Patch 068 defines the corrective contract for the Patch 067
+  candidate: exact corpus membership and caller-visible root identity must be
+  reauthenticated at the final mutation and return boundaries, and late failure
+  must restore original modes through retained descriptors with bounded retries
+  and verification while surfacing rollback failure. Public report fields,
+  schema `0.2.0`, candidate metrics, semantic classes, scores, and runtime
+  dependencies remain unchanged.
 
 - Sprint 12 Patch 066 corrects descriptor-relative GNU-property entry alignment,
   rejects non-identical note-carrier overlap before reporting, keeps corpus mode

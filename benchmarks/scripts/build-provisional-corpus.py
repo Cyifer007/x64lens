@@ -2680,10 +2680,16 @@ def restore_mode_or_raise(fd: int, expected_mode: int, label: str) -> None:
         )
     raise CorpusError(f"failed to restore {label} mode: {'; '.join(errors)}")
 
-def bound_tree_identity(root_fd: int) -> dict[pathlib.PurePosixPath, tuple[bool, int, int]]:
-    """Return an exact descriptor-rooted membership and inode snapshot."""
+def bound_tree_identity(root_fd: int) -> dict[pathlib.PurePosixPath, tuple[bool, int, int, int]]:
+    """Return exact descriptor-rooted membership, inode, and size state.
 
-    result: dict[pathlib.PurePosixPath, tuple[bool, int, int]] = {}
+    Directory ``st_size`` is retained intentionally.  It is not a portable
+    content count, but on the active filesystem it changes when an adversarial
+    add/remove cycle rewrites directory storage.  Requiring the same value at
+    the mode-repair boundaries detects that otherwise invisible churn.
+    """
+
+    result: dict[pathlib.PurePosixPath, tuple[bool, int, int, int]] = {}
 
     def walk(directory_fd: int, prefix: pathlib.PurePosixPath) -> None:
         for name in sorted(os.listdir(directory_fd)):
@@ -2705,7 +2711,7 @@ def bound_tree_identity(root_fd: int) -> dict[pathlib.PurePosixPath, tuple[bool,
                         (opened.st_dev, opened.st_ino) == (metadata.st_dev, metadata.st_ino),
                         f"corpus directory changed while enumerating: {relative}",
                     )
-                    result[relative] = (True, opened.st_dev, opened.st_ino)
+                    result[relative] = (True, opened.st_dev, opened.st_ino, opened.st_size)
                     walk(child_fd, relative)
                 finally:
                     os.close(child_fd)
@@ -2721,7 +2727,7 @@ def bound_tree_identity(root_fd: int) -> dict[pathlib.PurePosixPath, tuple[bool,
                         (opened.st_dev, opened.st_ino) == (metadata.st_dev, metadata.st_ino),
                         f"corpus file changed while enumerating: {relative}",
                     )
-                    result[relative] = (False, opened.st_dev, opened.st_ino)
+                    result[relative] = (False, opened.st_dev, opened.st_ino, opened.st_size)
                 finally:
                     os.close(child_fd)
             else:
@@ -2739,7 +2745,7 @@ def reauthenticate_bound_tree(
     """Require exact membership, type, and inode identity for a retained tree."""
 
     expected = {
-        relative: (is_directory, metadata.st_dev, metadata.st_ino)
+        relative: (is_directory, metadata.st_dev, metadata.st_ino, metadata.st_size)
         for _fd, relative, is_directory, _mode, metadata in opened
     }
     current = bound_tree_identity(root_fd)
@@ -2747,6 +2753,58 @@ def reauthenticate_bound_tree(
         current == expected,
         f"{label} membership or identity changed",
     )
+
+
+
+def verify_retained_corpus_snapshot(
+    opened: Sequence[tuple[int, pathlib.PurePosixPath, bool, int, os.stat_result]],
+    expected_root_name: str,
+    *,
+    allow_mode_drift: bool = False,
+) -> dict[str, Any]:
+    """Verify corpus semantics from retained descriptors, never live pathnames.
+
+    The ordinary corpus verifier intentionally consumes a pathname because it is
+    also the public verification entry point.  Mode repair has a stronger
+    transaction requirement: after preflight, semantic authority must remain the
+    exact already-opened bytes even when a same-UID adversary swaps visible names.
+    A bounded temporary projection gives the existing verifier those retained
+    bytes and the expected normalized modes without reopening the mutable source
+    tree.
+    """
+
+    with tempfile.TemporaryDirectory(prefix="x64lens-retained-corpus-") as raw:
+        snapshot = pathlib.Path(raw) / expected_root_name
+        snapshot.mkdir(mode=DIRECTORY_MODE)
+        directories = sorted(
+            (item for item in opened if item[2]),
+            key=lambda item: (len(item[1].parts), item[1].as_posix()),
+        )
+        files = sorted(
+            (item for item in opened if not item[2]),
+            key=lambda item: item[1].as_posix(),
+        )
+        for _fd, relative, _is_directory, _mode, _metadata in directories:
+            path = snapshot.joinpath(*relative.parts)
+            path.mkdir(mode=DIRECTORY_MODE)
+        for fd, relative, _is_directory, mode, metadata in files:
+            path = snapshot.joinpath(*relative.parts)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            data = read_fd_bytes(fd, metadata.st_size)
+            path.write_bytes(data)
+            path.chmod(mode)
+            os.utime(path, ns=(0, 0), follow_symlinks=False)
+        for _fd, relative, _is_directory, _mode, _metadata in reversed(directories):
+            path = snapshot.joinpath(*relative.parts)
+            path.chmod(DIRECTORY_MODE)
+            os.utime(path, ns=(0, 0), follow_symlinks=False)
+        snapshot.chmod(DIRECTORY_MODE)
+        os.utime(snapshot, ns=(0, 0), follow_symlinks=False)
+        return _verify_corpus_bound(
+            snapshot,
+            expected_root_name,
+            allow_mode_drift=allow_mode_drift,
+        )
 
 
 def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
@@ -2757,7 +2815,16 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
     any mode-changing syscall.  An idempotent descriptor operation creates a final
     mutation barrier, after which the complete path and tree are reauthenticated.
     Any late failure restores every original mode and verifies that restoration.
+    SIGINT and SIGTERM use the same controlled interruption path as corpus builds,
+    so a signal after the first real chmod is an ordinary rollback-triggering
+    transaction failure rather than an asynchronous partial repair.
     """
+
+    global _INTERRUPTED_BY
+    previous_handlers = {signum: signal.getsignal(signum) for signum in SIGNALS}
+    previous_interrupted = _INTERRUPTED_BY
+    _INTERRUPTED_BY = None
+    install_signal_handlers()
 
     absolute = pathlib.Path(os.path.abspath(root))
     expected_root_name = absolute.name
@@ -2822,7 +2889,7 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
             "retained corpus file membership disagrees with SHA256SUMS.txt",
         )
 
-        _verify_corpus_bound(bound_root, expected_root_name, allow_mode_drift=True)
+        verify_retained_corpus_snapshot(opened, expected_root_name, allow_mode_drift=True)
 
         root_after = os.fstat(root_fd)
         require(
@@ -2832,6 +2899,7 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 root_after.st_uid,
                 root_after.st_gid,
                 root_after.st_mtime_ns,
+                root_after.st_size,
             )
             == (
                 root_metadata.st_dev,
@@ -2839,6 +2907,7 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 root_metadata.st_uid,
                 root_metadata.st_gid,
                 root_metadata.st_mtime_ns,
+                root_metadata.st_size,
             ),
             "corpus root changed before mode repair",
         )
@@ -2867,6 +2936,10 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 require(
                     current.st_mtime_ns == 0,
                     f"corpus member mtime changed: {relative}",
+                )
+                require(
+                    current.st_size == initial.st_size,
+                    f"corpus member size metadata changed: {relative}",
                 )
                 fresh_fd = open_relative_member_nofollow(
                     root_fd, relative, directory=is_directory
@@ -2918,43 +2991,49 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 os.fchmod(fd, mode)
 
             reauthenticate_transaction("corpus mode-repair success boundary")
-            verified = _verify_corpus_bound(bound_root, expected_root_name)
+            verified = verify_retained_corpus_snapshot(opened, expected_root_name)
             reauthenticate_transaction("corpus mode-repair return boundary")
             return verified
         except BaseException as original:
+            rollback_mask: set[signal.Signals] | None = None
             if mutation_started:
+                rollback_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
                 rollback_errors: list[str] = []
-                for fd, relative, _directory, _mode, initial in reversed(opened):
+                try:
+                    for fd, relative, _directory, _mode, initial in reversed(opened):
+                        try:
+                            restore_mode_or_raise(
+                                fd,
+                                stat.S_IMODE(initial.st_mode),
+                                f"corpus member {relative}",
+                            )
+                        except CorpusError as exc:
+                            rollback_errors.append(str(exc))
                     try:
                         restore_mode_or_raise(
-                            fd,
-                            stat.S_IMODE(initial.st_mode),
-                            f"corpus member {relative}",
+                            root_fd,
+                            stat.S_IMODE(root_metadata.st_mode),
+                            "corpus root",
                         )
                     except CorpusError as exc:
                         rollback_errors.append(str(exc))
-                try:
-                    restore_mode_or_raise(
-                        root_fd,
-                        stat.S_IMODE(root_metadata.st_mode),
-                        "corpus root",
-                    )
-                except CorpusError as exc:
-                    rollback_errors.append(str(exc))
 
-                for fd, relative, _directory, _mode, initial in opened:
-                    observed = stat.S_IMODE(os.fstat(fd).st_mode)
-                    expected = stat.S_IMODE(initial.st_mode)
-                    if observed != expected:
+                    for fd, relative, _directory, _mode, initial in opened:
+                        observed = stat.S_IMODE(os.fstat(fd).st_mode)
+                        expected = stat.S_IMODE(initial.st_mode)
+                        if observed != expected:
+                            rollback_errors.append(
+                                f"corpus member {relative} mode remained {observed:04o}, expected {expected:04o}"
+                            )
+                    root_observed = stat.S_IMODE(os.fstat(root_fd).st_mode)
+                    root_expected = stat.S_IMODE(root_metadata.st_mode)
+                    if root_observed != root_expected:
                         rollback_errors.append(
-                            f"corpus member {relative} mode remained {observed:04o}, expected {expected:04o}"
+                            f"corpus root mode remained {root_observed:04o}, expected {root_expected:04o}"
                         )
-                root_observed = stat.S_IMODE(os.fstat(root_fd).st_mode)
-                root_expected = stat.S_IMODE(root_metadata.st_mode)
-                if root_observed != root_expected:
-                    rollback_errors.append(
-                        f"corpus root mode remained {root_observed:04o}, expected {root_expected:04o}"
-                    )
+                finally:
+                    if rollback_mask is not None:
+                        restore_signal_mask_deferred(rollback_mask)
                 if rollback_errors:
                     raise CorpusError(
                         f"mode repair failed ({original}); rollback failed: "
@@ -2966,6 +3045,9 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
             os.close(fd)
         os.close(root_fd)
         os.close(parent_fd)
+        for signum, handler in previous_handlers.items():
+            signal.signal(signum, handler)
+        _INTERRUPTED_BY = previous_interrupted
 
 
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:

@@ -4,8 +4,8 @@
 
 Accepted fact-acquisition architecture. The original Patch 065 implementation
 did not pass validation. Patch 066 corrected its parser and evidence-boundary
-findings, and the current Patch 067 corrective candidate carries this boundary
-forward.
+findings, Patch 067 added private layout attestation, and the current Patch 068
+candidate carries this boundary forward.
 
 ## Context
 
@@ -70,9 +70,9 @@ change the historical `mitigations.pie` indicator, alter candidate counts,
 semantic classes, or scores, or publish IBT/SHSTK indicators. Controlled inputs
 that differ only in private feature facts must produce byte-identical public text
 and JSON. The new facts remain private until positive, negative, unknown,
-duplicate, conflicting, malformed, and held-out system cases, bounded external
-reconciliation, and native/container parity justify a separate public-policy
-decision.
+duplicate, conflicting, and malformed controlled cases, the separate
+natural/metamorphic diagnostic matrix, bounded external ELF reconciliation, and
+native/container private-fact parity justify a separate public-policy decision.
 
 ## Module boundary
 
@@ -95,5 +95,6 @@ mapped ELF header or dynamic/string bytes.
   being silently collapsed or treated as parser errors.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
-- Native and Docker validation must prove identical facts and unchanged public
-  report fields before the current Patch 067 candidate is accepted.
+- The current Patch 068 candidate requires unchanged native/container public
+  report fields. Native/container private-fact parity remains a separate later
+  gate.

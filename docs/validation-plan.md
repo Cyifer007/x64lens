@@ -1564,10 +1564,10 @@ the exact 24-comparison plus six-control pre-execution plan.
 The controlled stage-zero gates do not execute the installed-tool comparative
 campaign. Their rows and derived artifacts remain diagnostic, unfrozen, and
 publication-ineligible and cannot support performance, RSS, coverage, or
-superiority claims. Patch 060 subsequently produced the authenticated cloud
-checkpoint, summaries, and engineering gap register. Patch 061 defines the
-closeout corrections, while a fresh unmodified all-tools campaign remains an
-empirical acceptance requirement.
+superiority claims. Patch 060 subsequently produced the initial partial-tool
+diagnostic checkpoint, summaries, and engineering gap register. Patch 061
+defines the closeout corrections; a distinct preregistered all-tools campaign
+remains required for empirical qualification.
 
 Full acceptance still requires strict ShellCheck, a clean NASM build, all
 samples and native validation, exact 4096/4097 capacity behavior, malformed-input
@@ -1594,17 +1594,17 @@ do not block available x64lens rows. Complete native, strict ShellCheck, Docker,
 capacity, malformed-input, public-overlay, and native/container parity gates
 remain mandatory. See [Sprint 11 Patch 060 Validation](sprints/sprint-11-patch-060-validation.md).
 
-The retained cloud checkpoint accounted for all 30 conditions, executed 12
-x64lens conditions, and recorded 18 pinned-baseline conditions as unavailable.
-All 60 measured x64lens process rows were below the reliable single-process
-timer floor. A later, separately qualified WSL2 replay used the exact pinned
-baselines and one narrow evidence-local ROPgadget 7.7 banner-authority
+The initial partial-tool diagnostic checkpoint accounted for all 30 conditions,
+executed 12 x64lens conditions, and recorded 18 pinned-baseline conditions as
+unavailable. All 60 measured x64lens process rows were below the reliable single-process
+timer floor. A later, separately qualified all-tools diagnostic replay used the
+exact pinned baselines and one narrow evidence-local ROPgadget 7.7 banner-authority
 correction. It executed 30 of 30 conditions, retained 180 of 180 successful
 process rows, and generated 24 relation artifacts. All 12 x64lens conditions
 remained below that host's 6,361,100 ns floor, while two Python task-path
 runtime-closure failures left those closures incomplete and coordinate
-calibration failed. The replay was not comparison-qualified and did not replace
-the required fresh unmodified Patch 061 campaign. Both evidence strata remain
+calibration failed. The replay was not comparison-qualified and remained
+separate from the preregistered Patch 061 campaign boundary. Both evidence strata remain
 diagnostic, unfrozen, and publication-ineligible.
 
 
@@ -1626,8 +1626,8 @@ make research-roadmap-consistency-smoke
 make planning-docs-check
 ```
 
-Empirical acceptance additionally requires the complete native and container
-aggregates and a fresh unmodified 30-condition run with the exact pinned
+Empirical qualification additionally requires the complete native and container
+aggregates and a distinct preregistered 30-condition run using the exact pinned
 baselines. A below-floor condition remains a successful process outcome but is
 excluded from single-run latency interpretation.
 
@@ -1747,11 +1747,11 @@ Malformed property inputs return exit code 5 before stdout; explicit cap
 exhaustion returns exit code 6 before stdout. The 4,096-candidate complete result
 and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
-Native and container results must agree before acceptance. After Patch 067
-acceptance, held-out role/property evidence remains diagnostic, unfrozen, and
-publication-ineligible; bounded `readelf -n` reconciliation and
-native/container fact parity precede any decision about compatible public
-`0.2.x` indicators.
+Native and container results must agree before acceptance. The Patch 068
+private-fact matrix remains diagnostic, unfrozen, and publication-ineligible;
+bounded external ELF reconciliation (`readelf -h -l -d -n`) and
+native/container private-fact parity precede any decision about compatible
+public `0.2.x` indicators.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1799,19 +1799,51 @@ mutations. Layout reconciliation attests only the development probe's record
 interpretation. Both remain development validation; native and Docker aggregates
 must still pass before acceptance.
 
-## Sprint 12 Patch 068 corrective and held-out validation
+## Sprint 12 Patch 068 corrective and diagnostic-matrix validation
 
 Patch 068 adds:
 
 ```bash
+make provisional-corpus-ready
+make provisional-corpus-verify
 make patch067-corrective-regression-smoke
 make sprint12-role-property-heldout-smoke
 ```
 
-The corrective gate covers first-mutation membership, caller-visible ancestor
-binding, verified rollback retry, the current displaced-root contract, the
-layout-authority Make dependency, and executable ABI-source checks. The held-out
-gate requires 96 exact private fact vectors and 288 byte-identical fact-probe
-runs, with natural and metamorphic evidence reported separately. Neither gate
-changes public schema or runtime semantics. Full native, Docker, capacity,
-malformed-input, and parity validation remain required before acceptance.
+The corrective gate covers first-mutation membership, complete caller-visible
+ancestor binding, verified original-mode rollback retry, fail-closed handling
+of a displaced caller-visible root, layout-authority rebuilds after
+structure-definition changes, and executable ABI-source checks. The diagnostic
+matrix gate requires 96 exact private fact vectors and 288 byte-identical
+fact-probe runs, with 48 held-out natural objects reported separately from 48
+controlled metamorphic objects.
+Neither gate changes schema `0.2.0`, public output, or runtime semantics. Full
+native, Docker, capacity, malformed-input, and public-output parity validation
+remain required before acceptance; private-fact parity remains a separate gate.
+
+## Sprint 12 Patch 069 corpus and external-reconciliation validation
+
+Patch 069 adds:
+
+```bash
+make patch068-corrective-regression-smoke
+make sprint12-role-property-heldout-smoke
+make sprint12-role-property-readelf-smoke
+```
+
+The corrective gate proves descriptor-authoritative semantic verification,
+termination-safe rollback, root and nested-directory size continuity, mandatory
+matrix authorities, recursive private-leak rejection across stdout and stderr,
+complete 18-field expected/observed retention, 24 parser-visible edge layouts,
+and production include dependencies.
+
+The held-out gate requires 96 objects, 288 repeated private fact-probe runs, 384
+public command paths, exact formal schema validation, an authenticated 24-target
+provisional corpus, and no private-field exposure. The `readelf` gate retains
+384 comparator processes and all 1,728 field dispositions. It requires zero
+unexplained mismatch among eligible direct or derived fields while preserving
+ambiguous, unavailable, and inapplicable cells.
+
+These are diagnostic development gates. Native and Docker aggregates, capacity,
+malformed-input behavior, and native/container private-fact parity remain
+separate acceptance requirements.

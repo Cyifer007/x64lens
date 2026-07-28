@@ -17,22 +17,25 @@ Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the
 provisional high-resolution runner, reproducible 24-target corpus, normalized
 baseline task authority, matched relation and runtime-closure evidence,
 30-condition diagnostic campaign authority, generated summaries, and
-engineering gap register. The earlier cloud checkpoint accounted for all 30
+engineering gap register. The initial partial-tool diagnostic checkpoint
+accounted for all 30
 conditions while executing 12 x64lens conditions and retaining 18 baseline
-conditions as unavailable. A later WSL2 replay recorded 30/30 conditions,
+conditions as unavailable. A later all-tools diagnostic replay recorded 30/30
+conditions,
 180/180 successful runner rows, and 24 relation artifacts; all 12 x64lens
 condition timings were below the 6,361,100 ns reliable single-process floor.
 Two Python task-path runtime-closure failures left those closures incomplete,
 and coordinate calibration failed, so the replay was not comparison-qualified
-and did not replace the required fresh, unmodified Patch 061 campaign.
+and remained separate from the preregistered Patch 061 campaign boundary.
 
 All Sprint 11 measurement evidence remains diagnostic, unfrozen, and
 publication-ineligible. Sprint 12 is active and proceeds through bounded
 program-header validity and extended-numbering outcomes,
 executable-overlap/provenance semantics, PIE-versus-DSO identity, GNU-property
-evidence, and then corrected held-out diagnostic confirmation with positive
-role-controlled coordinate anchors and complete task-path runtime closure for
-all five task paths. Sprint 15 freezes the confirmatory campaign.
+evidence, and then the private-fact diagnostic matrix. Positive role-controlled
+coordinate anchors and complete runtime closure for all five task paths belong
+to a separate comparison-qualification campaign. Sprint 15 freezes the
+confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must
@@ -66,7 +69,7 @@ Calendar progress does not satisfy an evidence gate.
 | 9 | Provenance and decoder-gap evidence | Schema `0.2.0`, completeness, candidate provenance, decoder decision |
 | 10 | Evidence-aware primitive expansion | Multi-pop, transfer, stack-adjust, memory effects, architectural effects, score and fixture closure |
 | 11 | Diagnostic benchmark foundation | Provisional corpus, high-resolution runner, baseline task normalization, development gap register |
-| 12 | Loader and mitigation precision | PHDR validity and extended numbering, overlap/provenance, PIE versus DSO, CET IBT/SHSTK, held-out diagnostic confirmation |
+| 12 | Loader and mitigation precision | PHDR validity and extended numbering, overlap/provenance, PIE versus DSO, CET IBT/SHSTK, private-fact diagnostic matrix |
 | 13 | Semantic capability completion | Generic pop/syscall roles, measured bounded family additions, score-policy completion |
 | 14 | Optional profile ablations | Candidate-scoped decoder and deterministic concurrency experiments, reference-profile preservation |
 | 15 | Corpus and method freeze | Final corpus, licenses, hashes, schema, runner, baselines, commands, task definitions |
@@ -170,7 +173,7 @@ Sprint 12 status is recorded below.
 
 ## Sprint 12 Patch 063-064 checkpoint
 
-Patch 063 retains lossless overlap provenance. The reviewed Patch 064 source
+Patch 063 retains lossless overlap provenance. The Patch 064 candidate
 records the measured decision to defer executable-range normalization because
 the bounded diagnostic sample produced no overlap activation, then adds an
 internal-only fact-first PIE-versus-DSO role lattice without changing public
@@ -183,24 +186,40 @@ Patch 065 added bounded private GNU-property evidence but required correction.
 Patch 066 fixes the parser and custody defects and adds the controlled 28-object
 role/property metamorphic preflight. Public mitigation fields and schema `0.2.0`
 remain unchanged; malformed non-identical carrier overlap now fails before
-output. Sprint 12 still requires broader held-out confirmation, bounded
-`readelf -n` reconciliation, and native/container fact parity before a separate
-public-policy review or Sprint 13 handoff.
+output. Patch 068 later adds the separate natural/metamorphic private-fact
+matrix. Sprint 12 still requires bounded external ELF reconciliation
+(`readelf -h -l -d -n`) and native/container private-fact parity before a
+separate public-policy review or Sprint 13 handoff.
 
 ## Sprint 12 Patch 067 checkpoint
 
 Patch 067 added C/NASM layout reconciliation for the development fact probe but
-required additional transaction and oracle correction. Patch 068 closes those
-findings and runs the separately identified held-out private fact confirmation. The reconciliation attests
-probe record interpretation only; it does not establish analyzer behavior or
-publication evidence. Broader held-out confirmation, bounded external
-reconciliation, and native/container fact parity remain subsequent diagnostic
-gates.
+required additional transaction and oracle correction. Patch 068 carries those
+corrections and adds the separately identified diagnostic private-fact matrix.
+The reconciliation attests probe record interpretation only; it does not
+establish analyzer behavior or publication evidence. Bounded external
+reconciliation and native/container private-fact parity remain subsequent gates.
 
 ## Sprint 12 Patch 068 checkpoint
 
-Patch 068 corrects the remaining Patch 067 corpus/private transaction and oracle
-findings and completes the first 48-natural/48-metamorphic held-out private
-role/property confirmation. Public schema and output remain unchanged. Sprint
-12 still requires bounded external reconciliation, native/container private-fact
-parity, and a deliberate public-policy decision before closeout.
+The current Patch 068 candidate defines corrections for the remaining Patch 067
+corpus mode-repair, rollback, and public-output leakage boundaries and includes a
+private-fact diagnostic agreement gate for 48 held-out natural objects and 48
+controlled metamorphic objects. Validation remains pending. The natural and
+metamorphic strata remain separate, diagnostic, unfrozen, and
+publication-ineligible; public schema and output remain unchanged. Sprint 12
+still requires bounded external
+reconciliation, native/container private-fact parity, and a deliberate
+public-policy decision before closeout.
+
+## Sprint 12 Patch 069 checkpoint
+
+Patch 069 closes the remaining Patch 068 corpus and matrix custody gaps and adds
+an authenticated field-scoped GNU `readelf -hW/-lW/-dW/-nW` reconciliation over
+the 96-object diagnostic matrix. All eligible represented fields must match;
+ambiguous, unavailable, and inapplicable fields remain visible rather than being
+forced into parity. Public output and schema `0.2.0` remain unchanged.
+
+Sprint 12 still requires native/container private-fact parity and a separate
+public-policy decision before any public PIE/DSO, IBT, or SHSTK indicator is
+considered. The result remains diagnostic, unfrozen, and publication-ineligible.

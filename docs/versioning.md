@@ -13,18 +13,18 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-The current Patch 067 corrective implementation candidate retains tool version `0.1.0-dev`
-and schema `0.2.0`; no release tag moves. Sprint 11 is complete and Sprint 12 is
-the active loader and mitigation
-precision sprint. The Sprint 11 cloud checkpoint and later WSL2 replay remain
-diagnostic, unfrozen, and publication-ineligible. They have no release authority
-and do not replace the fresh, unmodified Patch 061 campaign required to qualify
-that evidence stratum. Patch 064 records a bounded diagnostic overlap decision
-and an internal-only role-evidence lattice. Patch 065 carried the reviewed Patch
+The current Patch 069 corrective and external-reconciliation implementation candidate
+retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag moves.
+Sprint 11 is complete, and Sprint 12 is the active loader and mitigation
+precision sprint. The Sprint 11 partial-tool checkpoint and later all-tools
+diagnostic replay remain diagnostic, unfrozen, and publication-ineligible. They
+have no release authority and remain separate from the preregistered Patch 061
+campaign boundary. Patch 064 records a bounded diagnostic overlap decision
+and an internal-only role-evidence lattice. Patch 065 carried the Patch
 064 corrections and introduced the private GNU-property facts. Patch 066
-added the controlled metamorphic preflight. Patch 067 corrects its corpus-custody
-and oracle findings and attests the private C/NASM fact-probe layout without a
-public field or schema change. Measurements after Patch 067
+added the controlled metamorphic preflight. Patch 067 introduced corpus-custody
+and oracle corrections and attested the private C/NASM fact-probe layout without
+a public field or schema change. Patch 068 added the separate natural/metamorphic private-fact diagnostic gate. Patch 069 corrects its remaining custody and authority boundaries and adds authenticated field-scoped GNU `readelf` reconciliation, still without a public field or schema change. Measurements after Patch 069
 require a distinct diagnostic campaign identity and remain separate from Sprint
 11 rows.
 

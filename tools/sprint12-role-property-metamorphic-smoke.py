@@ -52,28 +52,44 @@ def require(condition: bool, message: str) -> None:
         raise RuntimeError(message)
 
 
-PRIVATE_PUBLIC_KEYS = {
-    "binary_role",
-    "role_state",
-    "role_evidence",
+PRIVATE_PUBLIC_KEY_NAMES = {
+    "binaryrole",
+    "rolestate",
+    "roleevidence",
     "ibt",
-    "ibt_state",
+    "ibtstate",
     "shstk",
-    "shstk_state",
-    "gnu_property",
-    "gnu_properties",
+    "shstkstate",
+    "gnuproperty",
+    "gnuproperties",
+    "privaterolenamespace",
+    "propertyviewcount",
+    "propertycontributorcount",
+    "propertynotecount",
+    "propertyfeaturecount",
+    "propertyfeatureand",
+    "propertyfeatureor",
+    "propertyunknowncount",
+    "propertyconflictcount",
+    "propertyoverlapcount",
 }
 
 
+def canonical_private_name(value: str) -> str:
+    return "".join(character for character in value.lower() if character.isalnum())
+
+
 def private_public_key(key: str) -> bool:
-    normalized = key.lower()
+    normalized = canonical_private_name(key)
     return (
-        normalized in PRIVATE_PUBLIC_KEYS
-        or normalized.startswith("property_")
-        or normalized.startswith("gnu_property")
-        or normalized.startswith("ibt_")
-        or normalized.startswith("shstk_")
+        normalized in PRIVATE_PUBLIC_KEY_NAMES
+        or normalized.startswith("private") and ("role" in normalized or "property" in normalized)
+        or normalized.startswith("gnuproperty")
+        or normalized.startswith("property")
+        or normalized.startswith("ibt")
+        or normalized.startswith("shstk")
     )
+
 
 
 def assert_no_private_public_fields(value: Any) -> None:
@@ -179,17 +195,22 @@ def fact(probe: Path, target: Path) -> dict[str, int]:
 
 
 PRIVATE_TEXT_MARKERS = (
+    b"binary_role",
+    b"binary role state",
     b"role_state",
     b"role_evidence",
     b"ibt_state",
     b"shstk_state",
     b"property_view_count",
     b"property_contributor_count",
+    b"property_note_count",
     b"property_feature_count",
+    b"property_feature_and",
+    b"property_feature_or",
     b"property_unknown_count",
     b"property_conflict_count",
+    b"property_overlap_count",
     b"gnu_property_private",
-    b"binary role state",
     b"private gnu property",
 )
 
@@ -198,6 +219,12 @@ def assert_no_private_public_text(payload: bytes) -> None:
     lowered = payload.lower()
     for marker in PRIVATE_TEXT_MARKERS:
         require(marker not in lowered, f"private role/property fact leaked into public text: {marker!r}")
+    canonical = bytes(character for character in lowered if 97 <= character <= 122 or 48 <= character <= 57)
+    for marker in (b"binaryrole", b"rolestate", b"roleevidence", b"privaterolenamespace",
+                   b"propertynotecount", b"propertyoverlapcount"):
+        require(marker not in canonical,
+                f"private role/property vocabulary leaked into public text: {marker!r}")
+
 
 
 def validate_public(analyzer: Path, target: Path) -> int:
@@ -212,6 +239,7 @@ def validate_public(analyzer: Path, target: Path) -> int:
         cp = run(command)
         require(cp.stdout, f"public command emitted empty output: {command!r}")
         assert_no_private_public_text(cp.stdout)
+        assert_no_private_public_text(cp.stderr)
         if "--format" in command:
             report = json.loads(cp.stdout)
             require(report.get("schema_version") == "0.2.0", "metamorphic report changed schema")
@@ -306,6 +334,7 @@ def main() -> int:
                 info = run([str(args.analyzer), "info", str(target)])
                 require(info.stdout, f"info emitted empty output for structurally valid ELF header: {name}")
                 assert_no_private_public_text(info.stdout)
+                assert_no_private_public_text(info.stderr)
                 public_commands += 1
                 for command in (
                     [str(args.analyzer), "mitigations", str(target)],
@@ -314,6 +343,7 @@ def main() -> int:
                 ):
                     cp = run(command, expected=EXIT_MALFORMED)
                     require(not cp.stdout, f"malformed mutant emitted public stdout: {name}")
+                    assert_no_private_public_text(cp.stderr)
                     public_commands += 1
             objects += 1
 

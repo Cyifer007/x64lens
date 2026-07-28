@@ -2,16 +2,18 @@
 
 ## Status
 
-Current corrective implementation-candidate validation plan. Patch 067 remains
-pending focused, native, container, parity, and independent validation against
-the exact candidate source.
+Historical corrective implementation-candidate validation plan. Patch 067
+required further corpus-transaction and oracle correction. Current expectations
+are recorded in the
+[Patch 068 validation plan](sprint-12-patch-068-validation.md).
 
 ## Scope
 
-Patch 067 corrects the Patch 066 corpus/private transaction and oracle findings
-and adds development-only private fact-probe layout attestation. It changes no
-public CLI, JSON field, schema version, candidate metric, semantic class, score,
-or runtime dependency.
+Patch 067 introduced corpus/private transaction and oracle corrections and added
+development-only private fact-probe layout attestation. Subsequent validation
+found remaining transaction and oracle gaps assigned to the current Patch 068
+candidate. Patch 067 changes no public CLI, JSON field, schema version, candidate
+metric, semantic class, score, or runtime dependency.
 
 ## Source precondition
 
@@ -127,7 +129,8 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 
 ## Deferred work
 
-The 96-object held-out natural/metamorphic confirmation, bounded external note
-comparison, positive coordinate anchors, native/container private-fact parity,
-and any public-policy decision remain subsequent diagnostic gates. No Patch 067
-row is publication evidence.
+Patch 068 adds the subsequent private-fact diagnostic agreement gate for 48
+held-out natural objects and 48 controlled metamorphic objects. Bounded external
+ELF reconciliation (`readelf -h -l -d -n`), positive coordinate anchors,
+native/container private-fact parity, and any public-policy decision remain
+separate gates. No Patch 067 row is publication evidence.

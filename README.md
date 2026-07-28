@@ -2,11 +2,12 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 068 as the current corrective and held-out-confirmation implementation candidate; the confirmatory corpus and method remain unfrozen until Sprint 15.
+> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 069 as the current corpus-integrity and authenticated external-reconciliation implementation candidate; the separate Sprint 15 confirmatory corpus and method remain unfrozen.
 >
-> The retained cloud checkpoint accounted for 30 planned conditions: 12 x64lens
-> conditions executed and 18 pinned-baseline conditions were unavailable. A
-> later, separately qualified WSL2 replay used the exact pinned baselines and,
+> The initial partial-tool diagnostic checkpoint accounted for 30 planned
+> conditions: 12 x64lens conditions executed and 18 pinned-baseline conditions
+> were unavailable. A later, separately qualified all-tools diagnostic replay
+> used the exact pinned baselines and,
 > after one narrow evidence-local correction to the ROPgadget 7.7 banner
 > authority, executed all 30 conditions and retained 180 successful process
 > rows plus 24 normalized relations.
@@ -15,7 +16,7 @@
 > 6,361,100 ns reliable single-process floor. This is unresolved latency, not
 > zero runtime or a speed result. Two Python baseline closures and coordinate
 > calibration failed, so the replay was not comparison-qualified and did not
-> qualify the Patch 061 evidence stratum. Measurements after Patch 063 require
+> qualify the Patch 061 evidence stratum. Measurements after Patch 069 require
 > a distinct diagnostic campaign identity. Tool-native record totals remain
 > definition-specific, and address-level comparisons remain blocked until
 > positive coordinate anchors exist.
@@ -198,20 +199,29 @@ freestanding product. Public command syntax and report fields, and schema
 `0.2.0`, remain unchanged; malformed non-identical carrier overlap now fails
 before output.
 
-Patch 067 added the private layout attestation but its review found additional
-corpus mutation-boundary, ancestor-binding, rollback, private-directory, Make,
-and oracle defects. Patch 068 corrects those defects, retains the complete
-caller-visible path and member identity through mode repair, verifies rollback,
-and updates the displaced-root and all-public-path oracles.
+Patch 067 added private layout attestation. Patch 068 corrects the remaining
+corpus-repair boundary. Its candidate contract requires the complete
+caller-visible path and exact member set to be reauthenticated immediately
+before mutation and at return. A failure after mutation begins must restore
+original modes through retained descriptors with bounded retries and
+verification and must surface rollback failure. Patch 068 also rebuilds the
+private-layout authority when its structure definition changes and extends
+private-field leakage checks across `info`, `mitigations`, `gadgets`, and
+`analyze`.
 
-Patch 068 then runs a development-only 96-object held-out confirmation: 48
-natural GCC/Clang linker outputs and 48 metamorphic objects. An independent ELF
+Patch 068 adds a development-only 96-object diagnostic agreement gate: 48
+held-out natural toolchain-produced ELF objects built from GCC/Clang object inputs
+linked by `ld.bfd`, plus 48 controlled metamorphic objects. An independent ELF
 reader authors every expected private fact vector, and the fact probe must
-reproduce each vector three times byte-identically. Natural targets require 48
-unique hashes and zero overlap with the provisional corpus. The evidence remains
-diagnostic, unfrozen, and absent from public schema `0.2.0` output.
+reproduce each vector three times byte-identically. The gate requires 48
+distinct held-out SHA-256 identities and zero intersection with an authenticated,
+verified provisional-corpus inventory. The natural and metamorphic strata remain
+separate, diagnostic, unfrozen, and publication-ineligible. This gate does not
+change schema `0.2.0` or add private facts to public output.
 
 ```bash
+make provisional-corpus-ready
+make provisional-corpus-verify
 make patch067-corrective-regression-smoke
 make patch066-corrective-regression-smoke
 make sprint12-role-property-layout-smoke
@@ -228,8 +238,39 @@ See [ADR 0051](docs/adr/0051-bounded-private-gnu-property-evidence.md),
 the [Patch 066 validation record](docs/sprints/sprint-12-patch-066-validation.md),
 [ADR 0053](docs/adr/0053-corpus-custody-and-private-layout-attestation.md),
 the [Patch 067 validation plan](docs/sprints/sprint-12-patch-067-validation.md),
-[ADR 0054](docs/adr/0054-held-out-private-role-property-confirmation.md), and
+[ADR 0054](docs/adr/0054-private-role-property-diagnostic-matrix.md), and
 the [Patch 068 validation plan](docs/sprints/sprint-12-patch-068-validation.md).
+
+
+## Sprint 12 authenticated role/property reconciliation checkpoint
+
+Patch 069 corrects the remaining Patch 068 corpus and matrix custody defects,
+then reconciles the authenticated private role/GNU-property fact plane against
+exact GNU `readelf -hW`, `-lW`, `-dW`, and `-nW` evidence.
+
+The maintained matrix now consumes the analyzer, schema, private fact probe,
+task authority, and complete authenticated 24-target provisional corpus. It
+retains all 18 expected and observed private fields for each of 96 objects,
+executes all four public command paths, scans stdout and stderr for private
+field leakage, and preserves 24 distinct parser-visible edge layouts.
+
+The external reconciliation retains 384 raw `readelf` command results and 1,728
+field dispositions. In the controlled diagnostic matrix, 1,224 eligible direct
+or reproducibly derived comparisons matched with zero unexplained eligible
+mismatches; 96 ambiguous, 288 unavailable, and 120 inapplicable cells remain
+explicitly outside that denominator. `readelf` is a comparator, not runtime
+authority.
+
+```bash
+make patch068-corrective-regression-smoke
+make sprint12-role-property-heldout-smoke
+make sprint12-role-property-readelf-smoke
+```
+
+Patch 069 adds no public role, PIE/DSO, IBT, or SHSTK field and does not change
+schema `0.2.0`. Static GNU properties remain indicators rather than proof of
+runtime CET enforcement. See [ADR 0055](docs/adr/0055-authenticated-role-property-readelf-reconciliation.md)
+and the [Patch 069 validation plan](docs/sprints/sprint-12-patch-069-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -513,14 +554,14 @@ identity. Runtime closure is a bounded observation of the declared path. Even a
 `complete` closure is complete only within that observation, and a Python
 version-command path may be narrower than a later analysis command.
 
-Patch 060 first produced a cloud checkpoint that accounted for all 30 planned
-conditions while executing the 12 available x64lens conditions and retaining
-18 pinned-baseline conditions as unavailable. That checkpoint retained 72
+Patch 060 first produced a partial-tool diagnostic checkpoint that accounted for
+all 30 planned conditions while executing the 12 available x64lens conditions
+and retaining 18 pinned-baseline conditions as unavailable. That checkpoint retained 72
 process rows, all 60 measured rows below the timer floor, six x64lens relation
 artifacts, two bounded x64lens closures, and coordinate status `unavailable`.
 
-A later, separately qualified WSL2 replay used the exact pinned baselines and,
-after one narrow evidence-local correction to the ROPgadget 7.7 banner
+A later, separately qualified all-tools diagnostic replay used the exact pinned
+baselines and, after one narrow evidence-local correction to the ROPgadget 7.7 banner
 authority, executed 30 of 30 conditions and retained 180 successful process
 rows plus 24 normalized relations. Seventeen conditions were above that host's
 measured 6,361,100 ns reliable single-process floor and 13 were below it; all 12
@@ -528,7 +569,8 @@ x64lens conditions were below it. Two Python task-path closures and coordinate
 calibration failed, so the replay exposed version-banner, coordinate,
 runtime-closure, status-accounting, and transaction defects rather than
 establishing a qualified comparison. Patch 061 corrects those defects and closes
-Sprint 11, but a fresh unmodified campaign remains its empirical requirement.
+Sprint 11; the replay remains separate from the preregistered Patch 061 campaign
+boundary.
 
 The below-floor process outcomes do not support a stable single-run latency
 comparison. The first normalized exact relation was absent across the selected
@@ -608,15 +650,17 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 067 are later
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 068 are later
 pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
 062 begins Sprint 12 loader-precision work, Patch 063 adds corrective hardening
 plus internal overlap provenance, and Patch 064 records the measured
 normalization deferral plus an internal role-evidence lattice. Patch 065 carries
-the reviewed Patch 064 corrections and adds private bounded GNU-property facts;
-Patch 066 adds the controlled metamorphic preflight, and the current
-Patch 067 candidate corrects its corpus-custody and oracle findings plus attests
-the private fact-probe layout without moving a release tag.
+the Patch 064 corrections and adds private bounded GNU-property facts;
+Patch 066 adds the controlled metamorphic preflight, Patch 067 adds private
+fact-probe layout attestation, and the current Patch 068 candidate corrects the
+remaining corpus-custody and oracle findings and adds the diagnostic matrix with
+48 held-out natural objects and 48 controlled metamorphic objects, without
+moving a release tag.
 
 Planned release sequence:
 
@@ -628,13 +672,14 @@ v0.1.0       first research release
 
 Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
-Patches 062 through 067 preserve schema `0.2.0`: Patch 062 adds shared PHDR
+Patches 062 through 068 preserve schema `0.2.0`: Patch 062 adds shared PHDR
 validity, Patch 063 adds parser/transaction hardening plus internal
 loader-contributor provenance, and Patch 064 adds only an internal role-evidence
 lattice and a diagnostic overlap decision. Patch 065 adds private GNU-property
 facts without a public schema field; Patch 066 corrects their parser and
-validation boundaries, and Patch 067 hardens private evidence custody and ABI
-attestation without adding one.
+validation boundaries, Patch 067 adds private evidence custody and ABI
+attestation, and Patch 068 corrects the remaining custody boundary and adds a
+private diagnostic agreement gate without adding a public field.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 

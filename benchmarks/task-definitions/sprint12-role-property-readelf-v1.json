@@ -1,0 +1,43 @@
+{
+  "authority_id": "sprint12-role-property-readelf-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "purpose": "Reconcile the retained 96-object private role and GNU-property fact plane against authenticated GNU readelf -h/-l/-d/-n evidence without making readelf runtime authority.",
+  "source_authority_id": "sprint12-role-property-heldout-v1",
+  "object_count": 96,
+  "readelf_commands": ["-hW", "-lW", "-dW", "-nW"],
+  "field_eligibility": {
+    "status": {"class": "unavailable", "reason": "readelf exit status is not the x64lens parser contract"},
+    "phnum": {"class": "direct", "source": "readelf -hW"},
+    "role_state": {"class": "derived", "source": "readelf -hW/-lW/-dW"},
+    "role_evidence": {"class": "derived", "source": "readelf -hW/-lW/-dW"},
+    "interp_count": {"class": "direct", "source": "readelf -lW"},
+    "flags1_count": {"class": "direct", "source": "readelf -dW"},
+    "soname_count": {"class": "direct", "source": "readelf -dW"},
+    "property_view_count": {"class": "derived", "source": "readelf -nW canonical displayed note views"},
+    "property_contributor_count": {"class": "unavailable", "reason": "readelf does not retain original PHDR contributor multiplicity"},
+    "property_note_count": {"class": "direct", "source": "readelf -nW"},
+    "property_feature_count": {"class": "direct", "source": "readelf -nW"},
+    "property_feature_and": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "property_feature_or": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "property_unknown_count": {"class": "ambiguous", "reason": "readelf textual unknown-property and unknown-bit categories are not isomorphic to the private count"},
+    "property_conflict_count": {"class": "derived", "source": "readelf -nW represented feature intersection/union"},
+    "property_overlap_count": {"class": "unavailable", "reason": "readelf output does not expose x64lens carrier-overlap accounting"},
+    "ibt_state": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "shstk_state": {"class": "derived", "source": "readelf -nW represented x86 feature records"}
+  },
+  "eligibility_rules": {
+    "role_fields": "eligible when readelf header/program-header/dynamic output is parseable",
+    "property_fields": "eligible only when the retained x64lens object status is success and readelf emits no corrupt, truncated, or warning marker for the property view",
+    "ambiguous_and_unavailable": "retained explicitly and excluded from mismatch acceptance"
+  },
+  "acceptance": {
+    "accounted_objects": 96,
+    "readelf_processes": 384,
+    "eligible_unexplained_mismatches": 0,
+    "raw_outputs_retained": true,
+    "all_field_dispositions_retained": true,
+    "public_policy_decision_authorized": false
+  }
+}

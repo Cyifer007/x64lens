@@ -422,9 +422,10 @@ populations, and binary presence remain distinct; baseline raw executable-byte
 presence remains unavailable. Patch 060 runs the provisional campaign and
 produces the engineering gap register. Patch 061 closes the sprint.
 
-## Sprint 11 Patch 060 cloud research posture
+## Sprint 11 Patch 060 initial diagnostic posture
 
-The Patch 060 authenticated cloud checkpoint accounts for all 30 provisional
+The Patch 060 authenticated partial-tool diagnostic checkpoint accounts for all
+30 provisional
 conditions while executing only the 12 available x64lens conditions; 18
 pinned-baseline conditions remain unavailable. The 72 native rows comprise 12
 warmups and 60 measured rows. All 60 measured x64lens rows were below the timer
@@ -443,24 +444,26 @@ mutable, unfrozen, and publication-ineligible.
 ## Sprint 11 closeout research posture
 
 Sprint 11 produced method-validating diagnostic evidence rather than a
-comparative result. A later WSL2 all-tools replay, qualified only for an
+comparative result. A later all-tools diagnostic replay, qualified only for an
 evidence-local correction to the official ROPgadget 7.7 banner, executed 30/30
 conditions and retained 180/180 successful process rows. Seventeen conditions
 were above the 6,361,100 ns reliable floor and 13 were below it; all 12 x64lens
 conditions were below that floor. The replay produced 24 normalized relations,
 but two Python task-path closures failed and coordinate calibration failed. It
-was not comparison-qualified and does not replace the fresh, unmodified Patch
-061 campaign required for empirical acceptance.
+was not comparison-qualified and remained separate from the preregistered Patch
+061 campaign boundary.
 
-The cloud checkpoint and WSL2 replay remain separate diagnostic, unfrozen, and
-publication-ineligible evidence strata. Baseline-native records are not a
-common gadget population, and native execution, normalization, runtime closure,
+The partial-tool checkpoint and all-tools replay remain separate diagnostic,
+unfrozen, and publication-ineligible evidence strata. Baseline-native records
+are not a common gadget population, and native execution, normalization,
+runtime closure,
 coordinate qualification, and comparison status remain independent. Patch 061
 turns those observations into explicit method gates. Sprint 12 proceeds through
 loader validity and extended numbering, overlap/provenance, PIE-versus-DSO
-identity, GNU-property evidence, and corrected held-out diagnostic confirmation
-with positive coordinate anchors and five complete task-path closures. Any
-changed behavior receives a new diagnostic campaign identity.
+identity, GNU-property evidence, and a private-fact diagnostic matrix. Positive
+coordinate anchors and five complete task-path closures belong to a separate
+comparison-qualification campaign. Any changed behavior receives a new
+diagnostic campaign identity.
 
 ## Sprint 12 Patch 062 research checkpoint
 
@@ -476,11 +479,11 @@ normalization, preserves current ordering, counts, capacity, and output, and
 records explicit reopening thresholds rather than implementing a high-risk
 semantic change without measured value.
 
-The reviewed Patch 064 source began the PIE-versus-DSO gate with an internal fact lattice over
+The Patch 064 candidate began the PIE-versus-DSO gate with an internal fact lattice over
 ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated
 `DT_SONAME` string evidence. The public `ET_DYN` indicator remains unchanged.
 Patch 064 did not pass validation. Patch 065 carried its role decision forward,
-corrected the reviewed Patch 064 findings, and added the independently bounded
+corrected the Patch 064 validation findings, and added the independently bounded
 GNU-property IBT/SHSTK gate.
 
 ## Sprint 12 Patch 065-066 research checkpoint
@@ -490,28 +493,46 @@ SHSTK but did not pass validation. Patch 066 corrects descriptor
 alignment, overlap, corpus custody, ABI, and oracle defects,
 then adds a 28-object role/property metamorphic preflight. The preflight is
 controlled development evidence, remains unfrozen and publication-ineligible,
-and changes no public report field. Broader held-out confirmation, bounded
-`readelf -n` reconciliation, and native/container fact parity must follow before
-any compatible public `0.2.x` indicator is considered.
+and changes no public report field. Patch 068 later adds the separate natural
+and metamorphic private-fact matrix. Bounded external ELF reconciliation
+(`readelf -h -l -d -n`) and native/container private-fact parity must follow
+before any compatible public `0.2.x` indicator is considered.
 
 ## Sprint 12 Patch 067 research checkpoint
 
-Patch 067 does not broaden public mitigation reporting. It addresses the
-remaining Patch 066 evidence-custody and oracle findings, binds corpus mode
-repair to exact membership and caller-visible root-name continuity immediately
-before mutation, and adds an assembly-emitted private fact-probe ABI descriptor
-reconciled by an independent C contract. This attestation covers probe record
+Patch 067 does not broaden public mitigation reporting. It introduces
+evidence-custody and oracle corrections and adds an assembly-emitted private
+fact-probe ABI descriptor reconciled by an independent C contract. This
+attestation covers probe record
 interpretation only; it is a prerequisite, not product validation or publication
-evidence. The larger held-out role/property confirmation remains subsequent
-diagnostic work. Diagnostic campaign rows remain unfrozen and cannot support
-performance, RSS, coverage, or runtime-CET claims.
+evidence. Patch 068 corrects the remaining custody boundary and adds the separate
+diagnostic agreement matrix. Diagnostic campaign rows remain unfrozen and
+cannot support performance, RSS, coverage, or runtime-CET claims.
 
 ## Sprint 12 Patch 068 research checkpoint
 
-Patch 068 closes the remaining Patch 067 evidence-transaction defects and runs a
-96-object private role/GNU-property confirmation. The 48 natural objects are
-separate from the 48 metamorphic objects, every expected vector is authored by
-an independent reader, and each probe result repeats byte-identically three
-times. This strengthens private fact evidence but does not authorize public
-fields, runtime CET claims, or publication measurement. External comparison,
-native/container private-fact parity, and a public-policy decision remain open.
+The current Patch 068 candidate defines corrections for the remaining Patch 067
+evidence-transaction boundaries and includes a 96-object private
+role/GNU-property diagnostic agreement gate. Its 48 held-out natural
+toolchain-produced objects remain separate from 48 controlled metamorphic
+objects; an independent reader authors every expected vector, and the gate
+requires three byte-identical probe results per object. Validation remains
+pending. The matrix is diagnostic, unfrozen, publication-ineligible, and not
+prevalence evidence. It does not authorize public fields or runtime-CET claims.
+External comparison, native/container private-fact parity, and a public-policy
+decision remain open.
+
+## Sprint 12 Patch 069 research checkpoint
+
+Patch 069 corrects the remaining Patch 068 evidence-custody defects and makes the
+96-object private role/property matrix authoritative for its diagnostic scope.
+It then retains 384 authenticated GNU `readelf` executions and 1,728 field
+classifications. The controlled result contains 1,224 eligible matches and zero
+unexplained eligible mismatches, while ambiguous, unavailable, and inapplicable
+cells remain outside the denominator.
+
+This is external diagnostic reconciliation, not public mitigation policy,
+prevalence evidence, runtime-CET evidence, or publication evidence. Sprint 12
+still requires native/container private-fact parity and a separate
+non-reinterpretive public-policy decision. Broader outcome-blind natural-object
+acquisition remains a later measurement gate.

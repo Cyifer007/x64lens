@@ -410,8 +410,21 @@ reconciliation does not validate analyzer behavior or public report semantics.
 
 ## Sprint 12 Patch 068 schema boundary
 
-Patch 068 keeps schema `0.2.0` unchanged. The 96-object held-out matrix validates
-private role and GNU-property facts only. Recursive JSON checks and text
-vocabulary checks cover all four public command paths, but no private state is
-added to current reports. Any later compatible indicator requires a separate
-schema and public-policy review.
+Patch 068 keeps schema `0.2.0` unchanged. The 96-object diagnostic matrix checks
+private role and GNU-property facts only; its 48 held-out natural objects remain
+separate from its 48 controlled metamorphic objects. The matrix is separate from
+public-output leakage validation. The metamorphic leakage oracle checks `info`
+and `mitigations` text and recursively checks `gadgets` and `analyze` JSON.
+Together, those checks cover all four file-analysis commands, but no private
+state is added to current reports. Any later compatible indicator requires a
+separate schema and public-policy review.
+
+## Sprint 12 Patch 069 schema boundary
+
+Patch 069 keeps schema `0.2.0` unchanged. The strengthened 96-object matrix
+actually validates all four public command paths against the formal schema and
+recursively rejects private role/property vocabulary in stdout and stderr. The
+external `readelf` reconciliation is a separate development artifact and does
+not create report fields or redefine existing mitigation or count semantics.
+Any public role, IBT, or SHSTK indicator still requires a compatible schema and
+public-policy review after native/container private-fact parity.

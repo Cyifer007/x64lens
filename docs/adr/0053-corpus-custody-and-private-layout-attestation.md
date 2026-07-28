@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 067 implementation candidate.
-Patch acceptance remains governed by native, Docker, and independent validation.
+Historical architecture record for the Sprint 12 Patch 067 implementation
+candidate. Patch 068 is current; product and delivery acceptance remain governed
+by separate validation.
 
 ## Context
 
@@ -20,14 +21,17 @@ three evidence-integrity defects and two oracle defects:
 - the public-JSON oracle did not reject the maintained private fact key names; and
 - the binary-role ABI oracle could accept removal of both stack adjustments.
 
-A broader held-out role/property corpus also requires the development C fact
+The later private-fact diagnostic matrix also requires the development C fact
 probe to establish that the offsets and sizes it consumes agree with the
 NASM-owned record layout.
 
 ## Decision
 
-The Patch 067 candidate addresses the transaction and oracle defects before any
-corpus expansion.
+Patch 067 introduced descriptor-bound custody and a controlled final-verifier
+restoration case. Subsequent validation identified remaining first-mutation
+membership, ancestor-chain binding, rollback-activation, and rollback-error
+gaps. Patch 068 owns the complete pre-mutation activation, bounded retry,
+verification, and surfaced-failure contract.
 
 Corpus mode repair now retains:
 
@@ -39,12 +43,13 @@ checksum authority and manifest-authorized file hashes
 original modes retained for descriptor-bound rollback
 ```
 
-Immediately before the first `fchmod`, repair revalidates exact membership,
+Patch 067 established the retained descriptor set and a late-verifier
+restoration case. The Patch 068 candidate contract requires exact membership,
 object type, device/inode identity, owner, timestamps, link count, bytes, and the
-parent/name binding. A late verification failure enters descriptor-bound
-rollback for every retained original mode. The controlled injected-failure case
-requires restoration of the root and affected member modes. A foreign
-replacement remains untouched.
+parent/name binding to be revalidated at the final mutation boundary. It also
+requires a failure after mutation begins to restore original modes through
+retained descriptors with bounded retries, verify each restoration, surface any
+rollback failure, and leave a foreign replacement untouched.
 
 The private fact-probe boundary now uses an assembly-emitted descriptor:
 
@@ -75,7 +80,7 @@ Patch 067 does not:
 - change loader authority, scanner behavior, candidate identity, capacity,
   semantic classes, scores, or report counts;
 - infer runtime CET enforcement from static properties;
-- run or freeze the broader held-out corpus;
+- run or freeze the later private-fact diagnostic matrix;
 - add a runtime dependency.
 
 The layout descriptor and fact probe are development-only objects and are not
@@ -83,13 +88,13 @@ linked into the freestanding analyzer.
 
 ## Consequences
 
-- Corpus repair remains mode-only and fail-closed; late failure enters
-  descriptor-bound rollback, with controlled restoration covered by the focused
-  probe.
+- Corpus repair remains mode-only and fail-closed. Patch 068 defines the
+  descriptor-bound original-mode restoration contract with bounded retry and
+  verification.
 - The maintained public-JSON private-key and ABI mutation oracles discriminate
   their targeted controlled cases.
 - C/NASM reconciliation attests only the development probe's record-layout
   interpretation. It does not establish parser or classifier correctness,
   analyzer behavior, runtime CET enforcement, or publication evidence.
-- The larger natural/metamorphic held-out confirmation remains a subsequent
-  diagnostic gate with a new identity.
+- Patch 068 defines the subsequent diagnostic agreement gate with a new
+  identity: 48 held-out natural objects and 48 controlled metamorphic objects.

@@ -2,15 +2,19 @@
 
 ## Status
 
-Current corrective and held-out-confirmation implementation candidate. Patch 068
-remains pending clean native, Docker, parity, and independent Lane A acceptance.
+Current corrective and private-fact diagnostic-gate implementation candidate.
+Patch 068 remains pending clean native, Docker, public-output parity, and
+independent validation. Native/container private-fact parity over the diagnostic
+matrix is a separate deferred gate.
 
 ## Scope
 
-Patch 068 resolves the Patch 067 corpus/private transaction, Make dependency,
-and oracle findings, then adds a 96-object development-only private binary-role
-and GNU-property confirmation. It changes no public CLI, JSON field, schema
-version, candidate metric, semantic class, score, or runtime dependency.
+Patch 068 corrects the Patch 067 corpus mode-repair and rollback boundaries,
+rebuilds the private-layout authority after its structure definition changes,
+extends private-field leakage checks across all four file-analysis commands, and
+adds a 96-object development-only private binary-role and GNU-property diagnostic
+agreement matrix. It changes no public CLI, JSON field, schema version, candidate
+metric, semantic class, score, or runtime dependency.
 
 ## Source precondition
 
@@ -58,21 +62,24 @@ The corrective gate must prove:
    current fail-closed contract; and
 5. ordinary authenticated mode-only drift still repairs and fully verifies.
 
-## Held-out fact acceptance
+## Diagnostic private-fact matrix gate
 
-The held-out gate requires:
+The diagnostic matrix gate requires:
 
-- 48 natural objects from GCC and Clang, two source variants, three role
-  constructions, and four GNU-property states;
-- 48 metamorphic objects split into 24 positive canonical/alias objects and 24
-  edge objects;
+- 48 held-out natural toolchain-produced ELF objects using GCC and Clang object
+  inputs linked by `ld.bfd`, two source variants, three role constructions, and
+  four GNU-property states;
+- 48 controlled metamorphic objects split into 24 positive canonical/alias
+  objects and 24 edge objects;
 - 96 exact independently authored private fact-vector matches;
 - three byte-identical fact-probe runs per object;
 - 48 unique natural SHA-256 identities;
-- zero natural-object hash overlap with the provisional corpus;
-- exact separation of unknown, absent, present, contradictory, malformed, and
-  unsupported states; and
-- no public schema or private-field exposure.
+- zero natural-object hash overlap with an authenticated, verified
+  provisional-corpus inventory;
+- exact separation of unknown, absent, present, contradictory, and malformed
+  states; and
+- no schema `0.2.0` change and no private-field exposure in current public
+  output.
 
 Natural and metamorphic strata must be reported separately. Controlled
 metamorphic evidence must not be represented as natural toolchain prevalence.
@@ -118,13 +125,16 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 - raw, exact, semantic-exact, unknown, future decoder-backed, and scored facts
   remain separate;
 - private role/property facts remain absent from public text and JSON;
+- public `mitigations.pie` remains the coarse `ET_DYN` indicator rather than a
+  definitive PIE/DSO classification;
+- static private IBT/SHSTK facts do not establish runtime CET enforcement;
 - the analyzer remains dependency-free, decoder-free, one-worker, bounded, and
   deterministic.
 
 ## Deferred work
 
 Authenticated `readelf -h -l -d -n` reconciliation, native/container private
-fact parity over the held-out corpus, the public-policy decision, positive
+fact parity over the diagnostic matrix, the public-policy decision, positive
 coordinate anchors, whole-batch timing, and process-tree RSS remain separate
 future gates. Patch 068 evidence is diagnostic and cannot support publication or
-runtime-CET claims.
+runtime-CET claims. The matrix remains unfrozen and publication-ineligible.

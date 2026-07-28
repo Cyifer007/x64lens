@@ -136,7 +136,7 @@ later sprints rather than Patch 037:
   tool, target, retained version-output, and native-stream files,
   duplicate-preserving tool-specific metrics, and canonical `pop rdi; ret`
   normalization over represented instruction text.
-- [x] Patch 060 cloud checkpoint with all 30 conditions accounted for:
+- [x] Patch 060 partial-tool diagnostic checkpoint with all 30 conditions accounted for:
   12 x64lens conditions executed and 18 baseline conditions retained as
   unavailable.
 - [x] Diagnostic rows isolated from future frozen campaigns.
@@ -151,30 +151,30 @@ later sprints rather than Patch 037:
 - [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
 - [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
   executable-like, shared-object-like, ambiguous, and contradictory states. The
-  implementation and intervening corrections are carried by the current Patch
-  067 candidate.
+  implementation and intervening corrections are carried by Patch 069.
 - [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
   public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by Patch 067.
+  is carried by Patch 068.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
-  Corrected and carried by the Patch 067 candidate.
+  Corrected and carried by Patch 069.
 - [ ] Accept exact C/NASM private fact-probe layout attestation before admitting
-  the wider held-out role/property corpus. Implemented in Patch 067; it attests
+  the later private-fact diagnostic matrix. Implemented in Patch 067; it attests
   probe record interpretation rather than analyzer behavior.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [x] Patch 068 corrects the remaining Patch 067 corpus/private transaction,
-  Make dependency, and all-public-path oracle findings.
-- [x] Patch 068 runs the 48-natural/48-metamorphic held-out private role/property
-  confirmation with exact independent vectors and three deterministic probe runs.
-- [ ] After Patch 068 acceptance, reconcile held-out private facts with bounded
-  external evidence and native/container fact parity before public-policy review.
-- [ ] Continue corrected held-out diagnostic PIE/DSO and
-  IBT/SHSTK confirmation under a new campaign identity, with positive
-  role-controlled coordinate anchors and complete task-path runtime closure for
-  all five task paths.
-- [ ] Reconcile the held-out private facts against bounded `readelf -n` evidence
-  and prove native/container fact parity.
+- [x] Patch 068 defined corrections for the remaining Patch 067
+  corpus mutation and rollback boundaries, rebuilds the private-layout authority
+  after its structure definition changes, and extends leakage checks across all
+  four file-analysis commands. Candidate validation remains pending.
+- [x] Patch 068 introduced a private-fact diagnostic agreement gate
+  for 48 held-out natural objects and 48 controlled metamorphic objects, with
+  exact independent vectors and three deterministic probe runs per object. Gate
+  acceptance remains pending.
+- [x] Patch 069 authenticates the complete 96-object matrix and reconciles eligible private facts against exact GNU `readelf -hW/-lW/-dW/-nW` output with zero unexplained eligible mismatches.
+- [ ] Prove native/container private-fact parity before public-policy review.
+- [ ] Run the separate comparison-qualification campaign under a new identity,
+  with positive role-controlled coordinate anchors, complete runtime closure for
+  all five task paths, whole-batch timing, and process-tree RSS.
 - [ ] Only then decide whether compatible public `0.2.x` PIE-versus-shared-object
   or GNU-property indicators are justified.
 
@@ -622,24 +622,24 @@ corpus-wide comparative result, development summary, or gap register.
 ## Sprint 11 Patch 060 backlog update
 
 Patch 060 corrected the remaining Patch 059 evidence-integrity findings and
-recorded the earlier cloud checkpoint with all 30 planned conditions accounted
-for: 12 x64lens conditions executed and 18 baseline conditions retained as
-unavailable. A later WSL2 replay recorded 30/30 conditions and 180/180
-successful runner rows, with 24 relation artifacts. All 12 x64lens timings were
+recorded the initial partial-tool diagnostic checkpoint with all 30 planned
+conditions accounted for: 12 x64lens conditions executed and 18 baseline
+conditions retained as unavailable. A later all-tools diagnostic replay recorded
+30/30 conditions and 180/180 successful runner rows, with 24 relation artifacts. All 12 x64lens timings were
 below the 6,361,100 ns reliable single-process floor.
 
 Two Python task-path runtime-closure failures left those closures incomplete,
 and coordinate calibration failed. The replay therefore was not
-comparison-qualified and did not replace the still-required fresh, unmodified
-Patch 061 campaign. The checkpoint, replay, summaries, and gap register remain
+comparison-qualified and remained separate from the preregistered Patch 061
+campaign boundary. The checkpoint, replay, summaries, and gap register remain
 diagnostic, unfrozen, and publication-ineligible.
 
 Evidence-backed Sprint 12 work proceeds in this order: bounded program-header
 validity and extended-numbering outcomes; lossless executable-overlap
 provenance; a measured decision on normalization and count policy;
-PIE-versus-DSO identity; GNU-property evidence; and corrected held-out
-diagnostic confirmation with positive role-controlled coordinate anchors and
-complete task-path runtime closure for all five task paths.
+PIE-versus-DSO identity; GNU-property evidence; and a private-fact diagnostic
+matrix. Positive role-controlled coordinate anchors and complete runtime closure
+for all five task paths belong to a separate comparison-qualification campaign.
 Exact-only semantic-role decisions follow in Sprint 13. Candidate-scoped
 decoding and concurrency remain deferred Sprint 14 ablations because the
 diagnostic evidence does not justify making either profile mandatory. Patch 061

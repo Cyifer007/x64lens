@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the Patch 068 candidate; acceptance is pending and there is no public indicator. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected through Patch 069; external diagnostic reconciliation is present, acceptance and native/container private-fact parity remain pending, and there is no public indicator. |
 
 ## Evidence and confidence
 
@@ -199,8 +199,9 @@ before stdout, while explicit cap exhaustion fails with exit 6 before stdout.
 
 These facts do not prove runtime CET enforcement, full control-flow integrity,
 safety, or exploitability. A later public-policy gate must preserve evidence,
-unknowns, duplicates, conflicts, and held-out confirmation before changing text
-or JSON output.
+unknowns, duplicates, conflicts, the separate natural/metamorphic diagnostic
+matrix, bounded external reconciliation, and parity before changing text or JSON
+output.
 
 
 ## Sprint 12 Patch 066 metamorphic evidence gate
@@ -215,16 +216,34 @@ is a development gate, not evidence of runtime CET enforcement.
 ## Sprint 12 Patch 067 private-fact attestation boundary
 
 Patch 067 changes no public mitigation indicator. It attests the development
-probe layout used to inspect private PIE/DSO and GNU-property states and hardens
-corpus custody and public-field leakage oracles. Static IBT/SHSTK property facts
-remain private evidence and do not establish runtime CET enforcement. Layout
-reconciliation does not establish parser, classifier, or analyzer behavior.
+probe layout used to inspect private PIE/DSO and GNU-property states and
+introduced corpus-custody and public-field-leakage oracle corrections.
+Subsequent validation assigned the remaining gaps to Patch 068. Static
+IBT/SHSTK property facts remain private evidence and do not establish runtime
+CET enforcement. Layout reconciliation does not establish parser, classifier,
+or analyzer behavior.
 
-## Sprint 12 Patch 068 held-out confirmation boundary
+## Sprint 12 Patch 068 private-fact diagnostic agreement boundary
 
-Patch 068 confirms private binary-role and GNU-property acquisition over 48
-natural and 48 metamorphic objects. The matrix distinguishes natural toolchain
-outputs from synthetic aliases, conflicts, unknown bits, role contradictions,
-and malformed property layouts. It does not add public PIE/DSO, IBT, or SHSTK
-fields and does not treat static GNU properties as proof of runtime CET
-enforcement. A later policy gate owns any compatible public `0.2.x` decision.
+Patch 068 defines a private binary-role and GNU-property agreement gate over 48
+held-out natural toolchain-produced objects and 48 controlled metamorphic
+objects. The matrix keeps the two strata separate and exercises aliases,
+conflicts, unknown bits, role contradictions, and malformed property layouts.
+It remains diagnostic, unfrozen, publication-ineligible, and not prevalence
+evidence. It does not add public PIE/DSO, IBT, or SHSTK fields and does not treat
+static GNU properties as proof of runtime CET enforcement. A later policy gate
+owns any compatible public `0.2.x` decision.
+
+## Sprint 12 Patch 069 external evidence reconciliation
+
+Patch 069 retains private binary-role and GNU-property facts and compares only
+eligible represented fields against authenticated GNU `readelf -hW`, `-lW`,
+`-dW`, and `-nW` output. Direct and reproducibly derived cells may be compared;
+ambiguous, unavailable, corrupt, malformed, and inapplicable cells remain
+explicit. The controlled diagnostic matrix records 1,224 eligible matches and
+zero unexplained eligible mismatches without converting `readelf` into parser or
+runtime authority.
+
+No public PIE/DSO, IBT, or SHSTK field is added. Static properties remain
+mitigation indicators and do not prove runtime CET enablement, complete control-
+flow integrity, safety, or exploitability.
