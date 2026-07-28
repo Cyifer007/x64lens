@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 067 as the current corrective implementation candidate; the confirmatory corpus and method remain unfrozen until Sprint 15.
+> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 068 as the current corrective and held-out-confirmation implementation candidate; the confirmatory corpus and method remain unfrozen until Sprint 15.
 >
 > The retained cloud checkpoint accounted for 30 planned conditions: 12 x64lens
 > conditions executed and 18 pinned-baseline conditions were unavailable. A
@@ -178,11 +178,11 @@ See [ADR 0050](docs/adr/0050-fact-first-binary-role-lattice.md) and the
 
 ## Sprint 12 private role and GNU-property checkpoint
 
-Patch 065 established the first bounded private binary-role and x86 GNU-property
-fact paths, but validation found descriptor-alignment, overlapping-
-carrier, corpus-repair, ABI, and oracle defects. Patch 066 preserves the
-accepted architecture and corrects those defects before expanding the evidence
-surface.
+Patch 064 introduced the first bounded private binary-role lattice. Patch 065
+carried its corrected role path forward and added private x86 GNU-property facts,
+but validation found descriptor-alignment, overlapping-carrier, corpus-repair,
+ABI, and oracle defects. Patch 066 addressed those findings and added the
+controlled metamorphic preflight; the remaining custody and oracle findings are corrected by Patch 068.
 
 GNU property entries are now aligned relative to the property descriptor. Exact
 duplicate physical carriers remain canonicalized, while any non-identical
@@ -198,20 +198,28 @@ freestanding product. Public command syntax and report fields, and schema
 `0.2.0`, remain unchanged; malformed non-identical carrier overlap now fails
 before output.
 
-Patch 067 closes the remaining corpus-custody and validation-oracle findings.
-Mode-only corpus repair now reauthenticates the exact retained tree and the
-caller-visible root name before its first `fchmod`, with transactional restoration
-after late failure. The development fact probe consumes a NASM-emitted layout
-descriptor that an independent C harness reconciles before any private record is
-interpreted. The broader held-out corpus remains a later diagnostic gate.
+Patch 067 added the private layout attestation but its review found additional
+corpus mutation-boundary, ancestor-binding, rollback, private-directory, Make,
+and oracle defects. Patch 068 corrects those defects, retains the complete
+caller-visible path and member identity through mode repair, verifies rollback,
+and updates the displaced-root and all-public-path oracles.
+
+Patch 068 then runs a development-only 96-object held-out confirmation: 48
+natural GCC/Clang linker outputs and 48 metamorphic objects. An independent ELF
+reader authors every expected private fact vector, and the fact probe must
+reproduce each vector three times byte-identically. Natural targets require 48
+unique hashes and zero overlap with the provisional corpus. The evidence remains
+diagnostic, unfrozen, and absent from public schema `0.2.0` output.
 
 ```bash
+make patch067-corrective-regression-smoke
 make patch066-corrective-regression-smoke
 make sprint12-role-property-layout-smoke
 make patch065-corrective-regression-smoke
 make sprint12-binary-role-smoke
 make sprint12-gnu-property-smoke
 make sprint12-role-property-metamorphic-smoke
+make sprint12-role-property-heldout-smoke
 ```
 
 See [ADR 0051](docs/adr/0051-bounded-private-gnu-property-evidence.md),
@@ -219,7 +227,9 @@ See [ADR 0051](docs/adr/0051-bounded-private-gnu-property-evidence.md),
 [Patch 065 validation record](docs/sprints/sprint-12-patch-065-validation.md),
 the [Patch 066 validation record](docs/sprints/sprint-12-patch-066-validation.md),
 [ADR 0053](docs/adr/0053-corpus-custody-and-private-layout-attestation.md),
-and the [Patch 067 validation plan](docs/sprints/sprint-12-patch-067-validation.md).
+the [Patch 067 validation plan](docs/sprints/sprint-12-patch-067-validation.md),
+[ADR 0054](docs/adr/0054-held-out-private-role-property-confirmation.md), and
+the [Patch 068 validation plan](docs/sprints/sprint-12-patch-068-validation.md).
 
 ## Quick start on Ubuntu 24.04
 

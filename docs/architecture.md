@@ -1374,9 +1374,9 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-The Patch 066 candidate preserves and corrects this seam so `binary_role.asm` consumes only
-those completed summary facts, including copied ELF type and entrypoint, and
-writes one internal state:
+The Patch 068 candidate preserves the corrected seam so
+`binary_role.asm` consumes only those completed summary facts, including copied
+ELF type and entrypoint, and writes one internal state:
 
 ```text
 unknown
@@ -1406,8 +1406,8 @@ deterministic.
 
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
-Patch 065 inserted `gnu_property.asm`; the current Patch 067 candidate preserves the corrected
-its alignment and overlap boundaries while retaining it after bounded
+Patch 065 inserted `gnu_property.asm`; the Patch 068 candidate preserves
+its corrected alignment and overlap boundaries while retaining it after bounded
 program-header acquisition and before public reporting. The module canonicalizes
 exact duplicate physical note carriers while retaining each original PHDR
 index/type contributor in a bounded command-lifetime context. It parses only
@@ -1432,9 +1432,31 @@ GNU-property, and binary-role routines, and emits compact private facts for the
 28-object metamorphic preflight. It must not enter the production link, define
 public report policy, or become loader authority.
 
+### Patch 067 development-only layout reconciliation
+
 Patch 067 binds that test-only C/assembly boundary through
 `role-property-layout-authority.asm`. The assembly object emits a fixed
 magic/version/field-count descriptor from `include/structs.inc`; an independent C
 contract reconciles all consumed offsets and sizes before the probe allocates or
 interprets records. The descriptor object is linked only into development
-harnesses, never into `build/x64lens`.
+harnesses, never into `build/x64lens`. This reconciliation attests the probe's
+record-layout interpretation; it does not establish parser or classifier
+correctness, analyzer behavior, or public report policy.
+
+## Sprint 12 Patch 068 held-out private fact confirmation
+
+Patch 068 changes no runtime module boundary. It hardens the development corpus
+transaction and adds a test-only held-out confirmation path:
+
+```text
+natural compiler/linker targets + metamorphic ELF targets
+  -> independent standard-library fact-vector oracle
+  -> C/NASM private fact probe
+  -> exact three-repeat reconciliation
+```
+
+The held-out tool does not parse targets on behalf of the product, select scan
+regions, discover candidates, classify semantics, assign scores, or emit public
+reports. `binary_role.asm` and `gnu_property.asm` continue to consume bounded
+PHDR/dynamic/note facts, and public reporters remain unaware of their private
+states. The matrix is diagnostic and is not linked into `build/x64lens`.

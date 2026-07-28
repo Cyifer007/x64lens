@@ -178,8 +178,31 @@ def fact(probe: Path, target: Path) -> dict[str, int]:
     return value
 
 
+PRIVATE_TEXT_MARKERS = (
+    b"role_state",
+    b"role_evidence",
+    b"ibt_state",
+    b"shstk_state",
+    b"property_view_count",
+    b"property_contributor_count",
+    b"property_feature_count",
+    b"property_unknown_count",
+    b"property_conflict_count",
+    b"gnu_property_private",
+    b"binary role state",
+    b"private gnu property",
+)
+
+
+def assert_no_private_public_text(payload: bytes) -> None:
+    lowered = payload.lower()
+    for marker in PRIVATE_TEXT_MARKERS:
+        require(marker not in lowered, f"private role/property fact leaked into public text: {marker!r}")
+
+
 def validate_public(analyzer: Path, target: Path) -> int:
     commands = [
+        [str(analyzer), "info", str(target)],
         [str(analyzer), "mitigations", str(target)],
         [str(analyzer), "gadgets", "--format", "json", "--max-depth", "4", str(target)],
         [str(analyzer), "analyze", "--format", "json", "--max-depth", "4", str(target)],
@@ -188,6 +211,7 @@ def validate_public(analyzer: Path, target: Path) -> int:
     for command in commands:
         cp = run(command)
         require(cp.stdout, f"public command emitted empty output: {command!r}")
+        assert_no_private_public_text(cp.stdout)
         if "--format" in command:
             report = json.loads(cp.stdout)
             require(report.get("schema_version") == "0.2.0", "metamorphic report changed schema")
@@ -279,6 +303,10 @@ def main() -> int:
             if first["status"] == 0:
                 public_commands += validate_public(args.analyzer, target)
             else:
+                info = run([str(args.analyzer), "info", str(target)])
+                require(info.stdout, f"info emitted empty output for structurally valid ELF header: {name}")
+                assert_no_private_public_text(info.stdout)
+                public_commands += 1
                 for command in (
                     [str(args.analyzer), "mitigations", str(target)],
                     [str(args.analyzer), "gadgets", "--format", "json", str(target)],
@@ -289,12 +317,12 @@ def main() -> int:
                     public_commands += 1
             objects += 1
 
-    require(objects == 28 and pairs == 12 and public_commands == 84,
+    require(objects == 28 and pairs == 12 and public_commands == 112,
             "metamorphic preflight accounting mismatch")
     print(
         "sprint12-role-property-metamorphic-smoke: ok "
         "objects=28 pairs=12 mutants=4 roles=3 property_states=4 "
-        "deterministic=28 public_commands=84 schema=unchanged"
+        "deterministic=28 public_commands=112 schema=unchanged"
     )
     return 0
 

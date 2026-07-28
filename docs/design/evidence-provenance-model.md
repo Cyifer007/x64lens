@@ -359,5 +359,18 @@ normalized.
 Private binary-role and GNU-property development facts are not public candidate
 provenance. Before a C probe may consume those assembly records, Patch 067
 requires a NASM-emitted layout descriptor and an independent C reconciliation
-gate. This proves record interpretation identity for the diagnostic probe without
-adding a runtime provenance tier or changing schema `0.2.0`.
+gate. This reconciles record interpretation identity for the diagnostic probe
+without adding a runtime provenance tier or changing schema `0.2.0`. It does not validate
+parser or classifier facts, analyzer behavior, runtime enforcement, or
+publication claims.
+
+## Sprint 12 Patch 068 held-out fact provenance
+
+Patch 068 keeps natural and metamorphic role/property evidence as separate
+strata. Each retained object is identified by SHA-256, an independently authored
+private fact vector, and three byte-identical fact-probe outputs. Natural objects
+must have unique identities and no identity overlap with the provisional corpus.
+Metamorphic pairs preserve logical facts while changing exact carrier
+provenance, and edge objects preserve unknown, contradictory, malformed, and
+unsupported outcomes. These development facts do not become candidate evidence,
+public mitigation fields, or publication rows.

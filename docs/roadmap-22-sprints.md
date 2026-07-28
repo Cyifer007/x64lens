@@ -175,8 +175,7 @@ records the measured decision to defer executable-range normalization because
 the bounded diagnostic sample produced no overlap activation, then adds an
 internal-only fact-first PIE-versus-DSO role lattice without changing public
 output. Patch 064 did not pass validation; its decision and required corrections
-were carried through Patch 065. The current Patch 067 candidate
-corrects the later Patch 065 findings.
+were carried through Patch 065 and Patch 066.
 
 ## Sprint 12 Patch 065-066 checkpoint
 
@@ -187,3 +186,21 @@ remain unchanged; malformed non-identical carrier overlap now fails before
 output. Sprint 12 still requires broader held-out confirmation, bounded
 `readelf -n` reconciliation, and native/container fact parity before a separate
 public-policy review or Sprint 13 handoff.
+
+## Sprint 12 Patch 067 checkpoint
+
+Patch 067 added C/NASM layout reconciliation for the development fact probe but
+required additional transaction and oracle correction. Patch 068 closes those
+findings and runs the separately identified held-out private fact confirmation. The reconciliation attests
+probe record interpretation only; it does not establish analyzer behavior or
+publication evidence. Broader held-out confirmation, bounded external
+reconciliation, and native/container fact parity remain subsequent diagnostic
+gates.
+
+## Sprint 12 Patch 068 checkpoint
+
+Patch 068 corrects the remaining Patch 067 corpus/private transaction and oracle
+findings and completes the first 48-natural/48-metamorphic held-out private
+role/property confirmation. Public schema and output remain unchanged. Sprint
+12 still requires bounded external reconciliation, native/container private-fact
+parity, and a deliberate public-policy decision before closeout.

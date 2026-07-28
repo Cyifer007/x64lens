@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the current Patch 067 candidate; acceptance is pending and there is no public indicator. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected in the Patch 068 candidate; acceptance is pending and there is no public indicator. |
 
 ## Evidence and confidence
 
@@ -180,13 +180,13 @@ validates every `DT_SONAME` carrier.
 
 Duplicate or conflicting role carriers are contradictory rather than
 first-wins or last-wins. Dynamic role tags use the existing bounded `PT_DYNAMIC`
-view. No new public mitigation field is emitted; the Patch 066 candidate carries
-the corrected role facts into a separate GNU-property parser gate.
+view. No new public mitigation field is emitted; the Patch 068 candidate
+carries the corrected role facts and separate GNU-property parser gate.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
 Patch 065 added bounded internal acquisition of x86 IBT and SHSTK GNU-property
-facts; the current Patch 067 candidate preserves the corrected alignment and overlap
+facts; the Patch 068 candidate preserves the corrected alignment and overlap
 boundaries without publishing a new mitigation field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
@@ -217,4 +217,14 @@ is a development gate, not evidence of runtime CET enforcement.
 Patch 067 changes no public mitigation indicator. It attests the development
 probe layout used to inspect private PIE/DSO and GNU-property states and hardens
 corpus custody and public-field leakage oracles. Static IBT/SHSTK property facts
-remain private evidence and do not establish runtime CET enforcement.
+remain private evidence and do not establish runtime CET enforcement. Layout
+reconciliation does not establish parser, classifier, or analyzer behavior.
+
+## Sprint 12 Patch 068 held-out confirmation boundary
+
+Patch 068 confirms private binary-role and GNU-property acquisition over 48
+natural and 48 metamorphic objects. The matrix distinguishes natural toolchain
+outputs from synthetic aliases, conflicts, unknown bits, role contradictions,
+and malformed property layouts. It does not add public PIE/DSO, IBT, or SHSTK
+fields and does not treat static GNU properties as proof of runtime CET
+enforcement. A later policy gate owns any compatible public `0.2.x` decision.

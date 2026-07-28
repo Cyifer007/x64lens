@@ -46,27 +46,37 @@ def copy_corpus(parent: Path) -> Path:
 
 
 def validate_role_harness_shape(role_harness: str) -> None:
+    """Require executable ABI instructions, not comment substrings."""
+
     start = role_harness.find("run_phdr:")
     end = role_harness.find("\nrun_role:", start)
     require(start >= 0 and end > start, "binary-role harness run_phdr block is missing")
-    block = role_harness[start:end]
+    executable: list[str] = []
+    for raw in role_harness[start:end].splitlines():
+        code = raw.split(";", 1)[0].strip()
+        if not code:
+            continue
+        executable.append(" ".join(code.split()))
+
     required_in_order = [
-        "sub     rsp, 8",
-        "call    assert_callee_entry_alignment",
-        "test    eax, eax",
-        "call    x64lens_phdr_analyze",
+        "sub rsp, 8",
+        "call assert_callee_entry_alignment",
+        "test eax, eax",
+        "call x64lens_phdr_analyze",
         ".return:",
-        "add     rsp, 8",
+        "add rsp, 8",
         "ret",
         "assert_callee_entry_alignment:",
-        "cmp     eax, 8",
-        "mov     eax, EXIT_BOUNDS",
+        "cmp eax, 8",
+        "mov eax, EXIT_BOUNDS",
     ]
     cursor = 0
     for token in required_in_order:
-        index = block.find(token, cursor)
-        require(index >= 0, f"binary-role harness ABI token is missing: {token}")
-        cursor = index + len(token)
+        try:
+            index = executable.index(token, cursor)
+        except ValueError as exc:
+            raise RuntimeError(f"binary-role harness ABI instruction is missing: {token}") from exc
+        cursor = index + 1
 
 
 def source_shape_probe() -> None:

@@ -2,9 +2,9 @@
 
 ## Status
 
-Current implementation-candidate validation plan. Patch 066 is not accepted
-until clean native, Docker, parity, and independent validation complete against
-the exact source.
+Historical implementation-candidate validation plan. Patch 066 required the
+current Patch 067 corrective candidate, whose expectations are recorded in the
+[Patch 067 validation plan](sprint-12-patch-067-validation.md).
 
 ## Purpose
 
@@ -130,15 +130,20 @@ native and container strata.
 - candidate 4,097 fails with exit `6` before stdout;
 - malformed parser failures emit no partial stdout;
 - program headers remain executable authority;
-- raw, exact, semantic-exact, unknown, and scored populations retain their
-  meanings;
+- current aggregate metrics remain distinct: `raw_candidate_count`,
+  `exact_pattern_count`, `semantic_candidate_count`,
+  `unknown_candidate_count`, and `scored_candidate_count`;
+- current evidence kinds remain `raw_only`, `exact_suffix`, and
+  `semantic_exact`; `decoder_validated` and `semantic_decoded` remain reserved
+  and unimplemented;
 - public schema and report fields remain unchanged;
 - no mandatory decoder, worker, helper process, or runtime dependency is added.
 
 ## Known limitations and next gate
 
 The 28-object preflight is controlled development evidence, not the wider
-held-out confirmation and not publication evidence. After acceptance, the next
-role/property gate should use the larger held-out matrix, bounded `readelf -n`
-comparison, and native/container fact parity. Whole-batch workload ladders and
-process-tree RSS calibration remain separate benchmark-method decisions.
+held-out confirmation and not publication evidence. After Patch 067 acceptance,
+the next role/property gate should use the larger held-out matrix, bounded
+`readelf -n` comparison, and native/container fact parity. Whole-batch workload
+ladders and process-tree RSS calibration remain separate benchmark-method
+decisions.

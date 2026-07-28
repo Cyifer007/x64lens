@@ -4,10 +4,11 @@
 
 Historical validation record for the exact Patch 064 source. Patch 064 did not
 pass validation; this document preserves its required outcomes rather than an
-acceptance result. The current corrective and GNU-property candidate is
-covered by the [Patch 066 validation plan](sprint-12-patch-066-validation.md);
-the [Patch 065 validation record](sprint-12-patch-065-validation.md) preserves
-the intervening historical boundary.
+acceptance result. The
+[Patch 065 validation record](sprint-12-patch-065-validation.md) and
+[Patch 066 validation plan](sprint-12-patch-066-validation.md) preserve the
+intervening candidate boundaries. The current corrective candidate is covered
+by the [Patch 067 validation plan](sprint-12-patch-067-validation.md).
 
 ## Purpose
 

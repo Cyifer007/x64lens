@@ -8,8 +8,20 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 067 corpus mode-repair custody now reauthenticates exact tree membership and caller-visible root identity immediately before descriptor-bound mode mutation, and restores original modes after any late verification failure.
-- A development-only C/NASM private fact-probe ABI descriptor, reconciliation harness, dynamic callee-alignment canary, and exact private-field public-output rejection gate. Public text, JSON schema `0.2.0`, candidate metrics, semantic classes, scores, and runtime dependencies remain unchanged.
+- Sprint 12 Patch 068 held-out private role/GNU-property confirmation over 48
+  natural compiler/linker outputs and 48 metamorphic objects, with independent
+  exact fact vectors, three byte-identical probe repetitions per object, unique
+  natural identities, and zero natural-object overlap with the provisional
+  corpus. The evidence remains diagnostic and does not add public fields.
+- Patch 067 corrective hardening for the corpus mutation boundary, complete
+  caller-visible path reauthentication, verified rollback retries, the stale
+  displaced-root oracle, the role/property layout Make dependency, executable
+  ABI-source validation, and all four public command paths.
+- ADR 0054, `make patch067-corrective-regression-smoke`,
+  `make sprint12-role-property-heldout-smoke`, and the Patch 068 validation plan.
+
+- A development-only C/NASM private fact-probe ABI descriptor and reconciliation
+  harness that attest only the probe's record-layout interpretation.
 - ADR 0053, `make patch066-corrective-regression-smoke`, `make sprint12-role-property-layout-smoke`, and the Patch 067 validation plan.
 
 - A development-only 28-object binary-role/GNU-property metamorphic preflight covering three role constructions, four IBT/SHSTK states, canonical and exact-dual carrier encodings, deterministic repeated facts, and four single-axis mutants without changing public schema or runtime dependencies.
@@ -354,6 +366,14 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Sprint 12 Patch 067 reauthenticates exact corpus membership and caller-visible
+  root identity immediately before descriptor-bound mode mutation. Late failure
+  enters descriptor-bound rollback, and the controlled injected-failure case
+  requires root and affected-member mode restoration. The patch also tightens
+  the binary-role ABI mutation oracle and recursive public-JSON private-key
+  checks. Public report fields, schema `0.2.0`, candidate metrics, semantic
+  classes, scores, and runtime dependencies remain unchanged.
 
 - Sprint 12 Patch 066 corrects descriptor-relative GNU-property entry alignment,
   rejects non-identical note-carrier overlap before reporting, keeps corpus mode

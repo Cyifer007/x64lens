@@ -306,8 +306,9 @@ replacement at the caller-visible pathname is not modified.
 
 ## Sprint 12 Patch 065 GNU-property parser safety
 
-The Patch 066 candidate consumes GNU property evidence only from checked file-backed `PT_NOTE` and
-`PT_GNU_PROPERTY` carriers. The parser bounds carrier bytes, note headers,
+The current Patch 067 candidate consumes GNU property evidence only from checked
+file-backed `PT_NOTE` and `PT_GNU_PROPERTY` carriers. The parser bounds carrier
+bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
 the ELF64 `PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
 property counts, descriptor size, canonical views, contributors, and recognized
@@ -329,3 +330,12 @@ equal to four. It also adds malformed partial-carrier overlap across public
 command paths. Corpus mode repair retains descriptor identity and checksum-
 authorized bytes through preflight and rejects directory substitution or
 post-preflight byte mutation before any chmod.
+
+## Sprint 12 Patch 067 corpus-repair custody
+
+Immediately before its first descriptor-bound mode mutation, the Patch 067
+candidate reauthenticates exact retained-tree membership and the caller-visible
+parent/name binding. A late verification failure enters descriptor-bound
+rollback for retained original modes; the controlled injected-failure case
+requires restoration of the root and affected member modes. This focused custody
+gate does not broaden parser, analyzer, or public-output claims.

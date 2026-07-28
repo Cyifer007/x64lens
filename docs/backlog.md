@@ -151,16 +151,25 @@ later sprints rather than Patch 037:
 - [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
 - [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
   executable-like, shared-object-like, ambiguous, and contradictory states. The
-  implementation and Patch 065 corrections are carried by the Patch 066 candidate.
+  implementation and intervening corrections are carried by the current Patch
+  067 candidate.
 - [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
   public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by Patch 066.
+  is carried by Patch 067.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
   Corrected and carried by the Patch 067 candidate.
-- [ ] Accept exact C/NASM private fact-probe layout attestation before admitting the wider held-out role/property corpus. Implemented in Patch 067.
+- [ ] Accept exact C/NASM private fact-probe layout attestation before admitting
+  the wider held-out role/property corpus. Implemented in Patch 067; it attests
+  probe record interpretation rather than analyzer behavior.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [ ] After Patch 067 acceptance, run corrected held-out diagnostic PIE/DSO and
+- [x] Patch 068 corrects the remaining Patch 067 corpus/private transaction,
+  Make dependency, and all-public-path oracle findings.
+- [x] Patch 068 runs the 48-natural/48-metamorphic held-out private role/property
+  confirmation with exact independent vectors and three deterministic probe runs.
+- [ ] After Patch 068 acceptance, reconcile held-out private facts with bounded
+  external evidence and native/container fact parity before public-policy review.
+- [ ] Continue corrected held-out diagnostic PIE/DSO and
   IBT/SHSTK confirmation under a new campaign identity, with positive
   role-controlled coordinate anchors and complete task-path runtime closure for
   all five task paths.

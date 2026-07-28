@@ -1,5 +1,11 @@
 # Sprint 12 Patch 067 Validation Plan
 
+## Status
+
+Current corrective implementation-candidate validation plan. Patch 067 remains
+pending focused, native, container, parity, and independent validation against
+the exact candidate source.
+
 ## Scope
 
 Patch 067 corrects the Patch 066 corpus/private transaction and oracle findings
@@ -9,9 +15,9 @@ or runtime dependency.
 
 ## Source precondition
 
-Apply to the exact committed Patch 066 source named by the delivery runbook.
-Use either the complete Git patch or the authenticated final-file overlay, never
-both.
+Patch 067 is defined against exact committed Patch 066 source
+`ea5885e9c2e8e66edd7c5730660ce975a3dd8dad`. Validate the candidate against that
+public source boundary.
 
 ## Focused validation
 
@@ -35,9 +41,11 @@ sprint12-role-property-layout-smoke: ok qwords=24 fields=21 descriptor_bytes=192
 ```
 
 The existing focused role/property gates must continue to report their maintained
-case counts. The metamorphic gate must execute all 84 public command paths while
-rejecting any nested `role_state`, `role_evidence`, `ibt_state`, `shstk_state`,
-`property_*`, or GNU-property private key in schema `0.2.0` output.
+case counts. The metamorphic gate must execute all 112 public command invocations.
+Across the 56 JSON-producing `gadgets` and `analyze` paths, it must recursively
+reject the maintained private role/property key vocabulary, including exact
+private keys and the `property_`, `gnu_property`, `ibt_`, and `shstk_` prefixes.
+The 28 `info` and 28 `mitigations` paths also receive bounded text-vocabulary checks; the JSON paths retain recursive private-key checks.
 
 ## Corpus transaction acceptance
 
@@ -47,7 +55,8 @@ The corrective gate must prove:
    change;
 2. replacing the caller-visible corpus root name is rejected while both the
    displaced authenticated tree and foreign replacement remain unmodified;
-3. a final verifier failure restores the original root and member modes;
+3. the controlled injected final-verifier failure restores the original root and
+   affected member modes;
 4. ordinary authenticated mode-only drift still repairs and fully verifies.
 
 ## ABI and layout acceptance
@@ -59,6 +68,10 @@ The private layout gate must:
 - reject a descriptor-version mutation;
 - reject a field-offset mutation;
 - link the descriptor into the development fact probe but not the analyzer.
+
+This reconciliation attests the C/NASM layout and the development probe's record
+interpretation only. Parser and classifier facts, analyzer behavior, and public
+reporting remain separate validation surfaces.
 
 The binary-role harness must check callee-entry alignment dynamically. Removing
 both `sub rsp, 8` and `add rsp, 8` must fail the maintained source-shape oracle
@@ -102,8 +115,12 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 - candidate 4,097 returns exit code 6 before stdout;
 - malformed parse failures emit no partial stdout;
 - program headers remain executable mapping authority;
-- raw, exact, semantic-exact, unknown, decoder-backed, and scored facts remain
-  distinct;
+- the current aggregate metrics remain distinct: `raw_candidate_count`,
+  `exact_pattern_count`, `semantic_candidate_count`,
+  `unknown_candidate_count`, and `scored_candidate_count`;
+- current evidence kinds remain `raw_only`, `exact_suffix`, and
+  `semantic_exact`; `decoder_validated` and `semantic_decoded` remain reserved
+  and unimplemented;
 - private role/property facts remain absent from public text and JSON;
 - the analyzer remains dependency-free, decoder-free, one-worker, bounded, and
   deterministic.

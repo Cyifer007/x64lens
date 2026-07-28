@@ -3,8 +3,9 @@
 ## Status
 
 Accepted fact-acquisition architecture. The original Patch 065 implementation
-did not pass validation; Patch 066 preserves this boundary while correcting the
-reviewed parser, corpus-repair, ABI, and oracle defects.
+did not pass validation. Patch 066 corrected its parser and evidence-boundary
+findings, and the current Patch 067 corrective candidate carries this boundary
+forward.
 
 ## Context
 
@@ -95,4 +96,4 @@ mapped ELF header or dynamic/string bytes.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Native and Docker validation must prove identical facts and unchanged public
-  report fields before Patch 066 is accepted.
+  report fields before the current Patch 067 candidate is accepted.

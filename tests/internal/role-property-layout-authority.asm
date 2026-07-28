@@ -58,3 +58,5 @@ x64lens_role_property_layout_descriptor:
 
 x64lens_role_property_layout_descriptor_size:
     dq x64lens_role_property_layout_descriptor.end - x64lens_role_property_layout_descriptor
+
+section .note.GNU-stack noalloc noexec nowrite progbits

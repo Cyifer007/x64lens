@@ -480,19 +480,8 @@ The reviewed Patch 064 source began the PIE-versus-DSO gate with an internal fac
 ELF type, entrypoint, a bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated
 `DT_SONAME` string evidence. The public `ET_DYN` indicator remains unchanged.
 Patch 064 did not pass validation. Patch 065 carried its role decision forward,
-corrected the reviewed Patch 064 findings, and added the independently
-bounded GNU-property IBT/SHSTK gate. The current Patch 067 candidate preserves the corrected
-later Patch 065 findings.
-
-## Sprint 12 Patch 067 research checkpoint
-
-Patch 067 does not broaden public mitigation reporting. It closes remaining
-Patch 066 evidence-custody and oracle defects, makes corpus mode repair
-transactional across exact membership and root-name continuity, and adds an
-assembly-emitted private fact-probe ABI descriptor reconciled by an independent C
-contract. This attestation is the prerequisite for the larger held-out
-role/property confirmation. Diagnostic campaign rows remain unfrozen and cannot
-support performance, RSS, coverage, or runtime-CET claims.
+corrected the reviewed Patch 064 findings, and added the independently bounded
+GNU-property IBT/SHSTK gate.
 
 ## Sprint 12 Patch 065-066 research checkpoint
 
@@ -504,3 +493,25 @@ controlled development evidence, remains unfrozen and publication-ineligible,
 and changes no public report field. Broader held-out confirmation, bounded
 `readelf -n` reconciliation, and native/container fact parity must follow before
 any compatible public `0.2.x` indicator is considered.
+
+## Sprint 12 Patch 067 research checkpoint
+
+Patch 067 does not broaden public mitigation reporting. It addresses the
+remaining Patch 066 evidence-custody and oracle findings, binds corpus mode
+repair to exact membership and caller-visible root-name continuity immediately
+before mutation, and adds an assembly-emitted private fact-probe ABI descriptor
+reconciled by an independent C contract. This attestation covers probe record
+interpretation only; it is a prerequisite, not product validation or publication
+evidence. The larger held-out role/property confirmation remains subsequent
+diagnostic work. Diagnostic campaign rows remain unfrozen and cannot support
+performance, RSS, coverage, or runtime-CET claims.
+
+## Sprint 12 Patch 068 research checkpoint
+
+Patch 068 closes the remaining Patch 067 evidence-transaction defects and runs a
+96-object private role/GNU-property confirmation. The 48 natural objects are
+separate from the 48 metamorphic objects, every expected vector is authored by
+an independent reader, and each probe result repeats byte-identically three
+times. This strengthens private fact evidence but does not authorize public
+fields, runtime CET claims, or publication measurement. External comparison,
+native/container private-fact parity, and a public-policy decision remain open.

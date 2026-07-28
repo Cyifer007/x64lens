@@ -8,26 +8,26 @@ Patch acceptance remains governed by native, Docker, and independent validation.
 ## Context
 
 Patch 066 corrected GNU-property alignment and overlap handling and added a
-28-object private role/property preflight. Its review confirmed that the product
-parser and normal native/container behavior were substantially sound, but found
+28-object private role/property preflight. Subsequent validation identified
 three evidence-integrity defects and two oracle defects:
 
 - corpus mode repair could begin changing authenticated modes before detecting a
   newly added member;
 - repair could continue through a retained descriptor after the caller-visible
   corpus root name had been replaced;
-- a late verifier failure needed transactional restoration of every original
-  mode;
-- the public-output oracle did not reject the actual private fact key names; and
+- a late verifier failure required a descriptor-bound rollback path for retained
+  original modes;
+- the public-JSON oracle did not reject the maintained private fact key names; and
 - the binary-role ABI oracle could accept removal of both stack adjustments.
 
-The strategic reviews also identified one prerequisite for a broader held-out
-role/property corpus: the development C fact probe must prove that the offsets
-and sizes it consumes agree with the NASM-owned record layout.
+A broader held-out role/property corpus also requires the development C fact
+probe to establish that the offsets and sizes it consumes agree with the
+NASM-owned record layout.
 
 ## Decision
 
-Patch 067 closes the transaction and oracle defects before expanding the corpus.
+The Patch 067 candidate addresses the transaction and oracle defects before any
+corpus expansion.
 
 Corpus mode repair now retains:
 
@@ -36,13 +36,15 @@ caller-visible parent descriptor and root name
 root descriptor and creation-time identity
 complete directory and regular-file descriptor set
 checksum authority and manifest-authorized file hashes
-original modes for transactional rollback
+original modes retained for descriptor-bound rollback
 ```
 
 Immediately before the first `fchmod`, repair revalidates exact membership,
 object type, device/inode identity, owner, timestamps, link count, bytes, and the
-parent/name binding. A late verification failure restores every original mode
-through retained descriptors. A foreign replacement remains untouched.
+parent/name binding. A late verification failure enters descriptor-bound
+rollback for every retained original mode. The controlled injected-failure case
+requires restoration of the root and affected member modes. A foreign
+replacement remains untouched.
 
 The private fact-probe boundary now uses an assembly-emitted descriptor:
 
@@ -61,8 +63,8 @@ allocation or record interpretation and no longer hardcodes assembly-owned
 layout offsets.
 
 The binary-role harness also executes a callee-entry alignment canary before the
-nested PHDR call. Removing either required stack adjustment is therefore both a
-source-shape failure and a runtime harness failure.
+nested PHDR call. The maintained mutation removes both matched stack adjustments
+and must fail both the source-shape oracle and the rebuilt runtime harness.
 
 ## Boundaries
 
@@ -81,10 +83,13 @@ linked into the freestanding analyzer.
 
 ## Consequences
 
-- Corpus repair remains mode-only, fail-closed, and transactional.
-- Public-output and ABI oracles now discriminate the exact defects they claim to
-  prevent.
-- Private fact evidence cannot be treated as authoritative until the C/NASM ABI
-  descriptor reconciles.
+- Corpus repair remains mode-only and fail-closed; late failure enters
+  descriptor-bound rollback, with controlled restoration covered by the focused
+  probe.
+- The maintained public-JSON private-key and ABI mutation oracles discriminate
+  their targeted controlled cases.
+- C/NASM reconciliation attests only the development probe's record-layout
+  interpretation. It does not establish parser or classifier correctness,
+  analyzer behavior, runtime CET enforcement, or publication evidence.
 - The larger natural/metamorphic held-out confirmation remains a subsequent
   diagnostic gate with a new identity.

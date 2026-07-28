@@ -3,17 +3,20 @@
 ## Status
 
 Historical implementation-candidate validation record. Patch 065 did not pass
-independent validation and required a corrective patch. The Patch 066 validation
-plan contains the current corrected commands and expected banners; Patch 066
-remains pending acceptance.
+independent validation and required Patch 066. Patch 066 subsequently required
+the current Patch 067 corrective candidate. The
+[Patch 066 validation plan](sprint-12-patch-066-validation.md) preserves that
+intervening boundary; use the
+[Patch 067 validation plan](sprint-12-patch-067-validation.md) for current
+candidate expectations.
 
 ## Review outcome
 
-Patch 065 did not pass acceptance. Review confirmed descriptor-relative GNU
+Patch 065 did not pass acceptance. Validation identified descriptor-relative GNU
 property alignment, non-identical carrier-overlap rejection, corpus repair
 identity/byte continuity, binary-role harness ABI alignment, copied-read-only
-regression-fixture behavior, and oracle defects. See the
-[Patch 066 validation plan](sprint-12-patch-066-validation.md).
+regression-fixture behavior, and oracle defects. Patch 066 addressed those
+findings but required the further Patch 067 correction.
 
 ## Purpose
 
@@ -138,7 +141,12 @@ Docker are separate environment strata.
 - candidate 4,097 fails before stdout with exit code 6;
 - malformed parser failures emit no partial stdout;
 - program headers remain executable authority;
-- raw, exact, semantic-exact, unknown, and scored counts retain their meanings;
+- current aggregate metrics remain distinct: `raw_candidate_count`,
+  `exact_pattern_count`, `semantic_candidate_count`,
+  `unknown_candidate_count`, and `scored_candidate_count`;
+- current evidence kinds remain `raw_only`, `exact_suffix`, and
+  `semantic_exact`; `decoder_validated` and `semantic_decoded` remain reserved
+  and unimplemented;
 - no public JSON or text field changes;
 - no new mandatory runtime dependency, decoder, or worker profile is added.
 

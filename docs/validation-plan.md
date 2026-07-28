@@ -1747,14 +1747,14 @@ Malformed property inputs return exit code 5 before stdout; explicit cap
 exhaustion returns exit code 6 before stdout. The 4,096-candidate complete result
 and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
-Native and container results must agree before acceptance. After Patch 066
+Native and container results must agree before acceptance. After Patch 067
 acceptance, held-out role/property evidence remains diagnostic, unfrozen, and
 publication-ineligible; bounded `readelf -n` reconciliation and
 native/container fact parity precede any decision about compatible public
 `0.2.x` indicators.
 
 
-## Sprint 12 Patch 066 corrective and metamorphic validation
+## Historical Sprint 12 Patch 066 corrective and metamorphic validation
 
 ```bash
 make patch065-corrective-regression-smoke
@@ -1763,7 +1763,7 @@ make sprint12-gnu-property-smoke
 make sprint12-role-property-metamorphic-smoke
 ```
 
-Expected current candidate results:
+Historical Patch 066 expected results:
 
 ```text
 patch065-corrective-regression-smoke: ok readonly_fixture=1 descriptor_alignment=1 partial_overlap=1 abi_alignment=1 directory_identity=1 post_preflight_bytes=1
@@ -1790,10 +1790,28 @@ make patch066-corrective-regression-smoke
 make sprint12-role-property-layout-smoke
 ```
 
-The first proves exact corpus membership and root-name continuity immediately
-before mode mutation, transactional mode rollback after late failure, actual
-private-field rejection in public JSON, and ABI-oracle mutation detection. The
-second reconciles 21 private record fields plus descriptor magic/version/count
-across NASM and C and rejects version and offset mutations. Both remain
-development validation; native and Docker aggregates must still pass before
-acceptance.
+The first checks exact corpus membership and root-name continuity immediately
+before mode mutation, controlled injected late-failure restoration of root and
+affected-member modes, recursive maintained-private-key rejection, and ABI-
+oracle mutation detection. The second reconciles 21 private record fields plus
+descriptor magic/version/count across NASM and C and rejects version and offset
+mutations. Layout reconciliation attests only the development probe's record
+interpretation. Both remain development validation; native and Docker aggregates
+must still pass before acceptance.
+
+## Sprint 12 Patch 068 corrective and held-out validation
+
+Patch 068 adds:
+
+```bash
+make patch067-corrective-regression-smoke
+make sprint12-role-property-heldout-smoke
+```
+
+The corrective gate covers first-mutation membership, caller-visible ancestor
+binding, verified rollback retry, the current displaced-root contract, the
+layout-authority Make dependency, and executable ABI-source checks. The held-out
+gate requires 96 exact private fact vectors and 288 byte-identical fact-probe
+runs, with natural and metamorphic evidence reported separately. Neither gate
+changes public schema or runtime semantics. Full native, Docker, capacity,
+malformed-input, and parity validation remain required before acceptance.

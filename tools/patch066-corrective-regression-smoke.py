@@ -175,13 +175,13 @@ def abi_oracle_probe() -> None:
     )
     source = (ROOT / "tests/internal/binary-role-reconciliation.asm").read_text(encoding="utf-8")
     module.validate_role_harness_shape(source)
-    mutated = source.replace("    sub     rsp, 8\n", "", 1)
-    mutated = mutated.replace("    add     rsp, 8\n", "", 1)
+    mutated = source.replace("    sub     rsp, 8\n", "    ; sub     rsp, 8\n", 1)
+    mutated = mutated.replace("    add     rsp, 8\n", "    ; add     rsp, 8\n", 1)
     try:
         module.validate_role_harness_shape(mutated)
     except RuntimeError:
         return
-    raise RuntimeError("binary-role ABI oracle accepted removal of both stack adjustments")
+    raise RuntimeError("binary-role ABI oracle accepted comment-only stack-adjustment tokens")
 
 
 def layout_authority_probe() -> None:

@@ -22,7 +22,7 @@ and do not replace the fresh, unmodified Patch 061 campaign required to qualify
 that evidence stratum. Patch 064 records a bounded diagnostic overlap decision
 and an internal-only role-evidence lattice. Patch 065 carried the reviewed Patch
 064 corrections and introduced the private GNU-property facts. Patch 066
-adds the controlled metamorphic preflight. Patch 067 corrects its corpus-custody
+added the controlled metamorphic preflight. Patch 067 corrects its corpus-custody
 and oracle findings and attests the private C/NASM fact-probe layout without a
 public field or schema change. Measurements after Patch 067
 require a distinct diagnostic campaign identity and remain separate from Sprint

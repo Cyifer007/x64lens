@@ -100,8 +100,9 @@ Whole-batch timing and process-tree RSS also remain separate measurement gates.
 
 ## Consequences
 
-- The Patch 065 private facts receive a discriminating, deterministic state
-  preflight rather than fixture-only confidence.
+- The Patch 065 private facts receive a discriminating, deterministic controlled
+  fixture preflight. This remains development evidence, not held-out or
+  publication evidence.
 - Original carrier provenance remains visible without accepting ambiguous
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.

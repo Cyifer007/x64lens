@@ -76,18 +76,21 @@ def probe_mode_root_continuity(corpus: Any) -> None:
                 return records
 
             corpus.verify_checksum_manifest = swap_after_auth
+            rejected = False
             try:
-                manifest = corpus.repair_corpus_modes(final)
+                corpus.repair_corpus_modes(final)
+            except corpus.CorpusError:
+                rejected = True
             finally:
                 corpus.verify_checksum_manifest = original_verify
-            require(fired, "mode-repair pathname substitution probe did not fire")
-            require(manifest.get("corpus_id") == spec["corpus_id"], "mode repair lost corpus identity")
+            require(fired and rejected, "substituted caller-visible corpus root was not rejected")
             require((final / "foreign-marker").read_text(encoding="utf-8") == "foreign\n", "foreign replacement was modified")
-            require((preserved / "inputs/spec/corpus-spec.json").stat().st_mode & 0o777 == 0o444,
-                    "owned corpus mode was not repaired")
+            require((preserved / "inputs/spec/corpus-spec.json").stat().st_mode & 0o777 == 0o644,
+                    "rejected repair mutated the displaced authenticated corpus")
 
             shutil.rmtree(final)
             os.rename(preserved, final)
+            corpus.repair_corpus_modes(final)
             corpus.verify_corpus(final)
     finally:
         spec_path.unlink(missing_ok=True)

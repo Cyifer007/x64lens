@@ -404,5 +404,14 @@ transition.
 
 Patch 067 keeps schema `0.2.0` unchanged. The private role/property layout
 descriptor is development-only ABI evidence and is not a report field. The
-metamorphic public-output oracle recursively rejects the actual private state and
-`property_*` key vocabulary from current JSON reports.
+metamorphic public-JSON oracle recursively rejects the maintained exact private
+keys and private-key prefix vocabulary from current JSON reports. Layout
+reconciliation does not validate analyzer behavior or public report semantics.
+
+## Sprint 12 Patch 068 schema boundary
+
+Patch 068 keeps schema `0.2.0` unchanged. The 96-object held-out matrix validates
+private role and GNU-property facts only. Recursive JSON checks and text
+vocabulary checks cover all four public command paths, but no private state is
+added to current reports. Any later compatible indicator requires a separate
+schema and public-policy review.

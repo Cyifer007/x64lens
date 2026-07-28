@@ -61,8 +61,8 @@ state, not measured RSS.
 
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
-corrected the earlier implementation that reread mapped ELF bytes, and Patch 066
-carries that boundary forward:
+corrected the earlier implementation that reread mapped ELF bytes, and the
+current Patch 067 candidate carries that boundary forward:
 
 ```text
 unknown
@@ -100,7 +100,8 @@ bounded, nonempty, NUL-terminated string before it becomes shared-object
 evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output. Patch 065 introduced these
-string-validation corrections, and Patch 066 carries them forward.
+string-validation corrections, and the current Patch 067 candidate carries them
+forward.
 
 ## Consequences
 
@@ -111,7 +112,7 @@ string-validation corrections, and Patch 066 carries them forward.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the Patch 066 candidate.
+  remains separate from public report policy in the Patch 067 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs
