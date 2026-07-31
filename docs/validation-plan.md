@@ -1747,11 +1747,12 @@ Malformed property inputs return exit code 5 before stdout; explicit cap
 exhaustion returns exit code 6 before stdout. The 4,096-candidate complete result
 and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
-Native and container results must agree before acceptance. The Patch 068
-private-fact matrix remains diagnostic, unfrozen, and publication-ineligible;
-bounded external ELF reconciliation (`readelf -h -l -d -n`) and
-native/container private-fact parity precede any decision about compatible
-public `0.2.x` indicators.
+Native and container results must agree before acceptance. Patch 068 introduced
+the private-fact matrix; the current Patch 069 candidate corrects and
+authenticates it and adds bounded external ELF reconciliation
+(`readelf -hW/-lW/-dW/-nW`). The matrix remains diagnostic, unfrozen, and
+publication-ineligible. Native/container private-fact parity still precedes any
+decision about compatible public `0.2.x` indicators.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1781,7 +1782,7 @@ repeats, and all three public report commands while keeping schema `0.2.0`
 unchanged.
 
 
-## Sprint 12 Patch 067 corpus and private-probe validation
+## Historical Sprint 12 Patch 067 corpus and private-probe validation
 
 Patch 067 adds two focused gates:
 
@@ -1799,7 +1800,7 @@ mutations. Layout reconciliation attests only the development probe's record
 interpretation. Both remain development validation; native and Docker aggregates
 must still pass before acceptance.
 
-## Sprint 12 Patch 068 corrective and diagnostic-matrix validation
+## Historical Sprint 12 Patch 068 corrective and diagnostic-matrix validation
 
 Patch 068 adds:
 
@@ -1838,12 +1839,30 @@ complete 18-field expected/observed retention, 24 parser-visible edge layouts,
 and production include dependencies.
 
 The held-out gate requires 96 objects, 288 repeated private fact-probe runs, 384
-public command paths, exact formal schema validation, an authenticated 24-target
-provisional corpus, and no private-field exposure. The `readelf` gate retains
-384 comparator processes and all 1,728 field dispositions. It requires zero
-unexplained mismatch among eligible direct or derived fields while preserving
-ambiguous, unavailable, and inapplicable cells.
+public command executions across four paths, an authenticated 24-target
+provisional corpus, and no private-field exposure in either output stream. For
+successful `gadgets` and `analyze` JSON results, it also performs command/schema
+identity checks, recursive private-key rejection, and formal-schema validation.
+The `readelf` gate retains 384 comparator processes and all 1,728 field
+dispositions. It assigns each field a direct, reproducibly derived, ambiguous,
+or unavailable authority class, and separately records each object/field cell
+as `match`, `mismatch`, `ambiguous`, `unavailable`, or `not_eligible`. It
+requires zero unexplained mismatch among eligible dispositions while preserving
+ambiguous, unavailable, and `not_eligible` cells.
 
 These are diagnostic development gates. Native and Docker aggregates, capacity,
 malformed-input behavior, and native/container private-fact parity remain
 separate acceptance requirements.
+
+## Sprint 12 Patch 070 focused gates
+
+```bash
+make patch069-corrective-regression-smoke
+make sprint12-batch-transaction-smoke
+make sprint12-role-property-heldout-smoke
+make sprint12-role-property-readelf-smoke
+```
+
+The Patch 068 corrective target must build or authenticate its analyzer, private
+fact probe, and provisional corpus before execution. Sealed temporary results
+are removed through exact-object cleanup rather than recursive path deletion.

@@ -99,6 +99,7 @@ Sprint 12 starts with bounded program-header validity and extended-numbering
 outcomes, executable-overlap/provenance semantics, PIE-versus-DSO identity, and
 GNU-property IBT/SHSTK evidence. Every new parser path requires checked ranges,
 hostile fixtures, no-partial-output behavior, native/container agreement, and a
-new diagnostic campaign identity. A corrected held-out diagnostic confirmation
-then requires positive role-controlled coordinate anchors and complete runtime
-closure for all five task paths before comparison qualification.
+new diagnostic campaign identity. A private-fact diagnostic matrix is a
+distinct gate with separate natural and controlled metamorphic strata. A
+separate comparison-qualification campaign requires positive role-controlled
+coordinate anchors and complete runtime closure for all five task paths.

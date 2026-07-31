@@ -9,9 +9,9 @@ validation against the exact candidate source.
 ## Context
 
 Patch 068 introduced a 96-object private binary-role and GNU-property diagnostic
-matrix, but independent review found that its maintained gate did not yet bind
-all of the authorities it claimed to consume. The review also found remaining
-corpus-repair transaction gaps:
+matrix, but follow-up validation showed that its maintained gate did not yet
+bind all of the authorities it claimed to consume. That validation also showed
+remaining corpus-repair transaction gaps:
 
 - semantic verification could reopen mutable pathnames instead of consuming a
   retained descriptor-authoritative view;
@@ -40,8 +40,9 @@ authenticated 96-object private-fact result
   + authenticated GNU readelf executable and version
   + exact readelf -hW/-lW/-dW/-nW commands
   -> retained raw comparator output
-  -> field-by-field direct, derived, ambiguous, unavailable, or inapplicable status
-  -> zero-unexplained-mismatch acceptance only over eligible fields
+  -> field authority class: direct, derived, ambiguous, or unavailable
+  -> per-object disposition: match, mismatch, ambiguous, unavailable, or not_eligible
+  -> zero-unexplained-mismatch acceptance only over eligible dispositions
 ```
 
 The corpus mode-repair path verifies semantic content through retained
@@ -60,10 +61,14 @@ The 96-object matrix now requires and authenticates:
 - all four public command paths and both output streams; and
 - 24 parser-visible edge layouts.
 
-The `readelf` reconciliation classifies each private field before comparison.
-Direct and reproducibly derived fields may enter the eligible denominator.
-Ambiguous, unavailable, and inapplicable fields remain explicit and cannot be
-converted into agreement or disagreement.
+The `readelf` reconciliation assigns a field-level authority class before
+comparison: direct, reproducibly derived, ambiguous, or unavailable. It records
+a separate per-object disposition: `match`, `mismatch`, `ambiguous`,
+`unavailable`, or `not_eligible`. Only `match` or `mismatch` dispositions backed
+by direct or reproducibly derived authority enter the eligible denominator.
+Ambiguous and unavailable cells remain explicit, as do `not_eligible` cells
+that are inapplicable for the object/field combination; none may be converted
+into agreement or disagreement.
 
 ## Boundaries
 

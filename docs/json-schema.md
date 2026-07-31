@@ -422,9 +422,11 @@ separate schema and public-policy review.
 ## Sprint 12 Patch 069 schema boundary
 
 Patch 069 keeps schema `0.2.0` unchanged. The strengthened 96-object matrix
-actually validates all four public command paths against the formal schema and
-recursively rejects private role/property vocabulary in stdout and stderr. The
-external `readelf` reconciliation is a separate development artifact and does
-not create report fields or redefine existing mitigation or count semantics.
+executes all four public command paths and scans both stdout and stderr for the
+maintained private vocabulary. For successful `gadgets` and `analyze` JSON
+results, it also checks command/schema identity, recursively rejects private
+keys, and validates the report against the formal schema. The external
+`readelf` reconciliation is a separate development artifact and does not create
+report fields or redefine existing mitigation or count semantics.
 Any public role, IBT, or SHSTK indicator still requires a compatible schema and
 public-policy review after native/container private-fact parity.

@@ -2,9 +2,10 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 068 implementation candidate.
-Product, delivery, and parity acceptance remain subject to separate validation
-against the exact candidate source.
+Accepted architecture for the historical Sprint 12 Patch 068 implementation
+candidate. The current Patch 069 candidate corrects and authenticates the
+matrix. Product, delivery, and parity acceptance remain subject to separate
+validation against the exact candidate source.
 
 ## Context
 

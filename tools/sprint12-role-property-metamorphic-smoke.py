@@ -84,7 +84,7 @@ def private_public_key(key: str) -> bool:
     return (
         normalized in PRIVATE_PUBLIC_KEY_NAMES
         or normalized.startswith("private") and ("role" in normalized or "property" in normalized)
-        or normalized.startswith("gnuproperty")
+        or "gnuproperty" in normalized
         or normalized.startswith("property")
         or normalized.startswith("ibt")
         or normalized.startswith("shstk")
@@ -221,7 +221,7 @@ def assert_no_private_public_text(payload: bytes) -> None:
         require(marker not in lowered, f"private role/property fact leaked into public text: {marker!r}")
     canonical = bytes(character for character in lowered if 97 <= character <= 122 or 48 <= character <= 57)
     for marker in (b"binaryrole", b"rolestate", b"roleevidence", b"privaterolenamespace",
-                   b"propertynotecount", b"propertyoverlapcount"):
+                   b"propertynotecount", b"propertyoverlapcount", b"gnuproperty", b"x64lensgnuproperty"):
         require(marker not in canonical,
                 f"private role/property vocabulary leaked into public text: {marker!r}")
 

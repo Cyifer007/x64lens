@@ -363,6 +363,24 @@ publication-ineligible evidence strata. They do not satisfy a preview,
 publication, or release gate. Cross-tool reporting preserves tool-native
 populations and named relations; it does not define a generic gadget count.
 
-## Sprint 12 Patch 062 release-gate update
+## Sprint 12 Patch 069 release-gate update
 
-The first loader-precision gate is resolved: ordinary PHDR validity and explicit ELF64 extended-numbering outcomes are deterministic and covered across all public command paths. This does not complete Sprint 12. Overlap semantics, PIE-versus-DSO identity, GNU-property IBT/SHSTK evidence, and corrected held-out diagnostic confirmation remain open before the preview gate.
+The current Patch 069 candidate carries the loader-precision, overlap-
+provenance, private PIE-versus-DSO, and private GNU-property work forward. It
+corrects and authenticates a 96-object private-fact diagnostic matrix with
+separate natural and controlled metamorphic strata, then adds field-scoped GNU
+`readelf` reconciliation. These results remain diagnostic, unfrozen,
+publication-ineligible, and pending independent acceptance.
+
+This does not complete Sprint 12 or satisfy the preview gate. Native/container
+private-fact parity and a separate public-policy review still precede any public
+role, PIE/DSO, IBT, or SHSTK field. Separately, comparison qualification still
+requires positive role-controlled coordinate anchors and complete runtime
+closure for all five task paths.
+
+## Patch 070 release-gate note
+
+The whole-batch transaction pilot and controlled readelf reconciliation are
+development evidence. They do not satisfy the Sprint 15 campaign freeze or the
+Sprint 16 preview gate. Any later throughput result must retain the batch as its
+measurement unit and preserve the diagnostic/confirmatory separation.

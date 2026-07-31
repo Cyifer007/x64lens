@@ -1,5 +1,15 @@
 # Sprint 12 Patch 069 Validation
 
+## Status
+
+Current Sprint 12 corpus-integrity and authenticated external-reconciliation
+implementation candidate. Patch 069 remains pending independent acceptance
+validation. The matrix and `readelf` reconciliation remain diagnostic,
+unfrozen, and publication-ineligible; native/container private-fact parity and
+public-policy review remain separate later gates. Results below are candidate
+contracts or controlled diagnostic observations, not accepted publication
+outcomes.
+
 ## Purpose
 
 Patch 069 corrects the remaining Patch 068 corpus-custody and private-fact
@@ -10,6 +20,14 @@ output.
 The patch changes development evidence and validation infrastructure only. It
 adds no runtime analyzer module, public field, schema change, candidate family,
 score, decoder, worker, or dependency.
+
+## Source precondition
+
+Patch 069 is defined against exact committed Patch 068 source:
+
+```text
+a28731a74367cb14d464ccf5160257bda75c9689
+```
 
 ## Exact focused commands
 
@@ -36,9 +54,11 @@ sprint12-role-property-readelf-smoke: ok objects=96 commands=384 fields=1728 eli
 ```
 
 Host-specific `readelf` version and executable hashes are retained in the
-result. The exact eligible total is a contract of the Patch 069 authority and
-must not be recomputed by discarding ambiguous, unavailable, or inapplicable
-cells.
+result. For this authenticated matrix, the observed field dispositions produce
+1,224 eligible matches. The authority requires all 1,728 dispositions to be
+retained and zero unexplained eligible mismatches; the 96 ambiguous, 288
+unavailable, and 120 `not_eligible` cells remain outside the eligible denominator
+and must not be discarded or relabeled.
 
 ## Corpus transaction acceptance
 
@@ -78,20 +98,34 @@ Natural and metamorphic strata remain separate. The 24 edge objects must remain
 
 ## readelf reconciliation acceptance
 
-The comparison authority classifies every private field as one of:
+The comparison authority assigns every private field one stable authority
+class:
 
 ```text
 direct
 derived
 ambiguous
 unavailable
-not eligible for this object
 ```
 
-Only direct and reproducibly derived eligible fields participate in the
-zero-unexplained-mismatch gate. Raw `readelf` output and every field disposition
-are retained. `readelf` does not become runtime authority, and comparator
-silence does not become a negative x64lens fact.
+For each object/field cell, the retained crosswalk then records a separate
+disposition:
+
+```text
+match
+mismatch
+ambiguous
+unavailable
+not_eligible
+```
+
+The last value covers fields that are inapplicable for that object because the
+represented private fact was not reached or the comparator representation was
+not usable. Only `match` or `mismatch` dispositions backed by direct or
+reproducibly derived authority participate in the zero-unexplained-mismatch
+gate. Raw `readelf` output and every field disposition are retained. `readelf`
+does not become runtime authority, and comparator silence does not become a
+negative x64lens fact.
 
 ## Full native validation
 
@@ -143,6 +177,6 @@ Native Ubuntu Docker and Docker Desktop remain separate evidence strata.
 
 Native/container private-fact parity, broader outcome-blind external-natural
 acquisition, the public-policy decision, positive coordinate anchors,
-whole-batch timing, and process-tree RSS remain separate gates. Patch 069 is
-diagnostic evidence and cannot support release-facing role, CET, speed, RSS, or
-coverage claims.
+whole-batch timing, and process-tree RSS remain separate gates. The matrix and
+reconciliation results are diagnostic evidence and cannot support release-facing
+role, CET, speed, RSS, or coverage claims.

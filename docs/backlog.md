@@ -154,7 +154,7 @@ later sprints rather than Patch 037:
   implementation and intervening corrections are carried by Patch 069.
 - [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
   public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by Patch 068.
+  is carried by Patch 069.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
   Corrected and carried by Patch 069.
@@ -162,10 +162,11 @@ later sprints rather than Patch 037:
   the later private-fact diagnostic matrix. Implemented in Patch 067; it attests
   probe record interpretation rather than analyzer behavior.
 - [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [x] Patch 068 defined corrections for the remaining Patch 067
-  corpus mutation and rollback boundaries, rebuilds the private-layout authority
-  after its structure definition changes, and extends leakage checks across all
-  four file-analysis commands. Candidate validation remains pending.
+- [x] Patch 068 defined corrections for the remaining Patch 067 corpus mutation
+  and rollback boundaries, rebuilt the private-layout authority after its
+  structure definition changed, and extended leakage checks across all four
+  file-analysis commands. Patch 069 carries and corrects those boundaries;
+  current candidate validation remains pending.
 - [x] Patch 068 introduced a private-fact diagnostic agreement gate
   for 48 held-out natural objects and 48 controlled metamorphic objects, with
   exact independent vectors and three deterministic probe runs per object. Gate
@@ -644,3 +645,12 @@ Exact-only semantic-role decisions follow in Sprint 13. Candidate-scoped
 decoding and concurrency remain deferred Sprint 14 ablations because the
 diagnostic evidence does not justify making either profile mandatory. Patch 061
 closes Sprint 11 and activates Sprint 12.
+
+### Sprint 12 Patch 070 evidence gate
+
+- [x] Correct Patch 069 corpus mutation, caller-visible root, early-signal, and rollback boundaries.
+- [x] Make sealed result cleanup inode-bound and make Patch 068 prerequisites explicit.
+- [x] Freeze the controlled readelf eligibility classes and 1,224/96/288/120 denominator.
+- [x] Add one positive property-carrier overlap discriminator.
+- [x] Validate the 27-case whole-batch transaction pilot without a latency claim.
+- [ ] Run broader outcome-blind natural acquisition and private-fact native/container parity before public policy.

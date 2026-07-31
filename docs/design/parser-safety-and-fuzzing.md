@@ -306,7 +306,7 @@ replacement at the caller-visible pathname is not modified.
 
 ## Sprint 12 Patch 065 GNU-property parser safety
 
-The current Patch 068 candidate consumes GNU property evidence only from checked
+The current Patch 069 candidate consumes GNU property evidence only from checked
 file-backed `PT_NOTE` and `PT_GNU_PROPERTY` carriers. The parser bounds carrier
 bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
@@ -333,10 +333,12 @@ post-preflight byte mutation before any chmod.
 
 ## Sprint 12 Patch 068 corpus-repair custody
 
-At its final mutation boundary, the Patch 068 candidate contract requires exact
+At its source boundary, the Patch 068 contract requires exact
 retained-tree membership and the complete caller-visible ancestor/name binding
 to be reauthenticated. It requires a failure after mutation begins to restore
 original modes through retained descriptors with bounded retries, verify every
 restoration, and surface rollback failure. This mode-only custody gate does not
 claim to restore bytes, names, ownership, or timestamps and does not broaden
-parser, analyzer, or public-output claims.
+parser, analyzer, or public-output claims. The current Patch 069 candidate
+corrects the remaining descriptor-authoritative semantic-verification,
+signal-rollback, and directory-identity evidence around that contract.

@@ -31,6 +31,41 @@ FACT_FIELDS = (
     "property_unknown_count", "property_conflict_count",
     "property_overlap_count", "ibt_state", "shstk_state",
 )
+
+EXPECTED_FIELD_ELIGIBILITY = {
+    "status": {"class": "unavailable", "reason": "readelf exit status is not the x64lens parser contract"},
+    "phnum": {"class": "direct", "source": "readelf -hW"},
+    "role_state": {"class": "derived", "source": "readelf -hW/-lW/-dW"},
+    "role_evidence": {"class": "derived", "source": "readelf -hW/-lW/-dW"},
+    "interp_count": {"class": "direct", "source": "readelf -lW"},
+    "flags1_count": {"class": "direct", "source": "readelf -dW"},
+    "soname_count": {"class": "direct", "source": "readelf -dW"},
+    "property_view_count": {"class": "derived", "source": "readelf -nW canonical displayed note views"},
+    "property_contributor_count": {"class": "unavailable", "reason": "readelf does not retain original PHDR contributor multiplicity"},
+    "property_note_count": {"class": "direct", "source": "readelf -nW"},
+    "property_feature_count": {"class": "direct", "source": "readelf -nW"},
+    "property_feature_and": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "property_feature_or": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "property_unknown_count": {"class": "ambiguous", "reason": "readelf textual unknown-property and unknown-bit categories are not isomorphic to the private count"},
+    "property_conflict_count": {"class": "derived", "source": "readelf -nW represented feature intersection/union"},
+    "property_overlap_count": {"class": "unavailable", "reason": "readelf output does not expose x64lens carrier-overlap accounting"},
+    "ibt_state": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+    "shstk_state": {"class": "derived", "source": "readelf -nW represented x86 feature records"},
+}
+EXPECTED_ACCEPTANCE = {
+    "accounted_objects": 96,
+    "readelf_processes": 384,
+    "field_record_count": 1728,
+    "eligible_match_count": 1224,
+    "eligible_unexplained_mismatches": 0,
+    "ambiguous_count": 96,
+    "unavailable_count": 288,
+    "not_eligible_count": 120,
+    "all_readelf_exit_codes_zero": True,
+    "raw_outputs_retained": True,
+    "all_field_dispositions_retained": True,
+    "public_policy_decision_authorized": False,
+}
 ROLE_UNKNOWN = 0
 ROLE_EXECUTABLE = 1
 ROLE_SHARED = 2
@@ -109,20 +144,10 @@ def load_authority(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     require(value.get("readelf_commands") == ["-hW", "-lW", "-dW", "-nW"],
             "readelf command authority changed")
     eligibility = value.get("field_eligibility")
-    require(isinstance(eligibility, dict) and tuple(eligibility) == FACT_FIELDS,
-            "readelf field eligibility is incomplete or reordered")
-    require(all(isinstance(eligibility[field], dict)
-                and eligibility[field].get("class") in {"direct", "derived", "ambiguous", "unavailable"}
-                for field in FACT_FIELDS), "readelf field eligibility class is invalid")
+    require(eligibility == EXPECTED_FIELD_ELIGIBILITY,
+            "readelf field eligibility is incomplete, reordered, or reclassified")
     acceptance = value.get("acceptance")
-    require(isinstance(acceptance, dict)
-            and acceptance.get("accounted_objects") == 96
-            and acceptance.get("readelf_processes") == 384
-            and acceptance.get("eligible_unexplained_mismatches") == 0
-            and acceptance.get("raw_outputs_retained") is True
-            and acceptance.get("all_field_dispositions_retained") is True
-            and acceptance.get("public_policy_decision_authorized") is False,
-            "readelf acceptance authority changed")
+    require(acceptance == EXPECTED_ACCEPTANCE, "readelf acceptance authority changed")
     return value, ident
 
 
@@ -434,6 +459,10 @@ def main() -> int:
         require(target.is_file() and not target.is_symlink(), f"held-out object is missing: {name}")
         command_records = {option: run_readelf(args.readelf, target, option)
                            for option in authority["readelf_commands"]}
+        for option, record in command_records.items():
+            require(record["exit_code"] == 0,
+                    f"readelf {option} failed for {name}: exit={record['exit_code']} "
+                    f"stderr={record['stderr'][:300]!r}")
         raw[name] = command_records
         facts, eligible_fields, _metadata = parse_readelf(command_records)
         object_status = int(heldout["observed_status"])
@@ -461,6 +490,14 @@ def main() -> int:
             "readelf process accounting changed")
     require(len(crosswalk) == 96 * len(FACT_FIELDS), "readelf field accounting changed")
     require(mismatches == 0, f"eligible readelf facts contain {mismatches} unexplained mismatches")
+    require(matches == EXPECTED_ACCEPTANCE["eligible_match_count"],
+            f"eligible match denominator changed: {matches}")
+    require(disposition_counts.get("ambiguous", 0) == EXPECTED_ACCEPTANCE["ambiguous_count"],
+            "ambiguous disposition denominator changed")
+    require(disposition_counts.get("unavailable", 0) == EXPECTED_ACCEPTANCE["unavailable_count"],
+            "unavailable disposition denominator changed")
+    require(disposition_counts.get("not_eligible", 0) == EXPECTED_ACCEPTANCE["not_eligible_count"],
+            "not-eligible disposition denominator changed")
     manifest = {
         "format": "x64lens-sprint12-role-property-readelf-v1",
         "authority_id": authority["authority_id"],

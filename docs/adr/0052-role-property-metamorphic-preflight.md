@@ -2,9 +2,10 @@
 
 ## Status
 
-Accepted architecture introduced by Sprint 12 Patch 066 and carried by the
-current Patch 068 candidate after Patch 067 layout attestation. Product and
-delivery acceptance remain governed by separate validation.
+Accepted architecture introduced by Sprint 12 Patch 066, extended by Patch 067
+layout attestation and the Patch 068 diagnostic matrix, and carried by the
+current Patch 069 candidate. Product and delivery acceptance remain governed by
+separate validation.
 
 ## Context
 
@@ -97,9 +98,11 @@ Patch 066 does not:
 Patch 067 adds C/NASM layout attestation. Patch 068 corrects its remaining
 custody boundary and defines a separate 96-object diagnostic agreement matrix:
 48 held-out natural toolchain-produced objects plus 48 controlled metamorphic
-objects. Bounded external ELF reconciliation (`readelf -h -l -d -n`) and
-native/container private-fact parity remain subsequent work. Whole-batch timing
-and process-tree RSS also remain separate measurement gates.
+objects. At the Patch 068 boundary, bounded external ELF reconciliation
+(`readelf -hW/-lW/-dW/-nW`) remained subsequent work. The current Patch 069
+candidate adds that authenticated reconciliation; native/container private-fact
+parity remains a separate later gate. Whole-batch timing and process-tree RSS
+also remain separate measurement gates.
 
 ## Consequences
 
@@ -109,5 +112,6 @@ and process-tree RSS also remain separate measurement gates.
 - Original carrier provenance remains visible without accepting ambiguous
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
-- Public indicators remain blocked until the diagnostic agreement, external
-  reconciliation, and parity gates justify a separate compatible-output decision.
+- Public indicators remain blocked while the current diagnostic agreement and
+  external-reconciliation candidate awaits acceptance, and until the later
+  parity gate and public-policy review justify a compatible-output decision.

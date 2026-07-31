@@ -804,3 +804,12 @@ repeated same-slope bytes, repeated exact identities, and candidate-capacity
 consequences. Patch 064 defers normalization because neither activation
 threshold was met. The result supports no timing, RSS, or population-wide
 claim, and it is not merged into the Sprint 15-frozen confirmatory campaign.
+
+## Patch 070 whole-batch transaction prerequisite
+
+Before batching is used for below-floor throughput, the development harness must
+pass the 27-case transaction pilot for empty, successful, failed, limited, timed
+out, and interrupted batches. A batch is the measurement unit. Batch elapsed
+time must not be divided into a claimed single-invocation latency. Failed and
+interrupted batches publish no result, and every member must be successful,
+failed, or explicitly not started.

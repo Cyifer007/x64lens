@@ -42,6 +42,23 @@ def load(name: str, relative: str) -> Any:
     return module
 
 
+
+def remove_owned_tree(path: Path) -> None:
+    if not path.exists():
+        return
+    helper = ROOT / "tools/remove-owned-tree.py"
+    identified = subprocess.run(
+        [sys.executable, str(helper), "--identify", str(path)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=10.0,
+    )
+    require(identified.returncode == 0, f"cannot identify owned result: {identified.stderr!r}")
+    removed = subprocess.run(
+        [sys.executable, str(helper), "--remove", str(path), "--identity", identified.stdout.decode().strip()],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=20.0,
+    )
+    require(removed.returncode == 0 and not path.exists(),
+            f"cannot remove owned result: {removed.stderr!r}")
+
 def copy_corpus(parent: Path) -> Path:
     require(CORPUS.is_dir(), f"authenticated corpus is missing: {CORPUS}")
     destination = parent / CORPUS.name
@@ -261,6 +278,7 @@ def heldout_authority_probe(parent: Path) -> None:
                              cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              check=False, timeout=20.0)
     require(missing.returncode != 0, "held-out gate accepted an absent provisional corpus")
+    remove_owned_tree(result)
 
 
 def make_dependency_probe() -> None:

@@ -73,9 +73,11 @@ Sprint 12 begins with this order:
 2. overlapping executable-region and provenance semantics;
 3. PIE executable versus shared-object identity;
 4. bounded GNU-property IBT and SHSTK evidence;
-5. a corrected held-out diagnostic rerun with positive coordinate anchors and
-   five complete task-path closures;
-6. measurement refinements such as below-floor batching, RSS calibration,
+5. a separately identified private-fact diagnostic matrix with natural and
+   controlled metamorphic strata;
+6. a separate comparison-qualification campaign with positive coordinate
+   anchors and five complete task-path closures;
+7. measurement refinements such as below-floor batching, RSS calibration,
    phase attribution, and bounded reporter buffering.
 
 Candidate-scoped decoding and concurrency remain optional Sprint 14 profiles.

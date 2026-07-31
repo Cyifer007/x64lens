@@ -180,13 +180,13 @@ validates every `DT_SONAME` carrier.
 
 Duplicate or conflicting role carriers are contradictory rather than
 first-wins or last-wins. Dynamic role tags use the existing bounded `PT_DYNAMIC`
-view. No new public mitigation field is emitted; the Patch 068 candidate
+view. No new public mitigation field is emitted; the current Patch 069 candidate
 carries the corrected role facts and separate GNU-property parser gate.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
 Patch 065 added bounded internal acquisition of x86 IBT and SHSTK GNU-property
-facts; the Patch 068 candidate preserves the corrected alignment and overlap
+facts; the current Patch 069 candidate preserves the corrected alignment and overlap
 boundaries without publishing a new mitigation field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
@@ -238,11 +238,14 @@ owns any compatible public `0.2.x` decision.
 
 Patch 069 retains private binary-role and GNU-property facts and compares only
 eligible represented fields against authenticated GNU `readelf -hW`, `-lW`,
-`-dW`, and `-nW` output. Direct and reproducibly derived cells may be compared;
-ambiguous, unavailable, corrupt, malformed, and inapplicable cells remain
-explicit. The controlled diagnostic matrix records 1,224 eligible matches and
-zero unexplained eligible mismatches without converting `readelf` into parser or
-runtime authority.
+`-dW`, and `-nW` output. Each field has a direct, reproducibly derived,
+ambiguous, or unavailable authority class; each object/field cell separately
+records `match`, `mismatch`, `ambiguous`, `unavailable`, or `not_eligible`.
+Only eligible `match` and `mismatch` dispositions enter the denominator, while
+ambiguous and unavailable cells and `not_eligible` cells—inapplicable for the
+object/field combination—remain explicit. The controlled diagnostic matrix
+records 1,224 eligible matches and zero unexplained eligible mismatches without
+converting `readelf` into parser or runtime authority.
 
 No public PIE/DSO, IBT, or SHSTK field is added. Static properties remain
 mitigation indicators and do not prove runtime CET enablement, complete control-

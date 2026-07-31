@@ -2810,14 +2810,13 @@ def verify_retained_corpus_snapshot(
 def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
     """Repair authenticated mode-only drift as one descriptor-bound transaction.
 
-    The caller-visible absolute path, exact member set, inode identity, ownership,
-    timestamps, link counts, bytes, and semantic manifests are authenticated before
-    any mode-changing syscall.  An idempotent descriptor operation creates a final
-    mutation barrier, after which the complete path and tree are reauthenticated.
-    Any late failure restores every original mode and verifies that restoration.
-    SIGINT and SIGTERM use the same controlled interruption path as corpus builds,
-    so a signal after the first real chmod is an ordinary rollback-triggering
-    transaction failure rather than an asynchronous partial repair.
+    The caller-visible root binding, immediate-parent metadata, exact member set,
+    inode identity, ownership, timestamps, ctime continuity, link counts, bytes,
+    and semantic manifests are authenticated before any mode-changing syscall.
+    Every intentional chmod advances the retained ctime/mode authority for that
+    exact descriptor. Any other metadata or byte mutation fails closed. A late
+    failure restores every original mode and verifies the restoration before a
+    deferred SIGINT or SIGTERM is allowed to escape.
     """
 
     global _INTERRUPTED_BY
@@ -2828,12 +2827,15 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
 
     absolute = pathlib.Path(os.path.abspath(root))
     expected_root_name = absolute.name
-    parent_fd, root_fd, expected_root_name = open_named_directory_nofollow(
-        absolute, "corpus mode-repair root"
-    )
+    parent_fd: int | None = None
+    root_fd: int | None = None
     opened: list[tuple[int, pathlib.PurePosixPath, bool, int, os.stat_result]] = []
     mutation_started = False
     try:
+        parent_fd, root_fd, expected_root_name = open_named_directory_nofollow(
+            absolute, "corpus mode-repair root"
+        )
+        parent_metadata = os.fstat(parent_fd)
         bound_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
         root_metadata = os.fstat(root_fd)
         expected_owner = (root_metadata.st_uid, root_metadata.st_gid)
@@ -2889,36 +2891,64 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
             "retained corpus file membership disagrees with SHA256SUMS.txt",
         )
 
-        verify_retained_corpus_snapshot(opened, expected_root_name, allow_mode_drift=True)
+        expected_root_mode = stat.S_IMODE(root_metadata.st_mode)
+        expected_root_ctime = root_metadata.st_ctime_ns
+        expected_modes = {fd: stat.S_IMODE(initial.st_mode) for fd, *_rest, initial in opened}
+        expected_ctimes = {fd: initial.st_ctime_ns for fd, *_rest, initial in opened}
 
-        root_after = os.fstat(root_fd)
-        require(
-            (
-                root_after.st_dev,
-                root_after.st_ino,
-                root_after.st_uid,
-                root_after.st_gid,
-                root_after.st_mtime_ns,
-                root_after.st_size,
+        def require_parent_unchanged(label: str) -> None:
+            current = os.fstat(parent_fd)
+            require(
+                (
+                    current.st_dev,
+                    current.st_ino,
+                    current.st_uid,
+                    current.st_gid,
+                    stat.S_IMODE(current.st_mode),
+                    current.st_size,
+                    current.st_mtime_ns,
+                    current.st_ctime_ns,
+                )
+                == (
+                    parent_metadata.st_dev,
+                    parent_metadata.st_ino,
+                    parent_metadata.st_uid,
+                    parent_metadata.st_gid,
+                    stat.S_IMODE(parent_metadata.st_mode),
+                    parent_metadata.st_size,
+                    parent_metadata.st_mtime_ns,
+                    parent_metadata.st_ctime_ns,
+                ),
+                f"{label} parent directory changed",
             )
-            == (
-                root_metadata.st_dev,
-                root_metadata.st_ino,
-                root_metadata.st_uid,
-                root_metadata.st_gid,
-                root_metadata.st_mtime_ns,
-                root_metadata.st_size,
-            ),
-            "corpus root changed before mode repair",
-        )
 
         def reauthenticate_transaction(label: str) -> None:
+            require_parent_unchanged(label)
             reauthenticate_absolute_directory(absolute, root_metadata, label)
-            reauthenticate_named_directory(
-                parent_fd,
-                expected_root_name,
-                root_metadata,
-                label,
+            reauthenticate_named_directory(parent_fd, expected_root_name, root_metadata, label)
+            current_root = os.fstat(root_fd)
+            require(
+                (
+                    current_root.st_dev,
+                    current_root.st_ino,
+                    current_root.st_uid,
+                    current_root.st_gid,
+                    current_root.st_size,
+                    current_root.st_mtime_ns,
+                    current_root.st_ctime_ns,
+                    stat.S_IMODE(current_root.st_mode),
+                )
+                == (
+                    root_metadata.st_dev,
+                    root_metadata.st_ino,
+                    root_metadata.st_uid,
+                    root_metadata.st_gid,
+                    root_metadata.st_size,
+                    root_metadata.st_mtime_ns,
+                    expected_root_ctime,
+                    expected_root_mode,
+                ),
+                f"{label} corpus root metadata changed",
             )
             reauthenticate_bound_tree(root_fd, opened, f"{label} tree")
 
@@ -2933,17 +2963,11 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                     (current.st_uid, current.st_gid) == expected_owner,
                     f"corpus member ownership changed: {relative}",
                 )
-                require(
-                    current.st_mtime_ns == 0,
-                    f"corpus member mtime changed: {relative}",
-                )
-                require(
-                    current.st_size == initial.st_size,
-                    f"corpus member size metadata changed: {relative}",
-                )
-                fresh_fd = open_relative_member_nofollow(
-                    root_fd, relative, directory=is_directory
-                )
+                require(current.st_mtime_ns == 0, f"corpus member mtime changed: {relative}")
+                require(current.st_size == initial.st_size, f"corpus member size metadata changed: {relative}")
+                require(current.st_ctime_ns == expected_ctimes[fd], f"corpus member ctime changed: {relative}")
+                require(stat.S_IMODE(current.st_mode) == expected_modes[fd], f"corpus member mode changed unexpectedly: {relative}")
+                fresh_fd = open_relative_member_nofollow(root_fd, relative, directory=is_directory)
                 try:
                     fresh = os.fstat(fresh_fd)
                     require(
@@ -2955,10 +2979,7 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                     os.close(fresh_fd)
                 if is_directory:
                     continue
-                require(
-                    current.st_nlink == 1,
-                    f"corpus contains a multiply linked file: {relative}",
-                )
+                require(current.st_nlink == 1, f"corpus contains a multiply linked file: {relative}")
                 if relative == pathlib.PurePosixPath("SHA256SUMS.txt"):
                     require(
                         read_fd_bytes(fd, 16 * 1024 * 1024) == checksum_bytes,
@@ -2966,29 +2987,36 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                     )
                 else:
                     expected_digest = checksum_records.get(relative.as_posix())
-                    require(
-                        expected_digest is not None,
-                        f"checksum authority omitted corpus member: {relative}",
-                    )
+                    require(expected_digest is not None, f"checksum authority omitted corpus member: {relative}")
                     require(
                         sha256_fd(fd) == expected_digest,
                         f"corpus file bytes changed after authenticated preflight: {relative}",
                     )
 
-        reauthenticate_transaction("corpus mode-repair mutation boundary")
+        # Semantics are evaluated from the retained descriptor set. Ctime then
+        # proves that no in-place write was transiently substituted and restored
+        # while that retained view was being consumed.
+        verify_retained_corpus_snapshot(opened, expected_root_name, allow_mode_drift=True)
+        reauthenticate_transaction("corpus mode-repair semantic boundary")
 
-        # The first fchmod is intentionally idempotent.  It creates a precise
-        # injection boundary for maintained adversarial tests without altering an
-        # authenticated mode.  The complete path/tree is then proven again before
-        # the first mode-changing syscall.
-        os.fchmod(root_fd, stat.S_IMODE(root_metadata.st_mode))
+        # An idempotent chmod creates the maintained injection boundary. Capture
+        # its exact ctime consequence before proving the whole transaction again.
+        os.fchmod(root_fd, expected_root_mode)
+        root_after_barrier = os.fstat(root_fd)
+        expected_root_ctime = root_after_barrier.st_ctime_ns
         reauthenticate_transaction("corpus mode-repair final mutation boundary")
 
         try:
             mutation_started = True
             os.fchmod(root_fd, DIRECTORY_MODE)
+            root_after_mutation = os.fstat(root_fd)
+            expected_root_mode = DIRECTORY_MODE
+            expected_root_ctime = root_after_mutation.st_ctime_ns
             for fd, _relative, _directory, mode, _initial in opened:
                 os.fchmod(fd, mode)
+                current = os.fstat(fd)
+                expected_modes[fd] = mode
+                expected_ctimes[fd] = current.st_ctime_ns
 
             reauthenticate_transaction("corpus mode-repair success boundary")
             verified = verify_retained_corpus_snapshot(opened, expected_root_name)
@@ -3002,19 +3030,11 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
                 try:
                     for fd, relative, _directory, _mode, initial in reversed(opened):
                         try:
-                            restore_mode_or_raise(
-                                fd,
-                                stat.S_IMODE(initial.st_mode),
-                                f"corpus member {relative}",
-                            )
+                            restore_mode_or_raise(fd, stat.S_IMODE(initial.st_mode), f"corpus member {relative}")
                         except CorpusError as exc:
                             rollback_errors.append(str(exc))
                     try:
-                        restore_mode_or_raise(
-                            root_fd,
-                            stat.S_IMODE(root_metadata.st_mode),
-                            "corpus root",
-                        )
+                        restore_mode_or_raise(root_fd, stat.S_IMODE(root_metadata.st_mode), "corpus root")
                     except CorpusError as exc:
                         rollback_errors.append(str(exc))
 
@@ -3043,12 +3063,13 @@ def repair_corpus_modes(root: pathlib.Path) -> dict[str, Any]:
     finally:
         for fd, _relative, _directory, _mode, _initial in reversed(opened):
             os.close(fd)
-        os.close(root_fd)
-        os.close(parent_fd)
+        if root_fd is not None:
+            os.close(root_fd)
+        if parent_fd is not None:
+            os.close(parent_fd)
         for signum, handler in previous_handlers.items():
             signal.signal(signum, handler)
         _INTERRUPTED_BY = previous_interrupted
-
 
 def clean_corpus(spec_path: pathlib.Path, output_root: pathlib.Path, repo_root: pathlib.Path) -> pathlib.Path:
     spec, _raw, _paths = parse_spec(spec_path, repo_root)

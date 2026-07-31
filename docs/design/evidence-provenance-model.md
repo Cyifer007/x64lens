@@ -382,9 +382,13 @@ Patch 069 binds each private role/property fact vector to its object, authority,
 analyzer, schema, fact probe, authenticated provisional corpus, and raw public
 command outputs. A separate comparator artifact binds the same object to exact
 GNU `readelf -hW/-lW/-dW/-nW` commands, executable identity, raw outputs, and a
-field-specific eligibility classification.
+field-specific authority class: direct, reproducibly derived, ambiguous, or
+unavailable. A separate per-object disposition records `match`, `mismatch`,
+`ambiguous`, `unavailable`, or `not_eligible`.
 
-Direct and reproducibly derived matches are not merged with ambiguous,
-unavailable, corrupt, malformed, or inapplicable states. These metadata facts do
-not create a candidate provenance tier, a public mitigation field, or runtime-
-CET evidence.
+Only `match` or `mismatch` dispositions supported by direct or reproducibly
+derived authority enter the eligible denominator. They are not merged with
+ambiguous or unavailable cells, or with `not_eligible` cells that are
+inapplicable for the object/field combination. These metadata facts do not
+create a candidate provenance tier, a public mitigation field, or runtime-CET
+evidence.

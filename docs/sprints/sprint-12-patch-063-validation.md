@@ -13,8 +13,10 @@ historical boundary, and the
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) for the last
 intermediate boundary and the
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) for the final
+intervening candidate boundary and the
+[Patch 068 validation plan](sprint-12-patch-068-validation.md) for the final
 historical candidate boundary. Use the
-[Patch 068 validation plan](sprint-12-patch-068-validation.md) for current
+[Patch 069 validation plan](sprint-12-patch-069-validation.md) for current
 candidate expectations.
 
 ## Purpose

@@ -3,8 +3,10 @@
 ## Status
 
 Historical architecture record for the Sprint 12 Patch 067 implementation
-candidate. Patch 068 is current; product and delivery acceptance remain governed
-by separate validation.
+candidate. Patch 068 introduced the intermediate corrective contract and
+diagnostic matrix; the current Patch 069 candidate carries and corrects that
+boundary. Product and delivery acceptance remain governed by separate
+validation.
 
 ## Context
 
@@ -30,8 +32,10 @@ NASM-owned record layout.
 Patch 067 introduced descriptor-bound custody and a controlled final-verifier
 restoration case. Subsequent validation identified remaining first-mutation
 membership, ancestor-chain binding, rollback-activation, and rollback-error
-gaps. Patch 068 owns the complete pre-mutation activation, bounded retry,
-verification, and surfaced-failure contract.
+gaps. Patch 068 defined the complete pre-mutation activation, bounded retry,
+verification, and surfaced-failure contract; Patch 069 corrects the remaining
+semantic-custody, signal-rollback, and directory-identity defects in that
+implementation.
 
 Corpus mode repair now retains:
 
@@ -44,12 +48,13 @@ original modes retained for descriptor-bound rollback
 ```
 
 Patch 067 established the retained descriptor set and a late-verifier
-restoration case. The Patch 068 candidate contract requires exact membership,
+restoration case. The Patch 068 contract requires exact membership,
 object type, device/inode identity, owner, timestamps, link count, bytes, and the
 parent/name binding to be revalidated at the final mutation boundary. It also
 requires a failure after mutation begins to restore original modes through
 retained descriptors with bounded retries, verify each restoration, surface any
-rollback failure, and leave a foreign replacement untouched.
+rollback failure, and leave a foreign replacement untouched. Patch 069 carries
+that contract and adds the corrective transaction evidence.
 
 The private fact-probe boundary now uses an assembly-emitted descriptor:
 
@@ -88,13 +93,15 @@ linked into the freestanding analyzer.
 
 ## Consequences
 
-- Corpus repair remains mode-only and fail-closed. Patch 068 defines the
+- Corpus repair remains mode-only and fail-closed. Patch 068 defined the
   descriptor-bound original-mode restoration contract with bounded retry and
-  verification.
+  verification; Patch 069 corrects and retains that contract.
 - The maintained public-JSON private-key and ABI mutation oracles discriminate
   their targeted controlled cases.
 - C/NASM reconciliation attests only the development probe's record-layout
   interpretation. It does not establish parser or classifier correctness,
   analyzer behavior, runtime CET enforcement, or publication evidence.
-- Patch 068 defines the subsequent diagnostic agreement gate with a new
+- Patch 068 introduced the subsequent diagnostic agreement gate with a new
   identity: 48 held-out natural objects and 48 controlled metamorphic objects.
+  Patch 069 authenticates and corrects that matrix, then adds external
+  reconciliation.

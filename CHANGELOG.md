@@ -8,9 +8,29 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 069 corrects the remaining Patch 068 corpus-repair and private-fact matrix custody defects, including descriptor-authoritative semantic verification, signal-safe mode rollback, directory identity/size continuity, mandatory analyzer/schema/corpus authority consumption, complete 18-field expected/observed vectors, and 24 distinct parser-visible edge layouts.
-- An authenticated development-only GNU `readelf -hW/-lW/-dW/-nW` reconciliation over the 96-object matrix. The retained result accounts for 1,728 field dispositions: 1,224 eligible matches, zero unexplained eligible mismatches, 96 ambiguous cells, 288 unavailable cells, and 120 inapplicable cells. Public output and schema `0.2.0` remain unchanged.
-- ADR 0055, `make patch068-corrective-regression-smoke`, `make sprint12-role-property-readelf-smoke`, and the Patch 069 validation record.
+- Sprint 12 Patch 070 evidence-integrity corrections: descriptor- and
+  metadata-continuous corpus mode repair, inode-bound sealed-result cleanup,
+  exact held-out/readelf authorities, comparator exit enforcement, positive
+  property-overlap coverage, recursive public-leak rejection, and exact-base
+  private apply/rollback inode custody.
+- A diagnostic 27-case, three-repetition whole-batch transaction pilot covering
+  success, first/middle/final failures, output limits, timeout, SIGINT, SIGTERM,
+  complete-or-absent publication, child cleanup, descriptor cleanup, and stable
+  normalized outcomes. It makes no timing claim and forbids divided batch
+  latency.
+- ADR 0056, `make patch069-corrective-regression-smoke`,
+  `make sprint12-batch-transaction-smoke`, and the Patch 070 validation record.
+
+- An authenticated development-only GNU `readelf -hW/-lW/-dW/-nW`
+  reconciliation over the controlled 96-object matrix. Its retained result
+  accounts for all 1,728 field dispositions: 1,224 eligible matches, zero
+  unexplained eligible mismatches, 96 ambiguous cells, 288 unavailable cells,
+  and 120 `not_eligible` cells that are inapplicable for those object/field
+  combinations. The matrix and reconciliation remain diagnostic, unfrozen, and
+  publication-ineligible. Public output and schema `0.2.0` remain unchanged.
+- ADR 0055, `make patch068-corrective-regression-smoke`,
+  `make sprint12-role-property-readelf-smoke`, and the Patch 069 validation
+  record.
 
 - Sprint 12 Patch 068 adds a 96-object private role/GNU-property diagnostic
   agreement gate: 48 held-out natural toolchain-produced ELF objects built
@@ -382,6 +402,13 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
+  private-fact matrix custody defects: descriptor-authoritative semantic
+  verification, signal-safe mode rollback, directory identity and size
+  continuity, mandatory analyzer/schema/corpus authority consumption, complete
+  18-field expected/observed vectors, and 24 distinct parser-visible edge
+  layouts.
 
 - Sprint 12 Patch 068 defines the corrective contract for the Patch 067
   candidate: exact corpus membership and caller-visible root identity must be

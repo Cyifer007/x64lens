@@ -2,7 +2,7 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 069 as the current corpus-integrity and authenticated external-reconciliation implementation candidate; the separate Sprint 15 confirmatory corpus and method remain unfrozen.
+> Status: Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the high-resolution diagnostic runner, reproducible 24-target provisional corpus, normalized baseline tasks, authenticated campaign evidence, generated summaries, and engineering gap register. Sprint 12 is active as the loader and mitigation precision sprint, with Patch 070 as the current evidence-integrity and whole-batch transaction-pilot implementation candidate; the separate Sprint 15 confirmatory corpus and method remain unfrozen.
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
 > conditions: 12 x64lens conditions executed and 18 pinned-baseline conditions
@@ -255,11 +255,14 @@ executes all four public command paths, scans stdout and stderr for private
 field leakage, and preserves 24 distinct parser-visible edge layouts.
 
 The external reconciliation retains 384 raw `readelf` command results and 1,728
-field dispositions. In the controlled diagnostic matrix, 1,224 eligible direct
+field dispositions. In this controlled diagnostic matrix, 1,224 eligible direct
 or reproducibly derived comparisons matched with zero unexplained eligible
-mismatches; 96 ambiguous, 288 unavailable, and 120 inapplicable cells remain
-explicitly outside that denominator. `readelf` is a comparator, not runtime
-authority.
+mismatches; 96 ambiguous, 288 unavailable, and 120 retained `not_eligible`
+cells—inapplicable for those object/field combinations—remain explicitly
+outside that denominator. `readelf` is a comparator, not runtime authority.
+The matrix and reconciliation remain diagnostic, unfrozen, publication-
+ineligible, and pending independent acceptance. They do not support an x64lens
+latency, RSS-superiority, generic gadget-count, or normalized-coverage claim.
 
 ```bash
 make patch068-corrective-regression-smoke
@@ -650,16 +653,17 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 068 are later
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 069 are later
 pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
 062 begins Sprint 12 loader-precision work, Patch 063 adds corrective hardening
 plus internal overlap provenance, and Patch 064 records the measured
 normalization deferral plus an internal role-evidence lattice. Patch 065 carries
 the Patch 064 corrections and adds private bounded GNU-property facts;
 Patch 066 adds the controlled metamorphic preflight, Patch 067 adds private
-fact-probe layout attestation, and the current Patch 068 candidate corrects the
-remaining corpus-custody and oracle findings and adds the diagnostic matrix with
-48 held-out natural objects and 48 controlled metamorphic objects, without
+fact-probe layout attestation, and Patch 068 adds the separate diagnostic matrix
+with 48 held-out natural objects and 48 controlled metamorphic objects. The
+current Patch 069 candidate carries the corrected corpus and matrix custody
+boundaries forward and adds field-scoped GNU `readelf` reconciliation without
 moving a release tag.
 
 Planned release sequence:
@@ -672,14 +676,15 @@ v0.1.0       first research release
 
 Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
-Patches 062 through 068 preserve schema `0.2.0`: Patch 062 adds shared PHDR
+Patches 062 through 069 preserve schema `0.2.0`: Patch 062 adds shared PHDR
 validity, Patch 063 adds parser/transaction hardening plus internal
 loader-contributor provenance, and Patch 064 adds only an internal role-evidence
 lattice and a diagnostic overlap decision. Patch 065 adds private GNU-property
 facts without a public schema field; Patch 066 corrects their parser and
 validation boundaries, Patch 067 adds private evidence custody and ABI
-attestation, and Patch 068 corrects the remaining custody boundary and adds a
-private diagnostic agreement gate without adding a public field.
+attestation, and Patch 068 adds the separate private diagnostic agreement gate.
+Patch 069 corrects its remaining custody boundaries and adds external
+reconciliation without adding a public field.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 
@@ -742,3 +747,19 @@ make shellcheck-smoke
 tools; absence should not block core build/test validation. The direct
 comparison helpers accept either `<target> <tool>` or `<tool> <target>` and
 print an explicit target identity line so optional review logs can be audited.
+
+## Sprint 12 evidence-transaction and batching checkpoint
+
+Patch 070 corrects the remaining corpus-repair mutation boundary, sealed-result
+cleanup, held-out/readelf authority, comparator-exit, public-leak, and private
+file-identity defects. The Patch 068 historical regression now declares its
+analyzer, private fact probe, and authenticated provisional corpus prerequisites,
+so a clean validation walk does not fail because artifacts were not built.
+
+The patch also adds a 27-case, three-repetition whole-batch transaction pilot.
+It validates exact failure position, explicit unstarted work, complete-or-absent
+publication, SIGINT/SIGTERM cleanup, output limits, and stable normalized
+outcomes. It does not lower the timer floor, divide batch elapsed time, or claim
+single-run latency. Public schema and analyzer behavior remain unchanged. See
+[ADR 0056](docs/adr/0056-whole-batch-transaction-and-external-evidence-custody.md)
+and the [Patch 070 validation record](docs/sprints/sprint-12-patch-070-validation.md).

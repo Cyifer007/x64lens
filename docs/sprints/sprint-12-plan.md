@@ -4,8 +4,8 @@
 
 Active loader and mitigation precision sprint after Sprint 11 Patch 061
 closeout. Patch 064 did not pass validation, and Patch 065 required a further
-correction. Patch 066 through Patch 068 required correction; Patch 069 is the current
-implementation candidate pending acceptance validation.
+correction. Patch 066 through Patch 068 required correction; Patch 069 is the
+current implementation candidate pending acceptance validation.
 
 Related implementation records:
 
@@ -21,10 +21,10 @@ Related implementation records:
 - [Patch 066 validation](sprint-12-patch-066-validation.md)
 - [ADR 0053](../adr/0053-corpus-custody-and-private-layout-attestation.md)
 - [Patch 067 validation](sprint-12-patch-067-validation.md)
-- [Patch 068 validation](sprint-12-patch-068-validation.md)
 - [ADR 0054](../adr/0054-private-role-property-diagnostic-matrix.md)
-- [Patch 069 validation](sprint-12-patch-069-validation.md)
+- [Patch 068 validation](sprint-12-patch-068-validation.md)
 - [ADR 0055](../adr/0055-authenticated-role-property-readelf-reconciliation.md)
+- [Patch 069 validation](sprint-12-patch-069-validation.md)
 
 ## Sprint goal
 
@@ -44,7 +44,7 @@ that would otherwise corrupt corpus labels or defensive triage.
 7. Add a 96-object private-fact diagnostic agreement gate under a new identity:
    48 held-out natural objects plus 48 controlled metamorphic objects.
 8. Reconcile the private facts against bounded external ELF evidence
-   (`readelf -h -l -d -n`). Patch 069.
+   (`readelf -hW/-lW/-dW/-nW`). Patch 069.
 9. Prove native/container private-fact parity.
 10. Only then review whether compatible public `0.2.x` role or GNU-property
    indicators are justified.
@@ -59,16 +59,18 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [ ] Accept an internal role-evidence lattice that keeps `ET_DYN` alone unknown
   and preserves unknown, executable-like, shared-object-like, ambiguous, and
   contradictory states. The Patch 064 design is carried by the current
-  Patch 068 candidate.
+  Patch 069 candidate.
 - [ ] Accept bounded private GNU property-note evidence for x86 IBT and SHSTK
   without adding public report fields or changing schema `0.2.0`. Corrected in
-  the current Patch 068 candidate.
+  the current Patch 069 candidate.
 - [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
-- [x] The Patch 068 candidate includes a 96-object private-fact diagnostic
-  agreement gate under a distinct identity and keeps the 48 held-out natural
-  objects separate from the 48 controlled metamorphic objects. Gate acceptance
-  remains pending.
-- [x] Reconcile eligible private facts against authenticated GNU `readelf -hW/-lW/-dW/-nW` evidence while retaining ambiguous and unavailable cells. Patch 069.
+- [x] Patch 068 introduced a 96-object private-fact diagnostic agreement gate
+  under a distinct identity. The current Patch 069 candidate authenticates and
+  corrects it while keeping the 48 held-out natural objects separate from the
+  48 controlled metamorphic objects. Gate acceptance remains pending.
+- [x] Reconcile eligible private facts against authenticated GNU
+  `readelf -hW/-lW/-dW/-nW` evidence while retaining ambiguous, unavailable,
+  and `not_eligible` cells. Patch 069.
 - [ ] Prove native/container private-fact parity.
 - [ ] Only then review whether compatible public `0.2.x` role or GNU-property
   indicators are justified.
@@ -87,20 +89,18 @@ that would otherwise corrupt corpus labels or defensive triage.
    controlled metamorphic objects.
 8. **Patch 069:** remaining Patch 068 corpus/matrix custody correction plus authenticated 96-object GNU `readelf` field reconciliation.
 9. **Conditional:** reopen executable-byte-union normalization, deduplication, and public count semantics only when the recorded activation thresholds are crossed.
-10. **After separate validation:** retain an authenticated matrix result and
-   begin bounded external reconciliation.
-11. **Parity:** native/container private-fact parity over the authenticated matrix.
-12. **Later policy gate:** decide whether compatible public `0.2.x` role or GNU-property indicators are justified.
-13. **Closeout:** Sprint 12 reconciliation.
+10. **Parity:** native/container private-fact parity over the authenticated matrix.
+11. **Later policy gate:** decide whether compatible public `0.2.x` role or GNU-property indicators are justified.
+12. **Closeout:** Sprint 12 reconciliation.
 
 ## Acceptance criteria
 
 - [x] Program headers remain executable authority.
 - [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
-- [ ] The Patch 068 candidate's internal PIE-versus-shared-object lattice passes
+- [ ] The Patch 069 candidate's internal PIE-versus-shared-object lattice passes
   controlled unknown, executable-like, shared-object-like, ambiguous,
   contradictory, duplicate, malformed, and unsupported cases.
-- [ ] The Patch 068 candidate's private IBT and SHSTK facts pass controlled
+- [ ] The Patch 069 candidate's private IBT and SHSTK facts pass controlled
   positive, negative, contradictory, truncated, duplicate, overlap, cap, and
   unknown-property cases.
 - [x] Overlap contributors are retained internally without changing current counts. Patch 063.
@@ -141,20 +141,22 @@ the separate natural/metamorphic diagnostic matrix.
 
 ## Patch 068 boundary
 
-The current Patch 068 candidate adds no public role or GNU-property field. Its
-contract corrects the remaining Patch 067 corpus mutation and rollback
-boundaries, rebuilds the private-layout authority from its structure definition,
-extends private-field leakage checks across all four file-analysis commands, and
-adds a matrix for 48 held-out natural objects plus 48 controlled metamorphic
-objects. Validation remains pending. The matrix remains diagnostic, unfrozen,
-and publication-ineligible. Bounded external ELF reconciliation
-(`readelf -h -l -d -n`), native/container private-fact parity, and public-policy
-review remain separate subsequent gates.
+At its source boundary, Patch 068 added no public role or GNU-property field. Its
+contract addressed the remaining Patch 067 corpus mutation and rollback
+boundaries, rebuilt the private-layout authority from its structure definition,
+extended private-field leakage checks across all four file-analysis commands,
+and added a matrix for 48 held-out natural objects plus 48 controlled metamorphic
+objects. Patch 068 required Patch 069 correction. The matrix remains diagnostic,
+unfrozen, and publication-ineligible. At the Patch 068 boundary, bounded
+external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`) was a separate future
+gate; Patch 069 now adds that reconciliation. Native/container private-fact
+parity and public-policy review remain separate later gates.
 
 
 ## Patch 069 boundary
 
-Patch 069 adds no public role or GNU-property field. It corrects the remaining
+The current Patch 069 candidate adds no public role or GNU-property field. It
+corrects the remaining
 Patch 068 corpus semantic-custody, signal rollback, directory-identity, matrix
 authority, private-leakage, retained-vector, edge-layout, and incremental-build
 oracles. It then reconciles the authenticated matrix against exact GNU
@@ -163,3 +165,13 @@ oracles. It then reconciles the authenticated matrix against exact GNU
 The reconciliation remains diagnostic, unfrozen, and publication-ineligible.
 `readelf` remains external evidence rather than runtime authority. Native/
 container private-fact parity and public-policy review remain separate gates.
+
+## Patch 070 boundary
+
+Patch 070 corrects the remaining Patch 069 corpus, comparator, leak-oracle,
+private-package, and Make prerequisite defects. It fixes the controlled field
+disposition denominator at 1,224 matches, 96 ambiguous, 288 unavailable, and
+120 not-eligible cells, and adds one positive fail-closed property-overlap
+anchor. It also adds the 27-case, 81-execution whole-batch transaction pilot.
+The pilot is a prerequisite for later below-floor throughput measurement; it
+does not authorize divided latency or public role/property fields.

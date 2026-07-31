@@ -4,12 +4,15 @@
 
 Historical implementation-candidate validation record. Patch 065 did not pass
 independent validation and required Patch 066. Patch 066 subsequently required
-Patch 067, which required the current Patch 068 corrective candidate. The
+Patch 067, which required Patch 068; Patch 068 in turn required the current
+Patch 069 corrective and external-reconciliation candidate. The
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) preserves that
 intervening boundary, and the
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves the last
-historical candidate boundary. Use the
-[Patch 068 validation plan](sprint-12-patch-068-validation.md) for current
+intervening candidate boundary, and the
+[Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the
+last historical candidate boundary. Use the
+[Patch 069 validation plan](sprint-12-patch-069-validation.md) for current
 candidate expectations.
 
 ## Review outcome
@@ -19,7 +22,8 @@ property alignment, non-identical carrier-overlap rejection, corpus repair
 identity/byte continuity, binary-role harness ABI alignment, copied-read-only
 regression-fixture behavior, and oracle defects. Patch 066 addressed those
 findings but required the further Patch 067 correction.
-Patch 067 in turn required the Patch 068 correction.
+Patch 067 in turn required the Patch 068 correction, which subsequently
+required Patch 069.
 
 ## Purpose
 
@@ -159,6 +163,8 @@ GNU-property facts remain private development evidence. They do not prove that
 CET is enabled at runtime, that every indirect branch is protected, or that a
 binary is safe or exploitable. The Patch 068 natural/metamorphic private-fact
 matrix remains diagnostic, unfrozen, and publication-ineligible. Bounded
-external ELF reconciliation (`readelf -h -l -d -n`) and native/container
-private-fact parity must follow before a separate review decides whether
-compatible public `0.2.x` indicators are justified.
+external ELF reconciliation was future work at the Patch 065 boundary; the
+current Patch 069 candidate adds exact `readelf -hW/-lW/-dW/-nW`
+reconciliation. Native/container private-fact parity must still follow before a
+separate review decides whether compatible public `0.2.x` indicators are
+justified.

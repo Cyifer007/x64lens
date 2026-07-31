@@ -1374,7 +1374,7 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-The Patch 068 candidate preserves the corrected seam so
+The current Patch 069 candidate preserves the corrected seam so
 `binary_role.asm` consumes only those completed summary facts, including copied
 ELF type and entrypoint, and writes one internal state:
 
@@ -1406,7 +1406,7 @@ deterministic.
 
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
-Patch 065 inserted `gnu_property.asm`; the Patch 068 candidate preserves
+Patch 065 inserted `gnu_property.asm`; the current Patch 069 candidate preserves
 its corrected alignment and overlap boundaries while retaining it after bounded
 program-header acquisition and before public reporting. The module canonicalizes
 exact duplicate physical note carriers while retaining each original PHDR
@@ -1474,11 +1474,24 @@ comparison-only path:
 authenticated private fact result
   -> authenticated readelf executable and exact commands
   -> retained header/program/dynamic/note text
-  -> field-scoped direct, derived, ambiguous, unavailable, or inapplicable status
+  -> field authority class: direct, derived, ambiguous, or unavailable
+  -> per-object disposition: match, mismatch, ambiguous, unavailable, or not_eligible
 ```
 
 The comparator cannot write analyzer records, select executable regions,
 classify candidates, assign scores, or format public output. Program headers
 remain x64lens mapping authority. `readelf` output is retained external evidence,
 not an imported parser result. Private field reconciliation remains outside
-candidate provenance, public mitigation output, and schema `0.2.0`.
+candidate provenance, public mitigation output, and schema `0.2.0`. Only
+`match` or `mismatch` dispositions supported by direct or reproducibly derived
+authority enter the eligible denominator; `not_eligible` cells remain visible
+as inapplicable object/field combinations.
+
+## Patch 070 development-evidence boundary
+
+The whole-batch pilot is external development infrastructure. It may execute
+controlled child processes and publish diagnostic transaction artifacts, but it
+does not parse ELF, select executable regions, discover candidates, classify
+semantics, score candidates, or format analyzer reports. `readelf` remains an
+external comparator. The reference analyzer pipeline and public schema are
+unchanged.

@@ -253,6 +253,7 @@ def parse_properties(blob: bytes, records: list[tuple[int, ...]], vector: dict[s
                 break
             if off < prior[2] and prior[1] < end:
                 overlap_count += 1
+                vector["property_overlap_count"] = overlap_count
                 raise HeldoutError("partially overlapping property carriers")
         else:
             canonical.append(carrier)
@@ -362,6 +363,7 @@ def independent_vector(blob: bytes) -> dict[str, int]:
         failed["interp_count"] = role_vector["interp_count"]
         failed["flags1_count"] = role_vector["flags1_count"]
         failed["soname_count"] = role_vector["soname_count"]
+        failed["property_overlap_count"] = vector["property_overlap_count"]
         return failed
     return vector
 
@@ -461,7 +463,16 @@ def metamorphic_objects(root: Path) -> list[tuple[str, bytes, dict[str, Any]]]:
         # eight-byte width is invalid, and the varied data byte remains inside
         # the bounded property record consumed by both parsers.
         bad_width[24 + variant] = 0x40 + variant
-        edge_objects.append(("bad-feature-width", meta.build_object("exec", bytes(bad_width))))
+        bad_width_blob = bytearray(meta.build_object("exec", bytes(bad_width), dual=(variant == 3)))
+        if variant == 3:
+            # Keep this object malformed for its bad feature width while adding
+            # one independently discriminating partial carrier-overlap fact.
+            phnum = struct.unpack_from("<H", bad_width_blob, 56)[0]
+            require(phnum == 3, "partial-overlap edge PHNUM changed")
+            second_property = 64 + 2 * 56
+            original_offset = struct.unpack_from("<Q", bad_width_blob, second_property + 8)[0]
+            struct.pack_into("<Q", bad_width_blob, second_property + 8, original_offset + 4)
+        edge_objects.append(("bad-feature-width", bytes(bad_width_blob)))
 
         bad_padding = bytearray(prop.property_note([IBT], nonzero_padding=True))
         # Four descriptor-relative padding bytes follow the four-byte feature
@@ -517,31 +528,65 @@ def load_authority(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     metamorphic = value["metamorphic_stratum"]
     boundary = value["public_boundary"]
     acceptance = value["acceptance"]
-    require(isinstance(natural, dict) and natural.get("object_count") == 48,
-            "held-out natural stratum changed")
-    require(isinstance(metamorphic, dict) and metamorphic.get("object_count") == 48,
-            "held-out metamorphic stratum changed")
-    require(isinstance(boundary, dict) and boundary.get("schema_version") == "0.2.0"
-            and boundary.get("private_fields_exposed") is False
-            and boundary.get("public_policy_decision_authorized") is False
-            and boundary.get("commands") == [
-                "info", "mitigations", "gadgets --format json", "analyze --format json"
-            ]
-            and boundary.get("stdout_and_stderr_private_leak_scan") is True
-            and boundary.get("formal_schema_authority_consumed") is True,
-            "held-out public boundary changed")
-    require(isinstance(acceptance, dict) and acceptance.get("object_count") == 96
-            and acceptance.get("probe_run_count") == 288
-            and acceptance.get("exact_vector_match_count") == 96
-            and acceptance.get("natural_unique_identity_count") == 48
-            and acceptance.get("provisional_overlap_count") == 0
-            and acceptance.get("strata_close_independently") is True
-            and acceptance.get("public_command_count") == 384
-            and acceptance.get("retained_fact_field_count") == 18
-            and acceptance.get("parser_visible_edge_layout_count") == 24
-            and acceptance.get("provisional_target_count") == 24
-            and acceptance.get("all_authorities_consumed") is True,
-            "held-out acceptance authority changed")
+    expected_natural = {
+        "compiler_count": 2,
+        "compilers": ["gcc", "clang"],
+        "object_count": 48,
+        "property_states": ["none", "IBT", "SHSTK", "IBT+SHSTK"],
+        "requirements": [
+            "48 unique SHA-256 identities",
+            "zero SHA-256 overlap with the authenticated provisional corpus",
+            "exact independently authored fact vectors",
+            "three byte-identical fact-probe repetitions per object",
+            "authenticated 24-target provisional corpus is required and verified before overlap comparison",
+            "all four public command paths execute against every object under the supplied analyzer and schema authorities",
+        ],
+        "role_constructions": ["ET_EXEC", "PIE-like ET_DYN", "shared-object-like ET_DYN"],
+        "source_variants_per_compiler": 2,
+    }
+    expected_metamorphic = {
+        "edge_families": [
+            "unknown feature bit", "conflicting feature properties",
+            "descending property order", "role contradiction",
+            "invalid feature width", "nonzero property padding",
+        ],
+        "edge_objects": 24,
+        "object_count": 48,
+        "positive_pair_objects": 24,
+        "positive_pairs": 12,
+        "requirements": [
+            "logical fact invariants across canonical and exact-alias carrier pairs",
+            "contributor-count deltas remain explicit",
+            "unknown, contradictory, malformed, and unsupported states remain distinct",
+            "three byte-identical fact-probe repetitions per object",
+            "all 24 edge variants differ in bytes consumed through file-backed program-header ranges",
+            "all 18 expected and observed fact fields are retained per object",
+        ],
+    }
+    require(natural == expected_natural, "held-out natural authority is incomplete or changed")
+    require(metamorphic == expected_metamorphic, "held-out metamorphic authority is incomplete or changed")
+    require(isinstance(boundary, dict) and boundary == {
+        "commands": ["info", "mitigations", "gadgets --format json", "analyze --format json"],
+        "formal_schema_authority_consumed": True,
+        "private_fields_exposed": False,
+        "public_policy_decision_authorized": False,
+        "schema_version": "0.2.0",
+        "stdout_and_stderr_private_leak_scan": True,
+    }, "held-out public boundary changed")
+    require(isinstance(acceptance, dict) and acceptance == {
+        "all_authorities_consumed": True,
+        "exact_vector_match_count": 96,
+        "natural_unique_identity_count": 48,
+        "object_count": 96,
+        "parser_visible_edge_layout_count": 24,
+        "probe_run_count": 288,
+        "property_overlap_positive_count": 1,
+        "provisional_overlap_count": 0,
+        "provisional_target_count": 24,
+        "public_command_count": 384,
+        "retained_fact_field_count": 18,
+        "strata_close_independently": True,
+    }, "held-out acceptance authority changed")
     return value, authority_identity
 
 
@@ -804,6 +849,9 @@ def main() -> int:
         require(malformed == 12, f"malformed held-out count is {malformed}, expected 12")
         require(sum(row["public_command_count"] for row in rows) == 384,
                 "held-out public-command accounting changed")
+        overlap_positive = sum(row["observed_property_overlap_count"] > 0 for row in rows)
+        require(overlap_positive == 1,
+                f"positive property-overlap anchor count is {overlap_positive}, expected 1")
         if args.result_dir is not None:
             identities = {
                 "authority": authority_identity,
@@ -818,7 +866,8 @@ def main() -> int:
         "sprint12-role-property-heldout-smoke: ok "
         "objects=96 natural=48 metamorphic=48 probe_runs=288 public_commands=384 "
         "fact_fields=18 expected_vectors=96 observed_vectors=96 unique_natural=48 "
-        "provisional_targets=24 provisional_overlap=0 edge_layouts=24 malformed=12 schema=0.2.0"
+        "provisional_targets=24 provisional_overlap=0 edge_layouts=24 property_overlap_positive=1 "
+        "malformed=12 schema=0.2.0"
     )
     return 0
 

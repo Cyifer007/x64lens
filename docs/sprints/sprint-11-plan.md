@@ -152,8 +152,9 @@ WSL2-replay observations and correcting the evidence plane that interprets them.
 Sprint 12 uses that diagnostic evidence to prioritize program-header validity
 and extended numbering, overlap/provenance, PIE-versus-DSO identity, and GNU
 properties without changing the reference scanner definition. A corrected
-held-out diagnostic confirmation follows under a new identifier with positive
-role-controlled coordinate anchors and complete task-path runtime closure for
-all five task paths. A behavior, schema, task, or method change after a
-diagnostic campaign receives a new campaign identifier; Sprint 15 remains the
-confirmatory freeze.
+private-fact diagnostic matrix follows under a new identifier with separate
+natural and controlled metamorphic strata. A separate comparison-qualification
+campaign requires positive role-controlled coordinate anchors and complete
+task-path runtime closure for all five task paths. A behavior, schema, task, or
+method change after a diagnostic campaign receives a new campaign identifier;
+Sprint 15 remains the confirmatory freeze.
