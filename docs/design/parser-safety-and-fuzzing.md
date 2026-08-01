@@ -351,11 +351,38 @@ Patch 071 extends fail-closed transaction safety outside the ELF parser. Every
 observed nested cleanup member is moved and reauthenticated before recursive
 work and again before final unlink or rmdir. A late regular-file or directory
 replacement is preserved and causes failure. The regression gate exercises both
-replacement branches and ordinary symlink-safe cleanup.
+replacement branches and ordinary symlink-safe cleanup. The helper is
+destructive rather than rollback-transactional: later failure can leave
+authenticated members removed or directory modes changed under quarantine.
 
 The batch harness no longer treats an output limit as a post-process size check.
-It reads both streams nonblockingly, retains at most `limit + 1` bytes, and kills
-and reaps the child process group immediately after overflow discrimination. A
-controlled 16 MiB producer must be terminated before it can publish a completion
-marker. These are development-harness safety properties and do not change target
-mapping, parser, capacity, or malformed-report behavior.
+It reads both streams nonblockingly, retains at most `limit + 1` bytes, sends
+`SIGKILL` to the child process group after overflow discrimination, and waits
+for the direct child. A controlled 16 MiB producer must be terminated before it
+can publish a completion marker. This does not establish group-wide descendant
+reaping. These are development-harness safety properties and do not change
+target mapping, parser, capacity, or malformed-report behavior.
+
+## Sprint 12 Patch 072 evidence-plane safety
+
+Patch 072 changes no ELF parser routine. It strengthens the development
+infrastructure that owns generated trees and external evidence:
+
+- owned-root identity includes `statx` birth time and mount identity so
+  device/inode reuse after recreation is rejected;
+- generated quarantine names are fixed-length and do not inherit hostile
+  component lengths;
+- failed ancestor authentication closes the descriptor opened for that
+  component;
+- final file, directory, and root unlink paths reauthenticate the held object at
+  the low-level removal boundary;
+- batch deadlines remain active after direct-leader exit while inherited pipes
+  or adopted descendants remain live;
+- normal and signal transaction roots use the same identity-bound cleanup; and
+- duplicate JSON keys fail closed in batch and delivery authorities.
+
+External-natural targets are selected from package-manager records, copied
+read-only, authenticated by SHA-256/size/mode, and never executed. Private probes
+and public commands map those copies through the existing analyzer paths. A
+capacity exit remains a retained unsupported outcome with empty stdout; it is
+not silently removed from the natural-object denominator.

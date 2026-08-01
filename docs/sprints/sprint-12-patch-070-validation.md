@@ -4,9 +4,10 @@
 
 Rejected as a Sprint 12 acceptance candidate after validation reproduced
 blocking cleanup, batch-oracle, output-limit, and delivery-custody defects.
-Patch 071 supersedes those boundaries while preserving valid Patch 070 work. The batch pilot, private-fact matrix, and `readelf` reconciliation
-remain diagnostic, unfrozen, and publication-ineligible; native/container
-private-fact parity and public-policy review remain separate later gates.
+Patch 071 supersedes those boundaries while preserving valid Patch 070 work. The
+batch pilot, private-fact matrix, and `readelf` reconciliation remain diagnostic,
+unfrozen, and publication-ineligible; native/container private-fact parity and
+public-policy review remain separate later gates.
 
 ## Purpose
 
@@ -51,12 +52,13 @@ Expected Patch 070 banners:
 ```text
 patch069-corrective-regression-smoke: ok retained_semantics=1 root_size=1 root_replacement=1 handlers=1 cleanup=2 make_prerequisites=4 private_leaks=8 authorities=2 readelf_exits=1 overlap_anchor=1
 
-The Patch 070 version-1 batch banner is not an acceptance authority; Patch 071 replaces it with case-specific expected records and derived totals.
-
 sprint12-role-property-heldout-smoke: ok objects=96 natural=48 metamorphic=48 probe_runs=288 public_commands=384 fact_fields=18 expected_vectors=96 observed_vectors=96 unique_natural=48 provisional_targets=24 provisional_overlap=0 edge_layouts=24 property_overlap_positive=1 malformed=12 schema=0.2.0
 
 sprint12-role-property-readelf-smoke: ok objects=96 commands=384 fields=1728 eligible_matches=1224 eligible_mismatches=0 ambiguous=96 unavailable=288 not_eligible=120 public_policy=deferred
 ```
+
+The Patch 070 version-1 batch banner is not an acceptance authority. Patch 071
+replaces it with case-specific expected records and derived totals.
 
 ## Full acceptance
 

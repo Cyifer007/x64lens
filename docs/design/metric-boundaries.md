@@ -342,3 +342,30 @@ behavior so diagnostic work can compare normalization policies later. Any future
 byte-union, region-count, scan-work, or candidate-deduplication metric requires a
 separate reviewed definition and campaign identity. Original PHDR indexes and
 dense contributor bits must remain visible to that decision.
+
+## Sprint 12 Patch 072 denominator boundary
+
+Patch 072 keeps the following populations separate:
+
+```text
+external objects                         48
+private probe processes                 144
+private run-field records             2,592
+private object-field summaries          864
+public command processes                 192
+readelf processes                        192
+readelf field dispositions               864
+
+parity objects                            96
+private fields per environment         5,184
+combined private fields               10,368
+paired probe processes                   288
+combined public closures                 768
+paired public tuples                     384
+```
+
+These are evidence-plane denominators, not gadget populations, mitigation
+prevalence, runtime-CET counts, or benchmark observations. Ambiguous,
+unavailable, inapplicable, malformed, unsupported, and capacity outcomes remain
+visible and do not enter an eligible-match denominator unless their field
+authority explicitly permits it.

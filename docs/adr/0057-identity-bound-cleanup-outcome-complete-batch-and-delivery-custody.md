@@ -44,6 +44,11 @@ for inspection.
 The UUID quarantine namespace is private to one helper invocation. A hostile
 same-UID process that can predict and race those random names is outside this
 helper's stated trust boundary; the helper makes no filesystem-sandbox claim.
+Cleanup is destructive rather than transactional rollback. If a later step
+fails, an authenticated tree can remain partially cleared and directory modes
+can remain changed under quarantine. The guarantee is that an unproven late
+replacement is preserved within the stated random-name trust boundary, not that
+the original tree is reconstructed.
 
 ### Outcome-complete batch authority
 
@@ -63,21 +68,22 @@ eight signal cases.
 
 Child stdout and stderr are read nonblockingly through a selector. Each stream
 retains at most `limit + 1` bytes. As soon as a stream reaches 4,097 bytes for a
-4,096-byte cap, the runner kills and reaps the complete child process group and
-classifies the member as `stdout_limit` or `stderr_limit`. Timeout and output
-limit records use a null exit code because the harness, not ordinary child
-completion, determines the outcome.
+4,096-byte cap, the runner sends `SIGKILL` to the child process group, waits for
+the direct child, and classifies the member as `stdout_limit` or `stderr_limit`.
+Timeout and output-limit records use a null exit code because the harness, not
+ordinary child completion, determines the outcome. This boundary does not claim
+group-wide descendant reaping.
 
 ### Exact recursive delivery custody
 
 `tools/verify-delivery-custody.py` creates and verifies a recursive manifest of
-regular files by canonical relative path, SHA-256, byte size, and mode. Missing,
-extra, duplicate, unsafe, linked, special, or undeclared empty-directory
-members fail closed. Patch 071
-source delivery is generated from the exact Git candidate tree, not from the
-live worktree or ignored evidence hierarchy. The source archive therefore
-excludes `.git`, `.local`, local environment files, generated build output, and
-host-absolute links.
+regular files by canonical relative path, SHA-256, byte size, and mode, together
+with exact implied-directory membership. Missing, extra, duplicate, unsafe,
+symbolic-link, special, or undeclared empty-directory members fail closed.
+Patch 071 source delivery must be generated from the exact Git candidate tree,
+not from the live worktree or ignored evidence hierarchy, and then verified.
+Conforming source archives exclude `.git`, `.local`, local environment files,
+generated build output, and host-absolute symbolic links.
 
 ## Consequences
 

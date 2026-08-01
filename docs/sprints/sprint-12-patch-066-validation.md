@@ -4,14 +4,17 @@
 
 Historical implementation-candidate validation plan. Patch 066 required the
 Patch 067 corrective candidate, which subsequently required Patch 068 and then
-Patch 069 and Patch 070. The
+Patch 069 and Patch 070. Patch 070 was rejected after acceptance validation. Patch 071 required
+further correction and is superseded by the current Patch 072 candidate. The
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
 historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the next
 historical boundary, and the
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
-last historical candidate boundary. Current expectations are in the
-[Patch 070 validation plan](sprint-12-patch-070-validation.md).
+next historical candidate boundary, and the
+[Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
+rejected boundary. Current expectations are in the
+[Patch 071 validation plan](sprint-12-patch-071-validation.md).
 
 ## Purpose
 

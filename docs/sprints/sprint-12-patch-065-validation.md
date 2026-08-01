@@ -5,8 +5,9 @@
 Historical implementation-candidate validation record. Patch 065 did not pass
 independent validation and required Patch 066. Patch 066 subsequently required
 Patch 067, which required Patch 068; Patch 068 in turn required the Patch 069
-corrective and external-reconciliation candidate, which required the
-current Patch 070 evidence-integrity candidate. The
+corrective and external-reconciliation candidate, which required Patch 070.
+Patch 070 was rejected after acceptance validation. Patch 071 required
+further correction and is superseded by the current Patch 072 candidate. The
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) preserves that
 intervening boundary, and the
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves a
@@ -14,9 +15,13 @@ subsequent historical candidate boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the
 next historical candidate boundary, and the
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
-last historical candidate boundary. Use the
-[Patch 070 validation plan](sprint-12-patch-070-validation.md) for current
-candidate expectations.
+next historical candidate boundary, and the
+[Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
+rejected boundary. Use the
+[Patch 072 validation plan](sprint-12-patch-072-validation.md) for current
+candidate expectations; the
+[Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
+historical boundary.
 
 ## Review outcome
 

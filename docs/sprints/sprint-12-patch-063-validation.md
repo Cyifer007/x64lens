@@ -17,9 +17,14 @@ historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) for the next
 historical boundary. The
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the final
-historical candidate boundary. Use the
-[Patch 070 validation plan](sprint-12-patch-070-validation.md) for current
-candidate expectations.
+pre-Patch-070 historical candidate boundary. Patch 070 was rejected after
+acceptance validation. Patch 071 required further correction. Use the
+[Patch 072 validation plan](sprint-12-patch-072-validation.md) for current
+candidate expectations; the
+[Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
+historical boundary; the
+[Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
+rejected boundary.
 
 ## Purpose
 

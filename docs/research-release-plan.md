@@ -382,10 +382,26 @@ closure for all five task paths.
 ## Patch 070 review and Patch 071 release-gate note
 
 Patch 070 did not satisfy acceptance because its nested cleanup, batch oracle,
-output-limit enforcement, and delivery custody were insufficient. Patch 071 is
-the corrective gate for those properties. The corrected pilot and controlled
-`readelf` reconciliation remain diagnostic development evidence and do not
-satisfy the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later
-throughput result must retain the batch as its measurement unit and preserve the
-diagnostic/confirmatory separation. External-natural acquisition remains a
-separate Patch 072 gate.
+output-limit enforcement, and delivery custody were insufficient. Patch 071
+corrected the first blocker set. Patch 072 carries the remaining generation,
+process-tree, publication-transition, duplicate-key, and delivery-completeness
+corrections together with outcome-blind external-natural acquisition and same-
+byte native/container private-fact parity.
+
+The version-3 pilot, natural acquisition, controlled `readelf` reconciliation,
+and parity records remain diagnostic development evidence. They do not satisfy
+the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later throughput
+result must retain the batch as its measurement unit and preserve the
+diagnostic/confirmatory separation. Patch 073 is the non-reinterpretive public-
+policy gate, and Patch 074 closes Sprint 12 and hands off to Sprint 13.
+
+
+## Patch 072 release-gate note
+
+Patch 072 acceptance requires the complete native aggregate, strict ShellCheck,
+Docker validation, package-specific external-natural acquisition, and the same-
+byte native/container parity gate. The 48-object natural stratum and 96-object
+parity matrix remain mutable diagnostic evidence and cannot satisfy preview or
+publication corpus requirements. Static property agreement does not establish
+runtime CET enforcement. No public PIE/DSO, IBT, or SHSTK field is admitted
+until the separate Patch 073 policy gate.

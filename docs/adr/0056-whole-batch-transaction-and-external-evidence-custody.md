@@ -83,5 +83,6 @@ latency remains unresolved when the analyzer is below the reliable floor.
 Patch 071 preserves this ADR's no-divided-latency and complete-or-absent
 publication decisions while replacing the insufficient implementation with
 identity-bound nested cleanup, an outcome-complete version-2 case authority,
-streaming output caps, and exact recursive delivery custody. See
+streaming output caps, and regular-file path/hash/size/mode delivery verification
+with exact implied-directory membership. See
 [ADR 0057](0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md).

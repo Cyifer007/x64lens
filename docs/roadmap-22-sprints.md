@@ -33,9 +33,11 @@ publication-ineligible. Sprint 12 is active and proceeds through bounded
 program-header validity and extended-numbering outcomes,
 executable-overlap/provenance semantics, PIE-versus-DSO identity, GNU-property
 evidence, the private-fact diagnostic matrix, Patch 069 authenticated external
-reconciliation, and the current Patch 070 evidence-integrity and whole-batch
-transaction-pilot candidate. Patch 070 acceptance, native/container private-
-fact parity, and public-policy review remain pending.
+reconciliation, the rejected Patch 070 evidence-integrity and whole-batch pilot,
+Patch 071 first corrective candidate, and the current Patch 072 implementation
+candidate for remaining evidence-plane correction, outcome-blind external-
+natural acquisition, and same-byte native/container private-fact parity. Patch
+073 public-policy review and Patch 074 closeout remain pending.
 Positive role-controlled coordinate anchors and complete runtime closure for all
 five task paths belong to a separate comparison-qualification campaign. Sprint
 15 freezes the confirmatory campaign.
@@ -231,13 +233,29 @@ Sprint 12 still requires native/container private-fact parity and a separate
 public-policy decision before any public PIE/DSO, IBT, or SHSTK indicator is
 considered. The result remains diagnostic, unfrozen, and publication-ineligible.
 Patch 069 required the further Patch 070 evidence-integrity correction;
-Patch 070 acceptance was rejected; Patch 071 corrective acceptance remains pending.
+Patch 070 acceptance was rejected; Patch 071 corrected the first blocker set,
+and Patch 072 carries the remaining correction plus acquisition/parity work.
 
-## Patch 070 review and Patch 071 sequencing note
+## Patch 070 through Patch 072 sequencing note
 
-Patch 070 acceptance was rejected. Patch 071 remains inside Sprint 12 and
-corrects only identity-bound nested cleanup, exact case-oracle semantics,
-streaming output limits, and closed delivery custody. It does not advance the
-Sprint 15 freeze, add a public mitigation field, or change the dependency-free
-one-worker reference profile. External-natural acquisition, public policy, and
-closeout move to Patches 072, 073, and 074 respectively.
+Patch 070 acceptance was rejected. Patch 071 corrected the first nested-cleanup,
+case-oracle, streaming-limit, and delivery-custody blockers, but its review
+required another correction. Patch 072 remains inside Sprint 12 and carries the
+narrower generation, descendant, publication, duplicate-key, and delivery-
+completeness corrections while completing outcome-blind external-natural
+acquisition and same-byte native/container parity. It
+does not advance the Sprint 15 freeze, add a public mitigation field, or change
+the dependency-free one-worker reference profile. Public policy and closeout
+remain Patches 073 and 074.
+
+
+## Patch 072 evidence gate
+
+The external-natural authority selects 48 installed-package objects before
+outcomes: twelve per source lineage with seven executable and five library
+paths. The same-byte environment authority compares the authenticated 96-object
+matrix with identical analyzer, probe, and schema bytes across native and
+container planes. Both remain diagnostic and publication-ineligible. Their
+acceptance precedes Patch 073 public policy but does not replace positive
+coordinate anchors, runtime closure, whole-batch workload qualification, or the
+Sprint 15 campaign freeze.

@@ -8,25 +8,30 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 12 Patch 072 outcome-blind external-natural acquisition and same-byte
+  environment parity. The new 48-object installed-package stratum freezes four
+  source lineages and a seven-executable/five-library path split before analyzer
+  outcomes, retains 144 private probe runs, 192 public commands, 192 exact GNU
+  `readelf` processes, and all 864 field dispositions, and keeps public policy
+  deferred. A separate 96-object native/container gate requires 5,184 private
+  fields per environment, 288 paired probe outputs, 768 public closures, and
+  384 paired path-normalized public tuples from byte-identical inputs.
+- Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
+  fixed-length quarantine names, final file/directory/root reauthentication,
+  ancestor-descriptor closure, strict duplicate-key JSON parsing, version-3
+  batch authority with 29 cases and 87 executions, deadline enforcement after
+  direct-leader exit, adopted-descendant reaping, explicit publication
+  transitions, identity-bound transaction-root cleanup, ADR 0058,
+  `make patch071-corrective-regression-smoke`, and the Patch 072 validation
+  record. Runtime `src/`, `include/`, schema `0.2.0`, candidate metrics, and
+  public role/property fields remain unchanged.
+
 - Sprint 12 Patch 071 corrective validation and delivery tooling: an
   outcome-complete version-2 batch authority, streaming child-output caps,
   identity-bound nested cleanup, an exact recursive delivery-custody verifier,
   ADR 0057, `make patch070-corrective-regression-smoke`, and the Patch 071
   validation record. Patch 071 changes no runtime analyzer or public schema
   behavior and defers external-natural acquisition.
-
-### Fixed
-
-- Nested cleanup now quarantines and reauthenticates every observed file and
-  directory before final deletion. A late replacement is preserved and causes
-  fail-closed cleanup rather than being unlinked.
-- The whole-batch pilot now consumes exact expected records for all 27 cases,
-  derives its summary from verified outcomes, and enforces the 4 KiB stdout and
-  stderr limits while streaming instead of buffering complete child output.
-- Source and evidence deliveries now use exact recursive path/hash/size/mode
-  custody, including rejection of undeclared empty directories. Candidate
-  source delivery is generated from the exact Git tree and excludes ignored
-  private state, local environment files, and host-absolute links.
 
 - A diagnostic 27-case, three-repetition whole-batch transaction pilot covering
   success, first/middle/final failures, output limits, timeout, SIGINT, SIGTERM,
@@ -418,10 +423,29 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Sprint 12 Patch 071 corrects the rejected Patch 070 cleanup boundary with
+  two-stage identity quarantine. A late replacement is preserved and causes
+  fail-closed cleanup rather than being unlinked. Cleanup remains destructive,
+  not transactional rollback: later failure can leave authenticated members
+  removed or mode-changed under quarantine.
+- The whole-batch pilot now consumes exact expected records for all 27 cases,
+  derives its summary from verified outcomes, and enforces the 4 KiB stdout and
+  stderr limits while streaming instead of buffering complete child output.
+  Limit handling sends `SIGKILL` to the child process group and waits for the
+  direct child; it does not claim group-wide descendant reaping.
+- Delivery custody now authenticates regular files by canonical relative path,
+  SHA-256, byte size, and mode plus exact implied-directory membership. It
+  rejects symbolic links, special members, and undeclared empty directories.
+  Candidate source delivery must be generated from the exact Git tree and
+  verified before use.
+
 - Sprint 12 Patch 070 evidence-integrity corrections: descriptor- and
   metadata-continuous corpus mode repair, inode-bound sealed-result cleanup,
   exact held-out/readelf authorities, comparator exit enforcement, positive
-  property-overlap coverage, and recursive public-leak rejection.
+  property-overlap coverage, and recursive public-leak rejection. Patch 070
+  acceptance was rejected; Patch 071 preserves its valid evidence facts while
+  replacing the nested-cleanup, batch-authority, streaming-limit, and delivery-
+  custody boundaries.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

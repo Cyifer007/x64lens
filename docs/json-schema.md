@@ -437,3 +437,24 @@ Patch 070 changes development-evidence and validation infrastructure only. It
 adds no runtime analyzer module, JSON field, report meaning, or schema change;
 schema `0.2.0` remains the producer contract. Public PIE/DSO, IBT, and SHSTK
 fields remain deferred until the separate parity and public-policy gates.
+
+## Sprint 12 Patch 071 schema boundary
+
+Patch 070 acceptance was rejected. Patch 071 corrected the first nested
+cleanup, batch-authority, streaming-limit, and delivery-custody blockers while
+leaving schema `0.2.0` unchanged. Its review required the remaining correction
+now carried by Patch 072. Patch 073 remains the separate non-reinterpretive
+public-policy gate.
+
+## Sprint 12 Patch 072 schema boundary
+
+Patch 072 keeps schema `0.2.0` unchanged. External-natural acquisition and
+native/container parity consume current public reports only to verify command
+identity, formal schema conformance, private-vocabulary absence, capacity
+failure behavior, and environment agreement. Their private role/property fields,
+package provenance, comparator dispositions, and parity records are separate
+diagnostic artifacts and are not JSON report properties.
+
+A successful later public-policy decision requires Patch 073. It must remain a
+compatible optional `0.2.x` addition or record explicit deferral; Patch 072 does
+not reinterpret the existing `mitigations.pie` field.

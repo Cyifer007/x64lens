@@ -13,9 +13,11 @@ subsequent historical candidate boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the
 next historical candidate boundary, and the
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
-last historical candidate boundary. The current evidence-integrity candidate is
-covered by the
-[Patch 070 validation plan](sprint-12-patch-070-validation.md).
+next historical candidate boundary. Patch 070 was rejected after acceptance
+validation; its
+[validation record](sprint-12-patch-070-validation.md) preserves that boundary.
+The current corrective candidate is covered by the
+[Patch 071 validation plan](sprint-12-patch-071-validation.md).
 
 ## Purpose
 

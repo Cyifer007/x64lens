@@ -392,3 +392,23 @@ ambiguous or unavailable cells, or with `not_eligible` cells that are
 inapplicable for the object/field combination. These metadata facts do not
 create a candidate provenance tier, a public mitigation field, or runtime-CET
 evidence.
+
+## Sprint 12 Patch 072 external-natural provenance
+
+Patch 072 introduces two private metadata provenance classes without adding a
+candidate evidence tier.
+
+The external-natural acquisition binds each selected object to its dpkg binary
+and source package identities, package file-list and copyright hashes, requested
+and resolved path, target SHA-256/size/mode, outcome-blind selection record,
+independent expected vector, three probe outputs, four public command outputs,
+and four exact GNU `readelf` outputs. Selection is hashed before any analyzer,
+probe, or comparator outcome is consumed.
+
+The environment-parity plane binds one 96-object matrix and one analyzer,
+private probe, and schema byte set to distinct native and container execution
+strata. Private fields compare exactly; public tuples compare after replacing
+the environment-specific target pathname while raw streams remain retained.
+Package source/build-origin evidence and environment evidence remain separate.
+Neither class changes raw, exact-suffix, semantic-exact, unknown, future
+decoder-backed, or scored candidate provenance.

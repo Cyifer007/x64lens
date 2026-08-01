@@ -4,9 +4,11 @@
 
 Accepted architecture for Sprint 12. The Patch 064 implementation did not pass
 validation. Patch 068 carried an intermediate corrective candidate; Patch 069
-carried the decision forward, and the current Patch 070
-candidate leaves the runtime lattice unchanged while correcting its development-
-evidence gates. Independent acceptance remains pending.
+carried the decision forward, Patch 070 attempted the next development-evidence
+correction but was rejected. Patch 071 corrected the first rejected
+boundaries, and the current Patch 072 candidate leaves the runtime lattice
+unchanged while carrying the remaining correction and private acquisition/parity
+gates. Independent acceptance remains pending.
 
 ## Context
 
@@ -104,7 +106,7 @@ evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output. Patch 065 introduced these
 string-validation corrections, Patch 069 carried them forward, and the current
-Patch 070 candidate leaves them unchanged.
+Patch 071 candidate leaves them unchanged.
 
 ## Consequences
 
@@ -115,7 +117,7 @@ Patch 070 candidate leaves them unchanged.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the Patch 070 candidate.
+  remains separate from public report policy in the Patch 071 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

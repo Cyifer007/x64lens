@@ -51,10 +51,8 @@ def cleanup_success_probe(module: Any, base: Path) -> None:
     require(not owned.exists(), "ordinary authenticated cleanup failed")
 
 
-def find_quarantine(base: Path, stem: str) -> Path:
-    matches = sorted(path for path in base.iterdir() if path.name.startswith(f".{stem}.x64lens-cleanup."))
-    require(len(matches) == 1, f"expected one retained root quarantine for {stem}, found {matches}")
-    return matches[0]
+def root_quarantines(base: Path) -> list[Path]:
+    return sorted(path for path in base.iterdir() if path.name.startswith(".x64lens-cleanup.") and path.is_dir())
 
 
 def cleanup_file_replacement_probe(module: Any, base: Path) -> None:
@@ -89,8 +87,7 @@ def cleanup_file_replacement_probe(module: Any, base: Path) -> None:
         module.unlinkat_expected = original
     require(fired and rejected, "file replacement did not fail closed")
     require(escaped.read_bytes() == b"owned\n", "authenticated file was not preserved after substitution")
-    quarantine = find_quarantine(base, owned.name)
-    foreign = list(quarantine.rglob("*"))
+    foreign = [path for quarantine in root_quarantines(base) for path in quarantine.rglob("*")]
     require(any(path.is_file() and path.read_bytes() == b"foreign\n" for path in foreign),
             "foreign file replacement was deleted")
 
@@ -132,13 +129,13 @@ def cleanup_directory_replacement_probe(module: Any, base: Path) -> None:
         module.unlinkat_expected = original
     require(fired and rejected, "directory replacement did not fail closed")
     require(escaped.is_dir() and not any(escaped.iterdir()), "authenticated directory was not preserved after substitution")
-    quarantine = find_quarantine(base, owned.name)
-    require(any(path.name == "foreign" and path.read_bytes() == b"foreign\n" for path in quarantine.rglob("foreign")),
+    foreign = [path for quarantine in root_quarantines(base) for path in quarantine.rglob("foreign")]
+    require(any(path.name == "foreign" and path.read_bytes() == b"foreign\n" for path in foreign),
             "foreign directory replacement was deleted")
 
 
 def authority_mutation_probe(batch: Any, base: Path) -> None:
-    authority_path = ROOT / "benchmarks/task-definitions/sprint12-batch-transaction-pilot-v2.json"
+    authority_path = ROOT / "benchmarks/task-definitions/sprint12-batch-transaction-pilot-v3.json"
     original = json.loads(authority_path.read_text(encoding="utf-8"))
     mutations: list[tuple[str, Any]] = [
         ("publication-policy", lambda value: value.__setitem__("publish_only_complete_success", False)),

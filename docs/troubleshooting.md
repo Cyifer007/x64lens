@@ -28,14 +28,9 @@ sudo chown -R "$(id -u):$(id -g)" build tests/bin tests/toy-src
 make clean
 ```
 
-Alternative blunt repair for a local-only working tree:
-
-```bash
-sudo chown -R "$USER:$USER" .
-make clean
-```
-
-Use the narrower command first when possible.
+Keep ownership repair limited to generated paths. Before widening that set,
+inspect the exact remaining files and their numeric owner/group rather than
+recursively changing the entire checkout.
 
 ### Prevent recurrence
 

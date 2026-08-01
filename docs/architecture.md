@@ -1374,7 +1374,7 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-Patch 069 preserved the corrected seam, and the Patch 071 candidate
+Patch 069 preserved the corrected seam, and the Patch 072 candidate
 leaves it unchanged, so
 `binary_role.asm` consumes only those completed summary facts, including copied
 ELF type and entrypoint, and writes one internal state:
@@ -1408,7 +1408,7 @@ deterministic.
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
 Patch 065 inserted `gnu_property.asm`; Patch 069 preserved its corrected
-alignment and overlap boundaries, and the Patch 071 candidate leaves
+alignment and overlap boundaries, and the Patch 072 candidate leaves
 them unchanged while retaining the module after bounded program-header
 acquisition and before public reporting. The module canonicalizes
 exact duplicate physical note carriers while retaining each original PHDR
@@ -1518,11 +1518,65 @@ version-2 batch authority
 
 delivery root
   -> exact regular-file membership
-  -> path/hash/size/mode manifest
+  -> regular-file path/hash/size/mode manifest
+  -> exact implied-directory membership
   -> closed verification
 ```
 
 These helpers cannot parse ELF, select executable regions, discover candidates,
 classify semantics, assign scores, or emit analyzer reports. The source archive
-is produced from the exact Git candidate tree rather than the live ignored
-worktree. Public schema `0.2.0` and the runtime pipeline remain unchanged.
+must be produced from the exact Git candidate tree rather than the live ignored
+worktree and then verified. Nested cleanup is destructive rather than
+transactional rollback; a later failure can leave authenticated content removed
+or mode-changed under quarantine. Public schema `0.2.0` and the runtime pipeline
+remain unchanged.
+
+
+## Patch 072 acquisition and parity boundary
+
+Patch 072 changes no analyzer module boundary. It strengthens external
+development infrastructure and adds two diagnostic evidence planes:
+
+```text
+owned cleanup v3
+  -> device/inode/birth-time/mount generation token
+  -> fixed random quarantine
+  -> descriptor and final-name reconciliation
+
+installed package inventory
+  -> outcome-blind source-lineage and path-bucket selection
+  -> immutable read-only object copies
+  -> independent private vector and three probe runs
+  -> four public command closures
+  -> field-scoped GNU readelf reconciliation
+
+one authenticated 96-object matrix + one analyzer/probe/schema byte set
+  -> native private/public plane
+  -> container private/public plane
+  -> exact private and path-normalized public tuple comparison
+```
+
+The acquisition harness is not an ELF parser authority for the runtime. It uses
+an independent bounded reader to author expected development facts, while the
+fact probe invokes the same assembly parser modules as x64lens. GNU `readelf`
+remains external comparator evidence. Package source/build-origin and execution
+environment are separate strata; one cannot be inferred from the other.
+
+The public pipeline remains:
+
+```text
+read-only mapping
+  -> bounded ELF/loader facts
+  -> program-header executable regions
+  -> scanner
+  -> exact matcher
+  -> semantic classifier
+  -> provenance/effect side-cars
+  -> scoring
+  -> text/JSON reporting
+```
+
+No external-natural or parity artifact is linked into `build/x64lens`, and no
+private role or property state enters schema `0.2.0`. Patch 073 owns any later
+compatible public-policy decision. Static IBT/SHSTK properties remain evidence,
+not proof of runtime CET enforcement.

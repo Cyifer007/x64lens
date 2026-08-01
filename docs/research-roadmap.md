@@ -12,9 +12,12 @@ engineering gap register. Patch 061 corrects the remaining transaction and
 comparison-accounting findings, preregisters the below-floor whole-batch method,
 and records the diagnostic limitations. Sprint 12 is active as the loader and
 mitigation precision sprint. Patch 069 added authenticated external
-reconciliation; Patch 070 is the current evidence-integrity and whole-batch
-transaction-pilot candidate. Independent acceptance, native/container private-
-fact parity, and public-policy review remain pending.
+reconciliation. Patch 070 introduced the first evidence-integrity and whole-
+batch transaction-pilot candidate but was rejected. Patch 071 corrected the
+first acceptance blockers; Patch 072 is the current implementation candidate
+for the remaining evidence-plane correction, outcome-blind external-natural
+acquisition, and same-byte native/container private-fact parity. Patch 073
+public-policy review and Patch 074 closeout remain pending.
 
 The repository now provides:
 
@@ -540,8 +543,8 @@ It then retained 384 authenticated GNU
 contains 1,224 eligible matches and zero unexplained eligible mismatches, while
 ambiguous, unavailable, and retained `not_eligible` cells—inapplicable for their
 object/field combinations—remain outside the denominator. Patch 069 required
-the further Patch 070 evidence-integrity correction; Patch 070 independent
-acceptance remains pending.
+the further Patch 070 evidence-integrity correction. Patch 070 acceptance was
+rejected; Patch 071 corrective acceptance remains pending.
 
 This is external diagnostic reconciliation, not public mitigation policy,
 prevalence evidence, runtime-CET evidence, or publication evidence. Sprint 12
@@ -554,10 +557,31 @@ acquisition remains a later measurement gate.
 Patch 070 acceptance was rejected after validation reproduced nested cleanup,
 batch-oracle, output-cap, and delivery-custody defects. Patch 071 preserves valid
 Patch 070 facts and replaces those boundaries with identity-bound cleanup, an
-outcome-complete version-2 authority, streaming 4 KiB output caps, and exact
-recursive delivery custody. This remains diagnostic, unfrozen, publication-
-ineligible method evidence, not performance evidence.
+outcome-complete version-2 authority, streaming 4 KiB output caps, and delivery
+verification for regular-file path/hash/size/mode plus implied-directory
+membership. This remains diagnostic, unfrozen, publication-ineligible method
+evidence, not performance evidence.
 
 External-natural acquisition is deferred to Patch 072. The latest real campaign
 still supports no x64lens single-run latency, RSS-superiority, generic gadget-
 count, or normalized-coverage claim.
+Patch 072 also carries native/container private-fact parity, Patch 073 is the
+non-reinterpretive public-policy gate, and Patch 074 closes Sprint 12 and hands
+off to Sprint 13.
+
+
+## Sprint 12 Patch 072 external-natural and parity checkpoint
+
+Patch 072 changes no analyzer runtime or public schema. It hardens generation-
+aware cleanup, process-tree deadline/reaping behavior, publication-transition
+authority, duplicate-key rejection, and complete delivery custody, then freezes
+48 installed-package natural objects before outcomes across four independent
+source lineages. The acquisition retains all 144 private probe runs, 192 public
+commands, 192 exact GNU `readelf` processes, and 864 field dispositions.
+
+A separate same-byte 96-object gate compares native and container environments
+while holding target, analyzer, fact-probe, and schema bytes constant. It keeps
+5,184 private fields per environment and 384 paired public tuples. Package
+source/build-origin and environment effects remain separate. Both planes are
+diagnostic, unfrozen, publication-ineligible, and insufficient for runtime-CET
+or public-field claims. Patch 073 owns that policy decision.

@@ -181,8 +181,7 @@ validates every `DT_SONAME` carrier.
 Duplicate or conflicting role carriers are contradictory rather than
 first-wins or last-wins. Dynamic role tags use the existing bounded `PT_DYNAMIC`
 view. No new public mitigation field is emitted; Patch 069 carried the corrected
-role facts and separate GNU-property parser gate, and the current Patch 070
-candidate leaves the runtime path unchanged.
+role facts and separate GNU-property parser gate, and Patches 071 and 072 leave the runtime path unchanged.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
@@ -260,3 +259,21 @@ runtime analyzer module, mitigation state, report field, or schema field. The
 controlled matrix and GNU `readelf` reconciliation remain diagnostic, unfrozen,
 and publication-ineligible. Public PIE/DSO, IBT, and SHSTK fields remain
 deferred, and static GNU properties do not prove runtime CET enforcement.
+Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set;
+the current Patch 072 candidate carries the remaining corrective prerequisite
+plus private acquisition/parity work. Neither changes any mitigation or
+public-policy boundary.
+
+## Sprint 12 Patch 072 external-natural and parity gate
+
+Patch 072 adds no public mitigation indicator. It freezes 48 installed-package
+objects before outcomes, retains independent private vectors and exact GNU
+`readelf` evidence, and preserves every ambiguous or unavailable field. GNU
+`readelf -nW` does not expose x64lens physical canonical-view multiplicity, so
+`property_view_count` is unavailable rather than forced into agreement.
+
+A separate same-byte 96-object gate compares private and public facts across
+native and container environments. Environment agreement does not prove that
+compiler, linker, package, or source-lineage effects generalize, and static
+IBT/SHSTK properties still do not prove runtime CET enforcement. Patch 073 owns
+any compatible public indicator decision.

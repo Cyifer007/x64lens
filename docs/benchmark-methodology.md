@@ -824,8 +824,34 @@ successes and sixteen failures; failure indexes occur eight, four, and four
 times at positions zero, one, and two. Eight additional cases cover SIGINT and
 SIGTERM at four barriers.
 
-The runner retains at most one byte beyond each 4,096-byte limit before killing
-and reaping the child process group. These facts qualify transaction semantics
-only. They do not establish a throughput result, a single-run latency, process-
-tree RSS, or a publication claim. External-natural acquisition and any later
-workload ladder receive separate identities.
+The runner retains at most one byte beyond each 4,096-byte limit before sending
+`SIGKILL` to the child process group and waiting for the direct child. The
+reported survivor total covers tracked signal-case child survival, not group-
+wide descendant reaping. These facts qualify transaction semantics only. They
+do not establish a throughput result, a single-run latency, process-tree RSS, or
+a publication claim. External-natural acquisition and any later workload ladder
+receive separate identities.
+
+## Patch 072 batch, natural-object, and parity boundaries
+
+Patch 072 supersedes the current batch prerequisite with version 3: 29 cases,
+87 executions, two explicit process-tree cases, exact publication-transition
+counts, deadline enforcement after direct-leader exit, and adopted-descendant
+reaping. This remains transaction-conformance evidence. It still does not
+measure batch throughput, divide batch elapsed time into latency, or provide
+process-tree RSS.
+
+The 48-object external-natural acquisition is a mitigation-accuracy diagnostic,
+not a benchmark corpus or prevalence sample. Source lineages, path buckets, and
+bytewise ordering are fixed before analyzer outcomes. Object, private-probe
+process, public-command, `readelf` process, run-field, object-field, and
+comparator-disposition denominators remain distinct. Capacity failures,
+ambiguous fields, and unavailable comparator facts are retained rather than
+excluded. The result cannot enter the Sprint 15-frozen campaign by relabeling.
+
+Native/container parity holds object, analyzer, probe, and schema bytes constant
+and varies only the execution environment. Compiler, linker, package, and
+source-lineage effects are not attributed from that gate. Public command tuples
+are compared after target-path normalization while raw output remains retained.
+This parity evidence is a correctness condition, not a performance or resource
+comparison.

@@ -3,9 +3,10 @@
 ## Status
 
 Active loader and mitigation precision sprint after Sprint 11 Patch 061
-closeout. Patches 064 through 070 required corrective follow-up. Patch 071 is
-the current acceptance candidate and is intentionally limited to the confirmed
-Patch 070 cleanup, batch-oracle, streaming-limit, and delivery-custody defects.
+closeout. Patches 064 through 071 required corrective follow-up. Patch 072 is
+the current implementation candidate. It carries the smallest confirmed Patch
+071 tooling correction while completing outcome-blind external-natural
+acquisition and the same-byte native/container private-fact parity gate.
 
 Related implementation records:
 
@@ -29,6 +30,8 @@ Related implementation records:
 - [Patch 070 validation](sprint-12-patch-070-validation.md)
 - [ADR 0057](../adr/0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md)
 - [Patch 071 validation](sprint-12-patch-071-validation.md)
+- [ADR 0058](../adr/0058-outcome-blind-external-natural-acquisition-and-environment-parity.md)
+- [Patch 072 validation](sprint-12-patch-072-validation.md)
 
 ## Sprint goal
 
@@ -49,10 +52,12 @@ that would otherwise corrupt corpus labels or defensive triage.
    48 held-out natural objects plus 48 controlled metamorphic objects.
 8. Reconcile the private facts against bounded external ELF evidence
    (`readelf -hW/-lW/-dW/-nW`). Patch 069.
-9. Review Patch 070 and correct its nested cleanup, batch oracle, streaming
-   output-limit, and delivery-custody blockers. Patch 071.
-10. Freeze outcome-blind external-natural selection rules, acquire the natural
-    stratum, and prove native/container private-fact parity. Patch 072.
+9. Review Patch 070 and correct its initial nested cleanup, batch oracle,
+   streaming output-limit, and delivery-custody blockers. Patch 071.
+10. Correct the remaining generation identity, final unlink, descendant,
+    publication-transition, duplicate-key, and delivery-completeness findings;
+    freeze outcome-blind external-natural selection rules; acquire the natural
+    stratum; and prove native/container private-fact parity. Patch 072.
 11. Review compatible public `0.2.x` indicators without reinterpreting prior
     facts. Patch 073.
 12. Close Sprint 12 and hand off to Sprint 13. Patch 074.
@@ -67,25 +72,33 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [ ] Accept an internal role-evidence lattice that keeps `ET_DYN` alone unknown
   and preserves unknown, executable-like, shared-object-like, ambiguous, and
   contradictory states. The Patch 064 design is carried by the current
-  Patch 070 candidate without a runtime analyzer change.
+  Patch 072 candidate without a runtime analyzer change.
 - [ ] Accept bounded private GNU property-note evidence for x86 IBT and SHSTK
   without adding public report fields or changing schema `0.2.0`. Corrected in
-  Patch 069 and carried unchanged by the Patch 071 candidate.
+  Patch 069 and carried unchanged by the Patch 072 candidate.
 - [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
 - [x] Patch 068 introduced a 96-object private-fact diagnostic agreement gate
   under a distinct identity. Patch 069 authenticated and corrected it while
   keeping the 48 held-out natural objects separate from the 48 controlled
-  metamorphic objects. The Patch 071 candidate corrects the remaining
-  evidence gates; independent acceptance remains pending.
+  metamorphic objects. Patch 070 attempted the next evidence-gate correction but
+  was rejected; Patch 071 corrected its first blocker set but required the
+  narrower Patch 072 corrective prerequisite. Independent Patch 072 acceptance
+  remains pending.
 - [x] Reconcile eligible private facts against authenticated GNU
   `readelf -hW/-lW/-dW/-nW` evidence while retaining ambiguous, unavailable,
   and `not_eligible` cells. Patch 069.
 - [x] Add the initial 27-case, 81-execution whole-batch transaction pilot while
   retaining the batch as the measurement unit. Patch 070; acceptance rejected.
-- [ ] Accept the Patch 071 version-2 outcome-complete batch oracle, streaming
-  output caps, identity-bound nested cleanup, and exact delivery custody.
-- [ ] Acquire outcome-blind external-natural objects and prove native/container
-  private-fact parity. Patch 072.
+- [x] Implement the Patch 072 version-3 batch authority, generation-aware
+  cleanup, descendant/deadline handling, explicit publication transitions,
+  strict duplicate-key parsing, and exact delivery custody. Local acceptance
+  remains pending.
+- [x] Implement outcome-blind acquisition for 48 external natural objects over
+  four source lineages with all object/run denominators and raw evidence
+  retained. Patch 072; host-specific acceptance remains pending.
+- [x] Implement same-byte 96-object native/container private-fact parity with
+  5,184 private fields per environment and 384 paired public tuples. Patch 072;
+  Docker acceptance remains pending.
 - [ ] Only then review whether compatible public `0.2.x` role or GNU-property
   indicators are justified.
 
@@ -105,10 +118,11 @@ that would otherwise corrupt corpus labels or defensive triage.
 9. **Patch 070:** initial evidence-custody correction and transaction pilot;
    rejected after acceptance validation found cleanup, oracle, output-cap, and
    delivery defects.
-10. **Patch 071:** smallest corrective patch for those confirmed blockers; no
-    runtime analyzer or schema field changes.
-11. **Patch 072:** outcome-blind external-natural acquisition and native/container
-    private-fact parity.
+10. **Patch 071:** first corrective patch for the confirmed Patch 070 blockers;
+    no runtime analyzer or schema field changes.
+11. **Patch 072:** remaining Patch 071 tooling correction plus outcome-blind
+    external-natural acquisition and same-byte native/container private-fact
+    parity.
 12. **Patch 073:** non-reinterpretive public-policy decision.
 13. **Patch 074:** Sprint 12 closeout and Sprint 13 handoff.
 14. **Conditional:** reopen executable-byte-union normalization only when the
@@ -118,10 +132,10 @@ that would otherwise corrupt corpus labels or defensive triage.
 
 - [x] Program headers remain executable authority.
 - [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
-- [ ] The Patch 071 candidate's preserved internal PIE-versus-shared-object lattice passes
+- [ ] The Patch 072 candidate's preserved internal PIE-versus-shared-object lattice passes
   controlled unknown, executable-like, shared-object-like, ambiguous,
   contradictory, duplicate, malformed, and unsupported cases.
-- [ ] The Patch 071 candidate's preserved private IBT and SHSTK facts pass controlled
+- [ ] The Patch 072 candidate's preserved private IBT and SHSTK facts pass controlled
   positive, negative, contradictory, truncated, duplicate, overlap, cap, and
   unknown-property cases.
 - [x] Overlap contributors are retained internally without changing current counts. Patch 063.
@@ -131,7 +145,9 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [ ] All five task paths have complete runtime-closure evidence.
 - [ ] Comparison qualification is withheld unless both calibration and closure
   gates pass.
-- [ ] Native and Docker facts agree.
+- [ ] The same 96 object, analyzer, probe, and schema bytes produce 5,184
+  private-field agreements per native/container environment and 384 paired
+  public command tuples.
 - [ ] Diagnostic measurements are versioned separately after behavior changes.
 - [ ] The private-fact matrix of 48 held-out natural objects and 48 controlled
   metamorphic objects remains diagnostic, unfrozen, and publication-ineligible.
@@ -189,15 +205,17 @@ Patch 069 required the further Patch 070 evidence-gate correction.
 
 ## Patch 070 boundary
 
-The Patch 071 candidate corrects the remaining Patch 069 corpus,
-comparator, leak-oracle, authority, and Make prerequisite defects. It fixes the
-complete 1,728-cell disposition accounting at
+Patch 070 addressed the remaining Patch 069 corpus, comparator, leak-oracle,
+authority, and Make prerequisite defects. It fixed the complete 1,728-cell
+disposition accounting at
 1,224 eligible matches, zero eligible mismatches, 96 ambiguous, 288 unavailable,
-and 120 `not_eligible`; the last three categories remain outside the eligible
-denominator. It also adds the 27-case, 81-execution whole-batch transaction
-pilot. The pilot is a prerequisite for later below-floor throughput measurement;
-it does not authorize divided latency or public role/property fields.
-Acceptance was rejected; Patch 071 corrects the confirmed blockers.
+and 120 `not_eligible`; the last three categories remained outside the eligible
+denominator. It also added the 27-case, 81-execution whole-batch transaction
+pilot. The pilot was intended as a prerequisite for later below-floor throughput
+measurement; it did not authorize divided latency or public role/property fields.
+Patch 070 acceptance was rejected; Patch 071 corrected the first confirmed
+cleanup, batch-authority, streaming-limit, and delivery-custody blockers, then
+Patch 072 carried the remaining narrower evidence-plane corrections.
 
 
 ## Patch 071 boundary
@@ -205,5 +223,35 @@ Acceptance was rejected; Patch 071 corrects the confirmed blockers.
 Patch 071 changes no runtime analyzer, include, or schema file. It preserves the
 valid Patch 070 role/property, comparator, prerequisite, and transaction intent
 while replacing unsafe nested cleanup, count-only case authority, post-hoc
-output limits, and open delivery custody. External-natural acquisition, public
-policy, and Sprint 12 closeout remain Patches 072 through 074.
+output limits, and open delivery custody. Cleanup remains destructive rather
+than rollback-transactional, and delivery manifests authenticate regular files
+plus implied-directory membership rather than directory modes. External-natural
+acquisition, public policy, and Sprint 12 closeout remain Patches 072 through
+074.
+
+
+## Patch 072 boundary
+
+Patch 072 changes no runtime analyzer, include, or schema file. It supersedes
+the Patch 071 validation authority with a version-3 owned-root identity
+and batch authority, strict duplicate-key parsing, complete process-tree and
+publication-transition regressions, and exact delivery membership.
+
+The external-natural stratum is selected before outcomes from four installed
+source lineages, twelve objects per lineage, with seven executable and five
+shared-library paths. It retains 48 object identities, 144 private probe
+processes, 2,592 private run-field records, 864 object-field summaries, 192
+public commands, 192 exact `readelf` processes, and 864 field dispositions.
+Ambiguous and unavailable fields remain outside the eligible denominator.
+
+Environment parity is a separate same-byte gate over the authenticated
+96-object held-out matrix. Each native/container plane retains 288 probe
+processes, 5,184 private field cells, and 384 public command closures. The
+comparison requires 10,368 combined private cells, 288 paired probe results,
+768 public closures, and 384 path-normalized public tuples with zero mismatch.
+This does not mix package source/build-origin effects with environment effects.
+
+Patch 072 remains diagnostic, unfrozen, and publication-ineligible. It does not
+prove runtime CET enforcement or authorize public PIE/DSO, IBT, or SHSTK fields.
+Patch 073 owns that non-reinterpretive policy decision; Patch 074 owns Sprint 12
+closeout.

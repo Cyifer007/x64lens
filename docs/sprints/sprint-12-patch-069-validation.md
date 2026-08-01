@@ -4,8 +4,13 @@
 
 Historical Sprint 12 corpus-integrity and authenticated external-reconciliation
 implementation candidate. Patch 069 required the further Patch 070 evidence-
-integrity correction. Current expectations are recorded in the
-[Patch 070 validation plan](sprint-12-patch-070-validation.md). The matrix and
+integrity correction. Patch 070 was rejected after acceptance validation.
+Patch 071 required further correction, and current expectations are recorded in
+the [Patch 072 validation plan](sprint-12-patch-072-validation.md). The
+[Patch 071 validation record](sprint-12-patch-071-validation.md) preserves that
+historical boundary, and the
+[Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
+rejected boundary. The matrix and
 `readelf` reconciliation remain diagnostic, unfrozen, and publication-
 ineligible; native/container private-fact parity and public-policy review remain
 separate later gates. Results below are historical candidate contracts or

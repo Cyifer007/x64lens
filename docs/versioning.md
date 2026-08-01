@@ -13,25 +13,27 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-The current Patch 070 evidence-integrity and whole-batch transaction-pilot
-implementation candidate retains tool version `0.1.0-dev` and schema `0.2.0`;
-no release tag moves.
+The current Patch 072 implementation candidate retains tool version
+`0.1.0-dev` and schema `0.2.0`; no release tag moves.
 Sprint 11 is complete, and Sprint 12 is the active loader and mitigation
 precision sprint. The Sprint 11 partial-tool checkpoint and later all-tools
 diagnostic replay remain diagnostic, unfrozen, and publication-ineligible. They
 have no release authority and remain separate from the preregistered Patch 061
-campaign boundary. Patch 064 records a bounded diagnostic overlap decision
-and an internal-only role-evidence lattice. Patch 065 carried the Patch
-064 corrections and introduced the private GNU-property facts. Patch 066
-added the controlled metamorphic preflight. Patch 067 introduced corpus-custody
-and oracle corrections and attested the private C/NASM fact-probe layout without
-a public field or schema change. Patch 068 added the separate natural/metamorphic
-private-fact diagnostic gate. Patch 069 corrected its remaining custody and
-authority boundaries and added authenticated field-scoped GNU `readelf`
-reconciliation. Patch 070 corrects the remaining development-evidence gates and
-adds a transaction-only batch pilot, still without a runtime analyzer, public
-field, or schema change. Measurements after Patch 070 require a distinct
-diagnostic campaign identity and remain separate from Sprint 11 rows.
+campaign boundary. Patch 064 records a bounded diagnostic overlap decision and an internal-only
+role-evidence lattice. Patch 065 carried the role corrections and introduced
+private GNU-property facts. Patch 066 added the controlled metamorphic
+preflight. Patch 067 introduced corpus-custody and oracle corrections plus
+private C/NASM fact-probe layout attestation. Patch 068 added the separate
+natural/metamorphic diagnostic gate, and Patch 069 added authenticated
+field-scoped GNU `readelf` reconciliation. Patch 070 attempted the first
+remaining evidence-custody and whole-batch correction but was rejected. Patch
+071 corrected its first blocker set; review required the remaining cleanup,
+process-tree, authority, publication-transition, and delivery-completeness
+correction now carried by Patch 072. Patch 072 also adds private outcome-blind
+external-natural acquisition and same-byte environment parity. It changes no
+runtime analyzer field, schema field, or release tag. Measurements after Patch
+072 require a distinct diagnostic campaign identity and remain separate from
+Sprint 11 rows.
 
 ## Release sequence
 
@@ -159,4 +161,7 @@ Patch 071 retains tool version `0.1.0-dev` and JSON schema `0.2.0`. The version-
 batch authority is a development-method authority, not a product schema. No CLI,
 report field, candidate meaning, score, runtime profile, release tag, or campaign
 freeze changes. External-natural acquisition and any compatible public
-role/property decision remain later, separately identified patches.
+role/property decision remain later, separately identified patches: Patch 072
+performs outcome-blind external-natural acquisition and native/container
+private-fact parity, Patch 073 is the non-reinterpretive public-policy gate, and
+Patch 074 closes Sprint 12 and hands off to Sprint 13.

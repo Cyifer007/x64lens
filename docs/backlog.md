@@ -152,13 +152,13 @@ later sprints rather than Patch 037:
 - [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
   executable-like, shared-object-like, ambiguous, and contradictory states. The
   implementation and intervening corrections are carried by the current Patch
-  070 candidate without a runtime analyzer change.
+  072 candidate without a runtime analyzer change.
 - [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
   public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by the Patch 071 candidate without a public field change.
+  is carried by the Patch 072 candidate without a public field change.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
-  Corrected through Patch 069 and carried by the Patch 071 candidate.
+  Corrected through Patch 069 and carried by the Patch 072 candidate.
 - [ ] Accept exact C/NASM private fact-probe layout attestation before admitting
   the later private-fact diagnostic matrix. Implemented in Patch 067; it attests
   probe record interpretation rather than analyzer behavior.
@@ -167,17 +167,24 @@ later sprints rather than Patch 037:
   and rollback boundaries, rebuilt the private-layout authority after its
   structure definition changed, and extended leakage checks across all four
   file-analysis commands. Patch 069 carried and corrected those boundaries;
-  the Patch 071 candidate supplies the further evidence-gate correction.
-  Independent acceptance remains pending.
+  Patch 071 supplied the first evidence-gate correction, and Patch 072 carries
+  the remaining generation, descendant, publication, and duplicate-key
+  corrections. Independent acceptance remains pending.
 - [x] Patch 068 introduced a private-fact diagnostic agreement gate
   for 48 held-out natural objects and 48 controlled metamorphic objects, with
   exact independent vectors and three deterministic probe runs per object. Gate
   acceptance remains pending.
 - [x] Patch 069 introduced authenticated 96-object matrix and GNU
-  `readelf -hW/-lW/-dW/-nW` reconciliation gates. The current Patch 070
-  candidate corrects their remaining authority and comparator boundaries;
-  independent acceptance remains pending.
-- [ ] Prove native/container private-fact parity before public-policy review.
+  `readelf -hW/-lW/-dW/-nW` reconciliation gates. Patch 070 attempted the next
+  authority and comparator correction but was rejected. Patch 071 corrected the
+  first blocker set; the current Patch 072 candidate carries the remaining
+  tooling correction and advances the external-natural/parity tranche.
+  Independent acceptance remains pending.
+- [x] Implement outcome-blind acquisition for 48 natural installed-package
+  objects across four source lineages, retaining all object, process, field, and
+  comparator denominators. Patch 072; host-specific acceptance remains pending.
+- [x] Implement same-byte native/container private-fact parity over the
+  authenticated 96-object matrix. Patch 072; Docker acceptance remains pending.
 - [ ] Run the separate comparison-qualification campaign under a new identity,
   with positive role-controlled coordinate anchors, complete runtime closure for
   all five task paths, whole-batch timing, and process-tree RSS.
@@ -666,7 +673,27 @@ comparator, prerequisite, and transaction intent is preserved by Patch 071.
   denominator.
 - [x] Add one positive property-carrier overlap discriminator.
 - [x] Add the 27-case whole-batch transaction pilot without a latency claim.
-- [ ] Accept Patch 071 identity-bound nested cleanup, outcome-complete batch
-  authority, streaming output caps, and exact recursive delivery custody.
-- [ ] Run broader outcome-blind natural acquisition and private-fact
-  native/container parity in Patch 072 before public policy.
+- [x] Implement Patch 072 generation-aware cleanup, version-3 outcome-complete
+  batch authority, post-leader deadline handling, adopted-descendant cleanup,
+  explicit publication transitions, strict duplicate-key parsing, and exact
+  delivery verification. Local acceptance remains pending.
+- [x] Implement broader outcome-blind natural acquisition and same-byte
+  native/container private-fact parity in Patch 072 before public policy.
+
+
+### Sprint 12 Patch 072 implementation update
+
+Patch 072 preserves the accepted runtime work and changes no `src/`, `include/`,
+or schema file. Its current development gates are:
+
+- version-3 owned cleanup and 29-case/87-execution batch transaction authority;
+- recursive duplicate-key rejection for batch and delivery JSON;
+- 48 outcome-blind natural package objects from four source lineages, with 144
+  private probe runs, 192 public commands, 192 exact `readelf` processes, and
+  864 retained field dispositions; and
+- 96-object same-byte native/container parity with 5,184 private fields per
+  environment and 384 paired public tuples.
+
+Natural package source/build-origin and execution-environment effects remain
+separate. These artifacts are diagnostic, unfrozen, and publication-ineligible.
+Patch 073 owns public policy; Patch 074 owns closeout.

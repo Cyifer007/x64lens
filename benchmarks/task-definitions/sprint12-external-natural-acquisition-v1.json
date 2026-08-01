@@ -1,0 +1,158 @@
+{
+  "authority_id": "sprint12-external-natural-acquisition-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "purpose": "Acquire external natural ELF64 x86_64 package objects under outcome-blind source-lineage and path-bucket rules before inspecting x64lens role or GNU-property outcomes.",
+  "selection": {
+    "package_manager": "dpkg-query",
+    "source_lineages": [
+      "binutils",
+      "glibc",
+      "systemd",
+      "util-linux"
+    ],
+    "objects_per_lineage": 12,
+    "buckets_per_lineage": {
+      "executable_path": 7,
+      "shared_library_path": 5
+    },
+    "ordering": "bytewise lexical absolute path within each source lineage and bucket",
+    "eligibility": [
+      "installed binary package declares the exact source lineage",
+      "dpkg-query lists the absolute path",
+      "path is a regular non-symlink file",
+      "ELF identity is 64-bit little-endian x86_64",
+      "executable_path is below /usr/bin or /usr/sbin and has an execute bit",
+      "shared_library_path is below /lib or /usr/lib and its basename contains .so",
+      "SHA-256 identity is unique across the selected 48 objects"
+    ],
+    "selection_must_precede_analyzer_outcomes": true,
+    "lineage_maximum_fraction": "0.25"
+  },
+  "acquisition_custody": {
+    "retain_binary_package_names_and_versions": true,
+    "retain_source_package_names_and_versions": true,
+    "retain_requested_and_resolved_paths": true,
+    "retain_target_sha256_size_mode": true,
+    "retain_package_file_list_sha256": true,
+    "retain_copyright_file_sha256": true,
+    "retain_dpkg_query_identity_and_version": true,
+    "targets_are_copied_read_only_and_never_executed": true
+  },
+  "fact_plane": {
+    "private_fact_fields": 18,
+    "probe_repeats_per_object": 3,
+    "public_commands_per_object": 4,
+    "readelf_commands_per_object": [
+      "-hW",
+      "-lW",
+      "-dW",
+      "-nW"
+    ],
+    "states_retained": [
+      "unknown",
+      "executable-like",
+      "shared-object-like",
+      "ambiguous",
+      "contradictory",
+      "malformed",
+      "unsupported",
+      "unavailable",
+      "inapplicable"
+    ],
+    "public_schema_version": "0.2.0",
+    "public_policy_decision_authorized": false,
+    "readelf_field_eligibility": {
+      "status": {
+        "class": "unavailable",
+        "reason": "readelf exit status is not the x64lens parser contract"
+      },
+      "phnum": {
+        "class": "direct",
+        "source": "readelf -hW"
+      },
+      "role_state": {
+        "class": "derived",
+        "source": "readelf -hW/-lW/-dW"
+      },
+      "role_evidence": {
+        "class": "derived",
+        "source": "readelf -hW/-lW/-dW"
+      },
+      "interp_count": {
+        "class": "direct",
+        "source": "readelf -lW"
+      },
+      "flags1_count": {
+        "class": "direct",
+        "source": "readelf -dW"
+      },
+      "soname_count": {
+        "class": "direct",
+        "source": "readelf -dW"
+      },
+      "property_view_count": {
+        "class": "unavailable",
+        "reason": "readelf -nW collapses canonical physical carrier views and does not retain x64lens view multiplicity"
+      },
+      "property_contributor_count": {
+        "class": "unavailable",
+        "reason": "readelf does not retain original PHDR contributor multiplicity"
+      },
+      "property_note_count": {
+        "class": "direct",
+        "source": "readelf -nW"
+      },
+      "property_feature_count": {
+        "class": "direct",
+        "source": "readelf -nW"
+      },
+      "property_feature_and": {
+        "class": "derived",
+        "source": "readelf -nW represented x86 feature records"
+      },
+      "property_feature_or": {
+        "class": "derived",
+        "source": "readelf -nW represented x86 feature records"
+      },
+      "property_unknown_count": {
+        "class": "ambiguous",
+        "reason": "readelf textual unknown-property and unknown-bit categories are not isomorphic to the private count"
+      },
+      "property_conflict_count": {
+        "class": "derived",
+        "source": "readelf -nW represented feature intersection/union"
+      },
+      "property_overlap_count": {
+        "class": "unavailable",
+        "reason": "readelf output does not expose x64lens carrier-overlap accounting"
+      },
+      "ibt_state": {
+        "class": "derived",
+        "source": "readelf -nW represented x86 feature records"
+      },
+      "shstk_state": {
+        "class": "derived",
+        "source": "readelf -nW represented x86 feature records"
+      }
+    }
+  },
+  "acceptance": {
+    "lineage_count": 4,
+    "object_count": 48,
+    "executable_path_count": 28,
+    "shared_library_path_count": 20,
+    "probe_run_count": 144,
+    "private_run_field_count": 2592,
+    "object_field_summary_count": 864,
+    "public_command_count": 192,
+    "readelf_process_count": 192,
+    "readelf_field_disposition_count": 864,
+    "eligible_readelf_mismatch_count": 0,
+    "all_selection_records_retained": true,
+    "all_raw_outputs_retained": true,
+    "native_container_parity_is_separate": true,
+    "public_policy_is_deferred": true
+  }
+}

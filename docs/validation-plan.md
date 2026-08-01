@@ -1749,11 +1749,12 @@ and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
 Native and container results must agree before acceptance. Patch 068 introduced
 the private-fact matrix; Patch 069 corrected and authenticated it and added
-bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). The current
-Patch 070 candidate corrects the remaining evidence gates without changing the
-runtime analyzer or schema. The matrix remains diagnostic, unfrozen, and
-publication-ineligible. Native/container private-fact parity still precedes any
-decision about compatible public `0.2.x` indicators.
+bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). Patch 070
+attempted the next evidence-gate correction but was rejected. The current Patch
+071 candidate corrects only its confirmed blockers without changing the runtime
+analyzer or schema. The matrix remains diagnostic, unfrozen, and publication-
+ineligible. Patch 072 native/container private-fact parity still precedes any
+Patch 073 decision about compatible public `0.2.x` indicators.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1887,10 +1888,13 @@ git diff --check
 
 The batch banner must report 27 cases, 81 executions, three successful normal
 batches, sixteen failed normal batches, failure-index counts `8/4/4`, eight
-signal cases, zero stage residue, zero surviving children, zero descriptor
-growth, and zero timing claims. The corrective regression must reject four
-mutated authorities, one mismatched case result, undeclared/missing/linked
-delivery members, and both late cleanup replacement branches.
+signal cases, zero stage residue, zero surviving tracked signal-case children,
+zero descriptor growth, and zero timing claims. The survivor field does not
+claim group-wide descendant reaping. The corrective regression must reject four
+mutated authorities, one mismatched case result, extra, missing, undeclared
+empty-directory, and symbolic-link delivery members, and both late cleanup
+replacement branches. Nested cleanup remains destructive rather than rollback-
+transactional if a later authenticated step fails.
 
 Patch 071 complete acceptance still requires the normal native aggregate,
 strict ShellCheck closeout, Docker validation, and native/container parity. A

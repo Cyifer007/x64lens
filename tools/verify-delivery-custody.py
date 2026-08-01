@@ -32,6 +32,19 @@ def require(condition: bool, message: str) -> None:
         raise CustodyError(message)
 
 
+def reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise CustodyError(f"duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def strict_json_loads(raw: str) -> Any:
+    return json.loads(raw, object_pairs_hook=reject_duplicate_pairs)
+
+
 def safe_relative(raw: str) -> str:
     require(isinstance(raw, str) and raw != "", "manifest path must be a nonempty string")
     path = PurePosixPath(raw)
@@ -156,7 +169,10 @@ def validate_entry(raw: Any, index: int) -> dict[str, Any]:
 
 
 def verify(root: Path, manifest: Path) -> dict[str, Any]:
-    value = json.loads(manifest.read_text(encoding="utf-8"))
+    metadata = manifest.lstat()
+    require(stat.S_ISREG(metadata.st_mode) and not manifest.is_symlink(),
+            f"custody manifest is not a regular non-symlink file: {manifest}")
+    value = strict_json_loads(manifest.read_text(encoding="utf-8"))
     require(isinstance(value, dict) and set(value) == {"schema_id", "root_label", "files"},
             "manifest top-level fields changed")
     require(value["schema_id"] == SCHEMA_ID, "wrong delivery-custody schema")

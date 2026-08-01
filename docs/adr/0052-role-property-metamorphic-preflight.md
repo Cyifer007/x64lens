@@ -3,9 +3,11 @@
 ## Status
 
 Accepted architecture introduced by Sprint 12 Patch 066, extended by Patch 067
-layout attestation and the Patch 068 diagnostic matrix, and carried by the
-Patch 069 candidate. The Patch 071 candidate leaves the runtime and
-schema boundaries unchanged while correcting development-evidence gates.
+layout attestation and the Patch 068 diagnostic matrix, and carried through
+Patches 069 and 070. Patch 070 acceptance was rejected. Patch 071 corrected
+the first development-evidence blockers, and the current Patch 072 candidate
+carries the remaining correction plus private acquisition/parity work while
+leaving runtime and schema boundaries unchanged.
 Product and delivery acceptance remain governed by separate validation.
 
 ## Context
@@ -101,10 +103,10 @@ custody boundary and defined a separate 96-object diagnostic agreement matrix:
 48 held-out natural toolchain-produced objects plus 48 controlled metamorphic
 objects. At the Patch 068 boundary, bounded external ELF reconciliation
 (`readelf -hW/-lW/-dW/-nW`) remained subsequent work. Patch 069 added that
-authenticated reconciliation; the current Patch 070
-candidate corrects its remaining evidence gates. Native/container private-fact
-parity remains a separate later gate. Whole-batch timing and process-tree RSS
-also remain separate measurement gates.
+authenticated reconciliation. Patch 070 attempted the next evidence-gate correction but was rejected.
+Patch 071 corrected the first blocker set; Patch 072 carries the remaining
+correction and the separate native/container private-fact parity gate. Whole-batch timing and process-tree RSS also remain separate
+measurement gates.
 
 ## Consequences
 
