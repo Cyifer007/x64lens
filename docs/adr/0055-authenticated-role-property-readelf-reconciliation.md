@@ -2,9 +2,11 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 069 implementation candidate.
-Product, native/container, and delivery acceptance remain subject to separate
-validation against the exact candidate source.
+Accepted architecture for the historical Sprint 12 Patch 069 implementation
+candidate. The Patch 071 candidate corrects its remaining development-
+evidence gates without changing the comparator boundary. Product, native/
+container, and delivery acceptance remain subject to separate validation
+against the exact candidate source.
 
 ## Context
 
@@ -32,7 +34,7 @@ all x64lens-private provenance or overlap facts.
 
 ## Decision
 
-Patch 069 first closes the corpus and matrix custody defects, then adds a
+Patch 069 defined the corpus and matrix custody corrections, then added a
 separate diagnostic reconciliation authority:
 
 ```text

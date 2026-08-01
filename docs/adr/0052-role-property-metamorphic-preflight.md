@@ -4,8 +4,9 @@
 
 Accepted architecture introduced by Sprint 12 Patch 066, extended by Patch 067
 layout attestation and the Patch 068 diagnostic matrix, and carried by the
-current Patch 069 candidate. Product and delivery acceptance remain governed by
-separate validation.
+Patch 069 candidate. The Patch 071 candidate leaves the runtime and
+schema boundaries unchanged while correcting development-evidence gates.
+Product and delivery acceptance remain governed by separate validation.
 
 ## Context
 
@@ -95,12 +96,13 @@ Patch 066 does not:
 - freeze the later natural/metamorphic diagnostic matrix;
 - add a runtime dependency.
 
-Patch 067 adds C/NASM layout attestation. Patch 068 corrects its remaining
-custody boundary and defines a separate 96-object diagnostic agreement matrix:
+Patch 067 added C/NASM layout attestation. Patch 068 addressed its remaining
+custody boundary and defined a separate 96-object diagnostic agreement matrix:
 48 held-out natural toolchain-produced objects plus 48 controlled metamorphic
 objects. At the Patch 068 boundary, bounded external ELF reconciliation
-(`readelf -hW/-lW/-dW/-nW`) remained subsequent work. The current Patch 069
-candidate adds that authenticated reconciliation; native/container private-fact
+(`readelf -hW/-lW/-dW/-nW`) remained subsequent work. Patch 069 added that
+authenticated reconciliation; the current Patch 070
+candidate corrects its remaining evidence gates. Native/container private-fact
 parity remains a separate later gate. Whole-batch timing and process-tree RSS
 also remain separate measurement gates.
 

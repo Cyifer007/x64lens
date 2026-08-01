@@ -13,8 +13,9 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-The current Patch 069 corrective and external-reconciliation implementation candidate
-retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag moves.
+The current Patch 070 evidence-integrity and whole-batch transaction-pilot
+implementation candidate retains tool version `0.1.0-dev` and schema `0.2.0`;
+no release tag moves.
 Sprint 11 is complete, and Sprint 12 is the active loader and mitigation
 precision sprint. The Sprint 11 partial-tool checkpoint and later all-tools
 diagnostic replay remain diagnostic, unfrozen, and publication-ineligible. They
@@ -24,9 +25,13 @@ and an internal-only role-evidence lattice. Patch 065 carried the Patch
 064 corrections and introduced the private GNU-property facts. Patch 066
 added the controlled metamorphic preflight. Patch 067 introduced corpus-custody
 and oracle corrections and attested the private C/NASM fact-probe layout without
-a public field or schema change. Patch 068 added the separate natural/metamorphic private-fact diagnostic gate. Patch 069 corrects its remaining custody and authority boundaries and adds authenticated field-scoped GNU `readelf` reconciliation, still without a public field or schema change. Measurements after Patch 069
-require a distinct diagnostic campaign identity and remain separate from Sprint
-11 rows.
+a public field or schema change. Patch 068 added the separate natural/metamorphic
+private-fact diagnostic gate. Patch 069 corrected its remaining custody and
+authority boundaries and added authenticated field-scoped GNU `readelf`
+reconciliation. Patch 070 corrects the remaining development-evidence gates and
+adds a transaction-only batch pilot, still without a runtime analyzer, public
+field, or schema change. Measurements after Patch 070 require a distinct
+diagnostic campaign identity and remain separate from Sprint 11 rows.
 
 ## Release sequence
 
@@ -147,3 +152,11 @@ Patch 054 closed Sprint 10 without advancing the tool or schema version. Sprint
 11 diagnostic artifacts retain `0.1.0-dev` and schema `0.2.0` provenance.
 Neither `v0.1.0-rc1` nor `v0.1.0` is created during diagnostic work; those
 remain evidence-gated milestones at Sprints 16 and 22.
+
+## Sprint 12 Patch 071 version state
+
+Patch 071 retains tool version `0.1.0-dev` and JSON schema `0.2.0`. The version-2
+batch authority is a development-method authority, not a product schema. No CLI,
+report field, candidate meaning, score, runtime profile, release tag, or campaign
+freeze changes. External-natural acquisition and any compatible public
+role/property decision remain later, separately identified patches.

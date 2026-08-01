@@ -363,14 +363,15 @@ publication-ineligible evidence strata. They do not satisfy a preview,
 publication, or release gate. Cross-tool reporting preserves tool-native
 populations and named relations; it does not define a generic gadget count.
 
-## Sprint 12 Patch 069 release-gate update
+## Sprint 12 Patch 069 release-gate history
 
-The current Patch 069 candidate carries the loader-precision, overlap-
-provenance, private PIE-versus-DSO, and private GNU-property work forward. It
-corrects and authenticates a 96-object private-fact diagnostic matrix with
-separate natural and controlled metamorphic strata, then adds field-scoped GNU
-`readelf` reconciliation. These results remain diagnostic, unfrozen,
-publication-ineligible, and pending independent acceptance.
+Patch 069 carried the loader-precision, overlap-provenance, private PIE-versus-
+DSO, and private GNU-property work forward. It corrected and authenticated a
+96-object private-fact diagnostic matrix with
+separate natural and controlled metamorphic strata, then added field-scoped GNU
+`readelf` reconciliation. These results remain diagnostic, unfrozen, and
+publication-ineligible. Patch 069 required the further Patch 070 evidence-
+integrity correction.
 
 This does not complete Sprint 12 or satisfy the preview gate. Native/container
 private-fact parity and a separate public-policy review still precede any public
@@ -378,9 +379,13 @@ role, PIE/DSO, IBT, or SHSTK field. Separately, comparison qualification still
 requires positive role-controlled coordinate anchors and complete runtime
 closure for all five task paths.
 
-## Patch 070 release-gate note
+## Patch 070 review and Patch 071 release-gate note
 
-The whole-batch transaction pilot and controlled readelf reconciliation are
-development evidence. They do not satisfy the Sprint 15 campaign freeze or the
-Sprint 16 preview gate. Any later throughput result must retain the batch as its
-measurement unit and preserve the diagnostic/confirmatory separation.
+Patch 070 did not satisfy acceptance because its nested cleanup, batch oracle,
+output-limit enforcement, and delivery custody were insufficient. Patch 071 is
+the corrective gate for those properties. The corrected pilot and controlled
+`readelf` reconciliation remain diagnostic development evidence and do not
+satisfy the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later
+throughput result must retain the batch as its measurement unit and preserve the
+diagnostic/confirmatory separation. External-natural acquisition remains a
+separate Patch 072 gate.

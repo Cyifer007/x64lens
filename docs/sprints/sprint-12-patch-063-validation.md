@@ -10,13 +10,15 @@ mapping cases, but did not pass validation. Use the
 intermediate boundary, the
 [Patch 065 validation record](sprint-12-patch-065-validation.md) for the next
 historical boundary, and the
-[Patch 066 validation plan](sprint-12-patch-066-validation.md) for the last
-intermediate boundary and the
-[Patch 067 validation plan](sprint-12-patch-067-validation.md) for the final
-intervening candidate boundary and the
-[Patch 068 validation plan](sprint-12-patch-068-validation.md) for the final
+[Patch 066 validation plan](sprint-12-patch-066-validation.md) for a subsequent
+historical boundary, the
+[Patch 067 validation plan](sprint-12-patch-067-validation.md) for the next
+historical boundary, and the
+[Patch 068 validation plan](sprint-12-patch-068-validation.md) for the next
+historical boundary. The
+[Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the final
 historical candidate boundary. Use the
-[Patch 069 validation plan](sprint-12-patch-069-validation.md) for current
+[Patch 070 validation plan](sprint-12-patch-070-validation.md) for current
 candidate expectations.
 
 ## Purpose

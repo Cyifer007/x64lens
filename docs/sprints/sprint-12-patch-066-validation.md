@@ -4,12 +4,14 @@
 
 Historical implementation-candidate validation plan. Patch 066 required the
 Patch 067 corrective candidate, which subsequently required Patch 068 and then
-Patch 069. The
+Patch 069 and Patch 070. The
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
 historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the next
-historical boundary. Current expectations are in the
-[Patch 069 validation plan](sprint-12-patch-069-validation.md).
+historical boundary, and the
+[Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
+last historical candidate boundary. Current expectations are in the
+[Patch 070 validation plan](sprint-12-patch-070-validation.md).
 
 ## Purpose
 
@@ -149,8 +151,8 @@ native and container strata.
 The 28-object preflight is controlled development evidence, not the wider
 natural/metamorphic diagnostic matrix and not publication evidence. Patch 068
 adds that separate gate for 48 held-out natural objects and 48 controlled
-metamorphic objects. The current Patch 069 candidate adds bounded external ELF
-reconciliation (`readelf -hW/-lW/-dW/-nW`); native/container private-fact parity
-remains open.
+metamorphic objects. Patch 069 added bounded external ELF reconciliation
+(`readelf -hW/-lW/-dW/-nW`); the Patch 071 candidate corrects its
+remaining evidence gates. Native/container private-fact parity remains open.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

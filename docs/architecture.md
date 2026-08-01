@@ -1374,7 +1374,8 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-The current Patch 069 candidate preserves the corrected seam so
+Patch 069 preserved the corrected seam, and the Patch 071 candidate
+leaves it unchanged, so
 `binary_role.asm` consumes only those completed summary facts, including copied
 ELF type and entrypoint, and writes one internal state:
 
@@ -1406,9 +1407,10 @@ deterministic.
 
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
-Patch 065 inserted `gnu_property.asm`; the current Patch 069 candidate preserves
-its corrected alignment and overlap boundaries while retaining it after bounded
-program-header acquisition and before public reporting. The module canonicalizes
+Patch 065 inserted `gnu_property.asm`; Patch 069 preserved its corrected
+alignment and overlap boundaries, and the Patch 071 candidate leaves
+them unchanged while retaining the module after bounded program-header
+acquisition and before public reporting. The module canonicalizes
 exact duplicate physical note carriers while retaining each original PHDR
 index/type contributor in a bounded command-lifetime context. It parses only
 checked ELF note and GNU property records and materializes private IBT/SHSTK
@@ -1495,3 +1497,32 @@ does not parse ELF, select executable regions, discover candidates, classify
 semantics, score candidates, or format analyzer reports. `readelf` remains an
 external comparator. The reference analyzer pipeline and public schema are
 unchanged.
+
+## Patch 071 development-transaction boundary
+
+Patch 071 changes no analyzer module boundary. Its cleanup, batch, and delivery
+helpers remain external development infrastructure:
+
+```text
+observed owned member
+  -> no-replace quarantine
+  -> device/inode/type reconciliation
+  -> descriptor-relative recursive clear
+  -> second no-replace quarantine
+  -> final identity reconciliation and removal
+
+version-2 batch authority
+  -> streaming bounded child capture
+  -> exact case-result reconciliation
+  -> complete-or-absent publication
+
+delivery root
+  -> exact regular-file membership
+  -> path/hash/size/mode manifest
+  -> closed verification
+```
+
+These helpers cannot parse ELF, select executable regions, discover candidates,
+classify semantics, assign scores, or emit analyzer reports. The source archive
+is produced from the exact Git candidate tree rather than the live ignored
+worktree. Public schema `0.2.0` and the runtime pipeline remain unchanged.

@@ -813,3 +813,19 @@ out, and interrupted batches. A batch is the measurement unit. Batch elapsed
 time must not be divided into a claimed single-invocation latency. Failed and
 interrupted batches publish no result, and every member must be successful,
 failed, or explicitly not started.
+
+## Patch 071 whole-batch transaction authority
+
+The Patch 070 version-1 pilot is not an accepted measurement prerequisite.
+Patch 071 replaces it with `sprint12-batch-transaction-pilot-v2`, which records
+one complete expected result for every case and enforces stdout and stderr limits
+while streaming. For the 19 normal cases, the authority requires three complete
+successes and sixteen failures; failure indexes occur eight, four, and four
+times at positions zero, one, and two. Eight additional cases cover SIGINT and
+SIGTERM at four barriers.
+
+The runner retains at most one byte beyond each 4,096-byte limit before killing
+and reaping the child process group. These facts qualify transaction semantics
+only. They do not establish a throughput result, a single-run latency, process-
+tree RSS, or a publication claim. External-natural acquisition and any later
+workload ladder receive separate identities.

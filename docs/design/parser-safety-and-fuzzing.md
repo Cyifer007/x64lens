@@ -306,8 +306,9 @@ replacement at the caller-visible pathname is not modified.
 
 ## Sprint 12 Patch 065 GNU-property parser safety
 
-The current Patch 069 candidate consumes GNU property evidence only from checked
-file-backed `PT_NOTE` and `PT_GNU_PROPERTY` carriers. The parser bounds carrier
+Patch 069 consumed GNU property evidence only from checked file-backed
+`PT_NOTE` and `PT_GNU_PROPERTY` carriers; the Patch 071 candidate leaves
+that runtime parser unchanged. The parser bounds carrier
 bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
 the ELF64 `PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
@@ -339,6 +340,22 @@ to be reauthenticated. It requires a failure after mutation begins to restore
 original modes through retained descriptors with bounded retries, verify every
 restoration, and surface rollback failure. This mode-only custody gate does not
 claim to restore bytes, names, ownership, or timestamps and does not broaden
-parser, analyzer, or public-output claims. The current Patch 069 candidate
-corrects the remaining descriptor-authoritative semantic-verification,
-signal-rollback, and directory-identity evidence around that contract.
+parser, analyzer, or public-output claims. Patch 069 corrected the descriptor-
+authoritative semantic-verification, signal-rollback, and directory-identity
+evidence around that contract; the Patch 071 candidate corrects its
+remaining development-evidence gates.
+
+## Sprint 12 Patch 071 cleanup and output-bound regressions
+
+Patch 071 extends fail-closed transaction safety outside the ELF parser. Every
+observed nested cleanup member is moved and reauthenticated before recursive
+work and again before final unlink or rmdir. A late regular-file or directory
+replacement is preserved and causes failure. The regression gate exercises both
+replacement branches and ordinary symlink-safe cleanup.
+
+The batch harness no longer treats an output limit as a post-process size check.
+It reads both streams nonblockingly, retains at most `limit + 1` bytes, and kills
+and reaps the child process group immediately after overflow discrimination. A
+controlled 16 MiB producer must be terminated before it can publish a completion
+marker. These are development-harness safety properties and do not change target
+mapping, parser, capacity, or malformed-report behavior.

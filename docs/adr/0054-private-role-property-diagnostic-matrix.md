@@ -3,9 +3,10 @@
 ## Status
 
 Accepted architecture for the historical Sprint 12 Patch 068 implementation
-candidate. The current Patch 069 candidate corrects and authenticates the
-matrix. Product, delivery, and parity acceptance remain subject to separate
-validation against the exact candidate source.
+candidate. Patch 069 corrected and authenticated the matrix; the current Patch
+070 candidate corrects the remaining evidence gates without promoting the
+diagnostic result. Product, delivery, and parity acceptance remain subject to
+separate validation against the exact candidate source.
 
 ## Context
 
@@ -38,7 +39,7 @@ mode-changing operation. Rollback must be activated before mutation, retry and
 verify restoration of every original mode, and report rollback failure rather
 than suppressing it.
 
-After those corrections, Patch 068 adds a development-only 96-object
+After those corrections, Patch 068 added a development-only 96-object
 diagnostic agreement matrix:
 
 ```text

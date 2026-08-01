@@ -151,13 +151,14 @@ later sprints rather than Patch 037:
 - [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
 - [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
   executable-like, shared-object-like, ambiguous, and contradictory states. The
-  implementation and intervening corrections are carried by Patch 069.
+  implementation and intervening corrections are carried by the current Patch
+  070 candidate without a runtime analyzer change.
 - [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
   public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by Patch 069.
+  is carried by the Patch 071 candidate without a public field change.
 - [ ] Accept the 28-object controlled role/property metamorphic preflight with
   deterministic state invariance, exact contributor deltas, and four mutants.
-  Corrected and carried by Patch 069.
+  Corrected through Patch 069 and carried by the Patch 071 candidate.
 - [ ] Accept exact C/NASM private fact-probe layout attestation before admitting
   the later private-fact diagnostic matrix. Implemented in Patch 067; it attests
   probe record interpretation rather than analyzer behavior.
@@ -165,13 +166,17 @@ later sprints rather than Patch 037:
 - [x] Patch 068 defined corrections for the remaining Patch 067 corpus mutation
   and rollback boundaries, rebuilt the private-layout authority after its
   structure definition changed, and extended leakage checks across all four
-  file-analysis commands. Patch 069 carries and corrects those boundaries;
-  current candidate validation remains pending.
+  file-analysis commands. Patch 069 carried and corrected those boundaries;
+  the Patch 071 candidate supplies the further evidence-gate correction.
+  Independent acceptance remains pending.
 - [x] Patch 068 introduced a private-fact diagnostic agreement gate
   for 48 held-out natural objects and 48 controlled metamorphic objects, with
   exact independent vectors and three deterministic probe runs per object. Gate
   acceptance remains pending.
-- [x] Patch 069 authenticates the complete 96-object matrix and reconciles eligible private facts against exact GNU `readelf -hW/-lW/-dW/-nW` output with zero unexplained eligible mismatches.
+- [x] Patch 069 introduced authenticated 96-object matrix and GNU
+  `readelf -hW/-lW/-dW/-nW` reconciliation gates. The current Patch 070
+  candidate corrects their remaining authority and comparator boundaries;
+  independent acceptance remains pending.
 - [ ] Prove native/container private-fact parity before public-policy review.
 - [ ] Run the separate comparison-qualification campaign under a new identity,
   with positive role-controlled coordinate anchors, complete runtime closure for
@@ -646,11 +651,22 @@ decoding and concurrency remain deferred Sprint 14 ablations because the
 diagnostic evidence does not justify making either profile mandatory. Patch 061
 closes Sprint 11 and activates Sprint 12.
 
-### Sprint 12 Patch 070 evidence gate
+### Sprint 12 Patch 070 evidence-gate disposition
 
-- [x] Correct Patch 069 corpus mutation, caller-visible root, early-signal, and rollback boundaries.
+Patch 070 acceptance was rejected after validation reproduced nested cleanup,
+batch-oracle, output-cap, and delivery-custody defects. Its valid role/property,
+comparator, prerequisite, and transaction intent is preserved by Patch 071.
+
+- [x] Add corrections for Patch 069 corpus mutation, caller-visible root,
+  early-signal, and rollback boundaries.
 - [x] Make sealed result cleanup inode-bound and make Patch 068 prerequisites explicit.
-- [x] Freeze the controlled readelf eligibility classes and 1,224/96/288/120 denominator.
+- [x] Fix the complete 1,728-cell disposition accounting at 1,224 eligible
+  matches, zero eligible mismatches, 96 ambiguous, 288 unavailable, and 120
+  `not_eligible`; the last three categories remain outside the eligible
+  denominator.
 - [x] Add one positive property-carrier overlap discriminator.
-- [x] Validate the 27-case whole-batch transaction pilot without a latency claim.
-- [ ] Run broader outcome-blind natural acquisition and private-fact native/container parity before public policy.
+- [x] Add the 27-case whole-batch transaction pilot without a latency claim.
+- [ ] Accept Patch 071 identity-bound nested cleanup, outcome-complete batch
+  authority, streaming output caps, and exact recursive delivery custody.
+- [ ] Run broader outcome-blind natural acquisition and private-fact
+  native/container parity in Patch 072 before public policy.

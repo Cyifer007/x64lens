@@ -2,20 +2,21 @@
 
 ## Status
 
-Accepted for Sprint 12 Patch 070.
+Superseded in part by ADR 0057. Patch 070 established the intended transaction
+and evidence-custody direction, but its nested cleanup, case oracle, output-cap,
+and delivery-closure implementation did not satisfy acceptance.
 
 ## Context
 
 Patch 069 retained a complete controlled role/property matrix and field-scoped
-GNU `readelf` reconciliation, but review found that several development oracles
-could still accept mutable or incomplete evidence. The same review confirmed
-that all measured x64lens rows in the latest diagnostic campaign remained below
-the reliable single-process timer floor. Lowering the floor or dividing a batch
+GNU `readelf` reconciliation, but follow-up validation showed that several
+development oracles could still accept mutable or incomplete evidence. The
+latest diagnostic campaign also left every measured x64lens row below the
+reliable single-process timer floor. Lowering the floor or dividing a batch
 elapsed time into synthetic per-invocation latency would overstate precision.
 
-The reported local Make failure also showed that a historical corrective target
-could run before its analyzer, private fact probe, and authenticated provisional
-corpus existed.
+A historical corrective target also lacked declared analyzer, private fact
+probe, and authenticated provisional-corpus prerequisites.
 
 ## Decision
 
@@ -30,14 +31,14 @@ Patch 070 first closes the evidence-integrity defects:
   prerequisites;
 - held-out and readelf authorities are exact semantic authorities, not count-only
   envelopes;
-- every readelf process must succeed and the 1,224/96/288/120 field-disposition
-  denominator is fixed;
+- every readelf process must succeed and the complete 1,728-cell disposition
+  accounting is fixed: 1,224 eligible matches, zero eligible mismatches, 96
+  ambiguous, 288 unavailable, and 120 `not_eligible`; the last three categories
+  remain outside the eligible denominator;
 - the controlled matrix includes one positive, fail-closed property-carrier
   overlap anchor;
 - public leak checks cover all four public commands, both output streams, and
-  snake, kebab, and camel naming variants;
-- private apply and rollback bind final files to authenticated device/inode
-  identities and the package-specific source base.
+  snake, kebab, and camel naming variants.
 
 Patch 070 then adds a development-only whole-batch transaction pilot:
 
@@ -75,3 +76,12 @@ latency remains unresolved when the analyzer is below the reliable floor.
 - Using recursive `rm -rf` against sealed or replaceable result paths.
 - Publishing role, PIE/DSO, IBT, or SHSTK fields before natural-object and
   native/container private-fact gates close.
+
+
+## Patch 071 supersession
+
+Patch 071 preserves this ADR's no-divided-latency and complete-or-absent
+publication decisions while replacing the insufficient implementation with
+identity-bound nested cleanup, an outcome-complete version-2 case authority,
+streaming output caps, and exact recursive delivery custody. See
+[ADR 0057](0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md).

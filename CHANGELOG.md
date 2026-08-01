@@ -8,18 +8,33 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 070 evidence-integrity corrections: descriptor- and
-  metadata-continuous corpus mode repair, inode-bound sealed-result cleanup,
-  exact held-out/readelf authorities, comparator exit enforcement, positive
-  property-overlap coverage, recursive public-leak rejection, and exact-base
-  private apply/rollback inode custody.
+- Sprint 12 Patch 071 corrective validation and delivery tooling: an
+  outcome-complete version-2 batch authority, streaming child-output caps,
+  identity-bound nested cleanup, an exact recursive delivery-custody verifier,
+  ADR 0057, `make patch070-corrective-regression-smoke`, and the Patch 071
+  validation record. Patch 071 changes no runtime analyzer or public schema
+  behavior and defers external-natural acquisition.
+
+### Fixed
+
+- Nested cleanup now quarantines and reauthenticates every observed file and
+  directory before final deletion. A late replacement is preserved and causes
+  fail-closed cleanup rather than being unlinked.
+- The whole-batch pilot now consumes exact expected records for all 27 cases,
+  derives its summary from verified outcomes, and enforces the 4 KiB stdout and
+  stderr limits while streaming instead of buffering complete child output.
+- Source and evidence deliveries now use exact recursive path/hash/size/mode
+  custody, including rejection of undeclared empty directories. Candidate
+  source delivery is generated from the exact Git tree and excludes ignored
+  private state, local environment files, and host-absolute links.
+
 - A diagnostic 27-case, three-repetition whole-batch transaction pilot covering
   success, first/middle/final failures, output limits, timeout, SIGINT, SIGTERM,
   complete-or-absent publication, child cleanup, descriptor cleanup, and stable
   normalized outcomes. It makes no timing claim and forbids divided batch
   latency.
 - ADR 0056, `make patch069-corrective-regression-smoke`,
-  `make sprint12-batch-transaction-smoke`, and the Patch 070 validation record.
+  `make sprint12-batch-transaction-smoke`, and the Patch 070 validation plan.
 
 - An authenticated development-only GNU `readelf -hW/-lW/-dW/-nW`
   reconciliation over the controlled 96-object matrix. Its retained result
@@ -402,6 +417,11 @@ The project follows semantic versioning once the first public release is cut.
 - Extended CI and the release dry-run workflow with repository contract and aggregate validation checks.
 
 ### Fixed
+
+- Sprint 12 Patch 070 evidence-integrity corrections: descriptor- and
+  metadata-continuous corpus mode repair, inode-bound sealed-result cleanup,
+  exact held-out/readelf authorities, comparator exit enforcement, positive
+  property-overlap coverage, and recursive public-leak rejection.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

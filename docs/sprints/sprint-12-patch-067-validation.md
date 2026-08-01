@@ -3,17 +3,20 @@
 ## Status
 
 Historical corrective implementation-candidate validation plan. Patch 067
-required Patch 068, which subsequently required Patch 069. The Patch 068 plan
-preserves the next historical boundary; current expectations are recorded in the
-[Patch 069 validation plan](sprint-12-patch-069-validation.md).
+required Patch 068, which subsequently required Patch 069 and Patch 070. The
+[Patch 068 plan](sprint-12-patch-068-validation.md) and
+[Patch 069 plan](sprint-12-patch-069-validation.md) preserve the intervening
+historical boundaries; current expectations are recorded in the
+[Patch 070 validation plan](sprint-12-patch-070-validation.md).
 
 ## Scope
 
 Patch 067 introduced corpus/private transaction and oracle corrections and added
 development-only private fact-probe layout attestation. Subsequent validation
 found remaining transaction and oracle gaps assigned to Patch 068; Patch 069
-then corrected the remaining Patch 068 corpus and matrix custody defects. Patch
-067 changes no public CLI, JSON field, schema version, candidate
+then corrected the remaining Patch 068 corpus and matrix custody defects, and
+Patch 070 addresses the remaining development-evidence gates. Patch 067 changes
+no public CLI, JSON field, schema version, candidate
 metric, semantic class, score, or runtime dependency.
 
 ## Source precondition
@@ -131,8 +134,8 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 ## Deferred work
 
 Patch 068 added the subsequent private-fact diagnostic agreement gate for 48
-held-out natural objects and 48 controlled metamorphic objects. Patch 069 now
-adds authenticated external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`).
+held-out natural objects and 48 controlled metamorphic objects. Patch 069 added
+authenticated external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`).
 Positive coordinate anchors, native/container private-fact parity, and any
 public-policy decision remain separate gates. No Patch 067 row is publication
 evidence.

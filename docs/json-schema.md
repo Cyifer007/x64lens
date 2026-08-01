@@ -430,3 +430,10 @@ keys, and validates the report against the formal schema. The external
 report fields or redefine existing mitigation or count semantics.
 Any public role, IBT, or SHSTK indicator still requires a compatible schema and
 public-policy review after native/container private-fact parity.
+
+## Sprint 12 Patch 070 schema boundary
+
+Patch 070 changes development-evidence and validation infrastructure only. It
+adds no runtime analyzer module, JSON field, report meaning, or schema change;
+schema `0.2.0` remains the producer contract. Public PIE/DSO, IBT, and SHSTK
+fields remain deferred until the separate parity and public-policy gates.

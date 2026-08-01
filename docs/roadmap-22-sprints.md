@@ -32,9 +32,10 @@ All Sprint 11 measurement evidence remains diagnostic, unfrozen, and
 publication-ineligible. Sprint 12 is active and proceeds through bounded
 program-header validity and extended-numbering outcomes,
 executable-overlap/provenance semantics, PIE-versus-DSO identity, GNU-property
-evidence, the private-fact diagnostic matrix, and the current Patch 069
-authenticated external-reconciliation candidate. Patch 069 acceptance,
-native/container private-fact parity, and public-policy review remain pending.
+evidence, the private-fact diagnostic matrix, Patch 069 authenticated external
+reconciliation, and the current Patch 070 evidence-integrity and whole-batch
+transaction-pilot candidate. Patch 070 acceptance, native/container private-
+fact parity, and public-policy review remain pending.
 Positive role-controlled coordinate anchors and complete runtime closure for all
 five task paths belong to a separate comparison-qualification campaign. Sprint
 15 freezes the confirmatory campaign.
@@ -190,8 +191,8 @@ role/property metamorphic preflight. Public mitigation fields and schema `0.2.0`
 remain unchanged; malformed non-identical carrier overlap now fails before
 output. Patch 068 later adds the separate natural/metamorphic private-fact
 matrix. At that historical boundary, Sprint 12 still required bounded external
-ELF reconciliation. The current Patch 069 candidate adds exact
-`readelf -hW/-lW/-dW/-nW` reconciliation; native/container private-fact parity
+ELF reconciliation. Patch 069 added exact `readelf -hW/-lW/-dW/-nW`
+reconciliation; native/container private-fact parity
 still precedes a separate public-policy review or Sprint 13 handoff.
 
 ## Sprint 12 Patch 067 checkpoint
@@ -212,27 +213,31 @@ diagnostic agreement gate for 48 held-out natural objects and 48 controlled
 metamorphic objects. It required further correction. The natural and
 metamorphic strata remain separate, diagnostic, unfrozen, and publication-
 ineligible; public schema and output remain unchanged. At the Patch 068
-boundary, bounded external reconciliation was still future work. Patch 069 now
-adds that reconciliation; native/container private-fact parity and a deliberate
+boundary, bounded external reconciliation was still future work. Patch 069
+added that reconciliation; native/container private-fact parity and a deliberate
 public-policy decision remain later gates.
 
 ## Sprint 12 Patch 069 checkpoint
 
-The current Patch 069 candidate closes the remaining Patch 068 corpus and matrix
-custody gaps and adds an authenticated field-scoped GNU
+Patch 069 addressed the Patch 068 corpus and matrix custody gaps and added an
+authenticated field-scoped GNU
 `readelf -hW/-lW/-dW/-nW` reconciliation over the 96-object diagnostic matrix.
 The controlled matrix records 1,224 eligible matches and zero unexplained
 eligible mismatches; ambiguous, unavailable, and retained `not_eligible` cells
 remain visible rather than being forced into parity. Public output and schema
-`0.2.0` remain unchanged. Independent acceptance remains pending.
+`0.2.0` remain unchanged.
 
 Sprint 12 still requires native/container private-fact parity and a separate
 public-policy decision before any public PIE/DSO, IBT, or SHSTK indicator is
 considered. The result remains diagnostic, unfrozen, and publication-ineligible.
+Patch 069 required the further Patch 070 evidence-integrity correction;
+Patch 070 acceptance was rejected; Patch 071 corrective acceptance remains pending.
 
-## Patch 070 sequencing note
+## Patch 070 review and Patch 071 sequencing note
 
-Patch 070 remains inside Sprint 12. It qualifies evidence custody and batch
-transaction semantics before larger-workload or whole-batch measurement. It
-does not advance the Sprint 15 freeze, add a public mitigation field, or change
-the dependency-free one-worker reference profile.
+Patch 070 acceptance was rejected. Patch 071 remains inside Sprint 12 and
+corrects only identity-bound nested cleanup, exact case-oracle semantics,
+streaming output limits, and closed delivery custody. It does not advance the
+Sprint 15 freeze, add a public mitigation field, or change the dependency-free
+one-worker reference profile. External-natural acquisition, public policy, and
+closeout move to Patches 072, 073, and 074 respectively.

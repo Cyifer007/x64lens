@@ -11,9 +11,10 @@ qualification, 30-condition campaign authority, generated summaries, and the
 engineering gap register. Patch 061 corrects the remaining transaction and
 comparison-accounting findings, preregisters the below-floor whole-batch method,
 and records the diagnostic limitations. Sprint 12 is active as the loader and
-mitigation precision sprint. Patch 069 is the current corpus-integrity and
-authenticated external-reconciliation candidate; independent acceptance,
-native/container private-fact parity, and public-policy review remain pending.
+mitigation precision sprint. Patch 069 added authenticated external
+reconciliation; Patch 070 is the current evidence-integrity and whole-batch
+transaction-pilot candidate. Independent acceptance, native/container private-
+fact parity, and public-policy review remain pending.
 
 The repository now provides:
 
@@ -497,8 +498,8 @@ then adds a 28-object role/property metamorphic preflight. The preflight is
 controlled development evidence, remains unfrozen and publication-ineligible,
 and changes no public report field. Patch 068 later adds the separate natural
 and metamorphic private-fact matrix. At that historical boundary, bounded
-external ELF reconciliation remained future work. The current Patch 069
-candidate adds exact `readelf -hW/-lW/-dW/-nW` reconciliation;
+external ELF reconciliation remained future work. Patch 069 added exact
+`readelf -hW/-lW/-dW/-nW` reconciliation;
 native/container private-fact parity must follow before any compatible public
 `0.2.x` indicator is considered.
 
@@ -509,7 +510,7 @@ evidence-custody and oracle corrections and adds an assembly-emitted private
 fact-probe ABI descriptor reconciled by an independent C contract. This
 attestation covers probe record
 interpretation only; it is a prerequisite, not product validation or publication
-evidence. Patch 068 corrects the remaining custody boundary and adds the separate
+evidence. Patch 068 addressed the remaining custody boundary and added the separate
 diagnostic agreement matrix. Diagnostic campaign rows remain unfrozen and
 cannot support performance, RSS, coverage, or runtime-CET claims. Patch 069
 subsequently corrects and authenticates that matrix and adds external
@@ -523,21 +524,23 @@ role/GNU-property diagnostic agreement gate. Its 48 held-out natural
 toolchain-produced objects remain separate from 48 controlled metamorphic
 objects; an independent reader authors every expected vector, and the gate
 requires three byte-identical probe results per object. Validation remains
-pending. The matrix is diagnostic, unfrozen, publication-ineligible, and not
-prevalence evidence. It does not authorize public fields or runtime-CET claims.
-At the Patch 068 boundary, external comparison remained future work. The current
-Patch 069 candidate adds that comparison; native/container private-fact parity
-and a public-policy decision remain open.
+pending at that historical boundary; Patch 068 required the Patch 069 and Patch
+070 corrections. The matrix is diagnostic, unfrozen, publication-ineligible,
+and not prevalence evidence. It does not authorize public fields or runtime-CET claims.
+At the Patch 068 boundary, external comparison remained future work. Patch 069
+added that comparison; native/container private-fact parity and a public-policy
+decision remain open.
 
 ## Sprint 12 Patch 069 research checkpoint
 
-The current Patch 069 candidate corrects the remaining Patch 068 evidence-
-custody defects and makes the 96-object private role/property matrix
-authoritative for its diagnostic scope. It then retains 384 authenticated GNU
+Patch 069 addressed the Patch 068 evidence-custody defects and introduced an
+authenticated 96-object private role/property matrix for its diagnostic scope.
+It then retained 384 authenticated GNU
 `readelf` executions and 1,728 field dispositions. The controlled result
 contains 1,224 eligible matches and zero unexplained eligible mismatches, while
 ambiguous, unavailable, and retained `not_eligible` cells—inapplicable for their
-object/field combinations—remain outside the denominator. Independent
+object/field combinations—remain outside the denominator. Patch 069 required
+the further Patch 070 evidence-integrity correction; Patch 070 independent
 acceptance remains pending.
 
 This is external diagnostic reconciliation, not public mitigation policy,
@@ -546,10 +549,15 @@ still requires native/container private-fact parity and a separate
 non-reinterpretive public-policy decision. Broader outcome-blind natural-object
 acquisition remains a later measurement gate.
 
-## Sprint 12 Patch 070 research checkpoint
+## Sprint 12 Patch 070 review and Patch 071 corrective checkpoint
 
-Patch 070 closes remaining development-evidence custody and comparator-oracle
-defects, then proves whole-batch transaction semantics across 81 controlled
-executions. This is method qualification, not performance evidence. The latest
-real campaign still supports no x64lens single-run latency, RSS-superiority, or
-generic cross-tool coverage claim.
+Patch 070 acceptance was rejected after validation reproduced nested cleanup,
+batch-oracle, output-cap, and delivery-custody defects. Patch 071 preserves valid
+Patch 070 facts and replaces those boundaries with identity-bound cleanup, an
+outcome-complete version-2 authority, streaming 4 KiB output caps, and exact
+recursive delivery custody. This remains diagnostic, unfrozen, publication-
+ineligible method evidence, not performance evidence.
+
+External-natural acquisition is deferred to Patch 072. The latest real campaign
+still supports no x64lens single-run latency, RSS-superiority, generic gadget-
+count, or normalized-coverage claim.

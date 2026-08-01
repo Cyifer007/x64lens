@@ -4,9 +4,9 @@
 
 Historical architecture record for the Sprint 12 Patch 067 implementation
 candidate. Patch 068 introduced the intermediate corrective contract and
-diagnostic matrix; the current Patch 069 candidate carries and corrects that
-boundary. Product and delivery acceptance remain governed by separate
-validation.
+diagnostic matrix; Patch 069 carried and corrected that boundary, and the
+Patch 071 candidate corrects its remaining development-evidence gates.
+Product and delivery acceptance remain governed by separate validation.
 
 ## Context
 

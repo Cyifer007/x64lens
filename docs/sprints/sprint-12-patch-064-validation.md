@@ -8,12 +8,14 @@ acceptance result. The
 [Patch 065 validation record](sprint-12-patch-065-validation.md) and
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) preserve the
 next intervening candidate boundaries. The
-[Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves the last
-intervening candidate boundary, and the
+[Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves a
+subsequent historical candidate boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the
-last historical candidate boundary. The current corrective and external-
-reconciliation candidate is covered by the
-[Patch 069 validation plan](sprint-12-patch-069-validation.md).
+next historical candidate boundary, and the
+[Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
+last historical candidate boundary. The current evidence-integrity candidate is
+covered by the
+[Patch 070 validation plan](sprint-12-patch-070-validation.md).
 
 ## Purpose
 
@@ -53,8 +55,9 @@ bounded `PT_INTERP` carrier, `DF_1_PIE`, and validated `DT_SONAME` string
 evidence. A raw SONAME tag or index is insufficient until it resolves to a
 bounded, nonempty, in-range, NUL-terminated string. `ET_DYN` alone remains
 unknown. The current public PIE indicator and schema `0.2.0` remain unchanged.
-The current Patch 069 candidate carries these facts forward with the intervening
-corrections and the separate bounded GNU-property IBT/SHSTK gate.
+Patch 069 carried these facts forward with the intervening corrections and the
+separate bounded GNU-property IBT/SHSTK gate; the Patch 071 candidate
+leaves the runtime facts unchanged.
 
 ## Focused validation
 
@@ -139,8 +142,9 @@ worker profile:           one-worker reference unchanged
 ## Known limitations
 
 - The internal role state is not a public PIE/DSO conclusion.
-- GNU-property IBT/SHSTK evidence is carried by the current Patch 069 candidate;
-  this historical Patch 064 source did not include it.
+- GNU-property IBT/SHSTK evidence was carried by Patch 069 and remains unchanged
+  in the Patch 071 candidate; this historical Patch 064 source did not
+  include it.
 - The overlap incidence measurement is one diagnostic corpus plus one system
   snapshot, not a population-wide estimate.
 - Toolchain-limited static review does not substitute for the required native,

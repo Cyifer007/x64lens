@@ -5,8 +5,10 @@
 Accepted fact-acquisition architecture. The original Patch 065 implementation
 did not pass validation. Patch 066 corrected its parser and evidence-boundary
 findings, Patch 067 added private layout attestation, Patch 068 introduced an
-intermediate diagnostic matrix, and the current Patch 069 candidate carries
-this boundary forward. Independent acceptance remains pending.
+intermediate diagnostic matrix, and Patch 069 added authenticated external
+reconciliation. The Patch 071 candidate carries the runtime boundary
+forward unchanged while correcting development-evidence gates. Independent
+acceptance remains pending.
 
 ## Context
 
@@ -96,6 +98,7 @@ mapped ELF header or dynamic/string bytes.
   being silently collapsed or treated as parser errors.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
-- The current Patch 069 candidate preserves the public report fields and adds
-  authenticated external reconciliation. Native/container private-fact parity
-  remains a separate later gate before any public-policy decision.
+- Patch 069 added authenticated external reconciliation without changing public
+  report fields. The Patch 071 candidate preserves those fields.
+  Native/container private-fact parity remains a separate later gate before any
+  public-policy decision.

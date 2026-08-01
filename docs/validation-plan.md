@@ -1748,9 +1748,10 @@ exhaustion returns exit code 6 before stdout. The 4,096-candidate complete resul
 and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 
 Native and container results must agree before acceptance. Patch 068 introduced
-the private-fact matrix; the current Patch 069 candidate corrects and
-authenticates it and adds bounded external ELF reconciliation
-(`readelf -hW/-lW/-dW/-nW`). The matrix remains diagnostic, unfrozen, and
+the private-fact matrix; Patch 069 corrected and authenticated it and added
+bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). The current
+Patch 070 candidate corrects the remaining evidence gates without changing the
+runtime analyzer or schema. The matrix remains diagnostic, unfrozen, and
 publication-ineligible. Native/container private-fact parity still precedes any
 decision about compatible public `0.2.x` indicators.
 
@@ -1866,3 +1867,33 @@ make sprint12-role-property-readelf-smoke
 The Patch 068 corrective target must build or authenticate its analyzer, private
 fact probe, and provisional corpus before execution. Sealed temporary results
 are removed through exact-object cleanup rather than recursive path deletion.
+The whole-batch gate covers 27 cases and 81 controlled executions. It validates
+transaction, publication, interruption, cleanup, and stable normalized-outcome
+semantics only. The batch remains the measurement unit; elapsed batch time is
+not divided into claimed single-run latency, and no performance conclusion
+follows from this gate.
+
+## Sprint 12 Patch 071 corrective validation
+
+Run the focused correction gate before the aggregate:
+
+```bash
+make script-perms-check
+make scaffold-check
+make patch070-corrective-regression-smoke
+make sprint12-batch-transaction-smoke
+git diff --check
+```
+
+The batch banner must report 27 cases, 81 executions, three successful normal
+batches, sixteen failed normal batches, failure-index counts `8/4/4`, eight
+signal cases, zero stage residue, zero surviving children, zero descriptor
+growth, and zero timing claims. The corrective regression must reject four
+mutated authorities, one mismatched case result, undeclared/missing/linked
+delivery members, and both late cleanup replacement branches.
+
+Patch 071 complete acceptance still requires the normal native aggregate,
+strict ShellCheck closeout, Docker validation, and native/container parity. A
+cloud environment that cannot install NASM or reach a Docker daemon records
+those checks as environment-deferred rather than substituting stale build
+output for a fresh build.

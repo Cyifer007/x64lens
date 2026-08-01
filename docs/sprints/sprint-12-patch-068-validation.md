@@ -4,8 +4,10 @@
 
 Historical corrective and private-fact diagnostic-gate implementation candidate.
 Patch 068 required further corpus-integrity, matrix-authority, oracle, and
-external-reconciliation work. Current expectations are recorded in the
-[Patch 069 validation plan](sprint-12-patch-069-validation.md).
+external-reconciliation work in
+[Patch 069](sprint-12-patch-069-validation.md), which in turn required Patch 070
+evidence-gate correction. Current expectations are recorded in the
+[Patch 070 validation plan](sprint-12-patch-070-validation.md).
 
 ## Scope
 
@@ -134,8 +136,9 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 ## Deferred work
 
 At the Patch 068 boundary, authenticated `readelf -hW/-lW/-dW/-nW`
-reconciliation remained future work; the current Patch 069 candidate adds that
-diagnostic reconciliation. Native/container private-fact parity over the
+reconciliation remained future work; Patch 069 added that diagnostic
+reconciliation, and the Patch 071 candidate corrects its remaining
+evidence gates. Native/container private-fact parity over the
 diagnostic matrix, the public-policy decision, positive coordinate anchors,
 whole-batch timing, and process-tree RSS remain separate later gates. Patch 068
 evidence is diagnostic and cannot support publication or runtime-CET claims.

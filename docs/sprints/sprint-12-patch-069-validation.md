@@ -2,13 +2,14 @@
 
 ## Status
 
-Current Sprint 12 corpus-integrity and authenticated external-reconciliation
-implementation candidate. Patch 069 remains pending independent acceptance
-validation. The matrix and `readelf` reconciliation remain diagnostic,
-unfrozen, and publication-ineligible; native/container private-fact parity and
-public-policy review remain separate later gates. Results below are candidate
-contracts or controlled diagnostic observations, not accepted publication
-outcomes.
+Historical Sprint 12 corpus-integrity and authenticated external-reconciliation
+implementation candidate. Patch 069 required the further Patch 070 evidence-
+integrity correction. Current expectations are recorded in the
+[Patch 070 validation plan](sprint-12-patch-070-validation.md). The matrix and
+`readelf` reconciliation remain diagnostic, unfrozen, and publication-
+ineligible; native/container private-fact parity and public-policy review remain
+separate later gates. Results below are historical candidate contracts or
+controlled diagnostic observations, not accepted publication outcomes.
 
 ## Purpose
 
