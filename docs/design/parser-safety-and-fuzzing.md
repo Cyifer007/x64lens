@@ -307,7 +307,7 @@ replacement at the caller-visible pathname is not modified.
 ## Sprint 12 Patch 065 GNU-property parser safety
 
 Patch 069 consumed GNU property evidence only from checked file-backed
-`PT_NOTE` and `PT_GNU_PROPERTY` carriers; the Patch 071 candidate leaves
+`PT_NOTE` and `PT_GNU_PROPERTY` carriers; the current Patch 072 candidate leaves
 that runtime parser unchanged. The parser bounds carrier
 bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
@@ -342,8 +342,8 @@ restoration, and surface rollback failure. This mode-only custody gate does not
 claim to restore bytes, names, ownership, or timestamps and does not broaden
 parser, analyzer, or public-output claims. Patch 069 corrected the descriptor-
 authoritative semantic-verification, signal-rollback, and directory-identity
-evidence around that contract; the Patch 071 candidate corrects its
-remaining development-evidence gates.
+evidence around that contract; Patch 071 supplied the first development-
+evidence correction and Patch 072 supplies the remainder.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 

@@ -18,7 +18,7 @@ next historical candidate boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Use the
-[Patch 072 validation plan](sprint-12-patch-072-validation.md) for current
+[Patch 072 validation record](sprint-12-patch-072-validation.md) for current
 candidate expectations; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary.
@@ -172,7 +172,8 @@ CET is enabled at runtime, that every indirect branch is protected, or that a
 binary is safe or exploitable. The Patch 068 natural/metamorphic private-fact
 matrix remains diagnostic, unfrozen, and publication-ineligible. Bounded
 external ELF reconciliation was future work at the Patch 065 boundary; the
-Patch 069 added exact `readelf -hW/-lW/-dW/-nW` reconciliation. The
-Patch 071 candidate corrects its remaining evidence gates. Native/
-container private-fact parity must still follow before a separate review decides
-whether compatible public `0.2.x` indicators are justified.
+Patch 069 candidate added exact `readelf -hW/-lW/-dW/-nW` reconciliation.
+Patch 071 supplied the first evidence-gate correction, and Patch 072 carries
+the remainder and implements the environment-parity gate. Qualified native/
+container parity evidence remains pending before Patch 073 decides whether
+compatible public `0.2.x` indicators are justified.

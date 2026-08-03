@@ -283,14 +283,16 @@ make sprint12-role-property-heldout-smoke
 make sprint12-role-property-readelf-smoke
 ```
 
-Patch 069 added no public role, PIE/DSO, IBT, or SHSTK field and did not change
-schema `0.2.0`; Patches 071 and 072 preserve those boundaries.
+Patch 069 added no new public role-derived PIE/DSO distinction or IBT/SHSTK
+indicator and did not reinterpret the existing coarse `mitigations.pie` field;
+schema `0.2.0` remained unchanged. Patches 071 and 072 preserve those
+boundaries.
 Static GNU properties remain indicators rather than proof of runtime CET
 enforcement. See [ADR 0055](docs/adr/0055-authenticated-role-property-readelf-reconciliation.md),
 the [Patch 069 validation plan](docs/sprints/sprint-12-patch-069-validation.md),
 the historical [Patch 070 validation record](docs/sprints/sprint-12-patch-070-validation.md),
 the historical [Patch 071 validation record](docs/sprints/sprint-12-patch-071-validation.md),
-and the current [Patch 072 validation plan](docs/sprints/sprint-12-patch-072-validation.md).
+and the current [Patch 072 validation record](docs/sprints/sprint-12-patch-072-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -798,11 +800,11 @@ failed batches, and failure-index counts of eight, four, and four.
 
 The pilot still makes no timing claim and does not authorize divided latency,
 public role/property fields, or runtime CET claims. Runtime analyzer behavior
-and schema `0.2.0` remain unchanged. Subsequent adversarial review found narrower
+and schema `0.2.0` remain unchanged. Follow-up validation found narrower
 cleanup-generation, descendant, publication-transition, duplicate-key, and
 delivery-completeness defects, so Patch 071 is not the final acceptance boundary.
 See [ADR 0057](docs/adr/0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md)
-and the [Patch 071 validation plan](docs/sprints/sprint-12-patch-071-validation.md).
+and the historical [Patch 071 validation record](docs/sprints/sprint-12-patch-071-validation.md).
 
 ## Sprint 12 external-natural acquisition and environment-parity checkpoint
 
@@ -817,12 +819,13 @@ transitions, and uses identity-bound transaction-root cleanup. Batch and
 delivery JSON authorities reject duplicate object keys.
 
 The outcome-blind natural stratum freezes 48 unique installed-package objects
-before analyzer outcomes: twelve each from `binutils`, `glibc`, `systemd`, and
-`util-linux`, with seven executable paths and five shared-library paths per
-lineage. It preserves 144 private probe executions, 192 public commands, 192
-exact GNU `readelf` processes, and all 864 field dispositions. Physical
-GNU-property view multiplicity remains explicitly unavailable from `readelf`
-rather than being forced into agreement.
+after package, path, mode, and ELF eligibility checks and before any x64lens,
+private fact-probe, or GNU `readelf` outcome is consumed: twelve each from
+`binutils`, `glibc`, `systemd`, and `util-linux`, with seven executable paths
+and five shared-library paths per lineage. It preserves 144 private probe
+executions, 192 public commands, 192 exact GNU `readelf` processes, and all 864
+field dispositions. Physical GNU-property view multiplicity remains explicitly
+unavailable from `readelf` rather than being forced into agreement.
 
 A separate same-byte native/container gate runs the authenticated 96-object
 matrix against byte-identical analyzer, fact-probe, and schema inputs. Each
@@ -834,8 +837,19 @@ from environment parity.
 
 Patch 072 changes no runtime `src/`, `include/`, or schema file. The acquisition
 and parity planes remain diagnostic, unfrozen, publication-ineligible, and do
-not prove runtime CET enforcement or authorize public PIE/DSO, IBT, or SHSTK
-fields. See [ADR 0058](docs/adr/0058-outcome-blind-external-natural-acquisition-and-environment-parity.md)
-and the [Patch 072 validation plan](docs/sprints/sprint-12-patch-072-validation.md).
-Patch 073 owns the non-reinterpretive public-policy decision, and Patch 074
-closes Sprint 12 and hands off to Sprint 13.
+not prove runtime CET enforcement or authorize new role-derived PIE/DSO or
+IBT/SHSTK fields; the existing coarse `mitigations.pie` field is unchanged.
+Retained cloud evidence covers the acquisition and same-host logic-only parity;
+qualified native/container parity remains pending. See
+[ADR 0058](docs/adr/0058-outcome-blind-external-natural-acquisition-and-environment-parity.md)
+and the [Patch 072 validation record](docs/sprints/sprint-12-patch-072-validation.md).
+Patch 073 executes that non-reinterpretive gate and records an explicit
+`defer` decision. It adds no public role-derived PIE/DSO, IBT, or SHSTK field,
+preserves the existing coarse `mitigations.pie` meaning, and makes no runtime-
+CET claim. The correction also binds cleanup and delivery checks to retained
+descriptors, reauthenticates external-natural selection throughout acquisition,
+and isolates the container parity write root from the completed native plane.
+Patch 074 closes Sprint 12 only after fresh native, Docker, corrected parity,
+delivery, and independent acceptance evidence is reconciled. See
+[ADR 0059](docs/adr/0059-patch072-correction-and-non-reinterpretive-public-policy-deferral.md)
+and the [Patch 073 validation record](docs/sprints/sprint-12-patch-073-validation.md).

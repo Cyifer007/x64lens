@@ -2,9 +2,10 @@
 
 ## Status
 
-Superseded in part by ADR 0057. Patch 070 established the intended transaction
-and evidence-custody direction, but its nested cleanup, case oracle, output-cap,
-and delivery-closure implementation did not satisfy acceptance.
+Superseded in part by ADR 0057 and further by ADR 0058. Patch 070 established
+the intended transaction and evidence-custody direction, but its nested cleanup,
+case oracle, output-cap, and delivery-closure implementation did not satisfy
+acceptance.
 
 ## Context
 
@@ -86,3 +87,7 @@ identity-bound nested cleanup, an outcome-complete version-2 case authority,
 streaming output caps, and regular-file path/hash/size/mode delivery verification
 with exact implied-directory membership. See
 [ADR 0057](0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md).
+
+ADR 0058 records the remaining Patch 071 correction and the version-3 authority
+used by the current Patch 072 candidate, together with outcome-blind external-
+natural acquisition and native/container private-fact parity.

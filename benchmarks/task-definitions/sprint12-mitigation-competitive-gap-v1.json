@@ -1,0 +1,99 @@
+{
+  "authority_id": "sprint12-mitigation-competitive-gap-v1",
+  "evidence_class": "design-decision",
+  "frozen": false,
+  "publication_eligible": false,
+  "purpose": "Prioritize bounded static ELF hardening indicators needed to narrow comparator capability gaps without overstating runtime enforcement or exploitability.",
+  "current_public_properties": [
+    "bind_now",
+    "canary",
+    "dynamic_entry_count",
+    "dynamic_linking",
+    "dynamic_terminated",
+    "nx_stack",
+    "pie",
+    "relro",
+    "rwx_load_segment",
+    "stripped"
+  ],
+  "current_private_or_deferred": [
+    {
+      "id": "binary-role",
+      "status": "private-policy-deferred",
+      "reason": "Corrected isolated parity and held-out task-value evidence remain open."
+    },
+    {
+      "id": "ibt-shstk",
+      "status": "private-policy-deferred",
+      "reason": "Static GNU property evidence does not establish runtime CET enforcement."
+    }
+  ],
+  "prioritized_gap_tranches": [
+    {
+      "priority": 1,
+      "id": "text-relocations",
+      "candidate_public_state": "unknown-absent-present-contradictory",
+      "bounded_evidence": [
+        "DT_TEXTREL",
+        "DT_FLAGS & DF_TEXTREL"
+      ],
+      "required_work": [
+        "checked dynamic-tag acquisition",
+        "duplicate and contradictory carrier policy",
+        "valid, malformed, unsupported, and no-dynamic fixtures",
+        "focused text and integrated JSON parity",
+        "external readelf comparator reconciliation",
+        "schema 0.2.x compatibility review"
+      ],
+      "selected_for_next_bounded_mitigation_tranche": true
+    },
+    {
+      "priority": 2,
+      "id": "runtime-search-path",
+      "candidate_public_state": "separate-rpath-and-runpath-indicators",
+      "bounded_evidence": [
+        "DT_RPATH validated string",
+        "DT_RUNPATH validated string"
+      ],
+      "required_work": [
+        "reuse validated dynamic string-table mapping",
+        "retain RPATH and RUNPATH separately",
+        "reject duplicate or conflicting singleton policy where required",
+        "hostile string-offset and NUL-termination fixtures",
+        "report indicators without claiming loader exploitability"
+      ],
+      "selected_for_next_bounded_mitigation_tranche": true
+    },
+    {
+      "priority": 3,
+      "id": "fortify-source-indicator",
+      "candidate_public_state": "unknown-absent-present",
+      "bounded_evidence": [
+        "validated dynamic symbol and string evidence",
+        "exact fortified *_chk symbol-family policy"
+      ],
+      "required_work": [
+        "bounded symbol-table view",
+        "symbol-entry and string-range hostile fixtures",
+        "avoid substring-only string-table inference",
+        "indicator wording that does not claim complete source fortification"
+      ],
+      "selected_for_next_bounded_mitigation_tranche": false
+    }
+  ],
+  "excluded_shortcuts": [
+    "infer runtime CET enforcement from static GNU properties",
+    "infer PIE versus DSO from ET_DYN alone",
+    "infer fortification from arbitrary string-table substring matches",
+    "collapse RPATH and RUNPATH into one unlabeled search-path bit",
+    "add a public field before fixtures, schema validation, and native/container parity"
+  ],
+  "patch_073_disposition": {
+    "runtime_fields_added": 0,
+    "reason": "Patch 073 first closes confirmed P072 evidence defects and executes a policy deferral. The next mitigation families are now selected with explicit parser, fixture, schema, and comparator gates rather than being added unvalidated.",
+    "next_tranche": [
+      "text-relocations",
+      "runtime-search-path"
+    ]
+  }
+}

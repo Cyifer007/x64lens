@@ -90,7 +90,8 @@ using descriptor-bound `fchmod`.
 
 Patch 066 does not:
 
-- add public PIE/DSO, IBT, or SHSTK fields;
+- add a public role-derived PIE/DSO distinction or IBT/SHSTK indicators, or
+  reinterpret the existing coarse `mitigations.pie` field;
 - change schema `0.2.0`;
 - infer runtime CET enforcement;
 - change executable-region authority, scanner behavior, candidate identity,
@@ -116,6 +117,6 @@ measurement gates.
 - Original carrier provenance remains visible without accepting ambiguous
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
-- Public indicators remain blocked while the current diagnostic agreement and
-  external-reconciliation candidate awaits acceptance, and until the later
-  parity gate and public-policy review justify a compatible-output decision.
+- Public indicators remain blocked while the current Patch 072 corrective,
+  external-natural, and parity candidate awaits complete acceptance and until
+  the Patch 073 public-policy review justifies a compatible-output decision.

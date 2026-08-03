@@ -8,23 +8,35 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 12 Patch 073 correction and non-reinterpretive public-policy gate.
+  Cleanup performs a final descriptor-bound generation check through removal;
+  external-natural selection is reauthenticated throughout outcome collection;
+  delivery custody v2 authenticates root, manifest, directory, and file modes
+  while hashing bytes through retained descriptors; and native/container parity
+  gives the container one dedicated empty write root without exposing the
+  completed native plane. Successful acquisition and parity results are retained
+  and sealed rather than deleted.
+- A machine-readable role/property policy authority with decision `defer`. It
+  authenticates the unchanged schema and reporter sources, preserves the coarse
+  `mitigations.pie` Boolean, adds zero public PIE/DSO/IBT/SHSTK fields, and makes
+  no runtime-CET claim. A separate competitive-mitigation authority selects
+  bounded text-relocation and distinct RPATH/RUNPATH evidence as the next parser,
+  fixture, comparator, and schema-gated tranche; Patch 073 adds no runtime field.
+
 - Sprint 12 Patch 072 outcome-blind external-natural acquisition and same-byte
-  environment parity. The new 48-object installed-package stratum freezes four
-  source lineages and a seven-executable/five-library path split before analyzer
-  outcomes, retains 144 private probe runs, 192 public commands, 192 exact GNU
-  `readelf` processes, and all 864 field dispositions, and keeps public policy
-  deferred. A separate 96-object native/container gate requires 5,184 private
-  fields per environment, 288 paired probe outputs, 768 public closures, and
-  384 paired path-normalized public tuples from byte-identical inputs.
-- Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
-  fixed-length quarantine names, final file/directory/root reauthentication,
-  ancestor-descriptor closure, strict duplicate-key JSON parsing, version-3
-  batch authority with 29 cases and 87 executions, deadline enforcement after
-  direct-leader exit, adopted-descendant reaping, explicit publication
-  transitions, identity-bound transaction-root cleanup, ADR 0058,
-  `make patch071-corrective-regression-smoke`, and the Patch 072 validation
-  record. Runtime `src/`, `include/`, schema `0.2.0`, candidate metrics, and
-  public role/property fields remain unchanged.
+  environment parity. Outcome-blind selection freezes 48 object identities
+  across four source lineages and a seven-executable/five-library path split
+  after package, path, mode, and ELF eligibility checks and before any x64lens,
+  private fact-probe, or GNU `readelf` outcome is consumed. Cloud-validated
+  acquisition evidence remains diagnostic, unfrozen, and publication-
+  ineligible; it includes 144 private probe runs, 192 public commands, 192 exact
+  GNU `readelf` processes, and all 864 field dispositions.
+  A separate 96-object native/container gate requires 5,184 private fields per
+  environment, 288 paired probe outputs, 768 public closures, and 384 paired
+  path-normalized public tuples from byte-identical inputs. Retained parity
+  evidence is same-host and logic-only; corrected write-isolated native/
+  container parity remains pending local rerun. Patch 073 has executed the
+  public-policy gate as an explicit deferral.
 
 - Sprint 12 Patch 071 corrective validation and delivery tooling: an
   outcome-complete version-2 batch authority, streaming child-output caps,
@@ -423,6 +435,16 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
+  fixed-length quarantine names, final file/directory/root reauthentication,
+  ancestor-descriptor closure, strict duplicate-key JSON parsing, version-3
+  batch authority with 29 cases and 87 executions, deadline enforcement after
+  direct-leader exit, adopted-descendant reaping, explicit publication
+  transitions, identity-bound transaction-root cleanup, ADR 0058,
+  `make patch071-corrective-regression-smoke`, and the Patch 072 validation
+  record. Runtime `src/`, `include/`, schema `0.2.0`, candidate metrics, and
+  existing public report fields remain unchanged.
+
 - Sprint 12 Patch 071 corrects the rejected Patch 070 cleanup boundary with
   two-stage identity quarantine. A late replacement is preserved and causes
   fail-closed cleanup rather than being unlinked. Cleanup remains destructive,
@@ -443,9 +465,9 @@ The project follows semantic versioning once the first public release is cut.
   metadata-continuous corpus mode repair, inode-bound sealed-result cleanup,
   exact held-out/readelf authorities, comparator exit enforcement, positive
   property-overlap coverage, and recursive public-leak rejection. Patch 070
-  acceptance was rejected; Patch 071 preserves its valid evidence facts while
-  replacing the nested-cleanup, batch-authority, streaming-limit, and delivery-
-  custody boundaries.
+  acceptance was rejected; Patch 071 supplied the first nested-cleanup, batch-
+  authority, streaming-limit, and delivery-custody corrections, and Patch 072
+  supplies the remaining correction plus acquisition and parity gates.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

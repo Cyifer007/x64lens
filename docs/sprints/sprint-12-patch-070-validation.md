@@ -4,10 +4,11 @@
 
 Rejected as a Sprint 12 acceptance candidate after validation reproduced
 blocking cleanup, batch-oracle, output-limit, and delivery-custody defects.
-Patch 071 supersedes those boundaries while preserving valid Patch 070 work. The
-batch pilot, private-fact matrix, and `readelf` reconciliation remain diagnostic,
-unfrozen, and publication-ineligible; native/container private-fact parity and
-public-policy review remain separate later gates.
+Patch 071 supplied the first corrective boundary, and Patch 072 supplies the
+remaining correction plus acquisition and environment-parity gates. The batch
+pilot, private-fact matrix, and `readelf` reconciliation remain diagnostic,
+unfrozen, and publication-ineligible. Qualified native/container parity remains
+pending, and public-policy review remains a separate later gate.
 
 ## Purpose
 
@@ -34,7 +35,8 @@ Patch 070 is defined against exact committed Patch 069 source:
 - malformed parse failures emit no partial stdout;
 - dependency-free, decoder-free, one-worker reference runtime;
 - no runtime analyzer module or schema field change;
-- no public PIE/DSO, IBT, or SHSTK field.
+- no new role-derived PIE/DSO field or IBT/SHSTK field; the existing coarse
+  `mitigations.pie` field remains unchanged.
 
 ## Focused validation
 
@@ -110,5 +112,7 @@ Patch 071 correction:
 - output limits were applied only after complete buffering; and
 - source/evidence deliveries were not recursively closed and portable.
 
-The corrective validation authority is
-[`sprint-12-patch-071-validation.md`](sprint-12-patch-071-validation.md).
+The first corrective validation authority is
+[`sprint-12-patch-071-validation.md`](sprint-12-patch-071-validation.md); the
+remaining correction and acquisition/parity gates are recorded in
+[`sprint-12-patch-072-validation.md`](sprint-12-patch-072-validation.md).

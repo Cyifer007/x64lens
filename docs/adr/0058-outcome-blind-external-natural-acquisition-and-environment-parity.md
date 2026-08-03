@@ -11,8 +11,8 @@ Docker checks.
 ## Context
 
 Patch 071 corrected the first Patch 070 cleanup, batch, output-cap, and delivery
-findings. Independent adversarial review then found narrower but material gaps
-in the development evidence plane:
+findings. Follow-up validation then identified narrower but material gaps in
+the development evidence plane:
 
 - cleanup could still delete a foreign replacement at the last pathname
   boundary, accept device/inode reuse after object recreation, exceed
@@ -25,11 +25,12 @@ in the development evidence plane:
 - the complete application delivery omitted loose artifacts named by its own
   records.
 
-Those are current tooling and delivery defects, not runtime analyzer defects.
-The freestanding assembly analyzer, loader and mitigation facts, capacity and
-malformed-input behavior, schema `0.2.0`, and controlled 96-object fact plane
-remained valid. External-natural acquisition could proceed only after its
-custody and process prerequisites were corrected in the same cohesive patch.
+Those prerequisites concern tooling and delivery rather than runtime analyzer
+changes. The freestanding assembly analyzer, loader and mitigation paths,
+capacity and malformed-input paths, schema `0.2.0`, and controlled 96-object
+fact plane were unchanged by Patches 071 and 072. External-natural acquisition
+could proceed only after its custody and process prerequisites were corrected
+in the same cohesive patch.
 
 ## Decision
 
@@ -83,9 +84,10 @@ loose artifact named by its delivery records.
 
 ### Outcome-blind external-natural acquisition
 
-The external-natural authority freezes selection before x64lens, the private
-fact probe, or GNU `readelf` inspect an outcome. The installed-package stratum
-uses four independent dpkg source lineages:
+The external-natural authority freezes selection after package, path, mode, and
+ELF eligibility checks and before any x64lens, private fact-probe, or GNU
+`readelf` outcome is consumed. The installed-package stratum uses four distinct
+dpkg source lineages:
 
 ```text
 binutils
@@ -133,20 +135,21 @@ planes. Each plane retains:
 ```
 
 The parity comparator requires 10,368 combined private field records, 5,184
-paired field agreements, 288 byte-identical paired probe results, 768 combined
-public closures, and 384 paired public tuples. Public outputs are compared only
-after replacing the environment-specific target pathname; raw outputs remain
-retained. Docker is an environment stratum, not a compiler/build-origin stratum.
+paired field agreements, 576 combined probe processes, 288 byte-identical
+paired probe-output agreements, 768 combined public closures, and 384 paired
+public tuples. Public outputs are compared only after replacing the
+environment-specific target pathname; raw outputs remain retained. Docker is
+an environment stratum, not a compiler/build-origin stratum.
 
 ## Consequences
 
-Patch 072 changes no runtime `src/`, `include/`, or schema file. It adds no
-public role, PIE/DSO, IBT, or SHSTK field and does not reinterpret the existing
-coarse PIE indicator. Static GNU-property facts do not prove runtime CET
-enforcement. Program headers remain executable authority. Candidate capacity
-remains 4,096, candidate 4,097 returns exit 6 before stdout, malformed inputs
-emit no partial report, and the dependency-free decoder-free one-worker
-reference remains unchanged.
+Patch 072 changes no runtime `src/`, `include/`, or schema file. It adds no new
+role-derived PIE/DSO field or IBT/SHSTK field and does not reinterpret the
+existing coarse `mitigations.pie` indicator. Static GNU-property facts do not
+prove runtime CET enforcement. Program headers remain executable authority.
+Candidate capacity remains 4,096, candidate 4,097 returns exit 6 before stdout,
+malformed inputs emit no partial report, and the dependency-free decoder-free
+one-worker reference remains unchanged.
 
 The Sprint 12 sequence is:
 

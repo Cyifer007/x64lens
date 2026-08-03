@@ -2,10 +2,11 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 071 corrective implementation
-candidate. Patch 071 changes development, validation, and delivery tooling only;
-product acceptance remains subject to native and Docker validation against the
-exact candidate source.
+Historical accepted architecture for the first Sprint 12 Patch 071 corrective
+implementation candidate. Patch 071 changed development, validation, and
+delivery tooling only, but its review required the remaining Patch 072
+correction recorded by ADR 0058. Product acceptance remains subject to native
+and Docker validation against the exact candidate source.
 
 ## Context
 
@@ -29,7 +30,7 @@ would compound the custody and oracle defects.
 
 ## Decision
 
-Patch 071 is the smallest cohesive corrective boundary.
+Patch 071 was the first cohesive corrective boundary.
 
 ### Identity-bound nested cleanup
 
@@ -95,11 +96,11 @@ still emit no partial report; and the dependency-free, decoder-free, one-worker
 reference profile remains intact.
 
 Patch 071 is corrective and does not perform outcome-blind external-natural
-role/property acquisition. The Sprint 12 sequence is renumbered as follows:
+role/property acquisition. The Sprint 12 sequence is:
 
-- Patch 071: this corrective acceptance boundary;
-- Patch 072: outcome-blind external-natural acquisition plus native/container
-  private-fact parity;
+- Patch 071: first corrective boundary for the confirmed Patch 070 blockers;
+- Patch 072: remaining Patch 071 correction plus outcome-blind external-natural
+  acquisition and native/container private-fact parity;
 - Patch 073: non-reinterpretive public-policy gate; and
 - Patch 074: Sprint 12 closeout and Sprint 13 handoff.
 

@@ -1545,7 +1545,7 @@ owned cleanup v3
 
 installed package inventory
   -> outcome-blind source-lineage and path-bucket selection
-  -> immutable read-only object copies
+  -> authenticated read-only object copies
   -> independent private vector and three probe runs
   -> four public command closures
   -> field-scoped GNU readelf reconciliation
@@ -1562,6 +1562,11 @@ fact probe invokes the same assembly parser modules as x64lens. GNU `readelf`
 remains external comparator evidence. Package source/build-origin and execution
 environment are separate strata; one cannot be inferred from the other.
 
+Retained cloud evidence covers the completed diagnostic acquisition and two
+same-host logic-only parity planes. Evidence for the unchanged runtime paths is
+artifact-backed rather than a fresh build. Qualified native/container parity
+remains pending; none of these evidence classes is publication evidence.
+
 The public pipeline remains:
 
 ```text
@@ -1577,6 +1582,9 @@ read-only mapping
 ```
 
 No external-natural or parity artifact is linked into `build/x64lens`, and no
-private role or property state enters schema `0.2.0`. Patch 073 owns any later
-compatible public-policy decision. Static IBT/SHSTK properties remain evidence,
-not proof of runtime CET enforcement.
+private role or property state enters schema `0.2.0`. Patch 073 executes the
+public-policy gate as `defer`: no role/property field is added, the existing
+coarse PIE Boolean is unchanged, and static IBT/SHSTK properties remain evidence
+rather than proof of runtime CET enforcement. The next bounded mitigation work
+is separately gated text-relocation and RPATH/RUNPATH acquisition; it does not
+alter this module graph in Patch 073.

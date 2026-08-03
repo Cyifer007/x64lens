@@ -1,0 +1,111 @@
+{
+  "authority_id": "sprint12-role-property-public-policy-v1",
+  "evidence_class": "decision",
+  "frozen": false,
+  "publication_eligible": false,
+  "policy_style": "non-reinterpretive",
+  "schema_version": "0.2.0",
+  "decision": "defer",
+  "decision_reason": "Corrected isolated native/container parity requires a fresh retained WSL2 rerun, and build-origin, consumer-task-value, and compatibility gates remain open.",
+  "existing_public_surface": {
+    "coarse_pie_field": "mitigations.pie",
+    "coarse_pie_meaning": "Existing ET_DYN-based indicator; unchanged by this decision.",
+    "required_direct_mitigation_properties": [
+      "bind_now",
+      "canary",
+      "dynamic_entry_count",
+      "dynamic_linking",
+      "dynamic_terminated",
+      "nx_stack",
+      "pie",
+      "relro",
+      "rwx_load_segment",
+      "stripped"
+    ],
+    "forbidden_new_direct_mitigation_properties": [
+      "binary_role",
+      "dso",
+      "ibt",
+      "pie_role",
+      "shadow_stack",
+      "shstk"
+    ],
+    "forbidden_report_labels": [
+      "Binary role:",
+      "IBT indicator:",
+      "SHSTK indicator:",
+      "Runtime CET enforcement:"
+    ]
+  },
+  "source_identity": {
+    "schemas/x64lens-report.schema.json": "65ea4a31f536033a1baf21888e8b6d256cae07ca54e010a02816ba0bad7ce1fe",
+    "src/report_json.asm": "7eda5cca895f42806e5028adac3297b6ba6bebad8652fb324e61ed7eb7cd18d6",
+    "src/report_text.asm": "1bbb4a912ca8726e1df535c618ab8061de74b8c5ce4f318510e526791a37db7d",
+    "src/mitigations.asm": "e32f40cfc7c0c7ef508618f14b3ab9e102700d3637609bca1fdcc2fbda61d1e3",
+    "include/constants.inc": "7e8ff788ec990ef2ed6e9a72c761f0e766da1a2366e529cd5904710796e739ce",
+    "include/structs.inc": "3980d772219453d5d2b9bddfb0a84075a62e9d85b9f81240a06def9d2f01974e",
+    "src/phdr.asm": "89f5a23aaf316cafd862eee18bba5d7da81f3aff34b71d1c1c8fed60da7a9924",
+    "src/binary_role.asm": "1e3310e4565ad9af4d76143ecbb761294f87819a74781db957af3c6be923a6e4",
+    "src/gnu_property.asm": "2270789694e3cc17a9581027985de303de79504f822c958204b0cc7c8617b16d"
+  },
+  "prerequisites": [
+    {
+      "id": "controlled-private-role-property-matrix",
+      "required_for_authorization": true,
+      "status": "passed_diagnostic",
+      "evidence": "96 authenticated objects with private fact and readelf reconciliation; diagnostic and unfrozen."
+    },
+    {
+      "id": "outcome-blind-external-natural-acquisition",
+      "required_for_authorization": true,
+      "status": "passed_diagnostic_not_policy_authority",
+      "evidence": "48 installed-package objects; all ambiguous and unavailable cells retained; no prevalence inference."
+    },
+    {
+      "id": "isolated-native-container-private-fact-parity",
+      "required_for_authorization": true,
+      "status": "pending_local_rerun",
+      "evidence": "The harness now isolates the container write plane and retains both planes, but cloud Docker is unavailable and prior nominal parity did not establish isolation."
+    },
+    {
+      "id": "build-origin-separation",
+      "required_for_authorization": true,
+      "status": "open",
+      "evidence": "Environment parity and compiler/build-origin effects remain separate experiments."
+    },
+    {
+      "id": "consumer-task-value",
+      "required_for_authorization": true,
+      "status": "open",
+      "evidence": "No held-out defensive task has yet established value for a new public role/property projection."
+    },
+    {
+      "id": "schema-compatibility-and-default-byte-parity",
+      "required_for_authorization": true,
+      "status": "open",
+      "evidence": "No new field is admitted until legacy default output and compatible 0.2.x consumer behavior are proven."
+    },
+    {
+      "id": "runtime-cet-enforcement",
+      "required_for_authorization": false,
+      "status": "out_of_scope_static_only",
+      "evidence": "Static GNU property evidence does not establish runtime CET enablement or enforcement."
+    }
+  ],
+  "authorization_rule": {
+    "authorize_only_when_all_required_statuses_equal": "passed",
+    "current_authorization": false,
+    "open_or_pending_required_prerequisite_count": 6,
+    "public_fields_added": 0,
+    "existing_field_reinterpreted": false
+  },
+  "deferral_effects": {
+    "preserve_private_role_property_facts": true,
+    "preserve_existing_coarse_pie_field": true,
+    "add_role_derived_pie_dso_field": false,
+    "add_public_ibt_field": false,
+    "add_public_shstk_field": false,
+    "claim_runtime_cet_enforcement": false,
+    "next_owner": "post-Patch-073 evidence gate after corrected parity and task-value evidence"
+  }
+}

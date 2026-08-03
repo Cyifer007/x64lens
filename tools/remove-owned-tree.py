@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 import stat
 import sys
-from typing import NamedTuple
+from typing import Callable, NamedTuple
 import uuid
 
 RENAME_NOREPLACE = 1
@@ -30,14 +30,18 @@ O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 O_PATH = getattr(os, "O_PATH", os.O_RDONLY)
 IDENTITY_VERSION = "v3"
 LIBC = ctypes.CDLL(None, use_errno=True)
+# PyDLL keeps the GIL held across the final libc call.  This does not make
+# pathname removal atomic against another process, but it prevents an in-process
+# Python callback from widening the authenticated recheck-to-unlink interval.
+LIBC_GIL = ctypes.PyDLL(None, use_errno=True)
 RENAMEAT2 = getattr(LIBC, "renameat2", None)
-UNLINKAT = getattr(LIBC, "unlinkat", None)
+_RAW_UNLINKAT = getattr(LIBC_GIL, "unlinkat", None)
 if RENAMEAT2 is not None:
     RENAMEAT2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
     RENAMEAT2.restype = ctypes.c_int
-if UNLINKAT is not None:
-    UNLINKAT.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
-    UNLINKAT.restype = ctypes.c_int
+if _RAW_UNLINKAT is not None:
+    _RAW_UNLINKAT.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+    _RAW_UNLINKAT.restype = ctypes.c_int
 
 
 class StatxTimestamp(ctypes.Structure):
@@ -140,10 +144,11 @@ class Fingerprint(NamedTuple):
 
 
 # The entry exists only while unlinkat_expected() is making one authenticated
-# call. Keeping the expectation outside the public function arguments also lets
-# an adversarial regression wrap unlinkat(), replace the name, and call the real
-# function while the real function still performs the final check.
+# call.  The optional hook is test-only and fires *before* the final descriptor-
+# bound recheck so a durable regression can inject the last practical pathname
+# substitution without wrapping the destructive libc primitive itself.
 _PENDING_REMOVALS: dict[tuple[int, str, bool], Fingerprint] = {}
+_TEST_PRE_UNLINK_RECHECK_HOOK: Callable[[int, str, bool], None] | None = None
 
 
 def require(ok: bool, message: str) -> None:
@@ -207,25 +212,50 @@ def rename_noreplace(parent_fd: int, old: str, new: str) -> None:
 
 
 def unlinkat(parent_fd: int, name: str, *, directory: bool = False) -> None:
-    """Perform one unlink only after an in-function final fingerprint check."""
-    require(UNLINKAT is not None, "Linux unlinkat is required")
+    """Perform one unlink after the last descriptor-bound pathname recheck.
+
+    Linux has no compare-and-unlink or unlink-by-file-descriptor primitive.  The
+    strongest portable boundary available here is therefore: run any controlled
+    pre-syscall test hook, reopen the final randomized name with ``O_NOFOLLOW``,
+    compare the complete generation-qualified fingerprint, retain that descriptor
+    through the libc call, and invoke the private raw primitive while the GIL is
+    held.  A hostile same-UID *external process* can still race the final recheck;
+    that residual boundary is documented rather than represented as atomic.
+    """
+    require(_RAW_UNLINKAT is not None, "Linux unlinkat is required")
     safe_name(name, name)
     key = (parent_fd, name, directory)
     expected = _PENDING_REMOVALS.get(key)
     require(expected is not None, f"unauthenticated unlink attempt: {name}")
+
+    hook = _TEST_PRE_UNLINK_RECHECK_HOOK
+    if hook is not None:
+        hook(parent_fd, name, directory)
+
     try:
         observed_fd = open_nofollow(parent_fd, name, directory=directory)
     except FileNotFoundError as exc:
         raise CleanupError(f"authenticated removal name disappeared: {name}") from exc
     try:
-        require(fingerprint_fd(observed_fd) == expected,
-                f"object changed at final unlink boundary: {name}")
+        require(
+            fingerprint_fd(observed_fd) == expected,
+            f"object changed at final unlink boundary: {name}",
+        )
+        rc = _RAW_UNLINKAT(parent_fd, os.fsencode(name), AT_REMOVEDIR if directory else 0)
+        if rc != 0:
+            value = ctypes.get_errno()
+            raise OSError(value, os.strerror(value), name)
+        # The retained descriptor must still identify the generation that was
+        # authenticated immediately before the destructive call.  Link count
+        # and ctime may change because of unlink, so compare the stable identity.
+        post = stable_fd_identity(observed_fd)
+        require(
+            (post.device, post.inode, post.birth_ns, post.mount_id)
+            == (expected.device, expected.inode, expected.birth_ns, expected.mount_id),
+            f"removed object identity changed across unlink: {name}",
+        )
     finally:
         os.close(observed_fd)
-    rc = UNLINKAT(parent_fd, os.fsencode(name), AT_REMOVEDIR if directory else 0)
-    if rc != 0:
-        value = ctypes.get_errno()
-        raise OSError(value, os.strerror(value), name)
 
 
 def restore_or_preserve(parent_fd: int, quarantine: str, original: str, label: str) -> None:

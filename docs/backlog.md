@@ -169,7 +169,7 @@ later sprints rather than Patch 037:
   file-analysis commands. Patch 069 carried and corrected those boundaries;
   Patch 071 supplied the first evidence-gate correction, and Patch 072 carries
   the remaining generation, descendant, publication, and duplicate-key
-  corrections. Independent acceptance remains pending.
+  corrections. Complete validation remains pending.
 - [x] Patch 068 introduced a private-fact diagnostic agreement gate
   for 48 held-out natural objects and 48 controlled metamorphic objects, with
   exact independent vectors and three deterministic probe runs per object. Gate
@@ -179,12 +179,14 @@ later sprints rather than Patch 037:
   authority and comparator correction but was rejected. Patch 071 corrected the
   first blocker set; the current Patch 072 candidate carries the remaining
   tooling correction and advances the external-natural/parity tranche.
-  Independent acceptance remains pending.
+  Complete validation remains pending.
 - [x] Implement outcome-blind acquisition for 48 natural installed-package
   objects across four source lineages, retaining all object, process, field, and
-  comparator denominators. Patch 072; host-specific acceptance remains pending.
+  comparator denominators. Patch 072; cloud-validated diagnostic evidence is
+  retained, and complete validation remains pending.
 - [x] Implement same-byte native/container private-fact parity over the
-  authenticated 96-object matrix. Patch 072; Docker acceptance remains pending.
+  authenticated 96-object matrix. Patch 072; retained parity evidence is
+  logic-only, and qualified native/container parity remains pending.
 - [ ] Run the separate comparison-qualification campaign under a new identity,
   with positive role-controlled coordinate anchors, complete runtime closure for
   all five task paths, whole-batch timing, and process-tree RSS.
@@ -676,14 +678,14 @@ comparator, prerequisite, and transaction intent is preserved by Patch 071.
 - [x] Implement Patch 072 generation-aware cleanup, version-3 outcome-complete
   batch authority, post-leader deadline handling, adopted-descendant cleanup,
   explicit publication transitions, strict duplicate-key parsing, and exact
-  delivery verification. Local acceptance remains pending.
+  delivery verification. Complete validation remains pending.
 - [x] Implement broader outcome-blind natural acquisition and same-byte
   native/container private-fact parity in Patch 072 before public policy.
 
 
 ### Sprint 12 Patch 072 implementation update
 
-Patch 072 preserves the accepted runtime work and changes no `src/`, `include/`,
+Patch 072 leaves the runtime paths unchanged and changes no `src/`, `include/`,
 or schema file. Its current development gates are:
 
 - version-3 owned cleanup and 29-case/87-execution batch transaction authority;
@@ -695,5 +697,26 @@ or schema file. Its current development gates are:
   environment and 384 paired public tuples.
 
 Natural package source/build-origin and execution-environment effects remain
-separate. These artifacts are diagnostic, unfrozen, and publication-ineligible.
-Patch 073 owns public policy; Patch 074 owns closeout.
+separate. Retained cloud evidence covers the acquisition and two same-host
+logic-only parity planes; qualified native/container parity remains pending.
+These artifacts are diagnostic, unfrozen, and publication-ineligible. Patch 073
+records public-policy deferral and selects the next bounded mitigation tranche;
+Patch 074 owns closeout. Positive coordinate anchors and complete runtime
+closure for all five task paths remain separate qualification gates.
+
+### Sprint 12 Patch 073 implementation update
+
+- [x] Close the post-fingerprint cleanup substitution boundary with a retained
+  final descriptor and durable adversarial regressions.
+- [x] Reauthenticate frozen external-natural selection and object identities
+  through outcome collection and require retained result planes.
+- [x] Authenticate delivery root, manifest, directory, and file modes and bind
+  file bytes plus metadata to retained descriptors.
+- [x] Isolate the container parity write root from the completed native plane and
+  retain/seal inputs, both planes, comparison, and run manifest.
+- [x] Execute the non-reinterpretive public-policy gate with decision `defer`,
+  zero public fields added, coarse PIE preserved, and no runtime-CET claim.
+- [x] Select text-relocation and distinct RPATH/RUNPATH evidence as the next
+  bounded mitigation tranche without adding untested Patch 073 runtime fields.
+- [ ] Complete fresh native, Docker, corrected parity, delivery, and Lane A
+  acceptance before Patch 074 Sprint 12 closeout.

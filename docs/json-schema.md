@@ -158,8 +158,8 @@ Future decoder-validity metrics will be additive.
 - Per-candidate raw, exact-suffix, and semantic-exact provenance is emitted;
   decoder validity is not yet implemented.
 - Schema `0.2.0` exposes the existing coarse Boolean `mitigations.pie`, but no
-  public PIE-versus-DSO role, IBT, or SHSTK fields. Private static GNU-property
-  facts do not establish runtime CET enforcement.
+  new role-derived PIE-versus-DSO, IBT, or SHSTK fields. Private static GNU-
+  property facts do not establish runtime CET enforcement.
 - Canary and stripped values are evidence-qualified indicators.
 - Scores are heuristic and are not exploitability verdicts.
 
@@ -429,22 +429,23 @@ keys, and validates the report against the formal schema. The external
 `readelf` reconciliation is a separate development artifact and does not create
 report fields or redefine existing mitigation or count semantics.
 Any public role, IBT, or SHSTK indicator still requires a compatible schema and
-public-policy review after native/container private-fact parity.
+public-policy review after qualified native/container private-fact parity.
 
 ## Sprint 12 Patch 070 schema boundary
 
 Patch 070 changes development-evidence and validation infrastructure only. It
 adds no runtime analyzer module, JSON field, report meaning, or schema change;
-schema `0.2.0` remains the producer contract. Public PIE/DSO, IBT, and SHSTK
-fields remain deferred until the separate parity and public-policy gates.
+schema `0.2.0` remains the producer contract. New role-derived PIE/DSO and
+IBT/SHSTK fields remain deferred until the separate parity and public-policy
+gates; the existing coarse `mitigations.pie` field remains unchanged.
 
 ## Sprint 12 Patch 071 schema boundary
 
 Patch 070 acceptance was rejected. Patch 071 corrected the first nested
 cleanup, batch-authority, streaming-limit, and delivery-custody blockers while
 leaving schema `0.2.0` unchanged. Its review required the remaining correction
-now carried by Patch 072. Patch 073 remains the separate non-reinterpretive
-public-policy gate.
+carried by Patch 072. Patch 073 executes the separate non-reinterpretive
+public-policy gate as an explicit deferral.
 
 ## Sprint 12 Patch 072 schema boundary
 
@@ -455,6 +456,8 @@ failure behavior, and environment agreement. Their private role/property fields,
 package provenance, comparator dispositions, and parity records are separate
 diagnostic artifacts and are not JSON report properties.
 
-A successful later public-policy decision requires Patch 073. It must remain a
-compatible optional `0.2.x` addition or record explicit deferral; Patch 072 does
-not reinterpret the existing `mitigations.pie` field.
+Patch 073 records the required explicit deferral. Schema `0.2.0`, its exact
+mitigation property set, and the existing `mitigations.pie` meaning remain
+unchanged. No public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH field
+is added. Any later addition remains a separately reviewed compatible `0.2.x`
+decision with parser, fixture, comparator, and consumer evidence.

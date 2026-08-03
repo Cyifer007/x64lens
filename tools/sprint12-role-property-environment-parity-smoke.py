@@ -2,11 +2,14 @@
 """Prove same-byte native/container parity for the private role/property plane.
 
 The 96 authenticated held-out objects, analyzer, fact probe, and public schema
-are mounted into both environments as the same bytes.  Each plane retains 288
-private-probe executions, 5,184 private field cells, and 384 public command
-closures.  Comparison uses exact private probe bytes and path-normalized public
-output tuples.  This gate does not expose private fields or authorize public
-PIE/DSO, IBT, or SHSTK policy.
+are mounted into both environments as the same bytes.  The completed native
+plane is never mounted into the container; the container receives one dedicated
+empty write root for its own plane only.  Both planes and their comparison are
+retained and recursively sealed.  Each plane records 288 private-probe
+executions, 5,184 private field cells, and 384 public command closures.
+Comparison uses exact private probe bytes and path-normalized public output
+tuples.  This gate does not expose private fields or authorize public PIE/DSO,
+IBT, or SHSTK policy.
 """
 from __future__ import annotations
 
@@ -438,21 +441,117 @@ def compare(args: argparse.Namespace) -> int:
 
 
 def capture_cleanup(path: Path) -> tuple[Any, Any]:
-    cleanup = load_module("p072_parity_cleanup", ROOT / "tools/remove-owned-tree.py")
+    cleanup = load_module("p073_parity_cleanup", ROOT / "tools/remove-owned-tree.py")
     return cleanup, cleanup.parse_identity(cleanup.identify(path))
+
+
+def recursive_tree_identity(root: Path) -> dict[str, Any]:
+    """Return a mode-aware identity for one sealed retained evidence tree."""
+    require(root.is_dir() and not root.is_symlink(), f"retained tree is unavailable: {root}")
+    records: list[dict[str, Any]] = []
+    for path in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
+        relative = path.relative_to(root).as_posix()
+        metadata = path.lstat()
+        require(not path.is_symlink(), f"retained parity tree contains a link: {relative}")
+        if path.is_dir():
+            records.append({"path": relative, "type": "directory", "mode": f"{stat.S_IMODE(metadata.st_mode):04o}"})
+        else:
+            require(path.is_file(), f"retained parity tree contains a special member: {relative}")
+            data = path.read_bytes()
+            records.append({
+                "path": relative,
+                "type": "file",
+                "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+                "size_bytes": len(data),
+                "sha256": sha256_bytes(data),
+            })
+    encoded = (json.dumps(records, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    return {"member_count": len(records), "sha256": sha256_bytes(encoded)}
+
+
+def build_container_command(
+    *,
+    docker: str,
+    image: str,
+    inputs: Path,
+    heldout: Path,
+    container_write_root: Path,
+) -> list[str]:
+    """Build the isolated container plane command.
+
+    The native result path is intentionally absent from this interface, making
+    cross-plane write access impossible to add accidentally at the call site.
+    """
+    return [
+        docker, "run", "--rm", "--read-only", "--network", "none",
+        "--user", f"{os.getuid()}:{os.getgid()}",
+        "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1",
+        "-e", "LC_ALL=C", "-e", "LANG=C", "-e", "TZ=UTC",
+        "--tmpfs", "/tmp:rw,nosuid,nodev,size=64m",
+        "-v", f"{ROOT}:/work:ro",
+        "-v", f"{inputs}:/inputs:ro",
+        "-v", f"{heldout}:/heldout:ro",
+        "-v", f"{container_write_root}:/output:rw",
+        "-w", "/work",
+        image,
+        "python3", "/work/tools/sprint12-role-property-environment-parity-smoke.py", "plane",
+        "--environment-id", "container", "--execution-stratum", "container",
+        "--heldout-result", "/heldout",
+        "--analyzer", "/inputs/x64lens",
+        "--schema", "/inputs/schema.json",
+        "--fact-probe", "/inputs/role-property-fact-probe",
+        "--result-dir", "/output/plane",
+    ]
+
+
+def validate_container_mount_policy(
+    command: list[str],
+    *,
+    native_result: Path,
+    container_write_root: Path,
+) -> dict[str, Any]:
+    """Validate that the container can write only its empty private plane root."""
+    require(str(native_result) not in "\n".join(command),
+            "native parity plane leaked into the container command")
+    mounts: list[str] = []
+    for index, item in enumerate(command[:-1]):
+        if item == "-v":
+            mounts.append(command[index + 1])
+    writable = [item for item in mounts if item.endswith(":rw")]
+    expected = f"{container_write_root}:/output:rw"
+    require(writable == [expected], f"container parity writable mounts changed: {writable!r}")
+    require(all(item.endswith(":ro") or item == expected for item in mounts),
+            f"container parity mount mode is not explicit: {mounts!r}")
+    require(container_write_root.is_dir() and not any(container_write_root.iterdir()),
+            "container parity write root is not empty before launch")
+    return {
+        "native_plane_exposed_to_container": False,
+        "container_write_scope": "dedicated-empty-container-plane-root-only",
+        "writable_mount_count": 1,
+        "mount_count": len(mounts),
+    }
 
 
 def run_full(args: argparse.Namespace) -> int:
     docker = shutil.which(args.docker)
     require(docker is not None, "Docker command is unavailable")
-    root = Path(tempfile.mkdtemp(prefix="x64lens-role-property-parity-"))
-    cleanup, cleanup_identity = capture_cleanup(root)
+    final_result = Path(os.path.abspath(args.result_dir))
+    require(not final_result.exists(), f"retained parity result already exists: {final_result}")
+    final_result.parent.mkdir(parents=True, exist_ok=True)
+    staging = final_result.parent / f".{final_result.name}.staging.{os.getpid()}.{os.urandom(8).hex()}"
+    require(not staging.exists(), "parity staging identity collision")
+    staging.mkdir(mode=0o700)
+    cleanup, cleanup_identity = capture_cleanup(staging)
+    completed = False
     try:
-        inputs = root / "inputs"
-        outputs = root / "outputs"
-        heldout = root / "heldout"
+        inputs = staging / "inputs"
+        heldout = staging / "heldout"
+        native_result = staging / "native"
+        container_write_root = staging / "container-write-root"
+        container_result = staging / "container"
+        parity_result = staging / "parity"
         inputs.mkdir()
-        outputs.mkdir()
+        container_write_root.mkdir(mode=0o700)
         shutil.copy2(args.analyzer, inputs / "x64lens")
         shutil.copy2(args.fact_probe, inputs / "role-property-fact-probe")
         shutil.copy2(args.schema, inputs / "schema.json")
@@ -462,6 +561,7 @@ def run_full(args: argparse.Namespace) -> int:
         before = {name: identity(inputs / name, name, executable=name != "schema.json") for name in (
             "x64lens", "role-property-fact-probe", "schema.json"
         )}
+        seal_tree(inputs)
 
         generate = [
             sys.executable,
@@ -475,6 +575,7 @@ def run_full(args: argparse.Namespace) -> int:
         ]
         cp = run(generate, timeout=180.0)
         require(cp.returncode == 0, f"held-out generation failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        verify_checksums(heldout)
 
         native = [
             sys.executable, str(Path(__file__).resolve()), "plane",
@@ -483,48 +584,88 @@ def run_full(args: argparse.Namespace) -> int:
             "--analyzer", str(inputs / "x64lens"),
             "--schema", str(inputs / "schema.json"),
             "--fact-probe", str(inputs / "role-property-fact-probe"),
-            "--result-dir", str(outputs / "native"),
+            "--result-dir", str(native_result),
         ]
         cp = run(native, timeout=180.0)
         require(cp.returncode == 0, f"native environment plane failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        verify_checksums(native_result)
+        native_before_container = recursive_tree_identity(native_result)
 
-        container_command = [
-            docker, "run", "--rm", "--read-only", "--network", "none",
-            "--user", f"{os.getuid()}:{os.getgid()}",
-            "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "LC_ALL=C", "-e", "LANG=C", "-e", "TZ=UTC",
-            "--tmpfs", "/tmp:rw,nosuid,nodev,size=64m",
-            "-v", f"{ROOT}:/work:ro",
-            "-v", f"{inputs}:/inputs:ro",
-            "-v", f"{heldout}:/heldout:ro",
-            "-v", f"{outputs}:/output:rw",
-            "-w", "/work",
-            args.docker_image,
-            "python3", "/work/tools/sprint12-role-property-environment-parity-smoke.py", "plane",
-            "--environment-id", "container", "--execution-stratum", "container",
-            "--heldout-result", "/heldout",
-            "--analyzer", "/inputs/x64lens",
-            "--schema", "/inputs/schema.json",
-            "--fact-probe", "/inputs/role-property-fact-probe",
-            "--result-dir", "/output/container",
-        ]
+        container_command = build_container_command(
+            docker=docker,
+            image=args.docker_image,
+            inputs=inputs,
+            heldout=heldout,
+            container_write_root=container_write_root,
+        )
+        # Exact mount policy: only the dedicated empty container-write root is
+        # writable.  The native plane is not present in the command at all.
+        mount_policy = validate_container_mount_policy(
+            container_command,
+            native_result=native_result,
+            container_write_root=container_write_root,
+        )
         cp = run(container_command, timeout=240.0)
         require(cp.returncode == 0, f"container environment plane failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        generated_container = container_write_root / "plane"
+        require(generated_container.is_dir(), "container plane did not publish its dedicated result")
+        require(set(container_write_root.iterdir()) == {generated_container},
+                "container write root contains undeclared members")
+        generated_container.rename(container_result)
+        container_write_root.rmdir()
+        verify_checksums(container_result)
+        native_after_container = recursive_tree_identity(native_result)
+        require(native_after_container == native_before_container,
+                "native parity plane changed during container execution")
 
         comparison = [
             sys.executable, str(Path(__file__).resolve()), "compare",
-            "--left", str(outputs / "native"),
-            "--right", str(outputs / "container"),
-            "--result-dir", str(outputs / "parity"),
+            "--left", str(native_result),
+            "--right", str(container_result),
+            "--result-dir", str(parity_result),
         ]
         cp = run(comparison, timeout=30.0)
         require(cp.returncode == 0, f"environment parity comparison failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        verify_checksums(parity_result)
         after = {name: identity(inputs / name, name, executable=name != "schema.json") for name in before}
         require(all(before[name]["sha256"] == after[name]["sha256"] for name in before),
                 "same-byte parity inputs changed during execution")
+
+        run_manifest = {
+            "format": "x64lens-sprint12-role-property-environment-parity-run-v2",
+            "evidence_class": "diagnostic",
+            "frozen": False,
+            "publication_eligible": False,
+            "actual_native_container_parity_executed": True,
+            "native_plane_exposed_to_container": mount_policy["native_plane_exposed_to_container"],
+            "container_write_scope": mount_policy["container_write_scope"],
+            "container_mount_policy": mount_policy,
+            "planes_retained_and_sealed": True,
+            "public_policy_decision_authorized": False,
+            "target_execution": False,
+            "input_identities": before,
+            "native_plane_identity_before_container": native_before_container,
+            "native_plane_identity_after_container": native_after_container,
+            "container_plane_identity": recursive_tree_identity(container_result),
+            "parity_identity": recursive_tree_identity(parity_result),
+            "container_command": container_command,
+        }
+        (staging / "run-manifest.json").write_text(
+            json.dumps(run_manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        seal_tree(staging)
+        os.rename(staging, final_result)
+        completed = True
         print(cp.stdout.decode("utf-8", errors="replace").strip())
+        print(
+            "sprint12-role-property-environment-parity-run: ok "
+            f"result={final_result} native_exposed=0 container_write_scope=exclusive "
+            "planes_retained=1 public_policy=deferred"
+        )
         return 0
     finally:
-        cleanup.remove(root, cleanup_identity)
+        if not completed and staging.exists():
+            cleanup.remove(staging, cleanup_identity)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -553,6 +694,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--fact-probe", type=Path, required=True)
     run_parser.add_argument("--docker-image", required=True)
     run_parser.add_argument("--docker", default="docker")
+    run_parser.add_argument("--result-dir", type=Path, required=True)
     return parser
 
 

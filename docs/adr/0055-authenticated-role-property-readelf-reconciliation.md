@@ -3,9 +3,10 @@
 ## Status
 
 Accepted architecture for the historical Sprint 12 Patch 069 implementation
-candidate. The Patch 071 candidate corrects its remaining development-
-evidence gates without changing the comparator boundary. Product, native/
-container, and delivery acceptance remain subject to separate validation
+candidate. Patch 071 supplied the first development-evidence correction; the
+current Patch 072 candidate carries the remaining correction and private
+acquisition/parity gates without changing the comparator boundary. Product,
+native/container, and delivery acceptance remain subject to separate validation
 against the exact candidate source.
 
 ## Context
@@ -77,7 +78,8 @@ into agreement or disagreement.
 Patch 069 does not:
 
 - make `readelf` loader, parser, mitigation, or reporting authority;
-- add public PIE-versus-DSO, IBT, or SHSTK fields;
+- add a public role-derived PIE/DSO distinction or IBT/SHSTK indicators, or
+  reinterpret the existing coarse `mitigations.pie` field;
 - change schema `0.2.0`;
 - claim runtime CET enforcement from static GNU properties;
 - redefine any candidate or mitigation count;
@@ -87,8 +89,9 @@ Patch 069 does not:
 - freeze the confirmatory campaign.
 
 The reconciliation remains diagnostic, unfrozen, and publication-ineligible.
-A later native/container private-fact parity gate and a separate public-policy
-review still own any public exposure decision.
+Patch 072 implements the native/container private-fact parity gate, but qualified
+native/container parity evidence remains pending. Patch 073 separately owns any
+public exposure decision.
 
 ## Consequences
 

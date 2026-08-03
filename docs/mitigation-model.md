@@ -40,7 +40,7 @@ Patch 030 implements the first bounded `PT_DYNAMIC` evidence view. Patch 031 use
 | Canary indicator | bounded dynamic-string evidence for exact `__stack_chk_fail`; future symbol or relocation evidence may refine it | Report `unknown`, `absent`, or `present` as an indicator, not complete stack protection. |
 | Stripped indicator | bounded section-header scan for `SHT_SYMTAB` | Report `unknown`, `stripped`, or `not_stripped` in JSON and `unknown`, `stripped`, or `not stripped` in text as metadata only. |
 | Section label | section range containing a region or candidate | Annotation only; never replace program-header mapping authority. |
-| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected through Patch 069; the Patch 071 candidate changes evidence gates only, acceptance and native/container private-fact parity remain pending, and there is no public indicator. |
+| CET/IBT/SHSTK private evidence | validated GNU property-note evidence with bounded parsing and controlled fixtures | Implemented and corrected through Patch 069; Patch 071 supplied the first evidence-gate correction and Patch 072 supplies the remainder plus acquisition and parity gates. The evidence remains private, and qualified native/container parity remains pending. |
 
 ## Evidence and confidence
 
@@ -187,7 +187,7 @@ role facts and separate GNU-property parser gate, and Patches 071 and 072 leave 
 
 Patch 065 added bounded internal acquisition of x86 IBT and SHSTK GNU-property
 facts; Patch 069 preserved the corrected alignment and overlap boundaries, and
-the Patch 071 candidate leaves them unchanged without publishing a new
+the current Patch 072 candidate leaves them unchanged without publishing a new
 mitigation field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
@@ -231,7 +231,8 @@ held-out natural toolchain-produced objects and 48 controlled metamorphic
 objects. The matrix keeps the two strata separate and exercises aliases,
 conflicts, unknown bits, role contradictions, and malformed property layouts.
 It remains diagnostic, unfrozen, publication-ineligible, and not prevalence
-evidence. It does not add public PIE/DSO, IBT, or SHSTK fields and does not treat
+evidence. It does not add a role-derived PIE/DSO field or IBT/SHSTK fields, and
+the existing coarse `mitigations.pie` field remains unchanged. It does not treat
 static GNU properties as proof of runtime CET enforcement. A later policy gate
 owns any compatible public `0.2.x` decision.
 
@@ -248,17 +249,19 @@ object/field combination—remain explicit. The controlled diagnostic matrix
 records 1,224 eligible matches and zero unexplained eligible mismatches without
 converting `readelf` into parser or runtime authority.
 
-No public PIE/DSO, IBT, or SHSTK field is added. Static properties remain
-mitigation indicators and do not prove runtime CET enablement, complete control-
-flow integrity, safety, or exploitability.
+No new role-derived PIE/DSO field or IBT/SHSTK field is added; the existing
+coarse `mitigations.pie` field remains unchanged. Static properties remain
+mitigation indicators and do not prove runtime CET enablement, complete
+control-flow integrity, safety, or exploitability.
 
 ## Sprint 12 Patch 070 mitigation boundary
 
 Patch 070 changes development-evidence and validation gates only. It adds no
 runtime analyzer module, mitigation state, report field, or schema field. The
 controlled matrix and GNU `readelf` reconciliation remain diagnostic, unfrozen,
-and publication-ineligible. Public PIE/DSO, IBT, and SHSTK fields remain
-deferred, and static GNU properties do not prove runtime CET enforcement.
+and publication-ineligible. New role-derived PIE/DSO and IBT/SHSTK fields remain
+deferred, the existing coarse `mitigations.pie` field remains unchanged, and
+static GNU properties do not prove runtime CET enforcement.
 Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set;
 the current Patch 072 candidate carries the remaining corrective prerequisite
 plus private acquisition/parity work. Neither changes any mitigation or
@@ -267,13 +270,28 @@ public-policy boundary.
 ## Sprint 12 Patch 072 external-natural and parity gate
 
 Patch 072 adds no public mitigation indicator. It freezes 48 installed-package
-objects before outcomes, retains independent private vectors and exact GNU
-`readelf` evidence, and preserves every ambiguous or unavailable field. GNU
+objects after package, path, mode, and ELF eligibility checks and before any
+x64lens, private fact-probe, or GNU `readelf` outcome is consumed. It retains
+independent private vectors and exact GNU `readelf` evidence and preserves every
+ambiguous or unavailable field. GNU
 `readelf -nW` does not expose x64lens physical canonical-view multiplicity, so
 `property_view_count` is unavailable rather than forced into agreement.
 
 A separate same-byte 96-object gate compares private and public facts across
 native and container environments. Environment agreement does not prove that
 compiler, linker, package, or source-lineage effects generalize, and static
-IBT/SHSTK properties still do not prove runtime CET enforcement. Patch 073 owns
-any compatible public indicator decision.
+IBT/SHSTK properties still do not prove runtime CET enforcement.
+
+## Sprint 12 Patch 073 public-policy and competitive-gap boundary
+
+Patch 073 executes the non-reinterpretive policy gate and records `defer`.
+No role-derived PIE/DSO, IBT, or SHSTK field or text label is admitted. The
+existing coarse `mitigations.pie` Boolean retains its `ET_DYN` indicator meaning,
+and static GNU property evidence remains distinct from runtime CET enforcement.
+
+The next selected bounded mitigation tranche is text-relocation evidence from
+`DT_TEXTREL` or `DF_TEXTREL` plus separately represented validated `DT_RPATH`
+and `DT_RUNPATH` indicators. Those families are not Patch 073 runtime output:
+each still requires checked parser acquisition, malformed and contradiction
+fixtures, focused/integrated parity, external reconciliation, and compatible
+schema review before reporting.

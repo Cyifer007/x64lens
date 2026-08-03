@@ -1750,11 +1750,12 @@ and 4,097th-candidate exit-6-before-stdout behavior remain unchanged.
 Native and container results must agree before acceptance. Patch 068 introduced
 the private-fact matrix; Patch 069 corrected and authenticated it and added
 bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). Patch 070
-attempted the next evidence-gate correction but was rejected. The current Patch
-071 candidate corrects only its confirmed blockers without changing the runtime
-analyzer or schema. The matrix remains diagnostic, unfrozen, and publication-
-ineligible. Patch 072 native/container private-fact parity still precedes any
-Patch 073 decision about compatible public `0.2.x` indicators.
+attempted the next evidence-gate correction but was rejected. Patch 071 supplied
+the first correction, and the current Patch 072 candidate supplies the remainder
+without changing the runtime analyzer or schema, then implements outcome-blind
+acquisition and the environment-parity gate. The matrix remains diagnostic,
+unfrozen, and publication-ineligible. Qualified native/container parity still
+precedes any Patch 073 decision about compatible public `0.2.x` indicators.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1874,7 +1875,7 @@ semantics only. The batch remains the measurement unit; elapsed batch time is
 not divided into claimed single-run latency, and no performance conclusion
 follows from this gate.
 
-## Sprint 12 Patch 071 corrective validation
+## Historical Sprint 12 Patch 071 corrective validation
 
 Run the focused correction gate before the aggregate:
 
@@ -1896,8 +1897,33 @@ empty-directory, and symbolic-link delivery members, and both late cleanup
 replacement branches. Nested cleanup remains destructive rather than rollback-
 transactional if a later authenticated step fails.
 
-Patch 071 complete acceptance still requires the normal native aggregate,
-strict ShellCheck closeout, Docker validation, and native/container parity. A
-cloud environment that cannot install NASM or reach a Docker daemon records
-those checks as environment-deferred rather than substituting stale build
-output for a fresh build.
+At the Patch 071 boundary, complete validation still required the normal native
+aggregate, strict ShellCheck closeout, Docker validation, and native/container
+parity. Missing evidence remained deferred rather than being inferred from
+retained build output. Follow-up validation required Patch 072.
+
+## Sprint 12 Patch 072 correction, acquisition, and parity gates
+
+Run the focused correction gate before the aggregate:
+
+```bash
+make script-perms-check
+make scaffold-check
+make sprint12-batch-transaction-smoke
+make patch071-corrective-regression-smoke
+git diff --check
+```
+
+The version-3 batch authority covers 29 cases and 87 executions. The
+external-natural gate freezes 48 object identities after package, path, mode,
+and ELF eligibility checks and before any x64lens, private fact-probe, or GNU
+`readelf` outcome is consumed. It retains 144 private probe processes, 192
+public commands, 192 `readelf` processes, and 864 field dispositions. The
+environment-parity gate retains 288 private probe processes and 5,184 private
+fields per environment, 576 combined probe processes, 288 paired probe-output
+agreements, 768 combined public closures, and 384 paired public tuples.
+
+Retained cloud evidence covers the diagnostic external-natural acquisition and
+two same-host logic-only parity planes. It is unfrozen and publication-
+ineligible. Fresh native and Docker validation, strict ShellCheck, and qualified
+native/container parity remain required.

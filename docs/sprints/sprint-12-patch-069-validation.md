@@ -6,14 +6,15 @@ Historical Sprint 12 corpus-integrity and authenticated external-reconciliation
 implementation candidate. Patch 069 required the further Patch 070 evidence-
 integrity correction. Patch 070 was rejected after acceptance validation.
 Patch 071 required further correction, and current expectations are recorded in
-the [Patch 072 validation plan](sprint-12-patch-072-validation.md). The
+the [Patch 072 validation record](sprint-12-patch-072-validation.md). The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves that
 historical boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. The matrix and
 `readelf` reconciliation remain diagnostic, unfrozen, and publication-
-ineligible; native/container private-fact parity and public-policy review remain
-separate later gates. Results below are historical candidate contracts or
+ineligible. Patch 072 implements the environment-parity gate, but qualified
+native/container parity evidence remains pending; public-policy review remains
+a separate later gate. Results below are historical candidate contracts or
 controlled diagnostic observations, not accepted publication outcomes.
 
 ## Purpose
@@ -181,8 +182,10 @@ Native Ubuntu Docker and Docker Desktop remain separate evidence strata.
 
 ## Deferred work
 
-Native/container private-fact parity, broader outcome-blind external-natural
-acquisition, the public-policy decision, positive coordinate anchors,
-whole-batch timing, and process-tree RSS remain separate gates. The matrix and
-reconciliation results are diagnostic evidence and cannot support release-facing
-role, CET, speed, RSS, or coverage claims.
+At the Patch 069 boundary, native/container private-fact parity and broader
+outcome-blind external-natural acquisition remained separate gates; Patch 072
+implements both, while qualified native/container parity evidence remains
+pending. The public-policy decision, positive coordinate anchors, whole-batch
+timing, and process-tree RSS remain separate gates. The matrix and reconciliation
+results are diagnostic evidence and cannot support release-facing role, CET,
+speed, RSS, or coverage claims.

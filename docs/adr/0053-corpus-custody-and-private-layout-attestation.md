@@ -4,8 +4,9 @@
 
 Historical architecture record for the Sprint 12 Patch 067 implementation
 candidate. Patch 068 introduced the intermediate corrective contract and
-diagnostic matrix; Patch 069 carried and corrected that boundary, and the
-Patch 071 candidate corrects its remaining development-evidence gates.
+diagnostic matrix; Patch 069 carried and corrected that boundary, Patch 071
+supplied the first evidence-gate correction, and the current Patch 072 candidate
+carries the remaining correction and acquisition/parity gates.
 Product and delivery acceptance remain governed by separate validation.
 
 ## Context
@@ -80,7 +81,8 @@ and must fail both the source-shape oracle and the rebuilt runtime harness.
 
 Patch 067 does not:
 
-- add public PIE/DSO, IBT, or SHSTK fields;
+- add a public role-derived PIE/DSO distinction or IBT/SHSTK indicators, or
+  reinterpret the existing coarse `mitigations.pie` field;
 - change schema `0.2.0`;
 - change loader authority, scanner behavior, candidate identity, capacity,
   semantic classes, scores, or report counts;

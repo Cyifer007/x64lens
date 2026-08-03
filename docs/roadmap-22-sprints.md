@@ -229,12 +229,14 @@ eligible mismatches; ambiguous, unavailable, and retained `not_eligible` cells
 remain visible rather than being forced into parity. Public output and schema
 `0.2.0` remain unchanged.
 
-Sprint 12 still requires native/container private-fact parity and a separate
-public-policy decision before any public PIE/DSO, IBT, or SHSTK indicator is
-considered. The result remains diagnostic, unfrozen, and publication-ineligible.
-Patch 069 required the further Patch 070 evidence-integrity correction;
-Patch 070 acceptance was rejected; Patch 071 corrected the first blocker set,
-and Patch 072 carries the remaining correction plus acquisition/parity work.
+Sprint 12 still requires qualified native/container private-fact parity and a
+separate public-policy decision before any new role-derived PIE/DSO or
+IBT/SHSTK indicator is considered. The existing coarse `mitigations.pie` field
+remains unchanged. The result remains diagnostic, unfrozen, and publication-
+ineligible. Patch 069 required the further Patch 070 evidence-integrity
+correction; Patch 070 acceptance was rejected; Patch 071 corrected the first
+blocker set, and Patch 072 carries the remaining correction plus acquisition
+and parity gates.
 
 ## Patch 070 through Patch 072 sequencing note
 
@@ -245,17 +247,31 @@ narrower generation, descendant, publication, duplicate-key, and delivery-
 completeness corrections while completing outcome-blind external-natural
 acquisition and same-byte native/container parity. It
 does not advance the Sprint 15 freeze, add a public mitigation field, or change
-the dependency-free one-worker reference profile. Public policy and closeout
-remain Patches 073 and 074.
+the dependency-free one-worker reference profile. Patch 073 executes public
+policy as an explicit deferral; Patch 074 remains Sprint 12 closeout.
 
 
 ## Patch 072 evidence gate
 
-The external-natural authority selects 48 installed-package objects before
-outcomes: twelve per source lineage with seven executable and five library
-paths. The same-byte environment authority compares the authenticated 96-object
-matrix with identical analyzer, probe, and schema bytes across native and
-container planes. Both remain diagnostic and publication-ineligible. Their
-acceptance precedes Patch 073 public policy but does not replace positive
-coordinate anchors, runtime closure, whole-batch workload qualification, or the
-Sprint 15 campaign freeze.
+The external-natural authority selects 48 installed-package objects after
+package, path, mode, and ELF eligibility checks and before any x64lens, private
+fact-probe, or GNU `readelf` outcome is consumed: twelve per source lineage with
+seven executable and five library paths. The same-byte environment authority
+compares the authenticated 96-object matrix with identical analyzer, probe, and
+schema bytes across native and container planes. Retained cloud evidence covers
+the diagnostic acquisition and same-host logic-only parity; qualified native/
+container parity remains pending. Both remain unfrozen and publication-
+ineligible. Patch 073 therefore adds no public role/property field and records
+`defer`; this does not replace positive coordinate anchors, runtime closure,
+whole-batch workload qualification, or the Sprint 15 campaign freeze. Corrected
+write-isolated parity remains a local acceptance gate before Patch 074 closeout.
+
+## Patch 073 policy and correction note
+
+Patch 073 closes the reproduced post-fingerprint cleanup, mutable selection,
+delivery mode/path, parity-isolation, and retained-evidence defects. Its policy
+authority authenticates the unchanged public schema and reporter sources,
+preserves `mitigations.pie`, and rejects authorization while any prerequisite
+is open. The competitive gap authority selects text-relocation and distinct
+RPATH/RUNPATH indicators for a later bounded implementation; no runtime field is
+added in Patch 073.

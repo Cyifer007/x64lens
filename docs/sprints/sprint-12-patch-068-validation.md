@@ -9,7 +9,7 @@ external-reconciliation work in
 evidence-gate correction. Patch 070 was rejected after acceptance validation and
 required the further Patch 071 correction, whose review in turn required Patch
 072. Current expectations are recorded in the
-[Patch 072 validation plan](sprint-12-patch-072-validation.md); the
+[Patch 072 validation record](sprint-12-patch-072-validation.md); the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary; the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
@@ -143,9 +143,10 @@ Native Ubuntu Docker and Docker Desktop remain separate environment strata.
 
 At the Patch 068 boundary, authenticated `readelf -hW/-lW/-dW/-nW`
 reconciliation remained future work; Patch 069 added that diagnostic
-reconciliation, and the Patch 071 candidate corrects its remaining
-evidence gates. Native/container private-fact parity over the
-diagnostic matrix, the public-policy decision, positive coordinate anchors,
-whole-batch timing, and process-tree RSS remain separate later gates. Patch 068
+reconciliation, Patch 071 supplied the first evidence-gate correction, and
+Patch 072 supplies the remainder plus acquisition and parity gates. Qualified
+native/container private-fact parity over the diagnostic matrix remains
+pending. The public-policy decision, positive coordinate anchors, whole-batch
+timing, and process-tree RSS remain separate later gates. Patch 068
 evidence is diagnostic and cannot support publication or runtime-CET claims.
 The matrix remains unfrozen and publication-ineligible.

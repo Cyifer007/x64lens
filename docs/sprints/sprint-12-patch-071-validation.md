@@ -2,11 +2,12 @@
 
 ## Status
 
-Current corrective implementation candidate after Patch 070 review. Patch 071
-is limited to nested cleanup identity, exact batch-oracle semantics, streaming
-output limits, and recursive source/evidence delivery custody. It performs no
-external-natural acquisition and changes no runtime analyzer or public schema
-behavior.
+Historical first corrective implementation candidate after Patch 070 review.
+Patch 071 is limited to nested cleanup identity, exact batch-oracle semantics,
+streaming output limits, and recursive source/evidence delivery custody. It
+performs no external-natural acquisition and changes no runtime analyzer or
+public schema behavior. Follow-up validation required the remaining Patch 072
+correction.
 
 ## Source precondition
 
@@ -112,11 +113,15 @@ native Ubuntu daemon are separate environment strata.
   distinctions;
 - read-only targets and no target execution;
 - dependency-free, decoder-free, one-worker reference runtime;
-- no public PIE/DSO, IBT, or SHSTK field.
+- no new role-derived PIE/DSO field or IBT/SHSTK field; the existing coarse
+  `mitigations.pie` field remains unchanged.
 
 ## Interpretation
 
-Passing Patch 071 establishes the corrected development and delivery
-transaction boundary. It does not validate arbitrary external-natural objects,
-prove runtime CET enforcement, authorize public mitigation fields, establish
-single-run latency, or produce publication evidence.
+At this historical boundary, passing the listed gates would have established
+the first corrected development and delivery transaction boundary. Follow-up
+validation identified narrower prerequisites now addressed by Patch 072, whose
+[validation record](sprint-12-patch-072-validation.md) carries the current
+expectations. Neither boundary validates arbitrary external-natural objects,
+proves runtime CET enforcement, authorizes public mitigation fields, establishes
+single-run latency, or produces publication evidence by itself.

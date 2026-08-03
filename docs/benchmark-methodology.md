@@ -841,9 +841,10 @@ reaping. This remains transaction-conformance evidence. It still does not
 measure batch throughput, divide batch elapsed time into latency, or provide
 process-tree RSS.
 
-The 48-object external-natural acquisition is a mitigation-accuracy diagnostic,
-not a benchmark corpus or prevalence sample. Source lineages, path buckets, and
-bytewise ordering are fixed before analyzer outcomes. Object, private-probe
+The 48-object external-natural acquisition is a private role/property agreement
+diagnostic, not a benchmark corpus or prevalence sample. Source lineages, path
+buckets, and bytewise ordering are fixed before any x64lens, private fact-probe,
+or GNU `readelf` outcome is consumed. Object, private-probe
 process, public-command, `readelf` process, run-field, object-field, and
 comparator-disposition denominators remain distinct. Capacity failures,
 ambiguous fields, and unavailable comparator facts are retained rather than

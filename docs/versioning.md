@@ -31,9 +31,10 @@ remaining evidence-custody and whole-batch correction but was rejected. Patch
 process-tree, authority, publication-transition, and delivery-completeness
 correction now carried by Patch 072. Patch 072 also adds private outcome-blind
 external-natural acquisition and same-byte environment parity. It changes no
-runtime analyzer field, schema field, or release tag. Measurements after Patch
-072 require a distinct diagnostic campaign identity and remain separate from
-Sprint 11 rows.
+runtime analyzer field, schema field, or release tag. Retained cloud evidence
+covers the diagnostic acquisition and same-host logic-only parity; qualified
+native/container parity remains pending. Measurements after Patch 072 require a
+distinct diagnostic campaign identity and remain separate from Sprint 11 rows.
 
 ## Release sequence
 
@@ -163,5 +164,6 @@ report field, candidate meaning, score, runtime profile, release tag, or campaig
 freeze changes. External-natural acquisition and any compatible public
 role/property decision remain later, separately identified patches: Patch 072
 performs outcome-blind external-natural acquisition and native/container
-private-fact parity, Patch 073 is the non-reinterpretive public-policy gate, and
-Patch 074 closes Sprint 12 and hands off to Sprint 13.
+private-fact parity, Patch 073 executes the non-reinterpretive public-policy gate
+as an explicit deferral without changing tool or schema version, and Patch 074
+closes Sprint 12 and hands off to Sprint 13.

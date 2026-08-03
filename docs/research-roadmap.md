@@ -544,13 +544,14 @@ contains 1,224 eligible matches and zero unexplained eligible mismatches, while
 ambiguous, unavailable, and retained `not_eligible` cells—inapplicable for their
 object/field combinations—remain outside the denominator. Patch 069 required
 the further Patch 070 evidence-integrity correction. Patch 070 acceptance was
-rejected; Patch 071 corrective acceptance remains pending.
+rejected; Patch 071 supplied the first correction, and Patch 072 supplies the
+remaining correction plus acquisition and parity gates.
 
 This is external diagnostic reconciliation, not public mitigation policy,
 prevalence evidence, runtime-CET evidence, or publication evidence. Sprint 12
-still requires native/container private-fact parity and a separate
-non-reinterpretive public-policy decision. Broader outcome-blind natural-object
-acquisition remains a later measurement gate.
+still requires qualified native/container private-fact parity and a separate
+non-reinterpretive public-policy decision. Patch 072 implements the broader
+outcome-blind natural-object acquisition gate.
 
 ## Sprint 12 Patch 070 review and Patch 071 corrective checkpoint
 
@@ -562,26 +563,34 @@ verification for regular-file path/hash/size/mode plus implied-directory
 membership. This remains diagnostic, unfrozen, publication-ineligible method
 evidence, not performance evidence.
 
-External-natural acquisition is deferred to Patch 072. The latest real campaign
-still supports no x64lens single-run latency, RSS-superiority, generic gadget-
-count, or normalized-coverage claim.
-Patch 072 also carries native/container private-fact parity, Patch 073 is the
-non-reinterpretive public-policy gate, and Patch 074 closes Sprint 12 and hands
-off to Sprint 13.
+At the Patch 071 boundary, external-natural acquisition and environment parity
+were deferred to Patch 072. Patch 072 implements both gates; qualified native/
+container parity evidence remains pending. The latest real campaign still
+supports no x64lens single-run latency, RSS-superiority, generic gadget-count,
+or normalized-coverage claim. Patch 073 executes the non-reinterpretive
+public-policy gate as an explicit deferral, and Patch 074 closes Sprint 12 only
+after corrected local acceptance and hands off to Sprint 13.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
 
 Patch 072 changes no analyzer runtime or public schema. It hardens generation-
 aware cleanup, process-tree deadline/reaping behavior, publication-transition
-authority, duplicate-key rejection, and complete delivery custody, then freezes
-48 installed-package natural objects before outcomes across four independent
-source lineages. The acquisition retains all 144 private probe runs, 192 public
-commands, 192 exact GNU `readelf` processes, and 864 field dispositions.
+authority, duplicate-key rejection, and complete delivery custody. It freezes
+selection of 48 installed-package natural objects after package, path, mode,
+and ELF eligibility checks and before any x64lens, private fact-probe, or GNU
+`readelf` outcome is consumed. The objects span four distinct source lineages;
+the acquisition retains all 144 private probe runs, 192 public commands, 192
+exact GNU `readelf` processes, and 864 field dispositions.
 
 A separate same-byte 96-object gate compares native and container environments
 while holding target, analyzer, fact-probe, and schema bytes constant. It keeps
 5,184 private fields per environment and 384 paired public tuples. Package
-source/build-origin and environment effects remain separate. Both planes are
-diagnostic, unfrozen, publication-ineligible, and insufficient for runtime-CET
-or public-field claims. Patch 073 owns that policy decision.
+source/build-origin and environment effects remain separate. Retained cloud
+evidence covers the diagnostic acquisition and two same-host logic-only parity
+planes; qualified native/container parity remains pending. All retained planes
+are diagnostic, unfrozen, publication-ineligible, and insufficient for
+runtime-CET or public-field claims. Patch 073 records `defer`, adds zero
+public role/property fields, preserves the coarse PIE indicator, and selects
+text-relocation plus distinct RPATH/RUNPATH evidence as the next bounded
+mitigation tranche.

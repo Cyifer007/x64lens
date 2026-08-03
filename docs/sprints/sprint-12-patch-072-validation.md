@@ -2,11 +2,16 @@
 
 ## Status
 
-Implementation candidate pending complete local native and Docker acceptance.
-Patch 072 addresses confirmed Patch 071 tooling/delivery findings and performs
-the planned outcome-blind external-natural acquisition plus same-byte
-environment parity. It changes no runtime assembly, include, or JSON schema
-file.
+Implementation candidate; complete native and Docker validation remains
+pending. Patch 072 addresses the remaining confirmed Patch 071 tooling and
+delivery prerequisites and implements the planned outcome-blind
+external-natural acquisition plus same-byte environment-parity gate. It changes
+no runtime assembly, include, or JSON schema file.
+
+Cloud validation covered source and tooling behavior and completed the
+external-natural acquisition. Evidence for the unchanged runtime is
+artifact-backed rather than a fresh build. Retained same-host parity evidence
+is logic-only, not native/container parity.
 
 ## Source precondition
 
@@ -66,7 +71,9 @@ and the exact installed source lineages named by the authority.
 make sprint12-external-natural-acquisition-smoke
 ```
 
-The gate freezes 48 identities before outcomes and then requires:
+The gate freezes selection after package, path, mode, and ELF eligibility checks
+and before any x64lens, private fact-probe, or GNU `readelf` outcome is consumed.
+It then requires:
 
 ```text
 4 source lineages
@@ -87,12 +94,13 @@ counts are observed results, not a selection criterion. Capacity exit 6 remains
 a valid retained public-command outcome only when stdout is empty and the stable
 fail-closed contract is preserved.
 
-A development-host acquisition rehearsal completed the intended denominators over
-four installed lineages. It retained 624 eligible matches, 48 ambiguous cells,
-192 unavailable cells, and zero eligible mismatches. Forty-six `gadgets` and
-`analyze` pairs succeeded; two pairs returned capacity exit 6 with empty stdout.
-All 48 private IBT and SHSTK states remained unknown in this selected natural
-stratum. These are diagnostic observations, not prevalence or runtime-CET
+A cloud-validated diagnostic acquisition completed the intended denominators
+over four installed lineages. It retained 624 eligible matches, 48 ambiguous
+cells, 192 unavailable cells, and zero eligible mismatches. Forty-six `gadgets`
+and `analyze` pairs succeeded; two pairs returned capacity exit 6 with empty
+stdout. Both `ibt_state` and `shstk_state` remained unknown for every selected
+object, or 96 object-field cells. The evidence is diagnostic, unfrozen, and
+publication-ineligible; these observations are not prevalence or runtime-CET
 claims.
 
 ## Native/container same-byte parity
@@ -109,16 +117,17 @@ bytes into both planes. Acceptance requires:
 5,184 private fields per environment
 10,368 combined private fields
 5,184 paired private-field agreements
-288 paired byte-identical probe processes
+288 private probe processes per environment
+576 combined private probe processes
+288 paired byte-identical probe-output agreements
 768 combined public command closures
 384 paired path-normalized public tuples
 0 mismatches
 ```
 
-A two-plane same-host logic rehearsal completed these denominators. Because
-that development environment had no Docker command or daemon, the rehearsal is
-labeled logic-only and is not native/container acceptance. The Docker parity gate
-remains required in WSL2.
+Retained cloud evidence includes two same-host logic planes that completed these
+denominators. That evidence is diagnostic, unfrozen, publication-ineligible,
+and logic-only; qualified native/container parity remains required.
 
 ## Complete Patch 072 acceptance
 
@@ -137,7 +146,8 @@ make sprint12-p072-acceptance-smoke
 
 `make sprint12-p072-acceptance-smoke` deliberately keeps package-specific
 external acquisition and Docker parity outside the portable native aggregate.
-It runs the normal aggregate first, then both Patch 072 host/environment gates.
+It runs the normal aggregate first, then both Patch 072 acquisition and
+environment-parity gates.
 
 ## Unchanged product contracts
 
@@ -152,7 +162,8 @@ It runs the normal aggregate first, then both Patch 072 host/environment gates.
 - malformed-input no-partial-output behavior;
 - read-only targets and no target execution;
 - dependency-free, decoder-free, one-worker reference runtime; and
-- no public PIE/DSO, IBT, or SHSTK field.
+- no new role-derived PIE/DSO field or IBT/SHSTK field; the existing coarse
+  `mitigations.pie` field remains unchanged.
 
 ## Interpretation and next gate
 

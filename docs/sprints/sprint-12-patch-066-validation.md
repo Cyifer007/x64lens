@@ -14,7 +14,9 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current expectations are in the
-[Patch 071 validation plan](sprint-12-patch-071-validation.md).
+[Patch 072 validation record](sprint-12-patch-072-validation.md); the
+[Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
+historical boundary.
 
 ## Purpose
 
@@ -155,7 +157,8 @@ The 28-object preflight is controlled development evidence, not the wider
 natural/metamorphic diagnostic matrix and not publication evidence. Patch 068
 adds that separate gate for 48 held-out natural objects and 48 controlled
 metamorphic objects. Patch 069 added bounded external ELF reconciliation
-(`readelf -hW/-lW/-dW/-nW`); the Patch 071 candidate corrects its
-remaining evidence gates. Native/container private-fact parity remains open.
+(`readelf -hW/-lW/-dW/-nW`). Patch 071 supplied the first evidence-gate
+correction, and Patch 072 supplies the remainder and implements the parity
+gate; qualified native/container parity evidence remains pending.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

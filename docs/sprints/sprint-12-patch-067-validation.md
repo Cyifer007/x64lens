@@ -9,7 +9,7 @@ correction and is superseded by Patch 072. The
 [Patch 068 plan](sprint-12-patch-068-validation.md) and
 [Patch 069 plan](sprint-12-patch-069-validation.md) preserve the intervening
 historical boundaries; current expectations are recorded in the
-[Patch 072 validation plan](sprint-12-patch-072-validation.md). The
+[Patch 072 validation record](sprint-12-patch-072-validation.md). The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary. The
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the

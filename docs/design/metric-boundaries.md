@@ -359,13 +359,17 @@ readelf field dispositions               864
 parity objects                            96
 private fields per environment         5,184
 combined private fields               10,368
-paired probe processes                   288
+private probe processes per environment  288
+combined private probe processes         576
+paired probe-process agreements          288
 combined public closures                 768
 paired public tuples                     384
 ```
 
 These are evidence-plane denominators, not gadget populations, mitigation
-prevalence, runtime-CET counts, or benchmark observations. Ambiguous,
-unavailable, inapplicable, malformed, unsupported, and capacity outcomes remain
-visible and do not enter an eligible-match denominator unless their field
-authority explicitly permits it.
+prevalence, runtime-CET counts, or benchmark observations. Only `match` or
+`mismatch` field dispositions backed by direct or reproducibly derived
+authority enter the eligible denominator. Ambiguous, unavailable, and
+`not_eligible` cells remain visible outside it. Malformed, unsupported, and
+capacity public-command outcomes remain in separate command and object
+accounting rather than becoming comparator cells.

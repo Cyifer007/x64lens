@@ -392,16 +392,23 @@ The version-3 pilot, natural acquisition, controlled `readelf` reconciliation,
 and parity records remain diagnostic development evidence. They do not satisfy
 the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later throughput
 result must retain the batch as its measurement unit and preserve the
-diagnostic/confirmatory separation. Patch 073 is the non-reinterpretive public-
-policy gate, and Patch 074 closes Sprint 12 and hands off to Sprint 13.
+diagnostic/confirmatory separation. Patch 073 records `defer`, changes no
+public field or schema meaning, and leaves corrected Docker parity as a local
+acceptance prerequisite. Patch 074 closes Sprint 12 and hands off to Sprint 13.
 
 
 ## Patch 072 release-gate note
 
 Patch 072 acceptance requires the complete native aggregate, strict ShellCheck,
 Docker validation, package-specific external-natural acquisition, and the same-
-byte native/container parity gate. The 48-object natural stratum and 96-object
-parity matrix remain mutable diagnostic evidence and cannot satisfy preview or
-publication corpus requirements. Static property agreement does not establish
-runtime CET enforcement. No public PIE/DSO, IBT, or SHSTK field is admitted
-until the separate Patch 073 policy gate.
+byte native/container parity gate. Retained cloud evidence covers the diagnostic
+acquisition and two same-host logic-only parity planes; evidence for unchanged
+runtime paths is artifact-backed rather than a fresh build. The 48-object
+natural stratum and 96-object parity matrix remain diagnostic, unfrozen, and
+publication-ineligible and cannot satisfy preview or publication corpus
+requirements. Static property agreement does not establish runtime CET
+enforcement. No new role-derived PIE/DSO field or IBT/SHSTK field is admitted
+after the separate Patch 073 policy gate, which records explicit deferral;
+the existing coarse `mitigations.pie` field remains unchanged. The next selected
+text-relocation and RPATH/RUNPATH families remain future bounded implementation
+work and are not release evidence from Patch 073.

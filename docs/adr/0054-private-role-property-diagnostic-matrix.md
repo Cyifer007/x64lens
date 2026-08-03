@@ -3,10 +3,12 @@
 ## Status
 
 Accepted architecture for the historical Sprint 12 Patch 068 implementation
-candidate. Patch 069 corrected and authenticated the matrix; the current Patch
-070 candidate corrects the remaining evidence gates without promoting the
-diagnostic result. Product, delivery, and parity acceptance remain subject to
-separate validation against the exact candidate source.
+candidate. Patch 069 corrected and authenticated the matrix, Patch 070 was
+rejected, and Patch 071 supplied the first evidence-gate correction. The current
+Patch 072 candidate carries the remaining correction and acquisition/parity
+gates without promoting the diagnostic result. Product, delivery, and parity
+acceptance remain subject to separate validation against the exact candidate
+source.
 
 ## Context
 
@@ -66,7 +68,8 @@ independently.
 
 Patch 068 does not:
 
-- add public PIE/DSO, IBT, or SHSTK fields;
+- add a public role-derived PIE/DSO distinction or IBT/SHSTK indicators, or
+  reinterpret the existing coarse `mitigations.pie` field;
 - change schema `0.2.0`;
 - infer runtime CET enforcement from static GNU properties;
 - change executable-region authority, scanner behavior, candidate identity,
@@ -88,5 +91,6 @@ decision.
   `include/structs.inc` changes.
 - Public `info`, `mitigations`, `gadgets`, and `analyze` paths remain free of the
   private role/property vocabulary.
-- Sprint 12 may proceed to bounded external comparison, native/container private
-  fact parity, and a later public-policy decision without conflating those gates.
+- Patch 069 subsequently added bounded external comparison. Patch 072 carries
+  outcome-blind external-natural acquisition and native/container private-fact
+  parity, while Patch 073 separately owns any public-policy decision.

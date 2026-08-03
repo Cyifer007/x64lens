@@ -402,8 +402,9 @@ The external-natural acquisition binds each selected object to its dpkg binary
 and source package identities, package file-list and copyright hashes, requested
 and resolved path, target SHA-256/size/mode, outcome-blind selection record,
 independent expected vector, three probe outputs, four public command outputs,
-and four exact GNU `readelf` outputs. Selection is hashed before any analyzer,
-probe, or comparator outcome is consumed.
+and four exact GNU `readelf` outputs. Selection is frozen after package, path,
+mode, and ELF eligibility checks and before any x64lens, private fact-probe, or
+GNU `readelf` outcome is consumed.
 
 The environment-parity plane binds one 96-object matrix and one analyzer,
 private probe, and schema byte set to distinct native and container execution
@@ -412,3 +413,7 @@ the environment-specific target pathname while raw streams remain retained.
 Package source/build-origin evidence and environment evidence remain separate.
 Neither class changes raw, exact-suffix, semantic-exact, unknown, future
 decoder-backed, or scored candidate provenance.
+
+Retained cloud parity evidence contains two same-host logic-only planes;
+qualified native/container parity remains pending. Both provenance classes are
+diagnostic, unfrozen, and publication-ineligible.
