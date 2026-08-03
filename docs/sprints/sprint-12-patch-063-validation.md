@@ -18,10 +18,14 @@ historical boundary, and the
 historical boundary. The
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the final
 pre-Patch-070 historical candidate boundary. Patch 070 was rejected after
-acceptance validation, Patch 071 required further correction, and Patch 072's
-returned review rejected current acceptance. Use the
-[Patch 073 validation record](sprint-12-patch-073-validation.md) for current
+acceptance validation. Patches 070, 071, 072, and 073 were not accepted at their
+respective first returned review boundaries. Patch 073 delivered the first
+custody/isolation correction and policy deferral; Patch 074 is the final
+corrective Sprint 12 closeout candidate. Use the
+[Patch 074 validation record](sprint-12-patch-074-validation.md) for current
 candidate expectations; the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
+first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary; the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the

@@ -4,13 +4,13 @@
 
 Accepted architecture introduced by Sprint 12 Patch 066, extended by Patch 067
 layout attestation and the Patch 068 diagnostic matrix, and carried through
-Patches 069 and 070. Patch 070 acceptance was rejected. Patch 071 corrected
-the first development-evidence blockers. Patch 072 added the remaining
-correction plus private acquisition/parity work, but its returned review
-rejected current acceptance. The current Patch 073 candidate leaves runtime and
-schema boundaries unchanged while carrying the reported custody and isolation
-corrections.
-Product and delivery acceptance remain governed by separate validation.
+Patches 069 and 070. Patches 070, 071, 072, and 073 were not accepted at their
+respective first returned review boundaries. Patch 073 delivered the first
+custody/isolation
+correction and the non-reinterpretive policy deferral. The current Patch 074
+final closeout candidate carries the remaining correction while leaving runtime
+and schema boundaries unchanged. Product, delivery, and actual
+native/container parity acceptance remain governed by Patch 074 validation.
 
 ## Context
 
@@ -109,9 +109,10 @@ objects. At the Patch 068 boundary, bounded external ELF reconciliation
 authenticated reconciliation. Patch 070 attempted the next evidence-gate correction but was rejected.
 Patch 071 corrected the first blocker set. Patch 072 carried the remaining
 correction and the initial native/container private-fact parity gate, but its
-returned review rejected current acceptance. Patch 073 carries the reported
-custody and isolation corrections. Whole-batch timing and process-tree RSS also remain separate
-measurement gates.
+returned review rejected current acceptance. Patch 073 delivered the first
+custody/isolation correction and policy deferral; Patch 074 carries the
+remaining correction as the final Sprint 12 closeout candidate. Whole-batch
+timing and process-tree RSS also remain separate measurement gates.
 
 ## Consequences
 
@@ -122,6 +123,6 @@ measurement gates.
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
 - Patch 073 executed the public-policy gate as `defer` and added no public
-  indicator. Corrected native/container parity and independent acceptance
+  indicator. Corrected actual native/container parity and Patch 074 acceptance
   remain pending; any future compatible-output decision requires a new
   separately reviewed gate.

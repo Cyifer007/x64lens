@@ -251,3 +251,9 @@ Patch 053 changes no text or JSON report field. Diagnostic benchmark artifacts
 must record the producer tool/schema identity and must not be represented as
 frozen release evidence. A future optional decoder or worker profile receives a
 separate profile identity; it may not change reference output facts silently.
+
+## Sprint 12 Patch 075 output boundary
+
+The private dynamic-metadata side-car changes no text or JSON output. Malformed
+dynamic-table inputs and private carrier-capacity exhaustion continue to fail
+before stdout. Reporters do not infer text-relocation state.

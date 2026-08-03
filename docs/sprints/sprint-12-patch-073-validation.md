@@ -2,15 +2,18 @@
 
 ## Status
 
-Reviewed implementation. The public-policy gate executed as `defer`, but
-acceptance review required the final Patch 074 custody, parity, permission, and
-authority correction before Sprint 12 closeout.
+Historical implementation candidate. The public-policy gate executed as
+`defer`, but Patch 073 was not accepted at its first returned review boundary.
+Patch 074 is the final corrective Sprint 12 closeout candidate and still
+requires complete acceptance.
 
 ## Purpose
 
-Patch 073 closes the confirmed Patch 072 cleanup, selection-freeze, delivery,
-parity-isolation, and evidence-retention defects while executing the planned
-non-reinterpretive public-policy gate. The policy result is an explicit
+Patch 073 delivered the first custody/isolation correction for the confirmed
+Patch 072 cleanup, selection-freeze, delivery, parity-isolation, and
+evidence-retention defects while executing the planned non-reinterpretive
+public-policy gate. Patch 074 carries the remaining correction. The Patch 073
+policy result is an explicit
 **deferral**: no new PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH
 field is added. The existing coarse `mitigations.pie` field remains the
 `ET_DYN` indicator, and static GNU properties do not prove runtime CET
@@ -94,7 +97,7 @@ its selection authority before loading outcome tools, before every object, and
 after all outcomes. The manifest must state
 `selection_freeze_verified_through_outcomes: true`.
 
-## Corrected native/container parity
+## Intended corrected native/container parity gate
 
 ```bash
 make sprint12-role-property-environment-parity-smoke
@@ -128,23 +131,26 @@ The unchanged runtime must preserve:
 
 ```text
 schema version:      0.2.0
-candidate capacity:  4096
-candidate 4097:      exit 6 before stdout
-malformed input:     no partial stdout
+candidate capacity:  4,096
+candidate 4,097:     exit 6 before stdout
+malformed input:     no partial report
 target mapping:      read-only
 target execution:    never
 reference profile:   dependency-free, decoder-free, one worker
 ```
 
-## Complete Patch 073 acceptance
+## Patch 073 candidate implementation aggregate
 
 ```bash
 make sprint12-p073-acceptance-smoke
 ```
 
-This aggregate is the complete acceptance gate. It requires the complete native
-aggregate, retained external-natural acquisition, corrected Docker parity, the
-policy deferral, and the mitigation gap authority.
+This aggregate covered the Patch 073 implementation surface: the complete native
+aggregate, retained external-natural acquisition, intended corrected Docker
+parity, policy deferral, and mitigation-gap authority. A pass was necessary but
+did not establish acceptance. Package/source authentication, exact delivery
+rehearsal, corrected actual native/container parity, and independent acceptance
+remained separate boundaries.
 
 ## Interpretation
 
@@ -154,6 +160,8 @@ does not support a claim that static GNU properties prove runtime CET, that
 `ET_DYN` alone distinguishes PIE from DSO, or that the external-natural sample
 estimates mitigation prevalence.
 
-Patch 074 carries the required final correction, exact delivery closure, and
-Sprint 12 closeout authority. Sprint 13 owns semantic completion after Patch
-074 acceptance.
+Patch 074 carries the required remaining correction, exact delivery-rehearsal
+requirement, and final Sprint 12 closeout-candidate authority. Current
+expectations are in the
+[Patch 074 validation record](sprint-12-patch-074-validation.md). Sprint 13 owns
+semantic completion only after Patch 074 acceptance.

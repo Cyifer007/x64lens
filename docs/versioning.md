@@ -14,16 +14,19 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 ## Current version and roadmap state
 
 Patch 074 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprints 1 through 12 are complete, and Sprint 13 is active as the
-semantic capability completion sprint.
+moves. It is the final Sprint 12 closeout candidate. Sprint 12 remains open and
+Sprint 13 remains the next semantic-capability sprint until every acceptance
+boundary passes on the same authenticated source.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 074 changes no tracked runtime analyzer, include, or schema path. It closes
-the final Patch 073 custody, parity isolation/membership/publication, selection-
-inode, tracked-permission, and strict-authority defects while preserving the
-same reference profile and exact candidate-capacity behavior.
+Patch 074 changes no tracked runtime analyzer, include, or schema path. It
+implements corrections for the final Patch 073 custody, parity isolation/
+membership/publication, selection-inode, tracked-permission, and strict-
+authority findings while preserving the same reference profile and exact
+candidate-capacity behavior. Actual qualified parity and acceptance remain
+pending.
 
 Measurements after Patch 074 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
@@ -159,8 +162,9 @@ role/property decision remain later, separately identified patches: Patch 072
 performs outcome-blind external-natural acquisition and native/container
 private-fact parity, Patch 073 executes the non-reinterpretive public-policy gate
 as an explicit deferral without changing tool or schema version, and Patch 074
-closes the final custody/parity findings, closes Sprint 12, and activates Sprint
-13 without moving either version.
+implements the final custody/parity-protocol corrections without moving either
+version. Sprint 12 closes and Sprint 13 becomes active only after complete
+acceptance.
 
 
 ## Sprint 12 Patch 074 version state
@@ -169,5 +173,5 @@ Patch 074 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
 fields, and the `v0.1.0-dev` checkpoint tag. Delivery custody version 3, retained
 selection/parity authorities, tracked-only permission normalization, and the
 Sprint 12 closeout authority are development and validation contracts, not
-product or schema versions. Sprint 13 begins without a release tag or campaign
-freeze.
+product or schema versions. Sprint 13 begins after complete Patch 074 acceptance
+without a release tag or campaign freeze.

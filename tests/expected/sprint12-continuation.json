@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "sprint": 12,
+  "status": "active",
+  "current_patch": 75,
+  "superseded_closeout_patch": 74,
+  "next_patch": 76,
+  "next_patch_tranche": "distinct-bounded-rpath-runpath-evidence",
+  "acceptance_target": "sprint12-p075-acceptance-smoke",
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "candidate_capacity": 4096,
+    "mandatory_decoder": false,
+    "mandatory_threads": false,
+    "target_mapping": "read_only",
+    "target_execution": false
+  },
+  "patch075_boundary": {
+    "remaining_patch074_corrections": true,
+    "private_dynamic_metadata_sidecar": true,
+    "textrel_carrier_capacity": 64,
+    "textrel_state": "private",
+    "public_fields_added": 0,
+    "existing_coarse_pie_field_reinterpreted": false,
+    "runtime_cet_enforcement_claimed": false,
+    "schema_changed": false
+  },
+  "preserved_authorities": {
+    "executable_mapping": "PT_LOAD_plus_PF_X_file_backed_ranges",
+    "section_headers": "bounded_metadata_and_annotations_only",
+    "candidate_4097": "exit_6_before_stdout",
+    "malformed_parse": "no_partial_stdout",
+    "reference_runtime": "dependency_free_decoder_free_one_worker"
+  },
+  "required_documents": [
+    "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
+    "docs/sprints/sprint-12-patch-075-validation.md",
+    "docs/sprints/sprint-12-plan.md",
+    "docs/sprints/sprint-13-plan.md"
+  ]
+}

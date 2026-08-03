@@ -63,6 +63,7 @@ def main() -> int:
         "authority_id", "evidence_class", "frozen", "publication_eligible", "purpose",
         "current_public_properties", "current_private_or_deferred",
         "prioritized_gap_tranches", "excluded_shortcuts", "patch_073_disposition", "patch_074_disposition",
+        "patch_075_disposition",
     }, "mitigation gap authority fields changed")
     require(value["authority_id"] == "sprint12-mitigation-competitive-gap-v1",
             "mitigation gap authority id changed")
@@ -143,11 +144,35 @@ def main() -> int:
     deferred = string_list(closeout["deferred_tranches"], "Patch 074 deferred tranches", exact_count=2)
     require(deferred == selected, "Patch 074 deferred-tranche disposition disagrees")
 
+    current = value["patch_075_disposition"]
+    require(isinstance(current, dict) and set(current) == {
+        "runtime_fields_added", "private_facts_added", "public_projection",
+        "next_implementation_tranche", "reason",
+    }, "Patch 075 gap disposition fields changed")
+    require(type(current["runtime_fields_added"]) is int and current["runtime_fields_added"] == 0,
+            "Patch 075 silently added a public runtime field")
+    private_facts = string_list(current["private_facts_added"], "Patch 075 private facts", exact_count=3)
+    require(private_facts == [
+        "DT_TEXTREL carrier provenance",
+        "DT_FLAGS and DF_TEXTREL carrier provenance",
+        "private unknown-absent-present-contradictory text-relocation state",
+    ], "Patch 075 private text-relocation facts changed")
+    require(current["public_projection"] == "deferred_pending_schema_and_consumer_value_gate",
+            "Patch 075 public projection boundary changed")
+    require(string_list(current["next_implementation_tranche"],
+                        "Patch 075 next implementation tranche", exact_count=1)
+            == ["runtime-search-path"],
+            "Patch 076 implementation handoff changed")
+    require(isinstance(current["reason"], str) and current["reason"],
+            "Patch 075 gap disposition reason is invalid")
+
     print(
         "sprint12-mitigation-competitive-gap-smoke: ok "
         f"current_public={len(observed)} private_deferred={len(private)} "
         f"gap_tranches={len(tranches)} selected_next={','.join(selected)} "
-        f"runtime_fields_added={disposition['runtime_fields_added']} closeout_fields_added={closeout['runtime_fields_added']}"
+        f"runtime_fields_added={disposition['runtime_fields_added']} "
+        f"closeout_fields_added={closeout['runtime_fields_added']} "
+        f"patch075_private_textrel={len(private_facts)} patch075_public_fields={current['runtime_fields_added']}"
     )
     return 0
 

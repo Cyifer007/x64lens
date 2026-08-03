@@ -57,7 +57,7 @@ extern x64lens_arena_destroy
 section .bss
 ana_mapped_file:     resb FILEMAP_RECORD_SIZE
 ana_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
-ana_property_context: resb GNU_PROPERTY_CONTEXT_SIZE
+ana_property_context: resb PRIVATE_METADATA_CONTEXT_SIZE
 ana_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 ana_gadget_summary:  resb GADGET_SUMMARY_RECORD_SIZE
 ana_analysis_summary: resb ANALYSIS_SUMMARY_RECORD_SIZE

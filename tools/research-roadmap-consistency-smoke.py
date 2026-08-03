@@ -48,16 +48,16 @@ ACTIVE_AUTHORITY_PATHS = (
 
 REQUIRED_TEXT = {
     "README.md": (
-        "Sprints 1 through 12 are complete",
-        "Sprint 13 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Sprint 15",
         "Sprint 16",
         "Sprint 17",
         "Sprint 22",
     ),
     "docs/roadmap-22-sprints.md": (
-        "Sprints 1 through 12 are complete",
-        "Sprint 13 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Diagnostic measurement checkpoint",
         "Campaign freeze",
         "Research preview candidate",
@@ -65,8 +65,8 @@ REQUIRED_TEXT = {
         "First research release",
     ),
     "docs/research-roadmap.md": (
-        "Sprints 1 through 12 are complete",
-        "Sprint 13 is active",
+        "Sprints 1 through 11 are complete",
+        "Sprint 12 is active",
         "Sprint 15 freezes",
         "Sprint 17 runs publication-grade",
     ),
@@ -80,10 +80,10 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Closed by Patch 074",
+        "Active at Patch 075",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Active semantic capability completion sprint",
+        "Planned semantic capability completion sprint",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",
@@ -152,8 +152,8 @@ def main() -> int:
             spec.get("release_sprint"),
         )
         require(milestones == (11, 15, 16, 17, 22), f"milestone mismatch: {milestones!r}")
-        require(spec.get("completed_sprints") == 12, "completed_sprints must be 12")
-        require(spec.get("active_sprint") == 13, "active_sprint must be 13")
+        require(spec.get("completed_sprints") == 11, "completed_sprints must be 11")
+        require(spec.get("active_sprint") == 12, "active_sprint must be 12")
 
         scanned = 0
         path_claims_checked = 0
@@ -179,7 +179,7 @@ def main() -> int:
     print(
         "research-roadmap-consistency-smoke: ok "
         f"documents={scanned} milestones=5 forbidden_patterns={len(FORBIDDEN_ACTIVE_CLAIMS)} "
-        f"path_claims={path_claims_checked} completed_sprints=12 active_sprint=13"
+        f"path_claims={path_claims_checked} completed_sprints=11 active_sprint=12"
     )
     return 0
 

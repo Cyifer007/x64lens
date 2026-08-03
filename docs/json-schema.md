@@ -461,3 +461,9 @@ mitigation property set, and the existing `mitigations.pie` meaning remain
 unchanged. No public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH field
 is added. Any later addition remains a separately reviewed compatible `0.2.x`
 decision with parser, fixture, comparator, and consumer evidence.
+
+## Sprint 12 Patch 075 private metadata boundary
+
+Patch 075 leaves schema `0.2.0` unchanged. Private `DT_TEXTREL`/`DF_TEXTREL`
+carrier and state facts are not JSON fields. A later public projection requires
+an explicit compatible policy gate and must not reinterpret existing fields.

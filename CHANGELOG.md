@@ -8,12 +8,29 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 074 closeout authority, ADR 0060, validation record, and
-  `make sprint12-closeout-smoke`. The machine authority closes Patches 062-074,
-  preserves tool `0.1.0-dev`, schema `0.2.0`, the 4,096-candidate fail-closed
-  boundary, read-only/nonexecuted targets, the dependency-free decoder-free
-  one-worker reference, public role/property deferral, and the Sprint 13
-  semantic-capability handoff.
+- Sprint 12 Patch 075 keeps the loader/mitigation sprint active after the Patch
+  074 closeout candidate was superseded. It adds a private 2,128-byte bounded
+  dynamic-metadata side-car, exact `DT_TEXTREL` and `DT_FLAGS` carrier
+  provenance, an unknown/absent/present/contradictory `DF_TEXTREL` state, a
+  24-fixture oracle, and a C/NASM layout attestation. Carrier 65 fails with exit
+  code 6 before public output. No CLI, public mitigation field, report schema,
+  candidate population, score, decoder, or worker behavior changes.
+- Patch 075 corrective custody and validation hardening: tracked files with
+  hardlink topology are rejected before permission normalization, late
+  verification remains inside rollback, parity accepts only the reviewed mount
+  grammar, JSON authorities reject duplicate keys and Boolean-as-integer data,
+  delivery creation retains one authenticated root descriptor, and the exact
+  supported custody boundary is 511 payload files plus the manifest. A
+  manifest-authoritative source recovery helper restores canonical Git modes
+  independently of the caller's umask.
+
+- Sprint 12 Patch 074 closeout-candidate authority, ADR 0060, validation record,
+  and `make sprint12-closeout-smoke`. The machine authority covers Patches
+  062-074 and preserves tool `0.1.0-dev`, schema `0.2.0`, the 4,096-candidate
+  fail-closed boundary, read-only/nonexecuted targets, the dependency-free
+  decoder-free one-worker reference, and public role/property deferral. Sprint
+  12 closure and the Sprint 13 semantic-capability handoff remain conditional on
+  complete Patch 074 acceptance.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -39,6 +56,12 @@ The project follows semantic versioning once the first public release is cut.
   evidence is same-host and logic-only; corrected write-isolated native/
   container parity remains pending. Patch 073 has executed the
   public-policy gate as an explicit deferral.
+
+- The Patch 073 diagnostic campaign boundary: every x64lens row was below the
+  timer floor and there were zero positive coordinate anchors. The retained
+  external-natural and logic-parity evidence remains diagnostic, unfrozen, and
+  publication-ineligible; it authorizes no speed, RSS, superiority, parity, or
+  normalized-coverage claim.
 
 - Sprint 12 Patch 071 corrective validation and delivery tooling: an
   outcome-complete version-2 batch authority, streaming child-output caps,
@@ -437,7 +460,8 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Patch 074 closes the confirmed Patch 073 evidence and acceptance defects:
+- Patch 074 implements corrections for the confirmed Patch 073 evidence and
+  acceptance defects:
   late custody-subtree mutation, accepted hardlink topology, incomplete
   root/ancestor binding, same-byte selected-object inode replacement, parity
   execute-bit loss, native-plane ancestor exposure, undeclared parity links or
@@ -446,16 +470,15 @@ The project follows semantic versioning once the first public release is cut.
   authorities, and missing-root cleanup success. The patch changes no runtime
   analyzer, include, or public schema file and adds zero mitigation fields.
 
-- Patch 072's returned review rejected current acceptance. Patch 073 addressed the
-  first post-fingerprint cleanup, selection-freeze, delivery-custody, retained-
-  evidence, and parity-isolation defects; Patch 074 closes the remaining
-  topology, inode, hardlink, mount, publication, permission, and authority
-  findings. Cleanup retains a final
-  descriptor through removal; external-natural selection is reauthenticated
-  throughout outcome collection; delivery custody v2 authenticates root,
-  manifest, directory, and file modes while hashing through retained
-  descriptors; and the container receives one dedicated empty write root
-  without access to the completed native plane.
+- Patches 070, 071, 072, and 073 were not accepted at their respective first
+  returned review boundaries. Patch 073 implemented the first post-fingerprint
+  cleanup, selection-freeze, delivery-custody, retained-evidence, and parity-
+  isolation corrections. At that historical boundary, cleanup retained a final
+  descriptor through removal, external-natural selection was reauthenticated
+  throughout outcome collection, delivery custody v2 authenticated root and
+  member modes, and the container received one dedicated empty write root.
+  Patch 074 carries delivery custody v3 and implements the remaining topology,
+  inode, hardlink, mount, publication, permission, and authority corrections.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,

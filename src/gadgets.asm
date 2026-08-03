@@ -49,7 +49,7 @@ extern x64lens_arena_destroy
 section .bss
 gad_mapped_file:     resb FILEMAP_RECORD_SIZE
 gad_phdr_summary:    resb PHDR_SUMMARY_RECORD_SIZE
-gad_property_context: resb GNU_PROPERTY_CONTEXT_SIZE
+gad_property_context: resb PRIVATE_METADATA_CONTEXT_SIZE
 gad_regions:         resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 gad_summary:         resb GADGET_SUMMARY_RECORD_SIZE
 gad_analysis_summary: resb ANALYSIS_SUMMARY_RECORD_SIZE

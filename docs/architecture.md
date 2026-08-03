@@ -41,6 +41,7 @@ x64lens CLI
 | `phdr.asm` | Program header parsing and bounded raw loader/dynamic role facts | Section label formatting or public role policy |
 | `binary_role.asm` | Internal-only fact-first executable/shared-object role lattice | Parse tables, change public PIE output, scan, classify gadgets, score, or report |
 | `gnu_property.asm` | Bounded canonical GNU-property carrier, note, contributor, and x86 feature facts | Map files, choose executable regions, scan candidates, score, or report |
+| `dynamic_metadata.asm` | Bounded private dynamic-carrier provenance and text-relocation evidence | Map files, resolve paths, parse sections, scan or classify candidates, score, or report |
 | `shdr.asm` | Section header metadata, stripped indicator, and section-label annotations | Runtime mapping authority |
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
@@ -1613,3 +1614,13 @@ Parity does not mount the repository, native result, or a covering ancestor into
 the container. These are evidence-integrity properties; they do not change ELF
 parsing, executable-region authority, candidate discovery, exact matching,
 semantic classification, side-cars, scoring, or reporters.
+
+## Sprint 12 Patch 075 private dynamic-metadata side-car
+
+`dynamic_metadata.asm` consumes only checked `Elf64_Dyn` carrier coordinates
+from `phdr.asm`. It retains bounded private carrier records and derives private
+text-relocation state. It does not own file mapping, executable-region
+selection, section parsing, gadget analysis, scoring, or reporting. The
+composite private metadata buffer preserves the GNU-property context at offset
+zero and appends the dynamic context, so previous property offsets remain
+stable. Program headers remain executable authority.

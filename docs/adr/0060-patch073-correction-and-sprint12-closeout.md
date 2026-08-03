@@ -2,15 +2,19 @@
 
 ## Status
 
-Accepted for the Patch 074 implementation candidate. Final acceptance still
-requires the complete native, Docker, retained external-natural, corrected
-native/container parity, delivery, and independent Lane A gates.
+Adopted as the design record for the Patch 074 implementation candidate. Final
+acceptance still requires the complete native, Docker, retained external-
+natural, corrected native/container parity, delivery, and independent non-
+documentation gates.
 
 ## Context
 
-Patch 073 preserved the runtime analyzer and executed the non-reinterpretive
-public role/property policy gate as `defer`. Its review nevertheless identified
-material defects in evidence custody and local acceptance tooling:
+Patches 070, 071, 072, and 073 were not accepted at their respective first
+returned review boundaries. Patch 073 preserved the runtime analyzer and
+executed the non-
+reinterpretive public role/property policy gate as `defer`, but its returned
+review identified material defects in evidence custody and local acceptance
+tooling:
 
 - executable analyzer and probe inputs lost execute permission when parity
   evidence was sealed;
@@ -98,10 +102,11 @@ public projection.
 
 ### Sprint closeout
 
-Patch 074 closes Sprint 12 and activates Sprint 13 after the complete acceptance
-target passes. Sprint 13 owns the generic exact-pop semantic decision, Linux
-syscall `r10` role decision, release-facing score/null policy, and only those
-bounded family additions justified by diagnostic task value.
+Patch 074 closes Sprint 12 and activates Sprint 13 only after the complete
+acceptance boundary passes. Until then it remains the final closeout candidate.
+Sprint 13 then owns the generic exact-pop semantic decision, Linux syscall
+`r10` role decision, release-facing score/null policy, and only those bounded
+family additions justified by diagnostic task value.
 
 ## Rejected alternatives
 
@@ -127,5 +132,5 @@ decoder-backed, and scored facts retain their existing meanings.
 
 The corrected source is a closeout candidate, not evidence of acceptance by
 itself. Native and Docker aggregates, retained external-natural acquisition,
-corrected isolated parity, delivery rehearsal, and independent Lane A review
-remain required before the closeout commit is accepted.
+corrected isolated parity, delivery rehearsal, and independent non-
+documentation review remain required before the closeout commit is accepted.

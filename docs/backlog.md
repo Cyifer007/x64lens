@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — complete
+### Sprint 12: loader and mitigation precision — closeout candidate
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -687,16 +687,20 @@ or schema file. Its current development gates are:
 Natural package source/build-origin and execution-environment effects remain
 separate. Retained diagnostic acquisition evidence remains distinct from the two
 same-host logic-only parity planes; qualified native/container parity remains pending.
+The Patch 073 diagnostic campaign retained every x64lens row below its measured
+timer floor and produced zero positive coordinate anchors, so it authorizes no
+speed, peak-RSS, parity, superiority, prevalence, or normalized-coverage claim.
 These artifacts are diagnostic, unfrozen, and publication-ineligible. Patch 073
 records public-policy deferral and selects the next bounded mitigation tranche;
-Patch 074 closes Sprint 12. Positive coordinate anchors and complete runtime
-closure for all five task paths remain separate qualification gates.
+Patch 074 remains the final Sprint 12 closeout candidate. Positive coordinate
+anchors and complete runtime closure for all five task paths remain separate
+qualification gates.
 
 ### Sprint 12 Patch 073 review and Patch 074 closeout update
 
-Patch 073 executed the public-policy deferral but required a final corrective
-patch. Patch 074 closes the confirmed review findings without modifying runtime
-analyzer, include, or schema files.
+Patch 073 executed the public-policy deferral but was not accepted at its first
+returned review boundary. Patch 074 implements corrections for the confirmed
+review findings without modifying runtime analyzer, include, or schema files.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -716,6 +720,7 @@ analyzer, include, or schema files.
   mitigation-gap authorities.
 - [x] Add the machine-readable Sprint 12 closeout authority, ADR 0060, Patch 074
   validation record, and Sprint 13 handoff.
-- [ ] Accept the closeout only after `make sprint12-p074-acceptance-smoke`,
-  qualified Docker parity, exact delivery rehearsal, and independent Lane A
-  acceptance pass on the same source.
+- [ ] Accept the closeout only after the candidate implementation aggregate,
+  qualified Docker parity, package/source authentication, exact delivery
+  rehearsal, and independent non-documentation acceptance pass on the same
+  source. The aggregate is `make sprint12-p074-acceptance-smoke`.

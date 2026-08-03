@@ -2,25 +2,36 @@
 
 ## Current checkpoint
 
-Sprints 1 through 12 are complete after Patch 074. Sprint 9 established report
-identity, schema `0.2.0`, candidate provenance, and the decoder-free reference
-profile. Sprint 10 added bounded semantic-exact primitive and effect coverage.
+Sprints 1 through 11 are complete. Sprint 12 is active at Patch 075. Patch 074
+was a superseded closeout candidate; Patch 075 carries remaining correction and
+private bounded text-relocation evidence. Sprint 13 is planned only after the
+active Sprint 12 gates close. The roadmap may state
+"Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
+acceptance boundary passes on the same authenticated source. Sprint 9
+established report identity, schema `0.2.0`, candidate provenance, and the
+decoder-free reference profile. Sprint 10 added bounded semantic-exact primitive
+and effect coverage.
 Sprint 11 established the provisional corpus, high-resolution runner, normalized
 baseline adapters, and diagnostic gap register. Sprint 12 established ordinary
 program-header validity, explicit extended-numbering outcomes, executable-
 overlap contributor provenance and measured normalization deferral, a private
 PIE/DSO role lattice, bounded private GNU-property IBT/SHSTK facts, natural and
 controlled private-fact strata, exact GNU `readelf` reconciliation, outcome-
-blind external-natural acquisition, corrected isolated native/container parity,
-and a non-reinterpretive public-policy decision of `defer`.
+blind external-natural acquisition, a corrected isolated native/container
+parity protocol, and a non-reinterpretive public-policy decision of `defer`.
 
-Patch 074 closes the final Patch 073 custody, hardlink, selection-inode, parity-
-membership/mount/publication, tracked-permission, and authority-oracle defects.
-It changes no runtime analyzer, include, or public schema path. Public PIE/DSO,
-IBT, SHSTK, runtime-CET, text-relocation, RPATH, and RUNPATH fields remain
-unadded. Sprint 13 is active as the semantic capability completion sprint.
-Sprint 15 still freezes the confirmatory campaign, and all Sprint 11-12
-measurement evidence remains diagnostic, unfrozen, and publication-ineligible.
+Patch 074 implements corrections for the final Patch 073 custody, hardlink,
+selection-inode, parity-membership/mount/publication, tracked-permission, and
+authority-oracle findings. It changes no runtime analyzer, include, or public
+schema path. Public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH,
+and RUNPATH fields remain unadded. Actual qualified parity and independent
+acceptance remain pending. Sprint 15 still freezes the confirmatory campaign,
+and all Sprint 11-12 measurement evidence remains diagnostic, unfrozen, and
+publication-ineligible.
+
+The Patch 073 diagnostic campaign retained every x64lens row below its measured
+timer floor and produced zero positive coordinate anchors. It supports no speed,
+peak-RSS, parity, superiority, prevalence, or normalized-coverage claim.
 
 The repository now provides:
 
@@ -558,9 +569,10 @@ outcome-blind natural-object acquisition gate.
 
 ## Sprint 12 Patch 070 review and Patch 071 corrective checkpoint
 
-Patch 070 acceptance was rejected after validation reproduced nested cleanup,
-batch-oracle, output-cap, and delivery-custody defects. Patch 071 preserves valid
-Patch 070 facts and replaces those boundaries with identity-bound cleanup, an
+Patches 070, 071, 072, and 073 were not accepted at their respective first
+returned review boundaries. Patch 071 preserves valid Patch 070 facts and
+replaces those
+boundaries with identity-bound cleanup, an
 outcome-complete version-2 authority, streaming 4 KiB output caps, and delivery
 verification for regular-file path/hash/size/mode plus implied-directory
 membership. This remains diagnostic, unfrozen, publication-ineligible method
@@ -570,10 +582,10 @@ At the Patch 071 boundary, external-natural acquisition and environment parity
 were deferred to Patch 072. Patch 072 implements both gates; qualified native/
 container parity evidence remains pending. The latest real campaign still
 supports no x64lens single-run latency, RSS-superiority, generic gadget-count,
-or normalized-coverage claim. Patch 073 executed the non-reinterpretive public-policy gate as an explicit
-deferral. Patch 074 supplies the final custody and parity-protocol correction,
-closes Sprint 12, and hands off to Sprint 13 after the complete acceptance
-target passes.
+or normalized-coverage claim. Patch 073 executed the non-reinterpretive public-
+policy gate as an explicit deferral. Patch 074 supplies the final custody and
+parity-protocol correction and remains the closeout candidate. Sprint 12 closes
+and the Sprint 13 handoff begins only after complete acceptance.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -601,17 +613,18 @@ text-relocation plus distinct RPATH/RUNPATH tranches as deferred bounded work.
 
 ## Sprint 12 Patch 074 closeout research posture
 
-Patch 074 changes no runtime analyzer, include, or public schema path. It closes
-the final evidence-custody and parity-protocol defects by retaining descriptors
-through final topology verification, rejecting hardlinks and late subtree
-mutation, binding external-natural selection to inode identity, preserving
-parity executable modes and exact tree membership, excluding native-plane
-ancestors from container mounts, and limiting permission normalization to
-preflighted Git-tracked paths.
+Patch 074 changes no runtime analyzer, include, or public schema path. It
+implements corrections for the final evidence-custody and parity-protocol
+findings by retaining descriptors through final topology verification,
+rejecting hardlinks and late subtree mutation, binding external-natural
+selection to inode identity, preserving parity executable modes and exact tree
+membership, excluding native-plane ancestors from container mounts, and
+limiting permission normalization to preflighted Git-tracked paths.
 
 The public role/property decision remains `defer`. Text-relocation and separate
 RPATH/RUNPATH evidence remain future bounded mitigation tranches, not Patch 074
-runtime output. Sprint 13 is active and owns the generic exact-pop, Linux
-syscall `r10`, score/null, and measurement-gated semantic decisions. All
-Sprint 11-12 campaign observations remain diagnostic and cannot be promoted into
-the Sprint 15-frozen confirmatory dataset.
+runtime output. Sprint 13 becomes active after complete Patch 074 acceptance
+and then owns the generic exact-pop, Linux syscall `r10`, score/null, and
+measurement-gated semantic decisions. All Sprint 11-12 campaign observations
+remain diagnostic and cannot be promoted into the Sprint 15-frozen confirmatory
+dataset.

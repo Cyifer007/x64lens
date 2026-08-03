@@ -215,10 +215,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Closed by Patch 074' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked closed by Patch 074'
-grep -q '^Active semantic capability completion sprint' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked active'
+grep -q '^Active at Patch 075' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked active at Patch 075'
+grep -q '^Planned semantic capability completion sprint' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked planned'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -452,5 +452,5 @@ python3 tools/sprint10-closeout-smoke.py >/dev/null
 python3 tools/sprint11-closeout-smoke.py >/dev/null
 python3 tools/sprint12-closeout-smoke.py >/dev/null
 
-printf 'planning-docs-check: ok plans=%d forward_plans=%d closed_sprints=12 active_sprint=13\n' \
+printf 'planning-docs-check: ok plans=%d forward_plans=%d closed_sprints=11 active_sprint=12\n' \
     "$plan_count" "$forward_count"

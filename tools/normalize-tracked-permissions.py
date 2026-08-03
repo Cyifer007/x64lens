@@ -82,8 +82,11 @@ def normalize(repo: Path) -> tuple[int, int]:
     owner = os.geteuid()
     file_changes: list[tuple[Path, int]] = []
     directory_modes: dict[Path, int] = {}
+    tracked_inodes: dict[tuple[int, int], str] = {}
 
-    # Complete preflight before any chmod.
+    # Complete preflight before any chmod.  A tracked regular file must have a
+    # unique inode and link count one; otherwise chmod would also mutate an
+    # untracked or ignored hard-link alias outside the declared Git path set.
     for record in records:
         path = repo / record.path
         metadata = path.lstat()
@@ -93,6 +96,13 @@ def normalize(repo: Path) -> tuple[int, int]:
         if record.file_type == stat.S_IFREG:
             require(metadata.st_uid == owner or owner == 0,
                     f"tracked file is not owned by the current user: {record.path}")
+            require(metadata.st_nlink == 1,
+                    f"tracked file has hard-link aliases: {record.path}")
+            inode_key = (metadata.st_dev, metadata.st_ino)
+            prior = tracked_inodes.get(inode_key)
+            require(prior is None,
+                    f"tracked files share one inode: {prior} and {record.path}")
+            tracked_inodes[inode_key] = record.path
             if stat.S_IMODE(metadata.st_mode) != record.expected_mode:
                 file_changes.append((path, stat.S_IMODE(metadata.st_mode)))
         parent = path.parent
@@ -117,6 +127,34 @@ def normalize(repo: Path) -> tuple[int, int]:
         for path, original in sorted(file_changes, key=lambda item: os.fsencode(str(item[0]))):
             os.chmod(path, expected_by_path[path], follow_symlinks=False)
             changed.append((path, original))
+
+        # Final verification is part of the transaction.  Any late pathname,
+        # type, link-count, inode-topology, or mode disagreement rolls back all
+        # earlier changes instead of leaving a partially normalized repository.
+        final_inodes: dict[tuple[int, int], str] = {}
+        for record in records:
+            path = repo / record.path
+            metadata = path.lstat()
+            if record.file_type == stat.S_IFREG:
+                require(stat.S_ISREG(metadata.st_mode),
+                        f"tracked regular file changed type: {record.path}")
+                require(metadata.st_nlink == 1,
+                        f"tracked file gained a hard-link alias: {record.path}")
+                inode_key = (metadata.st_dev, metadata.st_ino)
+                prior = final_inodes.get(inode_key)
+                require(prior is None,
+                        f"tracked files share one inode after normalization: {prior} and {record.path}")
+                final_inodes[inode_key] = record.path
+                require(stat.S_IMODE(metadata.st_mode) == record.expected_mode,
+                        f"tracked file mode normalization failed: {record.path}")
+            else:
+                require(stat.S_ISLNK(metadata.st_mode), f"tracked symlink changed: {record.path}")
+        for directory in directory_modes:
+            metadata = directory.lstat()
+            require(stat.S_ISDIR(metadata.st_mode) and not directory.is_symlink(),
+                    f"tracked directory changed type: {directory}")
+            require(stat.S_IMODE(metadata.st_mode) == 0o755,
+                    f"tracked directory mode normalization failed: {directory}")
     except BaseException as exc:
         rollback_errors: list[str] = []
         for path, original in reversed(changed):
@@ -128,18 +166,6 @@ def normalize(repo: Path) -> tuple[int, int]:
                 rollback_errors.append(f"{path}: {rollback_exc}")
         suffix = f"; rollback failures: {rollback_errors}" if rollback_errors else ""
         raise PermissionErrorContract(f"permission normalization failed: {exc}{suffix}") from exc
-
-    for record in records:
-        path = repo / record.path
-        metadata = path.lstat()
-        if record.file_type == stat.S_IFREG:
-            require(stat.S_IMODE(metadata.st_mode) == record.expected_mode,
-                    f"tracked file mode normalization failed: {record.path}")
-        else:
-            require(stat.S_ISLNK(metadata.st_mode), f"tracked symlink changed: {record.path}")
-    for directory in directory_modes:
-        require(stat.S_IMODE(directory.lstat().st_mode) == 0o755,
-                f"tracked directory mode normalization failed: {directory}")
     return len(file_changes), sum(1 for mode in directory_modes.values() if mode != 0o755)
 
 

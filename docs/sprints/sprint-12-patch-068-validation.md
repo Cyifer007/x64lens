@@ -10,7 +10,13 @@ evidence-gate correction. Patch 070 was rejected after acceptance validation and
 required the further Patch 071 correction, whose review in turn required Patch
 072. Patch 072's returned review rejected current acceptance. Current
 expectations are recorded in the
-[Patch 073 validation record](sprint-12-patch-073-validation.md); the
+[Patch 074 validation record](sprint-12-patch-074-validation.md). Patches 070,
+071, 072, and 073 were not accepted at their respective first returned review
+boundaries;
+Patch 073 delivered the first custody/isolation correction and policy deferral,
+and Patch 074 is the final corrective Sprint 12 closeout candidate. The
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
+historical boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary; the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
@@ -146,8 +152,9 @@ At the Patch 068 boundary, authenticated `readelf -hW/-lW/-dW/-nW`
 reconciliation remained future work; Patch 069 added that diagnostic
 reconciliation, Patch 071 supplied the first evidence-gate correction, and
 Patch 072 supplies the remainder plus acquisition and parity gates. Qualified
-native/container private-fact parity over the diagnostic matrix remains
-pending. The public-policy decision, positive coordinate anchors, whole-batch
+actual native/container private-fact parity over the diagnostic matrix and
+Patch 074 acceptance remain pending. The public-policy decision, positive
+coordinate anchors, whole-batch
 timing, and process-tree RSS remain separate later gates. Patch 068
 evidence is diagnostic and cannot support publication or runtime-CET claims.
 The matrix remains unfrozen and publication-ineligible.

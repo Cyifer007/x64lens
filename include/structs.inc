@@ -178,6 +178,43 @@
 %define GNU_PROPERTY_CTX_NOTES              (GNU_PROPERTY_CTX_CONTRIBUTORS + (GNU_PROPERTY_CONTRIBUTOR_MAX * GNU_PROPERTY_CONTRIB_RECORD_SIZE))
 %define GNU_PROPERTY_CONTEXT_SIZE           (GNU_PROPERTY_CTX_NOTES + (GNU_PROPERTY_NOTE_MAX * GNU_PROPERTY_NOTE_RECORD_SIZE))
 
+; Private bounded dynamic-metadata side-car. The GNU-property context remains
+; the first member of the composite private metadata buffer so existing private
+; property offsets retain their meaning. Dynamic carriers preserve exact tag,
+; dynamic-table index, checked file offset, and raw value. No field is emitted
+; through the public schema in Sprint 12 Patch 075.
+%define DYNAMIC_METADATA_STATE_UNKNOWN        0
+%define DYNAMIC_METADATA_STATE_ABSENT         1
+%define DYNAMIC_METADATA_STATE_PRESENT        2
+%define DYNAMIC_METADATA_STATE_CONTRADICTORY  3
+
+%define DYNAMIC_METADATA_CARRIER_MAX          64
+
+%define DYNAMIC_METADATA_CTX_CARRIER_COUNT          0
+%define DYNAMIC_METADATA_CTX_TEXTREL_TAG_COUNT      8
+%define DYNAMIC_METADATA_CTX_FLAGS_COUNT            16
+%define DYNAMIC_METADATA_CTX_FLAGS_FIRST_VALUE      24
+%define DYNAMIC_METADATA_CTX_FLAGS_AND              32
+%define DYNAMIC_METADATA_CTX_FLAGS_OR               40
+%define DYNAMIC_METADATA_CTX_FULL_VALUE_CONFLICTS   48
+%define DYNAMIC_METADATA_CTX_TEXTREL_CONFLICTS      56
+%define DYNAMIC_METADATA_CTX_TABLE_COMPLETE         64
+%define DYNAMIC_METADATA_CTX_TEXTREL_STATE           72
+%define DYNAMIC_METADATA_CTX_HEADER_SIZE             80
+
+%define DYNAMIC_METADATA_CARRIER_TAG          0
+%define DYNAMIC_METADATA_CARRIER_INDEX        8
+%define DYNAMIC_METADATA_CARRIER_FILE_OFFSET  16
+%define DYNAMIC_METADATA_CARRIER_VALUE        24
+%define DYNAMIC_METADATA_CARRIER_RECORD_SIZE  32
+
+%define DYNAMIC_METADATA_CTX_CARRIERS DYNAMIC_METADATA_CTX_HEADER_SIZE
+%define DYNAMIC_METADATA_CONTEXT_SIZE     (DYNAMIC_METADATA_CTX_CARRIERS + (DYNAMIC_METADATA_CARRIER_MAX * DYNAMIC_METADATA_CARRIER_RECORD_SIZE))
+
+%define PRIVATE_METADATA_GNU_PROPERTY_OFFSET 0
+%define PRIVATE_METADATA_DYNAMIC_OFFSET      GNU_PROPERTY_CONTEXT_SIZE
+%define PRIVATE_METADATA_CONTEXT_SIZE        (GNU_PROPERTY_CONTEXT_SIZE + DYNAMIC_METADATA_CONTEXT_SIZE)
+
 ; Canary indicator states. This is an evidence-qualified static indicator,
 ; not proof that every function in the target is stack-protected.
 %define CANARY_STATE_UNKNOWN         0

@@ -10,6 +10,7 @@
  */
 #define _GNU_SOURCE
 #include "role-property-layout.h"
+#include "dynamic-metadata-layout.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -92,13 +93,18 @@ int main(int argc, char **argv) {
     }
     if (!x64lens_role_property_layout_validate(
             x64lens_role_property_layout_descriptor,
-            (size_t)x64lens_role_property_layout_descriptor_size)) {
+            (size_t)x64lens_role_property_layout_descriptor_size) ||
+        !x64lens_dynamic_metadata_layout_validate(
+            x64lens_dynamic_metadata_layout_descriptor,
+            (size_t)x64lens_dynamic_metadata_layout_descriptor_size)) {
         fputs("role-property-fact-probe: private layout descriptor mismatch\n", stderr);
         return 7;
     }
 
     const uint64_t summary_size_u64 = layout(X64LENS_LAYOUT_PHDR_SUMMARY_RECORD_SIZE);
-    const uint64_t context_size_u64 = layout(X64LENS_LAYOUT_PROPERTY_CONTEXT_SIZE);
+    const uint64_t context_size_u64 = x64lens_dynamic_metadata_layout_value(
+        x64lens_dynamic_metadata_layout_descriptor,
+        X64LENS_DYNAMIC_LAYOUT_PRIVATE_CONTEXT_SIZE);
     const uint64_t region_size_u64 = layout(X64LENS_LAYOUT_EXEC_REGION_RECORD_SIZE);
     const uint64_t region_max_u64 = layout(X64LENS_LAYOUT_EXEC_REGION_MAX);
     if (summary_size_u64 == 0 || context_size_u64 == 0 || region_size_u64 == 0 ||

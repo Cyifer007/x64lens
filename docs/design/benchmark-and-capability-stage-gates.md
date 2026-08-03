@@ -180,11 +180,12 @@ make research-stage-gates-smoke
 
 ## Current stage after Sprint 12
 
-Patch 074 closes Sprint 12 and activates Sprint 13 semantic capability
-completion. The diagnostic corpus and method remain provisional until Sprint
-15. Sprints 13 and 14 may change capabilities or experimental profiles in
-response to diagnostic evidence; such changes require new diagnostic identities
-and do not contaminate the later frozen campaign.
+Patch 074 is the final Sprint 12 closeout candidate. Sprint 12 remains open and
+Sprint 13 remains next until complete acceptance. The diagnostic corpus and
+method remain provisional until Sprint 15. Sprints 13 and 14 may change
+capabilities or experimental profiles in response to diagnostic evidence; such
+changes require new diagnostic identities and do not contaminate the later
+frozen campaign.
 
 ## Sprint 11 Patch 055 foundation status
 
@@ -305,19 +306,27 @@ remain independent; no generic cross-tool gadget count is permitted.
 
 The `program_header_validity` and `elf_extended_numbering` gates were resolved
 by Patch 062. Patch 064 resolved `executable_overlap_policy` by measured
-deferral under explicit reopening thresholds. Patches 064-074 resolved the
-private role/property and GNU-property gates through implementation, diagnostic
-reconciliation, corrected environment parity, and a public-policy decision of
-`defer`. Any diagnostic campaign after Patch 074 requires a new identifier when
-its task, capability, schema, or method changes.
+deferral under explicit reopening thresholds. Patches 064-074 carry the
+candidate disposition for the private role/property and GNU-property gates
+through implementation, diagnostic reconciliation, a corrected environment-
+parity protocol, and a public-policy decision of `defer`. Corrected actual
+native/container parity and complete Patch 074 acceptance remain pending. Any
+diagnostic campaign after acceptance requires a new identifier when its task,
+capability, schema, or method changes.
 
 
 ## Sprint 12 Patch 074 closeout gate update
 
-The stage authority now records twelve completed sprints and Sprint 13 active.
-The overlap, PIE/DSO, and GNU-property gates are `resolved`: overlap by measured
-deferral, and role/property projection by retained private evidence plus an
-explicit non-reinterpretive public deferral. Resolution does not mean a public
-field or runtime-CET claim exists. Generic exact-pop semantics and score/null
-policy remain Sprint 13 gates; optional decoder and deterministic concurrency
-remain Sprint 14 decisions.
+The candidate stage authority records twelve completed sprints and Sprint 13
+active, but that state becomes project chronology only after complete Patch 074
+acceptance. The overlap, PIE/DSO, and GNU-property gates are `resolved`:
+overlap by measured deferral, and role/property projection by retained private
+evidence plus an explicit non-reinterpretive public deferral. Resolution does
+not mean a public field or runtime-CET claim exists. Generic exact-pop semantics
+and score/null policy remain Sprint 13 gates; optional decoder and deterministic
+concurrency remain Sprint 14 decisions.
+
+The Patch 073 diagnostic campaign retained every x64lens row below its measured
+timer floor and produced zero positive coordinate anchors. It remains
+diagnostic, unfrozen, and publication-ineligible and supports no speed, peak-
+RSS, parity, superiority, prevalence, or normalized-coverage claim.

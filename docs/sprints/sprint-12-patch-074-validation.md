@@ -8,10 +8,11 @@ this document alone.
 
 ## Purpose
 
-Patch 074 corrects the confirmed Patch 073 custody, parity, permission,
-selection-freeze, and authority-oracle findings, reconciles the accepted public
-Markdown corrections, records the policy decision as `defer`, and closes Sprint
-12 into the Sprint 13 semantic-capability handoff.
+Patch 074 implements corrections for the confirmed Patch 073 custody, parity-
+protocol, permission, selection-freeze, and authority-oracle findings,
+reconciles the prior public Markdown proposals, and records the policy decision
+as `defer`. It remains the final Sprint 12 closeout candidate; Sprint 13
+activation follows complete acceptance.
 
 It changes no tracked path under `src/`, `include/`, or `schemas/`. No runtime
 mitigation field is added.
@@ -59,7 +60,7 @@ The regression covers:
 - strict mitigation-gap types and uniqueness.
 
 Historical Patch 070 through Patch 072 corrective gates remain required because
-Patch 074 preserves their accepted behavior.
+Patch 074 preserves the still-valid behavior exercised by those gates.
 
 ## Delivery custody
 
@@ -148,10 +149,10 @@ The closeout authority preserves:
 ```text
 tool version:             0.1.0-dev
 schema version:           0.2.0
-candidate capacity:       4096
+candidate capacity:       4,096
 analysis arena:           851,968 bytes
-candidate 4097:           exit 6 before stdout
-malformed parse failure:  no partial stdout
+candidate 4,097:          exit 6 before stdout
+malformed parse failures: no partial report
 target mapping:           read-only
 target execution:         never
 reference profile:        dependency-free, decoder-free, one worker
@@ -173,21 +174,25 @@ Strict ShellCheck is part of `make sprint-closeout-smoke`. Docker availability
 is a separate environment prerequisite; native evidence does not substitute for
 Docker evidence.
 
-## Complete Patch 074 acceptance
+## Candidate implementation aggregate
 
 ```bash
 make sprint12-p074-acceptance-smoke
 ```
 
-This aggregate requires the complete native validation surface, retained
+This aggregate exercises the complete native validation surface, retained
 external-natural acquisition, corrected isolated native/container parity,
 deferral-only policy and mitigation-gap authorities, and the Sprint 12 closeout
-authority.
+authority. A passing result is necessary but not sufficient for acceptance:
+package/source authentication, exact delivery rehearsal, and independent non-
+documentation acceptance remain separate gates.
 
 ## Interpretation
 
-Patch 074 supports a bounded claim that Sprint 12’s loader and private
-mitigation-evidence work has an explicit accepted-or-deferred disposition and a
-machine-checked Sprint 13 handoff. It does not support a public PIE/DSO, IBT,
-SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, coverage,
-or exploitability claim beyond the existing report contract.
+After every acceptance boundary passes on the same source, Patch 074 would
+support a bounded claim that Sprint 12's loader and private mitigation-evidence
+work has an explicit implemented-or-deferred disposition and an authenticated
+Sprint 13 handoff. The candidate alone does not close Sprint 12 or support a
+public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH,
+performance, RSS, coverage, or exploitability claim beyond the existing report
+contract.

@@ -3,13 +3,14 @@
 ## Status
 
 Accepted architecture for the historical Sprint 12 Patch 068 implementation
-candidate. Patch 069 corrected and authenticated the matrix, Patch 070 was
-rejected, and Patch 071 supplied the first evidence-gate correction. Patch 072
-added the remaining correction and acquisition/parity gates, but its returned
-review rejected current acceptance. The current Patch 073 candidate carries the
-reported custody and isolation corrections without promoting the diagnostic result. Product, delivery, and parity
-acceptance remain subject to separate validation against the exact candidate
-source.
+candidate. Patch 069 corrected and authenticated the matrix. Patches 070, 071,
+072, and 073 were not accepted at their respective first returned review
+boundaries. Patch
+073 delivered the first custody/isolation correction and the non-reinterpretive
+policy deferral without promoting the diagnostic result. The current Patch 074
+final closeout candidate carries the remaining correction. Product, delivery,
+and actual native/container parity acceptance remain subject to Patch 074
+validation against the exact candidate source.
 
 ## Context
 

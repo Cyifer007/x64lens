@@ -8,9 +8,12 @@ gate to 33 fixtures and 132 executions, and Patch 064 expands it to 49 fixtures
 and 196 executions. Patch 064 did not pass validation, Patch 065 required a
 further correction, Patch 066 required Patch 067, Patch 067 required Patch 068,
 Patch 068 required Patch 069, and Patch 069 required Patch 070. Patch 070 was
-rejected after acceptance validation. Patch 071 required further correction,
-and Patch 072's returned review also rejected current acceptance. Use the
-[Patch 073 validation record](sprint-12-patch-073-validation.md) for current
+rejected after acceptance validation. Patches 070, 071, 072, and 073 were not
+accepted at their respective first returned review boundaries. Patch 073
+delivered the
+first custody/isolation correction and policy deferral; Patch 074 is the final
+corrective Sprint 12 closeout candidate. Use the
+[Patch 074 validation record](sprint-12-patch-074-validation.md) for current
 candidate expectations. See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
 for the Patch 062 design boundary, the
 [Patch 063 validation record](sprint-12-patch-063-validation.md) for the first
@@ -28,7 +31,9 @@ next historical candidate boundary, and the
 [Patch 069 validation plan](sprint-12-patch-069-validation.md) preserves the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) records the
-rejected candidate.
+rejected candidate, and the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
+first custody/isolation correction and policy-deferral boundary.
 
 ## Scope
 

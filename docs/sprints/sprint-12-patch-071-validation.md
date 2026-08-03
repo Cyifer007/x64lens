@@ -7,7 +7,11 @@ Patch 071 is limited to nested cleanup identity, exact batch-oracle semantics,
 streaming output limits, and recursive source/evidence delivery custody. It
 performs no external-natural acquisition and changes no runtime analyzer or
 public schema behavior. Follow-up validation required the remaining Patch 072
-correction.
+correction, so Patch 071 was not accepted at its first returned review boundary.
+Patches 070, 072, and 073 likewise were not accepted at their first returned
+review boundaries. Patch 073 delivered the first custody/isolation correction
+and policy deferral; Patch 074 is the final corrective Sprint 12 closeout
+candidate.
 
 ## Source precondition
 
@@ -122,7 +126,10 @@ At this historical boundary, passing the listed gates would have established
 the first corrected development and delivery transaction boundary. Follow-up
 validation identified narrower prerequisites addressed by Patch 072. Patch
 072's returned review rejected current acceptance; the
-[Patch 073 validation record](sprint-12-patch-073-validation.md) carries the
-current expectations. Neither historical boundary validates arbitrary external-natural objects,
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
+first custody/isolation correction and policy-deferral boundary, while the
+[Patch 074 validation record](sprint-12-patch-074-validation.md) carries current
+expectations. None of these historical boundaries validates arbitrary external-
+natural objects,
 proves runtime CET enforcement, authorizes public mitigation fields, establishes
 single-run latency, or produces publication evidence by itself.

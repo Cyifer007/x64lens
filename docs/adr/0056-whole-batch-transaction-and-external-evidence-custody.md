@@ -12,9 +12,11 @@ acceptance.
 Patch 069 retained a complete controlled role/property matrix and field-scoped
 GNU `readelf` reconciliation, but follow-up validation showed that several
 development oracles could still accept mutable or incomplete evidence. The
-latest diagnostic campaign also left every measured x64lens row below the
-reliable single-process timer floor. Lowering the floor or dividing a batch
-elapsed time into synthetic per-invocation latency would overstate precision.
+Patch 073 diagnostic campaign left every measured x64lens row below the reliable
+single-process timer floor and produced zero positive coordinate anchors. It
+authorizes no speed, RSS, superiority, or normalized coverage claim. Lowering
+the floor or dividing a batch elapsed time into synthetic per-invocation latency
+would overstate precision.
 
 A historical corrective target also lacked declared analyzer, private fact
 probe, and authenticated provisional-corpus prerequisites.
@@ -91,5 +93,6 @@ with exact implied-directory membership. See
 ADR 0058 records the remaining Patch 071 correction and the version-3 authority
 used by Patch 072, together with outcome-blind external-natural acquisition and
 the initial native/container private-fact parity protocol. Patch 072's returned
-review rejected current acceptance; ADR 0059 records the current Patch 073
-custody/isolation correction and policy deferral.
+review rejected current acceptance. ADR 0059 records the first Patch 073
+custody/isolation correction and policy deferral; ADR 0060 records the remaining
+Patch 074 correction and final Sprint 12 closeout candidate.

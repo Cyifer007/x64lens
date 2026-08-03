@@ -1,0 +1,29 @@
+{
+  "schema": "x64lens-sprint12-textrel-private-evidence-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "public_projection": false,
+  "schema_version": "0.2.0",
+  "carrier_capacity": 64,
+  "state_values": {
+    "unknown": 0,
+    "absent": 1,
+    "present": 2,
+    "contradictory": 3
+  },
+  "fixture_counts": {
+    "valid": 19,
+    "malformed": 4,
+    "unsupported": 1,
+    "total": 24,
+    "private_probe_outcomes": 24,
+    "public_command_outcomes": 96,
+    "external_dispositions": 24,
+    "total_outcome_cells": 144,
+    "eligible_readelf": 12
+  },
+  "public_commands": ["info", "mitigations", "gadgets", "analyze"],
+  "external_command": ["readelf", "-dW", "<target>"],
+  "interpretation": "DT_TEXTREL and DF_TEXTREL are private static carrier evidence. They do not establish a runtime relocation event, vulnerability, or exploitability."
+}

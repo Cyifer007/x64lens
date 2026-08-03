@@ -36,7 +36,7 @@ extern x64lens_error_print_status
 section .bss
 mit_mapped_file:  resb FILEMAP_RECORD_SIZE
 mit_summary:      resb PHDR_SUMMARY_RECORD_SIZE
-mit_property_context: resb GNU_PROPERTY_CONTEXT_SIZE
+mit_property_context: resb PRIVATE_METADATA_CONTEXT_SIZE
 mit_regions:      resb EXEC_REGION_RECORD_SIZE * EXEC_REGION_MAX
 
 section .text

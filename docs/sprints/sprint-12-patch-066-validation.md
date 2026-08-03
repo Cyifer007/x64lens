@@ -6,7 +6,11 @@ Historical implementation-candidate validation plan. Patch 066 required the
 Patch 067 corrective candidate, which subsequently required Patch 068 and then
 Patch 069 and Patch 070. Patch 070 was rejected after acceptance validation,
 Patch 071 required further correction, and Patch 072's returned review rejected
-current acceptance. The
+current acceptance. Patches 070, 071, 072, and 073 were not accepted at their
+respective first returned review boundaries. Patch 073 delivered the first
+custody/isolation
+correction and policy deferral; Patch 074 is the final corrective Sprint 12
+closeout candidate. The
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
 historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the next
@@ -15,7 +19,9 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current expectations are in the
-[Patch 073 validation record](sprint-12-patch-073-validation.md); the
+[Patch 074 validation record](sprint-12-patch-074-validation.md); the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
+first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary.
 
@@ -160,6 +166,8 @@ adds that separate gate for 48 held-out natural objects and 48 controlled
 metamorphic objects. Patch 069 added bounded external ELF reconciliation
 (`readelf -hW/-lW/-dW/-nW`). Patch 071 supplied the first evidence-gate
 correction, and Patch 072 supplies the remainder and implements the parity
-gate; qualified native/container parity evidence remains pending.
+gate. Patch 073 delivered the first custody/isolation correction and policy
+deferral, and Patch 074 carries the remaining correction. Corrected actual
+native/container parity and Patch 074 acceptance remain pending.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

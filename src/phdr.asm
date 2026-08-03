@@ -16,7 +16,7 @@
 ;
 ; Public module exports:
 ;   x64lens_phdr_validate_loader_contract(base, size, phnum)
-;   x64lens_phdr_analyze(base, size, summary, regions, max_regions, property_context)
+;   x64lens_phdr_analyze(base, size, summary, regions, max_regions, private_metadata_context)
 ;
 ; Contract:
 ;   Do not print, parse CLI arguments, or classify gadgets here. This module
@@ -38,6 +38,9 @@ extern x64lens_regions_store_from_phdr
 extern x64lens_gnu_property_context_init
 extern x64lens_gnu_property_register_carrier
 extern x64lens_gnu_property_parse
+extern x64lens_dynamic_metadata_context_init
+extern x64lens_dynamic_metadata_record
+extern x64lens_dynamic_metadata_finalize
 
 section .text
 global x64lens_phdr_validate_loader_contract
@@ -225,7 +228,7 @@ x64lens_phdr_validate_loader_contract:
     ret
 
 ; x64lens_phdr_analyze(base=rdi, file_size=rsi, summary=rdx, regions=rcx,
-;                        max_regions=r8, property_context=r9)
+;                        max_regions=r8, private_metadata_context=r9)
 ;
 ; Inputs:
 ;   RDI = mmap base for an already ELF64-validated target
@@ -233,10 +236,13 @@ x64lens_phdr_validate_loader_contract:
 ;   RDX = writable phdr_summary record
 ;   RCX = writable executable_region[] buffer
 ;   R8  = max executable-region records available
-;   R9  = writable GNU_PROPERTY_CONTEXT_SIZE command-lifetime buffer
+;   R9  = writable PRIVATE_METADATA_CONTEXT_SIZE command-lifetime buffer
 ;
 ; Output:
 ;   RAX = stable x64lens status code
+;
+; Clobbers:
+;   Caller-saved registers. Callee-saved registers are restored.
 ;
 ; Safety:
 ;   The shared loader contract is revalidated before iteration. Each PT_LOAD
@@ -252,7 +258,9 @@ x64lens_phdr_analyze:
     push    r15
     sub     rsp, 88             ; align calls and reserve parser scratch slots
 
-    mov     [rsp + 56], r9      ; private GNU-property context
+    mov     [rsp + 56], r9      ; composite private metadata context
+    lea     rax, [r9 + PRIVATE_METADATA_DYNAMIC_OFFSET]
+    mov     [rsp + 64], rax      ; bounded dynamic-metadata side-car
     mov     r15, rdi            ; mapped base
     mov     r14, rsi            ; file size
     mov     r13, rdx            ; phdr_summary record
@@ -297,6 +305,11 @@ x64lens_phdr_analyze:
     test    rax, rax
     jne     .done
 
+    mov     rdi, [rsp + 64]
+    call    x64lens_dynamic_metadata_context_init
+    test    rax, rax
+    jne     .done
+
     ; PIE baseline: ET_DYN is the common static indicator for PIE executables.
     ; Shared objects are also ET_DYN, so user-facing wording must remain
     ; careful and avoid overclaiming runtime exploitability.
@@ -318,7 +331,7 @@ x64lens_phdr_analyze:
     test    rax, rax
     jne     .done
     cmp     qword [r13 + PHDR_SUMMARY_PHNUM], 0
-    je      .finalize_gnu_property ; zero PHDRs imply an empty property view
+    je      .finalize_dynamic_metadata ; zero PHDRs imply empty private metadata views
 
     xor     rbx, rbx            ; program-header index
 .loop:
@@ -550,6 +563,7 @@ x64lens_phdr_analyze:
     jne     .malformed
 
     mov     rax, [rsp]
+    mov     [rsp + 72], rax     ; checked dynamic-entry file offset
     lea     rdx, [r15 + rax]    ; RDX = checked Elf64_Dyn pointer
     inc     qword [r13 + PHDR_SUMMARY_DYNAMIC_ENTRY_COUNT]
 
@@ -560,6 +574,8 @@ x64lens_phdr_analyze:
     je      .dynamic_strtab
     cmp     rax, DT_STRSZ
     je      .dynamic_strsz
+    cmp     rax, DT_TEXTREL
+    je      .dynamic_textrel
     cmp     rax, DT_BIND_NOW
     je      .dynamic_bind_now
     cmp     rax, DT_FLAGS
@@ -591,12 +607,32 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 1
     jmp     .dynamic_advance
 
+.dynamic_textrel:
+    mov     r8, [rdx + D_UN]
+    mov     rdi, [rsp + 64]
+    mov     rsi, DT_TEXTREL
+    mov     rdx, [rsp + 32]
+    mov     rcx, [rsp + 72]
+    call    x64lens_dynamic_metadata_record
+    test    rax, rax
+    jne     .done
+    jmp     .dynamic_advance
+
 .dynamic_bind_now:
     mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
     jmp     .dynamic_advance
 
 .dynamic_flags:
-    mov     rax, [rdx + D_UN]
+    mov     r8, [rdx + D_UN]
+    mov     [rsp + 80], r8
+    mov     rdi, [rsp + 64]
+    mov     rsi, DT_FLAGS
+    mov     rdx, [rsp + 32]
+    mov     rcx, [rsp + 72]
+    call    x64lens_dynamic_metadata_record
+    test    rax, rax
+    jne     .done
+    mov     rax, [rsp + 80]
     test    rax, DF_BIND_NOW
     jz      .dynamic_advance
     mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
@@ -648,6 +684,12 @@ x64lens_phdr_analyze:
     jmp     .loop
 
 .finalize_dynamic_metadata:
+    mov     rdi, [rsp + 64]
+    mov     rsi, r13
+    call    x64lens_dynamic_metadata_finalize
+    test    rax, rax
+    jne     .done
+
     ; Canary detection is an evidence-qualified bounded dynamic-string scan.
     ; If DT_STRTAB/DT_STRSZ are absent, leave the state unknown rather than
     ; guessing that stack canaries are absent. If both are present, the string

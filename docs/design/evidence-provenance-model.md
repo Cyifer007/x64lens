@@ -429,3 +429,11 @@ and preserving exact native/container plane membership. These facts establish
 which bytes and tree objects were observed; they do not convert private
 role/property agreement into public report fields, runtime CET evidence, or a
 publication dataset.
+
+## Sprint 12 Patch 075 dynamic-metadata provenance
+
+Private dynamic-metadata carriers are command-level mitigation evidence, not
+candidate provenance. Every retained carrier records its dynamic-table index,
+checked file offset, tag, and raw value. The aggregate text-relocation state
+does not upgrade raw, exact-suffix, semantic-exact, unknown, or scored gadget
+facts and is not emitted through schema `0.2.0`.

@@ -2,15 +2,19 @@
 
 ## Status
 
-Closed by Patch 074. Sprint 13 is active after the complete Patch 074 native,
-Docker, retained external-natural, corrected parity, delivery, and independent
-acceptance gates pass.
+Active at Patch 075. Patch 074 was a closeout candidate, but its independent
+review required a bounded corrective patch and the mitigation-gap review
+justified continuing Sprint 12. Patch 075 corrects the remaining custody and
+oracle defects and introduces private bounded `DT_TEXTREL` / `DF_TEXTREL`
+evidence. Patch 076 is planned for distinct bounded `DT_RPATH` and
+`DT_RUNPATH` evidence. Sprint 13 remains planned, not active.
 
-Patches 062 through 074 established ordinary PHDR validity and explicit
-extended-numbering outcomes, retained executable-overlap provenance, private
-PIE/DSO and GNU-property evidence, authenticated natural and controlled strata,
-external reconciliation, corrected environment parity, a non-reinterpretive
-public-policy deferral, and final evidence-custody closure. Public schema
+Patches 062 through 074 carry ordinary PHDR validity and explicit extended-
+numbering outcomes, retained executable-overlap provenance, private PIE/DSO and
+GNU-property evidence, authenticated natural and controlled strata, external
+reconciliation, a corrected environment-parity protocol, a non-reinterpretive
+public-policy deferral, and candidate evidence-custody corrections. Corrected
+actual native/container parity and final closure remain pending. Public schema
 `0.2.0` remains unchanged.
 
 Related closeout records:
@@ -29,6 +33,8 @@ Related closeout records:
 - [ADR 0059](../adr/0059-patch072-correction-and-non-reinterpretive-public-policy-deferral.md)
 - [ADR 0060](../adr/0060-patch073-correction-and-sprint12-closeout.md)
 - [Patch 074 validation](sprint-12-patch-074-validation.md)
+- [ADR 0061](../adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md)
+- [Patch 075 validation](sprint-12-patch-075-validation.md)
 
 ## Sprint goal
 
@@ -71,6 +77,24 @@ that would otherwise corrupt corpus labels or defensive triage.
   membership/publication, tracked-permission, and negative-oracle defects in
   Patch 074.
 
+## Active continuation deliverables
+
+- [x] Reject untracked hardlink mutation and include final permission
+  verification inside rollback.
+- [x] Bind custody publication to one retained root descriptor, close rejected
+  scans, and support exactly 511 payload files plus the custody manifest.
+- [x] Reject alternate container mount syntax outside the reviewed parity
+  grammar and reject duplicate JSON keys and Boolean-as-integer authority data.
+- [x] Add a private 2,128-byte bounded dynamic-metadata side-car after the
+  existing GNU-property context without changing earlier property offsets.
+- [x] Retain exact `DT_TEXTREL` and `DT_FLAGS` carrier provenance and derive
+  private unknown, absent, present, or contradictory text-relocation state.
+- [x] Preserve public schema `0.2.0`, public mitigation output, program-header
+  executable authority, candidate capacity, and no-partial-output behavior.
+- [ ] Complete fresh native, Docker, and independent acceptance for Patch 075.
+- [ ] Implement distinct bounded RPATH/RUNPATH evidence in Patch 076.
+
+
 ## Patch sequence
 
 1. **Patch 062:** ordinary PHDR validity and explicit extended-numbering
@@ -92,9 +116,13 @@ that would otherwise corrupt corpus labels or defensive triage.
 12. **Patch 073:** policy deferral and first parity/custody correction; review
     required the final closeout correction.
 13. **Patch 074:** final custody, parity, permission, authority, documentation,
-    and Sprint 12 closeout correction.
+    and a superseded Sprint 12 closeout candidate.
+14. **Patch 075:** remaining P074 correction plus private bounded text-relocation
+    carrier and state evidence.
+15. **Patch 076 (planned):** distinct bounded `DT_RPATH` and `DT_RUNPATH`
+    carrier/value evidence and final Sprint 12 acceptance decision.
 
-## Closeout disposition
+## Current continuation disposition
 
 ```text
 program-header executable authority: preserved
@@ -112,8 +140,9 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-Sprint 13 owns generic exact-pop semantics, the Linux syscall `r10` role,
-release-facing score/null policy, and only bounded family additions supported by
-measured task value. Any changed task definition receives a new diagnostic
-campaign identity. Sprint 14 remains the optional decoder/concurrency ablation
-stage, and Sprint 15 remains the confirmatory campaign freeze.
+After Patch 075 and the planned Patch 076 pass acceptance, Sprint 13 owns
+generic exact-pop semantics, the Linux syscall `r10` role, release-facing
+score/null policy, and only bounded family additions supported by measured task
+value. Any changed task definition receives a new diagnostic campaign identity.
+Sprint 14 remains the optional decoder/concurrency ablation stage, and Sprint 15
+remains the confirmatory campaign freeze.

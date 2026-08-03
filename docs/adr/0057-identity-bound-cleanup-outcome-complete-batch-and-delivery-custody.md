@@ -4,9 +4,13 @@
 
 Historical accepted architecture for the first Sprint 12 Patch 071 corrective
 implementation candidate. Patch 071 changed development, validation, and
-delivery tooling only, but its review required the remaining Patch 072
-correction recorded by ADR 0058. Product acceptance remains subject to native
-and Docker validation against the exact candidate source.
+delivery tooling only, but it was not accepted at its first returned review
+boundary and required the Patch 072 correction recorded by ADR 0058. Patches
+070, 072, and 073 likewise were not accepted at their first returned review
+boundaries. Patch 073 delivered the first custody/isolation correction and
+policy deferral; Patch 074 is the final corrective closeout candidate. Product
+acceptance remains subject to complete Patch 074 validation against the exact
+candidate source.
 
 ## Context
 
@@ -102,9 +106,10 @@ role/property acquisition. The Sprint 12 sequence is:
 - Patch 072: remaining Patch 071 correction plus outcome-blind external-natural
   acquisition and the initial native/container private-fact parity protocol;
   its returned review rejected current acceptance;
-- Patch 073: reported custody/isolation correction and non-reinterpretive
-  public-policy deferral; and
-- Patch 074: Sprint 12 closeout and Sprint 13 handoff.
+- Patch 073: first custody/isolation correction and non-reinterpretive
+  public-policy deferral; its returned review did not accept the candidate; and
+- Patch 074: remaining correction and final Sprint 12 closeout candidate, with
+  Sprint 13 handoff only after complete acceptance.
 
 The batch pilot remains transaction-conformance evidence. It is not a timing
 result, and no batch elapsed time may be divided into a single-run latency.

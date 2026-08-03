@@ -260,10 +260,17 @@ The paper may describe deterministic ordinary-PHDR validity and explicit extende
 
 ## Sprint 12 Patch 074 publication boundary
 
-Patch 074 permits a bounded engineering claim that Sprint 12’s private
-role/property evidence, external reconciliation, selection, parity protocol,
-and delivery custody have explicit accepted-or-deferred authorities. It does
-not authorize a public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation,
-RPATH/RUNPATH, performance, RSS, normalized coverage, or prevalence claim.
-All Sprint 11-12 measurements remain diagnostic and outside the Sprint
-15-frozen confirmatory campaign.
+Patch 074 is the final Sprint 12 closeout candidate. Its implementation records
+an explicit implemented-or-deferred disposition for the private role/property
+evidence, external reconciliation, selection, parity protocol, and delivery
+custody. That candidate disposition becomes accepted authority only after the
+remaining local execution, corrected actual native/container parity, delivery,
+and independent acceptance gates complete on the same source.
+
+The Patch 073 diagnostic campaign had every x64lens row below the timer floor
+and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
+publication-ineligible and supports no speed, RSS, superiority, parity, or
+normalized-coverage claim. Patch 074 does not authorize a public PIE/DSO, IBT,
+SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, normalized
+coverage, or prevalence claim. All Sprint 11-12 measurements remain outside the
+Sprint 15-frozen confirmatory campaign.

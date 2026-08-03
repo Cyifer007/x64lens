@@ -98,10 +98,23 @@
   },
   "patch_074_disposition": {
     "runtime_fields_added": 0,
-    "reason": "Patch 074 closes Sprint 12 without introducing unvalidated mitigation output. Text relocations and separate RPATH/RUNPATH evidence remain bounded future tranches with parser, fixture, schema, comparator, and parity gates.",
+    "reason": "Patch 074 recorded a closeout candidate without introducing unvalidated mitigation output. Patch 075 supersedes that closeout and retains text relocations plus separate RPATH/RUNPATH as bounded Sprint 12 tranches.",
     "deferred_tranches": [
       "text-relocations",
       "runtime-search-path"
     ]
+  },
+  "patch_075_disposition": {
+    "runtime_fields_added": 0,
+    "private_facts_added": [
+      "DT_TEXTREL carrier provenance",
+      "DT_FLAGS and DF_TEXTREL carrier provenance",
+      "private unknown-absent-present-contradictory text-relocation state"
+    ],
+    "public_projection": "deferred_pending_schema_and_consumer_value_gate",
+    "next_implementation_tranche": [
+      "runtime-search-path"
+    ],
+    "reason": "Patch 075 implements bounded private text-relocation evidence and preserves public schema 0.2.0. Patch 076 owns distinct bounded DT_RPATH and DT_RUNPATH carrier and value evidence."
   }
 }

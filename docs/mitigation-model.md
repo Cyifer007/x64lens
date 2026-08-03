@@ -265,8 +265,10 @@ static GNU properties do not prove runtime CET enforcement.
 Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set.
 Patch 072 carried the remaining corrective prerequisite plus private
 acquisition/parity work, but its returned review rejected current acceptance.
-Patch 073 recorded public policy as `defer`; Patch 074 closes the final custody
-and parity-protocol findings without changing a mitigation field.
+Patch 073 recorded public policy as `defer`, but its returned review did not
+accept the patch. Patch 074 implements the final custody and parity-protocol
+corrections without changing a mitigation field; complete acceptance remains
+pending.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
 
@@ -291,13 +293,23 @@ existing coarse `mitigations.pie` Boolean retains its `ET_DYN` indicator meaning
 and static GNU property evidence remains distinct from runtime CET enforcement.
 
 The next selected bounded mitigation tranche is text-relocation evidence from
-`DT_TEXTREL` or `DT_FLAGS & DF_TEXTREL` plus separately represented validated `DT_RPATH`
-and `DT_RUNPATH` indicators. Those families are not Patch 073 or Patch 074 runtime output:
-each still requires checked parser acquisition, malformed and contradiction
-fixtures, focused/integrated parity, external reconciliation, and compatible
-schema review before reporting.
+`DT_TEXTREL` or `DT_FLAGS & DF_TEXTREL` plus separately represented validated
+`DT_RPATH` and `DT_RUNPATH` indicators. Those families are not Patch 073 or
+Patch 074 runtime output: each still requires checked parser acquisition,
+malformed and contradiction fixtures, focused/integrated parity, external
+reconciliation, and compatible schema review before reporting.
 
-Patch 074 preserves this deferral, adds zero mitigation fields, and closes the
-selection, delivery, parity, permission, and negative-oracle defects around the
-policy evidence. Static GNU properties remain private indicators and do not
-prove runtime CET enforcement.
+Patch 074 preserves this deferral, adds zero mitigation fields, and implements
+corrections for the selection, delivery, parity, permission, and negative-oracle
+defects around the policy evidence. Static GNU properties remain private
+indicators and do not prove runtime CET enforcement. Corrected actual parity and
+complete Patch 074 acceptance remain pending until local execution.
+
+## Sprint 12 Patch 075 private text-relocation evidence
+
+Patch 075 retains `DT_TEXTREL` and `DT_FLAGS & DF_TEXTREL` as bounded private
+static evidence with exact carrier provenance. Complete negative evidence may
+produce `absent`; incomplete tables remain `unknown`; direct or consistent bit
+evidence produces `present`; disagreement in the `DF_TEXTREL` bit produces
+`contradictory`. Unrelated flag-bit disagreement remains a separate full-value
+conflict. No public mitigation field or schema change is introduced.

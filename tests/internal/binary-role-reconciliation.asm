@@ -42,7 +42,7 @@ align 16
 image:    resb IMAGE_SIZE
 summary:  resb PHDR_SUMMARY_RECORD_SIZE
 regions:  resb EXEC_REGION_RECORD_SIZE * 4
-property_context: resb GNU_PROPERTY_CONTEXT_SIZE
+property_context: resb PRIVATE_METADATA_CONTEXT_SIZE
 
 section .text
 %macro EXPECT_ROLE 1
@@ -364,7 +364,7 @@ setup_base:
     mov     ecx, (EXEC_REGION_RECORD_SIZE * 4) / 8
     rep stosq
     lea     rdi, [property_context]
-    mov     ecx, GNU_PROPERTY_CONTEXT_SIZE / 8
+    mov     ecx, PRIVATE_METADATA_CONTEXT_SIZE / 8
     rep stosq
     mov     qword [image + E_PHOFF], 0
     mov     word [image + E_PHENTSIZE], ELF64_PHDR_SIZE

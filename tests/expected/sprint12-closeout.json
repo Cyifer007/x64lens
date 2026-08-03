@@ -1,9 +1,23 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closed",
+  "status": "superseded_closeout_candidate",
   "closeout_patch": 74,
-  "completed_patches": [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74],
+  "completed_patches": [
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74
+  ],
   "next_sprint": 13,
   "acceptance_target": "sprint12-p074-acceptance-smoke",
   "reference_profile": {
@@ -68,5 +82,7 @@
     "docs/sprints/sprint-12-patch-074-validation.md",
     "docs/sprints/sprint-12-plan.md",
     "docs/sprints/sprint-13-plan.md"
-  ]
+  ],
+  "superseded_by_patch": 75,
+  "current_authority": "tests/expected/sprint12-continuation.json"
 }

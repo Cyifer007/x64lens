@@ -392,38 +392,47 @@ The version-3 pilot, natural acquisition, controlled `readelf` reconciliation,
 and parity records remain diagnostic development evidence. They do not satisfy
 the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later throughput
 result must retain the batch as its measurement unit and preserve the
-diagnostic/confirmatory separation. Patch 073 recorded `defer`; Patch 074
-closes the final custody and parity-protocol findings, changes no public field or
-schema meaning, closes Sprint 12, and hands off to Sprint 13.
+diagnostic/confirmatory separation. Patch 073 recorded `defer` but was not
+accepted at its first returned review boundary. Patch 074 implements the final
+custody and parity-protocol corrections and changes no public field or schema
+meaning. It remains the Sprint 12 closeout candidate; the Sprint 13 handoff
+follows complete acceptance.
+
+The Patch 073 diagnostic campaign retained every x64lens row below its measured
+timer floor and produced zero positive coordinate anchors. It remains
+diagnostic, unfrozen, and publication-ineligible and supports no speed, peak-
+RSS, parity, superiority, prevalence, or normalized-coverage claim.
 
 
 ## Patch 072 release-gate note
 
 Patch 072's returned review rejected current acceptance after reproducing
-custody and isolation defects first addressed by Patch 073 and closed by Patch 074. Retained diagnostic
-acquisition evidence remains separate from two same-host logic-only parity
-planes; neither substitutes for corrected native/container parity. The 48-object
-natural stratum and 96-object parity matrix remain diagnostic, unfrozen, and
-publication-ineligible and cannot satisfy preview or publication corpus
-requirements. Static property agreement does not establish runtime CET
-enforcement. No new role-derived PIE/DSO field or IBT/SHSTK field is admitted
-after the separate Patch 073 policy gate, whose deferral Patch 074 preserves;
-the existing coarse `mitigations.pie` field remains unchanged. The next selected
-text-relocation and RPATH/RUNPATH families remain future bounded implementation
-work and are not release evidence from Patch 073 or Patch 074.
+custody and isolation defects first addressed by Patch 073 and corrected again
+in the Patch 074 candidate. Retained diagnostic acquisition evidence remains
+separate from two same-host logic-only parity planes; neither substitutes for
+corrected native/container parity. The 48-object natural stratum and 96-object
+parity matrix remain diagnostic, unfrozen, and publication-ineligible and
+cannot satisfy preview or publication corpus requirements. Static property
+agreement does not establish runtime CET enforcement. No new role-derived
+PIE/DSO field or IBT/SHSTK field is admitted after the separate Patch 073 policy
+gate, whose deferral Patch 074 preserves; the existing coarse `mitigations.pie`
+field remains unchanged. The next selected text-relocation and RPATH/RUNPATH
+families remain future bounded implementation work and are not release evidence
+from Patch 073 or Patch 074.
 
 
 ## Patch 074 Sprint 12 closeout release-gate note
 
 Patch 074 changes no runtime analyzer, include, public schema, CLI, or release
-tag. It closes Sprint 12 by correcting delivery topology and late-mutation
-custody, hardlink rejection, inode-bound external-natural selection, exact
-parity membership and mount isolation, WSL2-safe sealed result publication,
-tracked-only permission normalization, and policy/gap negative oracles.
+tag. It implements corrections for delivery topology and late-mutation custody,
+hardlink rejection, inode-bound external-natural selection, exact parity
+membership and mount isolation, sealed result publication, tracked-only
+permission normalization, and policy/gap negative oracles. These implementation
+facts do not by themselves close Sprint 12.
 
-The complete closeout acceptance target requires native validation, strict
+The complete closeout acceptance boundary requires native validation, strict
 ShellCheck, retained external-natural acquisition, corrected isolated Docker
-parity, exact delivery rehearsal, and independent Lane A acceptance on the same
-source. The role/property policy remains `defer`, and text-relocation plus
-separate RPATH/RUNPATH evidence remain future bounded work. No Sprint 12
-diagnostic artifact becomes preview or publication evidence.
+parity, exact delivery rehearsal, and independent non-documentation acceptance
+on the same source. The role/property policy remains `defer`, and text-
+relocation plus separate RPATH/RUNPATH evidence remain future bounded work. No
+Sprint 12 diagnostic artifact becomes preview or publication evidence.

@@ -3,13 +3,14 @@
 ## Status
 
 Accepted architecture for the historical Sprint 12 Patch 069 implementation
-candidate. Patch 071 supplied the first development-evidence correction. Patch
-072 added the remaining correction and private acquisition/parity gates, but
-its returned review rejected current acceptance. The current Patch 073
-candidate leaves the comparator boundary unchanged while carrying the reported
-custody and isolation corrections. Product,
-native/container, and delivery acceptance remain subject to separate validation
-against the exact candidate source.
+candidate. Patches 070, 071, 072, and 073 were not accepted at their respective
+first returned review boundaries. Patch 073 delivered the first
+custody/isolation
+correction and the non-reinterpretive policy deferral. The current Patch 074
+final closeout candidate carries the remaining correction while leaving the
+comparator boundary unchanged. Product, actual native/container, and delivery
+acceptance remain subject to Patch 074 validation against the exact candidate
+source.
 
 ## Context
 
@@ -92,9 +93,9 @@ Patch 069 does not:
 
 The reconciliation remains diagnostic, unfrozen, and publication-ineligible.
 Patch 072 implemented the initial native/container private-fact parity gate, but
-qualified native/container parity evidence remains pending. Patch 073 executed
-the public-policy gate as `defer` and added no field; any future public exposure
-requires a new separately reviewed decision.
+corrected actual native/container parity evidence remains pending. Patch 073
+executed the public-policy gate as `defer` and added no field; any future public
+exposure requires a new separately reviewed decision.
 
 ## Consequences
 

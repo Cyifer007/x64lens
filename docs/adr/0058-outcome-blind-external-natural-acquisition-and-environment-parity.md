@@ -6,7 +6,12 @@ Historical architecture for the Sprint 12 Patch 072 implementation candidate.
 Patch 072 combined the smallest Patch 071 corrective prerequisite with the
 planned external-natural acquisition and initial same-byte native/container
 private-fact parity protocol. Its returned review rejected current acceptance
-after reproducing custody and isolation defects now addressed by Patch 073.
+after reproducing custody and isolation defects. Patches 070, 071, 072, and 073
+were not accepted at their respective first returned review boundaries. Patch
+073 delivered
+the first custody/isolation correction and policy deferral; Patch 074 is the
+remaining correction and final Sprint 12 closeout candidate. Complete Patch 074
+acceptance remains pending.
 
 ## Context
 
@@ -156,9 +161,11 @@ The Sprint 12 sequence is:
 - Patch 072: this corrective prerequisite, external-natural acquisition, and
   initial same-byte environment-parity protocol; its returned review rejected
   current acceptance;
-- Patch 073: reported custody/isolation correction and non-reinterpretive
-  public-policy decision `defer`; and
-- Patch 074: Sprint 12 closeout and Sprint 13 handoff.
+- Patch 073: first custody/isolation correction and non-reinterpretive
+  public-policy decision `defer`; its returned review did not accept the
+  candidate; and
+- Patch 074: remaining correction and final Sprint 12 closeout candidate, with
+  Sprint 13 handoff only after complete acceptance.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and
 publication-ineligible. They cannot be relabeled as Sprint 15-frozen evidence.

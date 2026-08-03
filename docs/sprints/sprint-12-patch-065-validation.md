@@ -7,7 +7,11 @@ independent validation and required Patch 066. Patch 066 subsequently required
 Patch 067, which required Patch 068; Patch 068 in turn required the Patch 069
 corrective and external-reconciliation candidate, which required Patch 070.
 Patch 070 was rejected after acceptance validation. Patch 071 required further
-correction, and Patch 072's returned review rejected current acceptance. The
+correction, and Patch 072's returned review rejected current acceptance. Patches
+070, 071, 072, and 073 were not accepted at their respective first returned
+review boundaries. Patch 073 delivered the first custody/isolation correction
+and policy
+deferral; Patch 074 is the final corrective Sprint 12 closeout candidate. The
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) preserves that
 intervening boundary, and the
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves a
@@ -18,8 +22,10 @@ next historical candidate boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Use the
-[Patch 073 validation record](sprint-12-patch-073-validation.md) for current
+[Patch 074 validation record](sprint-12-patch-074-validation.md) for current
 candidate expectations; the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
+first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary.
 
@@ -175,6 +181,7 @@ external ELF reconciliation was future work at the Patch 065 boundary; the
 Patch 069 candidate added exact `readelf -hW/-lW/-dW/-nW` reconciliation.
 Patch 071 supplied the first evidence-gate correction, and Patch 072 carried
 the remainder and added the environment-parity protocol. Patch 072's returned
-review rejected current acceptance. Patch 073 closes the reported custody and
-isolation defects and records the public-policy decision as `defer`; corrected
-native/container parity and independent acceptance remain pending.
+review rejected current acceptance. Patch 073 delivered the first
+custody/isolation correction and recorded the public-policy decision as `defer`;
+Patch 074 carries the remaining correction. Corrected actual native/container
+parity and Patch 074 acceptance remain pending.

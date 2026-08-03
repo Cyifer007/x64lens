@@ -383,3 +383,11 @@ records, and checksum authorities are custody facts, not analysis populations.
 They must not be added to raw, exact, semantic, unknown, scored, private-field,
 or benchmark denominators. The external-natural 624/0 eligible match/mismatch
 denominator remains separate from 48 ambiguous and 192 unavailable cells.
+
+## Sprint 12 Patch 075 dynamic-metadata boundary
+
+Dynamic carrier count, full-value disagreement, text-relocation disagreement,
+and private text-relocation state are metadata facts. They are not candidate,
+semantic, scored, decoder, coverage, vulnerability, or exploitability metrics.
+Carrier-capacity failure is a command failure and does not authorize partial
+public output.

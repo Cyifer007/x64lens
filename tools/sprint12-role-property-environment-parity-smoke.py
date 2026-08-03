@@ -690,6 +690,19 @@ def validate_container_mount_policy(
 ) -> dict[str, Any]:
     """Authenticate exact mounts and reject any host ancestor covering native."""
     mounts: list[tuple[Path, str, str]] = []
+    # The reviewed parity protocol deliberately accepts one exact Docker bind
+    # grammar only.  Alternate spellings must not create unparsed host mounts
+    # that bypass native-plane isolation accounting.
+    rejected_mount_forms = {
+        "--mount", "--volume", "--volumes-from",
+    }
+    for item in command:
+        require(item not in rejected_mount_forms,
+                f"alternate Docker mount syntax is not permitted: {item}")
+        require(not item.startswith("--mount=") and not item.startswith("--volume=")
+                and not (item.startswith("-v") and item != "-v"),
+                f"compact or alternate Docker mount syntax is not permitted: {item}")
+
     for index, item in enumerate(command[:-1]):
         if item != "-v":
             continue

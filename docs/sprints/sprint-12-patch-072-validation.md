@@ -3,8 +3,11 @@
 ## Status
 
 Historical implementation candidate. Its returned review rejected current
-acceptance after reproducing custody and isolation defects now addressed by
-Patch 073. Patch 072 addressed the remaining confirmed Patch 071 tooling and
+acceptance after reproducing custody and isolation defects. Patch 073 delivered
+the first custody/isolation correction and policy deferral but was not accepted
+at its first returned review boundary. Patch 074 carries the remaining
+correction as the final Sprint 12 closeout candidate. Patch 072 addressed the
+remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
 no runtime assembly, include, or JSON schema file.
@@ -12,7 +15,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-independent acceptance remain pending for Patch 073.
+Patch 074 acceptance remain pending.
 
 ## Source precondition
 
@@ -168,15 +171,16 @@ environment-parity gates.
 
 ## Interpretation and next gate
 
-Passing Patch 072 supports a bounded claim that the maintained private fact
-plane agrees with independent vectors and eligible GNU `readelf` evidence on
-the selected natural package stratum and that the same bytes produce the same
-private/public tuples in native and container environments. It does not prove
-runtime CET enforcement, representativeness, mitigation prevalence, complete
-loader semantics, publication readiness, or exploitability.
+The Patch 072 gates were intended to support a bounded claim that the maintained
+private fact plane agrees with independent vectors and eligible GNU `readelf`
+evidence on the selected natural package stratum. Retained same-host logic-only
+evidence did not establish actual native/container parity. Neither evidence
+class proves runtime CET enforcement, representativeness, mitigation prevalence,
+complete loader semantics, publication readiness, or exploitability.
 
 Patch 073 executed the non-reinterpretive public-policy gate as `defer`; it
 added no public field and preserved the existing coarse `mitigations.pie`
 meaning. Corrected native/container parity and independent acceptance remain
 pending. Any future compatible `0.2.x` indicator requires a new separately
-reviewed decision. Patch 074 owns Sprint 12 closeout.
+reviewed decision. Patch 074 is the final Sprint 12 closeout candidate; Sprint
+12 remains open pending complete Patch 074 acceptance.

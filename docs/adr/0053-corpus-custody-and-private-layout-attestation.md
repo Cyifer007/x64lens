@@ -5,11 +5,13 @@
 Historical architecture record for the Sprint 12 Patch 067 implementation
 candidate. Patch 068 introduced the intermediate corrective contract and
 diagnostic matrix; Patch 069 carried and corrected that boundary, and Patch 071
-supplied the first evidence-gate correction. Patch 072 added the remaining
-correction and acquisition/parity gates, but its returned review rejected
-current acceptance. The current Patch 073 candidate carries the reported
-custody and isolation corrections.
-Product and delivery acceptance remain governed by separate validation.
+supplied the first evidence-gate correction. Patches 070, 071, 072, and 073 were
+not accepted at their respective first returned review boundaries. Patch 073
+delivered the
+first custody/isolation correction and the non-reinterpretive policy deferral.
+The current Patch 074 final closeout candidate carries the remaining correction.
+Product, delivery, and actual native/container parity acceptance remain governed
+by Patch 074 validation.
 
 ## Context
 

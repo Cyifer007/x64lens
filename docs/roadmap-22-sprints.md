@@ -13,29 +13,40 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 12 are complete after Patch 074. Sprint 11 delivered the
-provisional high-resolution runner, reproducible 24-target corpus, normalized
-baseline task authority, diagnostic campaigns, generated summaries, and the
-engineering gap register. All Sprint 11 measurements remain diagnostic,
-unfrozen, and publication-ineligible; all observed x64lens single-process cells
-remain below the reliable floor, and no positive cross-tool coordinate anchor
-has qualified a coverage comparison.
+Sprints 1 through 11 are complete. Sprint 12 is active at Patch 075. Patch 074
+was a superseded closeout candidate; Patch 075 carries the private bounded
+text-relocation tranche and remaining correction. Sprint 13 is planned only
+after the active Sprint 12 gates close. The roadmap may state
+"Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
+acceptance boundary passes on the same authenticated source. Sprint 11
+delivered the provisional high-resolution runner, reproducible 24-target
+corpus, normalized baseline task authority, diagnostic campaigns, generated
+summaries, and the engineering gap register. All Sprint 11 measurements remain
+diagnostic, unfrozen, and publication-ineligible; all observed x64lens single-
+process cells remain below the reliable floor, and no positive cross-tool
+coordinate anchor has qualified a coverage comparison.
 
 Sprint 12 delivered bounded ordinary-PHDR validity and explicit extended-
 numbering outcomes, retained executable-overlap contributor provenance and a
 measured normalization deferral, private PIE/DSO and GNU-property evidence,
 controlled and held-out private-fact matrices, authenticated GNU `readelf`
-reconciliation, outcome-blind external-natural acquisition, corrected isolated
-native/container parity, and an explicit public-policy deferral. Patch 074 closes
-the final evidence-custody, selection-inode, parity topology/publication,
-permission-normalization, and authority-oracle defects. It adds zero public
-role/property or new mitigation fields and preserves schema `0.2.0`.
+reconciliation, outcome-blind external-natural acquisition, a corrected
+isolated native/container parity protocol, and an explicit public-policy
+deferral. Patch 074 implements corrections for the final evidence-custody,
+selection-inode, parity topology/publication, permission-normalization, and
+authority-oracle findings. Patch 075 adds private bounded text-relocation evidence while actual qualified parity and independent acceptance remain pending. It adds zero public role/property or new public mitigation fields and
+preserves schema `0.2.0`.
 
-Sprint 13 is active. It owns generic exact-pop semantics, the Linux syscall
-`r10` role, score/null policy, and only measured bounded family additions.
-Positive role-controlled coordinate anchors and complete task-path
-qualification remain a separate diagnostic gate. Sprint 15 freezes the
-confirmatory campaign.
+Sprint 13 becomes active only after Patch 075 and the planned Patch 076 acceptance. It then owns
+generic exact-pop semantics, the Linux syscall `r10` role, score/null policy,
+and only measured bounded family additions. Positive role-controlled coordinate
+anchors and complete task-path qualification remain a separate diagnostic
+gate. Sprint 15 freezes the confirmatory campaign.
+
+The Patch 073 diagnostic campaign retained every x64lens row below its measured
+timer floor and produced zero positive coordinate anchors. It remains
+diagnostic, unfrozen, and publication-ineligible and supports no speed, peak-
+RSS, parity, superiority, prevalence, or normalized-coverage claim.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must
@@ -235,16 +246,17 @@ and parity gates.
 
 ## Patch 070 through Patch 074 sequencing note
 
-Patch 070 acceptance was rejected. Patch 071 corrected the first nested-cleanup,
-case-oracle, streaming-limit, and delivery-custody blockers, but its review
-required another correction. Patch 072 remains inside Sprint 12 and carries the
-narrower generation, descendant, publication, duplicate-key, and delivery-
-completeness corrections while completing outcome-blind external-natural
-acquisition and the initial same-byte native/container parity protocol. Its
-returned review rejected current acceptance. Patch 073 carried the first custody/isolation correction and executed public
-policy as an explicit deferral. Patch 074 supplies the final topology, parity,
-permission, selection-inode, and authority-oracle correction and closes Sprint
-12. None of these patches advances the Sprint 15 freeze, adds a public
+Patches 070, 071, 072, and 073 were not accepted at their respective first
+returned review boundaries. Patch 071 corrected the first nested-cleanup, case-
+oracle,
+streaming-limit, and delivery-custody blockers. Patch 072 carried the narrower
+generation, descendant, publication, duplicate-key, and delivery-completeness
+corrections while completing outcome-blind external-natural acquisition and the
+initial same-byte native/container parity protocol. Patch 073 carried the first
+custody/isolation correction and executed public policy as an explicit
+deferral. Patch 074 supplies the final topology, parity-protocol, permission,
+selection-inode, and authority-oracle correction and remains the closeout
+candidate. None of these patches advances the Sprint 15 freeze, adds a public
 mitigation field, or changes the dependency-free one-worker reference profile.
 
 
@@ -267,8 +279,9 @@ Patch 074 closeout acceptance target.
 
 Patch 073 authenticated the unchanged public schema and reporter sources,
 preserved `mitigations.pie`, and rejected authorization while required
-prerequisites remained open. Patch 074 closes the remaining delivery topology,
-late-mutation, hardlink, selection-inode, parity membership/mount/publication,
-permission-normalization, and negative-oracle defects. The competitive gap
-authority retains text-relocation and distinct RPATH/RUNPATH indicators for a
-later bounded implementation; no runtime field is added in Patch 074.
+prerequisites remained open. Patch 074 implements corrections for the remaining
+delivery topology, late-mutation, hardlink, selection-inode, parity membership/
+mount/publication, permission-normalization, and negative-oracle findings. The
+competitive gap authority retains text-relocation and distinct RPATH/RUNPATH
+indicators for a later bounded implementation; no runtime field is added in
+Patch 074.

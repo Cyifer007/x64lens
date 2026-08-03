@@ -3,7 +3,10 @@
 ## Status
 
 Accepted as the design record for the Sprint 12 Patch 073 implementation
-candidate. Independent acceptance remains pending.
+candidate. Patch 073 was not accepted at its first returned review boundary; it
+delivered the first custody/isolation correction and the non-reinterpretive
+policy deferral. Patch 074 carries the remaining correction as the final Sprint
+12 closeout candidate. Complete Patch 074 acceptance remains pending.
 
 ## Context
 
@@ -31,7 +34,7 @@ establish runtime CET enablement or enforcement.
 
 ## Decision
 
-Patch 073 is one cohesive correction and decision tranche.
+Patch 073 is the first custody/isolation correction and policy-decision tranche.
 
 ### Evidence and custody correction
 
@@ -93,8 +96,9 @@ substrings.
 - Passing the portable Patch 073 gates supports the source-level correction and
   policy decision, but not actual native/container parity or current
   acceptance.
-- Patch 074 may close Sprint 12 only after fresh native, Docker, corrected parity,
-  delivery, and independent acceptance evidence is reconciled.
+- Patch 074 is the final Sprint 12 closeout candidate and may close the sprint
+  only after fresh native, Docker, corrected parity, delivery, and independent
+  acceptance evidence is reconciled.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

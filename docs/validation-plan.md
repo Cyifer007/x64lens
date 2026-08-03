@@ -1950,9 +1950,10 @@ public role-derived PIE/DSO, IBT, or SHSTK field, preserves the existing coarse
 gate selects text-relocation evidence and distinct RPATH/RUNPATH indicators as
 future bounded work without adding a Patch 073 runtime field.
 
-Patch 074 carries corrected native/container parity, delivery reconciliation,
-and the Sprint 12 closeout authority. Sprint 13 owns semantic completion after
-the complete Patch 074 acceptance target passes.
+Patch 074 carries the corrected native/container parity protocol, delivery
+reconciliation, and the Sprint 12 closeout authority. Actual qualified parity
+and acceptance remain pending. Sprint 13 owns semantic completion after every
+Patch 074 acceptance boundary passes on the same source.
 
 
 ## Sprint 12 Patch 074 closeout validation
@@ -1982,7 +1983,7 @@ creation, executable parity inputs, exact parity membership, native-plane mount
 isolation, WSL2 publication, selection-inode continuity, tracked-only permission
 normalization, and strict negative policy/gap oracles.
 
-Complete native and Docker acceptance remains:
+The candidate native and Docker command set is:
 
 ```bash
 make clean
@@ -1994,6 +1995,11 @@ make docker-test
 make docker-validation-smoke
 make sprint12-p074-acceptance-smoke
 ```
+
+The final target is the complete candidate implementation aggregate. Its pass
+is necessary but does not perform package/source authentication, exact delivery
+rehearsal, or independent non-documentation acceptance; those remain separate
+acceptance boundaries.
 
 The Patch 074 aggregate additionally retains the 48-object external-natural
 result and runs the corrected isolated 96-object native/container parity plane.

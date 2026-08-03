@@ -307,19 +307,20 @@ replacement at the caller-visible pathname is not modified.
 ## Sprint 12 Patch 065 GNU-property parser safety
 
 Patch 069 consumed GNU property evidence only from checked file-backed
-`PT_NOTE` and `PT_GNU_PROPERTY` carriers; Patch 074 leaves that runtime parser unchanged. The parser bounds carrier
-bytes, note headers,
-owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
-the ELF64 `PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
+`PT_NOTE` and `PT_GNU_PROPERTY` carriers; Patch 074 leaves that runtime parser
+unchanged. The parser bounds carrier bytes, note headers, owner/descriptor
+extents, represented 4- or 8-byte carrier-note alignment, the ELF64
+`PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
 property counts, descriptor size, canonical views, contributors, and recognized
 notes before dereference; it requires monotonic property ordering and zero note
 and property padding. Malformed recognized structures return exit code 5
 without stdout; explicit implementation-cap exhaustion returns exit code 6.
-Exact duplicate carriers are canonicalized and original PHDR contributors remain
-independently recorded. Any non-identical carrier overlap increments the private
-overlap fact and fails malformed before reporting. Duplicate feature records preserve AND/OR aggregates; differing
-values produce private contradictory states, while unknown property types and
-feature bits remain bounded facts.
+Exact duplicate carriers are canonicalized and original PHDR contributors
+remain independently recorded. Any non-identical carrier overlap increments the
+private overlap fact and fails malformed before reporting. Duplicate feature
+records preserve AND/OR aggregates; differing values produce private
+contradictory states, while unknown property types and feature bits remain
+bounded facts.
 
 
 ## Sprint 12 Patch 066 GNU-property and repair regressions
@@ -342,10 +343,10 @@ claim to restore bytes, names, ownership, or timestamps and does not broaden
 parser, analyzer, or public-output claims. Patch 069 corrected the descriptor-
 authoritative semantic-verification, signal-rollback, and directory-identity
 evidence around that contract; Patch 071 supplied the first development-
-evidence correction. Patch 072 supplied the remainder but its returned review rejected current
-acceptance; Patch 073 supplied the first custody correction, and Patch 074
-closes the final topology, hardlink, inode, parity, permission, and authority
-boundaries.
+evidence correction. Patch 072 supplied the remainder, but its returned review
+rejected current acceptance; Patch 073 supplied the first custody correction,
+and Patch 074 implements the remaining topology, hardlink, inode, parity,
+permission, and authority corrections. Complete acceptance remains pending.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -400,3 +401,12 @@ permission normalization. A missing authenticated cleanup root fails rather
 than being accepted as successful removal. These controls reduce evidence
 mutation risk but do not constitute a language-level or formal memory-safety
 guarantee.
+
+## Sprint 12 Patch 075 dynamic-table safety
+
+The private text-relocation side-car consumes only entries already bounded by
+the existing `PT_DYNAMIC` table proof. Storage is fixed at 64 represented
+`DT_TEXTREL`/`DT_FLAGS` carriers. Carrier 65 returns the stable unsupported
+status before output. The maintained fixture matrix covers complete, incomplete,
+duplicate, contradictory, malformed-range, non-integral, duplicate-table, and
+capacity cases.

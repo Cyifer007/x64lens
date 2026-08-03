@@ -30,8 +30,12 @@ from typing import Any, Callable, NamedTuple
 SCHEMA_ID = "x64lens-delivery-custody-v3"
 BUFFER_SIZE = 1024 * 1024
 MAX_DIRECTORIES = 256
-MAX_FILES = 512
+# The complete tree may contain at most 511 payload files plus the custody
+# manifest.  Create reserves the manifest slot before publication.
+MAX_PAYLOAD_FILES = 511
+MAX_FILES = MAX_PAYLOAD_FILES + 1
 MIN_FD_HEADROOM = 64
+FD_TRANSACTION_OVERHEAD = 12
 O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
 O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 
@@ -115,23 +119,29 @@ class TreeObservation:
     files: list[FileObservation]
     manifest: FileObservation | None
 
-    def close(self) -> None:
+    def close(self, *, keep_root: bool = False) -> None:
         for item in reversed(self.files):
             try:
                 os.close(item.fd)
             except OSError:
                 pass
+        self.files.clear()
         if self.manifest is not None:
             try:
                 os.close(self.manifest.fd)
             except OSError:
                 pass
+            self.manifest = None
         for item in reversed(self.directories):
+            if keep_root and item.path == "":
+                continue
             try:
                 os.close(item.fd)
             except OSError:
                 pass
-        close_root(self.root)
+        self.directories[:] = [item for item in self.directories if keep_root and item.path == ""]
+        if not keep_root:
+            close_root(self.root)
 
 
 def require(condition: bool, message: str) -> None:
@@ -178,6 +188,19 @@ def mode_text(mode: int) -> str:
     return f"{stat.S_IMODE(mode):04o}"
 
 
+def same_identity(left: Fingerprint, right: Fingerprint) -> bool:
+    """Compare stable object identity while allowing expected directory timestamps."""
+    return (
+        left.device == right.device
+        and left.inode == right.inode
+        and left.file_type == right.file_type
+        and left.mode == right.mode
+        and left.nlink == right.nlink
+        and left.uid == right.uid
+        and left.gid == right.gid
+    )
+
+
 def fingerprint(metadata: os.stat_result) -> Fingerprint:
     return Fingerprint(
         metadata.st_dev,
@@ -203,11 +226,41 @@ def manifest_relative(root: Path, manifest: Path) -> str:
     return safe_relative(relative)
 
 
-def check_fd_capacity() -> None:
+def current_fd_count() -> int:
+    try:
+        return len(os.listdir("/proc/self/fd"))
+    except OSError:
+        soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        ceiling = 4096 if soft == resource.RLIM_INFINITY else min(int(soft), 4096)
+        count = 0
+        for fd in range(ceiling):
+            try:
+                os.fstat(fd)
+            except OSError:
+                continue
+            count += 1
+        return count
+
+
+def check_fd_capacity(root: Path) -> None:
     soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-    if soft != resource.RLIM_INFINITY:
-        require(soft >= MAX_DIRECTORIES + MAX_FILES + MIN_FD_HEADROOM,
-                f"file-descriptor limit too low for bounded custody verification: {soft}")
+    if soft == resource.RLIM_INFINITY:
+        return
+    live = current_fd_count()
+    root_depth = len(Path(os.path.abspath(os.fspath(root))).parts)
+    required = (
+        live
+        + root_depth
+        + MAX_DIRECTORIES
+        + MAX_FILES
+        + FD_TRANSACTION_OVERHEAD
+        + MIN_FD_HEADROOM
+    )
+    require(
+        soft >= required,
+        "file-descriptor limit cannot guarantee the advertised custody capacity: "
+        f"soft={soft} live={live} root_depth={root_depth} required={required}",
+    )
 
 
 def open_root(root: Path) -> RootHandle:
@@ -271,13 +324,34 @@ def close_root(root: RootHandle) -> None:
 
 
 def reauthenticate_root(root: RootHandle) -> None:
-    for binding in root.bindings:
-        require(fingerprint(os.fstat(binding.child_fd)) == binding.opened,
-                f"custody path descriptor changed: {binding.display}")
-        current = os.stat(binding.name, dir_fd=binding.parent_fd, follow_symlinks=False)
-        require(fingerprint(current) == binding.opened,
-                f"custody path binding changed: {binding.display}")
-    require(fingerprint(os.fstat(root.fd)) == root.opened, "custody root descriptor changed")
+    for index, binding in enumerate(root.bindings):
+        observed_fd = fingerprint(os.fstat(binding.child_fd))
+        current = fingerprint(os.stat(binding.name, dir_fd=binding.parent_fd, follow_symlinks=False))
+        if index == len(root.bindings) - 1:
+            # Publication inside the root legitimately changes directory size and
+            # timestamps.  Device/inode/type/mode/link/owner identity must remain.
+            require(same_identity(observed_fd, binding.opened),
+                    f"custody root descriptor identity changed: {binding.display}")
+            require(same_identity(current, binding.opened),
+                    f"custody root binding changed: {binding.display}")
+        else:
+            require(observed_fd == binding.opened,
+                    f"custody path descriptor changed: {binding.display}")
+            require(current == binding.opened,
+                    f"custody path binding changed: {binding.display}")
+    require(same_identity(fingerprint(os.fstat(root.fd)), root.opened),
+            "custody root descriptor identity changed")
+
+
+def refresh_root_metadata(root: RootHandle) -> None:
+    """Refresh expected root directory metadata after an authenticated write."""
+    observed = fingerprint(os.fstat(root.fd))
+    require(same_identity(observed, root.opened), "custody root identity changed during publication")
+    current = fingerprint(os.stat(root.basename, dir_fd=root.bindings[-1].parent_fd, follow_symlinks=False))
+    require(same_identity(current, root.opened), "custody root binding changed during publication")
+    require(observed == current, "custody root descriptor/path metadata disagree after publication")
+    root.opened = observed
+    root.bindings[-1].opened = observed
 
 
 def open_directory(parent_fd: int, name: str, relative: str, root_device: int) -> DirectoryObservation:
@@ -333,7 +407,12 @@ def open_regular(parent_fd: int, name: str, relative: str, root_device: int) -> 
         raise
 
 
-def scan_tree(root: RootHandle, manifest_path: str) -> TreeObservation:
+def scan_tree(
+    root: RootHandle,
+    manifest_path: str,
+    *,
+    reserve_manifest_slot: bool = False,
+) -> TreeObservation:
     directories: list[DirectoryObservation] = []
     files: list[FileObservation] = []
     manifest: FileObservation | None = None
@@ -357,8 +436,13 @@ def scan_tree(root: RootHandle, manifest_path: str) -> TreeObservation:
                 directories.append(child)
                 child.children = walk(child.fd, relative)
             elif file_type == stat.S_IFREG:
-                require(len(files) + int(manifest is not None) < MAX_FILES,
-                        "delivery file capacity exceeded")
+                current_total = len(files) + int(manifest is not None)
+                if relative == manifest_path:
+                    require(current_total < MAX_FILES, "delivery file capacity exceeded")
+                else:
+                    payload_limit = MAX_PAYLOAD_FILES if reserve_manifest_slot else MAX_FILES
+                    require(len(files) < payload_limit and current_total < MAX_FILES,
+                            "delivery file capacity exceeded")
                 observed = open_regular(fd, name, relative, root.opened.device)
                 if relative == manifest_path:
                     require(manifest is None, "duplicate custody manifest pathname")
@@ -369,18 +453,41 @@ def scan_tree(root: RootHandle, manifest_path: str) -> TreeObservation:
                 raise CustodyError(f"link or special delivery member rejected: {relative}")
         return names
 
-    # Root membership is authenticated by a synthetic observation retained in
-    # the final closure pass below.
-    root_names = walk(root.fd, "")
-    root_directory = DirectoryObservation("", root.basename, root.bindings[-1].parent_fd,
-                                          root.fd, root.opened, root_names)
-    directories.sort(key=lambda item: item.path)
-    files.sort(key=lambda item: item.path)
-    observation = TreeObservation(root, [root_directory, *directories], files, manifest)
-    hook = _TEST_AFTER_TREE_SCAN_HOOK
-    if hook is not None:
-        hook(root.requested)
-    return observation
+    try:
+        # Root membership is authenticated by a synthetic observation retained
+        # in the final closure pass below.
+        root_names = walk(root.fd, "")
+        root_directory = DirectoryObservation(
+            "", root.basename, root.bindings[-1].parent_fd,
+            root.fd, root.opened, root_names,
+        )
+        directories.sort(key=lambda item: item.path)
+        files.sort(key=lambda item: item.path)
+        observation = TreeObservation(root, [root_directory, *directories], files, manifest)
+        hook = _TEST_AFTER_TREE_SCAN_HOOK
+        if hook is not None:
+            hook(root.requested)
+        return observation
+    except BaseException:
+        # scan_tree owns every descriptor it opened, but not the caller-owned
+        # retained root/ancestor chain.  Rejected late members must not leak the
+        # descriptors accumulated before the failure.
+        for item in reversed(files):
+            try:
+                os.close(item.fd)
+            except OSError:
+                pass
+        if manifest is not None:
+            try:
+                os.close(manifest.fd)
+            except OSError:
+                pass
+        for item in reversed(directories):
+            try:
+                os.close(item.fd)
+            except OSError:
+                pass
+        raise
 
 
 def read_observed_file(observed: FileObservation) -> bytes:
@@ -476,11 +583,13 @@ def open_parent_fd(root_fd: int, relative: str) -> tuple[int, str]:
         raise
 
 
-def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> None:
+def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Fingerprint:
+    reauthenticate_root(root)
     parent_fd, name = open_parent_fd(root.fd, relative)
     temporary = f".custody.{os.getpid()}.{os.urandom(16).hex()}"
     fd = -1
     linked = False
+    published_fingerprint: Fingerprint | None = None
     try:
         try:
             os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
@@ -511,7 +620,10 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> None:
         published = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
         require(stat.S_ISREG(published.st_mode) and published.st_nlink == 1,
                 "published custody manifest topology is invalid")
+        published_fingerprint = fingerprint(published)
         os.fsync(parent_fd)
+        reauthenticate_root(root)
+        refresh_root_metadata(root)
     finally:
         if fd >= 0:
             os.close(fd)
@@ -521,20 +633,24 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> None:
             except FileNotFoundError:
                 pass
         os.close(parent_fd)
+    require(published_fingerprint is not None, "custody manifest publication did not complete")
+    return published_fingerprint
 
 
-def _write_manifest_with_closed_root(root: Path, relative: str, raw: bytes) -> None:
-    handle = open_root(root)
+def remove_published_manifest(root: RootHandle, relative: str, expected: Fingerprint) -> None:
+    parent_fd, name = open_parent_fd(root.fd, relative)
     try:
-        write_manifest_atomic(handle, relative, raw)
+        current = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require(fingerprint(current) == expected,
+                "refusing to remove a changed custody manifest during rollback")
+        os.unlink(name, dir_fd=parent_fd)
+        os.fsync(parent_fd)
+        reauthenticate_root(root)
     finally:
-        close_root(handle)
+        os.close(parent_fd)
 
 
-def verify(root: Path, manifest: Path) -> dict[str, Any]:
-    check_fd_capacity()
-    relative = manifest_relative(root, manifest)
-    root_handle = open_root(root)
+def verify_open_root(root_handle: RootHandle, relative: str) -> dict[str, Any]:
     observation: TreeObservation | None = None
     try:
         observation = scan_tree(root_handle, relative)
@@ -577,23 +693,33 @@ def verify(root: Path, manifest: Path) -> dict[str, Any]:
         require(observed_files == expected_files,
                 "delivery file set, bytes, sizes, modes, or link counts disagree")
         final_closure(observation)
+        reauthenticate_root(root_handle)
         return value
     finally:
         if observation is not None:
-            observation.close()
-        else:
-            close_root(root_handle)
+            observation.close(keep_root=True)
+
+
+def verify(root: Path, manifest: Path) -> dict[str, Any]:
+    check_fd_capacity(root)
+    relative = manifest_relative(root, manifest)
+    root_handle = open_root(root)
+    try:
+        return verify_open_root(root_handle, relative)
+    finally:
+        close_root(root_handle)
 
 
 def create(root: Path, manifest: Path, label: str) -> dict[str, Any]:
-    """Create a v3 manifest and immediately self-verify it."""
-    check_fd_capacity()
+    """Create a v3 manifest through one retained root and self-verify it."""
+    check_fd_capacity(root)
     relative = manifest_relative(root, manifest)
     root_handle = open_root(root)
     observation: TreeObservation | None = None
+    published: Fingerprint | None = None
     try:
         require(isinstance(label, str) and label != "", "invalid root label")
-        observation = scan_tree(root_handle, relative)
+        observation = scan_tree(root_handle, relative, reserve_manifest_slot=True)
         require(observation.manifest is None, "custody manifest already exists")
         final_closure(observation)
         value = {
@@ -605,15 +731,26 @@ def create(root: Path, manifest: Path, label: str) -> dict[str, Any]:
             "files": [item.manifest_entry() for item in observation.files],
         }
         raw = (json.dumps(value, indent=2, sort_keys=False) + "\n").encode("utf-8")
+        observation.close(keep_root=True)
+        observation = None
+        published = write_manifest_atomic(root_handle, relative, raw)
+        verified = verify_open_root(root_handle, relative)
+        require(verified == value, "created custody manifest failed semantic self-verification")
+        reauthenticate_root(root_handle)
+        return value
+    except BaseException as exc:
+        if published is not None:
+            try:
+                remove_published_manifest(root_handle, relative, published)
+            except BaseException as rollback_exc:
+                raise CustodyError(
+                    f"custody creation failed: {exc}; manifest rollback failed: {rollback_exc}"
+                ) from exc
+        raise
     finally:
         if observation is not None:
-            observation.close()
-        else:
-            close_root(root_handle)
-    _write_manifest_with_closed_root(root, relative, raw)
-    verified = verify(root, manifest)
-    require(verified == value, "created custody manifest failed semantic self-verification")
-    return value
+            observation.close(keep_root=True)
+        close_root(root_handle)
 
 
 def main() -> int:
