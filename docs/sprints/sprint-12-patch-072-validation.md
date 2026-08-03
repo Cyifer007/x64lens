@@ -2,16 +2,17 @@
 
 ## Status
 
-Implementation candidate; complete native and Docker validation remains
-pending. Patch 072 addresses the remaining confirmed Patch 071 tooling and
-delivery prerequisites and implements the planned outcome-blind
+Historical implementation candidate. Its returned review rejected current
+acceptance after reproducing custody and isolation defects now addressed by
+Patch 073. Patch 072 addressed the remaining confirmed Patch 071 tooling and
+delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
 no runtime assembly, include, or JSON schema file.
 
-Cloud validation covered source and tooling behavior and completed the
-external-natural acquisition. Evidence for the unchanged runtime is
-artifact-backed rather than a fresh build. Retained same-host parity evidence
-is logic-only, not native/container parity.
+Retained diagnostic evidence completed the external-natural acquisition but did
+not include a fresh native runtime build. Retained same-host parity evidence is
+logic-only, not native/container parity. Corrected native/container parity and
+independent acceptance remain pending for Patch 073.
 
 ## Source precondition
 
@@ -94,8 +95,8 @@ counts are observed results, not a selection criterion. Capacity exit 6 remains
 a valid retained public-command outcome only when stdout is empty and the stable
 fail-closed contract is preserved.
 
-A cloud-validated diagnostic acquisition completed the intended denominators
-over four installed lineages. It retained 624 eligible matches, 48 ambiguous
+A retained diagnostic acquisition completed the intended denominators over four
+installed lineages. It retained 624 eligible matches, 48 ambiguous
 cells, 192 unavailable cells, and zero eligible mismatches. Forty-six `gadgets`
 and `analyze` pairs succeeded; two pairs returned capacity exit 6 with empty
 stdout. Both `ibt_state` and `shstk_state` remained unknown for every selected
@@ -125,7 +126,7 @@ bytes into both planes. Acceptance requires:
 0 mismatches
 ```
 
-Retained cloud evidence includes two same-host logic planes that completed these
+Retained evidence includes two same-host logic planes that completed these
 denominators. That evidence is diagnostic, unfrozen, publication-ineligible,
 and logic-only; qualified native/container parity remains required.
 
@@ -174,7 +175,8 @@ private/public tuples in native and container environments. It does not prove
 runtime CET enforcement, representativeness, mitigation prevalence, complete
 loader semantics, publication readiness, or exploitability.
 
-Patch 073 owns the non-reinterpretive public-policy decision. It may expose
-compatible optional `0.2.x` indicators only when the complete Patch 072
-acceptance evidence and limitations justify them; otherwise it records explicit
-deferral. Patch 074 owns Sprint 12 closeout.
+Patch 073 executed the non-reinterpretive public-policy gate as `defer`; it
+added no public field and preserved the existing coarse `mitigations.pie`
+meaning. Corrected native/container parity and independent acceptance remain
+pending. Any future compatible `0.2.x` indicator requires a new separately
+reviewed decision. Patch 074 owns Sprint 12 closeout.

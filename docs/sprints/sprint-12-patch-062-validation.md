@@ -8,9 +8,9 @@ gate to 33 fixtures and 132 executions, and Patch 064 expands it to 49 fixtures
 and 196 executions. Patch 064 did not pass validation, Patch 065 required a
 further correction, Patch 066 required Patch 067, Patch 067 required Patch 068,
 Patch 068 required Patch 069, and Patch 069 required Patch 070. Patch 070 was
-rejected after acceptance validation. Patch 071 required further correction
-and is superseded by the current Patch 072 candidate. Use the
-[Patch 072 validation record](sprint-12-patch-072-validation.md) for current
+rejected after acceptance validation. Patch 071 required further correction,
+and Patch 072's returned review also rejected current acceptance. Use the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) for current
 candidate expectations. See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
 for the Patch 062 design boundary, the
 [Patch 063 validation record](sprint-12-patch-063-validation.md) for the first

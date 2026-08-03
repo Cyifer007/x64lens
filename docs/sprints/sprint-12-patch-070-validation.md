@@ -4,11 +4,13 @@
 
 Rejected as a Sprint 12 acceptance candidate after validation reproduced
 blocking cleanup, batch-oracle, output-limit, and delivery-custody defects.
-Patch 071 supplied the first corrective boundary, and Patch 072 supplies the
-remaining correction plus acquisition and environment-parity gates. The batch
+Patch 071 supplied the first corrective boundary, and Patch 072 supplied the
+remaining correction plus acquisition and environment-parity gates. Patch 072's
+returned review rejected current acceptance, and Patch 073 closes the reported
+custody/isolation defects. The batch
 pilot, private-fact matrix, and `readelf` reconciliation remain diagnostic,
 unfrozen, and publication-ineligible. Qualified native/container parity remains
-pending, and public-policy review remains a separate later gate.
+pending, and Patch 073 records the public-policy decision as `defer`.
 
 ## Purpose
 

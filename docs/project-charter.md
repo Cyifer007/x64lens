@@ -158,17 +158,27 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 
 ## Current implementation stage
 
-Sprints 1 through 11 are complete after Patch 061. Sprint 11 established and
+Sprints 1 through 12 are complete after Patch 074. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
 comparison evidence, generated summaries, and gap register while preserving the
 unchanged dependency-free reference binary. The measurements did not resolve
 x64lens single-run latency on the selected small targets and did not establish a
-common cross-tool gadget population. Sprint 12 is active and uses those explicit
-limitations to prioritize bounded loader validity, overlap/provenance,
-PIE-versus-DSO identity, and GNU-property evidence. Sprint 15 freezes the
+common cross-tool gadget population. Sprint 12 resolved or explicitly deferred
+bounded loader validity, overlap/provenance, PIE-versus-DSO identity, and GNU-
+property evidence and closed the final evidence-custody/parity findings without
+adding public role/property fields. Sprint 13 is active. Sprint 15 freezes the
 confirmatory method; Sprint 16 produces the preview campaign, Sprint 17 runs
 publication-grade trials, and Sprint 22 is the first research-release gate.
 
 ## Sprint 12 loader-precision checkpoint
 
 Patch 062 strengthens the bounded assembly-first parser without adding a runtime dependency or broadening offensive capability. Loader facts now reject invalid PHDR alignment, congruence, virtual ranges, and executable entrypoints before analysis. Structurally valid extended numbering is reported as unsupported rather than guessed. This supports defensive trustworthiness while preserving the dependency-free reference profile.
+
+
+## Sprint 12 closeout checkpoint
+
+Patch 074 preserves the dependency-free one-worker reference profile, program-
+header executable authority, 4,096-candidate fail-closed behavior, and schema
+`0.2.0`. Private role/property evidence remains diagnostic and the public policy
+remains `defer`. Sprint 13 begins semantic completion without a release tag or
+confirmatory campaign freeze.

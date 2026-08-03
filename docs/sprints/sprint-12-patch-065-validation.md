@@ -6,8 +6,8 @@ Historical implementation-candidate validation record. Patch 065 did not pass
 independent validation and required Patch 066. Patch 066 subsequently required
 Patch 067, which required Patch 068; Patch 068 in turn required the Patch 069
 corrective and external-reconciliation candidate, which required Patch 070.
-Patch 070 was rejected after acceptance validation. Patch 071 required
-further correction and is superseded by the current Patch 072 candidate. The
+Patch 070 was rejected after acceptance validation. Patch 071 required further
+correction, and Patch 072's returned review rejected current acceptance. The
 [Patch 066 validation plan](sprint-12-patch-066-validation.md) preserves that
 intervening boundary, and the
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves a
@@ -18,7 +18,7 @@ next historical candidate boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Use the
-[Patch 072 validation record](sprint-12-patch-072-validation.md) for current
+[Patch 073 validation record](sprint-12-patch-073-validation.md) for current
 candidate expectations; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary.
@@ -173,7 +173,8 @@ binary is safe or exploitable. The Patch 068 natural/metamorphic private-fact
 matrix remains diagnostic, unfrozen, and publication-ineligible. Bounded
 external ELF reconciliation was future work at the Patch 065 boundary; the
 Patch 069 candidate added exact `readelf -hW/-lW/-dW/-nW` reconciliation.
-Patch 071 supplied the first evidence-gate correction, and Patch 072 carries
-the remainder and implements the environment-parity gate. Qualified native/
-container parity evidence remains pending before Patch 073 decides whether
-compatible public `0.2.x` indicators are justified.
+Patch 071 supplied the first evidence-gate correction, and Patch 072 carried
+the remainder and added the environment-parity protocol. Patch 072's returned
+review rejected current acceptance. Patch 073 closes the reported custody and
+isolation defects and records the public-policy decision as `defer`; corrected
+native/container parity and independent acceptance remain pending.

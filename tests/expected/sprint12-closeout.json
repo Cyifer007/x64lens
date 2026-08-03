@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "sprint": 12,
+  "status": "closed",
+  "closeout_patch": 74,
+  "completed_patches": [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74],
+  "next_sprint": 13,
+  "acceptance_target": "sprint12-p074-acceptance-smoke",
+  "reference_profile": {
+    "tool_version": "0.1.0-dev",
+    "report_schema": "0.2.0",
+    "candidate_capacity": 4096,
+    "analysis_arena_bytes": 851968,
+    "phdr_summary_bytes": 264,
+    "gnu_property_context_bytes": 3160,
+    "mandatory_decoder": false,
+    "mandatory_threads": false,
+    "target_mapping": "read_only",
+    "target_execution": false
+  },
+  "loader_and_mitigation_disposition": {
+    "program_header_executable_authority": "PT_LOAD_plus_PF_X_file_backed_ranges",
+    "ordinary_phdr_validity": "resolved",
+    "extended_numbering": "structurally_valid_unsupported_or_malformed_fail_closed",
+    "overlap_normalization": "deferred_under_measured_reopen_threshold",
+    "candidate_contributor_provenance": "retained_private",
+    "binary_role_lattice": "retained_private",
+    "ibt_shstk_properties": "retained_private_static_only",
+    "native_container_private_fact_parity": "required_by_acceptance_target",
+    "public_role_property_policy": "defer",
+    "public_role_property_fields_added": 0,
+    "existing_coarse_pie_field_reinterpreted": false,
+    "runtime_cet_enforcement_claimed": false
+  },
+  "diagnostic_evidence_boundary": {
+    "external_natural_objects": 48,
+    "external_natural_eligible_matches": 624,
+    "external_natural_eligible_mismatches": 0,
+    "external_natural_ambiguous": 48,
+    "external_natural_unavailable": 192,
+    "publication_eligible": false,
+    "performance_claim_authorized": false,
+    "positive_coordinate_anchors": 0
+  },
+  "corrective_custody_boundary": {
+    "delivery_custody_schema": "x64lens-delivery-custody-v3",
+    "descriptor_retained_final_reauthentication": true,
+    "hardlink_topology_rejected": true,
+    "late_subtree_mutation_rejected": true,
+    "root_and_ancestor_binding_authenticated": true,
+    "selection_freeze_inode_bound": true,
+    "container_native_plane_ancestor_mount_forbidden": true,
+    "tracked_only_permission_normalization": true
+  },
+  "deferred_mitigation_tranches": [
+    "text-relocations",
+    "runtime-search-path"
+  ],
+  "sprint13_handoff": {
+    "generic_exact_pop_semantic_decision": "open",
+    "linux_syscall_r10_role_decision": "open",
+    "score_null_policy_freeze": "open",
+    "bounded_family_additions": "measurement_gated",
+    "diagnostic_restart_on_task_change": true
+  },
+  "required_closeout_documents": [
+    "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
+    "docs/sprints/sprint-12-patch-074-validation.md",
+    "docs/sprints/sprint-12-plan.md",
+    "docs/sprints/sprint-13-plan.md"
+  ]
+}

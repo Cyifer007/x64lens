@@ -8,8 +8,9 @@ external-reconciliation work in
 [Patch 069](sprint-12-patch-069-validation.md), which in turn required Patch 070
 evidence-gate correction. Patch 070 was rejected after acceptance validation and
 required the further Patch 071 correction, whose review in turn required Patch
-072. Current expectations are recorded in the
-[Patch 072 validation record](sprint-12-patch-072-validation.md); the
+072. Patch 072's returned review rejected current acceptance. Current
+expectations are recorded in the
+[Patch 073 validation record](sprint-12-patch-073-validation.md); the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary; the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the

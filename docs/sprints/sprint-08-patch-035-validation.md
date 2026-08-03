@@ -52,7 +52,9 @@ make docker-test
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-If Docker Buildx cannot write activity metadata in a restricted filesystem sandbox, rerun the Docker targets outside that sandbox before classifying the result. That condition is an environment defect, not a product defect, when the rerun passes.
+If Docker Buildx cannot write activity metadata, classify the condition as an
+environment block until the same target succeeds in a qualified writable
+environment. Do not treat the blocked run as product evidence.
 
 ## Expected key evidence
 

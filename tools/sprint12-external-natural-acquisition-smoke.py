@@ -129,27 +129,52 @@ def identity(path: Path, label: str, *, executable: bool = False, allow_symlink:
 
 
 def retained_identity(path: Path, label: str) -> dict[str, Any]:
-    """Return the exact retained-file identity used by the selection freeze."""
-    require(path.is_file() and not path.is_symlink(), f"{label} is not a retained regular file")
-    metadata = path.stat()
-    data = path.read_bytes()
-    post = path.stat()
-    require(
-        (metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mtime_ns, metadata.st_ctime_ns)
-        == (post.st_dev, post.st_ino, post.st_size, post.st_mtime_ns, post.st_ctime_ns),
-        f"{label} changed while hashing",
-    )
-    return {
-        "sha256": sha256_bytes(data),
-        "size_bytes": len(data),
-        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
-    }
+    """Return a descriptor- and pathname-bound retained-file identity."""
+    requested = Path(os.path.abspath(path))
+    before = os.stat(requested, follow_symlinks=False)
+    require(stat.S_ISREG(before.st_mode), f"{label} is not a retained regular file")
+    require(before.st_nlink == 1, f"{label} is hard linked")
+    fd = os.open(requested, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        opened = os.fstat(fd)
+        identity_fields = lambda item: (
+            item.st_dev, item.st_ino, stat.S_IFMT(item.st_mode), stat.S_IMODE(item.st_mode),
+            item.st_size, item.st_mtime_ns, item.st_ctime_ns, item.st_nlink,
+        )
+        require(identity_fields(before) == identity_fields(opened), f"{label} changed while opening")
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+            total += len(chunk)
+        post_fd = os.fstat(fd)
+        post_path = os.stat(requested, follow_symlinks=False)
+        require(identity_fields(opened) == identity_fields(post_fd) == identity_fields(post_path),
+                f"{label} changed while hashing")
+        require(total == opened.st_size, f"{label} size changed while hashing")
+        return {
+            "device": opened.st_dev,
+            "inode": opened.st_ino,
+            "file_type": stat.S_IFMT(opened.st_mode),
+            "sha256": digest.hexdigest(),
+            "size_bytes": total,
+            "mode": f"{stat.S_IMODE(opened.st_mode):04o}",
+            "mtime_ns": opened.st_mtime_ns,
+            "ctime_ns": opened.st_ctime_ns,
+            "nlink": opened.st_nlink,
+        }
+    finally:
+        os.close(fd)
 
 
 def assert_selection_freeze(
     staging: Path,
     frozen: dict[str, Any],
     frozen_manifest_sha256: str,
+    frozen_runtime_identities: dict[str, dict[str, Any]],
     *,
     checkpoint: str,
 ) -> dict[str, Any]:
@@ -158,12 +183,14 @@ def assert_selection_freeze(
     selection = retained_identity(staging / "selection.tsv", "selection authority")
     freeze_path = staging / "selection-freeze.json"
     freeze_identity = retained_identity(freeze_path, "selection freeze")
-    require(candidates["sha256"] == frozen["selection_candidates_sha256"],
+    require(candidates == frozen_runtime_identities["selection_candidates"],
             f"selection candidates changed after freeze: {checkpoint}")
-    require(selection["sha256"] == frozen["selection_sha256"],
+    require(selection == frozen_runtime_identities["selection"],
             f"selection changed after freeze: {checkpoint}")
+    require(freeze_identity == frozen_runtime_identities["selection_freeze"],
+            f"selection-freeze identity changed: {checkpoint}")
     require(freeze_identity["sha256"] == frozen_manifest_sha256,
-            f"selection-freeze manifest changed: {checkpoint}")
+            f"selection-freeze manifest bytes changed: {checkpoint}")
     require(load_json(freeze_path) == frozen, f"selection-freeze semantics changed: {checkpoint}")
     require(candidates["mode"] == "0444" and selection["mode"] == "0444"
             and freeze_identity["mode"] == "0444",
@@ -584,14 +611,22 @@ def perform(args: argparse.Namespace, staging: Path) -> dict[str, Any]:
     ]
     write_tsv(staging / "selection-candidates.tsv", candidates, candidate_fields)
     write_tsv(staging / "selection.tsv", selected, candidate_fields)
+    for frozen_path in (staging / "selection-candidates.tsv", staging / "selection.tsv"):
+        frozen_path.chmod(0o444)
+    selection_candidates_identity = retained_identity(
+        staging / "selection-candidates.tsv", "selection candidate authority"
+    )
+    selection_identity = retained_identity(staging / "selection.tsv", "selection authority")
     selection_freeze = {
         "authority_id": authority["authority_id"],
         "authority_identity": authority_identity,
         "acquisition_harness_identity": harness_identity,
         "selection_rule": authority["selection"],
         "selection_metadata": selection_meta,
-        "selection_candidates_sha256": sha256_bytes((staging / "selection-candidates.tsv").read_bytes()),
-        "selection_sha256": sha256_bytes((staging / "selection.tsv").read_bytes()),
+        "selection_candidates_sha256": selection_candidates_identity["sha256"],
+        "selection_sha256": selection_identity["sha256"],
+        "selection_candidates_identity": selection_candidates_identity,
+        "selection_identity": selection_identity,
         "selected_objects": {
             row["object_name"]: retained_identity(objects_root / row["object_name"], f"selected object {row['object_name']}")
             for row in selected
@@ -602,15 +637,20 @@ def perform(args: argparse.Namespace, staging: Path) -> dict[str, Any]:
     freeze_path.write_text(
         json.dumps(selection_freeze, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    for frozen_path in (staging / "selection-candidates.tsv", staging / "selection.tsv", freeze_path):
-        frozen_path.chmod(0o444)
-    selection_freeze_sha = sha256_bytes(freeze_path.read_bytes())
+    freeze_path.chmod(0o444)
+    selection_freeze_identity = retained_identity(freeze_path, "selection freeze")
+    selection_freeze_sha = selection_freeze_identity["sha256"]
+    frozen_runtime_identities = {
+        "selection_candidates": selection_candidates_identity,
+        "selection": selection_identity,
+        "selection_freeze": selection_freeze_identity,
+    }
     freeze_checkpoints: list[dict[str, Any]] = []
     hook = _TEST_AFTER_SELECTION_FREEZE_HOOK
     if hook is not None:
         hook(staging)
     freeze_checkpoints.append(assert_selection_freeze(
-        staging, selection_freeze, selection_freeze_sha, checkpoint="before-outcome-authorities"
+        staging, selection_freeze, selection_freeze_sha, frozen_runtime_identities, checkpoint="before-outcome-authorities"
     ))
 
     # Analysis authorities are authenticated only after the target set is frozen.
@@ -656,7 +696,7 @@ def perform(args: argparse.Namespace, staging: Path) -> dict[str, Any]:
     for row in selected:
         name = row["object_name"]
         freeze_checkpoints.append(assert_selection_freeze(
-            staging, selection_freeze, selection_freeze_sha, checkpoint=f"before-outcomes:{name}"
+            staging, selection_freeze, selection_freeze_sha, frozen_runtime_identities, checkpoint=f"before-outcomes:{name}"
         ))
         target = objects_root / name
         blob = target.read_bytes()
@@ -767,13 +807,13 @@ def perform(args: argparse.Namespace, staging: Path) -> dict[str, Any]:
             f"eligible readelf mismatches: {eligible_mismatches}")
 
     freeze_checkpoints.append(assert_selection_freeze(
-        staging, selection_freeze, selection_freeze_sha, checkpoint="after-all-outcomes"
+        staging, selection_freeze, selection_freeze_sha, frozen_runtime_identities, checkpoint="after-all-outcomes"
     ))
     final_selection_candidates = retained_identity(staging / "selection-candidates.tsv", "final selection candidates")
     final_selection = retained_identity(staging / "selection.tsv", "final selection")
 
     manifest = {
-        "format": "x64lens-sprint12-external-natural-acquisition-v2",
+        "format": "x64lens-sprint12-external-natural-acquisition-v3",
         "authority_id": authority["authority_id"],
         "evidence_class": "diagnostic",
         "frozen": False,

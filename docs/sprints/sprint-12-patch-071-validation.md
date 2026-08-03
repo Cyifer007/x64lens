@@ -120,8 +120,9 @@ native Ubuntu daemon are separate environment strata.
 
 At this historical boundary, passing the listed gates would have established
 the first corrected development and delivery transaction boundary. Follow-up
-validation identified narrower prerequisites now addressed by Patch 072, whose
-[validation record](sprint-12-patch-072-validation.md) carries the current
-expectations. Neither boundary validates arbitrary external-natural objects,
+validation identified narrower prerequisites addressed by Patch 072. Patch
+072's returned review rejected current acceptance; the
+[Patch 073 validation record](sprint-12-patch-073-validation.md) carries the
+current expectations. Neither historical boundary validates arbitrary external-natural objects,
 proves runtime CET enforcement, authorizes public mitigation fields, establishes
 single-run latency, or produces publication evidence by itself.

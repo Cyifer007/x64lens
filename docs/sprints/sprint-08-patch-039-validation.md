@@ -95,9 +95,9 @@ make docker-context-hygiene-smoke
 MALFORMED_TIMEOUT=2 make docker-validation-smoke
 ```
 
-If Docker Buildx metadata writes fail under a restricted filesystem sandbox but
-unsandboxed reruns pass, classify the first failure as an environment defect,
-not a product defect.
+If Docker Buildx metadata writes fail, classify the run as environment-blocked
+until the same target succeeds in a qualified writable environment. Do not
+treat the blocked run as product evidence.
 
 ## Acceptance criteria
 

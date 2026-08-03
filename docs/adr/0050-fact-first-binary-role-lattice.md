@@ -5,10 +5,11 @@
 Accepted architecture for Sprint 12. The Patch 064 implementation did not pass
 validation. Patch 068 carried an intermediate corrective candidate; Patch 069
 carried the decision forward, Patch 070 attempted the next development-evidence
-correction but was rejected. Patch 071 corrected the first rejected
-boundaries, and the current Patch 072 candidate leaves the runtime lattice
-unchanged while carrying the remaining correction and private acquisition/parity
-gates. Complete validation remains pending.
+correction but was rejected. Patch 071 corrected the first rejected boundaries.
+Patch 072 added the remaining correction and private acquisition/parity gates,
+but its returned review rejected current acceptance. The current Patch 073
+candidate leaves the runtime lattice unchanged while carrying the reported
+custody and isolation corrections. Complete validation remains pending.
 
 ## Context
 
@@ -66,7 +67,7 @@ state, not measured RSS.
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
 corrected the earlier implementation that reread mapped ELF bytes, and the
-current Patch 072 candidate carries that boundary forward without changing the
+current Patch 073 candidate carries that boundary forward without changing the
 runtime analyzer:
 
 ```text
@@ -106,7 +107,7 @@ evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output. Patch 065 introduced these
 string-validation corrections, Patch 069 carried them forward, and the current
-Patch 072 candidate leaves them unchanged.
+Patch 073 candidate leaves them unchanged.
 
 ## Consequences
 
@@ -117,7 +118,7 @@ Patch 072 candidate leaves them unchanged.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the Patch 072 candidate.
+  remains separate from public report policy in the Patch 073 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

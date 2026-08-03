@@ -373,3 +373,13 @@ authority enter the eligible denominator. Ambiguous, unavailable, and
 `not_eligible` cells remain visible outside it. Malformed, unsupported, and
 capacity public-command outcomes remain in separate command and object
 accounting rather than becoming comparator cells.
+
+
+## Sprint 12 Patch 074 custody-denominator boundary
+
+Patch 074 changes no candidate or mitigation count. Descriptor-retained tree
+entries, hardlink/link rejection, selection inode identities, parity mount
+records, and checksum authorities are custody facts, not analysis populations.
+They must not be added to raw, exact, semantic, unknown, scored, private-field,
+or benchmark denominators. The external-natural 624/0 eligible match/mismatch
+denominator remains separate from 48 ambiguous and 192 unavailable cells.

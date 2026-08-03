@@ -1,8 +1,8 @@
 {
   "version": 2,
   "canonical_roadmap": "docs/roadmap-22-sprints.md",
-  "completed_sprints": 11,
-  "active_sprint": 12,
+  "completed_sprints": 12,
+  "active_sprint": 13,
   "diagnostic_sprint": 11,
   "campaign_freeze_sprint": 15,
   "preview_sprint": 16,
@@ -70,7 +70,7 @@
       "id": "executable_overlap_policy",
       "owner_sprint": 12,
       "required_before": "campaign_freeze",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "program_header_validity",
@@ -82,13 +82,13 @@
       "id": "pie_shared_object_distinction",
       "owner_sprint": 12,
       "required_before": "preview",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "cet_ibt_shstk_properties",
       "owner_sprint": 12,
       "required_before": "preview",
-      "status": "planned"
+      "status": "resolved"
     },
     {
       "id": "elf_extended_numbering",

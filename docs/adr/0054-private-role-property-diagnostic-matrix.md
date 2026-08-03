@@ -4,9 +4,10 @@
 
 Accepted architecture for the historical Sprint 12 Patch 068 implementation
 candidate. Patch 069 corrected and authenticated the matrix, Patch 070 was
-rejected, and Patch 071 supplied the first evidence-gate correction. The current
-Patch 072 candidate carries the remaining correction and acquisition/parity
-gates without promoting the diagnostic result. Product, delivery, and parity
+rejected, and Patch 071 supplied the first evidence-gate correction. Patch 072
+added the remaining correction and acquisition/parity gates, but its returned
+review rejected current acceptance. The current Patch 073 candidate carries the
+reported custody and isolation corrections without promoting the diagnostic result. Product, delivery, and parity
 acceptance remain subject to separate validation against the exact candidate
 source.
 
@@ -91,6 +92,8 @@ decision.
   `include/structs.inc` changes.
 - Public `info`, `mitigations`, `gadgets`, and `analyze` paths remain free of the
   private role/property vocabulary.
-- Patch 069 subsequently added bounded external comparison. Patch 072 carries
-  outcome-blind external-natural acquisition and native/container private-fact
-  parity, while Patch 073 separately owns any public-policy decision.
+- Patch 069 subsequently added bounded external comparison, and Patch 072 added
+  outcome-blind external-natural acquisition and the initial native/container
+  private-fact parity protocol. Patch 073 executed the public-policy gate as
+  `defer` and added no field; any future field requires a new separately
+  reviewed decision.

@@ -100,8 +100,10 @@ role/property acquisition. The Sprint 12 sequence is:
 
 - Patch 071: first corrective boundary for the confirmed Patch 070 blockers;
 - Patch 072: remaining Patch 071 correction plus outcome-blind external-natural
-  acquisition and native/container private-fact parity;
-- Patch 073: non-reinterpretive public-policy gate; and
+  acquisition and the initial native/container private-fact parity protocol;
+  its returned review rejected current acceptance;
+- Patch 073: reported custody/isolation correction and non-reinterpretive
+  public-policy deferral; and
 - Patch 074: Sprint 12 closeout and Sprint 13 handoff.
 
 The batch pilot remains transaction-conformance evidence. It is not a timing

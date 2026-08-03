@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Validate the bounded competitive mitigation gap and next-tranche authority."""
+"""Validate the bounded competitive mitigation gap and next-tranche authority.
+
+The register is a design authority, not a runtime-field implementation.  Every
+collection and scalar is type-checked exactly so JSON booleans cannot satisfy
+integer fields, duplicate records cannot inflate denominators, and a string
+cannot silently replace a list-valued selection policy.
+"""
 from __future__ import annotations
 
 import argparse
@@ -9,6 +15,13 @@ import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_PUBLIC = [
+    "bind_now", "canary", "dynamic_entry_count", "dynamic_linking",
+    "dynamic_terminated", "nx_stack", "pie", "relro", "rwx_load_segment", "stripped",
+]
+EXPECTED_PRIVATE = ["binary-role", "ibt-shstk"]
+EXPECTED_TRANCHES = ["text-relocations", "runtime-search-path", "fortify-source-indicator"]
+EXPECTED_SELECTED = ["text-relocations", "runtime-search-path"]
 
 
 class GapError(RuntimeError):
@@ -32,6 +45,15 @@ def load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=strict_object)
 
 
+def string_list(value: Any, label: str, *, exact_count: int | None = None) -> list[str]:
+    require(isinstance(value, list), f"{label} must be an array")
+    require(all(isinstance(item, str) and item for item in value), f"{label} contains a non-string or empty item")
+    require(len(value) == len(set(value)), f"{label} contains duplicate items")
+    if exact_count is not None:
+        require(len(value) == exact_count, f"{label} count changed")
+    return value
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--authority", type=Path, required=True)
@@ -40,49 +62,92 @@ def main() -> int:
     require(isinstance(value, dict) and set(value) == {
         "authority_id", "evidence_class", "frozen", "publication_eligible", "purpose",
         "current_public_properties", "current_private_or_deferred",
-        "prioritized_gap_tranches", "excluded_shortcuts", "patch_073_disposition",
+        "prioritized_gap_tranches", "excluded_shortcuts", "patch_073_disposition", "patch_074_disposition",
     }, "mitigation gap authority fields changed")
     require(value["authority_id"] == "sprint12-mitigation-competitive-gap-v1",
             "mitigation gap authority id changed")
-    require(value["evidence_class"] == "design-decision" and value["frozen"] is False
-            and value["publication_eligible"] is False,
+    require(value["evidence_class"] == "design-decision"
+            and type(value["frozen"]) is bool and value["frozen"] is False
+            and type(value["publication_eligible"]) is bool and value["publication_eligible"] is False,
             "mitigation gap evidence boundary changed")
+    require(isinstance(value["purpose"], str) and value["purpose"], "mitigation gap purpose is invalid")
 
+    current = string_list(value["current_public_properties"], "current public properties", exact_count=10)
+    require(current == EXPECTED_PUBLIC, "current public mitigation authority order or membership changed")
     schema = load(ROOT / "schemas/x64lens-report.schema.json")
     observed = sorted(schema["properties"]["mitigations"]["properties"])
-    require(observed == sorted(value["current_public_properties"]),
-            f"current mitigation property inventory changed: {observed}")
+    require(observed == sorted(current), f"current mitigation property inventory changed: {observed}")
 
     private = value["current_private_or_deferred"]
-    require(isinstance(private, list) and {item["id"] for item in private} == {"binary-role", "ibt-shstk"},
-            "private/deferred mitigation inventory changed")
-    require(all(item["status"] == "private-policy-deferred" for item in private),
-            "a private role/property fact was promoted through the gap register")
+    require(isinstance(private, list) and len(private) == 2, "private/deferred mitigation inventory changed")
+    private_ids: list[str] = []
+    for index, item in enumerate(private):
+        require(isinstance(item, dict) and set(item) == {"id", "status", "reason"},
+                f"private/deferred record fields changed: {index}")
+        require(isinstance(item["id"], str) and item["id"], f"invalid private record id: {index}")
+        require(isinstance(item["status"], str) and item["status"] == "private-policy-deferred",
+                f"private role/property fact was promoted: {item['id']}")
+        require(isinstance(item["reason"], str) and item["reason"], f"private record reason is invalid: {item['id']}")
+        private_ids.append(item["id"])
+    require(private_ids == EXPECTED_PRIVATE and len(private_ids) == len(set(private_ids)),
+            "private/deferred mitigation inventory order, membership, or uniqueness changed")
 
     tranches = value["prioritized_gap_tranches"]
-    require(isinstance(tranches, list) and [item["priority"] for item in tranches] == [1, 2, 3],
-            "mitigation gap priorities changed")
-    require([item["id"] for item in tranches] == [
-        "text-relocations", "runtime-search-path", "fortify-source-indicator"
-    ], "mitigation gap family order changed")
-    require(all(isinstance(item["bounded_evidence"], list) and item["bounded_evidence"]
-                and isinstance(item["required_work"], list) and item["required_work"]
-                for item in tranches), "mitigation gap evidence or work gate is incomplete")
-    selected = [item["id"] for item in tranches if item["selected_for_next_bounded_mitigation_tranche"]]
-    require(selected == ["text-relocations", "runtime-search-path"],
-            "next bounded mitigation tranche changed")
+    require(isinstance(tranches, list) and len(tranches) == 3, "mitigation gap tranche count changed")
+    tranche_ids: list[str] = []
+    priorities: list[int] = []
+    selected: list[str] = []
+    for index, item in enumerate(tranches):
+        require(isinstance(item, dict) and set(item) == {
+            "priority", "id", "candidate_public_state", "bounded_evidence", "required_work",
+            "selected_for_next_bounded_mitigation_tranche",
+        }, f"mitigation tranche fields changed: {index}")
+        require(type(item["priority"]) is int and item["priority"] > 0,
+                f"mitigation tranche priority type/value changed: {index}")
+        require(isinstance(item["id"], str) and item["id"], f"invalid mitigation tranche id: {index}")
+        require(isinstance(item["candidate_public_state"], str) and item["candidate_public_state"],
+                f"invalid candidate public state: {item['id']}")
+        string_list(item["bounded_evidence"], f"bounded evidence for {item['id']}")
+        string_list(item["required_work"], f"required work for {item['id']}")
+        require(type(item["selected_for_next_bounded_mitigation_tranche"]) is bool,
+                f"mitigation tranche selection type changed: {item['id']}")
+        priorities.append(item["priority"])
+        tranche_ids.append(item["id"])
+        if item["selected_for_next_bounded_mitigation_tranche"]:
+            selected.append(item["id"])
+    require(priorities == [1, 2, 3], "mitigation gap priorities changed")
+    require(tranche_ids == EXPECTED_TRANCHES and len(tranche_ids) == len(set(tranche_ids)),
+            "mitigation gap family order, membership, or uniqueness changed")
+    require(selected == EXPECTED_SELECTED, "next bounded mitigation tranche changed")
+
+    shortcuts = string_list(value["excluded_shortcuts"], "excluded shortcuts", exact_count=5)
+    require(len(shortcuts) == 5, "mitigation shortcut exclusions changed")
 
     disposition = value["patch_073_disposition"]
-    require(disposition["runtime_fields_added"] == 0,
+    require(isinstance(disposition, dict) and set(disposition) == {"runtime_fields_added", "reason", "next_tranche"},
+            "Patch 073 gap disposition fields changed")
+    require(type(disposition["runtime_fields_added"]) is int and disposition["runtime_fields_added"] == 0,
             "Patch 073 gap authority silently added an unvalidated runtime field")
-    require(disposition["next_tranche"] == selected, "Patch 073 next-tranche disposition disagrees")
-    shortcuts = value["excluded_shortcuts"]
-    require(isinstance(shortcuts, list) and len(shortcuts) == 5 and len(shortcuts) == len(set(shortcuts)),
-            "mitigation shortcut exclusions changed")
+    require(isinstance(disposition["reason"], str) and disposition["reason"],
+            "Patch 073 gap disposition reason is invalid")
+    next_tranche = string_list(disposition["next_tranche"], "Patch 073 next tranche", exact_count=2)
+    require(next_tranche == selected, "Patch 073 next-tranche disposition disagrees")
+
+    closeout = value["patch_074_disposition"]
+    require(isinstance(closeout, dict) and set(closeout) == {"runtime_fields_added", "reason", "deferred_tranches"},
+            "Patch 074 gap disposition fields changed")
+    require(type(closeout["runtime_fields_added"]) is int and closeout["runtime_fields_added"] == 0,
+            "Patch 074 silently added an unvalidated runtime field")
+    require(isinstance(closeout["reason"], str) and closeout["reason"],
+            "Patch 074 gap disposition reason is invalid")
+    deferred = string_list(closeout["deferred_tranches"], "Patch 074 deferred tranches", exact_count=2)
+    require(deferred == selected, "Patch 074 deferred-tranche disposition disagrees")
+
     print(
         "sprint12-mitigation-competitive-gap-smoke: ok "
         f"current_public={len(observed)} private_deferred={len(private)} "
-        f"gap_tranches={len(tranches)} selected_next={','.join(selected)} runtime_fields_added=0"
+        f"gap_tranches={len(tranches)} selected_next={','.join(selected)} "
+        f"runtime_fields_added={disposition['runtime_fields_added']} closeout_fields_added={closeout['runtime_fields_added']}"
     )
     return 0
 

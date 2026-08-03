@@ -99,14 +99,20 @@ def selection_freeze_mutation(external: Any, base: Path) -> None:
     (objects / "object-00.elf").chmod(0o444)
     (staging / "selection-candidates.tsv").write_text("name\nobject-00.elf\n", encoding="utf-8")
     (staging / "selection.tsv").write_text("name\nobject-00.elf\n", encoding="utf-8")
+    for path in (staging / "selection-candidates.tsv", staging / "selection.tsv"):
+        path.chmod(0o444)
+    candidates_identity = external.retained_identity(staging / "selection-candidates.tsv", "candidates")
+    selection_identity = external.retained_identity(staging / "selection.tsv", "selection")
     frozen = {
         "authority_id": "test",
         "authority_identity": {},
         "acquisition_harness_identity": {},
         "selection_rule": {},
         "selection_metadata": {},
-        "selection_candidates_sha256": external.sha256_bytes((staging / "selection-candidates.tsv").read_bytes()),
-        "selection_sha256": external.sha256_bytes((staging / "selection.tsv").read_bytes()),
+        "selection_candidates_sha256": candidates_identity["sha256"],
+        "selection_sha256": selection_identity["sha256"],
+        "selection_candidates_identity": candidates_identity,
+        "selection_identity": selection_identity,
         "selected_objects": {
             "object-00.elf": external.retained_identity(objects / "object-00.elf", "object")
         },
@@ -114,15 +120,22 @@ def selection_freeze_mutation(external: Any, base: Path) -> None:
     }
     freeze_path = staging / "selection-freeze.json"
     freeze_path.write_text(json.dumps(frozen, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    for path in (staging / "selection-candidates.tsv", staging / "selection.tsv", freeze_path):
-        path.chmod(0o444)
-    freeze_sha = external.sha256_bytes(freeze_path.read_bytes())
-    external.assert_selection_freeze(staging, frozen, freeze_sha, checkpoint="nominal")
+    freeze_path.chmod(0o444)
+    freeze_identity = external.retained_identity(freeze_path, "freeze")
+    freeze_sha = freeze_identity["sha256"]
+    runtime = {
+        "selection_candidates": candidates_identity,
+        "selection": selection_identity,
+        "selection_freeze": freeze_identity,
+    }
+    external.assert_selection_freeze(staging, frozen, freeze_sha, runtime, checkpoint="nominal")
     (staging / "selection.tsv").chmod(0o644)
     with (staging / "selection.tsv").open("a", encoding="utf-8") as stream:
         stream.write("mutated\n")
     try:
-        external.assert_selection_freeze(staging, frozen, freeze_sha, checkpoint="post-freeze-mutation")
+        external.assert_selection_freeze(
+            staging, frozen, freeze_sha, runtime, checkpoint="post-freeze-mutation"
+        )
     except external.AcquisitionError:
         pass
     else:
@@ -140,7 +153,7 @@ def custody_mode_and_schema(custody: Any, base: Path) -> None:
     payload.chmod(0o640)
     manifest = root / "DELIVERY_CUSTODY_MANIFEST.json"
     value = custody.create(root, manifest, "test-delivery")
-    require(value["schema_id"] == "x64lens-delivery-custody-v2", "custody v2 was not created")
+    require(value["schema_id"] == "x64lens-delivery-custody-v3", "custody v3 was not created")
     custody.verify(root, manifest)
 
     for target, mode, label in (
@@ -225,6 +238,8 @@ def parity_plane_isolation(parity: Any, base: Path) -> None:
     policy = parity.validate_container_mount_policy(
         command,
         native_result=native,
+        inputs=inputs,
+        heldout=heldout,
         container_write_root=writable,
     )
     require(policy["writable_mount_count"] == 1 and policy["native_plane_exposed_to_container"] is False,
@@ -232,7 +247,9 @@ def parity_plane_isolation(parity: Any, base: Path) -> None:
     bad = list(command)
     bad[bad.index("-w"):bad.index("-w")] = ["-v", f"{native}:/native:rw"]
     try:
-        parity.validate_container_mount_policy(bad, native_result=native, container_write_root=writable)
+        parity.validate_container_mount_policy(
+            bad, native_result=native, inputs=inputs, heldout=heldout, container_write_root=writable
+        )
     except parity.ParityError:
         pass
     else:

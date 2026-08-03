@@ -337,7 +337,15 @@ def custody_duplicate_probe(custody: Any, base: Path) -> None:
     custody.create(root, manifest, "delivery")
     custody.verify(root, manifest)
     raw = manifest.read_text()
-    manifest.write_text(raw.replace('"root_label": "delivery",', '"root_label": "delivery",\n  "root_label": "duplicate",', 1))
+    manifest.chmod(0o644)
+    try:
+        manifest.write_text(
+            raw.replace('"root_label": "delivery",', '"root_label": "delivery",\n  "root_label": "duplicate",', 1)
+        )
+    finally:
+        manifest.chmod(0o444)
+    require((manifest.stat().st_mode & 0o777) == 0o444,
+            "duplicate-key fixture failed to restore the sealed manifest mode")
     try:
         custody.verify(root, manifest)
     except custody.CustodyError:

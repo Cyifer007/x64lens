@@ -2,11 +2,11 @@
 
 ## Status
 
-Accepted architecture for the Sprint 12 Patch 072 implementation candidate.
-Patch 072 combines the smallest Patch 071 corrective prerequisite with the
-planned external-natural acquisition and same-byte native/container private-fact
-parity gate. Product acceptance remains subject to the documented native and
-Docker checks.
+Historical architecture for the Sprint 12 Patch 072 implementation candidate.
+Patch 072 combined the smallest Patch 071 corrective prerequisite with the
+planned external-natural acquisition and initial same-byte native/container
+private-fact parity protocol. Its returned review rejected current acceptance
+after reproducing custody and isolation defects now addressed by Patch 073.
 
 ## Context
 
@@ -154,8 +154,10 @@ one-worker reference remains unchanged.
 The Sprint 12 sequence is:
 
 - Patch 072: this corrective prerequisite, external-natural acquisition, and
-  same-byte environment parity;
-- Patch 073: non-reinterpretive public-policy decision; and
+  initial same-byte environment-parity protocol; its returned review rejected
+  current acceptance;
+- Patch 073: reported custody/isolation correction and non-reinterpretive
+  public-policy decision `defer`; and
 - Patch 074: Sprint 12 closeout and Sprint 13 handoff.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and
@@ -177,4 +179,5 @@ RSS, and deployment-envelope observation remain separate gates.
 - Treating `readelf`'s collapsed note presentation as physical carrier-view
   authority.
 - Mixing environment parity with compiler, package, or build-origin effects.
-- Publishing private fields before the separate Patch 073 policy gate.
+- Publishing private fields after Patch 073 recorded `defer` without a new
+  separately reviewed decision.

@@ -1751,11 +1751,13 @@ Native and container results must agree before acceptance. Patch 068 introduced
 the private-fact matrix; Patch 069 corrected and authenticated it and added
 bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). Patch 070
 attempted the next evidence-gate correction but was rejected. Patch 071 supplied
-the first correction, and the current Patch 072 candidate supplies the remainder
-without changing the runtime analyzer or schema, then implements outcome-blind
-acquisition and the environment-parity gate. The matrix remains diagnostic,
-unfrozen, and publication-ineligible. Qualified native/container parity still
-precedes any Patch 073 decision about compatible public `0.2.x` indicators.
+the first correction. Patch 072 supplied the remainder plus outcome-blind
+acquisition and the initial environment-parity protocol, but its returned review
+rejected current acceptance. Patch 073 changed no runtime analyzer or schema path and recorded the public-
+policy decision as `defer`, but review required the final Patch 074 custody,
+parity, permission, and authority correction. The matrix remains diagnostic,
+unfrozen, and publication-ineligible. Any future compatible public `0.2.x`
+indicator requires a new separately reviewed decision.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1923,7 +1925,78 @@ environment-parity gate retains 288 private probe processes and 5,184 private
 fields per environment, 576 combined probe processes, 288 paired probe-output
 agreements, 768 combined public closures, and 384 paired public tuples.
 
-Retained cloud evidence covers the diagnostic external-natural acquisition and
+Retained diagnostic external-natural acquisition evidence remains separate from
 two same-host logic-only parity planes. It is unfrozen and publication-
 ineligible. Fresh native and Docker validation, strict ShellCheck, and qualified
 native/container parity remain required.
+
+## Sprint 12 Patch 073 correction and policy-deferral gates
+
+Run the focused correction and policy gates before the Patch 073 aggregate:
+
+```bash
+make patch072-corrective-regression-smoke
+make sprint12-role-property-public-policy-smoke
+make sprint12-mitigation-competitive-gap-smoke
+make sprint12-p073-acceptance-smoke
+```
+
+Patch 073 changes no runtime `src/`, `include/`, or public schema path. The
+focused correction covers the reported post-fingerprint cleanup,
+selection-freeze, descriptor-bound delivery custody, retained evidence, and
+container write-isolation boundaries. The policy gate records `defer`, adds no
+public role-derived PIE/DSO, IBT, or SHSTK field, preserves the existing coarse
+`mitigations.pie` meaning, and makes no runtime-CET claim. The mitigation-gap
+gate selects text-relocation evidence and distinct RPATH/RUNPATH indicators as
+future bounded work without adding a Patch 073 runtime field.
+
+Patch 074 carries corrected native/container parity, delivery reconciliation,
+and the Sprint 12 closeout authority. Sprint 13 owns semantic completion after
+the complete Patch 074 acceptance target passes.
+
+
+## Sprint 12 Patch 074 closeout validation
+
+Patch 074 is the final Sprint 12 closeout candidate. It changes no runtime
+`src/`, `include/`, or schema path. Run the focused and machine closeout gates:
+
+```bash
+make patch073-corrective-regression-smoke
+make sprint12-role-property-public-policy-smoke
+make sprint12-mitigation-competitive-gap-smoke
+make sprint12-closeout-smoke
+```
+
+Expected closeout shape:
+
+```text
+patch073-corrective-regression-smoke: ok ...
+sprint12-role-property-public-policy-smoke: ok decision=defer authorization=0 ... public_fields_added=0 ...
+sprint12-mitigation-competitive-gap-smoke: ok ... runtime_fields_added=0 closeout_fields_added=0
+sprint12-closeout-smoke: ok sprint=12 patches=13 decision=defer public_fields=0 external_natural_objects=48 eligible_matches=624 next_sprint=13
+```
+
+The corrective gate covers descriptor-retained custody, late subtree mutation,
+hardlink and special-member rejection, root/ancestor binding, nested manifest
+creation, executable parity inputs, exact parity membership, native-plane mount
+isolation, WSL2 publication, selection-inode continuity, tracked-only permission
+normalization, and strict negative policy/gap oracles.
+
+Complete native and Docker acceptance remains:
+
+```bash
+make clean
+make
+make samples
+make sprint-closeout-smoke
+make docker-build
+make docker-test
+make docker-validation-smoke
+make sprint12-p074-acceptance-smoke
+```
+
+The Patch 074 aggregate additionally retains the 48-object external-natural
+result and runs the corrected isolated 96-object native/container parity plane.
+A same-host logic replay does not substitute for Docker parity. Candidate 4,097
+must still exit 6 before stdout, malformed input must emit no partial stdout,
+and target bytes remain read-only and never executed.

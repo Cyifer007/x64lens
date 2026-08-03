@@ -95,5 +95,13 @@
       "text-relocations",
       "runtime-search-path"
     ]
+  },
+  "patch_074_disposition": {
+    "runtime_fields_added": 0,
+    "reason": "Patch 074 closes Sprint 12 without introducing unvalidated mitigation output. Text relocations and separate RPATH/RUNPATH evidence remain bounded future tranches with parser, fixture, schema, comparator, and parity gates.",
+    "deferred_tranches": [
+      "text-relocations",
+      "runtime-search-path"
+    ]
   }
 }

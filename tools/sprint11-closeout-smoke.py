@@ -57,7 +57,10 @@ def main() -> int:
         patches = closeout.get("completed_patches")
         require(patches == list(range(55, 62)), "Patch sequence must cover 055-061")
         require(closeout.get("next_sprint") == 12, "Sprint 12 must be next")
-        require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage status mismatch")
+        completed_sprints = stages.get("completed_sprints")
+        active_sprint = stages.get("active_sprint")
+        require(isinstance(completed_sprints, int) and completed_sprints >= 11, "Sprint 11 completion was lost")
+        require(active_sprint == completed_sprints + 1, "active sprint must follow completed_sprints")
 
         profile = closeout.get("reference_profile")
         require(profile == {
@@ -122,7 +125,7 @@ def main() -> int:
         sprint11 = (ROOT / "docs/sprints/sprint-11-plan.md").read_text(encoding="utf-8")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         require("Closed by Patch 061" in sprint11, "Sprint 11 plan is not closed")
-        require("Active loader and mitigation precision sprint" in sprint12, "Sprint 12 is not active")
+        require("Closed by Patch 074" in sprint12, "Sprint 12 closeout chronology is missing")
 
         makefile = MAKEFILE.read_text(encoding="utf-8")
         require("sprint11-closeout-smoke:" in makefile, "Sprint 11 closeout Make target is missing")

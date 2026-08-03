@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted for the Sprint 12 Patch 073 implementation candidate.
+Accepted as the design record for the Sprint 12 Patch 073 implementation
+candidate. Independent acceptance remains pending.
 
 ## Context
 
@@ -20,8 +21,7 @@ architecturally valid, but it also reproduced seven material acceptance gaps:
   native evidence plane;
 - default acquisition and parity paths did not retain their complete raw result
   planes; and
-- the loose delivery omitted required records and did not provide one clean,
-  replayable command ledger.
+- the loose delivery omitted required public records.
 
 The policy review also established that the available diagnostic evidence does
 not justify a new public PIE-versus-DSO, IBT, or SHSTK field. The existing
@@ -62,8 +62,11 @@ no new role/property field or label was introduced, preserves the existing
 coarse PIE field, and rejects authorization while any required prerequisite is
 not exactly `passed`.
 
-The open prerequisites are corrected isolated native/container parity on a
-Docker-capable WSL2 host, build-origin separation, held-out consumer task value,
+No public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH field is added
+in Patch 073.
+
+The open prerequisites are corrected isolated native/container parity in a
+qualified environment, build-origin separation, held-out consumer task value,
 and schema/default-output compatibility. Controlled and external-natural facts
 remain diagnostic rather than being promoted into public policy.
 
@@ -72,7 +75,7 @@ remain diagnostic rather than being promoted into public policy.
 Patch 073 also records the next bounded mitigation families without adding an
 untested runtime field. The next selected tranche is:
 
-1. text-relocation evidence from `DT_TEXTREL` and `DF_TEXTREL`; and
+1. text-relocation evidence from `DT_TEXTREL` or `DT_FLAGS & DF_TEXTREL`; and
 2. separate validated `DT_RPATH` and `DT_RUNPATH` indicators.
 
 Each requires checked acquisition, malformed and contradiction fixtures,
@@ -87,11 +90,11 @@ substrings.
   capacity behavior, and analyzer output remain unchanged in Patch 073.
 - Program headers remain executable authority, and private role/property facts
   remain outside the candidate provenance tiers and public report schema.
-- Passing the portable Patch 073 gates proves the corrected source and policy
-  decision, but not actual native/container parity in an environment without a
-  Docker daemon.
+- Passing the portable Patch 073 gates supports the source-level correction and
+  policy decision, but not actual native/container parity or current
+  acceptance.
 - Patch 074 may close Sprint 12 only after fresh native, Docker, corrected parity,
-  delivery, and independent Lane A acceptance evidence is reconciled.
+  delivery, and independent acceptance evidence is reconciled.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

@@ -89,5 +89,7 @@ with exact implied-directory membership. See
 [ADR 0057](0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md).
 
 ADR 0058 records the remaining Patch 071 correction and the version-3 authority
-used by the current Patch 072 candidate, together with outcome-blind external-
-natural acquisition and native/container private-fact parity.
+used by Patch 072, together with outcome-blind external-natural acquisition and
+the initial native/container private-fact parity protocol. Patch 072's returned
+review rejected current acceptance; ADR 0059 records the current Patch 073
+custody/isolation correction and policy deferral.

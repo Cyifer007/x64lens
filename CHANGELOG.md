@@ -8,14 +8,16 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
-- Sprint 12 Patch 073 correction and non-reinterpretive public-policy gate.
-  Cleanup performs a final descriptor-bound generation check through removal;
-  external-natural selection is reauthenticated throughout outcome collection;
-  delivery custody v2 authenticates root, manifest, directory, and file modes
-  while hashing bytes through retained descriptors; and native/container parity
-  gives the container one dedicated empty write root without exposing the
-  completed native plane. Successful acquisition and parity results are retained
-  and sealed rather than deleted.
+- Sprint 12 Patch 074 closeout authority, ADR 0060, validation record, and
+  `make sprint12-closeout-smoke`. The machine authority closes Patches 062-074,
+  preserves tool `0.1.0-dev`, schema `0.2.0`, the 4,096-candidate fail-closed
+  boundary, read-only/nonexecuted targets, the dependency-free decoder-free
+  one-worker reference, public role/property deferral, and the Sprint 13
+  semantic-capability handoff.
+- Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
+  external-natural selection checkpoints, exact parity-tree custody, and a
+  Git-tracked-only transactional permission normalizer.
+
 - A machine-readable role/property policy authority with decision `defer`. It
   authenticates the unchanged schema and reporter sources, preserves the coarse
   `mitigations.pie` Boolean, adds zero public PIE/DSO/IBT/SHSTK fields, and makes
@@ -27,15 +29,15 @@ The project follows semantic versioning once the first public release is cut.
   environment parity. Outcome-blind selection freezes 48 object identities
   across four source lineages and a seven-executable/five-library path split
   after package, path, mode, and ELF eligibility checks and before any x64lens,
-  private fact-probe, or GNU `readelf` outcome is consumed. Cloud-validated
-  acquisition evidence remains diagnostic, unfrozen, and publication-
+  private fact-probe, or GNU `readelf` outcome is consumed. Retained acquisition
+  evidence remains diagnostic, unfrozen, and publication-
   ineligible; it includes 144 private probe runs, 192 public commands, 192 exact
   GNU `readelf` processes, and all 864 field dispositions.
   A separate 96-object native/container gate requires 5,184 private fields per
   environment, 288 paired probe outputs, 768 public closures, and 384 paired
   path-normalized public tuples from byte-identical inputs. Retained parity
   evidence is same-host and logic-only; corrected write-isolated native/
-  container parity remains pending local rerun. Patch 073 has executed the
+  container parity remains pending. Patch 073 has executed the
   public-policy gate as an explicit deferral.
 
 - Sprint 12 Patch 071 corrective validation and delivery tooling: an
@@ -435,6 +437,26 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Patch 074 closes the confirmed Patch 073 evidence and acceptance defects:
+  late custody-subtree mutation, accepted hardlink topology, incomplete
+  root/ancestor binding, same-byte selected-object inode replacement, parity
+  execute-bit loss, native-plane ancestor exposure, undeclared parity links or
+  special members, omitted nested checksum authorities, WSL2 container-plane
+  publication, broad permission normalization, duplicate/wrong-type policy
+  authorities, and missing-root cleanup success. The patch changes no runtime
+  analyzer, include, or public schema file and adds zero mitigation fields.
+
+- Patch 072's returned review rejected current acceptance. Patch 073 addressed the
+  first post-fingerprint cleanup, selection-freeze, delivery-custody, retained-
+  evidence, and parity-isolation defects; Patch 074 closes the remaining
+  topology, inode, hardlink, mount, publication, permission, and authority
+  findings. Cleanup retains a final
+  descriptor through removal; external-natural selection is reauthenticated
+  throughout outcome collection; delivery custody v2 authenticates root,
+  manifest, directory, and file modes while hashing through retained
+  descriptors; and the container receives one dedicated empty write root
+  without access to the completed native plane.
+
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,
   ancestor-descriptor closure, strict duplicate-key JSON parsing, version-3
@@ -466,8 +488,11 @@ The project follows semantic versioning once the first public release is cut.
   exact held-out/readelf authorities, comparator exit enforcement, positive
   property-overlap coverage, and recursive public-leak rejection. Patch 070
   acceptance was rejected; Patch 071 supplied the first nested-cleanup, batch-
-  authority, streaming-limit, and delivery-custody corrections, and Patch 072
-  supplies the remaining correction plus acquisition and parity gates.
+  authority, streaming-limit, and delivery-custody corrections. Patch 072
+  supplied the remaining correction plus acquisition and parity gates, but its
+  returned review also rejected current acceptance; Patch 073 supplied the
+  first custody/isolation correction, and Patch 074 supplies the final closeout
+  correction.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

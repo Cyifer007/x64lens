@@ -307,8 +307,7 @@ replacement at the caller-visible pathname is not modified.
 ## Sprint 12 Patch 065 GNU-property parser safety
 
 Patch 069 consumed GNU property evidence only from checked file-backed
-`PT_NOTE` and `PT_GNU_PROPERTY` carriers; the current Patch 072 candidate leaves
-that runtime parser unchanged. The parser bounds carrier
+`PT_NOTE` and `PT_GNU_PROPERTY` carriers; Patch 074 leaves that runtime parser unchanged. The parser bounds carrier
 bytes, note headers,
 owner/descriptor extents, represented 4- or 8-byte carrier-note alignment,
 the ELF64 `PT_GNU_PROPERTY` 8-byte alignment requirement, 8-byte property alignment,
@@ -343,7 +342,10 @@ claim to restore bytes, names, ownership, or timestamps and does not broaden
 parser, analyzer, or public-output claims. Patch 069 corrected the descriptor-
 authoritative semantic-verification, signal-rollback, and directory-identity
 evidence around that contract; Patch 071 supplied the first development-
-evidence correction and Patch 072 supplies the remainder.
+evidence correction. Patch 072 supplied the remainder but its returned review rejected current
+acceptance; Patch 073 supplied the first custody correction, and Patch 074
+closes the final topology, hardlink, inode, parity, permission, and authority
+boundaries.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -386,3 +388,15 @@ read-only, authenticated by SHA-256/size/mode, and never executed. Private probe
 and public commands map those copies through the existing analyzer paths. A
 capacity exit remains a retained unsupported outcome with empty stdout; it is
 not silently removed from the natural-object denominator.
+
+
+## Sprint 12 Patch 074 evidence-custody safety
+
+Patch 074 changes no ELF parser routine. Its safety work applies to generated
+and delivered evidence: descriptor-retained hashing and final path continuity,
+exact directory topology, hardlink/link/special-file rejection, inode-bound
+selection freeze, native-plane mount exclusion, and tracked-only transactional
+permission normalization. A missing authenticated cleanup root fails rather
+than being accepted as successful removal. These controls reduce evidence
+mutation risk but do not constitute a language-level or formal memory-safety
+guarantee.

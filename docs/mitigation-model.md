@@ -181,14 +181,13 @@ validates every `DT_SONAME` carrier.
 Duplicate or conflicting role carriers are contradictory rather than
 first-wins or last-wins. Dynamic role tags use the existing bounded `PT_DYNAMIC`
 view. No new public mitigation field is emitted; Patch 069 carried the corrected
-role facts and separate GNU-property parser gate, and Patches 071 and 072 leave the runtime path unchanged.
+role facts and separate GNU-property parser gate, and Patches 071 through 074 leave the runtime path unchanged.
 
 ## Sprint 12 Patch 065 private GNU-property evidence
 
 Patch 065 added bounded internal acquisition of x86 IBT and SHSTK GNU-property
 facts; Patch 069 preserved the corrected alignment and overlap boundaries, and
-the current Patch 072 candidate leaves them unchanged without publishing a new
-mitigation field. Exact duplicate
+Patch 074 leaves them unchanged without publishing a new mitigation field. Exact duplicate
 `PT_NOTE`/`PT_GNU_PROPERTY` physical carriers share one canonical view, while
 every original PHDR contributor remains retained. Recognized GNU property notes
 produce private unknown, absent, present, or contradictory feature states.
@@ -199,10 +198,11 @@ bits remain bounded facts. Malformed or truncated structures fail with exit 5
 before stdout, while explicit cap exhaustion fails with exit 6 before stdout.
 
 These facts do not prove runtime CET enforcement, full control-flow integrity,
-safety, or exploitability. A later public-policy gate must preserve evidence,
-unknowns, duplicates, conflicts, the separate natural/metamorphic diagnostic
-matrix, bounded external reconciliation, and parity before changing text or JSON
-output.
+safety, or exploitability. Patch 073 executed the later public-policy gate as
+`defer` and added no field. Any future text or JSON change requires a new
+separately reviewed decision that preserves evidence, unknowns, duplicates,
+conflicts, the natural/metamorphic diagnostic matrix, bounded external
+reconciliation, and parity.
 
 
 ## Sprint 12 Patch 066 metamorphic evidence gate
@@ -262,10 +262,11 @@ controlled matrix and GNU `readelf` reconciliation remain diagnostic, unfrozen,
 and publication-ineligible. New role-derived PIE/DSO and IBT/SHSTK fields remain
 deferred, the existing coarse `mitigations.pie` field remains unchanged, and
 static GNU properties do not prove runtime CET enforcement.
-Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set;
-the current Patch 072 candidate carries the remaining corrective prerequisite
-plus private acquisition/parity work. Neither changes any mitigation or
-public-policy boundary.
+Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set.
+Patch 072 carried the remaining corrective prerequisite plus private
+acquisition/parity work, but its returned review rejected current acceptance.
+Patch 073 recorded public policy as `defer`; Patch 074 closes the final custody
+and parity-protocol findings without changing a mitigation field.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
 
@@ -282,7 +283,7 @@ native and container environments. Environment agreement does not prove that
 compiler, linker, package, or source-lineage effects generalize, and static
 IBT/SHSTK properties still do not prove runtime CET enforcement.
 
-## Sprint 12 Patch 073 public-policy and competitive-gap boundary
+## Sprint 12 Patch 073 public-policy and Patch 074 closeout boundary
 
 Patch 073 executes the non-reinterpretive policy gate and records `defer`.
 No role-derived PIE/DSO, IBT, or SHSTK field or text label is admitted. The
@@ -290,8 +291,13 @@ existing coarse `mitigations.pie` Boolean retains its `ET_DYN` indicator meaning
 and static GNU property evidence remains distinct from runtime CET enforcement.
 
 The next selected bounded mitigation tranche is text-relocation evidence from
-`DT_TEXTREL` or `DF_TEXTREL` plus separately represented validated `DT_RPATH`
-and `DT_RUNPATH` indicators. Those families are not Patch 073 runtime output:
+`DT_TEXTREL` or `DT_FLAGS & DF_TEXTREL` plus separately represented validated `DT_RPATH`
+and `DT_RUNPATH` indicators. Those families are not Patch 073 or Patch 074 runtime output:
 each still requires checked parser acquisition, malformed and contradiction
 fixtures, focused/integrated parity, external reconciliation, and compatible
 schema review before reporting.
+
+Patch 074 preserves this deferral, adds zero mitigation fields, and closes the
+selection, delivery, parity, permission, and negative-oracle defects around the
+policy evidence. Static GNU properties remain private indicators and do not
+prove runtime CET enforcement.

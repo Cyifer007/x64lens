@@ -33,8 +33,8 @@ def main() -> int:
     try:
         spec = load_spec()
         require(spec.get("version") == 2, "unsupported specification version")
-        require(spec.get("completed_sprints") == 11, "completed_sprints must be 11")
-        require(spec.get("active_sprint") == 12, "active_sprint must be 12")
+        require(spec.get("completed_sprints") == 12, "completed_sprints must be 12")
+        require(spec.get("active_sprint") == 13, "active_sprint must be 13")
         require(spec.get("canonical_roadmap") == "docs/roadmap-22-sprints.md", "canonical roadmap mismatch")
 
         diagnostic = spec.get("diagnostic_sprint")
@@ -86,7 +86,9 @@ def main() -> int:
         gate_status = {gate["id"]: gate["status"] for gate in gates}
         require(gate_status["program_header_validity"] == "resolved", "Patch 062 PHDR-validity gate is not resolved")
         require(gate_status["elf_extended_numbering"] == "resolved", "Patch 062 extended-numbering gate is not resolved")
-        require(gate_status["executable_overlap_policy"] == "planned", "overlap policy must remain the next open Sprint 12 gate")
+        require(gate_status["executable_overlap_policy"] == "resolved", "Sprint 12 overlap policy must be resolved by measured deferral")
+        require(gate_status["pie_shared_object_distinction"] == "resolved", "Sprint 12 role policy gate must be resolved")
+        require(gate_status["cet_ibt_shstk_properties"] == "resolved", "Sprint 12 GNU-property policy gate must be resolved")
 
         profiles = spec.get("conditional_profiles")
         require(isinstance(profiles, list) and len(profiles) == 3, "expected three conditional profiles")
@@ -126,7 +128,7 @@ def main() -> int:
         "research-stage-gates-smoke: ok "
         f"stages={len(stages)} capability_gates={len(gates)} "
         f"conditional_profiles={len(profiles)} release_sprint={release} "
-        "completed_sprints=11 active_sprint=12"
+        "completed_sprints=12 active_sprint=13"
     )
     return 0
 

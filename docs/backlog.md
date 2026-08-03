@@ -142,56 +142,44 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision
+### Sprint 12: loader and mitigation precision — complete
 
-- [x] `p_align`, congruence, virtual-range, and executable-entrypoint behavior. Patch 062.
-- [x] Explicit ELF extended-numbering detection with structurally validated stable unsupported results. Patch 062.
-- [x] Original executable-PHDR identity and dense candidate contributor provenance without scan/count changes. Patch 063.
-- [x] Measure executable-overlap incidence and redundant scan work, then record the diagnostic decision to defer executable-byte-union normalization. Patch 064.
-- [ ] If normalization is selected, define candidate deduplication and public count semantics while preserving contributor provenance.
-- [ ] Accept the internal PIE-versus-shared-object evidence lattice with unknown,
-  executable-like, shared-object-like, ambiguous, and contradictory states. The
-  implementation and intervening corrections are carried by the current Patch
-  072 candidate without a runtime analyzer change.
-- [ ] Accept bounded private IBT and SHSTK GNU-property evidence without adding
-  public report fields or changing schema `0.2.0`. The corrected implementation
-  is carried by the Patch 072 candidate without a public field change.
-- [ ] Accept the 28-object controlled role/property metamorphic preflight with
-  deterministic state invariance, exact contributor deltas, and four mutants.
-  Corrected through Patch 069 and carried by the Patch 072 candidate.
-- [ ] Accept exact C/NASM private fact-probe layout attestation before admitting
-  the later private-fact diagnostic matrix. Implemented in Patch 067; it attests
-  probe record interpretation rather than analyzer behavior.
-- [x] Deterministic malformed fixtures for Patch 062 PHDR and extended-numbering paths; subsequent Sprint 12 parser paths retain this gate.
-- [x] Patch 068 defined corrections for the remaining Patch 067 corpus mutation
-  and rollback boundaries, rebuilt the private-layout authority after its
-  structure definition changed, and extended leakage checks across all four
-  file-analysis commands. Patch 069 carried and corrected those boundaries;
-  Patch 071 supplied the first evidence-gate correction, and Patch 072 carries
-  the remaining generation, descendant, publication, and duplicate-key
-  corrections. Complete validation remains pending.
-- [x] Patch 068 introduced a private-fact diagnostic agreement gate
-  for 48 held-out natural objects and 48 controlled metamorphic objects, with
-  exact independent vectors and three deterministic probe runs per object. Gate
-  acceptance remains pending.
-- [x] Patch 069 introduced authenticated 96-object matrix and GNU
-  `readelf -hW/-lW/-dW/-nW` reconciliation gates. Patch 070 attempted the next
-  authority and comparator correction but was rejected. Patch 071 corrected the
-  first blocker set; the current Patch 072 candidate carries the remaining
-  tooling correction and advances the external-natural/parity tranche.
-  Complete validation remains pending.
-- [x] Implement outcome-blind acquisition for 48 natural installed-package
-  objects across four source lineages, retaining all object, process, field, and
-  comparator denominators. Patch 072; cloud-validated diagnostic evidence is
-  retained, and complete validation remains pending.
-- [x] Implement same-byte native/container private-fact parity over the
-  authenticated 96-object matrix. Patch 072; retained parity evidence is
-  logic-only, and qualified native/container parity remains pending.
-- [ ] Run the separate comparison-qualification campaign under a new identity,
-  with positive role-controlled coordinate anchors, complete runtime closure for
-  all five task paths, whole-batch timing, and process-tree RSS.
-- [ ] Only then decide whether compatible public `0.2.x` PIE-versus-shared-object
-  or GNU-property indicators are justified.
+- [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
+  containment, and explicit structurally valid extended-numbering unsupported
+  outcomes.
+- [x] Retain original executable-PHDR identity and dense candidate contributor
+  provenance without changing scan, order, count, or capacity semantics.
+- [x] Measure executable overlap and resolve normalization by explicit deferral
+  under maintained reopening thresholds.
+- [x] Implement and validate the private PIE-versus-shared-object evidence
+  lattice with unknown, executable-like, shared-object-like, ambiguous, and
+  contradictory states while keeping `ET_DYN` alone unknown.
+- [x] Implement and validate bounded private IBT/SHSTK GNU-property evidence
+  without adding public fields or changing schema `0.2.0`.
+- [x] Reconcile the C/NASM fact-probe layout and retain the 28-object controlled
+  metamorphic and 96-object natural/metamorphic diagnostic matrices.
+- [x] Reconcile all 1,728 controlled matrix cells against authenticated GNU
+  `readelf -hW/-lW/-dW/-nW` evidence with 1,224 eligible matches, zero eligible
+  mismatches, 96 ambiguous, 288 unavailable, and 120 `not_eligible` cells.
+- [x] Harden complete-or-absent whole-batch transaction behavior without
+  dividing batch time into synthetic single-invocation latency.
+- [x] Implement 48-object outcome-blind external-natural acquisition with exact
+  object/run/field denominators and inode-bound freeze continuity.
+- [x] Define same-byte native/container private-fact parity with exact retained
+  input and result custody, no native-plane ancestor exposure, and environment/
+  build-origin separation.
+- [x] Execute the non-reinterpretive role/property policy gate as `defer`: add
+  zero fields, preserve the existing coarse PIE meaning, and make no runtime-CET
+  claim.
+- [x] Select text-relocation and separate RPATH/RUNPATH evidence as bounded
+  future mitigation tranches without adding unvalidated runtime output.
+- [x] Correct the final Patch 073 delivery topology, late mutation, hardlink,
+  selection-inode, parity membership/mount/publication, tracked-permission, and
+  negative-oracle defects in Patch 074.
+- [ ] Run the separate comparison-qualification campaign under a new identity
+  with positive role-controlled coordinate anchors, complete five-path runtime
+  closure, qualified whole-batch work, and process-tree RSS. This is not a
+  Sprint 12 closeout blocker and remains diagnostic work.
 
 ### Sprint 13: semantic capability completion
 
@@ -697,26 +685,37 @@ or schema file. Its current development gates are:
   environment and 384 paired public tuples.
 
 Natural package source/build-origin and execution-environment effects remain
-separate. Retained cloud evidence covers the acquisition and two same-host
-logic-only parity planes; qualified native/container parity remains pending.
+separate. Retained diagnostic acquisition evidence remains distinct from the two
+same-host logic-only parity planes; qualified native/container parity remains pending.
 These artifacts are diagnostic, unfrozen, and publication-ineligible. Patch 073
 records public-policy deferral and selects the next bounded mitigation tranche;
-Patch 074 owns closeout. Positive coordinate anchors and complete runtime
+Patch 074 closes Sprint 12. Positive coordinate anchors and complete runtime
 closure for all five task paths remain separate qualification gates.
 
-### Sprint 12 Patch 073 implementation update
+### Sprint 12 Patch 073 review and Patch 074 closeout update
 
-- [x] Close the post-fingerprint cleanup substitution boundary with a retained
-  final descriptor and durable adversarial regressions.
-- [x] Reauthenticate frozen external-natural selection and object identities
-  through outcome collection and require retained result planes.
-- [x] Authenticate delivery root, manifest, directory, and file modes and bind
-  file bytes plus metadata to retained descriptors.
-- [x] Isolate the container parity write root from the completed native plane and
-  retain/seal inputs, both planes, comparison, and run manifest.
-- [x] Execute the non-reinterpretive public-policy gate with decision `defer`,
-  zero public fields added, coarse PIE preserved, and no runtime-CET claim.
-- [x] Select text-relocation and distinct RPATH/RUNPATH evidence as the next
-  bounded mitigation tranche without adding untested Patch 073 runtime fields.
-- [ ] Complete fresh native, Docker, corrected parity, delivery, and Lane A
-  acceptance before Patch 074 Sprint 12 closeout.
+Patch 073 executed the public-policy deferral but required a final corrective
+patch. Patch 074 closes the confirmed review findings without modifying runtime
+analyzer, include, or schema files.
+
+- [x] Advance delivery custody to descriptor-retained schema v3 and reject late
+  subtree mutation, hardlinks, symlink ancestors, special files, undeclared
+  topology, root-label drift, and unverified nested-manifest schedules.
+- [x] Treat disappearance of an authenticated cleanup root as failure.
+- [x] Bind external-natural selection to device/inode/type/hash/metadata through
+  every outcome checkpoint.
+- [x] Preserve executable analyzer/probe inputs and exact parity tree membership.
+- [x] Exclude the repository, native plane, and every native-plane ancestor from
+  the container mount set; retain only read-only inputs/heldout plus one empty
+  writable output root.
+- [x] Publish the sealed container plane through the WSL2 path without losing
+  identity or final mode.
+- [x] Replace broad permission normalization with preflighted, rollback-capable,
+  Git-tracked-only normalization.
+- [x] Reject unauthorized public-policy state and wrong-type/duplicate
+  mitigation-gap authorities.
+- [x] Add the machine-readable Sprint 12 closeout authority, ADR 0060, Patch 074
+  validation record, and Sprint 13 handoff.
+- [ ] Accept the closeout only after `make sprint12-p074-acceptance-smoke`,
+  qualified Docker parity, exact delivery rehearsal, and independent Lane A
+  acceptance pass on the same source.

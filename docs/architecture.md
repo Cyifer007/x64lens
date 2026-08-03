@@ -1374,8 +1374,7 @@ validated SONAME string evidence
 duplicate and conflicting carrier evidence
 ```
 
-Patch 069 preserved the corrected seam, and the Patch 072 candidate
-leaves it unchanged, so
+Patch 069 preserved the corrected seam, and Patch 074 leaves it unchanged, so
 `binary_role.asm` consumes only those completed summary facts, including copied
 ELF type and entrypoint, and writes one internal state:
 
@@ -1408,8 +1407,8 @@ deterministic.
 ## Sprint 12 Patch 065 GNU-property evidence seam
 
 Patch 065 inserted `gnu_property.asm`; Patch 069 preserved its corrected
-alignment and overlap boundaries, and the Patch 072 candidate leaves
-them unchanged while retaining the module after bounded program-header
+alignment and overlap boundaries, and Patch 074 leaves them unchanged while
+retaining the module after bounded program-header
 acquisition and before public reporting. The module canonicalizes
 exact duplicate physical note carriers while retaining each original PHDR
 index/type contributor in a bounded command-lifetime context. It parses only
@@ -1562,10 +1561,10 @@ fact probe invokes the same assembly parser modules as x64lens. GNU `readelf`
 remains external comparator evidence. Package source/build-origin and execution
 environment are separate strata; one cannot be inferred from the other.
 
-Retained cloud evidence covers the completed diagnostic acquisition and two
-same-host logic-only parity planes. Evidence for the unchanged runtime paths is
-artifact-backed rather than a fresh build. Qualified native/container parity
-remains pending; none of these evidence classes is publication evidence.
+Retained diagnostic acquisition evidence remains separate from two same-host
+logic-only parity planes. Qualified native/container parity and independent
+acceptance remain pending; none of these evidence classes is publication
+evidence.
 
 The public pipeline remains:
 
@@ -1582,9 +1581,35 @@ read-only mapping
 ```
 
 No external-natural or parity artifact is linked into `build/x64lens`, and no
-private role or property state enters schema `0.2.0`. Patch 073 executes the
-public-policy gate as `defer`: no role/property field is added, the existing
-coarse PIE Boolean is unchanged, and static IBT/SHSTK properties remain evidence
-rather than proof of runtime CET enforcement. The next bounded mitigation work
-is separately gated text-relocation and RPATH/RUNPATH acquisition; it does not
-alter this module graph in Patch 073.
+private role or property state enters schema `0.2.0`. Patch 073 executed the
+public-policy gate as `defer`; Patch 074 preserves zero public fields, the
+existing coarse PIE Boolean, and the distinction between static GNU properties
+and runtime CET enforcement. The next bounded mitigation work is separately
+gated text-relocation and RPATH/RUNPATH acquisition; it does not alter this
+module graph in Patch 074.
+
+
+## Sprint 12 Patch 074 custody and closeout architecture
+
+Patch 074 changes no runtime module boundary. It strengthens the surrounding
+evidence and delivery plane:
+
+```text
+Git-tracked source
+  -> tracked-only transactional mode normalization
+  -> descriptor-retained delivery custody v3
+  -> outcome-blind device/inode/hash-bound natural selection
+  -> read-only parity inputs + held-out tree
+  -> isolated native plane
+  -> one empty container output plane
+  -> exact sealed tree comparison
+  -> deferral-only public-policy authority
+  -> Sprint 12 closeout authority
+```
+
+Delivery custody rejects hardlinks, links, special files, cross-device members,
+undeclared topology, late subtree mutation, and root/ancestor binding changes.
+Parity does not mount the repository, native result, or a covering ancestor into
+the container. These are evidence-integrity properties; they do not change ELF
+parsing, executable-region authority, candidate discovery, exact matching,
+semantic classification, side-cars, scoring, or reporters.

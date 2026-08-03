@@ -135,6 +135,7 @@ required=(
     tools/research-roadmap-consistency-smoke.py
     tools/sprint10-closeout-smoke.py
     tools/sprint11-closeout-smoke.py
+    tools/sprint12-closeout-smoke.py
     tools/verify-checksum-manifest.py
     tools/checksum-manifest-path-smoke.py
     tests/internal/memory-effect-reconciliation.asm
@@ -158,6 +159,7 @@ required=(
     tests/expected/research-stage-gates.json
     tests/expected/sprint10-closeout.json
     tests/expected/sprint11-closeout.json
+    tests/expected/sprint12-closeout.json
     tests/expected/decoder-gap-controlled.json
     tests/toy-src/gadgets_sprint10.S
     tests/toy-src/gadgets_sprint10_transfer.S
@@ -213,8 +215,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -Eq '^(Next|Active)' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the next or active loader/mitigation sprint'
+grep -q '^Closed by Patch 074' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked closed by Patch 074'
+grep -q '^Active semantic capability completion sprint' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked active'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -239,6 +243,12 @@ grep -q 'sprint-11-patch-061-validation.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link Patch 061 validation'
 grep -q 'sprint-11-retro.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link the retrospective'
+grep -q 'Patch 074' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not record the Patch 074 closeout boundary'
+grep -q 'sprint-12-patch-074-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 074 validation'
+grep -q 'ADR 0060' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link the closeout ADR'
 grep -q 'sprint11-below-floor-policy-smoke' docs/sprints/sprint-11-patch-061-validation.md \
     || fail 'Patch 061 validation does not name the below-floor policy gate'
 grep -q 'ADR 0040' docs/sprints/sprint-10-plan.md \
@@ -429,8 +439,10 @@ grep -q '^sprint10-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint10-closeout-smoke'
 grep -q '^sprint11-closeout-smoke:' Makefile \
     || fail 'Makefile does not define sprint11-closeout-smoke'
+grep -q '^sprint12-closeout-smoke:' Makefile \
+    || fail 'Makefile does not define sprint12-closeout-smoke'
 validation_line="$(grep '^validation-smoke:' Makefile || true)"
-for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
+for target in public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke json-effect-consistency-smoke capacity-smoke malformed-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke; do
     [[ "$validation_line" == *"$target"* ]] \
         || fail "validation-smoke does not include required target: $target"
 done
@@ -438,6 +450,7 @@ done
 python3 tools/research-roadmap-consistency-smoke.py >/dev/null
 python3 tools/sprint10-closeout-smoke.py >/dev/null
 python3 tools/sprint11-closeout-smoke.py >/dev/null
+python3 tools/sprint12-closeout-smoke.py >/dev/null
 
-printf 'planning-docs-check: ok plans=%d forward_plans=%d closed_sprints=11 active_sprint=12\n' \
+printf 'planning-docs-check: ok plans=%d forward_plans=%d closed_sprints=12 active_sprint=13\n' \
     "$plan_count" "$forward_count"

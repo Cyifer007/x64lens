@@ -5,11 +5,11 @@
 Historical corrective implementation-candidate validation plan. Patch 067
 required Patch 068, which subsequently required Patch 069 and Patch 070. Patch
 070 was rejected after acceptance validation. Patch 071 required further
-correction and is superseded by Patch 072. The
+correction, and Patch 072's returned review rejected current acceptance. The
 [Patch 068 plan](sprint-12-patch-068-validation.md) and
 [Patch 069 plan](sprint-12-patch-069-validation.md) preserve the intervening
 historical boundaries; current expectations are recorded in the
-[Patch 072 validation record](sprint-12-patch-072-validation.md). The
+[Patch 073 validation record](sprint-12-patch-073-validation.md). The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
 historical boundary. The
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
@@ -22,8 +22,9 @@ development-only private fact-probe layout attestation. Subsequent validation
 found remaining transaction and oracle gaps assigned to Patch 068; Patch 069
 then corrected the remaining Patch 068 corpus and matrix custody defects, and
 Patch 070 attempted the next development-evidence correction but was rejected.
-Patch 071 corrected the first blocker set; Patch 072 carries the remaining
-correction and private acquisition/parity work. Patch 067 changes no public CLI,
+Patch 071 corrected the first blocker set; Patch 072 carried the remaining
+correction and private acquisition/parity work, and Patch 073 closes the
+reported custody/isolation defects. Patch 067 changes no public CLI,
 JSON field, schema version, candidate
 metric, semantic class, score, or runtime dependency.
 

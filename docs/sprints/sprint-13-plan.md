@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned semantic capability completion sprint.
+Active semantic capability completion sprint after Sprint 12 Patch 074 closeout.
 
 ## Sprint goal
 

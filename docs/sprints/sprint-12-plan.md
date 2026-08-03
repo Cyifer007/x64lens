@@ -2,300 +2,118 @@
 
 ## Status
 
-Active loader and mitigation precision sprint after Sprint 11 Patch 061
-closeout. Patches 064 through 072 required corrective follow-up. Patch 073 is
-the current implementation candidate. It closes the confirmed Patch 072
-cleanup, immutable-selection, delivery-custody, retained-evidence, and parity-
-isolation defects, executes the non-reinterpretive public-policy gate as an
-explicit deferral, and selects the next bounded mitigation metadata tranche.
+Closed by Patch 074. Sprint 13 is active after the complete Patch 074 native,
+Docker, retained external-natural, corrected parity, delivery, and independent
+acceptance gates pass.
 
-Related implementation records:
+Patches 062 through 074 established ordinary PHDR validity and explicit
+extended-numbering outcomes, retained executable-overlap provenance, private
+PIE/DSO and GNU-property evidence, authenticated natural and controlled strata,
+external reconciliation, corrected environment parity, a non-reinterpretive
+public-policy deferral, and final evidence-custody closure. Public schema
+`0.2.0` remains unchanged.
+
+Related closeout records:
 
 - [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
-- [Patch 062 validation](sprint-12-patch-062-validation.md)
 - [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md)
-- [Patch 063 validation](sprint-12-patch-063-validation.md)
 - [ADR 0050](../adr/0050-fact-first-binary-role-lattice.md)
-- [Patch 064 validation](sprint-12-patch-064-validation.md)
 - [ADR 0051](../adr/0051-bounded-private-gnu-property-evidence.md)
-- [Patch 065 validation](sprint-12-patch-065-validation.md)
 - [ADR 0052](../adr/0052-role-property-metamorphic-preflight.md)
-- [Patch 066 validation](sprint-12-patch-066-validation.md)
 - [ADR 0053](../adr/0053-corpus-custody-and-private-layout-attestation.md)
-- [Patch 067 validation](sprint-12-patch-067-validation.md)
 - [ADR 0054](../adr/0054-private-role-property-diagnostic-matrix.md)
-- [Patch 068 validation](sprint-12-patch-068-validation.md)
 - [ADR 0055](../adr/0055-authenticated-role-property-readelf-reconciliation.md)
-- [Patch 069 validation](sprint-12-patch-069-validation.md)
 - [ADR 0056](../adr/0056-whole-batch-transaction-and-external-evidence-custody.md)
-- [Patch 070 validation](sprint-12-patch-070-validation.md)
 - [ADR 0057](../adr/0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md)
-- [Patch 071 validation](sprint-12-patch-071-validation.md)
 - [ADR 0058](../adr/0058-outcome-blind-external-natural-acquisition-and-environment-parity.md)
-- [Patch 072 validation](sprint-12-patch-072-validation.md)
 - [ADR 0059](../adr/0059-patch072-correction-and-non-reinterpretive-public-policy-deferral.md)
-- [Patch 073 validation](sprint-12-patch-073-validation.md)
+- [ADR 0060](../adr/0060-patch073-correction-and-sprint12-closeout.md)
+- [Patch 074 validation](sprint-12-patch-074-validation.md)
 
 ## Sprint goal
 
 Resolve loader-identity, executable-region, and mitigation-evidence ambiguities
 that would otherwise corrupt corpus labels or defensive triage.
 
-## Entry order from Sprint 11 diagnostics
+## Completed deliverables
 
-1. Validate program-header ranges, alignment, congruence, entrypoint behavior, and explicit extended-numbering outcomes.
-2. Retain original PHDR identity and dense candidate-contributor provenance without changing scan or count policy.
-3. Measure overlap incidence and redundant scan work, then decide whether executable-byte-union normalization should proceed.
-4. Add bounded internal PIE-versus-shared-object evidence without changing the public PIE indicator.
-5. Parse bounded GNU property notes for x86 IBT and SHSTK indicators.
-6. Correct the Patch 067 corpus mutation and rollback boundaries, rebuild the
-   private-layout authority from its structure definition, and extend leakage
-   checks across all four file-analysis commands.
-7. Add a 96-object private-fact diagnostic agreement gate under a new identity:
-   48 held-out natural objects plus 48 controlled metamorphic objects.
-8. Reconcile the private facts against bounded external ELF evidence
-   (`readelf -hW/-lW/-dW/-nW`). Patch 069.
-9. Review Patch 070 and correct its initial nested cleanup, batch oracle,
-   streaming output-limit, and delivery-custody blockers. Patch 071.
-10. Implement the remaining Patch 071 correction, outcome-blind external-
-    natural acquisition, and the initial same-byte parity protocol. Patch 072;
-    review required a narrower correction.
-11. Correct post-fingerprint cleanup, immutable selection, descriptor-bound
-    delivery custody, retained plane isolation, and delivery completeness; then
-    execute the non-reinterpretive public-policy gate. Patch 073 records
-    `defer` and selects text-relocation plus RPATH/RUNPATH evidence as the next
-    bounded mitigation tranche.
-12. Close Sprint 12 and hand off to Sprint 13. Patch 074.
-
-## Planned deliverables
-
-- [x] Validate `p_align`, offset/virtual congruence, virtual ranges, and executable-entrypoint states. Patch 062.
-- [x] Detect ELF extended-numbering cases and return a bounded stable unsupported outcome after structural validation. Patch 062.
-- [x] Retain original PHDR identity and dense same-slope candidate-contributor provenance without changing scan/count behavior. Patch 063.
-- [x] Measure executable-overlap incidence and redundant scan work, then record the diagnostic decision to defer executable-byte-union normalization. Patch 064.
-- [ ] If normalization is selected, define deduplication and public count semantics while preserving Patch 063 contributor provenance.
-- [ ] Accept an internal role-evidence lattice that keeps `ET_DYN` alone unknown
-  and preserves unknown, executable-like, shared-object-like, ambiguous, and
-  contradictory states. The Patch 064 design is carried by the current
-  Patch 072 candidate without a runtime analyzer change.
-- [ ] Accept bounded private GNU property-note evidence for x86 IBT and SHSTK
-  without adding public report fields or changing schema `0.2.0`. Corrected in
-  Patch 069 and carried unchanged by the Patch 072 candidate.
-- [x] Extend deterministic malformed-input coverage for the Patch 062 PHDR and extended-numbering paths; later Sprint 12 parsers must add their own fixtures.
-- [x] Patch 068 introduced a 96-object private-fact diagnostic agreement gate
-  under a distinct identity. Patch 069 authenticated and corrected it while
-  keeping the 48 held-out natural objects separate from the 48 controlled
-  metamorphic objects. Patch 070 attempted the next evidence-gate correction but
-  was rejected; Patch 071 corrected its first blocker set but required the
-  narrower Patch 072 corrective prerequisite. Patch 072 review reproduced
-  further evidence and custody defects; Patch 073 carries their correction.
-- [x] Reconcile eligible private facts against authenticated GNU
-  `readelf -hW/-lW/-dW/-nW` evidence while retaining ambiguous, unavailable,
-  and `not_eligible` cells. Patch 069.
-- [x] Add the initial 27-case, 81-execution whole-batch transaction pilot while
-  retaining the batch as the measurement unit. Patch 070; acceptance rejected.
-- [x] Implement the Patch 072 version-3 batch authority, generation-aware
-  cleanup, descendant/deadline handling, explicit publication transitions,
-  strict duplicate-key parsing, and exact delivery custody. Patch 073 corrects
-  the remaining post-fingerprint and descriptor-bound custody boundaries.
-- [x] Implement outcome-blind acquisition for 48 external natural objects over
-  four source lineages with all object/run denominators and raw evidence
-  retained. Patch 073 makes selection and object identities immutable through
-  every outcome checkpoint and requires a retained result.
-- [x] Implement the same-byte 96-object native/container private-fact parity
-  protocol with 5,184 private fields per environment and 384 paired public
-  tuples. Patch 073 removes native-plane write exposure and requires both planes
-  plus the comparison to be retained and sealed; a fresh Docker-capable rerun
-  remains pending.
-- [x] Execute the non-reinterpretive public-policy review. Patch 073 records
-  `defer`, adds zero public fields, preserves the coarse `mitigations.pie`
-  meaning, and makes no runtime-CET claim.
-- [x] Select the next bounded mitigation metadata tranche: text-relocation and
-  separate validated RPATH/RUNPATH indicators. Runtime implementation remains a
-  later fixture- and schema-gated patch.
+- [x] Validate `p_align`, offset/virtual congruence, virtual ranges, executable
+  entrypoint containment, and structurally validated extended-numbering
+  unsupported outcomes.
+- [x] Preserve original executable-PHDR identity and dense per-candidate
+  contributor provenance while retaining current scan, order, count, and
+  capacity semantics.
+- [x] Measure executable overlap and defer normalization under explicit reopening
+  thresholds. No current target recovered capacity or changed an outcome.
+- [x] Implement a private fact-first role lattice that keeps `ET_DYN` alone
+  unknown and preserves executable-like, shared-object-like, ambiguous, and
+  contradictory states.
+- [x] Implement bounded private GNU-property IBT/SHSTK evidence with canonical
+  physical views, original contributors, explicit unknown/absent/present/
+  contradictory states, and malformed/cap fail-closed behavior.
+- [x] Attest the C/NASM private fact-probe layout and retain separate natural and
+  controlled metamorphic evidence strata.
+- [x] Reconcile the authenticated 96-object matrix against exact GNU
+  `readelf -hW/-lW/-dW/-nW` evidence with direct/derived/ambiguous/unavailable
+  authority classes and separate eligibility denominators.
+- [x] Add and harden the whole-batch transaction pilot without dividing batch
+  time into synthetic per-invocation latency.
+- [x] Freeze and reauthenticate a 48-object outcome-blind external-natural
+  package stratum before and through analyzer, probe, and `readelf` outcomes.
+- [x] Define corrected same-byte native/container private-fact parity with exact
+  input and result custody, no native-plane exposure, retained planes, and
+  explicit environment/build-origin separation.
+- [x] Execute the public-policy gate as `defer`: add zero role/property fields,
+  preserve the coarse `mitigations.pie` meaning, and make no runtime-CET claim.
+- [x] Select text-relocation and separate RPATH/RUNPATH evidence as bounded
+  future mitigation tranches without adding unvalidated runtime output.
+- [x] Correct final custody, hardlink, late-subtree, selection-inode, parity
+  membership/publication, tracked-permission, and negative-oracle defects in
+  Patch 074.
 
 ## Patch sequence
 
-1. **Patch 062:** shared ordinary PHDR validity, explicit extended-numbering unsupported/malformed outcomes, and Patch 061 transaction corrections.
-2. **Patch 063:** Patch 062 corrective hardening plus original-PHDR and dense contributor provenance; scan normalization remains deferred.
-3. **Patch 064:** intermediate source that did not pass validation, containing Patch 063 corrective hardening, a measured decision to defer normalization, and an internal-only role-evidence lattice with public output unchanged.
-4. **Patch 065:** intermediate candidate that required correction, carrying the Patch 064 corrections plus bounded private GNU-property IBT/SHSTK facts with canonical carrier views and contributor provenance.
-5. **Patch 066:** controlled 28-object role/property metamorphic preflight, with no new public report field or schema change; review required further correction.
-6. **Patch 067:** corpus-custody correction plus a recursive public-JSON
-   private-key oracle, ABI canary, and C/NASM fact-probe layout attestation.
-7. **Patch 068:** remaining Patch 067 transaction/oracle correction plus a
-   private-fact diagnostic agreement gate for 48 held-out natural objects and 48
-   controlled metamorphic objects.
-8. **Patch 069:** remaining Patch 068 corpus/matrix custody correction plus authenticated 96-object GNU `readelf` field reconciliation.
-9. **Patch 070:** initial evidence-custody correction and transaction pilot;
-   rejected after acceptance validation found cleanup, oracle, output-cap, and
-   delivery defects.
-10. **Patch 071:** first corrective patch for the confirmed Patch 070 blockers;
-    no runtime analyzer or schema field changes.
-11. **Patch 072:** remaining Patch 071 tooling correction plus outcome-blind
-    external-natural acquisition and same-byte native/container private-fact
-    parity.
-12. **Patch 073:** remaining Patch 072 correction, retained and isolated
-    parity protocol, non-reinterpretive public-policy deferral, and bounded
-    mitigation gap authority.
-13. **Patch 074:** Sprint 12 closeout and Sprint 13 handoff.
-14. **Conditional:** reopen executable-byte-union normalization only when the
-    recorded activation thresholds are crossed.
+1. **Patch 062:** ordinary PHDR validity and explicit extended-numbering
+   outcomes.
+2. **Patch 063:** original executable-PHDR and candidate-contributor provenance.
+3. **Patch 064:** measured overlap-normalization deferral and internal role
+   evidence.
+4. **Patch 065:** bounded private GNU-property evidence.
+5. **Patch 066:** controlled 28-object role/property metamorphic preflight.
+6. **Patch 067:** corpus custody and private fact-probe layout attestation.
+7. **Patch 068:** 48-natural plus 48-metamorphic private-fact matrix.
+8. **Patch 069:** authenticated field-scoped GNU `readelf` reconciliation.
+9. **Patch 070:** first evidence-custody and whole-batch transaction candidate;
+   review required correction.
+10. **Patch 071:** first cleanup, batch authority, streaming-limit, and delivery
+    correction.
+11. **Patch 072:** remaining correction plus external-natural acquisition and
+    initial parity protocol; review required correction.
+12. **Patch 073:** policy deferral and first parity/custody correction; review
+    required the final closeout correction.
+13. **Patch 074:** final custody, parity, permission, authority, documentation,
+    and Sprint 12 closeout correction.
 
-## Acceptance criteria
+## Closeout disposition
 
-- [x] Program headers remain executable authority.
-- [x] Patch 062 reads section-header entry zero only through bounded fixed-size validation; later tables retain the same requirement.
-- [ ] The Patch 073 candidate's preserved internal PIE-versus-shared-object lattice passes
-  controlled unknown, executable-like, shared-object-like, ambiguous,
-  contradictory, duplicate, malformed, and unsupported cases.
-- [ ] The Patch 073 candidate's preserved private IBT and SHSTK facts pass controlled
-  positive, negative, contradictory, truncated, duplicate, overlap, cap, and
-  unknown-property cases.
-- [x] Overlap contributors are retained internally without changing current counts. Patch 063.
-- [x] A measured decision records that executable-byte-union normalization remains deferred under explicit reopening thresholds. Patch 064.
-- [ ] If selected, the normalization policy prevents silent duplicate scan/count behavior and preserves contributing-PHDR evidence.
-- [ ] Positive role-controlled anchors establish address-coordinate calibration.
-- [ ] All five task paths have complete runtime-closure evidence.
-- [ ] Comparison qualification is withheld unless both calibration and closure
-  gates pass.
-- [ ] The same 96 object, analyzer, probe, and schema bytes produce 5,184
-  private-field agreements per native/container environment and 384 paired
-  public command tuples under the corrected write-isolated retained protocol.
-- [x] Public policy is decided without reinterpreting existing fields: decision
-  `defer`, public fields added zero, existing coarse PIE preserved, and runtime
-  CET enforcement not claimed.
-- [ ] Diagnostic measurements are versioned separately after behavior changes.
-- [ ] The private-fact matrix of 48 held-out natural objects and 48 controlled
-  metamorphic objects remains diagnostic, unfrozen, and publication-ineligible.
+```text
+program-header executable authority: preserved
+extended numbering:                  explicit malformed/unsupported behavior
+overlap normalization:               deferred under measured threshold
+private PIE/DSO lattice:             retained
+private IBT/SHSTK facts:             retained; static only
+public role/property fields:         deferred; zero added
+schema version:                       0.2.0 unchanged
+candidate capacity:                   4096 unchanged
+reference runtime:                    dependency-free, decoder-free, one worker
+external-natural evidence:            diagnostic and publication-ineligible
+performance/coverage claims:          not authorized
+```
 
 ## Handoff
 
-Sprint 13 completes the release-facing semantic surface using the corrected
-loader and mitigation facts.
-
-
-## Patch 066 boundary
-
-Patch 066 corrects Patch 065 acceptance defects and adds the 28-object private
-role/property metamorphic preflight. It adds no public role, IBT, or SHSTK field,
-does not change schema `0.2.0`, and does not complete the later private-fact
-matrix or public-policy gates.
-
-
-## Patch 067 boundary
-
-Patch 067 adds no public role or property field and does not widen the corpus. It
-introduces corpus-custody and oracle corrections, then attests every
-private fact-probe offset and size through a NASM-emitted descriptor and an
-independent C contract. That reconciliation covers probe record interpretation,
-not analyzer behavior. Patch 068 addressed the remaining custody boundary and added
-the separate natural/metamorphic diagnostic matrix.
-
-
-## Patch 068 boundary
-
-At its source boundary, Patch 068 added no public role or GNU-property field. Its
-contract addressed the remaining Patch 067 corpus mutation and rollback
-boundaries, rebuilt the private-layout authority from its structure definition,
-extended private-field leakage checks across all four file-analysis commands,
-and added a matrix for 48 held-out natural objects plus 48 controlled metamorphic
-objects. Patch 068 required Patch 069 correction. The matrix remains diagnostic,
-unfrozen, and publication-ineligible. At the Patch 068 boundary, bounded
-external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`) was a separate future
-gate; Patch 069 added that reconciliation. Native/container private-fact
-parity and public-policy review remain separate later gates.
-
-
-## Patch 069 boundary
-
-Patch 069 added no public role or GNU-property field. It corrected the remaining
-Patch 068 corpus semantic-custody, signal rollback, directory-identity, matrix
-authority, private-leakage, retained-vector, edge-layout, and incremental-build
-oracles. It then reconciled the authenticated matrix against exact GNU
-`readelf -hW/-lW/-dW/-nW` evidence with field-specific eligibility rules.
-
-The reconciliation remains diagnostic, unfrozen, and publication-ineligible.
-`readelf` remains external evidence rather than runtime authority. Native/
-container private-fact parity and public-policy review remain separate gates.
-Patch 069 required the further Patch 070 evidence-gate correction.
-
-## Patch 070 boundary
-
-Patch 070 addressed the remaining Patch 069 corpus, comparator, leak-oracle,
-authority, and Make prerequisite defects. It fixed the complete 1,728-cell
-disposition accounting at
-1,224 eligible matches, zero eligible mismatches, 96 ambiguous, 288 unavailable,
-and 120 `not_eligible`; the last three categories remained outside the eligible
-denominator. It also added the 27-case, 81-execution whole-batch transaction
-pilot. The pilot was intended as a prerequisite for later below-floor throughput
-measurement; it did not authorize divided latency or public role/property fields.
-Patch 070 acceptance was rejected; Patch 071 corrected the first confirmed
-cleanup, batch-authority, streaming-limit, and delivery-custody blockers, then
-Patch 072 carried the remaining narrower evidence-plane corrections.
-
-
-## Patch 071 boundary
-
-Patch 071 changes no runtime analyzer, include, or schema file. It preserves the
-valid Patch 070 role/property, comparator, prerequisite, and transaction intent
-while replacing unsafe nested cleanup, count-only case authority, post-hoc
-output limits, and open delivery custody. Cleanup remains destructive rather
-than rollback-transactional, and delivery manifests authenticate regular files
-plus implied-directory membership rather than directory modes. External-natural
-acquisition, public policy, and Sprint 12 closeout remain Patches 072 through
-074.
-
-
-## Patch 072 boundary
-
-Patch 072 changes no runtime analyzer, include, or schema file. It supersedes
-the Patch 071 validation authority with a version-3 owned-root identity
-and batch authority, strict duplicate-key parsing, complete process-tree and
-publication-transition regressions, and exact delivery membership.
-
-The external-natural stratum is selected after package, path, mode, and ELF
-eligibility checks and before any x64lens, private fact-probe, or GNU `readelf`
-outcome is consumed. It spans four installed source lineages, twelve objects per
-lineage, with seven executable and five shared-library paths. It retains 48
-object identities, 144 private probe processes, 2,592 private run-field records,
-864 object-field summaries, 192 public commands, 192 exact `readelf` processes,
-and 864 field dispositions. Ambiguous and unavailable fields remain outside the
-eligible denominator.
-
-Environment parity is a separate same-byte gate over the authenticated
-96-object held-out matrix. Each native/container plane retains 288 probe
-processes, 5,184 private field cells, and 384 public command closures. The
-comparison requires 10,368 combined private cells, 288 paired probe results,
-768 public closures, and 384 path-normalized public tuples with zero mismatch.
-This does not mix package source/build-origin effects with environment effects.
-
-Patch 072 remained diagnostic, unfrozen, and publication-ineligible. Review
-confirmed post-fingerprint cleanup, mutable selection, delivery-mode/path,
-parity-isolation, and evidence-retention defects. Patch 073 corrects those
-boundaries and executes the public-policy decision as an explicit deferral.
-
-
-## Patch 073 boundary
-
-Patch 073 changes no runtime analyzer, include, or public schema file. It keeps
-program headers as executable authority and preserves all private role/property
-facts. Cleanup adds the final descriptor-bound recheck after the controlled
-mutation seam; delivery custody v2 authenticates root, manifest, directory, and
-file modes and binds file bytes plus pathname identity; external-natural
-selection is reauthenticated throughout outcome acquisition; and the container
-can write only its dedicated empty result root. Both parity planes and their
-comparison are retained and sealed.
-
-The non-reinterpretive policy authority authenticates the current schema and
-reporters and records `decision: defer`. No new role-derived PIE/DSO, IBT, or
-SHSTK field or label is admitted, and the existing `mitigations.pie` Boolean is
-not redefined. Static GNU properties remain distinct from runtime CET
-enforcement.
-
-The competitive mitigation gap authority selects `DT_TEXTREL`/`DF_TEXTREL` and
-separate validated `DT_RPATH`/`DT_RUNPATH` evidence as the next bounded tranche.
-It adds no Patch 073 runtime field because those families still require checked
-parser facts, hostile fixtures, external reconciliation, and schema review.
-Patch 074 may close Sprint 12 only after fresh native, Docker, corrected parity,
-delivery, and independent Lane A acceptance evidence is reconciled.
+Sprint 13 owns generic exact-pop semantics, the Linux syscall `r10` role,
+release-facing score/null policy, and only bounded family additions supported by
+measured task value. Any changed task definition receives a new diagnostic
+campaign identity. Sprint 14 remains the optional decoder/concurrency ablation
+stage, and Sprint 15 remains the confirmatory campaign freeze.

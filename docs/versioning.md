@@ -13,28 +13,21 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-The current Patch 072 implementation candidate retains tool version
-`0.1.0-dev` and schema `0.2.0`; no release tag moves.
-Sprint 11 is complete, and Sprint 12 is the active loader and mitigation
-precision sprint. The Sprint 11 partial-tool checkpoint and later all-tools
-diagnostic replay remain diagnostic, unfrozen, and publication-ineligible. They
-have no release authority and remain separate from the preregistered Patch 061
-campaign boundary. Patch 064 records a bounded diagnostic overlap decision and an internal-only
-role-evidence lattice. Patch 065 carried the role corrections and introduced
-private GNU-property facts. Patch 066 added the controlled metamorphic
-preflight. Patch 067 introduced corpus-custody and oracle corrections plus
-private C/NASM fact-probe layout attestation. Patch 068 added the separate
-natural/metamorphic diagnostic gate, and Patch 069 added authenticated
-field-scoped GNU `readelf` reconciliation. Patch 070 attempted the first
-remaining evidence-custody and whole-batch correction but was rejected. Patch
-071 corrected its first blocker set; review required the remaining cleanup,
-process-tree, authority, publication-transition, and delivery-completeness
-correction now carried by Patch 072. Patch 072 also adds private outcome-blind
-external-natural acquisition and same-byte environment parity. It changes no
-runtime analyzer field, schema field, or release tag. Retained cloud evidence
-covers the diagnostic acquisition and same-host logic-only parity; qualified
-native/container parity remains pending. Measurements after Patch 072 require a
-distinct diagnostic campaign identity and remain separate from Sprint 11 rows.
+Patch 074 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprints 1 through 12 are complete, and Sprint 13 is active as the
+semantic capability completion sprint.
+
+Sprint 12’s internal role/property and GNU-property evidence remains private and
+diagnostic. The public-policy authority records `defer`, adds zero fields,
+preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
+Patch 074 changes no tracked runtime analyzer, include, or schema path. It closes
+the final Patch 073 custody, parity isolation/membership/publication, selection-
+inode, tracked-permission, and strict-authority defects while preserving the
+same reference profile and exact candidate-capacity behavior.
+
+Measurements after Patch 074 require a distinct diagnostic campaign identity
+and remain separate from Sprint 11 rows. The confirmatory corpus and method do
+not freeze until Sprint 15.
 
 ## Release sequence
 
@@ -166,4 +159,15 @@ role/property decision remain later, separately identified patches: Patch 072
 performs outcome-blind external-natural acquisition and native/container
 private-fact parity, Patch 073 executes the non-reinterpretive public-policy gate
 as an explicit deferral without changing tool or schema version, and Patch 074
-closes Sprint 12 and hands off to Sprint 13.
+closes the final custody/parity findings, closes Sprint 12, and activates Sprint
+13 without moving either version.
+
+
+## Sprint 12 Patch 074 version state
+
+Patch 074 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
+fields, and the `v0.1.0-dev` checkpoint tag. Delivery custody version 3, retained
+selection/parity authorities, tracked-only permission normalization, and the
+Sprint 12 closeout authority are development and validation contracts, not
+product or schema versions. Sprint 13 begins without a release tag or campaign
+freeze.

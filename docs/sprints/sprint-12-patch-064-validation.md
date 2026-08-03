@@ -16,8 +16,9 @@ next historical candidate boundary, and the
 next historical candidate boundary. Patch 070 was rejected after acceptance
 validation; its
 [validation record](sprint-12-patch-070-validation.md) preserves that boundary.
-The current corrective candidate is covered by the
-[Patch 072 validation record](sprint-12-patch-072-validation.md); the
+Patch 072's returned review rejected current acceptance. The current corrective
+candidate is covered by the
+[Patch 073 validation record](sprint-12-patch-073-validation.md); the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves the
 first corrective boundary.
 
@@ -60,7 +61,7 @@ evidence. A raw SONAME tag or index is insufficient until it resolves to a
 bounded, nonempty, in-range, NUL-terminated string. `ET_DYN` alone remains
 unknown. The current public PIE indicator and schema `0.2.0` remain unchanged.
 Patch 069 carried these facts forward with the intervening corrections and the
-separate bounded GNU-property IBT/SHSTK gate; the current Patch 072 candidate
+separate bounded GNU-property IBT/SHSTK gate; the current Patch 073 candidate
 leaves the runtime facts unchanged.
 
 ## Focused validation
@@ -147,7 +148,7 @@ worker profile:           one-worker reference unchanged
 
 - The internal role state is not a public PIE/DSO conclusion.
 - GNU-property IBT/SHSTK evidence was carried by Patch 069 and remains unchanged
-  in the current Patch 072 candidate; this historical Patch 064 source did not
+  in the current Patch 073 candidate; this historical Patch 064 source did not
   include it.
 - The overlap incidence measurement is one diagnostic corpus plus one system
   snapshot, not a population-wide estimate.

@@ -414,6 +414,18 @@ Package source/build-origin evidence and environment evidence remain separate.
 Neither class changes raw, exact-suffix, semantic-exact, unknown, future
 decoder-backed, or scored candidate provenance.
 
-Retained cloud parity evidence contains two same-host logic-only planes;
-qualified native/container parity remains pending. Both provenance classes are
+The Patch 074 protocol preserves both same-byte native/container planes and the
+comparison with exact tree custody and no native-plane mount exposure. Qualified
+Docker execution remains an acceptance gate. Both provenance classes remain
 diagnostic, unfrozen, and publication-ineligible.
+
+
+## Sprint 12 Patch 074 custody provenance
+
+Patch 074 adds no candidate provenance tier. It strengthens custody around
+private metadata evidence by retaining descriptor and inode identity through
+selection and delivery closure, rejecting hardlink topology and late mutation,
+and preserving exact native/container plane membership. These facts establish
+which bytes and tree objects were observed; they do not convert private
+role/property agreement into public report fields, runtime CET evidence, or a
+publication dataset.

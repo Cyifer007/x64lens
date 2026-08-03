@@ -6,7 +6,7 @@
   "policy_style": "non-reinterpretive",
   "schema_version": "0.2.0",
   "decision": "defer",
-  "decision_reason": "Corrected isolated native/container parity requires a fresh retained WSL2 rerun, and build-origin, consumer-task-value, and compatibility gates remain open.",
+  "decision_reason": "The corrected isolated parity and evidence-custody protocol requires the Patch 074 native/Docker acceptance rerun, while build-origin, consumer-task-value, and schema-compatibility gates remain open.",
   "existing_public_surface": {
     "coarse_pie_field": "mitigations.pie",
     "coarse_pie_meaning": "Existing ET_DYN-based indicator; unchanged by this decision.",
@@ -64,8 +64,8 @@
     {
       "id": "isolated-native-container-private-fact-parity",
       "required_for_authorization": true,
-      "status": "pending_local_rerun",
-      "evidence": "The harness now isolates the container write plane and retains both planes, but cloud Docker is unavailable and prior nominal parity did not establish isolation."
+      "status": "pending_patch074_local_acceptance",
+      "evidence": "Patch 074 removes native-plane ancestor exposure, preserves executable inputs, retains exact tree membership, and requires a fresh WSL2 Docker acceptance run."
     },
     {
       "id": "build-origin-separation",
@@ -106,6 +106,6 @@
     "add_public_ibt_field": false,
     "add_public_shstk_field": false,
     "claim_runtime_cet_enforcement": false,
-    "next_owner": "post-Patch-073 evidence gate after corrected parity and task-value evidence"
+    "next_owner": "post-Sprint-12 evidence gate; reopen only after corrected accepted parity, task-value, and compatibility evidence"
   }
 }

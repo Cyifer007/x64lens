@@ -856,3 +856,19 @@ source-lineage effects are not attributed from that gate. Public command tuples
 are compared after target-path normalization while raw output remains retained.
 This parity evidence is a correctness condition, not a performance or resource
 comparison.
+
+## Patch 074 closeout evidence boundary
+
+Patch 074 strengthens custody and parity qualification without creating a new
+benchmark result. External-natural selection is device/inode/hash bound through
+all outcome checkpoints. Native/container parity preserves executable input
+modes, exact tree membership, nested checksum authorities, and a container
+mount set limited to read-only inputs, read-only held-out objects, and one empty
+writable output root. The repository, native result plane, and any ancestor
+covering that plane are excluded.
+
+These corrections qualify which bytes and evidence trees were measured. They do
+not resolve below-floor x64lens latency, provide process-tree RSS, create
+positive coordinate anchors, establish mitigation prevalence, or promote a
+Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Any changed
+semantic task in Sprint 13 receives a new diagnostic campaign identity.

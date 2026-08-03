@@ -436,8 +436,8 @@ def remove(path: Path, expected: RootIdentity) -> None:
     try:
         try:
             metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-        except FileNotFoundError:
-            return
+        except FileNotFoundError as exc:
+            raise CleanupError("owned path disappeared before cleanup") from exc
         require(stat.S_ISDIR(metadata.st_mode), "owned path became non-directory")
         root_fd = os.open(
             name,

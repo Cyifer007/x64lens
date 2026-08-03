@@ -79,9 +79,8 @@ must compare the same analyzed target.
 ## Acceptance criteria
 
 - `make validation-smoke` exits 0.
-- Docker validation exits 0, or any first Docker failure is isolated to an
-environment-specific Docker metadata write restriction and an unsandboxed rerun
-passes.
+- Docker validation exits 0. A metadata write restriction is an environment
+  block until the same target succeeds in a qualified writable environment.
 - Direct `checksec` and `rabin2` helpers no longer false-pass when arguments are
 reversed.
 - `make benchmark-integrity-smoke` directly exercises non-finite wall-time and

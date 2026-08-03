@@ -19,7 +19,7 @@ import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_ID = "x64lens-sprint12-role-property-public-policy-result-v1"
+SCHEMA_ID = "x64lens-sprint12-role-property-public-policy-result-v2"
 
 
 class PolicyError(RuntimeError):
@@ -84,7 +84,10 @@ def require_authority(value: Any) -> dict[str, Any]:
             "public-policy evidence boundary changed")
     require(value["policy_style"] == "non-reinterpretive" and value["schema_version"] == "0.2.0",
             "public-policy compatibility boundary changed")
-    require(value["decision"] in {"defer", "authorize"}, "unsupported public-policy decision")
+    require(value["decision"] == "defer",
+            "public-policy authority v1 is deferral-only; authorization requires a new reviewed authority")
+    require(isinstance(value["decision_reason"], str) and value["decision_reason"],
+            "public-policy decision reason is invalid")
 
     surface = value["existing_public_surface"]
     require(isinstance(surface, dict) and set(surface) == {
@@ -100,7 +103,8 @@ def require_authority(value: Any) -> dict[str, Any]:
 
     source_identity = value["source_identity"]
     require(isinstance(source_identity, dict) and source_identity, "missing public-policy source identity")
-    require(all(isinstance(path, str) and isinstance(digest, str) and len(digest) == 64
+    require(all(isinstance(path, str) and path and isinstance(digest, str) and len(digest) == 64
+                and all(char in "0123456789abcdef" for char in digest)
                 for path, digest in source_identity.items()), "invalid public-policy source identity")
 
     prereqs = value["prerequisites"]
@@ -136,6 +140,14 @@ def require_authority(value: Any) -> dict[str, Any]:
         "add_role_derived_pie_dso_field", "add_public_ibt_field", "add_public_shstk_field",
         "claim_runtime_cet_enforcement", "next_owner",
     }, "deferral effects changed")
+    for key in (
+        "preserve_private_role_property_facts", "preserve_existing_coarse_pie_field",
+        "add_role_derived_pie_dso_field", "add_public_ibt_field", "add_public_shstk_field",
+        "claim_runtime_cet_enforcement",
+    ):
+        require(type(effects[key]) is bool, f"invalid deferral-effect type: {key}")
+    require(isinstance(effects["next_owner"], str) and effects["next_owner"],
+            "invalid deferral next owner")
     return value
 
 
@@ -173,24 +185,20 @@ def evaluate(authority_path: Path) -> dict[str, Any]:
     require(len(not_passed) == rule["open_or_pending_required_prerequisite_count"],
             "required prerequisite denominator changed")
     authorization_possible = not not_passed
-    require(rule["current_authorization"] == (authority["decision"] == "authorize"),
-            "decision and authorization flag disagree")
-    if authority["decision"] == "authorize":
-        require(authorization_possible, "public authorization requested with open prerequisites")
-        require(rule["public_fields_added"] > 0, "authorization adds no reviewed public field")
-    else:
-        require(not authorization_possible, "deferral is inconsistent with all prerequisites passed")
-        require(rule["public_fields_added"] == 0 and rule["existing_field_reinterpreted"] is False,
-                "deferral changed a public field")
-        effects = authority["deferral_effects"]
-        require(effects["preserve_private_role_property_facts"] is True
-                and effects["preserve_existing_coarse_pie_field"] is True,
-                "deferral failed to preserve current facts or PIE surface")
-        require(effects["add_role_derived_pie_dso_field"] is False
-                and effects["add_public_ibt_field"] is False
-                and effects["add_public_shstk_field"] is False
-                and effects["claim_runtime_cet_enforcement"] is False,
-                "deferral authorized a prohibited projection or runtime claim")
+    require(not authorization_possible, "deferral authority is inconsistent with all prerequisites passed")
+    require(rule["current_authorization"] is False,
+            "deferral-only authority attempted to authorize public fields")
+    require(rule["public_fields_added"] == 0 and rule["existing_field_reinterpreted"] is False,
+            "deferral changed a public field")
+    effects = authority["deferral_effects"]
+    require(effects["preserve_private_role_property_facts"] is True
+            and effects["preserve_existing_coarse_pie_field"] is True,
+            "deferral failed to preserve current facts or PIE surface")
+    require(effects["add_role_derived_pie_dso_field"] is False
+            and effects["add_public_ibt_field"] is False
+            and effects["add_public_shstk_field"] is False
+            and effects["claim_runtime_cet_enforcement"] is False,
+            "deferral authorized a prohibited projection or runtime claim")
 
     return {
         "format": SCHEMA_ID,
@@ -245,7 +253,9 @@ def main() -> int:
         f"decision={manifest['decision']} authorization={int(manifest['authorization'])} "
         f"required={manifest['required_prerequisite_count']} "
         f"open_or_pending={manifest['open_or_pending_required_prerequisite_count']} "
-        "public_fields_added=0 existing_pie_preserved=1 runtime_cet_claim=0"
+        f"public_fields_added={manifest['public_fields_added']} "
+        f"existing_pie_preserved={int(manifest['existing_coarse_pie_preserved'])} "
+        f"runtime_cet_claim={int(manifest['runtime_cet_enforcement_claimed'])}"
     )
     return 0
 

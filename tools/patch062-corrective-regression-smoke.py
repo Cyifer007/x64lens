@@ -199,8 +199,8 @@ def probe_make_contracts() -> None:
             "controlled campaign does not consume the self-contained corpus-ready target")
     require("provisional-corpus-repair-modes" in makefile,
             "authenticated mode-only corpus recovery target is missing")
-    require("benchmarks/corpus/generated -prune" in makefile,
-            "permission normalization does not preserve authenticated corpus modes")
+    require("normalize-tracked-permissions.py --repo ." in makefile,
+            "permission normalization is not restricted to authenticated Git-tracked paths")
 
     probe_root = ROOT / "benchmarks/corpus/generated" / f".p063-mode-{uuid.uuid4().hex}"
     probe_root.mkdir(parents=True)

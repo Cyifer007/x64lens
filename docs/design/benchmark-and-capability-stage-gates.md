@@ -178,13 +178,13 @@ capability authority. Validate it with:
 make research-stage-gates-smoke
 ```
 
-## Current stage after Sprint 11
+## Current stage after Sprint 12
 
-Patch 061 closes Sprint 11 and activates Sprint 12 loader and mitigation
-precision work. The diagnostic corpus and method remain provisional until
-Sprint 15. Sprints 12 through 14 may change capabilities or experimental
-profiles in response to diagnostic evidence; such changes require new
-diagnostic identities and do not contaminate the later frozen campaign.
+Patch 074 closes Sprint 12 and activates Sprint 13 semantic capability
+completion. The diagnostic corpus and method remain provisional until Sprint
+15. Sprints 13 and 14 may change capabilities or experimental profiles in
+response to diagnostic evidence; such changes require new diagnostic identities
+and do not contaminate the later frozen campaign.
 
 ## Sprint 11 Patch 055 foundation status
 
@@ -303,4 +303,21 @@ remain independent; no generic cross-tool gadget count is permitted.
 
 ## Sprint 12 Patch 062 capability-gate update
 
-The `program_header_validity` and `elf_extended_numbering` gates are resolved for the Patch 062 boundary. Ordinary PHDR validity is implemented and tested; extended numbering is detected, structurally validated, and returned as a stable unsupported condition rather than silently interpreted. The `executable_overlap_policy` gate remains planned and is the next ordered Sprint 12 change. Any diagnostic campaign after Patch 062 requires a new identifier because accepted input behavior changed.
+The `program_header_validity` and `elf_extended_numbering` gates were resolved
+by Patch 062. Patch 064 resolved `executable_overlap_policy` by measured
+deferral under explicit reopening thresholds. Patches 064-074 resolved the
+private role/property and GNU-property gates through implementation, diagnostic
+reconciliation, corrected environment parity, and a public-policy decision of
+`defer`. Any diagnostic campaign after Patch 074 requires a new identifier when
+its task, capability, schema, or method changes.
+
+
+## Sprint 12 Patch 074 closeout gate update
+
+The stage authority now records twelve completed sprints and Sprint 13 active.
+The overlap, PIE/DSO, and GNU-property gates are `resolved`: overlap by measured
+deferral, and role/property projection by retained private evidence plus an
+explicit non-reinterpretive public deferral. Resolution does not mean a public
+field or runtime-CET claim exists. Generic exact-pop semantics and score/null
+policy remain Sprint 13 gates; optional decoder and deterministic concurrency
+remain Sprint 14 decisions.

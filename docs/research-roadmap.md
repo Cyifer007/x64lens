@@ -2,22 +2,25 @@
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete after Patch 061. Sprint 9 established report
+Sprints 1 through 12 are complete after Patch 074. Sprint 9 established report
 identity, schema `0.2.0`, candidate provenance, and the decoder-free reference
 profile. Sprint 10 added bounded semantic-exact primitive and effect coverage.
 Sprint 11 established the provisional corpus, high-resolution runner, normalized
-baseline adapters, matched relations, task-path runtime closure, coordinate
-qualification, 30-condition campaign authority, generated summaries, and the
-engineering gap register. Patch 061 corrects the remaining transaction and
-comparison-accounting findings, preregisters the below-floor whole-batch method,
-and records the diagnostic limitations. Sprint 12 is active as the loader and
-mitigation precision sprint. Patch 069 added authenticated external
-reconciliation. Patch 070 introduced the first evidence-integrity and whole-
-batch transaction-pilot candidate but was rejected. Patch 071 corrected the
-first acceptance blockers; Patch 072 is the current implementation candidate
-for the remaining evidence-plane correction, outcome-blind external-natural
-acquisition, and same-byte native/container private-fact parity. Patch 073
-public-policy review and Patch 074 closeout remain pending.
+baseline adapters, and diagnostic gap register. Sprint 12 established ordinary
+program-header validity, explicit extended-numbering outcomes, executable-
+overlap contributor provenance and measured normalization deferral, a private
+PIE/DSO role lattice, bounded private GNU-property IBT/SHSTK facts, natural and
+controlled private-fact strata, exact GNU `readelf` reconciliation, outcome-
+blind external-natural acquisition, corrected isolated native/container parity,
+and a non-reinterpretive public-policy decision of `defer`.
+
+Patch 074 closes the final Patch 073 custody, hardlink, selection-inode, parity-
+membership/mount/publication, tracked-permission, and authority-oracle defects.
+It changes no runtime analyzer, include, or public schema path. Public PIE/DSO,
+IBT, SHSTK, runtime-CET, text-relocation, RPATH, and RUNPATH fields remain
+unadded. Sprint 13 is active as the semantic capability completion sprint.
+Sprint 15 still freezes the confirmatory campaign, and all Sprint 11-12
+measurement evidence remains diagnostic, unfrozen, and publication-ineligible.
 
 The repository now provides:
 
@@ -567,9 +570,10 @@ At the Patch 071 boundary, external-natural acquisition and environment parity
 were deferred to Patch 072. Patch 072 implements both gates; qualified native/
 container parity evidence remains pending. The latest real campaign still
 supports no x64lens single-run latency, RSS-superiority, generic gadget-count,
-or normalized-coverage claim. Patch 073 executes the non-reinterpretive
-public-policy gate as an explicit deferral, and Patch 074 closes Sprint 12 only
-after corrected local acceptance and hands off to Sprint 13.
+or normalized-coverage claim. Patch 073 executed the non-reinterpretive public-policy gate as an explicit
+deferral. Patch 074 supplies the final custody and parity-protocol correction,
+closes Sprint 12, and hands off to Sprint 13 after the complete acceptance
+target passes.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -586,11 +590,28 @@ exact GNU `readelf` processes, and 864 field dispositions.
 A separate same-byte 96-object gate compares native and container environments
 while holding target, analyzer, fact-probe, and schema bytes constant. It keeps
 5,184 private fields per environment and 384 paired public tuples. Package
-source/build-origin and environment effects remain separate. Retained cloud
-evidence covers the diagnostic acquisition and two same-host logic-only parity
-planes; qualified native/container parity remains pending. All retained planes
+source/build-origin and environment effects remain separate. Retained
+diagnostic acquisition evidence and the two same-host logic-only parity planes
+remain distinct; qualified native/container parity remains pending. All retained planes
 are diagnostic, unfrozen, publication-ineligible, and insufficient for
-runtime-CET or public-field claims. Patch 073 records `defer`, adds zero
-public role/property fields, preserves the coarse PIE indicator, and selects
-text-relocation plus distinct RPATH/RUNPATH evidence as the next bounded
-mitigation tranche.
+runtime-CET or public-field claims. Patch 073 recorded `defer`; Patch 074
+preserves zero public role/property fields, the coarse PIE indicator, and the
+text-relocation plus distinct RPATH/RUNPATH tranches as deferred bounded work.
+
+
+## Sprint 12 Patch 074 closeout research posture
+
+Patch 074 changes no runtime analyzer, include, or public schema path. It closes
+the final evidence-custody and parity-protocol defects by retaining descriptors
+through final topology verification, rejecting hardlinks and late subtree
+mutation, binding external-natural selection to inode identity, preserving
+parity executable modes and exact tree membership, excluding native-plane
+ancestors from container mounts, and limiting permission normalization to
+preflighted Git-tracked paths.
+
+The public role/property decision remains `defer`. Text-relocation and separate
+RPATH/RUNPATH evidence remain future bounded mitigation tranches, not Patch 074
+runtime output. Sprint 13 is active and owns the generic exact-pop, Linux
+syscall `r10`, score/null, and measurement-gated semantic decisions. All
+Sprint 11-12 campaign observations remain diagnostic and cannot be promoted into
+the Sprint 15-frozen confirmatory dataset.

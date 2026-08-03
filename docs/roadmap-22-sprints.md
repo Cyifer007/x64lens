@@ -13,34 +13,29 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete after Patch 061. Sprint 11 delivered the
+Sprints 1 through 12 are complete after Patch 074. Sprint 11 delivered the
 provisional high-resolution runner, reproducible 24-target corpus, normalized
-baseline task authority, matched relation and runtime-closure evidence,
-30-condition diagnostic campaign authority, generated summaries, and
-engineering gap register. The initial partial-tool diagnostic checkpoint
-accounted for all 30
-conditions while executing 12 x64lens conditions and retaining 18 baseline
-conditions as unavailable. A later all-tools diagnostic replay recorded 30/30
-conditions,
-180/180 successful runner rows, and 24 relation artifacts; all 12 x64lens
-condition timings were below the 6,361,100 ns reliable single-process floor.
-Two Python task-path runtime-closure failures left those closures incomplete,
-and coordinate calibration failed, so the replay was not comparison-qualified
-and remained separate from the preregistered Patch 061 campaign boundary.
+baseline task authority, diagnostic campaigns, generated summaries, and the
+engineering gap register. All Sprint 11 measurements remain diagnostic,
+unfrozen, and publication-ineligible; all observed x64lens single-process cells
+remain below the reliable floor, and no positive cross-tool coordinate anchor
+has qualified a coverage comparison.
 
-All Sprint 11 measurement evidence remains diagnostic, unfrozen, and
-publication-ineligible. Sprint 12 is active and proceeds through bounded
-program-header validity and extended-numbering outcomes,
-executable-overlap/provenance semantics, PIE-versus-DSO identity, GNU-property
-evidence, the private-fact diagnostic matrix, Patch 069 authenticated external
-reconciliation, the rejected Patch 070 evidence-integrity and whole-batch pilot,
-Patch 071 first corrective candidate, and the current Patch 072 implementation
-candidate for remaining evidence-plane correction, outcome-blind external-
-natural acquisition, and same-byte native/container private-fact parity. Patch
-073 public-policy review and Patch 074 closeout remain pending.
-Positive role-controlled coordinate anchors and complete runtime closure for all
-five task paths belong to a separate comparison-qualification campaign. Sprint
-15 freezes the confirmatory campaign.
+Sprint 12 delivered bounded ordinary-PHDR validity and explicit extended-
+numbering outcomes, retained executable-overlap contributor provenance and a
+measured normalization deferral, private PIE/DSO and GNU-property evidence,
+controlled and held-out private-fact matrices, authenticated GNU `readelf`
+reconciliation, outcome-blind external-natural acquisition, corrected isolated
+native/container parity, and an explicit public-policy deferral. Patch 074 closes
+the final evidence-custody, selection-inode, parity topology/publication,
+permission-normalization, and authority-oracle defects. It adds zero public
+role/property or new mitigation fields and preserves schema `0.2.0`.
+
+Sprint 13 is active. It owns generic exact-pop semantics, the Linux syscall
+`r10` role, score/null policy, and only measured bounded family additions.
+Positive role-controlled coordinate anchors and complete task-path
+qualification remain a separate diagnostic gate. Sprint 15 freezes the
+confirmatory campaign.
 
 The reference runtime remains a bounded, dependency-free, decoder-free,
 one-worker ELF64 x86_64 analyzer. Optional decoder or parallel profiles must
@@ -238,17 +233,19 @@ correction; Patch 070 acceptance was rejected; Patch 071 corrected the first
 blocker set, and Patch 072 carries the remaining correction plus acquisition
 and parity gates.
 
-## Patch 070 through Patch 072 sequencing note
+## Patch 070 through Patch 074 sequencing note
 
 Patch 070 acceptance was rejected. Patch 071 corrected the first nested-cleanup,
 case-oracle, streaming-limit, and delivery-custody blockers, but its review
 required another correction. Patch 072 remains inside Sprint 12 and carries the
 narrower generation, descendant, publication, duplicate-key, and delivery-
 completeness corrections while completing outcome-blind external-natural
-acquisition and same-byte native/container parity. It
-does not advance the Sprint 15 freeze, add a public mitigation field, or change
-the dependency-free one-worker reference profile. Patch 073 executes public
-policy as an explicit deferral; Patch 074 remains Sprint 12 closeout.
+acquisition and the initial same-byte native/container parity protocol. Its
+returned review rejected current acceptance. Patch 073 carried the first custody/isolation correction and executed public
+policy as an explicit deferral. Patch 074 supplies the final topology, parity,
+permission, selection-inode, and authority-oracle correction and closes Sprint
+12. None of these patches advances the Sprint 15 freeze, adds a public
+mitigation field, or changes the dependency-free one-worker reference profile.
 
 
 ## Patch 072 evidence gate
@@ -258,20 +255,20 @@ package, path, mode, and ELF eligibility checks and before any x64lens, private
 fact-probe, or GNU `readelf` outcome is consumed: twelve per source lineage with
 seven executable and five library paths. The same-byte environment authority
 compares the authenticated 96-object matrix with identical analyzer, probe, and
-schema bytes across native and container planes. Retained cloud evidence covers
-the diagnostic acquisition and same-host logic-only parity; qualified native/
-container parity remains pending. Both remain unfrozen and publication-
+schema bytes across native and container planes. Retained diagnostic
+acquisition evidence remains separate from the same-host logic-only parity
+planes; qualified native/container parity remains pending. Both remain unfrozen and publication-
 ineligible. Patch 073 therefore adds no public role/property field and records
 `defer`; this does not replace positive coordinate anchors, runtime closure,
-whole-batch workload qualification, or the Sprint 15 campaign freeze. Corrected
-write-isolated parity remains a local acceptance gate before Patch 074 closeout.
+whole-batch workload qualification, or the Sprint 15 campaign freeze. Corrected write-isolated parity and independent acceptance are required by the
+Patch 074 closeout acceptance target.
 
-## Patch 073 policy and correction note
+## Patch 073 policy decision and Patch 074 closeout note
 
-Patch 073 closes the reproduced post-fingerprint cleanup, mutable selection,
-delivery mode/path, parity-isolation, and retained-evidence defects. Its policy
-authority authenticates the unchanged public schema and reporter sources,
-preserves `mitigations.pie`, and rejects authorization while any prerequisite
-is open. The competitive gap authority selects text-relocation and distinct
-RPATH/RUNPATH indicators for a later bounded implementation; no runtime field is
-added in Patch 073.
+Patch 073 authenticated the unchanged public schema and reporter sources,
+preserved `mitigations.pie`, and rejected authorization while required
+prerequisites remained open. Patch 074 closes the remaining delivery topology,
+late-mutation, hardlink, selection-inode, parity membership/mount/publication,
+permission-normalization, and negative-oracle defects. The competitive gap
+authority retains text-relocation and distinct RPATH/RUNPATH indicators for a
+later bounded implementation; no runtime field is added in Patch 074.

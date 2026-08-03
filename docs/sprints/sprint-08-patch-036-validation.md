@@ -113,12 +113,7 @@ git diff --stat
 git diff --check
 ```
 
-Commit after native and Docker validation succeeds or after Docker-only failures are classified as environment defects and rerun successfully outside the restricted filesystem sandbox:
-
-```bash
-git add .
-git reset .local 2>/dev/null || true
-git status
-git commit -m "test: harden historical finding evidence gates"
-git push
-```
+After native and Docker validation succeeds, follow the repository
+[contribution workflow](../../CONTRIBUTING.md) and include only the intended
+tracked files. Classify an environment-blocked Docker run separately; it does
+not satisfy the Docker gate.

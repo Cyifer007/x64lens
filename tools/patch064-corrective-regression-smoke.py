@@ -176,13 +176,17 @@ def probe_hardlink_substitution(corpus: Any, root: Path) -> None:
 def probe_normalize_perms_nofollow(root: Path) -> None:
     work = root / "perms"
     for rel in (
-        ".git", ".local", ".codex", ".agents", "build", "tests/bin",
+        ".local", ".codex", ".agents", "build", "tests/bin",
         "benchmarks/corpus/generated", "benchmarks/results", "tests/results",
         "tools", "benchmarks/scripts", "tests",
     ):
         (work / rel).mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / "tools/normalize-tracked-permissions.py",
+                 work / "tools/normalize-tracked-permissions.py")
     (work / "tests/run-tests.sh").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     (work / "benchmarks/scripts/diagnostic_artifact.py").write_text("# helper\n", encoding="utf-8")
+    os.chmod(work / "tests/run-tests.sh", 0o600)
+    os.chmod(work / "benchmarks/scripts/diagnostic_artifact.py", 0o600)
     victims = [
         work / "benchmarks/results/victim.py",
         work / "tests/results/victim.py",
@@ -194,13 +198,27 @@ def probe_normalize_perms_nofollow(root: Path) -> None:
     os.symlink(victims[0], work / "tools/redirect.py")
     os.symlink(victims[1], work / "benchmarks/scripts/redirect.py")
     os.symlink(victims[2], work / "tools/redirect.sh")
+
+    subprocess.run(["git", "init", "-q"], cwd=work, check=True)
+    subprocess.run(
+        ["git", "add", "tools/normalize-tracked-permissions.py", "tests/run-tests.sh",
+         "benchmarks/scripts/diagnostic_artifact.py", "tools/redirect.py",
+         "benchmarks/scripts/redirect.py", "tools/redirect.sh"],
+        cwd=work, check=True,
+    )
+    subprocess.run(["git", "update-index", "--chmod=+x", "tests/run-tests.sh"],
+                   cwd=work, check=True)
     cp = subprocess.run(
         ["make", "-f", str(ROOT / "Makefile"), "normalize-perms"],
         cwd=work, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False,
     )
     require(cp.returncode == 0, f"normalize-perms probe failed:\n{cp.stdout}\n{cp.stderr}")
     require(all(stat.S_IMODE(path.stat().st_mode) == 0o600 for path in victims),
-            "normalize-perms followed a symlink into an excluded output tree")
+            "normalize-perms followed a tracked symlink or touched an untracked output")
+    require(stat.S_IMODE((work / "tests/run-tests.sh").stat().st_mode) == 0o755,
+            "normalize-perms did not restore the tracked executable mode")
+    require(stat.S_IMODE((work / "benchmarks/scripts/diagnostic_artifact.py").stat().st_mode) == 0o644,
+            "normalize-perms did not restore the tracked regular-file mode")
 
 
 def main() -> int:

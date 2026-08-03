@@ -257,3 +257,13 @@ comparison status as interchangeable.
 ## Sprint 12 Patch 062 publication boundary
 
 The paper may describe deterministic ordinary-PHDR validity and explicit extended-numbering unsupported outcomes for the reviewed fixtures. It may not claim complete ELF extended-numbering support, complete loader correctness, PIE-versus-DSO precision, CET evidence, or universal parser safety from this patch.
+
+## Sprint 12 Patch 074 publication boundary
+
+Patch 074 permits a bounded engineering claim that Sprint 12’s private
+role/property evidence, external reconciliation, selection, parity protocol,
+and delivery custody have explicit accepted-or-deferred authorities. It does
+not authorize a public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation,
+RPATH/RUNPATH, performance, RSS, normalized coverage, or prevalence claim.
+All Sprint 11-12 measurements remain diagnostic and outside the Sprint
+15-frozen confirmatory campaign.

@@ -5,9 +5,11 @@
 Accepted architecture introduced by Sprint 12 Patch 066, extended by Patch 067
 layout attestation and the Patch 068 diagnostic matrix, and carried through
 Patches 069 and 070. Patch 070 acceptance was rejected. Patch 071 corrected
-the first development-evidence blockers, and the current Patch 072 candidate
-carries the remaining correction plus private acquisition/parity work while
-leaving runtime and schema boundaries unchanged.
+the first development-evidence blockers. Patch 072 added the remaining
+correction plus private acquisition/parity work, but its returned review
+rejected current acceptance. The current Patch 073 candidate leaves runtime and
+schema boundaries unchanged while carrying the reported custody and isolation
+corrections.
 Product and delivery acceptance remain governed by separate validation.
 
 ## Context
@@ -105,8 +107,10 @@ custody boundary and defined a separate 96-object diagnostic agreement matrix:
 objects. At the Patch 068 boundary, bounded external ELF reconciliation
 (`readelf -hW/-lW/-dW/-nW`) remained subsequent work. Patch 069 added that
 authenticated reconciliation. Patch 070 attempted the next evidence-gate correction but was rejected.
-Patch 071 corrected the first blocker set; Patch 072 carries the remaining
-correction and the separate native/container private-fact parity gate. Whole-batch timing and process-tree RSS also remain separate
+Patch 071 corrected the first blocker set. Patch 072 carried the remaining
+correction and the initial native/container private-fact parity gate, but its
+returned review rejected current acceptance. Patch 073 carries the reported
+custody and isolation corrections. Whole-batch timing and process-tree RSS also remain separate
 measurement gates.
 
 ## Consequences
@@ -117,6 +121,7 @@ measurement gates.
 - Original carrier provenance remains visible without accepting ambiguous
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
-- Public indicators remain blocked while the current Patch 072 corrective,
-  external-natural, and parity candidate awaits complete acceptance and until
-  the Patch 073 public-policy review justifies a compatible-output decision.
+- Patch 073 executed the public-policy gate as `defer` and added no public
+  indicator. Corrected native/container parity and independent acceptance
+  remain pending; any future compatible-output decision requires a new
+  separately reviewed gate.

@@ -19,7 +19,7 @@ import hashlib
 import importlib.util
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import stat
@@ -101,28 +101,214 @@ def run(command: list[str], *, timeout: float = 30.0) -> subprocess.CompletedPro
     )
 
 
-def verify_checksums(root: Path) -> None:
-    manifest = root / "SHA256SUMS.txt"
-    require(manifest.is_file() and not manifest.is_symlink(), f"checksum manifest missing: {root}")
+CHECKSUM_NAME = "SHA256SUMS.txt"
+TREE_MANIFEST_NAME = "TREE_CUSTODY.json"
+TREE_FORMAT = "x64lens-parity-tree-custody-v1"
+O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
+O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+
+
+def safe_relative(raw: str) -> str:
+    pure = PurePosixPath(raw)
+    require(raw and not pure.is_absolute() and all(part not in {"", ".", ".."} for part in pure.parts),
+            f"unsafe parity tree path: {raw!r}")
+    require(pure.as_posix() == raw and "\\" not in raw, f"noncanonical parity tree path: {raw!r}")
+    return raw
+
+
+def hash_regular(path: Path, relative: str) -> tuple[str, int, os.stat_result]:
+    before = path.lstat()
+    require(stat.S_ISREG(before.st_mode), f"non-regular parity member: {relative}")
+    require(before.st_nlink == 1, f"hard-linked parity member: {relative}")
+    fd = os.open(path, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
+    try:
+        opened = os.fstat(fd)
+        identity_fields = lambda item: (
+            item.st_dev, item.st_ino, stat.S_IFMT(item.st_mode), stat.S_IMODE(item.st_mode),
+            item.st_size, item.st_mtime_ns, item.st_ctime_ns, item.st_nlink,
+        )
+        require(identity_fields(before) == identity_fields(opened), f"parity member changed while opening: {relative}")
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+            total += len(chunk)
+        post_fd = os.fstat(fd)
+        post_path = path.lstat()
+        require(identity_fields(opened) == identity_fields(post_fd) == identity_fields(post_path),
+                f"parity member changed while hashing: {relative}")
+        require(total == opened.st_size, f"parity member size changed: {relative}")
+        return digest.hexdigest(), total, opened
+    finally:
+        os.close(fd)
+
+
+def tree_snapshot(root: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    root_meta = root.lstat()
+    require(stat.S_ISDIR(root_meta.st_mode) and not root.is_symlink(), f"parity tree is not a real directory: {root}")
+    directories: list[dict[str, Any]] = []
+    files: list[dict[str, Any]] = []
+    seen: set[tuple[int, int]] = {(root_meta.st_dev, root_meta.st_ino)}
+    for path in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
+        relative = safe_relative(path.relative_to(root).as_posix())
+        metadata = path.lstat()
+        key = (metadata.st_dev, metadata.st_ino)
+        require(key not in seen, f"duplicate parity inode topology: {relative}")
+        seen.add(key)
+        if stat.S_ISDIR(metadata.st_mode):
+            require(not path.is_symlink(), f"parity tree contains a directory link: {relative}")
+            directories.append({"path": relative, "mode": f"{stat.S_IMODE(metadata.st_mode):04o}"})
+        elif stat.S_ISREG(metadata.st_mode):
+            digest, size, opened = hash_regular(path, relative)
+            files.append({
+                "path": relative,
+                "sha256": digest,
+                "size_bytes": size,
+                "mode": f"{stat.S_IMODE(opened.st_mode):04o}",
+                "nlink": opened.st_nlink,
+            })
+        else:
+            raise ParityError(f"parity tree contains a link or special member: {relative}")
+    return directories, files
+
+
+def verify_legacy_checksums(root: Path) -> None:
+    """Authenticate one upstream held-out result before parity-owned resealing."""
+    manifest = root / CHECKSUM_NAME
+    require(manifest.is_file() and not manifest.is_symlink(), f"legacy checksum manifest missing: {root}")
     listed: set[str] = set()
     for number, line in enumerate(manifest.read_text(encoding="utf-8").splitlines(), 1):
         require(len(line) >= 67 and line[64:66] == "  " and re.fullmatch(r"[0-9a-f]{64}", line[:64]),
-                f"invalid checksum line {number}: {root}")
-        name = line[66:]
-        pure = Path(name)
-        require(name and not pure.is_absolute() and ".." not in pure.parts and "\\" not in name,
-                f"unsafe checksum path: {name!r}")
-        require(name not in listed and name != "SHA256SUMS.txt", f"duplicate checksum path: {name}")
+                f"invalid legacy checksum line {number}: {root}")
+        name = safe_relative(line[66:])
+        require(name not in listed and name != CHECKSUM_NAME, f"duplicate legacy checksum path: {name}")
         path = root / name
-        require(path.is_file() and not path.is_symlink(), f"missing checksummed member: {name}")
-        require(sha256_bytes(path.read_bytes()) == line[:64], f"checksum mismatch: {name}")
+        digest, _size, _metadata = hash_regular(path, name)
+        require(digest == line[:64], f"legacy checksum mismatch: {name}")
         listed.add(name)
-    actual = {
-        path.relative_to(root).as_posix()
-        for path in root.rglob("*")
-        if path.is_file() and path.name != "SHA256SUMS.txt"
+    _directories, files = tree_snapshot(root)
+    actual = {item["path"] for item in files if item["path"] != CHECKSUM_NAME}
+    require(actual == listed,
+            f"legacy checksum membership mismatch: missing={sorted(listed-actual)} extra={sorted(actual-listed)}")
+
+
+def unseal_for_reseal(root: Path) -> None:
+    metadata = root.lstat()
+    require(stat.S_ISDIR(metadata.st_mode) and not root.is_symlink(), "parity reseal root is unsafe")
+    root.chmod(0o700)
+    for path in sorted(root.rglob("*")):
+        current = path.lstat()
+        require(not path.is_symlink() and (stat.S_ISDIR(current.st_mode) or stat.S_ISREG(current.st_mode)),
+                f"parity reseal member is unsafe: {path}")
+        if stat.S_ISDIR(current.st_mode):
+            path.chmod(0o700)
+    for name in (CHECKSUM_NAME, TREE_MANIFEST_NAME):
+        control = root / name
+        if control.exists():
+            require(control.is_file() and not control.is_symlink(), f"unsafe parity control member: {name}")
+            control.chmod(0o600)
+            control.unlink()
+
+
+def seal_tree(root: Path) -> None:
+    """Seal one exact parity tree while preserving executable input modes."""
+    require(not (root / CHECKSUM_NAME).exists() and not (root / TREE_MANIFEST_NAME).exists(),
+            f"parity tree is already sealed: {root}")
+    directories, files = tree_snapshot(root)
+    payload_files = [item for item in files]
+    final_directories = [{"path": item["path"], "mode": "0555"} for item in directories]
+    final_files = []
+    for item in payload_files:
+        final_mode = "0555" if int(item["mode"], 8) & 0o111 else "0444"
+        final_files.append({"path": item["path"], "mode": final_mode, "nlink": 1})
+    final_files.extend([
+        {"path": CHECKSUM_NAME, "mode": "0444", "nlink": 1},
+        {"path": TREE_MANIFEST_NAME, "mode": "0444", "nlink": 1},
+    ])
+    final_files.sort(key=lambda item: item["path"])
+    tree_manifest = {
+        "format": TREE_FORMAT,
+        "root_mode": "0555",
+        "directories": final_directories,
+        "files": final_files,
     }
-    require(actual == listed, f"checksum membership mismatch: missing={sorted(listed-actual)} extra={sorted(actual-listed)}")
+    (root / TREE_MANIFEST_NAME).write_text(
+        json.dumps(tree_manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    checksummed = payload_files + [{
+        "path": TREE_MANIFEST_NAME,
+        "sha256": sha256_bytes((root / TREE_MANIFEST_NAME).read_bytes()),
+    }]
+    (root / CHECKSUM_NAME).write_text(
+        "".join(f"{item['sha256']}  {item['path']}\n" for item in sorted(checksummed, key=lambda row: row["path"])),
+        encoding="utf-8",
+    )
+    for item in final_files:
+        (root / item["path"]).chmod(int(item["mode"], 8))
+    for item in reversed(final_directories):
+        (root / item["path"]).chmod(0o555)
+    root.chmod(0o555)
+    verify_checksums(root)
+
+
+def verify_checksums(root: Path) -> None:
+    root_meta = root.lstat()
+    require(stat.S_ISDIR(root_meta.st_mode) and not root.is_symlink(), f"parity tree is unavailable: {root}")
+    require(stat.S_IMODE(root_meta.st_mode) == 0o555, f"parity tree root mode changed: {root}")
+    manifest_path = root / TREE_MANIFEST_NAME
+    checksum_path = root / CHECKSUM_NAME
+    require(manifest_path.is_file() and not manifest_path.is_symlink(), f"parity tree manifest missing: {root}")
+    require(checksum_path.is_file() and not checksum_path.is_symlink(), f"checksum manifest missing: {root}")
+    value = load_json(manifest_path)
+    require(isinstance(value, dict) and set(value) == {"format", "root_mode", "directories", "files"},
+            "parity tree manifest fields changed")
+    require(value["format"] == TREE_FORMAT and value["root_mode"] == "0555",
+            "parity tree manifest identity changed")
+    expected_directories = value["directories"]
+    expected_files = value["files"]
+    require(isinstance(expected_directories, list) and isinstance(expected_files, list),
+            "parity tree manifest collections changed")
+    for item in expected_directories:
+        require(isinstance(item, dict) and set(item) == {"path", "mode"}
+                and safe_relative(item["path"]) == item["path"] and item["mode"] == "0555",
+                "invalid parity directory record")
+    for item in expected_files:
+        require(isinstance(item, dict) and set(item) == {"path", "mode", "nlink"}
+                and safe_relative(item["path"]) == item["path"]
+                and item["mode"] in {"0444", "0555"}
+                and type(item["nlink"]) is int and item["nlink"] == 1,
+                "invalid parity file record")
+    dir_paths = [item["path"] for item in expected_directories]
+    file_paths = [item["path"] for item in expected_files]
+    require(dir_paths == sorted(dir_paths) and len(dir_paths) == len(set(dir_paths)),
+            "parity directory paths changed")
+    require(file_paths == sorted(file_paths) and len(file_paths) == len(set(file_paths)),
+            "parity file paths changed")
+    require({CHECKSUM_NAME, TREE_MANIFEST_NAME}.issubset(file_paths), "parity control files are undeclared")
+
+    observed_directories, observed_files = tree_snapshot(root)
+    observed_dir_modes = [{"path": item["path"], "mode": item["mode"]} for item in observed_directories]
+    observed_file_modes = [{"path": item["path"], "mode": item["mode"], "nlink": item["nlink"]}
+                           for item in observed_files]
+    require(observed_dir_modes == expected_directories, "parity directory membership or modes changed")
+    require(observed_file_modes == expected_files, "parity file membership, modes, or topology changed")
+
+    listed: set[str] = set()
+    for number, line in enumerate(checksum_path.read_text(encoding="utf-8").splitlines(), 1):
+        require(len(line) >= 67 and line[64:66] == "  " and re.fullmatch(r"[0-9a-f]{64}", line[:64]),
+                f"invalid checksum line {number}: {root}")
+        name = safe_relative(line[66:])
+        require(name not in listed and name != CHECKSUM_NAME, f"duplicate checksum path: {name}")
+        path = root / name
+        digest, _size, _metadata = hash_regular(path, name)
+        require(digest == line[:64], f"checksum mismatch: {name}")
+        listed.add(name)
+    actual = {item["path"] for item in observed_files if item["path"] != CHECKSUM_NAME}
+    require(actual == listed,
+            f"checksum membership mismatch: missing={sorted(listed-actual)} extra={sorted(actual-listed)}")
 
 
 def write_tsv(path: Path, rows: list[dict[str, Any]], fields: list[str]) -> None:
@@ -130,17 +316,6 @@ def write_tsv(path: Path, rows: list[dict[str, Any]], fields: list[str]) -> None
         writer = csv.DictWriter(handle, delimiter="\t", fieldnames=fields, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-
-
-def seal_tree(root: Path) -> None:
-    files = sorted(path for path in root.rglob("*") if path.is_file())
-    (root / "SHA256SUMS.txt").write_text(
-        "".join(f"{sha256_bytes(path.read_bytes())}  {path.relative_to(root).as_posix()}\n" for path in files),
-        encoding="utf-8",
-    )
-    for path in sorted(root.rglob("*"), reverse=True):
-        path.chmod(0o555 if path.is_dir() else 0o444)
-    root.chmod(0o555)
 
 
 def normalize_output(value: bytes, target: Path) -> bytes:
@@ -477,24 +652,19 @@ def build_container_command(
     heldout: Path,
     container_write_root: Path,
 ) -> list[str]:
-    """Build the isolated container plane command.
-
-    The native result path is intentionally absent from this interface, making
-    cross-plane write access impossible to add accidentally at the call site.
-    """
+    """Build the isolated container plane command from three explicit mounts."""
     return [
         docker, "run", "--rm", "--read-only", "--network", "none",
         "--user", f"{os.getuid()}:{os.getgid()}",
         "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1",
         "-e", "LC_ALL=C", "-e", "LANG=C", "-e", "TZ=UTC",
         "--tmpfs", "/tmp:rw,nosuid,nodev,size=64m",
-        "-v", f"{ROOT}:/work:ro",
         "-v", f"{inputs}:/inputs:ro",
         "-v", f"{heldout}:/heldout:ro",
         "-v", f"{container_write_root}:/output:rw",
-        "-w", "/work",
+        "-w", "/tmp",
         image,
-        "python3", "/work/tools/sprint12-role-property-environment-parity-smoke.py", "plane",
+        "python3", "/inputs/tools/sprint12-role-property-environment-parity-smoke.py", "plane",
         "--environment-id", "container", "--execution-stratum", "container",
         "--heldout-result", "/heldout",
         "--analyzer", "/inputs/x64lens",
@@ -504,31 +674,51 @@ def build_container_command(
     ]
 
 
+def path_covers(ancestor: Path, child: Path) -> bool:
+    ancestor = Path(os.path.realpath(ancestor))
+    child = Path(os.path.realpath(child))
+    return ancestor == child or ancestor in child.parents
+
+
 def validate_container_mount_policy(
     command: list[str],
     *,
     native_result: Path,
+    inputs: Path,
+    heldout: Path,
     container_write_root: Path,
 ) -> dict[str, Any]:
-    """Validate that the container can write only its empty private plane root."""
-    require(str(native_result) not in "\n".join(command),
-            "native parity plane leaked into the container command")
-    mounts: list[str] = []
+    """Authenticate exact mounts and reject any host ancestor covering native."""
+    mounts: list[tuple[Path, str, str]] = []
     for index, item in enumerate(command[:-1]):
-        if item == "-v":
-            mounts.append(command[index + 1])
-    writable = [item for item in mounts if item.endswith(":rw")]
-    expected = f"{container_write_root}:/output:rw"
-    require(writable == [expected], f"container parity writable mounts changed: {writable!r}")
-    require(all(item.endswith(":ro") or item == expected for item in mounts),
-            f"container parity mount mode is not explicit: {mounts!r}")
-    require(container_write_root.is_dir() and not any(container_write_root.iterdir()),
-            "container parity write root is not empty before launch")
+        if item != "-v":
+            continue
+        raw = command[index + 1]
+        parts = raw.rsplit(":", 2)
+        require(len(parts) == 3 and parts[2] in {"ro", "rw"}, f"invalid parity mount: {raw!r}")
+        host = Path(os.path.abspath(parts[0]))
+        mounts.append((host, parts[1], parts[2]))
+    expected = [
+        (Path(os.path.abspath(inputs)), "/inputs", "ro"),
+        (Path(os.path.abspath(heldout)), "/heldout", "ro"),
+        (Path(os.path.abspath(container_write_root)), "/output", "rw"),
+    ]
+    require(mounts == expected, f"container parity mount set changed: {mounts!r}")
+    covering = [str(host) for host, _target, _mode in mounts if path_covers(host, native_result)]
+    require(not covering, f"container mount exposes native parity plane through an ancestor: {covering}")
+    require(container_write_root.is_dir() and not container_write_root.is_symlink()
+            and not any(container_write_root.iterdir()),
+            "container parity write root is not an empty real directory before launch")
     return {
         "native_plane_exposed_to_container": False,
+        "covering_native_mount_count": 0,
         "container_write_scope": "dedicated-empty-container-plane-root-only",
         "writable_mount_count": 1,
         "mount_count": len(mounts),
+        "host_mounts": [
+            {"host": str(host), "container": target, "mode": mode}
+            for host, target, mode in mounts
+        ],
     }
 
 
@@ -555,12 +745,28 @@ def run_full(args: argparse.Namespace) -> int:
         shutil.copy2(args.analyzer, inputs / "x64lens")
         shutil.copy2(args.fact_probe, inputs / "role-property-fact-probe")
         shutil.copy2(args.schema, inputs / "schema.json")
+        tools_root = inputs / "tools"
+        tools_root.mkdir()
+        parity_tools = (
+            "sprint12-role-property-environment-parity-smoke.py",
+            "sprint12-role-property-heldout-smoke.py",
+            "sprint12-role-property-readelf-smoke.py",
+            "sprint12-role-property-metamorphic-smoke.py",
+            "sprint12-gnu-property-smoke.py",
+        )
+        for name in parity_tools:
+            shutil.copy2(ROOT / "tools" / name, tools_root / name)
+            (tools_root / name).chmod(0o555)
         (inputs / "x64lens").chmod(0o555)
         (inputs / "role-property-fact-probe").chmod(0o555)
         (inputs / "schema.json").chmod(0o444)
         before = {name: identity(inputs / name, name, executable=name != "schema.json") for name in (
             "x64lens", "role-property-fact-probe", "schema.json"
         )}
+        before["parity_harness"] = identity(
+            tools_root / "sprint12-role-property-environment-parity-smoke.py",
+            "parity_harness", executable=True,
+        )
         seal_tree(inputs)
 
         generate = [
@@ -575,10 +781,14 @@ def run_full(args: argparse.Namespace) -> int:
         ]
         cp = run(generate, timeout=180.0)
         require(cp.returncode == 0, f"held-out generation failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        verify_legacy_checksums(heldout)
+        unseal_for_reseal(heldout)
+        seal_tree(heldout)
         verify_checksums(heldout)
 
+        copied_harness = inputs / "tools" / "sprint12-role-property-environment-parity-smoke.py"
         native = [
-            sys.executable, str(Path(__file__).resolve()), "plane",
+            sys.executable, str(copied_harness), "plane",
             "--environment-id", "native", "--execution-stratum", "native",
             "--heldout-result", str(heldout),
             "--analyzer", str(inputs / "x64lens"),
@@ -603,15 +813,33 @@ def run_full(args: argparse.Namespace) -> int:
         mount_policy = validate_container_mount_policy(
             container_command,
             native_result=native_result,
+            inputs=inputs,
+            heldout=heldout,
             container_write_root=container_write_root,
         )
         cp = run(container_command, timeout=240.0)
         require(cp.returncode == 0, f"container environment plane failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
         generated_container = container_write_root / "plane"
-        require(generated_container.is_dir(), "container plane did not publish its dedicated result")
+        require(generated_container.is_dir() and not generated_container.is_symlink(),
+                "container plane did not publish a real dedicated result")
         require(set(container_write_root.iterdir()) == {generated_container},
                 "container write root contains undeclared members")
+        verify_checksums(generated_container)
+        write_root_before = container_write_root.lstat()
+        generated_before = generated_container.lstat()
+        container_write_root.chmod(0o700)
+        generated_container.chmod(0o700)
+        require((container_write_root.lstat().st_dev, container_write_root.lstat().st_ino)
+                == (write_root_before.st_dev, write_root_before.st_ino),
+                "container write-root identity changed before publication")
+        require((generated_container.lstat().st_dev, generated_container.lstat().st_ino)
+                == (generated_before.st_dev, generated_before.st_ino),
+                "container plane identity changed before publication")
         generated_container.rename(container_result)
+        container_result.chmod(0o555)
+        require((container_result.lstat().st_dev, container_result.lstat().st_ino)
+                == (generated_before.st_dev, generated_before.st_ino),
+                "container plane identity changed across publication")
         container_write_root.rmdir()
         verify_checksums(container_result)
         native_after_container = recursive_tree_identity(native_result)
@@ -619,7 +847,7 @@ def run_full(args: argparse.Namespace) -> int:
                 "native parity plane changed during container execution")
 
         comparison = [
-            sys.executable, str(Path(__file__).resolve()), "compare",
+            sys.executable, str(copied_harness), "compare",
             "--left", str(native_result),
             "--right", str(container_result),
             "--result-dir", str(parity_result),
@@ -627,12 +855,19 @@ def run_full(args: argparse.Namespace) -> int:
         cp = run(comparison, timeout=30.0)
         require(cp.returncode == 0, f"environment parity comparison failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
         verify_checksums(parity_result)
-        after = {name: identity(inputs / name, name, executable=name != "schema.json") for name in before}
+        after = {
+            "x64lens": identity(inputs / "x64lens", "x64lens", executable=True),
+            "role-property-fact-probe": identity(
+                inputs / "role-property-fact-probe", "role-property-fact-probe", executable=True
+            ),
+            "schema.json": identity(inputs / "schema.json", "schema.json"),
+            "parity_harness": identity(copied_harness, "parity_harness", executable=True),
+        }
         require(all(before[name]["sha256"] == after[name]["sha256"] for name in before),
                 "same-byte parity inputs changed during execution")
 
         run_manifest = {
-            "format": "x64lens-sprint12-role-property-environment-parity-run-v2",
+            "format": "x64lens-sprint12-role-property-environment-parity-run-v3",
             "evidence_class": "diagnostic",
             "frozen": False,
             "publication_eligible": False,
@@ -655,6 +890,7 @@ def run_full(args: argparse.Namespace) -> int:
         )
         seal_tree(staging)
         os.rename(staging, final_result)
+        verify_checksums(final_result)
         completed = True
         print(cp.stdout.decode("utf-8", errors="replace").strip())
         print(

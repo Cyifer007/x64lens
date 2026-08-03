@@ -1,16 +1,24 @@
 # Sprint 12 Patch 073 Validation
 
+## Status
+
+Reviewed implementation. The public-policy gate executed as `defer`, but
+acceptance review required the final Patch 074 custody, parity, permission, and
+authority correction before Sprint 12 closeout.
+
 ## Purpose
 
 Patch 073 closes the confirmed Patch 072 cleanup, selection-freeze, delivery,
 parity-isolation, and evidence-retention defects while executing the planned
 non-reinterpretive public-policy gate. The policy result is an explicit
-**deferral**: no new PIE/DSO, IBT, or SHSTK field is added, and the existing
-coarse `mitigations.pie` field keeps its current meaning.
+**deferral**: no new PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH
+field is added. The existing coarse `mitigations.pie` field remains the
+`ET_DYN` indicator, and static GNU properties do not prove runtime CET
+enforcement.
 
-The patch also records the next bounded mitigation tranche, text-relocation and
-runtime-search-path indicators, without adding those fields before their parser,
-fixture, schema, and external-comparator gates exist.
+The patch also records text-relocation evidence and distinct RPATH/RUNPATH
+indicators as selected future bounded work. It adds none of those fields before
+their parser, fixture, schema, and external-comparator gates exist.
 
 ## Source boundary
 
@@ -25,7 +33,8 @@ base tree:   8f065e695de498434ed3c41aeb01fe85858aa27c
 The delivery source-identity record is authoritative for the final candidate
 tree, patch digest, and package digest.
 
-Patch 073 changes no tracked path under `src/`, `include/`, or `schemas/`.
+Patch 073 changes no tracked path under `src/`, `include/`, or `schemas/` and
+adds no public schema field.
 
 ## Focused correction gate
 
@@ -51,7 +60,8 @@ The gate covers:
 - rejection of public-field authorization with open prerequisites.
 
 The existing Patch 070 and Patch 071 corrective gates remain required because
-Patch 073 preserves their accepted behavior rather than replacing it.
+Patch 073 preserves the valid behavior covered by those historical gates rather
+than replacing it.
 
 ## Public-policy and mitigation-gap gates
 
@@ -132,7 +142,7 @@ reference profile:   dependency-free, decoder-free, one worker
 make sprint12-p073-acceptance-smoke
 ```
 
-This aggregate is local-environment acceptance. It requires the complete native
+This aggregate is the complete acceptance gate. It requires the complete native
 aggregate, retained external-natural acquisition, corrected Docker parity, the
 policy deferral, and the mitigation gap authority.
 
@@ -144,5 +154,6 @@ does not support a claim that static GNU properties prove runtime CET, that
 `ET_DYN` alone distinguishes PIE from DSO, or that the external-natural sample
 estimates mitigation prevalence.
 
-Patch 074 owns Sprint 12 closeout after fresh local acceptance and the three
-independent post-patch lanes are reconciled.
+Patch 074 carries the required final correction, exact delivery closure, and
+Sprint 12 closeout authority. Sprint 13 owns semantic completion after Patch
+074 acceptance.

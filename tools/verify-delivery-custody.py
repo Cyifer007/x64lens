@@ -1,34 +1,43 @@
 #!/usr/bin/env python3
 """Create or verify an exact descriptor-bound delivery-custody manifest.
 
-Schema v2 authenticates the root mode, manifest path/mode, every directory
-path/mode, and every regular payload path/hash/size/mode.  Verification opens
-objects descriptor-relatively with ``O_NOFOLLOW``, hashes the bytes from the
-same descriptor whose metadata is checked, and reauthenticates the caller-
-visible pathname after hashing.  Symlinks, special files, unsafe or duplicate
-paths, undeclared objects, mode drift, and pathname substitution fail closed.
+Schema v3 authenticates the caller-visible root name, semantic label, root mode,
+manifest path/mode/link count, every directory path/mode, and every regular
+payload path/hash/size/mode/link count.  Root ancestors are opened one component
+at a time with ``O_NOFOLLOW`` and retained through verification.  Every payload
+and directory descriptor is also retained until a final closure pass, which
+rehashes files, relists directories, and reauthenticates every pathname binding.
+
+The verifier rejects symlinks, special files, hard links, unsafe or duplicate
+paths, undeclared members, mode drift, late subtree mutation, and root/ancestor
+substitution.  It is intentionally Linux/POSIX-specific and bounded.  It does
+not claim a kernel-atomic filesystem snapshot against a malicious concurrent
+same-UID process; any detected disagreement fails closed.
 """
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass, field
 import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import resource
 import stat
 import sys
-import tempfile
 from typing import Any, Callable, NamedTuple
 
-SCHEMA_ID = "x64lens-delivery-custody-v2"
+SCHEMA_ID = "x64lens-delivery-custody-v3"
 BUFFER_SIZE = 1024 * 1024
+MAX_DIRECTORIES = 256
+MAX_FILES = 512
+MIN_FD_HEADROOM = 64
 O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
 O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 
-# Test-only injection point.  It runs after a file has been hashed through its
-# retained descriptor and before the descriptor/path post-checks.  Production
-# callers leave it unset.
+# Test-only injection points.  Production callers leave these unset.
 _TEST_AFTER_FILE_HASH_HOOK: Callable[[int, str, str], None] | None = None
+_TEST_AFTER_TREE_SCAN_HOOK: Callable[[Path], None] | None = None
 
 
 class CustodyError(RuntimeError):
@@ -44,6 +53,85 @@ class Fingerprint(NamedTuple):
     mtime_ns: int
     ctime_ns: int
     nlink: int
+    uid: int
+    gid: int
+
+
+@dataclass
+class AncestorBinding:
+    parent_fd: int
+    name: str
+    child_fd: int
+    opened: Fingerprint
+    display: str
+
+
+@dataclass
+class RootHandle:
+    requested: Path
+    basename: str
+    fd: int
+    opened: Fingerprint
+    bindings: list[AncestorBinding]
+
+
+@dataclass
+class DirectoryObservation:
+    path: str
+    name: str
+    parent_fd: int
+    fd: int
+    opened: Fingerprint
+    children: tuple[str, ...] = field(default_factory=tuple)
+
+    def manifest_entry(self) -> dict[str, Any]:
+        return {"path": self.path, "mode": mode_text(self.opened.mode)}
+
+
+@dataclass
+class FileObservation:
+    path: str
+    name: str
+    parent_fd: int
+    fd: int
+    opened: Fingerprint
+    sha256: str
+    size_bytes: int
+
+    def manifest_entry(self) -> dict[str, Any]:
+        return {
+            "path": self.path,
+            "sha256": self.sha256,
+            "size_bytes": self.size_bytes,
+            "mode": mode_text(self.opened.mode),
+            "nlink": self.opened.nlink,
+        }
+
+
+@dataclass
+class TreeObservation:
+    root: RootHandle
+    directories: list[DirectoryObservation]
+    files: list[FileObservation]
+    manifest: FileObservation | None
+
+    def close(self) -> None:
+        for item in reversed(self.files):
+            try:
+                os.close(item.fd)
+            except OSError:
+                pass
+        if self.manifest is not None:
+            try:
+                os.close(self.manifest.fd)
+            except OSError:
+                pass
+        for item in reversed(self.directories):
+            try:
+                os.close(item.fd)
+            except OSError:
+                pass
+        close_root(self.root)
 
 
 def require(condition: bool, message: str) -> None:
@@ -64,7 +152,7 @@ def strict_json_loads(raw: str) -> Any:
     return json.loads(raw, object_pairs_hook=reject_duplicate_pairs)
 
 
-def safe_relative(raw: str) -> str:
+def safe_relative(raw: Any) -> str:
     require(isinstance(raw, str) and raw != "", "manifest path must be a nonempty string")
     path = PurePosixPath(raw)
     require(not path.is_absolute(), f"absolute manifest path: {raw}")
@@ -72,6 +160,12 @@ def safe_relative(raw: str) -> str:
     normalized = path.as_posix()
     require(normalized == raw and "\\" not in raw, f"noncanonical manifest path: {raw}")
     return normalized
+
+
+def safe_component(raw: str, label: str) -> str:
+    require(raw not in {"", ".", ".."} and "/" not in raw and "\0" not in raw,
+            f"unsafe {label}: {raw!r}")
+    return raw
 
 
 def parse_mode(raw: Any, label: str) -> int:
@@ -94,18 +188,14 @@ def fingerprint(metadata: os.stat_result) -> Fingerprint:
         metadata.st_mtime_ns,
         metadata.st_ctime_ns,
         metadata.st_nlink,
-    )
-
-
-def same_identity(left: os.stat_result, right: os.stat_result) -> bool:
-    return (left.st_dev, left.st_ino, stat.S_IFMT(left.st_mode)) == (
-        right.st_dev, right.st_ino, stat.S_IFMT(right.st_mode)
+        metadata.st_uid,
+        metadata.st_gid,
     )
 
 
 def manifest_relative(root: Path, manifest: Path) -> str:
-    root_absolute = Path(os.path.abspath(root))
-    manifest_absolute = Path(os.path.abspath(manifest))
+    root_absolute = Path(os.path.abspath(os.fspath(root)))
+    manifest_absolute = Path(os.path.abspath(os.fspath(manifest)))
     try:
         relative = manifest_absolute.relative_to(root_absolute).as_posix()
     except ValueError as exc:
@@ -113,151 +203,201 @@ def manifest_relative(root: Path, manifest: Path) -> str:
     return safe_relative(relative)
 
 
-def open_root(root: Path) -> tuple[int, os.stat_result]:
-    requested = Path(os.path.abspath(root))
-    before = os.stat(requested, follow_symlinks=False)
-    require(stat.S_ISDIR(before.st_mode), f"custody root is not a real directory: {requested}")
-    fd = os.open(requested, os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW)
+def check_fd_capacity() -> None:
+    soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    if soft != resource.RLIM_INFINITY:
+        require(soft >= MAX_DIRECTORIES + MAX_FILES + MIN_FD_HEADROOM,
+                f"file-descriptor limit too low for bounded custody verification: {soft}")
+
+
+def open_root(root: Path) -> RootHandle:
+    """Open every absolute path component without following a symlink."""
+    requested = Path(os.path.abspath(os.fspath(root)))
+    require(requested != Path("/"), "custody root may not be the filesystem root")
+    parts = requested.parts
+    require(parts and parts[0] == "/", "custody root must resolve to an absolute POSIX path")
+    current_fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC)
+    bindings: list[AncestorBinding] = []
+    display = ""
     try:
-        opened = os.fstat(fd)
-        require(same_identity(before, opened), "custody root changed while opening")
-        after = os.stat(requested, follow_symlinks=False)
-        require(fingerprint(after) == fingerprint(opened), "custody root changed after opening")
-        return fd, opened
+        for component in parts[1:]:
+            safe_component(component, "custody-root component")
+            display = f"{display}/{component}"
+            before = os.stat(component, dir_fd=current_fd, follow_symlinks=False)
+            require(stat.S_ISDIR(before.st_mode), f"custody path component is not a real directory: {display}")
+            child_fd = os.open(
+                component,
+                os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW,
+                dir_fd=current_fd,
+            )
+            opened = fingerprint(os.fstat(child_fd))
+            require(opened == fingerprint(before), f"custody path component changed while opening: {display}")
+            after = os.stat(component, dir_fd=current_fd, follow_symlinks=False)
+            require(fingerprint(after) == opened, f"custody path component changed after opening: {display}")
+            bindings.append(AncestorBinding(current_fd, component, child_fd, opened, display))
+            current_fd = child_fd
+        require(bindings, "custody root path has no basename")
+        root_binding = bindings[-1]
+        return RootHandle(requested, root_binding.name, root_binding.child_fd, root_binding.opened, bindings)
     except BaseException:
-        os.close(fd)
+        # Every child is also the next binding's parent; close each unique fd once.
+        seen: set[int] = set()
+        for binding in reversed(bindings):
+            for fd in (binding.child_fd, binding.parent_fd):
+                if fd not in seen:
+                    seen.add(fd)
+                    try:
+                        os.close(fd)
+                    except OSError:
+                        pass
+        if current_fd not in seen:
+            try:
+                os.close(current_fd)
+            except OSError:
+                pass
         raise
 
 
-def open_directory(parent_fd: int, name: str, relative: str) -> tuple[int, os.stat_result]:
+def close_root(root: RootHandle) -> None:
+    seen: set[int] = set()
+    for binding in reversed(root.bindings):
+        for fd in (binding.child_fd, binding.parent_fd):
+            if fd not in seen:
+                seen.add(fd)
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+
+
+def reauthenticate_root(root: RootHandle) -> None:
+    for binding in root.bindings:
+        require(fingerprint(os.fstat(binding.child_fd)) == binding.opened,
+                f"custody path descriptor changed: {binding.display}")
+        current = os.stat(binding.name, dir_fd=binding.parent_fd, follow_symlinks=False)
+        require(fingerprint(current) == binding.opened,
+                f"custody path binding changed: {binding.display}")
+    require(fingerprint(os.fstat(root.fd)) == root.opened, "custody root descriptor changed")
+
+
+def open_directory(parent_fd: int, name: str, relative: str, root_device: int) -> DirectoryObservation:
     before = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
     require(stat.S_ISDIR(before.st_mode), f"non-directory traversal member: {relative}")
+    require(before.st_dev == root_device, f"cross-device delivery directory rejected: {relative}")
     fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
     try:
-        opened = os.fstat(fd)
-        require(fingerprint(before) == fingerprint(opened), f"directory changed while opening: {relative}")
+        opened = fingerprint(os.fstat(fd))
+        require(opened == fingerprint(before), f"directory changed while opening: {relative}")
         after = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-        require(fingerprint(after) == fingerprint(opened), f"directory pathname changed after opening: {relative}")
-        return fd, opened
+        require(fingerprint(after) == opened, f"directory pathname changed after opening: {relative}")
+        return DirectoryObservation(relative, name, parent_fd, fd, opened)
     except BaseException:
         os.close(fd)
         raise
 
 
-def hash_open_regular(parent_fd: int, name: str, relative: str) -> tuple[dict[str, Any], Fingerprint]:
+def hash_fd(fd: int) -> tuple[str, int]:
+    os.lseek(fd, 0, os.SEEK_SET)
+    digest = hashlib.sha256()
+    total = 0
+    while True:
+        chunk = os.read(fd, BUFFER_SIZE)
+        if not chunk:
+            break
+        digest.update(chunk)
+        total += len(chunk)
+    return digest.hexdigest(), total
+
+
+def open_regular(parent_fd: int, name: str, relative: str, root_device: int) -> FileObservation:
     before = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
     require(stat.S_ISREG(before.st_mode), f"non-regular delivery member: {relative}")
+    require(before.st_dev == root_device, f"cross-device delivery file rejected: {relative}")
+    require(before.st_nlink == 1, f"hard-linked delivery file rejected: {relative}")
     fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
     try:
-        opened = os.fstat(fd)
-        require(fingerprint(before) == fingerprint(opened), f"file changed while opening: {relative}")
-        digest = hashlib.sha256()
-        total = 0
-        while True:
-            chunk = os.read(fd, BUFFER_SIZE)
-            if not chunk:
-                break
-            digest.update(chunk)
-            total += len(chunk)
+        opened = fingerprint(os.fstat(fd))
+        require(opened == fingerprint(before), f"file changed while opening: {relative}")
+        require(opened.nlink == 1, f"hard-linked delivery file rejected after open: {relative}")
+        digest, total = hash_fd(fd)
         hook = _TEST_AFTER_FILE_HASH_HOOK
         if hook is not None:
             hook(parent_fd, name, relative)
-        post_fd = os.fstat(fd)
-        require(fingerprint(post_fd) == fingerprint(opened), f"file changed while hashing: {relative}")
+        require(fingerprint(os.fstat(fd)) == opened, f"file changed while hashing: {relative}")
         post_path = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-        require(fingerprint(post_path) == fingerprint(opened), f"file pathname changed after hashing: {relative}")
-        require(total == opened.st_size, f"file size changed while hashing: {relative}")
-        return ({
-            "path": relative,
-            "sha256": digest.hexdigest(),
-            "size_bytes": total,
-            "mode": mode_text(opened.st_mode),
-        }, fingerprint(opened))
-    finally:
-        os.close(fd)
-
-
-def open_parent_fd(root_fd: int, relative: str) -> tuple[int, str]:
-    parts = PurePosixPath(safe_relative(relative)).parts
-    fd = os.dup(root_fd)
-    try:
-        prefix: list[str] = []
-        for component in parts[:-1]:
-            prefix.append(component)
-            child, _metadata = open_directory(fd, component, "/".join(prefix))
-            os.close(fd)
-            fd = child
-        return fd, parts[-1]
+        require(fingerprint(post_path) == opened, f"file pathname changed after hashing: {relative}")
+        require(total == opened.size, f"file size changed while hashing: {relative}")
+        return FileObservation(relative, name, parent_fd, fd, opened, digest, total)
     except BaseException:
         os.close(fd)
         raise
 
 
-def read_manifest(root_fd: int, relative: str) -> tuple[dict[str, Any], Fingerprint]:
-    parent_fd, name = open_parent_fd(root_fd, relative)
-    try:
-        entry, observed = hash_open_regular(parent_fd, name, relative)
-        fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
-        try:
-            raw = b""
-            chunks: list[bytes] = []
-            while True:
-                chunk = os.read(fd, BUFFER_SIZE)
-                if not chunk:
-                    break
-                chunks.append(chunk)
-            raw = b"".join(chunks)
-            require(len(raw) == entry["size_bytes"], "manifest changed between authenticated reads")
-            require(hashlib.sha256(raw).hexdigest() == entry["sha256"], "manifest bytes changed between reads")
-        finally:
-            os.close(fd)
-        value = strict_json_loads(raw.decode("utf-8"))
-        require(isinstance(value, dict), "delivery manifest must be an object")
-        return value, observed
-    finally:
-        os.close(parent_fd)
+def scan_tree(root: RootHandle, manifest_path: str) -> TreeObservation:
+    directories: list[DirectoryObservation] = []
+    files: list[FileObservation] = []
+    manifest: FileObservation | None = None
+    seen_objects: set[tuple[int, int]] = {(root.opened.device, root.opened.inode)}
 
-
-def scan_tree(root_fd: int, manifest_path: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], Fingerprint | None]:
-    directories: list[dict[str, Any]] = []
-    files: list[dict[str, Any]] = []
-    manifest_fingerprint: Fingerprint | None = None
-
-    def walk(fd: int, prefix: str) -> None:
-        nonlocal manifest_fingerprint
-        start = fingerprint(os.fstat(fd))
-        names = sorted(os.listdir(fd), key=os.fsencode)
+    def walk(fd: int, prefix: str) -> tuple[str, ...]:
+        nonlocal manifest
+        names = tuple(sorted(os.listdir(fd), key=os.fsencode))
         for name in names:
-            require(name not in {"", ".", ".."} and "/" not in name, f"unsafe delivery name: {name!r}")
+            safe_component(name, "delivery member name")
             relative = f"{prefix}/{name}" if prefix else name
             safe_relative(relative)
             metadata = os.stat(name, dir_fd=fd, follow_symlinks=False)
+            key = (metadata.st_dev, metadata.st_ino)
+            require(key not in seen_objects, f"duplicate delivery inode topology rejected: {relative}")
+            seen_objects.add(key)
             file_type = stat.S_IFMT(metadata.st_mode)
             if file_type == stat.S_IFDIR:
-                child, opened = open_directory(fd, name, relative)
-                directories.append({"path": relative, "mode": mode_text(opened.st_mode)})
-                try:
-                    walk(child, relative)
-                    post = os.fstat(child)
-                    require(fingerprint(post) == fingerprint(opened), f"directory changed during traversal: {relative}")
-                finally:
-                    os.close(child)
-                path_post = os.stat(name, dir_fd=fd, follow_symlinks=False)
-                require(fingerprint(path_post) == fingerprint(opened), f"directory pathname changed after traversal: {relative}")
+                require(len(directories) < MAX_DIRECTORIES, "delivery directory capacity exceeded")
+                child = open_directory(fd, name, relative, root.opened.device)
+                directories.append(child)
+                child.children = walk(child.fd, relative)
             elif file_type == stat.S_IFREG:
-                entry, observed = hash_open_regular(fd, name, relative)
+                require(len(files) + int(manifest is not None) < MAX_FILES,
+                        "delivery file capacity exceeded")
+                observed = open_regular(fd, name, relative, root.opened.device)
                 if relative == manifest_path:
-                    manifest_fingerprint = observed
+                    require(manifest is None, "duplicate custody manifest pathname")
+                    manifest = observed
                 else:
-                    files.append(entry)
+                    files.append(observed)
             else:
                 raise CustodyError(f"link or special delivery member rejected: {relative}")
-        require(fingerprint(os.fstat(fd)) == start, f"directory changed while listing: {prefix or '.'}")
+        return names
 
-    walk(root_fd, "")
-    directories.sort(key=lambda item: item["path"])
-    files.sort(key=lambda item: item["path"])
-    return directories, files, manifest_fingerprint
+    # Root membership is authenticated by a synthetic observation retained in
+    # the final closure pass below.
+    root_names = walk(root.fd, "")
+    root_directory = DirectoryObservation("", root.basename, root.bindings[-1].parent_fd,
+                                          root.fd, root.opened, root_names)
+    directories.sort(key=lambda item: item.path)
+    files.sort(key=lambda item: item.path)
+    observation = TreeObservation(root, [root_directory, *directories], files, manifest)
+    hook = _TEST_AFTER_TREE_SCAN_HOOK
+    if hook is not None:
+        hook(root.requested)
+    return observation
+
+
+def read_observed_file(observed: FileObservation) -> bytes:
+    os.lseek(observed.fd, 0, os.SEEK_SET)
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = os.read(observed.fd, BUFFER_SIZE)
+        if not chunk:
+            break
+        chunks.append(chunk)
+        total += len(chunk)
+    require(total == observed.size_bytes, f"file size changed between authenticated reads: {observed.path}")
+    raw = b"".join(chunks)
+    require(hashlib.sha256(raw).hexdigest() == observed.sha256,
+            f"file bytes changed between authenticated reads: {observed.path}")
+    return raw
 
 
 def validate_directory(raw: Any, index: int) -> dict[str, Any]:
@@ -270,75 +410,159 @@ def validate_directory(raw: Any, index: int) -> dict[str, Any]:
 
 def validate_file(raw: Any, index: int) -> dict[str, Any]:
     require(isinstance(raw, dict), f"manifest file {index} is not an object")
-    require(set(raw) == {"path", "sha256", "size_bytes", "mode"}, f"manifest file fields changed: {index}")
+    require(set(raw) == {"path", "sha256", "size_bytes", "mode", "nlink"},
+            f"manifest file fields changed: {index}")
     path = safe_relative(raw["path"])
     sha = raw["sha256"]
     require(isinstance(sha, str) and len(sha) == 64 and all(char in "0123456789abcdef" for char in sha),
             f"invalid SHA-256: {path}")
     require(type(raw["size_bytes"]) is int and raw["size_bytes"] >= 0, f"invalid size: {path}")
     parse_mode(raw["mode"], path)
-    return {"path": path, "sha256": sha, "size_bytes": raw["size_bytes"], "mode": raw["mode"]}
-
-
-def create(root: Path, manifest: Path, label: str) -> dict[str, Any]:
-    relative = manifest_relative(root, manifest)
-    root_fd, root_metadata = open_root(root)
-    try:
-        directories, files, _existing_manifest = scan_tree(root_fd, relative)
-    finally:
-        os.close(root_fd)
-    value = {
-        "schema_id": SCHEMA_ID,
-        "root_label": label,
-        "root": {"mode": mode_text(root_metadata.st_mode)},
-        "manifest": {"path": relative, "mode": "0444"},
-        "directories": directories,
-        "files": files,
+    require(type(raw["nlink"]) is int and raw["nlink"] == 1, f"invalid link count: {path}")
+    return {
+        "path": path,
+        "sha256": sha,
+        "size_bytes": raw["size_bytes"],
+        "mode": raw["mode"],
+        "nlink": 1,
     }
-    manifest.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=f".{manifest.name}.", dir=manifest.parent)
+
+
+def final_closure(observation: TreeObservation) -> None:
+    # Rehash every retained file descriptor and reauthenticate its pathname.
+    all_files = ([observation.manifest] if observation.manifest is not None else []) + observation.files
+    for item in all_files:
+        assert item is not None
+        digest, total = hash_fd(item.fd)
+        require(digest == item.sha256 and total == item.size_bytes,
+                f"file changed after initial scan: {item.path}")
+        require(fingerprint(os.fstat(item.fd)) == item.opened,
+                f"file descriptor changed after initial scan: {item.path}")
+        current = os.stat(item.name, dir_fd=item.parent_fd, follow_symlinks=False)
+        require(fingerprint(current) == item.opened,
+                f"file pathname changed after initial scan: {item.path}")
+        require(current.st_nlink == 1, f"file became hard linked after initial scan: {item.path}")
+
+    # Relist and reauthenticate every retained directory.  The synthetic root
+    # observation uses an empty path and the retained root descriptor.
+    for item in reversed(observation.directories):
+        label = item.path or "."
+        current_names = tuple(sorted(os.listdir(item.fd), key=os.fsencode))
+        require(current_names == item.children, f"directory membership changed after scan: {label}")
+        require(fingerprint(os.fstat(item.fd)) == item.opened,
+                f"directory descriptor changed after scan: {label}")
+        current = os.stat(item.name, dir_fd=item.parent_fd, follow_symlinks=False)
+        require(fingerprint(current) == item.opened,
+                f"directory pathname changed after scan: {label}")
+    reauthenticate_root(observation.root)
+
+
+def open_parent_fd(root_fd: int, relative: str) -> tuple[int, str]:
+    parts = PurePosixPath(safe_relative(relative)).parts
+    fd = os.dup(root_fd)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
-            json.dump(value, stream, indent=2, sort_keys=False)
-            stream.write("\n")
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.chmod(temporary, 0o444)
-        os.replace(temporary, manifest)
-        directory_fd = os.open(manifest.parent, os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW)
+        for index, component in enumerate(parts[:-1]):
+            prefix = "/".join(parts[: index + 1])
+            before = os.stat(component, dir_fd=fd, follow_symlinks=False)
+            require(stat.S_ISDIR(before.st_mode), f"manifest parent is not a real directory: {prefix}")
+            child = os.open(component, os.O_RDONLY | os.O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=fd)
+            require(fingerprint(os.fstat(child)) == fingerprint(before),
+                    f"manifest parent changed while opening: {prefix}")
+            os.close(fd)
+            fd = child
+        return fd, parts[-1]
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> None:
+    parent_fd, name = open_parent_fd(root.fd, relative)
+    temporary = f".custody.{os.getpid()}.{os.urandom(16).hex()}"
+    fd = -1
+    linked = False
+    try:
         try:
-            os.fsync(directory_fd)
-        finally:
-            os.close(directory_fd)
-    finally:
-        try:
-            os.unlink(temporary)
+            os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
         except FileNotFoundError:
             pass
-    return value
+        else:
+            raise CustodyError("custody manifest already exists")
+        fd = os.open(
+            temporary,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | O_CLOEXEC | O_NOFOLLOW,
+            0o600,
+            dir_fd=parent_fd,
+        )
+        written = 0
+        while written < len(raw):
+            count = os.write(fd, raw[written:])
+            require(count > 0, "short zero-length manifest write")
+            written += count
+        os.fsync(fd)
+        os.fchmod(fd, 0o444)
+        os.fsync(fd)
+        # Hard-link publication is no-replace.  The temporary name is removed
+        # immediately, returning the published manifest to nlink=1.
+        os.link(temporary, name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd, follow_symlinks=False)
+        linked = True
+        os.unlink(temporary, dir_fd=parent_fd)
+        linked = False
+        published = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require(stat.S_ISREG(published.st_mode) and published.st_nlink == 1,
+                "published custody manifest topology is invalid")
+        os.fsync(parent_fd)
+    finally:
+        if fd >= 0:
+            os.close(fd)
+        if not linked:
+            try:
+                os.unlink(temporary, dir_fd=parent_fd)
+            except FileNotFoundError:
+                pass
+        os.close(parent_fd)
+
+
+def _write_manifest_with_closed_root(root: Path, relative: str, raw: bytes) -> None:
+    handle = open_root(root)
+    try:
+        write_manifest_atomic(handle, relative, raw)
+    finally:
+        close_root(handle)
 
 
 def verify(root: Path, manifest: Path) -> dict[str, Any]:
+    check_fd_capacity()
     relative = manifest_relative(root, manifest)
-    root_fd, root_opened = open_root(root)
+    root_handle = open_root(root)
+    observation: TreeObservation | None = None
     try:
-        value, initial_manifest = read_manifest(root_fd, relative)
+        observation = scan_tree(root_handle, relative)
+        require(observation.manifest is not None, "custody manifest is missing")
+        raw = read_observed_file(observation.manifest)
+        value = strict_json_loads(raw.decode("utf-8"))
+        require(isinstance(value, dict), "delivery manifest must be an object")
         require(set(value) == {"schema_id", "root_label", "root", "manifest", "directories", "files"},
                 "manifest top-level fields changed")
         require(value["schema_id"] == SCHEMA_ID, "wrong delivery-custody schema")
         require(isinstance(value["root_label"], str) and value["root_label"], "invalid root label")
-        require(isinstance(value["root"], dict) and set(value["root"]) == {"mode"}, "invalid root record")
+        require(isinstance(value["root"], dict)
+                and set(value["root"]) == {"name", "label", "mode"}, "invalid root record")
+        require(value["root"]["name"] == root_handle.basename, "custody root basename mismatch")
+        require(value["root"]["label"] == value["root_label"], "custody root label mismatch")
         expected_root_mode = parse_mode(value["root"]["mode"], ".")
-        require(stat.S_IMODE(root_opened.st_mode) == expected_root_mode, "custody root mode mismatch")
-        require(isinstance(value["manifest"], dict) and set(value["manifest"]) == {"path", "mode"},
-                "invalid manifest record")
+        require(root_handle.opened.mode == expected_root_mode, "custody root mode mismatch")
+        require(isinstance(value["manifest"], dict)
+                and set(value["manifest"]) == {"path", "mode", "nlink"}, "invalid manifest record")
         require(safe_relative(value["manifest"]["path"]) == relative, "manifest path disagreement")
         expected_manifest_mode = parse_mode(value["manifest"]["mode"], relative)
-        require(initial_manifest.mode == expected_manifest_mode, "custody manifest mode mismatch")
+        require(observation.manifest.opened.mode == expected_manifest_mode, "custody manifest mode mismatch")
+        require(type(value["manifest"]["nlink"]) is int and value["manifest"]["nlink"] == 1
+                and observation.manifest.opened.nlink == 1, "custody manifest link count mismatch")
         require(isinstance(value["directories"], list), "manifest directories must be an array")
         require(isinstance(value["files"], list), "manifest files must be an array")
-        expected_directories = [validate_directory(raw, index) for index, raw in enumerate(value["directories"])]
-        expected_files = [validate_file(raw, index) for index, raw in enumerate(value["files"])]
+        expected_directories = [validate_directory(item, index) for index, item in enumerate(value["directories"])]
+        expected_files = [validate_file(item, index) for index, item in enumerate(value["files"])]
         dir_paths = [entry["path"] for entry in expected_directories]
         file_paths = [entry["path"] for entry in expected_files]
         require(dir_paths == sorted(dir_paths) and len(dir_paths) == len(set(dir_paths)),
@@ -347,18 +571,49 @@ def verify(root: Path, manifest: Path) -> dict[str, Any]:
                 "manifest file paths are not unique and sorted")
         require(relative not in file_paths and relative not in dir_paths, "manifest self-entry is invalid")
         require(not (set(dir_paths) & set(file_paths)), "manifest path is both file and directory")
-        observed_directories, observed_files, observed_manifest = scan_tree(root_fd, relative)
-        require(observed_manifest is not None, "custody manifest disappeared during tree scan")
-        require(observed_manifest == initial_manifest, "custody manifest changed during verification")
+        observed_directories = [item.manifest_entry() for item in observation.directories if item.path]
+        observed_files = [item.manifest_entry() for item in observation.files]
         require(observed_directories == expected_directories, "delivery directory set or modes disagree")
-        require(observed_files == expected_files, "delivery file set, bytes, sizes, or modes disagree")
-        root_post_fd = os.fstat(root_fd)
-        require(fingerprint(root_post_fd) == fingerprint(root_opened), "custody root changed during verification")
-        root_post_path = os.stat(Path(os.path.abspath(root)), follow_symlinks=False)
-        require(fingerprint(root_post_path) == fingerprint(root_opened), "custody root pathname changed during verification")
+        require(observed_files == expected_files,
+                "delivery file set, bytes, sizes, modes, or link counts disagree")
+        final_closure(observation)
         return value
     finally:
-        os.close(root_fd)
+        if observation is not None:
+            observation.close()
+        else:
+            close_root(root_handle)
+
+
+def create(root: Path, manifest: Path, label: str) -> dict[str, Any]:
+    """Create a v3 manifest and immediately self-verify it."""
+    check_fd_capacity()
+    relative = manifest_relative(root, manifest)
+    root_handle = open_root(root)
+    observation: TreeObservation | None = None
+    try:
+        require(isinstance(label, str) and label != "", "invalid root label")
+        observation = scan_tree(root_handle, relative)
+        require(observation.manifest is None, "custody manifest already exists")
+        final_closure(observation)
+        value = {
+            "schema_id": SCHEMA_ID,
+            "root_label": label,
+            "root": {"name": root_handle.basename, "label": label, "mode": mode_text(root_handle.opened.mode)},
+            "manifest": {"path": relative, "mode": "0444", "nlink": 1},
+            "directories": [item.manifest_entry() for item in observation.directories if item.path],
+            "files": [item.manifest_entry() for item in observation.files],
+        }
+        raw = (json.dumps(value, indent=2, sort_keys=False) + "\n").encode("utf-8")
+    finally:
+        if observation is not None:
+            observation.close()
+        else:
+            close_root(root_handle)
+    _write_manifest_with_closed_root(root, relative, raw)
+    verified = verify(root, manifest)
+    require(verified == value, "created custody manifest failed semantic self-verification")
+    return value
 
 
 def main() -> int:
@@ -368,10 +623,11 @@ def main() -> int:
     action.add_argument("--verify", action="store_true")
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--label", default="x64lens-delivery")
+    parser.add_argument("--label")
     args = parser.parse_args()
     if args.create:
-        value = create(args.root, args.manifest, args.label)
+        label = args.label if args.label is not None else Path(os.path.abspath(args.root)).name
+        value = create(args.root, args.manifest, label)
         print(
             "delivery-custody-create: ok "
             f"schema={SCHEMA_ID} directories={len(value['directories'])} "
