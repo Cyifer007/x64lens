@@ -3,7 +3,7 @@
 ## Status
 
 Planned semantic capability completion sprint after Sprint 12 Patch 075 and
-the planned Patch 076 runtime-search-path tranche pass acceptance. Sprint 12
+Patch 076 and the planned Patch 077 closeout reconciliation pass acceptance. Sprint 12
 remains active; this plan is not yet the current implementation authority.
 
 ## Sprint goal

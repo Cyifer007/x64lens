@@ -9,10 +9,13 @@ intermediate diagnostic matrix, and Patch 069 added authenticated external
 reconciliation. Patch 071 supplied the first development-evidence correction.
 Patches 070, 071, 072, and 073 were not accepted at their respective first
 returned review boundaries. Patch 073 delivered the first custody/isolation
-correction and
-the non-reinterpretive policy deferral. The current Patch 074 final closeout
-candidate carries the remaining correction without changing the runtime
-boundary. Complete Patch 074 validation and acceptance remain pending.
+correction and the non-reinterpretive policy deferral. Patch 074 was the
+superseded Sprint 12 closeout candidate. Patch 076 is active: it owns the
+remaining correction plus private static text-relocation evidence without
+changing this GNU-property runtime boundary. Complete Patch 076 acceptance
+remains pending. Patch 076 implements distinct `DT_RPATH` and `DT_RUNPATH`
+evidence. Current validation expectations are in the
+[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 
@@ -103,7 +106,7 @@ mapped ELF header or dynamic/string bytes.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Patch 069 added authenticated external reconciliation without changing public
-  report fields. The Patch 074 candidate preserves those fields. Patch 073
-  executed the public-policy gate as `defer`; corrected actual native/container
-  parity and Patch 074 acceptance remain pending, and any future public field
-  requires a new separately reviewed decision.
+  report fields. The active Patch 075 candidate preserves those fields. Patch
+  073 executed the public-policy gate as `defer`; corrected actual native/
+  container parity and complete Patch 075 acceptance remain pending, and any
+  future public field requires a new separately reviewed decision.

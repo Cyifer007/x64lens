@@ -215,8 +215,8 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Active at Patch 075' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked active at Patch 075'
+grep -q '^Active at Patch 076' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked active at Patch 076'
 grep -q '^Planned semantic capability completion sprint' docs/sprints/sprint-13-plan.md \
     || fail 'Sprint 13 is not marked planned'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \

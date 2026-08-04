@@ -2,12 +2,13 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete. Sprint 12 is active at Patch 075.
-> Patch 074 was a superseded closeout candidate. Patch 075 corrects the
-> remaining custody and validation findings and adds private bounded
-> `DT_TEXTREL` / `DF_TEXTREL` evidence without changing public schema `0.2.0`.
-> Patch 076 is planned for distinct bounded `DT_RPATH` and `DT_RUNPATH`
-> evidence. Sprint 13 remains planned until the active Sprint 12 gates close.
+> Status: Sprints 1 through 11 are complete. Sprint 12 is active at Patch 076.
+> Patch 074 was a superseded closeout candidate. Patch 075 introduced private
+> bounded `DT_TEXTREL` / `DF_TEXTREL` evidence. Patch 076 corrects the remaining
+> Patch 075 transaction, oracle, recovery, parity, and delivery findings and adds
+> distinct bounded private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence.
+> Public schema `0.2.0` remains unchanged. Sprint 13 remains planned until the
+> active Sprint 12 gates close.
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
 > conditions: 12 x64lens conditions executed and 18 pinned-baseline conditions
@@ -21,7 +22,7 @@
 > 6,361,100 ns reliable single-process floor. This is unresolved latency, not
 > zero runtime or a speed result. Two Python baseline closures and coordinate
 > calibration failed, so the replay was not comparison-qualified and did not
-> qualify the Patch 061 evidence stratum. Measurements after Patch 075 require
+> qualify the Patch 061 evidence stratum. Measurements after Patch 076 require
 > a distinct diagnostic campaign identity. Tool-native record totals remain
 > definition-specific, and address-level comparisons remain blocked until
 > positive coordinate anchors exist.
@@ -198,10 +199,11 @@ controlled metamorphic preflight. Patch 068 supplied an intermediate custody
 and oracle correction, and Patch 069 authenticated the resulting matrix.
 Patches 070, 071, 072, and 073 were not accepted at their respective first
 returned review boundaries. Patch 073 supplied the first custody/isolation
-correction and
-recorded the policy deferral; Patch 074 carries the remaining custody, parity-
-protocol, permission, and authority corrections. It preserves the public-policy
-decision as `defer` and remains the final Sprint 12 closeout candidate.
+correction and recorded the policy deferral. Patch 074 carried the next custody,
+parity-protocol, permission, and authority corrections but was superseded as
+the closeout candidate. Patch 075 introduced private bounded text-relocation
+evidence; Patch 076 is the active correction and distinct private search-path
+tranche. Sprint 12 remains active.
 
 GNU property entries are now aligned relative to the property descriptor. Exact
 duplicate physical carriers remain canonicalized, while any non-identical
@@ -218,11 +220,12 @@ freestanding product. Public command syntax and report fields, and schema
 before output.
 
 Patch 067 added private layout attestation. Patch 068 addressed the remaining
-corpus-repair boundary; Patches 069 and 070 supplied subsequent evidence-gate corrections. Patch 071
-corrected the first rejected Patch 070 boundaries. Patch 072 supplied the next
-correction and acquisition/parity protocol but was rejected for current
-acceptance; Patch 073 carried the first correction, and Patch 074 supplies the
-final custody, parity, permission, and closeout correction. The Patch 068 candidate contract required the complete
+corpus-repair boundary; Patches 069 and 070 supplied subsequent evidence-gate
+corrections. Patch 071 corrected the first rejected Patch 070 boundaries.
+Patch 072 supplied the next correction and acquisition/parity protocol but was
+rejected for current acceptance; Patch 073 carried the first correction, and
+Patch 074 supplied a superseded closeout candidate. Patch 075 carries the
+remaining correction. The Patch 068 candidate contract required the complete
 caller-visible path and exact member set to be reauthenticated immediately
 before mutation and at return. A failure after mutation begins must restore
 original modes through retained descriptors with bounded retries and
@@ -240,12 +243,12 @@ distinct held-out SHA-256 identities and zero intersection with an authenticated
 verified provisional-corpus inventory. The natural and metamorphic strata remain
 separate, diagnostic, unfrozen, and publication-ineligible. This gate does not
 change schema `0.2.0` or add private facts to public output.
-Patch 069 authenticated that matrix. Patch 070 attempted the next evidence-gate correction but was rejected.
-Patch 071 corrected its first blocker set. Patch 072 carried the remaining
-correction plus private acquisition/parity work, but its returned review
-rejected current acceptance. Patch 073 changed no runtime analyzer or schema
-path but was not accepted at its first returned review boundary. Patch 074
-supplies the final correction and remains the Sprint 12 closeout candidate.
+Patch 069 authenticated that matrix. Patch 070 attempted the next evidence-gate
+correction but was rejected. Patch 071 corrected its first blocker set. Patch
+072 carried the remaining correction plus private acquisition/parity work, but
+its returned review rejected current acceptance. Patch 073 changed no runtime
+analyzer or schema path but was not accepted at its first returned review
+boundary. Patch 074 was a superseded closeout candidate; Patch 076 is active.
 
 ```bash
 make provisional-corpus-ready
@@ -292,7 +295,8 @@ The matrix and reconciliation remain diagnostic, unfrozen, and publication-
 ineligible. Patch 070 was rejected, Patch 071 supplied the first correction,
 and Patch 072 added the corrective acquisition/parity work but was rejected for
 current acceptance. Patch 073 executed the deferral but was not accepted at its
-first returned review boundary; Patch 074 is the Sprint 12 closeout candidate.
+first returned review boundary. Patch 074 was a superseded closeout candidate,
+and Patch 076 is the active Sprint 12 correction.
 These results do not support an x64lens latency, RSS-superiority, generic
 gadget-count, or normalized-coverage claim.
 
@@ -314,9 +318,12 @@ the historical [Patch 071 validation record](docs/sprints/sprint-12-patch-071-va
 the historical [Patch 072 validation record](docs/sprints/sprint-12-patch-072-validation.md),
 the historical
 [Patch 073 validation record](docs/sprints/sprint-12-patch-073-validation.md),
-and the [Patch 074 closeout validation record](docs/sprints/sprint-12-patch-074-validation.md).
+the historical
+[P074 validation](docs/sprints/sprint-12-patch-074-validation.md),
+[ADR 0061][a61], and
+[P075 validation](docs/sprints/sprint-12-patch-075-validation.md).
 
-## Sprint 12 closeout checkpoint
+## Sprint 12 Patch 074 superseded closeout checkpoint
 
 Patch 074 preserves the unchanged runtime analyzer and implements corrections
 for the remaining Patch 073 review findings in the evidence and acceptance
@@ -337,8 +344,8 @@ existing mitigations.pie:    unchanged
 runtime CET claim:           none
 ```
 
-Text-relocation evidence and separate validated RPATH/RUNPATH indicators remain
-bounded future mitigation work. They are not runtime fields in Patch 074.
+At the Patch 074 boundary, text-relocation and separate validated RPATH/RUNPATH
+indicators remained bounded future mitigation work and were not runtime fields.
 
 ```bash
 make patch073-corrective-regression-smoke
@@ -352,6 +359,21 @@ rehearsal, or independent non-documentation acceptance.
 
 See [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md) and
 the [Patch 074 validation record](docs/sprints/sprint-12-patch-074-validation.md).
+
+## Sprint 12 Patch 075 and Patch 076 continuation checkpoint
+
+Patch 075 superseded the Patch 074 closeout candidate and introduced bounded
+private static `DT_TEXTREL` / `DF_TEXTREL` evidence. Patch 076 corrects the
+remaining Patch 075 acceptance findings and extends the same private side-car
+with distinct exact-byte `DT_RPATH` and `DT_RUNPATH` facts. It does not split or
+expand path strings, apply loader policy, inspect target-derived paths, add a
+public field, revise schema `0.2.0`, reinterpret PIE, or make a runtime-CET
+claim. Program headers remain executable authority; section headers remain
+bounded metadata and annotations.
+
+See [ADR 0061][a61], [ADR 0062][a62],
+[P075 validation](docs/sprints/sprint-12-patch-075-validation.md), and
+[P076 validation](docs/sprints/sprint-12-patch-076-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -731,8 +753,9 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 074 are later
-pre-release work. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 076 are later
+pre-release work. Patch 076 is the current development patch and Patch 077 is
+planned as the final Sprint 12 reconciliation. Patch 054 closes Sprint 10, Patch 061 closes Sprint 11, Patch
 062 begins Sprint 12 loader-precision work, Patch 063 adds corrective hardening
 plus internal overlap provenance, and Patch 064 records the measured
 normalization deferral plus an internal role-evidence lattice. Patch 065 carries
@@ -748,8 +771,8 @@ the remaining cleanup, process-tree, authority, publication-transition, and
 delivery-completeness correction together with the private acquisition/parity
 gates, but its returned review rejected current acceptance. Patch 073 carried
 the first custody/isolation correction and policy deferral but was not accepted
-at its first returned review boundary. Patch 074 is the current final closeout
-candidate and does not move a release tag.
+at its first returned review boundary. Patch 074 was a superseded closeout
+candidate. Patch 076 is active and does not move a release tag.
 
 Planned release sequence:
 
@@ -761,7 +784,7 @@ v0.1.0       first research release
 
 Schema `0.2.0` is the current producer contract. Patch 040 added report identity and complete-analysis state; Patch 041 added candidate provenance compatibly while preserving Patch 040 and versioned `0.1.0` fixtures. Patches 046 through 049 add schema-compatible ordered-pop, clobber, side-effect, register-transfer, stack-adjust, and structured memory fields without redefining historical counts. Retained earlier `0.2.0` reports may omit those additive fields, while current producers must satisfy the stronger effect relationships. Patch 050 strengthens current-producer relationships for implicit return stack reads, syscall and pivot clobbers, and cross-family fixture promotion. Patch 051 adds compatible architectural effects and two validated score entries while keeping earlier `0.2.0` reports consumable. Patch 052 corrects the current effect and validation relationships without changing the field shape. Patch 053 changes planning and validation infrastructure only: it separates diagnostic measurement from the frozen confirmatory campaign and keeps decoder-backed facts and worker profiles optional. Patch 054 closes Sprint 10, and Patches 055 through 061 establish, harden, and close the external Sprint 11 diagnostic measurement plane without changing the analyzer or schema. Decoder-backed facts remain additive rather than a mandatory default-runtime dependency.
 
-Patches 062 through 074 preserve schema `0.2.0`: Patch 062 adds shared PHDR
+Patches 062 through 076 preserve schema `0.2.0`: Patch 062 adds shared PHDR
 validity, Patch 063 adds parser/transaction hardening plus internal
 loader-contributor provenance, and Patch 064 adds only an internal role-evidence
 lattice and a diagnostic overlap decision. Patch 065 adds private GNU-property
@@ -774,7 +797,9 @@ evidence and validation infrastructure only; it adds no runtime analyzer module,
 schema field, or public report field. Patch 071 corrected the first rejected Patch 070 development and delivery
 boundaries. Patch 072 carries the remaining corrective prerequisite and adds
 private external-natural acquisition plus same-byte environment parity without
-changing any public field.
+changing any public field. Patch 073 records the policy deferral, Patch 074
+supplies a superseded closeout candidate, and Patch 075 adds private static
+text-relocation evidence without a public field.
 
 See [`docs/versioning.md`](docs/versioning.md) and [`docs/design/schema-evolution.md`](docs/design/schema-evolution.md).
 
@@ -913,9 +938,17 @@ SHSTK, text-relocation, RPATH, or RUNPATH field, and implements corrections for
 the remaining descriptor, topology, selection-inode, parity-mount, publication,
 permission-normalization, and negative-oracle defects. The existing coarse
 `mitigations.pie` ET_DYN indicator remains unchanged, and no runtime-CET claim
-is made. Sprint 12 closes and Sprint 13 becomes active only after complete
-Patch 075 and the planned Patch 076 acceptance; Sprint 13 then owns semantic completion.
-Text-relocation and distinct RPATH/RUNPATH evidence remain selected future
-bounded work rather than Patch 074 product behavior. See
-[ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md) and the
-[Patch 074 validation record](docs/sprints/sprint-12-patch-074-validation.md).
+is made. Patch 074 was superseded as the closeout candidate. Patch 075 kept
+Sprint 12 active and added bounded private static text-relocation evidence.
+Patch 076 preserves those public boundaries while adding distinct bounded
+private RPATH/RUNPATH carrier and exact-value evidence. Sprint 13 becomes active
+only after the active Sprint 12 gates close. See
+[ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
+historical
+[P074 validation](docs/sprints/sprint-12-patch-074-validation.md),
+[ADR 0061][a61], [ADR 0062][a62],
+[P075 validation](docs/sprints/sprint-12-patch-075-validation.md), and
+[P076 validation](docs/sprints/sprint-12-patch-076-validation.md).
+
+[a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
+[a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

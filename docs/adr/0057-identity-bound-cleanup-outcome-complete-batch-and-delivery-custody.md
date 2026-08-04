@@ -8,9 +8,12 @@ delivery tooling only, but it was not accepted at its first returned review
 boundary and required the Patch 072 correction recorded by ADR 0058. Patches
 070, 072, and 073 likewise were not accepted at their first returned review
 boundaries. Patch 073 delivered the first custody/isolation correction and
-policy deferral; Patch 074 is the final corrective closeout candidate. Product
-acceptance remains subject to complete Patch 074 validation against the exact
-candidate source.
+policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
+Patch 076 is active: it corrects the remaining Patch 075 findings and adds
+distinct private RPATH/RUNPATH evidence. Complete Patch 076 acceptance remains pending. Patch 076 is
+planned for distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current validation
+expectations are in the
+[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 
@@ -107,9 +110,12 @@ role/property acquisition. The Sprint 12 sequence is:
   acquisition and the initial native/container private-fact parity protocol;
   its returned review rejected current acceptance;
 - Patch 073: first custody/isolation correction and non-reinterpretive
-  public-policy deferral; its returned review did not accept the candidate; and
-- Patch 074: remaining correction and final Sprint 12 closeout candidate, with
-  Sprint 13 handoff only after complete acceptance.
+  public-policy deferral; its returned review did not accept the candidate;
+- Patch 074: remaining correction and superseded Sprint 12 closeout candidate;
+- Patch 075: active remaining correction plus private static text-relocation
+  evidence, with complete acceptance pending; and
+- Patch 076: distinct `DT_RPATH` and `DT_RUNPATH` evidence, with the
+  Sprint 13 handoff only after the active Sprint 12 gates close.
 
 The batch pilot remains transaction-conformance evidence. It is not a timing
 result, and no batch elapsed time may be divided into a single-run latency.

@@ -8,13 +8,14 @@ external-reconciliation work in
 [Patch 069](sprint-12-patch-069-validation.md), which in turn required Patch 070
 evidence-gate correction. Patch 070 was rejected after acceptance validation and
 required the further Patch 071 correction, whose review in turn required Patch
-072. Patch 072's returned review rejected current acceptance. Current
-expectations are recorded in the
-[Patch 074 validation record](sprint-12-patch-074-validation.md). Patches 070,
-071, 072, and 073 were not accepted at their respective first returned review
-boundaries;
-Patch 073 delivered the first custody/isolation correction and policy deferral,
-and Patch 074 is the final corrective Sprint 12 closeout candidate. The
+072. Patch 072's returned review rejected acceptance. Patches 070, 071, 072, and
+073 were not accepted at their respective first returned review boundaries.
+Patch 073 delivered the first custody/isolation correction and policy deferral.
+Patch 074 was a superseded Sprint 12 closeout candidate. Patch 076 is active,
+owns the remaining correction plus private static text-relocation evidence, and
+still requires complete acceptance; Patch 076 implements distinct
+RPATH/RUNPATH evidence. Current validation expectations are recorded in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
 historical boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -153,7 +154,9 @@ reconciliation remained future work; Patch 069 added that diagnostic
 reconciliation, Patch 071 supplied the first evidence-gate correction, and
 Patch 072 supplies the remainder plus acquisition and parity gates. Qualified
 actual native/container private-fact parity over the diagnostic matrix and
-Patch 074 acceptance remain pending. The public-policy decision, positive
+Patch 075 acceptance remain pending. Patch 075 also owns private static text-
+relocation evidence, while Patch 076 owns the planned distinct RPATH/RUNPATH
+tranche. The public-policy decision, positive
 coordinate anchors, whole-batch
 timing, and process-tree RSS remain separate later gates. Patch 068
 evidence is diagnostic and cannot support publication or runtime-CET claims.

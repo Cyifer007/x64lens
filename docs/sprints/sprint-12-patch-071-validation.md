@@ -10,8 +10,11 @@ public schema behavior. Follow-up validation required the remaining Patch 072
 correction, so Patch 071 was not accepted at its first returned review boundary.
 Patches 070, 072, and 073 likewise were not accepted at their first returned
 review boundaries. Patch 073 delivered the first custody/isolation correction
-and policy deferral; Patch 074 is the final corrective Sprint 12 closeout
-candidate.
+and policy deferral. Patch 074 was a superseded Sprint 12 closeout candidate.
+Patch 076 is active, owns the remaining correction plus private static text-
+relocation evidence, and still requires complete acceptance; Patch 076 is
+planned for distinct RPATH/RUNPATH evidence. Current validation expectations are
+in the [Patch 076 validation record](sprint-12-patch-076-validation.md).
 
 ## Source precondition
 
@@ -125,11 +128,13 @@ native Ubuntu daemon are separate environment strata.
 At this historical boundary, passing the listed gates would have established
 the first corrected development and delivery transaction boundary. Follow-up
 validation identified narrower prerequisites addressed by Patch 072. Patch
-072's returned review rejected current acceptance; the
+072's returned review rejected acceptance; the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary, while the
-[Patch 074 validation record](sprint-12-patch-074-validation.md) carries current
-expectations. None of these historical boundaries validates arbitrary external-
+[Patch 074 validation record](sprint-12-patch-074-validation.md) preserves the
+superseded closeout-candidate boundary. Current validation expectations are in
+the [Patch 076 validation record](sprint-12-patch-076-validation.md). None of
+these historical boundaries validates arbitrary external-
 natural objects,
 proves runtime CET enforcement, authorizes public mitigation fields, establishes
 single-run latency, or produces publication evidence by itself.

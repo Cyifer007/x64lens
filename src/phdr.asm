@@ -40,6 +40,7 @@ extern x64lens_gnu_property_register_carrier
 extern x64lens_gnu_property_parse
 extern x64lens_dynamic_metadata_context_init
 extern x64lens_dynamic_metadata_record
+extern x64lens_dynamic_metadata_resolve_search_path
 extern x64lens_dynamic_metadata_finalize
 
 section .text
@@ -256,7 +257,7 @@ x64lens_phdr_analyze:
     push    r13
     push    r14
     push    r15
-    sub     rsp, 88             ; align calls and reserve parser scratch slots
+    sub     rsp, 120            ; align calls and reserve parser scratch slots
 
     mov     [rsp + 56], r9      ; composite private metadata context
     lea     rax, [r9 + PRIVATE_METADATA_DYNAMIC_OFFSET]
@@ -584,6 +585,10 @@ x64lens_phdr_analyze:
     je      .dynamic_flags_1
     cmp     rax, DT_SONAME
     je      .dynamic_soname
+    cmp     rax, DT_RPATH
+    je      .dynamic_rpath
+    cmp     rax, DT_RUNPATH
+    je      .dynamic_runpath
     jmp     .dynamic_advance
 
 .dynamic_strtab:
@@ -657,6 +662,29 @@ x64lens_phdr_analyze:
     mov     qword [r13 + PHDR_SUMMARY_BIND_NOW], 1
     jmp     .dynamic_advance
 
+
+.dynamic_rpath:
+    mov     r8, [rdx + D_UN]
+    mov     rdi, [rsp + 64]
+    mov     rsi, DT_RPATH
+    mov     rdx, [rsp + 32]
+    mov     rcx, [rsp + 72]
+    call    x64lens_dynamic_metadata_record
+    test    rax, rax
+    jne     .done
+    jmp     .dynamic_advance
+
+.dynamic_runpath:
+    mov     r8, [rdx + D_UN]
+    mov     rdi, [rsp + 64]
+    mov     rsi, DT_RUNPATH
+    mov     rdx, [rsp + 32]
+    mov     rcx, [rsp + 72]
+    call    x64lens_dynamic_metadata_record
+    test    rax, rax
+    jne     .done
+    jmp     .dynamic_advance
+
 .dynamic_soname:
     mov     rax, [rdx + D_UN]
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
@@ -699,13 +727,23 @@ x64lens_phdr_analyze:
     jne     .dynamic_strtab_present
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
     jne     .malformed
-    jmp     .finalize_gnu_property
+    mov     rax, [rsp + 64]
+    cmp     qword [rax + DYNAMIC_METADATA_CTX_RPATH_CARRIER_COUNT], 0
+    jne     .malformed
+    cmp     qword [rax + DYNAMIC_METADATA_CTX_RUNPATH_CARRIER_COUNT], 0
+    jne     .malformed
+    jmp     .refinalize_dynamic_metadata
 .dynamic_strtab_present:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ_SEEN], 0
     jne     .dynamic_string_table_present
     cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
     jne     .malformed
-    jmp     .finalize_gnu_property
+    mov     rax, [rsp + 64]
+    cmp     qword [rax + DYNAMIC_METADATA_CTX_RPATH_CARRIER_COUNT], 0
+    jne     .malformed
+    cmp     qword [rax + DYNAMIC_METADATA_CTX_RUNPATH_CARRIER_COUNT], 0
+    jne     .malformed
+    jmp     .refinalize_dynamic_metadata
 .dynamic_string_table_present:
 
     mov     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
@@ -767,16 +805,14 @@ x64lens_phdr_analyze:
     cmp     rax, 1
     jne     .malformed
 
-    ; Every DT_SONAME carrier must resolve to a nonempty NUL-terminated string
-    ; inside the bounded table. Validating only the first index would allow a
-    ; later malformed duplicate to be hidden by a valid first carrier.
-    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
-    je      .canary_string_scan
-    mov     qword [rsp + 64], 0
-.soname_second_pass:
-    mov     rax, [rsp + 64]
+    ; Resolve every represented dynamic-string carrier from the same checked
+    ; DT_STRTAB/DT_STRSZ view. SONAME remains nonempty role evidence. RPATH and
+    ; RUNPATH preserve exact bytes separately and never trigger path-derived I/O.
+    mov     qword [rsp + 88], 0
+.dynamic_string_second_pass:
+    mov     rax, [rsp + 88]
     cmp     rax, [rsp + 24]
-    jae     .soname_all_validated
+    jae     .dynamic_string_second_done
     mov     rdi, r14
     mov     rsi, [rsp + 16]
     mov     rdx, ELF64_DYN_SIZE
@@ -787,13 +823,20 @@ x64lens_phdr_analyze:
     cmp     rax, 1
     jne     .malformed
     mov     rax, [rsp]
+    mov     [rsp + 72], rax
     lea     rdx, [r15 + rax]
     mov     rax, [rdx + D_TAG]
     cmp     rax, DT_NULL
-    je      .soname_all_validated
+    je      .dynamic_string_second_done
     cmp     rax, DT_SONAME
-    jne     .soname_second_advance
+    je      .dynamic_string_soname
+    cmp     rax, DT_RPATH
+    je      .dynamic_string_rpath
+    cmp     rax, DT_RUNPATH
+    je      .dynamic_string_runpath
+    jmp     .dynamic_string_second_advance
 
+.dynamic_string_soname:
     mov     rax, [rdx + D_UN]
     cmp     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     jae     .malformed
@@ -806,35 +849,70 @@ x64lens_phdr_analyze:
     mov     rcx, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     sub     rcx, rax
     xor     r8, r8
-.soname_second_terminator:
+.dynamic_string_soname_terminator:
     cmp     r8, rcx
     jae     .malformed
     cmp     byte [rdx + r8], 0
-    je      .soname_second_advance
+    je      .dynamic_string_second_advance
     inc     r8
-    jmp     .soname_second_terminator
-.soname_second_advance:
-    inc     qword [rsp + 64]
-    jmp     .soname_second_pass
-.soname_all_validated:
+    jmp     .dynamic_string_soname_terminator
+
+.dynamic_string_rpath:
+    mov     rsi, DT_RPATH
+    jmp     .dynamic_string_search_path
+.dynamic_string_runpath:
+    mov     rsi, DT_RUNPATH
+.dynamic_string_search_path:
+    ; An unterminated dynamic table keeps path state unknown. Raw carriers stay
+    ; retained, but no value is promoted from incomplete table evidence.
+    mov     rdi, [rsp + 64]
+    cmp     qword [rdi + DYNAMIC_METADATA_CTX_TABLE_COMPLETE], 1
+    jne     .dynamic_string_second_advance
+    mov     rax, [rdx + D_UN]
+    cmp     rax, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
+    jae     .malformed
+    mov     rcx, [rsp + 48]
+    add     rcx, rax
+    jc      .malformed
+    lea     r8, [r15 + rcx]
+    mov     r9, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
+    sub     r9, rax
+    mov     rdx, [rsp + 88]
+    call    x64lens_dynamic_metadata_resolve_search_path
+    test    rax, rax
+    jne     .done
+
+.dynamic_string_second_advance:
+    inc     qword [rsp + 88]
+    jmp     .dynamic_string_second_pass
+.dynamic_string_second_done:
+    cmp     qword [r13 + PHDR_SUMMARY_SONAME_COUNT], 0
+    je      .canary_string_scan
     or      qword [r13 + PHDR_SUMMARY_ROLE_EVIDENCE], ROLE_EVIDENCE_DT_SONAME
 
 .canary_string_scan:
     cmp     qword [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ], CANARY_SYMBOL_LEN_WITH_NUL
-    jb      .finalize_gnu_property
+    jb      .refinalize_dynamic_metadata
 
     mov     rax, [rsp + 48]
     lea     rdi, [r15 + rax]
     mov     rsi, [r13 + PHDR_SUMMARY_DYNAMIC_STRSZ]
     call    .scan_canary_string_table
     cmp     rax, 1
-    jne     .finalize_gnu_property
+    jne     .refinalize_dynamic_metadata
     mov     qword [r13 + PHDR_SUMMARY_CANARY_STATE], CANARY_STATE_PRESENT
-    jmp     .finalize_gnu_property
+    jmp     .refinalize_dynamic_metadata
 
 .strtab_next_load:
     inc     rbx
     jmp     .strtab_load_loop
+
+.refinalize_dynamic_metadata:
+    mov     rdi, [rsp + 64]
+    mov     rsi, r13
+    call    x64lens_dynamic_metadata_finalize
+    test    rax, rax
+    jne     .done
 
 .finalize_gnu_property:
     mov     rdi, r15
@@ -853,7 +931,7 @@ x64lens_phdr_analyze:
 .unsupported:
     mov     rax, EXIT_UNSUPPORTED
 .done:
-    add     rsp, 88
+    add     rsp, 120
     pop     r15
     pop     r14
     pop     r13

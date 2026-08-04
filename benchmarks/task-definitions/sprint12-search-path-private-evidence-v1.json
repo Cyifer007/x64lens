@@ -1,0 +1,39 @@
+{
+  "schema": "x64lens-sprint12-search-path-private-evidence-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "public_projection": false,
+  "schema_version": "0.2.0",
+  "mixed_carrier_capacity": 64,
+  "search_record_capacity": 64,
+  "aggregate_value_byte_capacity": 4096,
+  "state_values": {
+    "unknown": 0,
+    "absent": 1,
+    "present": 2,
+    "contradictory": 3
+  },
+  "fixture_counts": {
+    "valid": 22,
+    "malformed": 10,
+    "unsupported": 4,
+    "total": 36,
+    "private_probe_outcomes": 36,
+    "public_command_outcomes": 144,
+    "external_dispositions": 36,
+    "total_outcome_cells": 216,
+    "eligible_readelf": 19
+  },
+  "public_commands": ["info", "mitigations", "gadgets", "analyze"],
+  "external_command": ["readelf", "-dW", "<target>"],
+  "value_semantics": {
+    "rpath_and_runpath_are_distinct": true,
+    "split_on_colon": false,
+    "expand_origin": false,
+    "resolve_filesystem_paths": false,
+    "additional_target_derived_opens": 0,
+    "loader_order_or_security_judgment": false
+  },
+  "interpretation": "DT_RPATH and DT_RUNPATH are separate private static carrier/value facts with exact byte provenance. They are not expanded, resolved, opened, collapsed into one state, or projected into public schema 0.2.0."
+}

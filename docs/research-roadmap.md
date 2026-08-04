@@ -2,8 +2,9 @@
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 is active at Patch 075. Patch 074
-was a superseded closeout candidate; Patch 075 carries remaining correction and
+Sprints 1 through 11 are complete. Sprint 12 is active at Patch 076. Patch 074
+was a superseded closeout candidate; Patch 075 introduced textrel evidence and
+Patch 076 carries the remaining correction and
 private bounded text-relocation evidence. Sprint 13 is planned only after the
 active Sprint 12 gates close. The roadmap may state
 "Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
@@ -571,8 +572,7 @@ outcome-blind natural-object acquisition gate.
 
 Patches 070, 071, 072, and 073 were not accepted at their respective first
 returned review boundaries. Patch 071 preserves valid Patch 070 facts and
-replaces those
-boundaries with identity-bound cleanup, an
+replaces those boundaries with identity-bound cleanup, an
 outcome-complete version-2 authority, streaming 4 KiB output caps, and delivery
 verification for regular-file path/hash/size/mode plus implied-directory
 membership. This remains diagnostic, unfrozen, publication-ineligible method
@@ -584,8 +584,10 @@ container parity evidence remains pending. The latest real campaign still
 supports no x64lens single-run latency, RSS-superiority, generic gadget-count,
 or normalized-coverage claim. Patch 073 executed the non-reinterpretive public-
 policy gate as an explicit deferral. Patch 074 supplies the final custody and
-parity-protocol correction and remains the closeout candidate. Sprint 12 closes
-and the Sprint 13 handoff begins only after complete acceptance.
+parity-protocol correction but was superseded as the closeout candidate. Patch
+075 is active and adds bounded private static text-relocation evidence. Patch
+Patch 076 implements distinct bounded private RPATH/RUNPATH evidence. Sprint 12 remains
+active, and the Sprint 13 handoff begins only after its active gates close.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -607,11 +609,12 @@ diagnostic acquisition evidence and the two same-host logic-only parity planes
 remain distinct; qualified native/container parity remains pending. All retained planes
 are diagnostic, unfrozen, publication-ineligible, and insufficient for
 runtime-CET or public-field claims. Patch 073 recorded `defer`; Patch 074
-preserves zero public role/property fields, the coarse PIE indicator, and the
-text-relocation plus distinct RPATH/RUNPATH tranches as deferred bounded work.
+preserves zero public role/property fields and the coarse PIE indicator. Patch
+075 adds private static text-relocation evidence; Patch 076 implements the
+distinct RPATH/RUNPATH tranche.
 
 
-## Sprint 12 Patch 074 closeout research posture
+## Sprint 12 Patch 074 and Patch 075 continuation research posture
 
 Patch 074 changes no runtime analyzer, include, or public schema path. It
 implements corrections for the final evidence-custody and parity-protocol
@@ -622,9 +625,20 @@ membership, excluding native-plane ancestors from container mounts, and
 limiting permission normalization to preflighted Git-tracked paths.
 
 The public role/property decision remains `defer`. Text-relocation and separate
-RPATH/RUNPATH evidence remain future bounded mitigation tranches, not Patch 074
-runtime output. Sprint 13 becomes active after complete Patch 074 acceptance
-and then owns the generic exact-pop, Linux syscall `r10`, score/null, and
+RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 now owns
+bounded private static text-relocation evidence, and Patch 076 owns distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-CET
+claim. Sprint 13 becomes active only after the active Sprint 12 gates close and
+then owns the generic exact-pop, Linux syscall `r10`, score/null, and
 measurement-gated semantic decisions. All Sprint 11-12 campaign observations
 remain diagnostic and cannot be promoted into the Sprint 15-frozen confirmatory
 dataset.
+
+
+## Sprint 12 Patch 076 research posture
+
+Patch 076 turns runtime search-path uncertainty into bounded private evidence
+without turning path strings into loader or security conclusions. The 36-object
+matrix separates carrier presence, exact values, malformed input, unsupported
+capacity, external presence comparison, and public non-projection. Native and
+container facts remain separate evidence planes. No performance, prevalence,
+runtime resolution, safety, or exploitability claim follows from this tranche.

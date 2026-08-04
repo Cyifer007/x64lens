@@ -4,8 +4,10 @@
 
 Patch 075 corrects the remaining Patch 074 custody and validation findings,
 keeps Sprint 12 active, and adds private bounded `DT_TEXTREL` / `DF_TEXTREL`
-evidence through a separate dynamic-metadata side-car. Public CLI and schema
-`0.2.0` remain unchanged.
+evidence through a separate dynamic-metadata side-car. Public CLI syntax,
+command names, report fields, and schema `0.2.0` remain unchanged. Existing
+dynamic-table-consuming commands gain the fail-closed carrier limit described
+below.
 
 ## Source boundary
 
@@ -28,7 +30,7 @@ Expected high-level results:
 ```text
 patch074-corrective-regression-smoke: ok ...
 sprint12-dynamic-metadata-layout-smoke: ok ...
-sprint12-textrel-matrix-smoke: ok fixtures=24 ... carrier_cap=64 public_fields_added=0
+sprint12-textrel-matrix-smoke: ok fixtures=24 ... carrier_cap=64 ...
 sprint12-continuation-smoke: ok sprint=12 status=active patch=75 ...
 ```
 
@@ -39,8 +41,8 @@ make sprint12-textrel-readelf-oracle
 ```
 
 It generates 24 controlled layouts, retains 19 valid, four malformed, and one
-unsupported class, and reconciles 12 eligible direct states against GNU
-`readelf -dW`.
+unsupported class, and reconciles 12 eligible direct TEXTREL presence/absence
+dispositions against GNU `readelf -dW`.
 
 ## Complete validation
 
@@ -55,13 +57,21 @@ make docker-validation-smoke
 make sprint12-p075-acceptance-smoke
 ```
 
-Fresh native and Docker execution must preserve exit code 6 before stdout for
-carrier 65 and candidate 4097, no partial stdout for malformed parser failures,
-and byte/fact parity for unchanged public reports.
+Fresh native and Docker execution must preserve exit code 6 with empty stdout
+for carrier 65 on `mitigations`, `gadgets`, and `analyze`, and for candidate
+4097 on the candidate-producing commands. The `info` command does not parse
+`PT_DYNAMIC`. Malformed parser failures must emit no partial stdout, and
+successful public reports must preserve byte/fact parity.
 
 ## Limitations
 
 Text-relocation state is private static evidence. It does not prove that a
 runtime relocation occurred, that code pages remain writable, that the binary
 is vulnerable, or that exploitation is possible. Actual Patch 075 acceptance
-requires fresh NASM, strict ShellCheck, Docker, and independent Lane A results.
+requires fresh NASM, strict ShellCheck, Docker, and independent
+non-documentation acceptance review.
+
+Validation evidence keeps cloud-executed, static-review-only, and WSL2-deferred
+results in separate classes. A result in one class does not pass a check in
+another, and a deferred check remains pending until it runs in its named
+environment.

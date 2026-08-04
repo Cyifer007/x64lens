@@ -41,7 +41,7 @@ x64lens CLI
 | `phdr.asm` | Program header parsing and bounded raw loader/dynamic role facts | Section label formatting or public role policy |
 | `binary_role.asm` | Internal-only fact-first executable/shared-object role lattice | Parse tables, change public PIE output, scan, classify gadgets, score, or report |
 | `gnu_property.asm` | Bounded canonical GNU-property carrier, note, contributor, and x86 feature facts | Map files, choose executable regions, scan candidates, score, or report |
-| `dynamic_metadata.asm` | Bounded private dynamic-carrier provenance and text-relocation evidence | Map files, resolve paths, parse sections, scan or classify candidates, score, or report |
+| `dynamic_metadata.asm` | Private dynamic facts | Map files or report |
 | `shdr.asm` | Section header metadata, stripped indicator, and section-label annotations | Runtime mapping authority |
 | `regions.asm` | Executable region model | Decode instructions |
 | `mitigations.asm` | NX, PIE, RELRO, canary indicators, RWX | Claim exploitability alone |
@@ -1585,9 +1585,9 @@ No external-natural or parity artifact is linked into `build/x64lens`, and no
 private role or property state enters schema `0.2.0`. Patch 073 executed the
 public-policy gate as `defer`; Patch 074 preserves zero public fields, the
 existing coarse PIE Boolean, and the distinction between static GNU properties
-and runtime CET enforcement. The next bounded mitigation work is separately
-gated text-relocation and RPATH/RUNPATH acquisition; it does not alter this
-module graph in Patch 074.
+and runtime CET enforcement. Patch 075 adds a private dynamic-metadata side-car
+for bounded static text-relocation evidence without public projection. Patch
+076 is planned for distinct bounded RPATH/RUNPATH acquisition.
 
 
 ## Sprint 12 Patch 074 custody and closeout architecture
@@ -1624,3 +1624,37 @@ selection, section parsing, gadget analysis, scoring, or reporting. The
 composite private metadata buffer preserves the GNU-property context at offset
 zero and appends the dynamic context, so previous property offsets remain
 stable. Program headers remain executable authority.
+
+
+## Sprint 12 Patch 076 private search-path side-car
+
+Patch 076 preserves the first 2,128 bytes of the Patch 075 dynamic-metadata
+context and appends fixed-capacity search-path records. `phdr.asm` remains the
+only owner of the bounded `PT_DYNAMIC` and translated `DT_STRTAB` views.
+`dynamic_metadata.asm` retains exact `DT_RPATH` and `DT_RUNPATH` bytes plus
+entry and file provenance and derives separate private states.
+
+```text
+checked PT_DYNAMIC carrier
+  -> mixed private carrier record
+checked DT_STRTAB / DT_STRSZ translation
+  -> exact RPATH value record + byte pool
+  -> exact RUNPATH value record + byte pool
+  -> separate absent/present/contradictory/unknown states
+```
+
+The side-car does not split path lists, expand `$ORIGIN`, emulate loader search
+order, inspect the host filesystem, or open a target-derived path. It does not
+select executable mappings, parse sections, scan or classify gadgets, score
+records, or format public reports. Mixed carrier capacity is 64, resolved record
+capacity is 64, aggregate exact-value storage is 4,096 bytes, the dynamic
+context is 9,904 bytes, and the composite private context is 13,064 bytes.
+
+## Sprint 12 Patch 076 private dynamic-metadata storage
+
+The bounded private dynamic-metadata context is 13,064 bytes: the accepted
+2,128-byte Patch 075 text-relocation prefix, a 96-byte search-path header, 64
+fixed 56-byte path records, and one 4,096-byte exact-value pool. Three current
+command-owned copies account for 39,192 fixed bytes. This allocation arithmetic
+is not a measured RSS result. No public report, candidate record, scanner
+capacity, or executable mapping is changed.

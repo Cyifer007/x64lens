@@ -13,22 +13,21 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 074 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. It is the final Sprint 12 closeout candidate. Sprint 12 remains open and
-Sprint 13 remains the next semantic-capability sprint until every acceptance
-boundary passes on the same authenticated source.
+Patch 075 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains active. Patch 074 was a superseded closeout candidate,
+and Patch 076 implements distinct bounded `DT_RPATH` and `DT_RUNPATH`
+evidence. Sprint 13 remains the next semantic-capability sprint until the active
+Sprint 12 gates close.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 074 changes no tracked runtime analyzer, include, or schema path. It
-implements corrections for the final Patch 073 custody, parity isolation/
-membership/publication, selection-inode, tracked-permission, and strict-
-authority findings while preserving the same reference profile and exact
-candidate-capacity behavior. Actual qualified parity and acceptance remain
-pending.
+Patch 075 carries the remaining correction and bounded private static
+text-relocation evidence while preserving the same public fields, reference
+profile, and candidate-capacity behavior. It adds no PIE reinterpretation or
+runtime-CET claim. Actual qualified parity and acceptance remain pending.
 
-Measurements after Patch 074 require a distinct diagnostic campaign identity
+Measurements after Patch 075 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
 not freeze until Sprint 15.
 
@@ -173,5 +172,12 @@ Patch 074 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
 fields, and the `v0.1.0-dev` checkpoint tag. Delivery custody version 3, retained
 selection/parity authorities, tracked-only permission normalization, and the
 Sprint 12 closeout authority are development and validation contracts, not
-product or schema versions. Sprint 13 begins after complete Patch 074 acceptance
-without a release tag or campaign freeze.
+product or schema versions. Patch 074 was superseded as the closeout candidate;
+Sprint 13 remains planned without a release tag or campaign freeze.
+
+## Sprint 12 Patch 075 version state
+
+Patch 075 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
+fields, and the `v0.1.0-dev` checkpoint tag. Private text-relocation carrier and
+state facts do not change a product or schema version. Patch 076 implements
+distinct bounded RPATH/RUNPATH evidence, and Sprint 12 remains active.

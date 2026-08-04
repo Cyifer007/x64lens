@@ -258,19 +258,29 @@ comparison status as interchangeable.
 
 The paper may describe deterministic ordinary-PHDR validity and explicit extended-numbering unsupported outcomes for the reviewed fixtures. It may not claim complete ELF extended-numbering support, complete loader correctness, PIE-versus-DSO precision, CET evidence, or universal parser safety from this patch.
 
-## Sprint 12 Patch 074 publication boundary
+## Sprint 12 Patch 074 through Patch 076 publication boundary
 
-Patch 074 is the final Sprint 12 closeout candidate. Its implementation records
-an explicit implemented-or-deferred disposition for the private role/property
-evidence, external reconciliation, selection, parity protocol, and delivery
-custody. That candidate disposition becomes accepted authority only after the
-remaining local execution, corrected actual native/container parity, delivery,
-and independent acceptance gates complete on the same source.
+Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 keeps Sprint
+12 active, carries the remaining correction, and adds bounded private static
+text-relocation evidence. Patch 076 implements distinct bounded RPATH and
+RUNPATH evidence. None of these candidate dispositions becomes accepted
+authority before the active native, container, delivery, and independent
+acceptance gates complete on the same source.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
 publication-ineligible and supports no speed, RSS, superiority, parity, or
-normalized-coverage claim. Patch 074 does not authorize a public PIE/DSO, IBT,
+normalized-coverage claim. Patch 076 does not authorize a public PIE/DSO, IBT,
 SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, normalized
-coverage, or prevalence claim. All Sprint 11-12 measurements remain outside the
-Sprint 15-frozen confirmatory campaign.
+coverage, or prevalence claim. Its text-relocation evidence is private static
+evidence, not runtime enforcement. All Sprint 11-12 measurements remain outside
+the Sprint 15-frozen confirmatory campaign.
+
+
+## Patch 076 publication note
+
+The paper may describe separate bounded acquisition of exact `DT_RPATH` and
+`DT_RUNPATH` carrier/value evidence for the reviewed fixture domain. It must not
+claim loader path selection, `$ORIGIN` resolution, filesystem exposure,
+misconfiguration, vulnerability, or exploitability from static carrier bytes.
+The private matrix remains development evidence and adds no public schema field.

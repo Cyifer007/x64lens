@@ -254,6 +254,16 @@ separate profile identity; it may not change reference output facts silently.
 
 ## Sprint 12 Patch 075 output boundary
 
-The private dynamic-metadata side-car changes no text or JSON output. Malformed
-dynamic-table inputs and private carrier-capacity exhaustion continue to fail
-before stdout. Reporters do not infer text-relocation state.
+The private dynamic-metadata side-car adds no text or JSON field. On
+`mitigations`, `gadgets`, and `analyze`, malformed dynamic-table inputs and
+private carrier-capacity exhaustion fail with empty stdout. The `info` command
+does not parse `PT_DYNAMIC`, and reporters do not infer text-relocation state.
+
+
+## Sprint 12 Patch 076 output boundary
+
+Patch 076 changes no public text or JSON report field. Private textrel, RPATH,
+and RUNPATH facts remain development-only side-car records. Public commands
+must preserve schema `0.2.0`, current mitigation meanings, candidate counts,
+ordering, and limitations. Any malformed or unsupported dynamic-metadata path
+that prevents a complete command report fails before stdout.

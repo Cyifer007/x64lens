@@ -8,29 +8,33 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 12 Patch 076 corrects the remaining Patch 075 textrel-oracle,
+  permission-normalization, custody-publication, source-recovery, parity, and
+  loose-delivery findings. It preserves the first 2,128 bytes of the private
+  dynamic side-car and appends separate bounded `DT_RPATH` and `DT_RUNPATH`
+  carrier/value facts, exact byte provenance, a 64-record limit, and a 4,096-
+  byte aggregate value limit. It performs no path splitting, `$ORIGIN`
+  expansion, loader emulation, target-derived open, public-field addition,
+  schema change, PIE reinterpretation, or runtime-CET claim.
+
 - Sprint 12 Patch 075 keeps the loader/mitigation sprint active after the Patch
   074 closeout candidate was superseded. It adds a private 2,128-byte bounded
   dynamic-metadata side-car, exact `DT_TEXTREL` and `DT_FLAGS` carrier
-  provenance, an unknown/absent/present/contradictory `DF_TEXTREL` state, a
-  24-fixture oracle, and a C/NASM layout attestation. Carrier 65 fails with exit
-  code 6 before public output. No CLI, public mitigation field, report schema,
-  candidate population, score, decoder, or worker behavior changes.
-- Patch 075 corrective custody and validation hardening: tracked files with
-  hardlink topology are rejected before permission normalization, late
-  verification remains inside rollback, parity accepts only the reviewed mount
-  grammar, JSON authorities reject duplicate keys and Boolean-as-integer data,
-  delivery creation retains one authenticated root descriptor, and the exact
-  supported custody boundary is 511 payload files plus the manifest. A
-  manifest-authoritative source recovery helper restores canonical Git modes
-  independently of the caller's umask.
+  provenance, an unknown/absent/present/contradictory text-relocation state, a
+  24-fixture oracle, and a C/NASM layout attestation. On `mitigations`,
+  `gadgets`, and `analyze`, carrier 65 fails with exit code 6 and empty stdout;
+  `info` does not parse `PT_DYNAMIC`. CLI syntax, public mitigation fields,
+  report schema, candidate population, scores, decoder policy, and worker
+  behavior remain unchanged.
 
-- Sprint 12 Patch 074 closeout-candidate authority, ADR 0060, validation record,
-  and `make sprint12-closeout-smoke`. The machine authority covers Patches
-  062-074 and preserves tool `0.1.0-dev`, schema `0.2.0`, the 4,096-candidate
-  fail-closed boundary, read-only/nonexecuted targets, the dependency-free
-  decoder-free one-worker reference, and public role/property deferral. Sprint
-  12 closure and the Sprint 13 semantic-capability handoff remain conditional on
-  complete Patch 074 acceptance.
+- Sprint 12 Patch 074 added a closeout-candidate authority, ADR 0060, its
+  validation record, and `make sprint12-closeout-smoke`. The candidate is now
+  superseded. The machine authority historically covers Patches 062-074 and
+  preserves tool `0.1.0-dev`, schema `0.2.0`, the 4,096-candidate fail-closed
+  boundary, read-only/nonexecuted targets, the dependency-free decoder-free
+  one-worker reference, and public role/property deferral. Sprint 12 closure
+  and the Sprint 13 semantic-capability handoff remain conditional on the
+  active Patch 076 and planned Patch 077 closeout gate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -38,9 +42,10 @@ The project follows semantic versioning once the first public release is cut.
 - A machine-readable role/property policy authority with decision `defer`. It
   authenticates the unchanged schema and reporter sources, preserves the coarse
   `mitigations.pie` Boolean, adds zero public PIE/DSO/IBT/SHSTK fields, and makes
-  no runtime-CET claim. A separate competitive-mitigation authority selects
-  bounded text-relocation and distinct RPATH/RUNPATH evidence as the next parser,
-  fixture, comparator, and schema-gated tranche; Patch 073 adds no runtime field.
+  no runtime-CET claim. Patch 075 introduced bounded private static
+  text-relocation evidence, while Patch 076 adds distinct bounded private
+  RPATH/RUNPATH carrier/value evidence. Neither patch adds a public mitigation
+  field without a separate policy and compatibility gate.
 
 - Sprint 12 Patch 072 outcome-blind external-natural acquisition and same-byte
   environment parity. Outcome-blind selection freezes 48 object identities
@@ -460,6 +465,15 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
+- Patch 075 corrective custody and validation hardening: tracked files with
+  hardlink topology are rejected before permission normalization, late
+  verification remains inside rollback, parity accepts only the reviewed mount
+  grammar, JSON authorities reject duplicate keys and Boolean-as-integer data,
+  delivery creation retains one authenticated root descriptor, and the exact
+  supported custody boundary is 511 payload files plus the manifest. A
+  manifest-authoritative source recovery helper restores canonical Git modes
+  independently of the caller's umask.
+
 - Patch 074 implements corrections for the confirmed Patch 073 evidence and
   acceptance defects:
   late custody-subtree mutation, accepted hardlink topology, incomplete
@@ -477,8 +491,10 @@ The project follows semantic versioning once the first public release is cut.
   descriptor through removal, external-natural selection was reauthenticated
   throughout outcome collection, delivery custody v2 authenticated root and
   member modes, and the container received one dedicated empty write root.
-  Patch 074 carries delivery custody v3 and implements the remaining topology,
-  inode, hardlink, mount, publication, permission, and authority corrections.
+  Patch 074 carried delivery custody v3 and the next topology, inode, hardlink,
+  mount, publication, permission, and authority corrections, but was
+  superseded as the closeout candidate. Patch 075 carries the remaining
+  correction while Sprint 12 stays active.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,
@@ -514,8 +530,9 @@ The project follows semantic versioning once the first public release is cut.
   authority, streaming-limit, and delivery-custody corrections. Patch 072
   supplied the remaining correction plus acquisition and parity gates, but its
   returned review also rejected current acceptance; Patch 073 supplied the
-  first custody/isolation correction, and Patch 074 supplies the final closeout
-  correction.
+  first custody/isolation correction, and Patch 074 supplied a superseded
+  closeout candidate. Patch 076 is the active correction and distinct bounded
+  RPATH/RUNPATH evidence tranche.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

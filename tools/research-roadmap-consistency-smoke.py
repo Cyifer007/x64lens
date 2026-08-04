@@ -80,7 +80,7 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Active at Patch 075",
+        "Active at Patch 076",
     ),
     "docs/sprints/sprint-13-plan.md": (
         "Planned semantic capability completion sprint",

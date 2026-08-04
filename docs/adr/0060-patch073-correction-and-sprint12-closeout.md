@@ -2,10 +2,12 @@
 
 ## Status
 
-Adopted as the design record for the Patch 074 implementation candidate. Final
-acceptance still requires the complete native, Docker, retained external-
-natural, corrected native/container parity, delivery, and independent non-
-documentation gates.
+Historical design record for the superseded Patch 074 Sprint 12 closeout
+candidate. Patch 076 is active: it owns the remaining correction plus private
+static text-relocation evidence. Complete Patch 076 acceptance remains pending.
+Patch 076 implements distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current
+validation expectations are in the
+[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 
@@ -41,7 +43,7 @@ custody and closeout correction, not a new runtime mitigation family.
 
 ## Decision
 
-Patch 074 applies these decisions.
+Patch 074 applied these decisions.
 
 ### Delivery and evidence custody
 
@@ -92,21 +94,24 @@ state is outside this normalizer.
 
 ### Public policy and mitigation breadth
 
-The role/property decision remains `defer`. Patch 074 adds no public PIE/DSO,
+The role/property decision remains `defer`. Patch 074 added no public PIE/DSO,
 IBT, SHSTK, runtime-CET, text-relocation, RPATH, RUNPATH, or fortify field and
-does not reinterpret `mitigations.pie`. Text relocations and separate validated
-RPATH/RUNPATH evidence remain bounded future mitigation tranches. They require
-checked parser facts, complete-table and duplicate semantics, hostile fixtures,
-external reconciliation, schema review, and native/container parity before any
-public projection.
+did not reinterpret `mitigations.pie`. At that boundary, text relocations and
+separate validated RPATH/RUNPATH evidence remained future mitigation tranches.
+Patch 075 now owns private static text-relocation evidence; Patch 076 implements
+ distinct `DT_RPATH` and `DT_RUNPATH` evidence. Public projection still
+requires checked parser facts, complete-table and duplicate semantics, hostile
+fixtures, external reconciliation, schema review, and native/container parity.
 
 ### Sprint closeout
 
-Patch 074 closes Sprint 12 and activates Sprint 13 only after the complete
-acceptance boundary passes. Until then it remains the final closeout candidate.
-Sprint 13 then owns the generic exact-pop semantic decision, Linux syscall
-`r10` role decision, release-facing score/null policy, and only those bounded
-family additions justified by diagnostic task value.
+Patch 074 would have closed Sprint 12 and activated Sprint 13 only after its
+complete acceptance boundary passed, but it was superseded before acceptance.
+Sprint 12 remains active at Patch 076, and Sprint 13 remains planned until the
+Patch 075 and Patch 076 gates close. Sprint 13 then owns the generic
+exact-pop semantic decision, Linux syscall `r10` role decision, release-facing
+score/null policy, and only those bounded family additions justified by
+diagnostic task value.
 
 ## Rejected alternatives
 
@@ -124,13 +129,14 @@ family additions justified by diagnostic task value.
 
 ## Consequences
 
-Patch 074 changes no tracked path under `src/`, `include/`, or `schemas/`. The
+Patch 074 changed no tracked path under `src/`, `include/`, or `schemas/`. The
 reference analyzer remains dependency-free, decoder-free, one-worker, bounded,
 and deterministic. Program headers and file-backed `PT_LOAD + PF_X` ranges
 remain executable authority. Raw, exact-suffix, semantic-exact, unknown, future
 decoder-backed, and scored facts retain their existing meanings.
 
-The corrected source is a closeout candidate, not evidence of acceptance by
-itself. Native and Docker aggregates, retained external-natural acquisition,
-corrected isolated parity, delivery rehearsal, and independent non-
-documentation review remain required before the closeout commit is accepted.
+The corrected Patch 074 source was a closeout candidate, not evidence of
+acceptance by itself, and it was superseded by Patch 075. Native and Docker
+aggregates, retained external-natural acquisition, corrected isolated parity,
+delivery rehearsal, and independent non-documentation review remain part of the
+active Patch 075 acceptance boundary.

@@ -64,6 +64,7 @@ ROLE_PROPERTY_FACT_PROBE_BIN := $(INTERNAL_TEST_BUILD_DIR)/role-property-fact-pr
 DYNAMIC_METADATA_FACT_PROBE_OBJ := $(INTERNAL_TEST_BUILD_DIR)/dynamic-metadata-fact-probe.o
 DYNAMIC_METADATA_FACT_PROBE_BIN := $(INTERNAL_TEST_BUILD_DIR)/dynamic-metadata-fact-probe
 TEXTREL_AUTHORITY := ./benchmarks/task-definitions/sprint12-textrel-private-evidence-v1.json
+SEARCH_PATH_AUTHORITY := ./benchmarks/task-definitions/sprint12-search-path-private-evidence-v1.json
 ROLE_PROPERTY_HELDOUT_AUTHORITY := ./benchmarks/task-definitions/sprint12-role-property-heldout-v1.json
 ROLE_PROPERTY_READELF_AUTHORITY := ./benchmarks/task-definitions/sprint12-role-property-readelf-v1.json
 ROLE_PROPERTY_BATCH_AUTHORITY := ./benchmarks/task-definitions/sprint12-batch-transaction-pilot-v3.json
@@ -72,6 +73,7 @@ ROLE_PROPERTY_PUBLIC_POLICY_AUTHORITY := ./benchmarks/task-definitions/sprint12-
 MITIGATION_COMPETITIVE_GAP_AUTHORITY := ./benchmarks/task-definitions/sprint12-mitigation-competitive-gap-v1.json
 ROLE_PROPERTY_EXTERNAL_NATURAL_RESULT_DIR ?=
 ROLE_PROPERTY_PARITY_RESULT_DIR ?=
+DYNAMIC_METADATA_PARITY_RESULT_DIR ?=
 ROLE_PROPERTY_PUBLIC_SCHEMA := ./schemas/x64lens-report.schema.json
 
 NASM         ?= nasm
@@ -88,7 +90,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke provisional-corpus-ready provisional-corpus-repair-modes clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-p072-acceptance-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-p073-acceptance-smoke sprint12-p074-acceptance-smoke sprint12-p075-acceptance-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-readelf-oracle sprint12-textrel-smoke sprint12-continuation-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke provisional-corpus-ready provisional-corpus-repair-modes clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-p072-acceptance-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-p073-acceptance-smoke sprint12-p074-acceptance-smoke sprint12-p075-acceptance-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-readelf-oracle sprint12-textrel-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke sprint12-search-path-readelf-oracle sprint12-search-path-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint12-p076-acceptance-smoke
 
 help:
 	@echo "x64lens development targets"
@@ -108,6 +110,9 @@ help:
 	@echo "  make sprint12-dynamic-metadata-layout-smoke  Reconcile the private dynamic-metadata NASM/C layout ABI"
 	@echo "  make sprint12-textrel-readelf-oracle  Validate the independent DT_TEXTREL/DF_TEXTREL fixture oracle"
 	@echo "  make sprint12-textrel-smoke  Validate the private text-relocation side-car against analyzer/probe/readelf"
+	@echo "  make sprint12-search-path-readelf-oracle  Validate distinct RPATH/RUNPATH fixture dispositions"
+	@echo "  make sprint12-search-path-smoke  Validate exact private RPATH/RUNPATH carrier/value evidence"
+	@echo "  make sprint12-dynamic-metadata-environment-parity-smoke  Prove complete native/container dynamic-sidecar parity"
 	@echo "  make sprint12-role-property-metamorphic-smoke  Run the 28-object private role/property preflight"
 	@echo "  make sprint12-role-property-heldout-smoke  Run the authenticated 96-object private fact confirmation"
 	@echo "  make sprint12-role-property-readelf-smoke  Reconcile eligible private facts against retained readelf output"
@@ -528,6 +533,21 @@ sprint12-textrel-smoke: dev-tools-check all $(DYNAMIC_METADATA_FACT_PROBE_BIN)
 		--schema "$(ROLE_PROPERTY_PUBLIC_SCHEMA)" \
 		--readelf "$$(command -v $(READELF))"
 
+# Patch 076 keeps RPATH and RUNPATH as separate private carrier/value families.
+sprint12-search-path-readelf-oracle:
+	python3 tools/sprint12-search-path-matrix-smoke.py \
+		--authority "$(SEARCH_PATH_AUTHORITY)" \
+		--readelf "$$(command -v $(READELF))" \
+		--oracle-only
+
+sprint12-search-path-smoke: dev-tools-check all $(DYNAMIC_METADATA_FACT_PROBE_BIN)
+	python3 tools/sprint12-search-path-matrix-smoke.py \
+		--authority "$(SEARCH_PATH_AUTHORITY)" \
+		--analyzer ./$(TARGET) \
+		--fact-probe ./$(DYNAMIC_METADATA_FACT_PROBE_BIN) \
+		--schema "$(ROLE_PROPERTY_PUBLIC_SCHEMA)" \
+		--readelf "$$(command -v $(READELF))"
+
 # Patch 066 held-out preflight. This crosses three internal role constructions
 # with four GNU-property states under canonical and exact-dual carrier encodings,
 # then exercises four single-axis mutants. It changes no public schema or policy.
@@ -611,6 +631,27 @@ sprint12-role-property-environment-parity-smoke: corpus-tools-check provisional-
 		--result-dir "$$result_dir"; \
 	echo "native/container parity retained result: $$result_dir"
 
+# Patch 076 extends private parity to the complete textrel/RPATH/RUNPATH side-car.
+# The container builds its own binaries from authenticated source, receives the
+# held-out fixtures read-only, and never sees the completed native result plane.
+sprint12-dynamic-metadata-environment-parity-smoke: all $(DYNAMIC_METADATA_FACT_PROBE_BIN) docker-build
+	@set -eu; \
+	result_dir="$(DYNAMIC_METADATA_PARITY_RESULT_DIR)"; \
+	if [ -z "$$result_dir" ]; then \
+		result_dir="./tests/results/sprint12-dynamic-metadata-parity-$$(date -u +%Y%m%dT%H%M%SZ)-$$$$"; \
+	fi; \
+	mkdir -p "$$(dirname "$$result_dir")"; \
+	python3 tools/sprint12-dynamic-metadata-environment-parity-smoke.py run \
+		--repo . \
+		--authority "$(SEARCH_PATH_AUTHORITY)" \
+		--analyzer ./$(TARGET) \
+		--fact-probe ./$(DYNAMIC_METADATA_FACT_PROBE_BIN) \
+		--schema "$(ROLE_PROPERTY_PUBLIC_SCHEMA)" \
+		--docker-image "$(DOCKER_IMAGE)" \
+		--result-dir "$$result_dir"; \
+	echo "dynamic-metadata native/container parity retained result: $$result_dir"
+
+
 # Full Patch 072 acceptance keeps package-specific acquisition and Docker parity
 # outside the portable native aggregate while making the required local gate explicit.
 sprint12-p072-acceptance-smoke: validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke
@@ -637,23 +678,36 @@ sprint12-p073-acceptance-smoke: validation-smoke sprint12-external-natural-acqui
 # for exact historical replay; it is not the current acceptance gate.
 sprint12-p074-acceptance-smoke: validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke
 
+patch075-corrective-regression-smoke:
+	python3 tools/patch075-corrective-regression-smoke.py
+
 patch074-corrective-regression-smoke:
 	python3 tools/patch074-corrective-regression-smoke.py
 
 sprint12-continuation-smoke:
 	python3 tools/sprint12-continuation-smoke.py
 
-# Patch 075 is the current Sprint 12 acceptance aggregate. It requires the full
-# native aggregate, strict shell lint, complete Docker validation, a fresh
-# external-natural regression, and corrected native/container private-fact
-# parity after the PHDR/private-context change.
-sprint12-p075-acceptance-smoke: validation-smoke docker-validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke
+# Patch 075 remains the historical text-relocation acceptance aggregate. Patch
+# 076 supersedes it after extending the same private context with distinct
+# RPATH/RUNPATH evidence. Retain this target for exact P075 replay.
+sprint12-p075-acceptance-smoke: validation-smoke docker-validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-dynamic-metadata-environment-parity-smoke
 	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
 		echo "error: sprint12-p075-acceptance-smoke requires $(SHELLCHECK)" >&2; \
 		exit 127; \
 	}
 	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
 	@echo "sprint12-p075-acceptance-smoke: ok sprint=12 status=active textrel=private public-fields-added=0"
+
+# Patch 076 is the current Sprint 12 gate: all P075 corrections, strict textrel
+# authority, distinct bounded RPATH/RUNPATH evidence, both private parity planes,
+# complete native/Docker validation, and unchanged public schema 0.2.0.
+sprint12-p076-acceptance-smoke: validation-smoke docker-validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-dynamic-metadata-environment-parity-smoke
+	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
+		echo "error: sprint12-p076-acceptance-smoke requires $(SHELLCHECK)" >&2; \
+		exit 127; \
+	}
+	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
+	@echo "sprint12-p076-acceptance-smoke: ok sprint=12 status=active textrel=private rpath=private runpath=private public-fields-added=0"
 
 # Patch 070 prerequisite pilot. This validates complete-or-absent batch
 # publication, exact failure positions, cleanup, and signal semantics without
@@ -768,7 +822,7 @@ shellcheck-smoke:
 # Sprint closeout gate. Normal development keeps ShellCheck optional, but a
 # sprint cannot close unless strict lint is available and the complete native
 # aggregate passes. Docker remains a separate reproducibility gate.
-sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke
+sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke
 	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
 		echo "error: sprint-closeout-smoke requires $(SHELLCHECK)" >&2; \
 		exit 127; \
@@ -779,7 +833,7 @@ sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-textrel-readelf-oracle mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-smoke sprint12-search-path-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-textrel-readelf-oracle sprint12-search-path-readelf-oracle mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -1118,6 +1172,9 @@ script-perms-check:
 	@test -x tools/sprint12-role-property-public-policy-smoke.py
 	@test -x tools/sprint12-mitigation-competitive-gap-smoke.py
 	@test -x tools/sprint12-textrel-matrix-smoke.py
+	@test -x tools/sprint12-search-path-matrix-smoke.py
+	@test -x tools/sprint12-dynamic-metadata-environment-parity-smoke.py
+	@test -x tools/patch075-corrective-regression-smoke.py
 	@test -x tools/sprint12-continuation-smoke.py
 	@test -x tools/patch074-corrective-regression-smoke.py
 	@test -x tools/recover-candidate-source.py
@@ -1272,6 +1329,7 @@ scaffold-check: script-perms-check
 	@test -f tests/internal/dynamic-metadata-layout-reconciliation.c
 	@test -f tests/internal/dynamic-metadata-fact-probe.c
 	@test -f benchmarks/task-definitions/sprint12-textrel-private-evidence-v1.json
+	@test -f benchmarks/task-definitions/sprint12-search-path-private-evidence-v1.json
 	@test -f docs/adr/0052-role-property-metamorphic-preflight.md
 	@test -f docs/adr/0053-corpus-custody-and-private-layout-attestation.md
 	@test -f docs/sprints/sprint-12-patch-066-validation.md

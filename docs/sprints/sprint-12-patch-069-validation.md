@@ -6,12 +6,14 @@ Historical Sprint 12 corpus-integrity and authenticated external-reconciliation
 implementation candidate. Patch 069 required the further Patch 070 evidence-
 integrity correction. Patch 070 was rejected after acceptance validation.
 Patch 071 required further correction, and Patch 072's returned review rejected
-current acceptance. Patches 070, 071, 072, and 073 were not accepted at their
+acceptance. Patches 070, 071, 072, and 073 were not accepted at their
 respective first returned review boundaries. Patch 073 delivered the first
-custody/isolation
-correction and policy deferral; Patch 074 is the final corrective Sprint 12
-closeout candidate. Current expectations are recorded in the
-[Patch 074 validation record](sprint-12-patch-074-validation.md). The
+custody/isolation correction and policy deferral. Patch 074 was a superseded
+Sprint 12 closeout candidate. Patch 076 is active, owns the remaining
+correction plus private static text-relocation evidence, and still requires
+complete acceptance; Patch 076 implements distinct RPATH/RUNPATH evidence.
+Current validation expectations are recorded in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary. The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves that
@@ -20,7 +22,7 @@ historical boundary, and the
 rejected boundary. The matrix and
 `readelf` reconciliation remain diagnostic, unfrozen, and publication-
 ineligible. Patch 072 added the environment-parity protocol, but corrected
-actual native/container parity evidence and Patch 074 acceptance remain pending.
+actual native/container parity evidence and Patch 075 acceptance remain pending.
 Patch 073 records the public-policy decision as `defer`. Results below are
 historical candidate contracts or
 controlled diagnostic observations, not accepted publication outcomes.

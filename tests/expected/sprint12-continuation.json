@@ -2,11 +2,11 @@
   "schema_version": 1,
   "sprint": 12,
   "status": "active",
-  "current_patch": 75,
+  "current_patch": 76,
   "superseded_closeout_patch": 74,
-  "next_patch": 76,
-  "next_patch_tranche": "distinct-bounded-rpath-runpath-evidence",
-  "acceptance_target": "sprint12-p075-acceptance-smoke",
+  "next_patch": 77,
+  "next_patch_tranche": "sprint12-final-reconciliation-and-closeout-decision",
+  "acceptance_target": "sprint12-p076-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -16,11 +16,18 @@
     "target_mapping": "read_only",
     "target_execution": false
   },
-  "patch075_boundary": {
-    "remaining_patch074_corrections": true,
+  "patch076_boundary": {
+    "remaining_patch075_corrections": true,
     "private_dynamic_metadata_sidecar": true,
-    "textrel_carrier_capacity": 64,
+    "mixed_carrier_capacity": 64,
+    "search_record_capacity": 64,
+    "search_value_byte_capacity": 4096,
     "textrel_state": "private",
+    "rpath_state": "private_distinct",
+    "runpath_state": "private_distinct",
+    "path_splitting": false,
+    "origin_expansion": false,
+    "target_derived_opens": 0,
     "public_fields_added": 0,
     "existing_coarse_pie_field_reinterpreted": false,
     "runtime_cet_enforcement_claimed": false,
@@ -35,7 +42,9 @@
   },
   "required_documents": [
     "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
+    "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
     "docs/sprints/sprint-12-patch-075-validation.md",
+    "docs/sprints/sprint-12-patch-076-validation.md",
     "docs/sprints/sprint-12-plan.md",
     "docs/sprints/sprint-13-plan.md"
   ]

@@ -5,12 +5,13 @@
 Accepted architecture for the historical Sprint 12 Patch 068 implementation
 candidate. Patch 069 corrected and authenticated the matrix. Patches 070, 071,
 072, and 073 were not accepted at their respective first returned review
-boundaries. Patch
-073 delivered the first custody/isolation correction and the non-reinterpretive
-policy deferral without promoting the diagnostic result. The current Patch 074
-final closeout candidate carries the remaining correction. Product, delivery,
-and actual native/container parity acceptance remain subject to Patch 074
-validation against the exact candidate source.
+boundaries. Patch 073 delivered the first custody/isolation correction and the
+non-reinterpretive policy deferral without promoting the diagnostic result.
+Patch 074 was the superseded Sprint 12 closeout candidate. Patch 076 is active:
+it owns the remaining correction plus private static text-relocation evidence.
+Complete Patch 076 acceptance remains pending. Patch 076 implements distinct
+`DT_RPATH` and `DT_RUNPATH` evidence. Current validation expectations are in
+the [Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 

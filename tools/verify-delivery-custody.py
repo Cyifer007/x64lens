@@ -42,6 +42,9 @@ O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 # Test-only injection points.  Production callers leave these unset.
 _TEST_AFTER_FILE_HASH_HOOK: Callable[[int, str, str], None] | None = None
 _TEST_AFTER_TREE_SCAN_HOOK: Callable[[Path], None] | None = None
+_TEST_AFTER_MANIFEST_LINK_HOOK: Callable[[int, str, str], None] | None = None
+_TEST_AFTER_MANIFEST_TEMP_UNLINK_HOOK: Callable[[int, str], None] | None = None
+_TEST_BEFORE_MANIFEST_PARENT_FSYNC_HOOK: Callable[[int, str], None] | None = None
 
 
 class CustodyError(RuntimeError):
@@ -583,13 +586,39 @@ def open_parent_fd(root_fd: int, relative: str) -> tuple[int, str]:
         raise
 
 
+def _same_descriptor_object(metadata: os.stat_result, fd_metadata: os.stat_result) -> bool:
+    return (metadata.st_dev, metadata.st_ino, stat.S_IFMT(metadata.st_mode)) == (
+        fd_metadata.st_dev, fd_metadata.st_ino, stat.S_IFMT(fd_metadata.st_mode)
+    )
+
+
+def _unlink_owned_name(parent_fd: int, name: str, fd: int, label: str) -> bool:
+    """Unlink name only when it still identifies the retained manifest inode."""
+    try:
+        current = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        return False
+    retained = os.fstat(fd)
+    require(_same_descriptor_object(current, retained),
+            f"refusing to remove changed {label} during manifest rollback")
+    os.unlink(name, dir_fd=parent_fd)
+    return True
+
+
 def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Fingerprint:
+    """Publish one manifest no-replace or restore the complete prior absence.
+
+    Every post-link failure, including temporary-name removal, parent fsync,
+    root reauthentication, or root metadata refresh, rolls back both names
+    through the retained manifest descriptor. Foreign substitutions are never
+    deleted. The function returns only after final nlink=1 and parent durability.
+    """
     reauthenticate_root(root)
     parent_fd, name = open_parent_fd(root.fd, relative)
     temporary = f".custody.{os.getpid()}.{os.urandom(16).hex()}"
     fd = -1
-    linked = False
-    published_fingerprint: Fingerprint | None = None
+    temporary_exists = False
+    published_exists = False
     try:
         try:
             os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
@@ -603,6 +632,7 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Finger
             0o600,
             dir_fd=parent_fd,
         )
+        temporary_exists = True
         written = 0
         while written < len(raw):
             count = os.write(fd, raw[written:])
@@ -611,30 +641,62 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Finger
         os.fsync(fd)
         os.fchmod(fd, 0o444)
         os.fsync(fd)
-        # Hard-link publication is no-replace.  The temporary name is removed
-        # immediately, returning the published manifest to nlink=1.
-        os.link(temporary, name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd, follow_symlinks=False)
-        linked = True
-        os.unlink(temporary, dir_fd=parent_fd)
-        linked = False
+        os.link(temporary, name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd,
+                follow_symlinks=False)
+        published_exists = True
+        if _TEST_AFTER_MANIFEST_LINK_HOOK is not None:
+            _TEST_AFTER_MANIFEST_LINK_HOOK(parent_fd, temporary, name)
+        _unlink_owned_name(parent_fd, temporary, fd, "temporary manifest")
+        temporary_exists = False
+        if _TEST_AFTER_MANIFEST_TEMP_UNLINK_HOOK is not None:
+            _TEST_AFTER_MANIFEST_TEMP_UNLINK_HOOK(parent_fd, name)
         published = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
-        require(stat.S_ISREG(published.st_mode) and published.st_nlink == 1,
+        retained = os.fstat(fd)
+        require(_same_descriptor_object(published, retained),
+                "published custody manifest identity changed")
+        require(stat.S_ISREG(published.st_mode) and published.st_nlink == 1
+                and retained.st_nlink == 1,
                 "published custody manifest topology is invalid")
         published_fingerprint = fingerprint(published)
+        if _TEST_BEFORE_MANIFEST_PARENT_FSYNC_HOOK is not None:
+            _TEST_BEFORE_MANIFEST_PARENT_FSYNC_HOOK(parent_fd, name)
         os.fsync(parent_fd)
         reauthenticate_root(root)
         refresh_root_metadata(root)
+        return published_fingerprint
+    except BaseException as exc:
+        rollback_errors: list[str] = []
+        if fd >= 0:
+            if published_exists:
+                try:
+                    _unlink_owned_name(parent_fd, name, fd, "published manifest")
+                    published_exists = False
+                except BaseException as rollback_exc:
+                    rollback_errors.append(f"published manifest: {rollback_exc}")
+            if temporary_exists:
+                try:
+                    _unlink_owned_name(parent_fd, temporary, fd, "temporary manifest")
+                    temporary_exists = False
+                except BaseException as rollback_exc:
+                    rollback_errors.append(f"temporary manifest: {rollback_exc}")
+            try:
+                os.fsync(parent_fd)
+            except OSError as rollback_exc:
+                rollback_errors.append(f"parent fsync: {rollback_exc}")
+            try:
+                reauthenticate_root(root)
+                refresh_root_metadata(root)
+            except BaseException as rollback_exc:
+                rollback_errors.append(f"root reauthentication: {rollback_exc}")
+        if rollback_errors:
+            raise CustodyError(
+                f"custody manifest publication failed: {exc}; rollback failures: {rollback_errors}"
+            ) from exc
+        raise
     finally:
         if fd >= 0:
             os.close(fd)
-        if not linked:
-            try:
-                os.unlink(temporary, dir_fd=parent_fd)
-            except FileNotFoundError:
-                pass
         os.close(parent_fd)
-    require(published_fingerprint is not None, "custody manifest publication did not complete")
-    return published_fingerprint
 
 
 def remove_published_manifest(root: RootHandle, relative: str, expected: Fingerprint) -> None:

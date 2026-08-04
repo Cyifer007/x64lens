@@ -44,17 +44,17 @@ def main()->int:
 
         # Late verification failure rolls back every completed mode change.
         repo2,tracked2=new_repo(base,'rollback'); before_modes=(stat.S_IMODE(repo2.stat().st_mode),stat.S_IMODE(tracked2.stat().st_mode))
-        real=norm.os.chmod; fired=False
-        def sabotage(path,mode,*,follow_symlinks=True):
+        real=norm.os.fchmod; fired=False; tracked_inode=tracked2.stat().st_ino
+        def sabotage(fd,mode):
             nonlocal fired
-            real(path,mode,follow_symlinks=follow_symlinks)
-            if not fired and Path(path)==tracked2 and mode==0o755:
-                fired=True; real(path,0o644,follow_symlinks=False)
-        norm.os.chmod=sabotage
+            real(fd,mode)
+            if not fired and os.fstat(fd).st_ino==tracked_inode and mode==0o755:
+                fired=True; real(fd,0o644)
+        norm.os.fchmod=sabotage
         try:
             try: norm.normalize(repo2); raise Error('late verification sabotage accepted')
             except norm.PermissionErrorContract: pass
-        finally: norm.os.chmod=real
+        finally: norm.os.fchmod=real
         require(fired and (stat.S_IMODE(repo2.stat().st_mode),stat.S_IMODE(tracked2.stat().st_mode))==before_modes,'normalizer rollback incomplete')
 
         # Exactly five alternate mount spellings are rejected.

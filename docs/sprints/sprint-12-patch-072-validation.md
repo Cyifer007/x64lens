@@ -2,12 +2,16 @@
 
 ## Status
 
-Historical implementation candidate. Its returned review rejected current
-acceptance after reproducing custody and isolation defects. Patch 073 delivered
-the first custody/isolation correction and policy deferral but was not accepted
-at its first returned review boundary. Patch 074 carries the remaining
-correction as the final Sprint 12 closeout candidate. Patch 072 addressed the
-remaining confirmed Patch 071 tooling and
+Historical implementation candidate. Its returned review rejected acceptance
+after reproducing custody and isolation defects. Patch 073 delivered the first
+custody/isolation correction and policy deferral but was not accepted at its
+first returned review boundary. Patch 074 was a superseded Sprint 12 closeout
+candidate. Patch 076 is active, owns the remaining correction plus private
+static text-relocation evidence, and still requires complete acceptance; Patch
+076 is planned for distinct RPATH/RUNPATH evidence. Current validation
+expectations are in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md).
+Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
 no runtime assembly, include, or JSON schema file.
@@ -15,7 +19,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-Patch 074 acceptance remain pending.
+Patch 075 acceptance remain pending.
 
 ## Source precondition
 
@@ -182,5 +186,7 @@ Patch 073 executed the non-reinterpretive public-policy gate as `defer`; it
 added no public field and preserved the existing coarse `mitigations.pie`
 meaning. Corrected native/container parity and independent acceptance remain
 pending. Any future compatible `0.2.x` indicator requires a new separately
-reviewed decision. Patch 074 is the final Sprint 12 closeout candidate; Sprint
-12 remains open pending complete Patch 074 acceptance.
+reviewed decision. Patch 074 was a superseded Sprint 12 closeout candidate.
+Patch 075 introduced private static text-relocation evidence; Patch 076 is active
+with pending acceptance and distinct private RPATH/RUNPATH evidence; Patch 076 implements distinct RPATH/RUNPATH evidence. Sprint 12
+remains open.

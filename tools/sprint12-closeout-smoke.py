@@ -174,7 +174,7 @@ def main() -> int:
 
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Active at Patch 075" in sprint12, "Sprint 12 continuation chronology is missing")
+        require("Active at Patch 076" in sprint12, "Sprint 12 continuation chronology is missing")
         require("Planned semantic capability completion sprint" in sprint13, "Sprint 13 plan is not planned")
 
         makefile = MAKEFILE.read_text(encoding="utf-8")

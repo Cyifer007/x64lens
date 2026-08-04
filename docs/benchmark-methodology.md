@@ -857,10 +857,12 @@ are compared after target-path normalization while raw output remains retained.
 This parity evidence is a correctness condition, not a performance or resource
 comparison.
 
-## Patch 074 closeout evidence boundary
+## Patch 074 and Patch 075 evidence boundary
 
-Patch 074 proposes stronger custody and parity qualification without creating a
-new benchmark result. External-natural selection is device/inode/hash bound
+Patch 074 proposed stronger custody and parity qualification without creating a
+new benchmark result and was superseded as the closeout candidate. Patch 075
+keeps Sprint 12 active and carries the remaining correction. External-natural
+selection is device/inode/hash bound
 through all outcome checkpoints. The corrected native/container protocol
 preserves executable input modes, exact tree membership, nested checksum
 authorities, and a container mount set limited to read-only inputs, read-only
@@ -873,5 +875,15 @@ floor and there were zero positive coordinate anchors. These corrections do not
 resolve below-floor x64lens latency, provide process-tree RSS, establish speed,
 superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Any changed
-semantic task in Sprint 13 receives a new diagnostic campaign identity after
-complete Patch 074 acceptance.
+semantic task in Sprint 13 receives a new diagnostic campaign identity only
+after the active Sprint 12 gates close.
+
+
+## Patch 076 benchmark boundary
+
+The larger private metadata context and new search-path fixtures are
+implementation and correctness facts, not measured RSS or performance results.
+Any post-P076 diagnostic campaign receives a new identity because the parser
+work and private fact probe changed. RPATH/RUNPATH carrier or value counts are
+not gadget populations and must not be merged with raw, exact, semantic,
+unknown, or scored candidate metrics.

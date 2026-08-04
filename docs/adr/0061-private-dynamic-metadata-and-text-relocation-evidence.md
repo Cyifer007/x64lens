@@ -33,7 +33,8 @@ A complete bounded `PT_DYNAMIC` table yields one private text-relocation state:
 
 Duplicate full values and text-relocation semantic disagreement remain separate
 facts. Unrelated `DT_FLAGS` bit differences do not manufacture a text-relocation
-contradiction. Carrier 65 returns exit code 6 before public report emission.
+contradiction. On `mitigations`, `gadgets`, and `analyze`, carrier 65 returns
+exit code 6 with empty stdout. The `info` command does not parse `PT_DYNAMIC`.
 
 ## Boundaries
 
@@ -45,7 +46,8 @@ continues to use file-backed `PT_LOAD + PF_X` ranges.
 
 ## Consequences
 
-Patch 076 can extend the same bounded side-car with separate `DT_RPATH` and
-`DT_RUNPATH` carrier/value evidence. It must not collapse their different loader
-semantics into one security label. Public projection requires a later explicit
-policy and compatibility gate.
+Patch 076 extends the same bounded side-car with separate `DT_RPATH` and
+`DT_RUNPATH` carrier/value evidence while preserving the Patch 075 prefix. The
+two families remain distinct and are not collapsed into one security label.
+Public projection still requires a later explicit policy and compatibility
+gate.

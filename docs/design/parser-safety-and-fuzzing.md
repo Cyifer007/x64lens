@@ -344,9 +344,10 @@ parser, analyzer, or public-output claims. Patch 069 corrected the descriptor-
 authoritative semantic-verification, signal-rollback, and directory-identity
 evidence around that contract; Patch 071 supplied the first development-
 evidence correction. Patch 072 supplied the remainder, but its returned review
-rejected current acceptance; Patch 073 supplied the first custody correction,
-and Patch 074 implements the remaining topology, hardlink, inode, parity,
-permission, and authority corrections. Complete acceptance remains pending.
+rejected current acceptance; Patch 073 supplied the first custody correction.
+Patch 074 implemented the remaining topology, hardlink, inode, parity,
+permission, and authority corrections but was superseded. Active Patch 075
+acceptance remains pending.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -410,3 +411,18 @@ the existing `PT_DYNAMIC` table proof. Storage is fixed at 64 represented
 status before output. The maintained fixture matrix covers complete, incomplete,
 duplicate, contradictory, malformed-range, non-integral, duplicate-table, and
 capacity cases.
+
+
+## Sprint 12 Patch 076 dynamic-string safety
+
+RPATH/RUNPATH acquisition reuses the existing singleton `DT_STRTAB`/`DT_STRSZ`
+policy and checked virtual-address-to-file translation through a file-backed
+`PT_LOAD`. Every string-table offset must be strictly inside the bounded table,
+and every retained value must terminate before the checked extent ends.
+
+One 64-record mixed carrier cap covers textrel, flags, RPATH, and RUNPATH. One
+64-record resolved-value cap and one 4,096-byte exact-value pool bound the new
+work. Mixed carrier 65, resolved record 65, or aggregate value byte 4,097 returns
+`EXIT_UNSUPPORTED` before output. Missing string-table metadata, duplicate
+singletons, unmapped tables, out-of-range offsets, and unterminated strings fail
+closed. The implementation performs no path-derived file open.

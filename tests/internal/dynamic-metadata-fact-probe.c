@@ -1,10 +1,11 @@
 /*
  * dynamic-metadata-fact-probe.c
  *
- * Development-only probe for private bounded DT_TEXTREL/DF_TEXTREL evidence.
- * It maps one supplied ELF read-only, invokes the normal assembly ELF/PHDR
- * path, validates both private layout descriptors, and emits only side-car
- * facts. It is not linked into the runtime and defines no public policy.
+ * Development-only probe for private bounded dynamic metadata. It maps one
+ * supplied ELF read-only, invokes the normal assembly ELF/PHDR path, validates
+ * both private layout descriptors, and emits the complete fixed summary plus
+ * exact hex-encoded RPATH/RUNPATH records. It is not linked into the runtime,
+ * opens no target-derived path, and defines no public policy.
  */
 #define _GNU_SOURCE
 #include "dynamic-metadata-layout.h"
@@ -38,6 +39,15 @@ static uint64_t dq(const unsigned char *base, size_t size, uint64_t offset) {
 static uint64_t dynamic_layout(enum x64lens_dynamic_metadata_layout_field field) {
     return x64lens_dynamic_metadata_layout_value(
         x64lens_dynamic_metadata_layout_descriptor, field);
+}
+
+static void print_hex(const unsigned char *bytes, uint64_t length) {
+    static const char alphabet[] = "0123456789abcdef";
+    for (uint64_t i = 0; i < length; ++i) {
+        unsigned char value = bytes[i];
+        putchar(alphabet[value >> 4]);
+        putchar(alphabet[value & 0x0f]);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -104,6 +114,34 @@ int main(int argc, char **argv) {
                                       private_context);
     }
     const unsigned char *ctx = private_context + dynamic_offset;
+    const uint64_t search_record_count = dq(
+        ctx, dynamic_size,
+        dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_SEARCH_RECORD_COUNT));
+    const uint64_t search_bytes_used = dq(
+        ctx, dynamic_size,
+        dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_SEARCH_BYTES_USED));
+    const uint64_t search_record_max = dynamic_layout(
+        X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_MAX);
+    const uint64_t search_bytes_max = dynamic_layout(
+        X64LENS_DYNAMIC_LAYOUT_SEARCH_BYTES_MAX);
+    const uint64_t records_offset = dynamic_layout(
+        X64LENS_DYNAMIC_LAYOUT_CTX_SEARCH_RECORDS);
+    const uint64_t record_size = dynamic_layout(
+        X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_SIZE);
+    const uint64_t pool_offset = dynamic_layout(
+        X64LENS_DYNAMIC_LAYOUT_CTX_SEARCH_BYTES);
+    if (search_record_count > search_record_max ||
+        search_bytes_used > search_bytes_max ||
+        records_offset > dynamic_size ||
+        record_size > dynamic_size ||
+        search_record_count > (dynamic_size - records_offset) / record_size ||
+        pool_offset > dynamic_size || search_bytes_max > dynamic_size - pool_offset) {
+        fputs("dynamic-metadata-fact-probe: private search-path bounds are invalid\n", stderr);
+        free(summary); free(regions); free(private_context);
+        munmap(mapping, (size_t)st.st_size);
+        return 7;
+    }
+
     printf("{\"status\":%" PRIu64
            ",\"carrier_count\":%" PRIu64
            ",\"textrel_tag_count\":%" PRIu64
@@ -114,7 +152,20 @@ int main(int argc, char **argv) {
            ",\"full_value_conflicts\":%" PRIu64
            ",\"textrel_conflicts\":%" PRIu64
            ",\"table_complete\":%" PRIu64
-           ",\"textrel_state\":%" PRIu64 "}\n",
+           ",\"textrel_state\":%" PRIu64
+           ",\"search_record_count\":%" PRIu64
+           ",\"search_bytes_used\":%" PRIu64
+           ",\"rpath_carrier_count\":%" PRIu64
+           ",\"runpath_carrier_count\":%" PRIu64
+           ",\"rpath_value_count\":%" PRIu64
+           ",\"runpath_value_count\":%" PRIu64
+           ",\"rpath_value_conflicts\":%" PRIu64
+           ",\"runpath_value_conflicts\":%" PRIu64
+           ",\"rpath_first_record\":%" PRIu64
+           ",\"runpath_first_record\":%" PRIu64
+           ",\"rpath_state\":%" PRIu64
+           ",\"runpath_state\":%" PRIu64
+           ",\"paths\":[",
            status,
            dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_CARRIER_COUNT)),
            dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_TEXTREL_TAG_COUNT)),
@@ -125,7 +176,56 @@ int main(int argc, char **argv) {
            dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_FULL_VALUE_CONFLICTS)),
            dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_TEXTREL_CONFLICTS)),
            dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_TABLE_COMPLETE)),
-           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_TEXTREL_STATE)));
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_TEXTREL_STATE)),
+           search_record_count,
+           search_bytes_used,
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_CARRIER_COUNT)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RUNPATH_CARRIER_COUNT)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_VALUE_COUNT)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RUNPATH_VALUE_COUNT)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_VALUE_CONFLICTS)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RUNPATH_VALUE_CONFLICTS)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_FIRST_RECORD)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RUNPATH_FIRST_RECORD)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_STATE)),
+           dq(ctx, dynamic_size, dynamic_layout(X64LENS_DYNAMIC_LAYOUT_CTX_RUNPATH_STATE)));
+
+    for (uint64_t i = 0; i < search_record_count; ++i) {
+        const uint64_t record = records_offset + i * record_size;
+        const uint64_t byte_pool_record_offset = dq(
+            ctx, dynamic_size,
+            record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_BYTE_POOL_OFFSET));
+        const uint64_t byte_length = dq(
+            ctx, dynamic_size,
+            record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_BYTE_LENGTH));
+        if (byte_pool_record_offset > search_bytes_used ||
+            byte_length > search_bytes_used - byte_pool_record_offset ||
+            byte_pool_record_offset > search_bytes_max ||
+            byte_length > search_bytes_max - byte_pool_record_offset) {
+            fputs("dynamic-metadata-fact-probe: private path record exceeds pool\n", stderr);
+            free(summary); free(regions); free(private_context);
+            munmap(mapping, (size_t)st.st_size);
+            return 7;
+        }
+        if (i != 0) putchar(',');
+        printf("{\"tag\":%" PRIu64
+               ",\"dynamic_index\":%" PRIu64
+               ",\"dynamic_file_offset\":%" PRIu64
+               ",\"string_table_offset\":%" PRIu64
+               ",\"string_file_offset\":%" PRIu64
+               ",\"byte_pool_offset\":%" PRIu64
+               ",\"byte_length\":%" PRIu64
+               ",\"bytes_hex\":\"",
+               dq(ctx, dynamic_size, record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_TAG)),
+               dq(ctx, dynamic_size, record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_INDEX)),
+               dq(ctx, dynamic_size, record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_DYNAMIC_FILE_OFFSET)),
+               dq(ctx, dynamic_size, record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_STRING_TABLE_OFFSET)),
+               dq(ctx, dynamic_size, record + dynamic_layout(X64LENS_DYNAMIC_LAYOUT_SEARCH_RECORD_STRING_FILE_OFFSET)),
+               byte_pool_record_offset, byte_length);
+        print_hex(ctx + pool_offset + byte_pool_record_offset, byte_length);
+        fputs("\"}", stdout);
+    }
+    fputs("]}\n", stdout);
 
     free(summary); free(regions); free(private_context);
     munmap(mapping, (size_t)st.st_size);

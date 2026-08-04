@@ -13,8 +13,8 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 is active at Patch 075. Patch 074
-was a superseded closeout candidate; Patch 075 carries the private bounded
+Sprints 1 through 11 are complete. Sprint 12 is active at Patch 076. Patch 074
+was a superseded closeout candidate; Patch 075 introduced the private bounded
 text-relocation tranche and remaining correction. Sprint 13 is planned only
 after the active Sprint 12 gates close. The roadmap may state
 "Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
@@ -34,14 +34,16 @@ reconciliation, outcome-blind external-natural acquisition, a corrected
 isolated native/container parity protocol, and an explicit public-policy
 deferral. Patch 074 implements corrections for the final evidence-custody,
 selection-inode, parity topology/publication, permission-normalization, and
-authority-oracle findings. Patch 075 adds private bounded text-relocation evidence while actual qualified parity and independent acceptance remain pending. It adds zero public role/property or new public mitigation fields and
+authority-oracle findings. Patch 075 adds private bounded text-relocation
+evidence while actual qualified parity and independent acceptance remain
+pending. It adds zero public role/property or new public mitigation fields and
 preserves schema `0.2.0`.
 
-Sprint 13 becomes active only after Patch 075 and the planned Patch 076 acceptance. It then owns
-generic exact-pop semantics, the Linux syscall `r10` role, score/null policy,
-and only measured bounded family additions. Positive role-controlled coordinate
-anchors and complete task-path qualification remain a separate diagnostic
-gate. Sprint 15 freezes the confirmatory campaign.
+Sprint 13 becomes active only after Patch 076 and the planned Patch 077 closeout reconciliation
+acceptance. It then owns generic exact-pop semantics, the Linux syscall `r10`
+role, score/null policy, and only measured bounded family additions. Positive
+role-controlled coordinate anchors and complete task-path qualification remain
+a separate diagnostic gate. Sprint 15 freezes the confirmatory campaign.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -244,20 +246,22 @@ correction; Patch 070 acceptance was rejected; Patch 071 corrected the first
 blocker set, and Patch 072 carries the remaining correction plus acquisition
 and parity gates.
 
-## Patch 070 through Patch 074 sequencing note
+## Patch 070 through Patch 076 sequencing note
 
 Patches 070, 071, 072, and 073 were not accepted at their respective first
 returned review boundaries. Patch 071 corrected the first nested-cleanup, case-
-oracle,
-streaming-limit, and delivery-custody blockers. Patch 072 carried the narrower
+oracle, streaming-limit, and delivery-custody blockers. Patch 072 carried the
+narrower
 generation, descendant, publication, duplicate-key, and delivery-completeness
 corrections while completing outcome-blind external-natural acquisition and the
 initial same-byte native/container parity protocol. Patch 073 carried the first
 custody/isolation correction and executed public policy as an explicit
 deferral. Patch 074 supplies the final topology, parity-protocol, permission,
-selection-inode, and authority-oracle correction and remains the closeout
-candidate. None of these patches advances the Sprint 15 freeze, adds a public
-mitigation field, or changes the dependency-free one-worker reference profile.
+selection-inode, and authority-oracle correction but was superseded as the
+closeout candidate. Patch 076 is active after Patch 075 added bounded private static
+text-relocation evidence. None of these patches advances the Sprint 15 freeze,
+adds a public mitigation field, or changes the dependency-free one-worker
+reference profile.
 
 
 ## Patch 072 evidence gate
@@ -269,13 +273,14 @@ seven executable and five library paths. The same-byte environment authority
 compares the authenticated 96-object matrix with identical analyzer, probe, and
 schema bytes across native and container planes. Retained diagnostic
 acquisition evidence remains separate from the same-host logic-only parity
-planes; qualified native/container parity remains pending. Both remain unfrozen and publication-
-ineligible. Patch 073 therefore adds no public role/property field and records
+planes; qualified native/container parity remains pending. Both remain unfrozen
+and publication-ineligible. Patch 073 therefore adds no public role/property
+field and records
 `defer`; this does not replace positive coordinate anchors, runtime closure,
-whole-batch workload qualification, or the Sprint 15 campaign freeze. Corrected write-isolated parity and independent acceptance are required by the
-Patch 074 closeout acceptance target.
+whole-batch workload qualification, or the Sprint 15 campaign freeze. Corrected
+write-isolated parity and independent acceptance remain active Sprint 12 gates.
 
-## Patch 073 policy decision and Patch 074 closeout note
+## Patch 073 policy decision through Patch 075 continuation note
 
 Patch 073 authenticated the unchanged public schema and reporter sources,
 preserved `mitigations.pie`, and rejected authorization while required
@@ -283,5 +288,16 @@ prerequisites remained open. Patch 074 implements corrections for the remaining
 delivery topology, late-mutation, hardlink, selection-inode, parity membership/
 mount/publication, permission-normalization, and negative-oracle findings. The
 competitive gap authority retains text-relocation and distinct RPATH/RUNPATH
-indicators for a later bounded implementation; no runtime field is added in
-Patch 074.
+indicators as separate bounded tranches. Patch 075 owns private static text-relocation evidence, and Patch 076 adds
+distinct private RPATH/RUNPATH
+carrier/value evidence. No public mitigation field is added.
+
+
+## Patch 076 bounded search-path checkpoint
+
+Patch 076 preserves the Patch 075 private text-relocation prefix and appends
+separate exact-byte `DT_RPATH` and `DT_RUNPATH` evidence with fixed carrier,
+record, and byte budgets. It performs no path-derived open, loader emulation,
+path expansion, public projection, or schema change. Complete native/container
+private dynamic-metadata parity and independent acceptance remain required.
+Patch 077 owns final Sprint 12 reconciliation and closeout decision.

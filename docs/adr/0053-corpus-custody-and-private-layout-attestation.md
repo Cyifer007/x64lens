@@ -7,11 +7,13 @@ candidate. Patch 068 introduced the intermediate corrective contract and
 diagnostic matrix; Patch 069 carried and corrected that boundary, and Patch 071
 supplied the first evidence-gate correction. Patches 070, 071, 072, and 073 were
 not accepted at their respective first returned review boundaries. Patch 073
-delivered the
-first custody/isolation correction and the non-reinterpretive policy deferral.
-The current Patch 074 final closeout candidate carries the remaining correction.
-Product, delivery, and actual native/container parity acceptance remain governed
-by Patch 074 validation.
+delivered the first custody/isolation correction and the non-reinterpretive
+policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
+Patch 076 is active: it corrects the remaining Patch 075 findings and adds
+distinct private RPATH/RUNPATH evidence. Complete Patch 076 acceptance remains pending. Patch 076 is
+planned for distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current validation
+expectations are in the
+[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 

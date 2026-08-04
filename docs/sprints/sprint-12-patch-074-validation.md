@@ -2,17 +2,20 @@
 
 ## Status
 
-Current Sprint 12 closeout implementation candidate. The patch is ready for
-native and Docker acceptance after package authentication; it is not accepted by
-this document alone.
+Historical superseded Sprint 12 closeout implementation candidate. Patch 074 did
+not establish complete acceptance. Patch 076 is active, owns the remaining
+correction plus private static text-relocation evidence, and still requires
+complete acceptance; Patch 076 implements distinct RPATH/RUNPATH evidence.
+Current validation expectations are in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md).
 
 ## Purpose
 
 Patch 074 implements corrections for the confirmed Patch 073 custody, parity-
 protocol, permission, selection-freeze, and authority-oracle findings,
 reconciles the prior public Markdown proposals, and records the policy decision
-as `defer`. It remains the final Sprint 12 closeout candidate; Sprint 13
-activation follows complete acceptance.
+as `defer`. It was the Patch 074 closeout candidate but was superseded; it did
+not close Sprint 12 or activate Sprint 13.
 
 It changes no tracked path under `src/`, `include/`, or `schemas/`. No runtime
 mitigation field is added.
@@ -27,8 +30,8 @@ base parent: 1ddd18a7c1d33001f1998d261ed2a3e4c77ca281
 base tree:   920979629ec23123cc92dc05ab92d3d9ab1668c4
 ```
 
-The delivered source-identity record is authoritative for the final candidate
-tree, patch digest, stable patch ID, and package digest.
+The delivered source-identity record is authoritative for the historical
+Patch 074 candidate tree, patch digest, stable patch ID, and package digest.
 
 ## Focused Patch 073 correction
 
@@ -129,8 +132,10 @@ decision=defer authorization=0 public_fields_added=0
 existing_pie_preserved=1 runtime_cet_claim=0
 ```
 
-Text-relocation and separate RPATH/RUNPATH evidence remain deferred bounded
-tranches. Patch 074 adds zero runtime fields.
+At the Patch 074 boundary, text-relocation and separate RPATH/RUNPATH evidence
+remained deferred bounded tranches, and Patch 074 added zero runtime fields.
+Patch 075 subsequently implemented private static text-relocation evidence;
+Patch 076 implements distinct RPATH/RUNPATH evidence.
 
 ## Sprint closeout authority
 
@@ -174,25 +179,29 @@ Strict ShellCheck is part of `make sprint-closeout-smoke`. Docker availability
 is a separate environment prerequisite; native evidence does not substitute for
 Docker evidence.
 
-## Candidate implementation aggregate
+## Historical candidate implementation aggregate
 
 ```bash
 make sprint12-p074-acceptance-smoke
 ```
 
-This aggregate exercises the complete native validation surface, retained
-external-natural acquisition, corrected isolated native/container parity,
+For the Patch 074 candidate, this aggregate exercised the complete native
+validation surface, retained external-natural acquisition, corrected isolated
+native/container parity,
 deferral-only policy and mitigation-gap authorities, and the Sprint 12 closeout
-authority. A passing result is necessary but not sufficient for acceptance:
+authority. A passing result was necessary but not sufficient for acceptance:
 package/source authentication, exact delivery rehearsal, and independent non-
 documentation acceptance remain separate gates.
 
 ## Interpretation
 
-After every acceptance boundary passes on the same source, Patch 074 would
-support a bounded claim that Sprint 12's loader and private mitigation-evidence
-work has an explicit implemented-or-deferred disposition and an authenticated
-Sprint 13 handoff. The candidate alone does not close Sprint 12 or support a
-public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH,
-performance, RSS, coverage, or exploitability claim beyond the existing report
-contract.
+At the Patch 074 boundary, passing every acceptance boundary on the same source
+would have supported a bounded claim that Sprint 12's loader and private
+mitigation-evidence work had an explicit implemented-or-deferred disposition and
+an authenticated Sprint 13 handoff. That acceptance was not established, and
+Patch 074 was superseded. Active Patch 075 owns the remaining correction and
+private static text-relocation evidence; its acceptance remains pending, while
+Patch 076 owns the planned distinct RPATH/RUNPATH tranche. The historical Patch
+074 candidate does not close Sprint 12 or support a public PIE/DSO, IBT, SHSTK,
+runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, coverage, or
+exploitability claim beyond the existing report contract.

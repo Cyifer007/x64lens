@@ -21,7 +21,7 @@ EXPECTED_PUBLIC = [
 ]
 EXPECTED_PRIVATE = ["binary-role", "ibt-shstk"]
 EXPECTED_TRANCHES = ["text-relocations", "runtime-search-path", "fortify-source-indicator"]
-EXPECTED_SELECTED = ["text-relocations", "runtime-search-path"]
+EXPECTED_SELECTED: list[str] = []
 
 
 class GapError(RuntimeError):
@@ -63,7 +63,7 @@ def main() -> int:
         "authority_id", "evidence_class", "frozen", "publication_eligible", "purpose",
         "current_public_properties", "current_private_or_deferred",
         "prioritized_gap_tranches", "excluded_shortcuts", "patch_073_disposition", "patch_074_disposition",
-        "patch_075_disposition",
+        "patch_075_disposition", "patch_076_disposition",
     }, "mitigation gap authority fields changed")
     require(value["authority_id"] == "sprint12-mitigation-competitive-gap-v1",
             "mitigation gap authority id changed")
@@ -132,7 +132,7 @@ def main() -> int:
     require(isinstance(disposition["reason"], str) and disposition["reason"],
             "Patch 073 gap disposition reason is invalid")
     next_tranche = string_list(disposition["next_tranche"], "Patch 073 next tranche", exact_count=2)
-    require(next_tranche == selected, "Patch 073 next-tranche disposition disagrees")
+    require(next_tranche == ["text-relocations", "runtime-search-path"], "Patch 073 historical next-tranche disposition changed")
 
     closeout = value["patch_074_disposition"]
     require(isinstance(closeout, dict) and set(closeout) == {"runtime_fields_added", "reason", "deferred_tranches"},
@@ -142,7 +142,7 @@ def main() -> int:
     require(isinstance(closeout["reason"], str) and closeout["reason"],
             "Patch 074 gap disposition reason is invalid")
     deferred = string_list(closeout["deferred_tranches"], "Patch 074 deferred tranches", exact_count=2)
-    require(deferred == selected, "Patch 074 deferred-tranche disposition disagrees")
+    require(deferred == ["text-relocations", "runtime-search-path"], "Patch 074 historical deferred-tranche disposition changed")
 
     current = value["patch_075_disposition"]
     require(isinstance(current, dict) and set(current) == {
@@ -166,13 +166,38 @@ def main() -> int:
     require(isinstance(current["reason"], str) and current["reason"],
             "Patch 075 gap disposition reason is invalid")
 
+    p076 = value["patch_076_disposition"]
+    require(isinstance(p076, dict) and set(p076) == {
+        "runtime_fields_added", "private_facts_added", "public_projection",
+        "next_implementation_tranche", "next_gate", "reason",
+    }, "Patch 076 gap disposition fields changed")
+    require(type(p076["runtime_fields_added"]) is int and p076["runtime_fields_added"] == 0,
+            "Patch 076 silently added a public runtime field")
+    p076_private = string_list(p076["private_facts_added"], "Patch 076 private facts", exact_count=3)
+    require(p076_private == [
+        "DT_RPATH carrier and exact byte provenance",
+        "DT_RUNPATH carrier and exact byte provenance",
+        "separate private unknown-absent-present-contradictory RPATH and RUNPATH states",
+    ], "Patch 076 private search-path facts changed")
+    require(p076["public_projection"] ==
+            "deferred_pending_acceptance_parity_schema_and_consumer_value_gate",
+            "Patch 076 public projection boundary changed")
+    require(string_list(p076["next_implementation_tranche"],
+                        "Patch 076 next implementation tranche", exact_count=0) == [],
+            "Patch 076 selected an unreviewed implementation tranche")
+    require(p076["next_gate"] == "Patch 077 Sprint 12 acceptance and closeout reconciliation",
+            "Patch 077 closeout handoff changed")
+    require(isinstance(p076["reason"], str) and p076["reason"],
+            "Patch 076 gap disposition reason is invalid")
+
     print(
         "sprint12-mitigation-competitive-gap-smoke: ok "
         f"current_public={len(observed)} private_deferred={len(private)} "
-        f"gap_tranches={len(tranches)} selected_next={','.join(selected)} "
+        f"gap_tranches={len(tranches)} selected_next={','.join(selected) if selected else 'none'} "
         f"runtime_fields_added={disposition['runtime_fields_added']} "
         f"closeout_fields_added={closeout['runtime_fields_added']} "
-        f"patch075_private_textrel={len(private_facts)} patch075_public_fields={current['runtime_fields_added']}"
+        f"patch075_private_textrel={len(private_facts)} patch075_public_fields={current['runtime_fields_added']} "
+        f"patch076_private_search_path={len(p076_private)} patch076_public_fields={p076['runtime_fields_added']}"
     )
     return 0
 

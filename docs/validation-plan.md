@@ -1753,11 +1753,13 @@ bounded external ELF reconciliation (`readelf -hW/-lW/-dW/-nW`). Patch 070
 attempted the next evidence-gate correction but was rejected. Patch 071 supplied
 the first correction. Patch 072 supplied the remainder plus outcome-blind
 acquisition and the initial environment-parity protocol, but its returned review
-rejected current acceptance. Patch 073 changed no runtime analyzer or schema path and recorded the public-
-policy decision as `defer`, but review required the final Patch 074 custody,
-parity, permission, and authority correction. The matrix remains diagnostic,
-unfrozen, and publication-ineligible. Any future compatible public `0.2.x`
-indicator requires a new separately reviewed decision.
+rejected current acceptance. Patch 073 changed no runtime analyzer or schema
+path and recorded the public-policy decision as `defer`. Patch 074 supplied the
+next custody, parity, permission, and authority correction but was superseded
+as the closeout candidate. Patch 076 is active and adds private static
+text-relocation evidence. The matrix remains diagnostic, unfrozen, and
+publication-ineligible. Any future compatible public `0.2.x` indicator requires
+a new separately reviewed decision.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1950,16 +1952,17 @@ public role-derived PIE/DSO, IBT, or SHSTK field, preserves the existing coarse
 gate selects text-relocation evidence and distinct RPATH/RUNPATH indicators as
 future bounded work without adding a Patch 073 runtime field.
 
-Patch 074 carries the corrected native/container parity protocol, delivery
-reconciliation, and the Sprint 12 closeout authority. Actual qualified parity
-and acceptance remain pending. Sprint 13 owns semantic completion after every
-Patch 074 acceptance boundary passes on the same source.
+Patch 074 carried the corrected native/container parity protocol, delivery
+reconciliation, and a Sprint 12 closeout authority, but was superseded as the
+closeout candidate. Patch 076 is active, and actual qualified parity plus
+acceptance remain pending. Patch 076 implements distinct RPATH/RUNPATH
+evidence. Sprint 13 remains planned until the active Sprint 12 gates close.
 
 
-## Sprint 12 Patch 074 closeout validation
+## Historical Sprint 12 Patch 074 closeout validation
 
-Patch 074 is the final Sprint 12 closeout candidate. It changes no runtime
-`src/`, `include/`, or schema path. Run the focused and machine closeout gates:
+Patch 074 was a superseded Sprint 12 closeout candidate. It changed no runtime
+`src/`, `include/`, or schema path. Its focused and machine closeout gates were:
 
 ```bash
 make patch073-corrective-regression-smoke
@@ -2006,3 +2009,31 @@ result and runs the corrected isolated 96-object native/container parity plane.
 A same-host logic replay does not substitute for Docker parity. Candidate 4,097
 must still exit 6 before stdout, malformed input must emit no partial stdout,
 and target bytes remain read-only and never executed.
+
+## Sprint 12 Patch 075 and Patch 076 continuation validation
+
+Patch 076 is the active Sprint 12 patch. Patch 075 keeps text-relocation evidence
+private and static, adds no public mitigation field, preserves schema `0.2.0`,
+does not reinterpret public PIE output, and makes no runtime-CET claim. Program
+headers remain executable authority; section headers remain optional metadata.
+
+Run the focused Patch 075/Patch 076 gates and complete candidate aggregate:
+
+```bash
+make patch074-corrective-regression-smoke
+make sprint12-dynamic-metadata-layout-smoke
+make sprint12-textrel-smoke
+make sprint12-search-path-smoke
+make sprint12-dynamic-metadata-environment-parity-smoke
+make sprint12-continuation-smoke
+make sprint12-p076-acceptance-smoke
+```
+
+For the supported dynamic-carrier boundary, `mitigations`, `gadgets`, and
+`analyze` fail carrier 65 with exit code 6 before stdout. `info` remains a
+header-only path and does not parse `PT_DYNAMIC`. CLI syntax, command names,
+public fields, and the report schema remain unchanged.
+
+Patch 076 implements the separate bounded private RPATH/RUNPATH evidence
+tranche. Cloud-executed, static-review-only, and WSL2-deferred evidence remain distinct
+classes; none substitutes for another or for qualified native/container parity.

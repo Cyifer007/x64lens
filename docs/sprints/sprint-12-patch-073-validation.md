@@ -4,15 +4,19 @@
 
 Historical implementation candidate. The public-policy gate executed as
 `defer`, but Patch 073 was not accepted at its first returned review boundary.
-Patch 074 is the final corrective Sprint 12 closeout candidate and still
-requires complete acceptance.
+Patch 074 was a superseded Sprint 12 closeout candidate. Patch 076 is active,
+owns the remaining correction plus private static text-relocation evidence, and
+still requires complete acceptance; Patch 076 implements distinct
+RPATH/RUNPATH evidence. Current validation expectations are in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md).
 
 ## Purpose
 
 Patch 073 delivered the first custody/isolation correction for the confirmed
 Patch 072 cleanup, selection-freeze, delivery, parity-isolation, and
 evidence-retention defects while executing the planned non-reinterpretive
-public-policy gate. Patch 074 carries the remaining correction. The Patch 073
+public-policy gate. Patch 074 carried the next correction but was superseded by
+active Patch 075. The Patch 073
 policy result is an explicit
 **deferral**: no new PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH
 field is added. The existing coarse `mitigations.pie` field remains the
@@ -160,8 +164,10 @@ does not support a claim that static GNU properties prove runtime CET, that
 `ET_DYN` alone distinguishes PIE from DSO, or that the external-natural sample
 estimates mitigation prevalence.
 
-Patch 074 carries the required remaining correction, exact delivery-rehearsal
-requirement, and final Sprint 12 closeout-candidate authority. Current
-expectations are in the
-[Patch 074 validation record](sprint-12-patch-074-validation.md). Sprint 13 owns
-semantic completion only after Patch 074 acceptance.
+Patch 074 carried the next correction, exact delivery-rehearsal requirement, and
+closeout-candidate authority, but was superseded. Patch 075 now owns the
+remaining correction and private static text-relocation evidence; its acceptance
+remains pending, and Patch 076 owns the planned distinct RPATH/RUNPATH tranche.
+Current validation expectations are in the
+[Patch 076 validation record](sprint-12-patch-076-validation.md). Sprint 13 owns
+semantic completion only after Sprint 12 acceptance.

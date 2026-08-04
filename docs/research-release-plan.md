@@ -395,8 +395,10 @@ result must retain the batch as its measurement unit and preserve the
 diagnostic/confirmatory separation. Patch 073 recorded `defer` but was not
 accepted at its first returned review boundary. Patch 074 implements the final
 custody and parity-protocol corrections and changes no public field or schema
-meaning. It remains the Sprint 12 closeout candidate; the Sprint 13 handoff
-follows complete acceptance.
+meaning, but it was superseded as the Sprint 12 closeout candidate. Patch 075
+introduced bounded private static text-relocation evidence. Patch 076 is active
+and adds distinct bounded private RPATH/RUNPATH evidence; the Sprint 13 handoff
+follows only after the active Sprint 12 gates close.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -416,12 +418,12 @@ cannot satisfy preview or publication corpus requirements. Static property
 agreement does not establish runtime CET enforcement. No new role-derived
 PIE/DSO field or IBT/SHSTK field is admitted after the separate Patch 073 policy
 gate, whose deferral Patch 074 preserves; the existing coarse `mitigations.pie`
-field remains unchanged. The next selected text-relocation and RPATH/RUNPATH
-families remain future bounded implementation work and are not release evidence
-from Patch 073 or Patch 074.
+field remains unchanged. Patch 075 owns bounded private static text-relocation evidence, while Patch 076
+owns distinct bounded private RPATH/RUNPATH evidence.
+Neither is release evidence or a public field without a later policy gate.
 
 
-## Patch 074 Sprint 12 closeout release-gate note
+## Patch 074 superseded closeout and Patch 075 continuation release-gate note
 
 Patch 074 changes no runtime analyzer, include, public schema, CLI, or release
 tag. It implements corrections for delivery topology and late-mutation custody,
@@ -433,6 +435,17 @@ facts do not by themselves close Sprint 12.
 The complete closeout acceptance boundary requires native validation, strict
 ShellCheck, retained external-natural acquisition, corrected isolated Docker
 parity, exact delivery rehearsal, and independent non-documentation acceptance
-on the same source. The role/property policy remains `defer`, and text-
-relocation plus separate RPATH/RUNPATH evidence remain future bounded work. No
-Sprint 12 diagnostic artifact becomes preview or publication evidence.
+on the same source. Patch 075 carries the remaining correction and private
+static text-relocation evidence; Patch 076 owns separate private RPATH/RUNPATH
+evidence. The role/property policy remains `defer`, no public mitigation field
+or runtime-CET claim is added, and no Sprint 12 diagnostic artifact becomes
+preview or publication evidence.
+
+
+## Patch 076 release-gate note
+
+Patch 076 adds no release-facing field. Its private RPATH/RUNPATH facts qualify
+future mitigation design only when the exact layout, controlled matrix,
+malformed and capacity behavior, GNU `readelf` presence reconciliation, native
+and Docker execution, and complete private parity all pass. A preview artifact
+must not infer loader resolution or search-path safety from these records.

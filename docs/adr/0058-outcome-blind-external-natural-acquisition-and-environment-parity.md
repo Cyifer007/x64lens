@@ -8,10 +8,12 @@ planned external-natural acquisition and initial same-byte native/container
 private-fact parity protocol. Its returned review rejected current acceptance
 after reproducing custody and isolation defects. Patches 070, 071, 072, and 073
 were not accepted at their respective first returned review boundaries. Patch
-073 delivered
-the first custody/isolation correction and policy deferral; Patch 074 is the
-remaining correction and final Sprint 12 closeout candidate. Complete Patch 074
-acceptance remains pending.
+073 delivered the first custody/isolation correction and policy deferral. Patch
+074 was the superseded Sprint 12 closeout candidate. Patch 076 is active: it
+owns the remaining correction plus private static text-relocation evidence.
+Complete Patch 076 acceptance remains pending. Patch 076 implements distinct
+`DT_RPATH` and `DT_RUNPATH` evidence. Current validation expectations are in
+the [Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
 
 ## Context
 
@@ -163,9 +165,12 @@ The Sprint 12 sequence is:
   current acceptance;
 - Patch 073: first custody/isolation correction and non-reinterpretive
   public-policy decision `defer`; its returned review did not accept the
-  candidate; and
-- Patch 074: remaining correction and final Sprint 12 closeout candidate, with
-  Sprint 13 handoff only after complete acceptance.
+  candidate;
+- Patch 074: remaining correction and superseded Sprint 12 closeout candidate;
+- Patch 075: active remaining correction plus private static text-relocation
+  evidence, with complete acceptance pending; and
+- Patch 076: distinct `DT_RPATH` and `DT_RUNPATH` evidence, with the
+  Sprint 13 handoff only after the active Sprint 12 gates close.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and
 publication-ineligible. They cannot be relabeled as Sprint 15-frozen evidence.

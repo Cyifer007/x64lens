@@ -27,9 +27,16 @@ int main(void) {
         fputs("sprint12-dynamic-metadata-layout-smoke: error: offset mutation accepted\n", stderr);
         return 1;
     }
+    memcpy(mutated, x64lens_dynamic_metadata_layout_descriptor, sizeof(mutated));
+    mutated[X64LENS_DYNAMIC_METADATA_LAYOUT_HEADER_QWORDS +
+            X64LENS_DYNAMIC_LAYOUT_CTX_RPATH_STATE] += 8;
+    if (x64lens_dynamic_metadata_layout_validate(mutated, sizeof(mutated))) {
+        fputs("sprint12-dynamic-metadata-layout-smoke: error: search-path offset mutation accepted\n", stderr);
+        return 1;
+    }
     printf("sprint12-dynamic-metadata-layout-smoke: ok qwords=%zu fields=%" PRIu64
            " descriptor_bytes=%" PRIu64 " context_bytes=%" PRIu64
-           " private_context_bytes=%" PRIu64 " mutations=2\n",
+           " private_context_bytes=%" PRIu64 " mutations=3\n",
            X64LENS_DYNAMIC_METADATA_LAYOUT_QWORDS,
            x64lens_dynamic_metadata_layout_descriptor[2],
            x64lens_dynamic_metadata_layout_descriptor_size,

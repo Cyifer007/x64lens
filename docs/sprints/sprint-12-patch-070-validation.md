@@ -6,12 +6,13 @@ Rejected as a Sprint 12 acceptance candidate after validation reproduced
 blocking cleanup, batch-oracle, output-limit, and delivery-custody defects.
 Patches 070, 071, 072, and 073 were not accepted at their respective first
 returned review boundaries. Patch 073 delivered the first custody/isolation
-correction and
-the policy decision `defer`; Patch 074 carries the remaining correction as the
-final Sprint 12 closeout candidate. The batch
+correction and the policy decision `defer`. Patch 074 was a superseded Sprint 12
+closeout candidate. Patch 076 is active, owns the remaining correction plus
+private static text-relocation evidence, and still requires complete acceptance;
+Patch 076 implements distinct RPATH/RUNPATH evidence. The batch
 pilot, private-fact matrix, and `readelf` reconciliation remain diagnostic,
-unfrozen, and publication-ineligible. Qualified native/container parity remains
-pending until complete Patch 074 validation.
+unfrozen, and publication-ineligible. Qualified native/container parity and
+Patch 075 acceptance remain pending.
 
 ## Purpose
 
@@ -121,5 +122,7 @@ remaining correction and acquisition/parity gates are recorded in
 [`sprint-12-patch-072-validation.md`](sprint-12-patch-072-validation.md). The
 first custody/isolation correction and policy deferral are recorded in
 [`sprint-12-patch-073-validation.md`](sprint-12-patch-073-validation.md), and
-current closeout-candidate expectations are in
+the superseded closeout-candidate boundary is recorded in
 [`sprint-12-patch-074-validation.md`](sprint-12-patch-074-validation.md).
+Current validation expectations are in
+[`sprint-12-patch-075-validation.md`](sprint-12-patch-075-validation.md).

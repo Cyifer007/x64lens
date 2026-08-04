@@ -2,11 +2,11 @@
 
 ## Status
 
-Active at Patch 075. Patch 074 was a closeout candidate, but its independent
-review required a bounded corrective patch and the mitigation-gap review
-justified continuing Sprint 12. Patch 075 corrects the remaining custody and
-oracle defects and introduces private bounded `DT_TEXTREL` / `DF_TEXTREL`
-evidence. Patch 076 is planned for distinct bounded `DT_RPATH` and
+Active at Patch 076. Patch 074 was a closeout candidate, but later review
+required bounded corrections and the mitigation-gap review justified continuing
+Sprint 12. Patch 075 introduced private bounded `DT_TEXTREL` / `DF_TEXTREL`
+evidence. Patch 076 corrects its remaining transaction, oracle, recovery,
+parity, and delivery findings and adds distinct bounded `DT_RPATH` and
 `DT_RUNPATH` evidence. Sprint 13 remains planned, not active.
 
 Patches 062 through 074 carry ordinary PHDR validity and explicit extended-
@@ -35,6 +35,8 @@ Related closeout records:
 - [Patch 074 validation](sprint-12-patch-074-validation.md)
 - [ADR 0061](../adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md)
 - [Patch 075 validation](sprint-12-patch-075-validation.md)
+- [ADR 0062](../adr/0062-distinct-private-rpath-runpath-evidence.md)
+- [Patch 076 validation](sprint-12-patch-076-validation.md)
 
 ## Sprint goal
 
@@ -91,8 +93,18 @@ that would otherwise corrupt corpus labels or defensive triage.
   private unknown, absent, present, or contradictory text-relocation state.
 - [x] Preserve public schema `0.2.0`, public mitigation output, program-header
   executable authority, candidate capacity, and no-partial-output behavior.
-- [ ] Complete fresh native, Docker, and independent acceptance for Patch 075.
-- [ ] Implement distinct bounded RPATH/RUNPATH evidence in Patch 076.
+- [x] Harden the textrel oracle against path-value false positives, exact
+  aggregate mutations, unconsumed schema authority, and stale public-field
+  assumptions.
+- [x] Bind permission normalization, custody publication, and candidate-source
+  recovery to retained identities with complete rollback and derived tree
+  verification.
+- [x] Add distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value records,
+  exact byte provenance, separate states, a 64-record cap, and a 4,096-byte cap.
+- [x] Add tracked native/container parity over all private dynamic fields and
+  public command closures without exposing the native result plane.
+- [ ] Complete fresh native, Docker, actual parity, and independent acceptance
+  for Patch 076.
 
 
 ## Patch sequence
@@ -117,10 +129,13 @@ that would otherwise corrupt corpus labels or defensive triage.
     required the final closeout correction.
 13. **Patch 074:** final custody, parity, permission, authority, documentation,
     and a superseded Sprint 12 closeout candidate.
-14. **Patch 075:** remaining P074 correction plus private bounded text-relocation
-    carrier and state evidence.
-15. **Patch 076 (planned):** distinct bounded `DT_RPATH` and `DT_RUNPATH`
-    carrier/value evidence and final Sprint 12 acceptance decision.
+14. **Patch 075:** remaining P074 correction plus private bounded
+    text-relocation carrier and state evidence.
+15. **Patch 076:** remaining Patch 075 correction plus distinct bounded
+    `DT_RPATH` and `DT_RUNPATH` carrier/value evidence and complete private
+    dynamic-metadata parity.
+16. **Patch 077 (planned):** reconcile Patch 076 acceptance evidence and decide
+    Sprint 12 closeout without adding unreviewed mitigation fields.
 
 ## Current continuation disposition
 
@@ -140,7 +155,7 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After Patch 075 and the planned Patch 076 pass acceptance, Sprint 13 owns
+After Patch 076 and the planned Patch 077 closeout reconciliation pass acceptance, Sprint 13 owns
 generic exact-pop semantics, the Linux syscall `r10` role, release-facing
 score/null policy, and only bounded family additions supported by measured task
 value. Any changed task definition receives a new diagnostic campaign identity.

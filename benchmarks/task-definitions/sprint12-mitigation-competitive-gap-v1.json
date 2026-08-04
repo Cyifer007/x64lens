@@ -38,14 +38,12 @@
         "DT_FLAGS & DF_TEXTREL"
       ],
       "required_work": [
-        "checked dynamic-tag acquisition",
-        "duplicate and contradictory carrier policy",
-        "valid, malformed, unsupported, and no-dynamic fixtures",
-        "focused text and integrated JSON parity",
-        "external readelf comparator reconciliation",
-        "schema 0.2.x compatibility review"
+        "private bounded acquisition implemented in Patch 075",
+        "fresh native and Docker validation",
+        "fresh dynamic-metadata parity",
+        "consumer-value and schema policy review before any public projection"
       ],
-      "selected_for_next_bounded_mitigation_tranche": true
+      "selected_for_next_bounded_mitigation_tranche": false
     },
     {
       "priority": 2,
@@ -56,13 +54,12 @@
         "DT_RUNPATH validated string"
       ],
       "required_work": [
-        "reuse validated dynamic string-table mapping",
-        "retain RPATH and RUNPATH separately",
-        "reject duplicate or conflicting singleton policy where required",
-        "hostile string-offset and NUL-termination fixtures",
-        "report indicators without claiming loader exploitability"
+        "private distinct RPATH/RUNPATH acquisition implemented in Patch 076",
+        "fresh native and Docker validation",
+        "fresh dynamic-metadata parity",
+        "consumer-value and schema policy review before any public projection"
       ],
-      "selected_for_next_bounded_mitigation_tranche": true
+      "selected_for_next_bounded_mitigation_tranche": false
     },
     {
       "priority": 3,
@@ -116,5 +113,17 @@
       "runtime-search-path"
     ],
     "reason": "Patch 075 implements bounded private text-relocation evidence and preserves public schema 0.2.0. Patch 076 owns distinct bounded DT_RPATH and DT_RUNPATH carrier and value evidence."
+  },
+  "patch_076_disposition": {
+    "runtime_fields_added": 0,
+    "private_facts_added": [
+      "DT_RPATH carrier and exact byte provenance",
+      "DT_RUNPATH carrier and exact byte provenance",
+      "separate private unknown-absent-present-contradictory RPATH and RUNPATH states"
+    ],
+    "public_projection": "deferred_pending_acceptance_parity_schema_and_consumer_value_gate",
+    "next_implementation_tranche": [],
+    "next_gate": "Patch 077 Sprint 12 acceptance and closeout reconciliation",
+    "reason": "Patch 076 completes the two selected bounded private mitigation tranches without changing public schema 0.2.0. Fortify remains measurement/design-first and is not selected for immediate implementation."
   }
 }

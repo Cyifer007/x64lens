@@ -94,5 +94,6 @@ ADR 0058 records the remaining Patch 071 correction and the version-3 authority
 used by Patch 072, together with outcome-blind external-natural acquisition and
 the initial native/container private-fact parity protocol. Patch 072's returned
 review rejected current acceptance. ADR 0059 records the first Patch 073
-custody/isolation correction and policy deferral; ADR 0060 records the remaining
-Patch 074 correction and final Sprint 12 closeout candidate.
+custody/isolation correction and policy deferral. ADR 0060 records the Patch 074
+correction and superseded closeout candidate; ADR 0061 records the active Patch
+075 private static text-relocation tranche.
