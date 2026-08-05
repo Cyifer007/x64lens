@@ -1,138 +1,710 @@
 #!/usr/bin/env python3
-"""Recover an exact candidate source tree with archive and Git-tree custody.
+"""Recover one exact candidate source tree through retained descriptors.
 
-The helper rejects unsafe, duplicate, linked, special, mode-mismatched, or
-undeclared TAR members; requires every ancestor directory to be declared before
-use; writes without following links; verifies exact bytes, Git blob IDs, modes,
-and final membership; and derives the Git root tree from the recovered manifest
-instead of trusting a printable ``candidate_tree`` label. The destination's
-parent must already exist, so recovery never creates undeclared ancestors.
+The manifest and TAR are independent authorities: the manifest supplies the
+exact Git paths, modes, object IDs, sizes, and SHA-256 values, while the TAR
+supplies the bytes.  Recovery writes into an unpredictable sibling staging
+root beneath an already existing, no-follow destination parent.  Every created
+directory and file descriptor is retained through a second full closure pass.
+Publication uses Linux ``renameat2(RENAME_NOREPLACE)`` and therefore cannot
+replace a destination raced into place.
+
+Failure cleanup is ownership-qualified.  The helper first moves the staging
+name to fresh quarantine names without replacement and reauthenticates the
+retained root descriptor before recursive removal.  A foreign substitution is
+preserved and reported rather than deleted.  Linux has no atomic compare-and-
+unlink-by-descriptor primitive; a malicious concurrent same-UID process remains
+an explicit external threat boundary, but the deterministic check/use and
+path-based rollback defects covered by the project regressions fail closed.
 """
 from __future__ import annotations
+
 import argparse
+import ctypes
+from dataclasses import dataclass
+import errno
 import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import resource
 import shutil
 import stat
 import sys
 import tarfile
-from typing import Any
-class RecoveryError(RuntimeError): pass
-def require(c:bool,m:str)->None:
-    if not c: raise RecoveryError(m)
-def strict(pairs:list[tuple[str,Any]])->dict[str,Any]:
-    out={}
-    for k,v in pairs: require(k not in out,f"duplicate JSON key: {k}"); out[k]=v
+from typing import Any, BinaryIO, Callable, NamedTuple
+
+BUFFER_SIZE = 1024 * 1024
+MAX_SOURCE_FILES = 4096
+MAX_SOURCE_DIRECTORIES = 1024
+MIN_FD_HEADROOM = 64
+O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
+O_DIRECTORY = getattr(os, "O_DIRECTORY", 0)
+O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+RENAME_NOREPLACE = 1
+
+# Durable regressions inject races only through these hooks.
+_TEST_AFTER_INITIAL_VERIFY_HOOK: Callable[[int, str, int], None] | None = None
+_TEST_BEFORE_PUBLISH_HOOK: Callable[[int, str, str], None] | None = None
+_TEST_AFTER_PUBLISH_HOOK: Callable[[int, str, int], None] | None = None
+_TEST_BEFORE_CLEANUP_HOOK: Callable[[int, str, int], None] | None = None
+_TEST_BEFORE_FINAL_RMTREE_HOOK: Callable[[int, str, int], None] | None = None
+
+
+class RecoveryError(RuntimeError):
+    """Raised when source bytes, topology, identity, or publication disagree."""
+
+
+class StableIdentity(NamedTuple):
+    device: int
+    inode: int
+    file_type: int
+    uid: int
+    gid: int
+
+
+@dataclass
+class AncestorBinding:
+    parent_fd: int
+    name: str
+    child_fd: int
+    opened: StableIdentity
+    display: str
+
+
+@dataclass
+class ParentHandle:
+    requested: Path
+    fd: int
+    bindings: list[AncestorBinding]
+
+
+@dataclass
+class DirectoryRecord:
+    path: str
+    name: str
+    parent_fd: int
+    fd: int
+    opened: StableIdentity
+
+
+@dataclass
+class FileRecord:
+    path: str
+    name: str
+    parent_fd: int
+    fd: int
+    opened: StableIdentity
+    sha256: str
+    size: int
+    mode: int
+    git_oid: str
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise RecoveryError(message)
+
+
+def strict(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, value in pairs:
+        require(key not in out, f"duplicate JSON key: {key}")
+        out[key] = value
     return out
-def safe(raw:str)->str:
-    p=PurePosixPath(raw); require(raw and not p.is_absolute() and p.as_posix()==raw and "\\" not in raw and all(x not in {"",".",".."} for x in p.parts),f"unsafe member path: {raw!r}"); return raw
-def parent(raw:str)->str:
-    parts=PurePosixPath(raw).parts; return "/".join(parts[:-1])
-def digest(path:Path)->tuple[str,int]:
-    h=hashlib.sha256(); total=0
-    with path.open("rb") as f:
-        while True:
-            b=f.read(1024*1024)
-            if not b: break
-            h.update(b); total+=len(b)
-    return h.hexdigest(),total
-def git_object(kind:bytes,payload:bytes)->str:
-    return hashlib.sha1(kind+b" "+str(len(payload)).encode("ascii")+b"\0"+payload).hexdigest()
-def load_manifest(path:Path)->dict[str,Any]:
-    value=json.loads(path.read_text(),object_pairs_hook=strict)
-    require(isinstance(value,dict) and set(value)=={"schema_id","candidate_tree","directories","files"},"source manifest shape changed")
-    require(value["schema_id"]=="x64lens-candidate-source-tree-v1","wrong source manifest schema")
-    require(isinstance(value["candidate_tree"],str) and len(value["candidate_tree"])==40 and all(c in "0123456789abcdef" for c in value["candidate_tree"]),"invalid candidate tree")
-    require(isinstance(value["directories"],list) and isinstance(value["files"],list),"invalid manifest arrays")
-    return value
-def derive_tree(files:dict[str,dict[str,Any]],directories:set[str])->str:
-    all_dirs={"",*directories}; children:dict[str,list[tuple[str,bool,str,str]]]={d:[] for d in all_dirs}
-    for directory in directories:
-        par=parent(directory); require(par in all_dirs,f"undeclared directory parent: {directory}")
-    for path,item in files.items():
-        par=parent(path); require(par in all_dirs,f"undeclared file parent: {path}")
-        children[par].append((PurePosixPath(path).name,False,item["git_mode"],item["git_oid"]))
-    tree_ids:dict[str,str]={}
-    for directory in sorted(directories,key=lambda x:(-x.count("/"),os.fsencode(x))):
-        par=parent(directory); name=PurePosixPath(directory).name
-        payload_entries=children[directory]
-        require(payload_entries,f"manifest contains an empty non-Git directory: {directory}")
-        payload=b"".join(
-            mode.encode("ascii")+b" "+name_b+b"\0"+bytes.fromhex(oid)
-            for name_b,is_dir,mode,oid in sorted(
-                ((os.fsencode(n)+(b"/" if d else b""),d,m,o) for n,d,m,o in payload_entries),
-                key=lambda item:item[0],
-            )
-            for name_b in [name_b[:-1] if is_dir else name_b]
-        )
-        oid=git_object(b"tree",payload); tree_ids[directory]=oid
-        children[par].append((name,True,"40000",oid))
-    root_entries=children[""]; require(root_entries,"source manifest has no root entries")
-    payload=b"".join(
-        mode.encode("ascii")+b" "+name_b+b"\0"+bytes.fromhex(oid)
-        for name_b,is_dir,mode,oid in sorted(
-            ((os.fsencode(n)+(b"/" if d else b""),d,m,o) for n,d,m,o in root_entries),key=lambda item:item[0]
-        )
-        for name_b in [name_b[:-1] if is_dir else name_b]
+
+
+def safe(raw: str) -> str:
+    path = PurePosixPath(raw)
+    require(
+        raw
+        and not path.is_absolute()
+        and path.as_posix() == raw
+        and "\\" not in raw
+        and all(part not in {"", ".", ".."} for part in path.parts),
+        f"unsafe member path: {raw!r}",
     )
-    return git_object(b"tree",payload)
-def final_membership(destination:Path)->tuple[set[str],set[str]]:
-    dirs=set(); files=set()
-    for root,dirnames,filenames in os.walk(destination,topdown=True,followlinks=False):
-        root_path=Path(root); rel_root=root_path.relative_to(destination)
-        for name in dirnames:
-            path=root_path/name; require(not path.is_symlink() and path.is_dir(),f"unsafe recovered directory: {path}"); dirs.add((rel_root/name).as_posix())
-        for name in filenames:
-            path=root_path/name; st=path.lstat(); require(stat.S_ISREG(st.st_mode) and st.st_nlink==1,f"unsafe recovered file: {path}"); files.add((rel_root/name).as_posix())
-    return dirs,files
-def main()->int:
-    ap=argparse.ArgumentParser(description=__doc__); ap.add_argument("--archive",type=Path,required=True); ap.add_argument("--manifest",type=Path,required=True); ap.add_argument("--destination",type=Path,required=True); ns=ap.parse_args()
-    m=load_manifest(ns.manifest); dir_modes={}; ordered_dirs=[]
-    for item in m["directories"]:
-        require(isinstance(item,dict) and set(item)=={"path","mode"},"invalid directory record"); path=safe(item["path"]); require(item["mode"]=="0755",f"noncanonical directory mode: {path}"); require(path not in dir_modes,f"duplicate directory: {path}"); dir_modes[path]=0o755; ordered_dirs.append(path)
-    files={}
-    for item in m["files"]:
-        require(isinstance(item,dict) and set(item)=={"path","type","git_oid","git_mode","mode","sha256","size_bytes"},"invalid file record"); path=safe(item["path"]); require(path not in files and path not in dir_modes,f"duplicate source path: {path}")
-        require(item["type"]=="blob",f"invalid source object type: {path}"); require(isinstance(item["git_oid"],str) and len(item["git_oid"])==40 and all(c in "0123456789abcdef" for c in item["git_oid"]),f"invalid Git object id: {path}")
-        require(item["git_mode"] in {"100644","100755"} and item["mode"] in {"0644","0755"},f"invalid source mode: {path}"); require((item["git_mode"]=="100755")== (item["mode"]=="0755"),f"Git/recovery mode mismatch: {path}")
-        require(isinstance(item["sha256"],str) and len(item["sha256"])==64 and all(c in "0123456789abcdef" for c in item["sha256"]),f"invalid digest: {path}"); require(type(item["size_bytes"]) is int and item["size_bytes"]>=0,f"invalid size: {path}"); files[path]=item
-    require(ordered_dirs==sorted(ordered_dirs) and list(files)==sorted(files),"manifest paths must be sorted")
-    for directory in dir_modes: require(parent(directory) in {"",*dir_modes},f"undeclared directory parent: {directory}")
-    for path in files: require(parent(path) in {"",*dir_modes},f"undeclared file parent: {path}")
-    derived_tree=derive_tree(files,set(dir_modes)); require(derived_tree==m["candidate_tree"],f"manifest candidate tree disagrees: derived={derived_tree} declared={m['candidate_tree']}")
-    destination=Path(os.path.abspath(ns.destination)); require(not destination.exists(),"destination already exists"); require(destination.parent.is_dir() and not destination.parent.is_symlink(),"destination parent must already be a real directory")
-    destination.mkdir(mode=0o755,parents=False); os.chmod(destination,0o755)
-    seen_dirs=set(); seen_files=set()
+    return raw
+
+
+def safe_component(raw: str, label: str) -> str:
+    require(raw not in {"", ".", ".."} and "/" not in raw and "\0" not in raw,
+            f"unsafe {label}: {raw!r}")
+    return raw
+
+
+def parent(raw: str) -> str:
+    return "/".join(PurePosixPath(raw).parts[:-1])
+
+
+def stable(metadata: os.stat_result) -> StableIdentity:
+    return StableIdentity(
+        metadata.st_dev,
+        metadata.st_ino,
+        stat.S_IFMT(metadata.st_mode),
+        metadata.st_uid,
+        metadata.st_gid,
+    )
+
+
+def same_path_object(parent_fd: int, name: str, fd: int, label: str) -> os.stat_result:
+    descriptor = os.fstat(fd)
+    current = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    require(stable(descriptor) == stable(current), f"{label} pathname identity changed")
+    return descriptor
+
+
+def git_object(kind: bytes, payload: bytes) -> str:
+    return hashlib.sha1(kind + b" " + str(len(payload)).encode("ascii") + b"\0" + payload).hexdigest()
+
+
+def load_regular_bytes(path: Path, label: str, limit: int) -> bytes:
+    fd = os.open(path, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
     try:
-        with tarfile.open(ns.archive,"r:*") as tf:
-            for member in tf:
-                raw=member.name[:-1] if member.name.endswith("/") else member.name; name=safe(raw)
-                require(not member.issym() and not member.islnk() and not member.isdev() and not member.isfifo(),"linked or special source member rejected")
-                target=destination/name
-                if member.isdir():
-                    require(name in dir_modes and name not in seen_dirs,f"undeclared/duplicate directory: {name}"); require(member.mode & 0o7777==dir_modes[name],f"TAR directory mode disagrees: {name}"); require(parent(name) in seen_dirs or parent(name)=="",f"directory parent not declared first: {name}")
-                    target.mkdir(parents=False,exist_ok=False,mode=0o755); os.chmod(target,0o755); seen_dirs.add(name)
-                elif member.isfile():
-                    require(name in files and name not in seen_files,f"undeclared/duplicate file: {name}"); expected_mode=int(files[name]["mode"],8); require(member.mode & 0o7777==expected_mode,f"TAR file mode disagrees: {name}"); require(member.size==files[name]["size_bytes"],f"TAR file size disagrees: {name}"); require(parent(name) in seen_dirs or parent(name)=="",f"file parent not declared first: {name}")
-                    src=tf.extractfile(member); require(src is not None,f"cannot read member: {name}"); fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
-                    try:
-                        with os.fdopen(fd,"wb",closefd=False) as out: shutil.copyfileobj(src,out,1024*1024); out.flush(); os.fsync(out.fileno())
-                        os.fchmod(fd,expected_mode)
-                    finally: os.close(fd); src.close()
-                    observed,size=digest(target); require(observed==files[name]["sha256"] and size==files[name]["size_bytes"],f"file bytes disagree: {name}")
-                    raw_bytes=target.read_bytes(); require(git_object(b"blob",raw_bytes)==files[name]["git_oid"],f"Git object id disagrees: {name}"); seen_files.add(name)
-                else: raise RecoveryError(f"unsupported TAR member: {name}")
-        require(seen_dirs==set(dir_modes),f"directory membership mismatch: missing={sorted(set(dir_modes)-seen_dirs)}"); require(seen_files==set(files),f"file membership mismatch: missing={sorted(set(files)-seen_files)}")
-        observed_dirs,observed_files=final_membership(destination); require(observed_dirs==set(dir_modes),"final directory membership changed"); require(observed_files==set(files),"final file membership changed")
-        for name in sorted(dir_modes,key=lambda x:(-x.count("/"),x)): require(stat.S_IMODE((destination/name).stat().st_mode)==0o755,f"directory mode mismatch: {name}")
-        for name,item in files.items(): require(stat.S_IMODE((destination/name).stat().st_mode)==int(item["mode"],8),f"file mode mismatch: {name}")
-        require(derive_tree(files,set(dir_modes))==m["candidate_tree"],"final candidate tree derivation changed")
+        opened = os.fstat(fd)
+        require(stat.S_ISREG(opened.st_mode) and opened.st_nlink == 1,
+                f"{label} must be one regular non-hard-linked file")
+        require(opened.st_size <= limit, f"{label} exceeds bounded size")
+        chunks: list[bytes] = []
+        total = 0
+        while True:
+            chunk = os.read(fd, BUFFER_SIZE)
+            if not chunk:
+                break
+            total += len(chunk)
+            require(total <= limit, f"{label} exceeds bounded size")
+            chunks.append(chunk)
+        final = os.fstat(fd)
+        require(
+            (opened.st_dev, opened.st_ino, opened.st_mode, opened.st_size, opened.st_nlink)
+            == (final.st_dev, final.st_ino, final.st_mode, final.st_size, final.st_nlink),
+            f"{label} changed while reading",
+        )
+        return b"".join(chunks)
+    finally:
+        os.close(fd)
+
+
+def load_manifest(path: Path) -> dict[str, Any]:
+    raw = load_regular_bytes(path, "source manifest", 32 * 1024 * 1024)
+    value = json.loads(raw.decode("utf-8"), object_pairs_hook=strict)
+    require(
+        isinstance(value, dict)
+        and set(value) == {"schema_id", "candidate_tree", "directories", "files"},
+        "source manifest shape changed",
+    )
+    require(value["schema_id"] == "x64lens-candidate-source-tree-v1", "wrong source manifest schema")
+    require(
+        isinstance(value["candidate_tree"], str)
+        and len(value["candidate_tree"]) == 40
+        and all(char in "0123456789abcdef" for char in value["candidate_tree"]),
+        "invalid candidate tree",
+    )
+    require(isinstance(value["directories"], list) and isinstance(value["files"], list),
+            "invalid manifest arrays")
+    return value
+
+
+def derive_tree(files: dict[str, dict[str, Any]], directories: set[str]) -> str:
+    all_dirs = {"", *directories}
+    children: dict[str, list[tuple[str, bool, str, str]]] = {directory: [] for directory in all_dirs}
+    for directory in directories:
+        require(parent(directory) in all_dirs, f"undeclared directory parent: {directory}")
+    for path, item in files.items():
+        require(parent(path) in all_dirs, f"undeclared file parent: {path}")
+        children[parent(path)].append((PurePosixPath(path).name, False, item["git_mode"], item["git_oid"]))
+    for directory in sorted(directories, key=lambda item: (-item.count("/"), os.fsencode(item))):
+        entries = children[directory]
+        require(entries, f"manifest contains an empty non-Git directory: {directory}")
+        payload = b"".join(
+            mode.encode("ascii") + b" " + name_bytes + b"\0" + bytes.fromhex(oid)
+            for name_bytes, is_directory, mode, oid in sorted(
+                (
+                    (os.fsencode(name) + (b"/" if is_dir else b""), is_dir, mode, oid)
+                    for name, is_dir, mode, oid in entries
+                ),
+                key=lambda item: item[0],
+            )
+            for name_bytes in [name_bytes[:-1] if is_directory else name_bytes]
+        )
+        oid = git_object(b"tree", payload)
+        children[parent(directory)].append((PurePosixPath(directory).name, True, "40000", oid))
+    root_entries = children[""]
+    require(root_entries, "source manifest has no root entries")
+    payload = b"".join(
+        mode.encode("ascii") + b" " + name_bytes + b"\0" + bytes.fromhex(oid)
+        for name_bytes, is_directory, mode, oid in sorted(
+            (
+                (os.fsencode(name) + (b"/" if is_dir else b""), is_dir, mode, oid)
+                for name, is_dir, mode, oid in root_entries
+            ),
+            key=lambda item: item[0],
+        )
+        for name_bytes in [name_bytes[:-1] if is_directory else name_bytes]
+    )
+    return git_object(b"tree", payload)
+
+
+def parse_manifest(value: dict[str, Any]) -> tuple[dict[str, int], dict[str, dict[str, Any]], str]:
+    directories: dict[str, int] = {}
+    ordered_directories: list[str] = []
+    for item in value["directories"]:
+        require(isinstance(item, dict) and set(item) == {"path", "mode"}, "invalid directory record")
+        path = safe(item["path"])
+        require(item["mode"] == "0755", f"noncanonical directory mode: {path}")
+        require(path not in directories, f"duplicate directory: {path}")
+        directories[path] = 0o755
+        ordered_directories.append(path)
+    files: dict[str, dict[str, Any]] = {}
+    for item in value["files"]:
+        require(
+            isinstance(item, dict)
+            and set(item) == {"path", "type", "git_oid", "git_mode", "mode", "sha256", "size_bytes"},
+            "invalid file record",
+        )
+        path = safe(item["path"])
+        require(path not in files and path not in directories, f"duplicate source path: {path}")
+        require(item["type"] == "blob", f"invalid source object type: {path}")
+        require(
+            isinstance(item["git_oid"], str)
+            and len(item["git_oid"]) == 40
+            and all(char in "0123456789abcdef" for char in item["git_oid"]),
+            f"invalid Git object id: {path}",
+        )
+        require(item["git_mode"] in {"100644", "100755"} and item["mode"] in {"0644", "0755"},
+                f"invalid source mode: {path}")
+        require((item["git_mode"] == "100755") == (item["mode"] == "0755"),
+                f"Git/recovery mode mismatch: {path}")
+        require(
+            isinstance(item["sha256"], str)
+            and len(item["sha256"]) == 64
+            and all(char in "0123456789abcdef" for char in item["sha256"]),
+            f"invalid digest: {path}",
+        )
+        require(type(item["size_bytes"]) is int and item["size_bytes"] >= 0, f"invalid size: {path}")
+        files[path] = item
+    require(len(directories) <= MAX_SOURCE_DIRECTORIES, "source directory capacity exceeded")
+    require(len(files) <= MAX_SOURCE_FILES, "source file capacity exceeded")
+    require(ordered_directories == sorted(ordered_directories) and list(files) == sorted(files),
+            "manifest paths must be sorted")
+    all_dirs = {"", *directories}
+    for directory in directories:
+        require(parent(directory) in all_dirs, f"undeclared directory parent: {directory}")
+    for path in files:
+        require(parent(path) in all_dirs, f"undeclared file parent: {path}")
+    derived = derive_tree(files, set(directories))
+    require(derived == value["candidate_tree"],
+            f"manifest candidate tree disagrees: derived={derived} declared={value['candidate_tree']}")
+    return directories, files, derived
+
+
+def open_parent_chain(destination: Path) -> ParentHandle:
+    absolute = Path(os.path.abspath(os.fspath(destination)))
+    require(absolute != Path("/") and absolute.name, "destination must have a basename")
+    parent_path = absolute.parent
+    current_fd = os.open("/", os.O_RDONLY | O_DIRECTORY | O_CLOEXEC)
+    bindings: list[AncestorBinding] = []
+    display = ""
+    try:
+        for component in parent_path.parts[1:]:
+            safe_component(component, "destination-parent component")
+            display = f"{display}/{component}"
+            before = os.stat(component, dir_fd=current_fd, follow_symlinks=False)
+            require(stat.S_ISDIR(before.st_mode), f"destination ancestor is not a real directory: {display}")
+            child = os.open(component, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=current_fd)
+            opened = stable(os.fstat(child))
+            require(opened == stable(before), f"destination ancestor changed while opening: {display}")
+            after = os.stat(component, dir_fd=current_fd, follow_symlinks=False)
+            require(stable(after) == opened, f"destination ancestor changed after opening: {display}")
+            bindings.append(AncestorBinding(current_fd, component, child, opened, display))
+            current_fd = child
+        require(bindings, "destination parent path has no retained binding")
+        return ParentHandle(parent_path, current_fd, bindings)
     except BaseException:
-        shutil.rmtree(destination,ignore_errors=True); raise
-    print(f"recover-candidate-source: ok tree={derived_tree} derived_tree=1 directories={len(dir_modes)} files={len(files)} destination={destination}"); return 0
-if __name__=="__main__":
-    try: raise SystemExit(main())
-    except (RecoveryError,OSError,tarfile.TarError,json.JSONDecodeError,UnicodeDecodeError) as exc:
-        print(f"recover-candidate-source: error: {exc}",file=sys.stderr); raise SystemExit(1)
+        close_parent(ParentHandle(parent_path, current_fd, bindings))
+        raise
+
+
+def close_parent(handle: ParentHandle) -> None:
+    seen: set[int] = set()
+    for binding in reversed(handle.bindings):
+        for fd in (binding.child_fd, binding.parent_fd):
+            if fd in seen:
+                continue
+            seen.add(fd)
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+    if handle.fd not in seen:
+        try:
+            os.close(handle.fd)
+        except OSError:
+            pass
+
+
+def reauthenticate_parent(handle: ParentHandle) -> None:
+    for binding in handle.bindings:
+        descriptor = stable(os.fstat(binding.child_fd))
+        current = stable(os.stat(binding.name, dir_fd=binding.parent_fd, follow_symlinks=False))
+        require(descriptor == binding.opened, f"destination ancestor descriptor changed: {binding.display}")
+        require(current == binding.opened, f"destination ancestor binding changed: {binding.display}")
+
+
+def rename_noreplace(old_parent: int, old: str, new_parent: int, new: str) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    function = getattr(libc, "renameat2", None)
+    require(function is not None, "renameat2 is unavailable on this Linux runtime")
+    function.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    function.restype = ctypes.c_int
+    result = function(old_parent, os.fsencode(old), new_parent, os.fsencode(new), RENAME_NOREPLACE)
+    if result != 0:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error), new)
+
+
+def hash_fd(fd: int) -> tuple[str, int, bytes | None]:
+    os.lseek(fd, 0, os.SEEK_SET)
+    digest = hashlib.sha256()
+    git_payload = bytearray()
+    total = 0
+    while True:
+        chunk = os.read(fd, BUFFER_SIZE)
+        if not chunk:
+            break
+        digest.update(chunk)
+        git_payload.extend(chunk)
+        total += len(chunk)
+    return digest.hexdigest(), total, bytes(git_payload)
+
+
+def open_archive(path: Path) -> tuple[int, BinaryIO]:
+    fd = os.open(path, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
+    metadata = os.fstat(fd)
+    require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
+            "source archive must be one regular non-hard-linked file")
+    return fd, os.fdopen(os.dup(fd), "rb", closefd=True)
+
+
+def expected_children(directories: dict[str, int], files: dict[str, dict[str, Any]]) -> dict[str, tuple[str, ...]]:
+    rows: dict[str, list[str]] = {"": []}
+    for directory in directories:
+        rows.setdefault(directory, [])
+        rows[parent(directory)].append(PurePosixPath(directory).name)
+    for path in files:
+        rows[parent(path)].append(PurePosixPath(path).name)
+    return {key: tuple(sorted(value, key=os.fsencode)) for key, value in rows.items()}
+
+
+def final_verify(
+    parent_handle: ParentHandle,
+    root_parent_fd: int,
+    root_name: str,
+    root_fd: int,
+    root_identity: StableIdentity,
+    directories: dict[str, int],
+    files: dict[str, dict[str, Any]],
+    directory_records: dict[str, DirectoryRecord],
+    file_records: dict[str, FileRecord],
+) -> None:
+    reauthenticate_parent(parent_handle)
+    root_metadata = same_path_object(root_parent_fd, root_name, root_fd, "recovery root")
+    require(stable(root_metadata) == root_identity, "recovery root descriptor identity changed")
+    require(stat.S_IMODE(root_metadata.st_mode) == 0o755, "recovery root mode changed")
+    children = expected_children(directories, files)
+    require(tuple(sorted(os.listdir(root_fd), key=os.fsencode)) == children[""],
+            "recovery root membership changed")
+    for path, record in directory_records.items():
+        metadata = same_path_object(record.parent_fd, record.name, record.fd, f"directory {path}")
+        require(stable(metadata) == record.opened, f"directory descriptor identity changed: {path}")
+        require(stat.S_IMODE(metadata.st_mode) == 0o755, f"directory mode changed: {path}")
+        require(tuple(sorted(os.listdir(record.fd), key=os.fsencode)) == children[path],
+                f"directory membership changed: {path}")
+    for path, record in file_records.items():
+        metadata = same_path_object(record.parent_fd, record.name, record.fd, f"file {path}")
+        require(stable(metadata) == record.opened, f"file descriptor identity changed: {path}")
+        require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
+                f"file topology changed: {path}")
+        require(stat.S_IMODE(metadata.st_mode) == record.mode, f"file mode changed: {path}")
+        observed, size, payload = hash_fd(record.fd)
+        require(observed == record.sha256 and size == record.size, f"file bytes changed: {path}")
+        assert payload is not None
+        require(git_object(b"blob", payload) == record.git_oid, f"Git blob identity changed: {path}")
+
+
+def cleanup_owned_root(parent_fd: int, name: str, root_fd: int, expected: StableIdentity) -> None:
+    if _TEST_BEFORE_CLEANUP_HOOK is not None:
+        _TEST_BEFORE_CLEANUP_HOOK(parent_fd, name, root_fd)
+    first = f".x64lens-recovery-quarantine.{os.getpid()}.{os.urandom(16).hex()}"
+    second = f".x64lens-recovery-delete.{os.getpid()}.{os.urandom(16).hex()}"
+    try:
+        rename_noreplace(parent_fd, name, parent_fd, first)
+    except FileNotFoundError:
+        raise RecoveryError("owned recovery root binding disappeared; residue preserved")
+    first_fd = os.open(first, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+    try:
+        require(stable(os.fstat(first_fd)) == expected == stable(os.fstat(root_fd)),
+                f"recovery cleanup encountered a foreign replacement; preserved as {first}")
+        rename_noreplace(parent_fd, first, parent_fd, second)
+        second_fd = os.open(second, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+        try:
+            require(stable(os.fstat(second_fd)) == expected,
+                    f"recovery cleanup identity changed; preserved as {second}")
+            if _TEST_BEFORE_FINAL_RMTREE_HOOK is not None:
+                _TEST_BEFORE_FINAL_RMTREE_HOOK(parent_fd, second, root_fd)
+            # Reopen after the last injectable namespace boundary.  rmtree's
+            # descriptor-hardened recursion begins only after this check.  A
+            # malicious uninstrumented same-UID race remains an explicit Linux
+            # namespace limitation because unlink-by-directory-fd is not atomic.
+            final_fd = os.open(second, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+            try:
+                require(stable(os.fstat(final_fd)) == expected,
+                        f"recovery cleanup identity changed; preserved as {second}")
+                require(shutil.rmtree.avoids_symlink_attacks, "platform rmtree is not descriptor/symlink hardened")
+                shutil.rmtree(second, dir_fd=parent_fd)
+            finally:
+                os.close(final_fd)
+        finally:
+            os.close(second_fd)
+    finally:
+        os.close(first_fd)
+    os.fsync(parent_fd)
+
+
+def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple[str, int, int, Path]:
+    value = load_manifest(manifest_path)
+    directories, files, derived_tree = parse_manifest(value)
+    soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    if soft != resource.RLIM_INFINITY:
+        required = len(directories) + len(files) + MIN_FD_HEADROOM + 16
+        require(soft >= required, f"file-descriptor limit cannot retain the source tree: {soft} < {required}")
+
+    destination = Path(os.path.abspath(os.fspath(destination)))
+    safe_component(destination.name, "destination basename")
+    parent_handle = open_parent_chain(destination)
+    stage_name = f".x64lens-recovery-stage.{os.getpid()}.{os.urandom(16).hex()}"
+    root_fd = -1
+    published = False
+    current_name = stage_name
+    directory_records: dict[str, DirectoryRecord] = {}
+    file_records: dict[str, FileRecord] = {}
+    archive_fd = -1
+    archive_file: BinaryIO | None = None
+    try:
+        reauthenticate_parent(parent_handle)
+        try:
+            os.stat(destination.name, dir_fd=parent_handle.fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise RecoveryError("destination already exists")
+        os.mkdir(stage_name, 0o700, dir_fd=parent_handle.fd)
+        root_fd = os.open(stage_name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_handle.fd)
+        root_identity = stable(os.fstat(root_fd))
+        require(root_identity.file_type == stat.S_IFDIR, "staging root changed type")
+        directory_fds: dict[str, int] = {"": root_fd}
+        seen_directories: set[str] = set()
+        seen_files: set[str] = set()
+
+        archive_fd, archive_file = open_archive(archive_path)
+        with tarfile.open(fileobj=archive_file, mode="r:*") as archive:
+            for member in archive:
+                raw_name = member.name[:-1] if member.name.endswith("/") else member.name
+                name = safe(raw_name)
+                require(
+                    not member.issym()
+                    and not member.islnk()
+                    and not member.isdev()
+                    and not member.isfifo(),
+                    "linked or special source member rejected",
+                )
+                parent_name = parent(name)
+                require(parent_name in directory_fds, f"member parent not declared first: {name}")
+                parent_fd = directory_fds[parent_name]
+                basename = PurePosixPath(name).name
+                if member.isdir():
+                    require(name in directories and name not in seen_directories,
+                            f"undeclared/duplicate directory: {name}")
+                    require(member.mode & 0o7777 == 0o755, f"TAR directory mode disagrees: {name}")
+                    os.mkdir(basename, 0o700, dir_fd=parent_fd)
+                    fd = os.open(basename, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+                    os.fchmod(fd, 0o755)
+                    opened = stable(os.fstat(fd))
+                    require(opened.file_type == stat.S_IFDIR, f"recovered directory changed type: {name}")
+                    directory_fds[name] = fd
+                    directory_records[name] = DirectoryRecord(name, basename, parent_fd, fd, opened)
+                    seen_directories.add(name)
+                elif member.isfile():
+                    require(name in files and name not in seen_files, f"undeclared/duplicate file: {name}")
+                    expected = files[name]
+                    expected_mode = int(expected["mode"], 8)
+                    require(member.mode & 0o7777 == expected_mode, f"TAR file mode disagrees: {name}")
+                    require(member.size == expected["size_bytes"], f"TAR file size disagrees: {name}")
+                    source = archive.extractfile(member)
+                    require(source is not None, f"cannot read member: {name}")
+                    fd = os.open(
+                        basename,
+                        os.O_RDWR | os.O_CREAT | os.O_EXCL | O_CLOEXEC | O_NOFOLLOW,
+                        0o600,
+                        dir_fd=parent_fd,
+                    )
+                    digest = hashlib.sha256()
+                    git_payload = bytearray()
+                    total = 0
+                    try:
+                        while True:
+                            chunk = source.read(BUFFER_SIZE)
+                            if not chunk:
+                                break
+                            total += len(chunk)
+                            require(total <= expected["size_bytes"], f"TAR member exceeds declared size: {name}")
+                            digest.update(chunk)
+                            git_payload.extend(chunk)
+                            view = memoryview(chunk)
+                            while view:
+                                written = os.write(fd, view)
+                                require(written > 0, f"zero-length source write: {name}")
+                                view = view[written:]
+                        require(total == expected["size_bytes"], f"TAR member size changed: {name}")
+                        os.fsync(fd)
+                        os.fchmod(fd, expected_mode)
+                        os.fsync(fd)
+                        opened_stat = same_path_object(parent_fd, basename, fd, f"file {name}")
+                        opened = stable(opened_stat)
+                        require(opened_stat.st_nlink == 1, f"recovered file has hard-link aliases: {name}")
+                        observed_sha = digest.hexdigest()
+                        observed_oid = git_object(b"blob", bytes(git_payload))
+                        require(observed_sha == expected["sha256"], f"file SHA-256 disagrees: {name}")
+                        require(observed_oid == expected["git_oid"], f"Git blob identity disagrees: {name}")
+                        file_records[name] = FileRecord(
+                            name,
+                            basename,
+                            parent_fd,
+                            fd,
+                            opened,
+                            observed_sha,
+                            total,
+                            expected_mode,
+                            observed_oid,
+                        )
+                        seen_files.add(name)
+                    except BaseException:
+                        os.close(fd)
+                        raise
+                else:
+                    raise RecoveryError(f"unsupported TAR member type: {name}")
+        require(seen_directories == set(directories), "source directory membership changed")
+        require(seen_files == set(files), "source file membership changed")
+        os.fchmod(root_fd, 0o755)
+        for record in sorted(directory_records.values(), key=lambda item: -item.path.count("/")):
+            os.fsync(record.fd)
+        os.fsync(root_fd)
+        os.fsync(parent_handle.fd)
+        final_verify(
+            parent_handle,
+            parent_handle.fd,
+            stage_name,
+            root_fd,
+            root_identity,
+            directories,
+            files,
+            directory_records,
+            file_records,
+        )
+        if _TEST_AFTER_INITIAL_VERIFY_HOOK is not None:
+            _TEST_AFTER_INITIAL_VERIFY_HOOK(parent_handle.fd, stage_name, root_fd)
+        final_verify(
+            parent_handle,
+            parent_handle.fd,
+            stage_name,
+            root_fd,
+            root_identity,
+            directories,
+            files,
+            directory_records,
+            file_records,
+        )
+        if _TEST_BEFORE_PUBLISH_HOOK is not None:
+            _TEST_BEFORE_PUBLISH_HOOK(parent_handle.fd, stage_name, destination.name)
+        rename_noreplace(parent_handle.fd, stage_name, parent_handle.fd, destination.name)
+        published = True
+        current_name = destination.name
+        if _TEST_AFTER_PUBLISH_HOOK is not None:
+            _TEST_AFTER_PUBLISH_HOOK(parent_handle.fd, destination.name, root_fd)
+        final_verify(
+            parent_handle,
+            parent_handle.fd,
+            destination.name,
+            root_fd,
+            root_identity,
+            directories,
+            files,
+            directory_records,
+            file_records,
+        )
+        os.fsync(parent_handle.fd)
+        return derived_tree, len(directories), len(files), destination
+    except BaseException as exc:
+        cleanup_error: BaseException | None = None
+        if root_fd >= 0:
+            try:
+                cleanup_owned_root(parent_handle.fd, current_name, root_fd, stable(os.fstat(root_fd)))
+            except BaseException as candidate:
+                cleanup_error = candidate
+        if cleanup_error is not None:
+            raise RecoveryError(f"source recovery failed: {exc}; cleanup failed closed: {cleanup_error}") from exc
+        raise
+    finally:
+        for record in reversed(list(file_records.values())):
+            try:
+                os.close(record.fd)
+            except OSError:
+                pass
+        for record in reversed(list(directory_records.values())):
+            try:
+                os.close(record.fd)
+            except OSError:
+                pass
+        if root_fd >= 0:
+            try:
+                os.close(root_fd)
+            except OSError:
+                pass
+        if archive_file is not None:
+            try:
+                archive_file.close()
+            except OSError:
+                pass
+        if archive_fd >= 0:
+            try:
+                os.close(archive_fd)
+            except OSError:
+                pass
+        close_parent(parent_handle)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--archive", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--destination", type=Path, required=True)
+    args = parser.parse_args()
+    tree, directory_count, file_count, destination = recover(
+        Path(os.path.abspath(args.archive)),
+        Path(os.path.abspath(args.manifest)),
+        args.destination,
+    )
+    print(
+        "recover-candidate-source: ok "
+        f"tree={tree} derived_tree=1 directories={directory_count} files={file_count} "
+        f"destination={destination} descriptor_bound=1 no_replace=1"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (RecoveryError, OSError, ValueError, json.JSONDecodeError, UnicodeDecodeError, tarfile.TarError) as exc:
+        print(f"recover-candidate-source: error: {exc}", file=sys.stderr)
+        raise SystemExit(1)

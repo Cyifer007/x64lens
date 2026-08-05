@@ -25,8 +25,17 @@
     "total_outcome_cells": 216,
     "eligible_readelf": 19
   },
-  "public_commands": ["info", "mitigations", "gadgets", "analyze"],
-  "external_command": ["readelf", "-dW", "<target>"],
+  "public_commands": [
+    "info",
+    "mitigations",
+    "gadgets",
+    "analyze"
+  ],
+  "external_command": [
+    "readelf",
+    "-dW",
+    "<target>"
+  ],
   "value_semantics": {
     "rpath_and_runpath_are_distinct": true,
     "split_on_colon": false,
@@ -35,5 +44,11 @@
     "additional_target_derived_opens": 0,
     "loader_order_or_security_judgment": false
   },
-  "interpretation": "DT_RPATH and DT_RUNPATH are separate private static carrier/value facts with exact byte provenance. They are not expanded, resolved, opened, collapsed into one state, or projected into public schema 0.2.0."
+  "failure_snapshot_semantics": {
+    "public_report": "none",
+    "private_probe": "deterministic_parse_prefix",
+    "public_policy_eligible": false,
+    "prefix_rule": "retain only facts completed before the failing proof obligation; never finalize a later aggregate state"
+  },
+  "interpretation": "DT_RPATH and DT_RUNPATH are separate private static carrier/value facts with exact byte provenance. They are not expanded, resolved, opened, collapsed into one state, or projected into public schema 0.2.0. Nonzero parser outcomes retain only deterministic private parse-prefix facts and remain ineligible for public policy."
 }

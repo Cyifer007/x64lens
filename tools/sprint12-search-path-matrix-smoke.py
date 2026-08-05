@@ -93,7 +93,8 @@ AUTHORITY={
  "fixture_counts":{"valid":22,"malformed":10,"unsupported":4,"total":36,"private_probe_outcomes":36,"public_command_outcomes":144,"external_dispositions":36,"total_outcome_cells":216,"eligible_readelf":19},
  "public_commands":["info","mitigations","gadgets","analyze"],"external_command":["readelf","-dW","<target>"],
  "value_semantics":{"rpath_and_runpath_are_distinct":True,"split_on_colon":False,"expand_origin":False,"resolve_filesystem_paths":False,"additional_target_derived_opens":0,"loader_order_or_security_judgment":False},
- "interpretation":"DT_RPATH and DT_RUNPATH are separate private static carrier/value facts with exact byte provenance. They are not expanded, resolved, opened, collapsed into one state, or projected into public schema 0.2.0.",
+ "failure_snapshot_semantics":{"public_report":"none","private_probe":"deterministic_parse_prefix","public_policy_eligible":False,"prefix_rule":"retain only facts completed before the failing proof obligation; never finalize a later aggregate state"},
+ "interpretation":"DT_RPATH and DT_RUNPATH are separate private static carrier/value facts with exact byte provenance. They are not expanded, resolved, opened, collapsed into one state, or projected into public schema 0.2.0. Nonzero parser outcomes retain only deterministic private parse-prefix facts and remain ineligible for public policy.",
 }
 
 def strict_pairs(items:list[tuple[str,Any]])->dict[str,Any]:
@@ -165,34 +166,87 @@ def build(case:Case)->Built:
     return Built(bytes(image),entries,value_by_entry,strtab_file,strsz)
 
 def expected(case:Case,built:Built)->dict[str,Any]:
+    """Model the private probe's deterministic parse-prefix contract.
+
+    A nonzero parser status is never public evidence: PHDR-consuming commands
+    still fail before stdout.  The private diagnostic probe deliberately keeps
+    facts that were fully acquired before the failing proof obligation.  It
+    never invents values from a stage that did not complete, and the retained
+    prefix is not eligible for public-policy projection.
+    """
     facts={"status":case.expected_status,"carrier_count":0,"textrel_tag_count":0,"flags_count":0,"flags_first_value":0,"flags_and":0,"flags_or":0,"full_value_conflicts":0,"textrel_conflicts":0,"table_complete":0,"textrel_state":UNKNOWN,
       "search_record_count":0,"search_bytes_used":0,"rpath_carrier_count":0,"runpath_carrier_count":0,"rpath_value_count":0,"runpath_value_count":0,"rpath_value_conflicts":0,"runpath_value_conflicts":0,"rpath_first_record":FIRST_NONE,"runpath_first_record":FIRST_NONE,"rpath_state":UNKNOWN,"runpath_state":UNKNOWN,"paths":[]}
-    if case.no_dynamic: return facts
-    if case.mutation in {"nonintegral","out_of_range","duplicate_dynamic"}:
+    if case.no_dynamic:
         return facts
+
+    # These failures occur before a bounded dynamic carrier pass can be
+    # admitted.  Duplicate singleton string metadata is rejected during the
+    # metadata prepass, before carrier materialization.
+    if case.mutation in {"nonintegral","out_of_range","duplicate_strtab","duplicate_strsz"}:
+        return facts
+
     carriers=[]; null=False
     for index,(tag,value) in enumerate(built.entries):
-        if tag==DT_NULL: null=True; break
+        if tag==DT_NULL:
+            null=True
+            break
         if tag in (DT_TEXTREL,DT_RPATH,DT_RUNPATH):
-            if len(carriers)>=64: break
+            if len(carriers)>=64:
+                break
             carriers.append((index,tag,value))
     facts["carrier_count"]=len(carriers)
     facts["textrel_tag_count"]=sum(tag==DT_TEXTREL for _,tag,_ in carriers)
     facts["rpath_carrier_count"]=sum(tag==DT_RPATH for _,tag,_ in carriers)
     facts["runpath_carrier_count"]=sum(tag==DT_RUNPATH for _,tag,_ in carriers)
-    complete=null and case.expected_status not in {EXIT_UNSUPPORTED} and case.mutation!="duplicate_dynamic"
-    facts["table_complete"]=int(complete)
-    if complete: facts["textrel_state"]=PRESENT if facts["textrel_tag_count"] else ABSENT
-    if case.expected_status!=EXIT_OK or not complete or case.mutation in {"missing_strtab","missing_strsz","offset_equal_strsz","unterminated","unmapped_strtab","duplicate_strtab","duplicate_strsz","strtab_scan_cap"}:
+
+    # A second PT_DYNAMIC is found only after the first table's bounded prefix
+    # has been acquired.  It invalidates the command but does not rewrite that
+    # private diagnostic history.
+    if case.mutation=="duplicate_dynamic":
         return facts
+
+    # Carrier 65 fails before a complete table can be represented.
+    if case.name=="mixed_carrier_65":
+        return facts
+
+    complete=null
+    facts["table_complete"]=int(complete)
+    if not complete:
+        return facts
+    facts["textrel_state"]=PRESENT if facts["textrel_tag_count"] else ABSENT
+
+    # Absence is justified independently for a family with no carrier once the
+    # bounded table is complete, even if resolving the other family later fails.
+    if facts["rpath_carrier_count"]==0:
+        facts["rpath_state"]=ABSENT
+    if facts["runpath_carrier_count"]==0:
+        facts["runpath_state"]=ABSENT
+
+    # These failures happen after the complete-table proof but before any
+    # search-path value can be admitted.
+    if case.mutation in {"missing_strtab","missing_strsz","offset_equal_strsz","unterminated","unmapped_strtab","strtab_scan_cap"}:
+        return facts
+
     pool=0; first_value:dict[int,bytes]={}; first_index:dict[int,int]={}; conflicts={DT_RPATH:0,DT_RUNPATH:0}; counts={DT_RPATH:0,DT_RUNPATH:0}
     for dyn_index,tag,_offset in carriers:
-        if tag not in (DT_RPATH,DT_RUNPATH): continue
+        if tag not in (DT_RPATH,DT_RUNPATH):
+            continue
         value=built.value_by_entry[dyn_index]
-        if pool+len(value)>4096: break
+        # The over-cap record is not partially stored.  Earlier records remain
+        # exact private prefix evidence, but aggregate family states are not
+        # finalized after this unsupported outcome.
+        if pool+len(value)>4096:
+            facts["search_record_count"]=len(facts["paths"]); facts["search_bytes_used"]=pool
+            facts["rpath_value_count"]=counts[DT_RPATH]; facts["runpath_value_count"]=counts[DT_RUNPATH]
+            facts["rpath_value_conflicts"]=conflicts[DT_RPATH]; facts["runpath_value_conflicts"]=conflicts[DT_RUNPATH]
+            if DT_RPATH in first_index: facts["rpath_first_record"]=first_index[DT_RPATH]
+            if DT_RUNPATH in first_index: facts["runpath_first_record"]=first_index[DT_RUNPATH]
+            return facts
         record_index=len(facts["paths"])
-        if tag not in first_value: first_value[tag]=value; first_index[tag]=record_index
-        elif value!=first_value[tag]: conflicts[tag]+=1
+        if tag not in first_value:
+            first_value[tag]=value; first_index[tag]=record_index
+        elif value!=first_value[tag]:
+            conflicts[tag]+=1
         facts["paths"].append({"tag":tag,"dynamic_index":dyn_index,"dynamic_file_offset":0x2000+dyn_index*16,"string_table_offset":built.entries[dyn_index][1],"string_file_offset":built.strtab_offset+built.entries[dyn_index][1],"byte_pool_offset":pool,"byte_length":len(value),"bytes_hex":value.hex()})
         pool+=len(value); counts[tag]+=1
     facts["search_record_count"]=len(facts["paths"]); facts["search_bytes_used"]=pool
@@ -202,7 +256,8 @@ def expected(case:Case,built:Built)->dict[str,Any]:
     if DT_RUNPATH in first_index: facts["runpath_first_record"]=first_index[DT_RUNPATH]
     facts["rpath_state"]=CONTRADICTORY if conflicts[DT_RPATH] else (PRESENT if counts[DT_RPATH] else ABSENT)
     facts["runpath_state"]=CONTRADICTORY if conflicts[DT_RUNPATH] else (PRESENT if counts[DT_RUNPATH] else ABSENT)
-    require(facts["rpath_state"]==case.expected_rpath and facts["runpath_state"]==case.expected_runpath,f"expected state model disagreement: {case.name}")
+    if case.expected_status==EXIT_OK:
+        require(facts["rpath_state"]==case.expected_rpath and facts["runpath_state"]==case.expected_runpath,f"expected state model disagreement: {case.name}")
     return facts
 
 def run(argv:list[str])->subprocess.CompletedProcess[bytes]: return subprocess.run(argv,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False,timeout=20)
@@ -244,6 +299,7 @@ def main()->int:
             built=build(case); target=root/(case.name+".elf"); target.write_bytes(built.image); target.chmod(0o444)
             ext=run([ns.readelf,"-dW",str(target)]); observed=readelf_presence(ext.stdout+ext.stderr)
             if case.readelf_eligible:
+                require(ext.returncode==0,f"readelf process failed for eligible case {case.name}: {ext.returncode}")
                 eligible+=1; expected_presence=(any(t==DT_RPATH for t,_ in case.paths),any(t==DT_RUNPATH for t,_ in case.paths))
                 require(observed==expected_presence,f"readelf presence mismatch for {case.name}: {observed} != {expected_presence}"); matches+=1
             if ns.oracle_only: continue

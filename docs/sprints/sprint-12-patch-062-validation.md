@@ -11,11 +11,12 @@ Patch 068 required Patch 069, and Patch 069 required Patch 070. Patch 070 was
 rejected after acceptance validation. Patches 070, 071, 072, and 073 were not
 accepted at their respective first returned review boundaries. Patch 073
 delivered the first custody/isolation correction and policy deferral. Patch 074
-was a superseded Sprint 12 closeout candidate. Patch 076 is active, owns the
-remaining correction plus private static text-relocation evidence, and still
-requires complete acceptance; Patch 076 implements distinct RPATH/RUNPATH
-evidence. Use the
-[Patch 076 validation record](sprint-12-patch-076-validation.md) for current
+was a superseded Sprint 12 closeout candidate. Patch 075 introduced bounded
+private static text-relocation evidence, and Patch 076 implemented distinct
+private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch 076's review
+required the Patch 077 correction. Patch 077 is the current final Sprint 12
+reconciliation candidate, pending complete acceptance. Use the
+[Patch 077 validation record](sprint-12-patch-077-validation.md) for current
 validation expectations.
 See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
 for the Patch 062 design boundary, the

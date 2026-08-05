@@ -1585,9 +1585,10 @@ No external-natural or parity artifact is linked into `build/x64lens`, and no
 private role or property state enters schema `0.2.0`. Patch 073 executed the
 public-policy gate as `defer`; Patch 074 preserves zero public fields, the
 existing coarse PIE Boolean, and the distinction between static GNU properties
-and runtime CET enforcement. Patch 075 adds a private dynamic-metadata side-car
+and runtime CET enforcement. Patch 075 added a private dynamic-metadata side-car
 for bounded static text-relocation evidence without public projection. Patch
-076 is planned for distinct bounded RPATH/RUNPATH acquisition.
+076 preserves that prefix and implements distinct bounded private RPATH and
+RUNPATH acquisition.
 
 
 ## Sprint 12 Patch 074 custody and closeout architecture
@@ -1658,3 +1659,40 @@ fixed 56-byte path records, and one 4,096-byte exact-value pool. Three current
 command-owned copies account for 39,192 fixed bytes. This allocation arithmetic
 is not a measured RSS result. No public report, candidate record, scanner
 capacity, or executable mapping is changed.
+
+## Sprint 12 Patch 077 final reconciliation boundary
+
+Patch 077 adds no runtime analysis module and changes no parser, side-car, or
+report layout. The private dynamic-metadata context remains 9,904 bytes and the
+combined private metadata context remains 13,064 bytes. The architecture change
+is confined to support transactions:
+
+```text
+authenticated patch bytes -> one check/mutation stream
+retained parent/root descriptors -> staged recovery -> no-replace publication
+retained file descriptors -> permission rollback
+successful external process + validated output -> comparator eligibility
+staged Git index -> Git-less source authority -> independent native/container builds
+```
+
+Private malformed/unsupported snapshots are defined as deterministic parse
+prefixes. They do not become public negatives or change public mitigation
+policy. Program headers remain executable authority, dynamic metadata remains a
+separate private evidence layer, and Sprint 13 activation remains blocked until complete
+Patch 078 acceptance.
+
+## Sprint 13 Patch 078 transaction and role-decision boundary
+
+Patch 078 adds no runtime analysis module. Repository transaction, source
+recovery, permission normalization, parity publication, delivery custody, and
+Docker source construction remain development and delivery tooling outside the
+analyzer pipeline. Docker builds consume an exact Git-less tree generated from
+authenticated Git objects; ignored or generated host files are not part of the
+image source authority.
+
+The Sprint 13 role decision queries existing exact-pattern and architectural-
+effect facts rather than adding a second classifier. It distinguishes generic
+register control, System V call arguments, Linux syscall arguments, the `rax`
+syscall-number role, and the `rsp` pivot. `r10` is Linux syscall argument 4;
+`rcx` is System V call argument 4. These private facets do not change current
+semantic classes, scores, reports, or schema `0.2.0`.

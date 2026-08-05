@@ -17,6 +17,7 @@ same-UID process; any detected disagreement fails closed.
 from __future__ import annotations
 
 import argparse
+import ctypes
 from dataclasses import dataclass, field
 import hashlib
 import json
@@ -38,6 +39,7 @@ MIN_FD_HEADROOM = 64
 FD_TRANSACTION_OVERHEAD = 12
 O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
 O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+RENAME_NOREPLACE = 1
 
 # Test-only injection points.  Production callers leave these unset.
 _TEST_AFTER_FILE_HASH_HOOK: Callable[[int, str, str], None] | None = None
@@ -45,6 +47,8 @@ _TEST_AFTER_TREE_SCAN_HOOK: Callable[[Path], None] | None = None
 _TEST_AFTER_MANIFEST_LINK_HOOK: Callable[[int, str, str], None] | None = None
 _TEST_AFTER_MANIFEST_TEMP_UNLINK_HOOK: Callable[[int, str], None] | None = None
 _TEST_BEFORE_MANIFEST_PARENT_FSYNC_HOOK: Callable[[int, str], None] | None = None
+_TEST_AFTER_UNLINK_QUARANTINE_RENAME_HOOK: Callable[[int, str, int, str], None] | None = None
+_TEST_BEFORE_FINAL_UNLINK_HOOK: Callable[[int, str, int, str], None] | None = None
 
 
 class CustodyError(RuntimeError):
@@ -204,6 +208,17 @@ def same_identity(left: Fingerprint, right: Fingerprint) -> bool:
     )
 
 
+def same_stable_binding(left: Fingerprint, right: Fingerprint) -> bool:
+    """Compare path-object identity without mutable ancestor membership facts."""
+    return (
+        left.device == right.device
+        and left.inode == right.inode
+        and left.file_type == right.file_type
+        and left.uid == right.uid
+        and left.gid == right.gid
+    )
+
+
 def fingerprint(metadata: os.stat_result) -> Fingerprint:
     return Fingerprint(
         metadata.st_dev,
@@ -338,9 +353,12 @@ def reauthenticate_root(root: RootHandle) -> None:
             require(same_identity(current, binding.opened),
                     f"custody root binding changed: {binding.display}")
         else:
-            require(observed_fd == binding.opened,
+            # Ancestor membership, size, timestamps, mode, and link count may
+            # change independently of the bound root.  Only the retained path
+            # object's stable identity is relevant here.
+            require(same_stable_binding(observed_fd, binding.opened),
                     f"custody path descriptor changed: {binding.display}")
-            require(current == binding.opened,
+            require(same_stable_binding(current, binding.opened),
                     f"custody path binding changed: {binding.display}")
     require(same_identity(fingerprint(os.fstat(root.fd)), root.opened),
             "custody root descriptor identity changed")
@@ -592,16 +610,61 @@ def _same_descriptor_object(metadata: os.stat_result, fd_metadata: os.stat_resul
     )
 
 
+def _rename_noreplace(parent_fd: int, old: str, new: str) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    function = getattr(libc, "renameat2", None)
+    require(function is not None, "renameat2 is unavailable on this Linux runtime")
+    function.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    function.restype = ctypes.c_int
+    if function(parent_fd, os.fsencode(old), parent_fd, os.fsencode(new), RENAME_NOREPLACE) != 0:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error), new)
+
+
 def _unlink_owned_name(parent_fd: int, name: str, fd: int, label: str) -> bool:
-    """Unlink name only when it still identifies the retained manifest inode."""
+    """Remove only the retained manifest object through no-replace quarantine.
+
+    The caller-visible name is first moved atomically to an unpredictable
+    quarantine name.  The moved object is reopened without following links and
+    compared with the retained descriptor before a second no-replace move and
+    final unlink.  A foreign replacement is preserved under its quarantine
+    name and the transaction fails closed.
+    """
     try:
-        current = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
     except FileNotFoundError:
         return False
-    retained = os.fstat(fd)
-    require(_same_descriptor_object(current, retained),
-            f"refusing to remove changed {label} during manifest rollback")
-    os.unlink(name, dir_fd=parent_fd)
+    first = f".custody-quarantine.{os.getpid()}.{os.urandom(16).hex()}"
+    second = f".custody-delete.{os.getpid()}.{os.urandom(16).hex()}"
+    _rename_noreplace(parent_fd, name, first)
+    if _TEST_AFTER_UNLINK_QUARANTINE_RENAME_HOOK is not None:
+        _TEST_AFTER_UNLINK_QUARANTINE_RENAME_HOOK(parent_fd, first, fd, label)
+    first_fd = os.open(first, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+    try:
+        require(_same_descriptor_object(os.fstat(first_fd), os.fstat(fd)),
+                f"refusing to remove changed {label}; foreign object preserved as {first}")
+        _rename_noreplace(parent_fd, first, second)
+        second_fd = os.open(second, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+        try:
+            require(_same_descriptor_object(os.fstat(second_fd), os.fstat(fd)),
+                    f"refusing to remove changed {label}; foreign object preserved as {second}")
+            if _TEST_BEFORE_FINAL_UNLINK_HOOK is not None:
+                _TEST_BEFORE_FINAL_UNLINK_HOOK(parent_fd, second, fd, label)
+            # Reopen after the final injectable boundary.  The reopened object
+            # remains retained through unlink.  Linux still lacks an atomic
+            # compare-and-unlink-by-fd primitive, so an uninstrumented malicious
+            # same-UID race remains an explicit external threat boundary.
+            final_fd = os.open(second, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+            try:
+                require(_same_descriptor_object(os.fstat(final_fd), os.fstat(fd)),
+                        f"refusing to remove changed {label}; foreign object preserved as {second}")
+                os.unlink(second, dir_fd=parent_fd)
+            finally:
+                os.close(final_fd)
+        finally:
+            os.close(second_fd)
+    finally:
+        os.close(first_fd)
     return True
 
 
@@ -701,14 +764,18 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Finger
 
 def remove_published_manifest(root: RootHandle, relative: str, expected: Fingerprint) -> None:
     parent_fd, name = open_parent_fd(root.fd, relative)
+    fd = -1
     try:
-        current = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+        current = os.fstat(fd)
         require(fingerprint(current) == expected,
                 "refusing to remove a changed custody manifest during rollback")
-        os.unlink(name, dir_fd=parent_fd)
+        _unlink_owned_name(parent_fd, name, fd, "published manifest")
         os.fsync(parent_fd)
         reauthenticate_root(root)
     finally:
+        if fd >= 0:
+            os.close(fd)
         os.close(parent_fd)
 
 

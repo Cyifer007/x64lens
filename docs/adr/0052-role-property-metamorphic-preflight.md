@@ -7,13 +7,14 @@ layout attestation and the Patch 068 diagnostic matrix, and carried through
 Patches 069 and 070. Patches 070, 071, 072, and 073 were not accepted at their
 respective first returned review boundaries. Patch 073 delivered the first
 custody/isolation correction and the non-reinterpretive policy deferral.
-Patch 074 was the superseded Sprint 12 closeout candidate. Patch 076 is active:
-it owns the remaining correction plus private static text-relocation evidence
-while leaving these role/property runtime and schema boundaries unchanged.
-Complete Patch 076 acceptance remains pending. Patch 076 implements
-distinct `DT_RPATH` and `DT_RUNPATH` evidence.
-Current validation expectations are in the
-[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
+bounded private static text-relocation evidence. Patch 076 preserved that
+private prefix while leaving these role/property runtime and schema boundaries
+unchanged and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
+carrier/value evidence, but its review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance. Current validation expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 
@@ -109,12 +110,14 @@ custody boundary and defined a separate 96-object diagnostic agreement matrix:
 48 held-out natural toolchain-produced objects plus 48 controlled metamorphic
 objects. At the Patch 068 boundary, bounded external ELF reconciliation
 (`readelf -hW/-lW/-dW/-nW`) remained subsequent work. Patch 069 added that
-authenticated reconciliation. Patch 070 attempted the next evidence-gate correction but was rejected.
+authenticated reconciliation. Patch 070 attempted the next evidence-gate
+correction but was rejected.
 Patch 071 corrected the first blocker set. Patch 072 carried the remaining
 correction and the initial native/container private-fact parity gate, but its
 returned review rejected current acceptance. Patch 073 delivered the first
 custody/isolation correction and policy deferral. Patch 074 carried the next
-correction as a closeout candidate but was superseded by active Patch 075.
+correction as a closeout candidate but was superseded. Patch 075 introduced the
+private static text-relocation tranche, but its review required Patch 076.
 Whole-batch timing and process-tree RSS also remain separate measurement gates.
 
 ## Consequences
@@ -126,6 +129,6 @@ Whole-batch timing and process-tree RSS also remain separate measurement gates.
   overlap.
 - The dependency-free, decoder-free, one-worker product profile remains intact.
 - Patch 073 executed the public-policy gate as `defer` and added no public
-  indicator. Corrected actual native/container parity and complete Patch 075
+  indicator. Corrected actual native/container parity and complete Patch 076
   acceptance remain pending; any future compatible-output decision requires a
   new separately reviewed gate.

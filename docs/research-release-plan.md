@@ -393,12 +393,14 @@ and parity records remain diagnostic development evidence. They do not satisfy
 the Sprint 15 campaign freeze or Sprint 16 preview gate. Any later throughput
 result must retain the batch as its measurement unit and preserve the
 diagnostic/confirmatory separation. Patch 073 recorded `defer` but was not
-accepted at its first returned review boundary. Patch 074 implements the final
+accepted at its first returned review boundary. Patch 074 implemented the final
 custody and parity-protocol corrections and changes no public field or schema
 meaning, but it was superseded as the Sprint 12 closeout candidate. Patch 075
-introduced bounded private static text-relocation evidence. Patch 076 is active
-and adds distinct bounded private RPATH/RUNPATH evidence; the Sprint 13 handoff
-follows only after the active Sprint 12 gates close.
+introduced bounded private static text-relocation evidence, and Patch 076 added
+distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
+Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
+only after complete Patch 078 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -418,12 +420,13 @@ cannot satisfy preview or publication corpus requirements. Static property
 agreement does not establish runtime CET enforcement. No new role-derived
 PIE/DSO field or IBT/SHSTK field is admitted after the separate Patch 073 policy
 gate, whose deferral Patch 074 preserves; the existing coarse `mitigations.pie`
-field remains unchanged. Patch 075 owns bounded private static text-relocation evidence, while Patch 076
-owns distinct bounded private RPATH/RUNPATH evidence.
+field remains unchanged. Patch 075 introduced bounded private static text-
+relocation evidence, and Patch 076 implements distinct bounded private RPATH/
+RUNPATH evidence.
 Neither is release evidence or a public field without a later policy gate.
 
 
-## Patch 074 superseded closeout and Patch 075 continuation release-gate note
+## Patch 074 through Patch 076 continuation release-gate note
 
 Patch 074 changes no runtime analyzer, include, public schema, CLI, or release
 tag. It implements corrections for delivery topology and late-mutation custody,
@@ -435,9 +438,11 @@ facts do not by themselves close Sprint 12.
 The complete closeout acceptance boundary requires native validation, strict
 ShellCheck, retained external-natural acquisition, corrected isolated Docker
 parity, exact delivery rehearsal, and independent non-documentation acceptance
-on the same source. Patch 075 carries the remaining correction and private
-static text-relocation evidence; Patch 076 owns separate private RPATH/RUNPATH
-evidence. The role/property policy remains `defer`, no public mitigation field
+on the same source. Patch 075 introduced private static text-relocation
+evidence, and Patch 076 implemented separate private RPATH/RUNPATH evidence.
+Patch 076's review required the Patch 077 correction. Patch 077 is the current
+final Sprint 12 reconciliation candidate, pending complete acceptance.
+The role/property policy remains `defer`, no public mitigation field
 or runtime-CET claim is added, and no Sprint 12 diagnostic artifact becomes
 preview or publication evidence.
 
@@ -449,3 +454,18 @@ future mitigation design only when the exact layout, controlled matrix,
 malformed and capacity behavior, GNU `readelf` presence reconciliation, native
 and Docker execution, and complete private parity all pass. A preview artifact
 must not infer loader resolution or search-path safety from these records.
+
+## Sprint 12 Patch 077 release-gate update
+
+Patch 077 is a closeout candidate, not a release candidate. Preview eligibility
+still requires complete native and Docker validation, both private parity
+planes, source and delivery custody, and the later Sprint 15-16 freeze and pilot
+gates. No public textrel, RPATH, RUNPATH, PIE/DSO, IBT, or SHSTK field is
+introduced.
+
+## Sprint 13 Patch 078 release-gate update
+
+Patch 078 is an implementation and closeout-correction candidate, not a release
+candidate. Preview eligibility still requires fresh native and Docker validation,
+both private parity planes, exact source and delivery custody, independent
+acceptance, and later task-value evidence before any public role or score change.

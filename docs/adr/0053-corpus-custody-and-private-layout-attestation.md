@@ -9,11 +9,12 @@ supplied the first evidence-gate correction. Patches 070, 071, 072, and 073 were
 not accepted at their respective first returned review boundaries. Patch 073
 delivered the first custody/isolation correction and the non-reinterpretive
 policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
-Patch 076 is active: it corrects the remaining Patch 075 findings and adds
-distinct private RPATH/RUNPATH evidence. Complete Patch 076 acceptance remains pending. Patch 076 is
-planned for distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current validation
-expectations are in the
-[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+Patch 075 introduced bounded private static text-relocation evidence. Patch 076
+preserved that private prefix and implemented distinct private `DT_RPATH` and
+`DT_RUNPATH` carrier/value evidence, but its review required the Patch 077
+correction. Patch 077 is the current final Sprint 12 reconciliation candidate,
+pending complete acceptance. Current validation expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 

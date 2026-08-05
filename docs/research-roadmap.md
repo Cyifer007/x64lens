@@ -2,13 +2,15 @@
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 is active at Patch 076. Patch 074
-was a superseded closeout candidate; Patch 075 introduced textrel evidence and
-Patch 076 carries the remaining correction and
-private bounded text-relocation evidence. Sprint 13 is planned only after the
-active Sprint 12 gates close. The roadmap may state
-"Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
-acceptance boundary passes on the same authenticated source. Sprint 9
+Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
+authority with Patch 078 as the closeout correction and Sprint 13 entry
+candidate. Patch 077 preserved the private textrel/RPATH/RUNPATH implementation
+but required further transaction, cleanup, parity-publication, Git-less Docker
+source, digest-oracle, and delivery correction. Patch 078 freezes a private
+multi-role exact-pop decision without changing runtime output or scores. The
+roadmap may state "Sprints 1 through 12 are complete" and "Sprint 13 is active"
+only after the complete Patch 078 acceptance gate passes on one authenticated
+source. Sprint 9
 established report identity, schema `0.2.0`, candidate provenance, and the
 decoder-free reference profile. Sprint 10 added bounded semantic-exact primitive
 and effect coverage.
@@ -21,7 +23,7 @@ controlled private-fact strata, exact GNU `readelf` reconciliation, outcome-
 blind external-natural acquisition, a corrected isolated native/container
 parity protocol, and a non-reinterpretive public-policy decision of `defer`.
 
-Patch 074 implements corrections for the final Patch 073 custody, hardlink,
+Patch 074 implemented corrections for the final Patch 073 custody, hardlink,
 selection-inode, parity-membership/mount/publication, tracked-permission, and
 authority-oracle findings. It changes no runtime analyzer, include, or public
 schema path. Public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH,
@@ -583,11 +585,13 @@ were deferred to Patch 072. Patch 072 implements both gates; qualified native/
 container parity evidence remains pending. The latest real campaign still
 supports no x64lens single-run latency, RSS-superiority, generic gadget-count,
 or normalized-coverage claim. Patch 073 executed the non-reinterpretive public-
-policy gate as an explicit deferral. Patch 074 supplies the final custody and
+policy gate as an explicit deferral. Patch 074 supplied the final custody and
 parity-protocol correction but was superseded as the closeout candidate. Patch
-075 is active and adds bounded private static text-relocation evidence. Patch
-Patch 076 implements distinct bounded private RPATH/RUNPATH evidence. Sprint 12 remains
-active, and the Sprint 13 handoff begins only after its active gates close.
+075 introduced bounded private static text-relocation evidence, but its review
+required the Patch 076 correction. Patch 076 implements distinct bounded private
+RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance before the Sprint 13 handoff.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -606,15 +610,16 @@ while holding target, analyzer, fact-probe, and schema bytes constant. It keeps
 5,184 private fields per environment and 384 paired public tuples. Package
 source/build-origin and environment effects remain separate. Retained
 diagnostic acquisition evidence and the two same-host logic-only parity planes
-remain distinct; qualified native/container parity remains pending. All retained planes
-are diagnostic, unfrozen, publication-ineligible, and insufficient for
+remain distinct; qualified native/container parity remains pending. All
+retained planes are diagnostic, unfrozen, publication-ineligible, and
+insufficient for
 runtime-CET or public-field claims. Patch 073 recorded `defer`; Patch 074
 preserves zero public role/property fields and the coarse PIE indicator. Patch
 075 adds private static text-relocation evidence; Patch 076 implements the
 distinct RPATH/RUNPATH tranche.
 
 
-## Sprint 12 Patch 074 and Patch 075 continuation research posture
+## Sprint 12 Patch 074 through Patch 077 reconciliation research posture
 
 Patch 074 changes no runtime analyzer, include, or public schema path. It
 implements corrections for the final evidence-custody and parity-protocol
@@ -625,10 +630,12 @@ membership, excluding native-plane ancestors from container mounts, and
 limiting permission normalization to preflighted Git-tracked paths.
 
 The public role/property decision remains `defer`. Text-relocation and separate
-RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 now owns
-bounded private static text-relocation evidence, and Patch 076 owns distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-CET
-claim. Sprint 13 becomes active only after the active Sprint 12 gates close and
-then owns the generic exact-pop, Linux syscall `r10`, score/null, and
+RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
+bounded private static text-relocation evidence, and Patch 076 implements
+distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
+CET claim. Patch 076's review required the Patch 077 correction. Sprint 13
+remains planned and activates only after complete Patch 078 acceptance, then
+owns the generic exact-pop, Linux syscall `r10`, score/null, and
 measurement-gated semantic decisions. All Sprint 11-12 campaign observations
 remain diagnostic and cannot be promoted into the Sprint 15-frozen confirmatory
 dataset.
@@ -642,3 +649,11 @@ matrix separates carrier presence, exact values, malformed input, unsupported
 capacity, external presence comparison, and public non-projection. Native and
 container facts remain separate evidence planes. No performance, prevalence,
 runtime resolution, safety, or exploitability claim follows from this tranche.
+
+## Sprint 12 Patch 077 research update
+
+Patch 077 adds no new measured capability. It converts the Patch 076 review
+findings into durable transaction, comparator, parity, and evidence gates while
+preserving the private dynamic-metadata results. These are development
+correctness facts, not publication performance, coverage, or mitigation-
+prevalence evidence.

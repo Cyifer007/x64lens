@@ -239,29 +239,37 @@ def custody_probe(custody: Any, base: Path) -> None:
 
 
 def source_custody_probe() -> None:
-    completed = subprocess.run(
-        ["git", "ls-files", "-s", "-z"],
-        cwd=ROOT,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-    require(completed.returncode == 0, f"git source inventory failed: {completed.stderr!r}")
+    manifest_path = os.environ.get("X64LENS_SOURCE_MANIFEST")
+    if manifest_path:
+        source = load("p078_gitless_source", "tools/gitless-source-manifest.py")
+        value = source.load_manifest(Path(manifest_path))
+        source.verify(ROOT, value)
+        rows = [(item["git_mode"].encode("ascii"), item["path"]) for item in value["files"]]
+    else:
+        completed = subprocess.run(
+            ["git", "ls-files", "-s", "-z"],
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        require(completed.returncode == 0, f"git source inventory failed: {completed.stderr!r}")
+        rows = []
+        for raw in completed.stdout.split(b"\0"):
+            if not raw:
+                continue
+            metadata, path_bytes = raw.split(b"\t", 1)
+            rows.append((metadata.split(b" ", 1)[0], path_bytes.decode("utf-8", "surrogateescape")))
     prohibited = []
     symlinks = []
-    for raw in completed.stdout.split(b"\0"):
-        if not raw:
-            continue
-        metadata, path_bytes = raw.split(b"\t", 1)
-        mode = metadata.split(b" ", 1)[0]
-        path = path_bytes.decode("utf-8", "surrogateescape")
+    for mode, path in rows:
         if mode == b"120000":
             symlinks.append(path)
         parts = Path(path).parts
         if path == ".env.local" or ".local" in parts or ".git" in parts or "build" in parts or "tests/bin" in path:
             prohibited.append(path)
-    require(not symlinks, f"tracked source contains symbolic links: {symlinks[:5]}")
-    require(not prohibited, f"tracked source contains private/generated paths: {prohibited[:5]}")
+    require(not symlinks, f"source authority contains symbolic links: {symlinks[:5]}")
+    require(not prohibited, f"source authority contains private/generated paths: {prohibited[:5]}")
 
 
 def main() -> int:
@@ -286,7 +294,7 @@ def main() -> int:
         "cleanup_success=1 file_replacement=1 directory_replacement=1 "
         "authority_mutations=4 case_mismatch=1 streaming_cap=1 "
         "delivery_extra=1 delivery_missing=1 delivery_empty_directory=1 "
-        "delivery_symlink=1 source_custody=1"
+        "delivery_symlink=1 source_custody=1 gitless_source=1"
     )
     return 0
 

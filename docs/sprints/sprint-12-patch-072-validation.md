@@ -6,11 +6,12 @@ Historical implementation candidate. Its returned review rejected acceptance
 after reproducing custody and isolation defects. Patch 073 delivered the first
 custody/isolation correction and policy deferral but was not accepted at its
 first returned review boundary. Patch 074 was a superseded Sprint 12 closeout
-candidate. Patch 076 is active, owns the remaining correction plus private
-static text-relocation evidence, and still requires complete acceptance; Patch
-076 is planned for distinct RPATH/RUNPATH evidence. Current validation
-expectations are in the
-[Patch 076 validation record](sprint-12-patch-076-validation.md).
+candidate. Patch 075 introduced bounded private static text-relocation evidence,
+and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
+carrier/value evidence. Patch 076's review required the Patch 077 correction.
+Patch 077 is the current final Sprint 12 reconciliation candidate, pending
+complete acceptance. Current validation expectations are in the
+[Patch 077 validation record](sprint-12-patch-077-validation.md).
 Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
@@ -19,7 +20,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-Patch 075 acceptance remain pending.
+complete Patch 077 acceptance remain pending.
 
 ## Source precondition
 
@@ -187,6 +188,8 @@ added no public field and preserved the existing coarse `mitigations.pie`
 meaning. Corrected native/container parity and independent acceptance remain
 pending. Any future compatible `0.2.x` indicator requires a new separately
 reviewed decision. Patch 074 was a superseded Sprint 12 closeout candidate.
-Patch 075 introduced private static text-relocation evidence; Patch 076 is active
-with pending acceptance and distinct private RPATH/RUNPATH evidence; Patch 076 implements distinct RPATH/RUNPATH evidence. Sprint 12
-remains open.
+Patch 075 introduced private static text-relocation evidence, but its review
+required the Patch 076 correction. Patch 076 implemented distinct private
+RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
+077 is the current final reconciliation candidate, pending complete acceptance,
+so Sprint 12 remains open.

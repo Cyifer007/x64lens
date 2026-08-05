@@ -7,12 +7,14 @@ validation. Patch 068 carried an intermediate corrective candidate; Patch 069
 carried the decision forward. Patches 070, 071, 072, and 073 were not accepted
 at their respective first returned review boundaries. Patch 073 delivered the
 first custody/isolation correction and the non-reinterpretive policy deferral.
-Patch 074 was the superseded Sprint 12 closeout candidate. Patch 076 is active:
-it owns the remaining correction plus private static text-relocation evidence
-without changing the runtime lattice. Complete Patch 076 acceptance remains
-pending. Patch 076 implements distinct `DT_RPATH` and `DT_RUNPATH`
-evidence. Current validation expectations are in the
-[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
+bounded private static text-relocation evidence. Patch 076 preserved that
+private prefix without changing the runtime lattice and implemented distinct
+private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review
+required the Patch 077 correction. Patch 077 is the current final Sprint 12
+reconciliation candidate, pending complete acceptance. Current validation
+expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 
@@ -70,7 +72,7 @@ state, not measured RSS.
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
 corrected the earlier implementation that reread mapped ELF bytes, and the
-active Patch 075 candidate carries that boundary forward without changing the
+current Patch 077 candidate carries that boundary forward without changing the
 runtime analyzer:
 
 ```text
@@ -110,7 +112,7 @@ evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output. Patch 065 introduced these
 string-validation corrections, Patch 069 carried them forward, and the active
-Patch 075 candidate leaves them unchanged.
+Patch 076 candidate leaves them unchanged.
 
 ## Consequences
 
@@ -121,7 +123,7 @@ Patch 075 candidate leaves them unchanged.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the active Patch 075 candidate.
+  remains separate from public report policy in the current Patch 077 candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

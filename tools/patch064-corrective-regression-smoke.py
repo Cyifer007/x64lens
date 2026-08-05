@@ -84,8 +84,8 @@ def probe_assembly_corrections() -> None:
             "binary-role classifier still rereads mapped ELF header bytes")
     require("cmp     byte [rdx], 0" in phdr and ".interp_interior_loop:" in phdr,
             "PT_INTERP empty/interior-NUL validation is missing")
-    require(".soname_second_pass:" in phdr and ".soname_second_terminator:" in phdr,
-            "all DT_SONAME carriers are not independently validated")
+    require(".dynamic_string_second_pass:" in phdr and ".dynamic_string_soname_terminator:" in phdr,
+            "generalized dynamic-string second-pass SONAME validation is missing")
     summary_match = re.search(r"%define\s+PHDR_SUMMARY_RECORD_SIZE\s+(\d+)", structs)
     context_match = re.search(r"%define\s+GNU_PROPERTY_CONTEXT_SIZE\s+\([^\n]+\)", structs)
     require(summary_match is not None and int(summary_match.group(1)) - 200 <= 64,

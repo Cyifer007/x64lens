@@ -82,11 +82,14 @@ completed native result plane.
 
 ## Limitations
 
-RPATH and RUNPATH facts are private static metadata. They do not establish which
-path a runtime loader will select, whether a referenced location exists, whether
-an attacker can modify it, or whether a binary is vulnerable. Patch 076 does
-not expand `$ORIGIN`, split values, emulate the loader, inspect target-derived
-paths, or claim exploitability.
+RPATH and RUNPATH facts are separate private static metadata. They do not
+establish which path a runtime loader will select, whether a referenced location
+exists, whether an attacker can modify it, or whether a binary is vulnerable.
+Patch 076 does not expand `$ORIGIN`, split values, emulate the loader, open
+target-derived paths, or claim exploitability.
 
-Fresh NASM, strict ShellCheck, Docker, actual native/container parity, and
-independent Lane A acceptance remain required before Patch 076 is accepted.
+Patch 076 did not establish complete acceptance. Fresh NASM, strict ShellCheck,
+Docker, actual native/container parity, and independent non-documentation
+acceptance remain required for the current Patch 077 closeout candidate. These
+requirements remain separate; none substitutes for another. Patch 077 is the
+final Sprint 12 reconciliation candidate, pending complete acceptance.

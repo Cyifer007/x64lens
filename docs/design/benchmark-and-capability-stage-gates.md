@@ -180,13 +180,16 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 is active at Patch 076. Patch 074 was a superseded closeout candidate,
-and Patch 076 implements distinct bounded RPATH/RUNPATH evidence. Sprint 13
-remains next until the active Sprint 12 gates close. The diagnostic corpus and
-method remain provisional until Sprint 15. Sprints 13 and 14 may change
-capabilities or experimental profiles in response to diagnostic evidence; such
-changes require new diagnostic identities and do not contaminate the later
-frozen campaign.
+Sprint 12 is at the Patch 077 closeout candidate, pending complete acceptance.
+Patch 074 was a superseded closeout candidate. Patch 075 introduced private
+text-relocation evidence, and Patch 076 added distinct bounded RPATH/RUNPATH
+evidence. Patch 077 is the current corrective final reconciliation candidate.
+Sprint 13 remains planned and activates only after complete Patch 077
+acceptance. The diagnostic
+corpus and method remain provisional until Sprint 15. Sprints 13 and 14 may
+change capabilities or experimental profiles in response to diagnostic
+evidence; such changes require new diagnostic identities and do not contaminate
+the later frozen campaign.
 
 ## Sprint 11 Patch 055 foundation status
 
@@ -307,12 +310,12 @@ remain independent; no generic cross-tool gadget count is permitted.
 
 The `program_header_validity` and `elf_extended_numbering` gates were resolved
 by Patch 062. Patch 064 resolved `executable_overlap_policy` by measured
-deferral under explicit reopening thresholds. Patches 064-075 carry the
+deferral under explicit reopening thresholds. Patches 064-076 carry the
 candidate disposition for the private role/property and GNU-property gates
 through implementation, diagnostic reconciliation, a corrected environment-
-parity protocol, a public-policy decision of `defer`, and bounded private static
-text-relocation evidence. Corrected actual native/container parity and active
-Sprint 12 acceptance gates remain pending. Any
+parity protocol, a public-policy decision of `defer`, bounded private static
+text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Corrected
+actual native/container parity and Patch 077 acceptance remain pending. Any
 diagnostic campaign after acceptance requires a new identifier when its task,
 capability, schema, or method changes.
 
@@ -321,8 +324,8 @@ capability, schema, or method changes.
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 is active at Patch 076. The overlap, PIE/DSO, and GNU-property gates
-are `resolved`:
+Sprint 12 is at the Patch 077 closeout candidate, pending complete acceptance.
+The overlap, PIE/DSO, and GNU-property gates are `resolved`:
 overlap by measured deferral, and role/property projection by retained private
 evidence plus an explicit non-reinterpretive public deferral. Resolution does
 not mean a public field or runtime-CET claim exists. Generic exact-pop semantics

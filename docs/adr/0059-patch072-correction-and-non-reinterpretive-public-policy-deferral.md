@@ -6,11 +6,12 @@ Accepted as the design record for the Sprint 12 Patch 073 implementation
 candidate. Patch 073 was not accepted at its first returned review boundary; it
 delivered the first custody/isolation correction and the non-reinterpretive
 policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
-Patch 076 is active: it corrects the remaining Patch 075 findings and adds
-distinct private RPATH/RUNPATH evidence. Complete Patch 076 acceptance remains pending. Patch 076 is
-planned for distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current validation
-expectations are in the
-[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+Patch 075 introduced bounded private static text-relocation evidence. Patch 076
+preserved that private prefix and implemented distinct private `DT_RPATH` and
+`DT_RUNPATH` carrier/value evidence, but its review required the Patch 077
+correction. Patch 077 is the current final Sprint 12 reconciliation candidate,
+pending complete acceptance. Current validation expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 
@@ -85,9 +86,9 @@ untested runtime field. The next selected tranche is:
 1. text-relocation evidence from `DT_TEXTREL` or `DT_FLAGS & DF_TEXTREL`; and
 2. separate validated `DT_RPATH` and `DT_RUNPATH` indicators.
 
-Patch 075 now owns the first item as private static evidence. Patch 076 is
-planned to own the distinct `DT_RPATH` and `DT_RUNPATH` evidence in the second
-item.
+Patch 075 implemented the first item as private static evidence, but its review
+required correction. Patch 076 implements distinct private `DT_RPATH` and
+`DT_RUNPATH` carrier/value evidence for the second item.
 
 Each requires checked acquisition, malformed and contradiction fixtures,
 focused/integrated report parity, external reconciliation, and a compatible
@@ -104,8 +105,10 @@ substrings.
 - Passing the portable Patch 073 gates supports the source-level correction and
   policy decision, but not actual native/container parity or current
   acceptance.
-- Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 is
-  active, and complete Patch 076 acceptance remains pending.
+- Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075
+  introduced private static text-relocation evidence, and Patch 076 added
+  distinct private RPATH/RUNPATH evidence. Patch 076's review required the
+  Patch 077 correction. Complete Patch 077 acceptance remains pending.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

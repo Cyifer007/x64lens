@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "active",
-  "current_patch": 76,
-  "superseded_closeout_patch": 74,
-  "next_patch": 77,
-  "next_patch_tranche": "sprint12-final-reconciliation-and-closeout-decision",
-  "acceptance_target": "sprint12-p076-acceptance-smoke",
+  "status": "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
+  "current_patch": 78,
+  "superseded_closeout_patch": 77,
+  "next_patch": 79,
+  "next_patch_tranche": "blinded-register-role-task-value-after-p078-acceptance",
+  "acceptance_target": "sprint13-p078-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -16,22 +16,46 @@
     "target_mapping": "read_only",
     "target_execution": false
   },
-  "patch076_boundary": {
-    "remaining_patch075_corrections": true,
-    "private_dynamic_metadata_sidecar": true,
+  "patch078_boundary": {
+    "remaining_patch077_corrections": true,
+    "runtime_parser_or_report_change": false,
+    "runtime_source_include_schema_change": false,
+    "private_dynamic_metadata_sidecar_preserved": true,
+    "dynamic_metadata_context_bytes": 9904,
+    "private_metadata_context_bytes": 13064,
     "mixed_carrier_capacity": 64,
     "search_record_capacity": 64,
     "search_value_byte_capacity": 4096,
     "textrel_state": "private",
     "rpath_state": "private_distinct",
     "runpath_state": "private_distinct",
+    "private_failure_snapshot_semantics": "deterministic_parse_prefix",
     "path_splitting": false,
     "origin_expansion": false,
     "target_derived_opens": 0,
+    "gitless_docker_source": "exact_staged_tree_membership",
+    "reviewed_base_modes": [
+      "staged",
+      "committed"
+    ],
     "public_fields_added": 0,
+    "score_changes": 0,
     "existing_coarse_pie_field_reinterpreted": false,
     "runtime_cet_enforcement_claimed": false,
     "schema_changed": false
+  },
+  "sprint13_entry_decision": {
+    "exact_pop_patterns_accounted": 16,
+    "generic_register_control_patterns": 15,
+    "sysv_call_argument_patterns": 6,
+    "linux_syscall_argument_patterns": 6,
+    "linux_syscall_arg4_register": "r10",
+    "sysv_call_arg4_register": "rcx",
+    "syscall_number_register": "rax",
+    "stack_pivot_register": "rsp",
+    "new_public_fields": 0,
+    "new_scores": 0,
+    "next_gate": "blinded_task_value"
   },
   "preserved_authorities": {
     "executable_mapping": "PT_LOAD_plus_PF_X_file_backed_ranges",
@@ -43,8 +67,12 @@
   "required_documents": [
     "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
     "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
+    "docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md",
+    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
     "docs/sprints/sprint-12-patch-075-validation.md",
     "docs/sprints/sprint-12-patch-076-validation.md",
+    "docs/sprints/sprint-12-patch-077-validation.md",
+    "docs/sprints/sprint-13-patch-078-validation.md",
     "docs/sprints/sprint-12-plan.md",
     "docs/sprints/sprint-13-plan.md"
   ]

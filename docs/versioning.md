@@ -13,21 +13,22 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 075 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains active. Patch 074 was a superseded closeout candidate,
-and Patch 076 implements distinct bounded `DT_RPATH` and `DT_RUNPATH`
-evidence. Sprint 13 remains the next semantic-capability sprint until the active
-Sprint 12 gates close.
+Patch 078 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains pending acceptance while Patch 078 corrects the
+remaining Patch 077 transaction, parity-publication, cleanup, Git-less Docker
+source, digest-oracle, and delivery boundaries. The private textrel, RPATH, and
+RUNPATH facts remain unchanged. Patch 078 also freezes a private exact-pop role
+authority without changing the runtime report, scores, or public schema.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 075 carries the remaining correction and bounded private static
-text-relocation evidence while preserving the same public fields, reference
-profile, and candidate-capacity behavior. It adds no PIE reinterpretation or
-runtime-CET claim. Actual qualified parity and acceptance remain pending.
+Patch 077 preserves the same public fields, reference profile, private context
+sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
+runtime-CET claim. Actual qualified parity and complete Patch 078 acceptance
+remain pending.
 
-Measurements after Patch 075 require a distinct diagnostic campaign identity
+Measurements after Patch 078 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
 not freeze until Sprint 15.
 
@@ -175,9 +176,19 @@ Sprint 12 closeout authority are development and validation contracts, not
 product or schema versions. Patch 074 was superseded as the closeout candidate;
 Sprint 13 remains planned without a release tag or campaign freeze.
 
-## Sprint 12 Patch 075 version state
+## Sprint 12 Patch 076 version state
 
-Patch 075 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
-fields, and the `v0.1.0-dev` checkpoint tag. Private text-relocation carrier and
-state facts do not change a product or schema version. Patch 076 implements
-distinct bounded RPATH/RUNPATH evidence, and Sprint 12 remains active.
+Patch 076 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
+fields, and the `v0.1.0-dev` checkpoint tag. Patch 075 private text-relocation
+facts and Patch 076 distinct private RPATH/RUNPATH facts do not change a product
+or schema version. Patch 076's review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance.
+
+## Sprint 12 Patch 077 version state
+
+Patch 077 changes no runtime analyzer source, NASM ABI include, public schema,
+CLI syntax, output field, candidate population, or score. It retains the
+private textrel/RPATH/RUNPATH facts and strengthens only their application,
+recovery, custody, comparator, parity, Docker-build, and evidence authorities.
+Sprint 13 begins at Patch 078 only after the Patch 078 acceptance gate passes.

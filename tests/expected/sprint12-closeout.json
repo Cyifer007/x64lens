@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "superseded_closeout_candidate",
-  "closeout_patch": 74,
-  "completed_patches": [
+  "status": "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
+  "closeout_patch": 78,
+  "candidate_patches": [
     62,
     63,
     64,
@@ -16,10 +16,14 @@
     71,
     72,
     73,
-    74
+    74,
+    75,
+    76,
+    77,
+    78
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint12-p074-acceptance-smoke",
+  "acceptance_target": "sprint13-p078-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -27,6 +31,8 @@
     "analysis_arena_bytes": 851968,
     "phdr_summary_bytes": 264,
     "gnu_property_context_bytes": 3160,
+    "dynamic_metadata_context_bytes": 9904,
+    "private_metadata_context_bytes": 13064,
     "mandatory_decoder": false,
     "mandatory_threads": false,
     "target_mapping": "read_only",
@@ -40,9 +46,15 @@
     "candidate_contributor_provenance": "retained_private",
     "binary_role_lattice": "retained_private",
     "ibt_shstk_properties": "retained_private_static_only",
+    "textrel": "retained_private_static_only",
+    "rpath": "retained_private_distinct_static_only",
+    "runpath": "retained_private_distinct_static_only",
+    "private_failure_snapshot_semantics": "deterministic_parse_prefix",
     "native_container_private_fact_parity": "required_by_acceptance_target",
+    "native_container_dynamic_metadata_parity": "required_by_acceptance_target",
     "public_role_property_policy": "defer",
-    "public_role_property_fields_added": 0,
+    "public_dynamic_metadata_policy": "defer",
+    "public_fields_added": 0,
     "existing_coarse_pie_field_reinterpreted": false,
     "runtime_cet_enforcement_claimed": false
   },
@@ -56,33 +68,57 @@
     "performance_claim_authorized": false,
     "positive_coordinate_anchors": 0
   },
-  "corrective_custody_boundary": {
-    "delivery_custody_schema": "x64lens-delivery-custody-v3",
-    "descriptor_retained_final_reauthentication": true,
-    "hardlink_topology_rejected": true,
-    "late_subtree_mutation_rejected": true,
-    "root_and_ancestor_binding_authenticated": true,
-    "selection_freeze_inode_bound": true,
-    "container_native_plane_ancestor_mount_forbidden": true,
-    "tracked_only_permission_normalization": true
+  "corrective_transaction_boundary": {
+    "patch_bytes_pinned_across_check_and_mutation": true,
+    "repository_root_and_git_directory_pinned": true,
+    "staged_or_committed_reviewed_base_supported": true,
+    "permission_root_bound_before_index_inventory": true,
+    "expected_failure_output_not_json_parsed": true,
+    "parity_publication_parent_reauthenticated": true,
+    "source_recovery_descriptor_bound": true,
+    "source_recovery_no_replace_publication": true,
+    "source_recovery_final_cleanup_reauthenticated": true,
+    "source_recovery_foreign_replacement_preserved": true,
+    "delivery_cleanup_final_unlink_reauthenticated": true,
+    "delivery_cleanup_foreign_replacement_preserved": true,
+    "permission_rollback_uses_retained_inode": true,
+    "readelf_nonzero_exit_rejected": true,
+    "parity_git_metadata_independent": true,
+    "parity_no_replace_publication": true,
+    "docker_exact_gitless_source_membership": true,
+    "docker_build_artifacts_isolated_from_host": true,
+    "wrong_digest_negative_reaches_digest_authentication": true,
+    "loose_and_packaged_helper_identity_required": true,
+    "delivery_custody_schema": "x64lens-delivery-custody-v3"
   },
-  "deferred_mitigation_tranches": [
-    "text-relocations",
-    "runtime-search-path"
+  "deferred_loader_and_mitigation_work": [
+    "public-pie-dso-ibt-shstk-projection",
+    "public-textrel-rpath-runpath-projection",
+    "executable-overlap-normalization",
+    "bounded-fortify-relocation-symbol-join"
   ],
   "sprint13_handoff": {
-    "generic_exact_pop_semantic_decision": "open",
-    "linux_syscall_r10_role_decision": "open",
-    "score_null_policy_freeze": "open",
+    "generic_exact_pop_semantic_decision": "private_multi_role_decision_frozen_pending_task_value",
+    "linux_syscall_r10_role_decision": "private_linux_syscall_arg4_role_frozen_pending_task_value",
+    "score_null_policy_freeze": "existing_scores_retained_new_roles_unscored_pending_task_value",
+    "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
+    "next_patch": 79,
+    "next_patch_tranche": "blinded_register_role_task_value",
     "diagnostic_restart_on_task_change": true
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
+    "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
+    "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
+    "docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md",
+    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
     "docs/sprints/sprint-12-patch-074-validation.md",
+    "docs/sprints/sprint-12-patch-075-validation.md",
+    "docs/sprints/sprint-12-patch-076-validation.md",
+    "docs/sprints/sprint-12-patch-077-validation.md",
+    "docs/sprints/sprint-13-patch-078-validation.md",
     "docs/sprints/sprint-12-plan.md",
     "docs/sprints/sprint-13-plan.md"
-  ],
-  "superseded_by_patch": 75,
-  "current_authority": "tests/expected/sprint12-continuation.json"
+  ]
 }

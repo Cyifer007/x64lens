@@ -9,10 +9,11 @@ Patch 071 required further correction, and Patch 072's returned review rejected
 acceptance. Patches 070, 071, 072, and 073 were not accepted at their
 respective first returned review boundaries. Patch 073 delivered the first
 custody/isolation correction and policy deferral. Patch 074 was a superseded
-Sprint 12 closeout candidate. Patch 076 is active, owns the remaining
-correction plus private static text-relocation evidence, and still requires
-complete acceptance; Patch 076 implements distinct RPATH/RUNPATH evidence.
-The
+Sprint 12 closeout candidate. Patch 075 introduced bounded private static
+text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
+and `DT_RUNPATH` carrier/value evidence. Patch 076's review required the Patch
+077 correction. Patch 077 is the current final Sprint 12 reconciliation
+candidate, pending complete acceptance. The
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
 historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the next
@@ -21,7 +22,7 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current validation expectations are in the
-[Patch 076 validation record](sprint-12-patch-076-validation.md); the
+[Patch 077 validation record](sprint-12-patch-077-validation.md); the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -169,9 +170,10 @@ metamorphic objects. Patch 069 added bounded external ELF reconciliation
 (`readelf -hW/-lW/-dW/-nW`). Patch 071 supplied the first evidence-gate
 correction, and Patch 072 supplies the remainder and implements the parity
 gate. Patch 073 delivered the first custody/isolation correction and policy
-deferral, and Patch 074 was a superseded closeout candidate. Patch 075 owns the
-remaining correction plus private static text-relocation evidence. Corrected
-actual native/container parity and Patch 075 acceptance remain pending; Patch
-076 owns the planned distinct RPATH/RUNPATH tranche.
+deferral, and Patch 074 was a superseded closeout candidate. Patch 075
+introduced private static text-relocation evidence, but its review required the
+Patch 076 correction. Patch 076 implements distinct private RPATH/RUNPATH
+evidence; complete acceptance remains pending, and Patch 077 owns final
+reconciliation.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

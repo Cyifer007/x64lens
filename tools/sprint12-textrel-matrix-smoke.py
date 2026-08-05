@@ -268,6 +268,7 @@ def main()->int:
             result=run([ns.readelf,"-dW",str(target)])
             observed=readelf_has_textrel(result.stdout+result.stderr)
             if case.readelf_eligible:
+                if result.returncode!=0: raise Error(f"readelf process failed for eligible case {case.name}: {result.returncode}")
                 eligible+=1
                 if observed!=case.readelf_textrel: raise Error(f"readelf disposition mismatch for {case.name}: expected {case.readelf_textrel}, observed {observed}")
                 matches+=1

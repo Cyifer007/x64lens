@@ -346,8 +346,11 @@ evidence around that contract; Patch 071 supplied the first development-
 evidence correction. Patch 072 supplied the remainder, but its returned review
 rejected current acceptance; Patch 073 supplied the first custody correction.
 Patch 074 implemented the remaining topology, hardlink, inode, parity,
-permission, and authority corrections but was superseded. Active Patch 075
-acceptance remains pending.
+permission, and authority corrections but was superseded. Patch 075 introduced
+private static text-relocation evidence, and Patch 076 added distinct private
+RPATH/RUNPATH evidence. Patch 076's review required the Patch 077 correction.
+Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -426,3 +429,24 @@ work. Mixed carrier 65, resolved record 65, or aggregate value byte 4,097 return
 `EXIT_UNSUPPORTED` before output. Missing string-table metadata, duplicate
 singletons, unmapped tables, out-of-range offsets, and unterminated strings fail
 closed. The implementation performs no path-derived file open.
+
+## Sprint 12 Patch 077 transaction and oracle safety
+
+Patch 077 changes no ELF dereference rule. It strengthens the surrounding
+safety plane: patch and recovery inputs are pinned across check/use,
+source recovery and custody cleanup remain bound to retained descriptors,
+publication uses no-replace rename, permission rollback targets the retained
+inode, and GNU `readelf` output is ineligible after a nonzero process exit.
+Malformed and unsupported private dynamic records may retain only the validated
+parse prefix reached before failure; public commands still emit no partial
+stdout.
+
+## Sprint 13 Patch 078 transaction and source-custody safety
+
+Patch 078 changes no ELF dereference or candidate boundary. It adds durable
+regressions for repository-root rebinding, expected-failure JSON parsing,
+parity-parent replacement, final cleanup substitution, digest-oracle reachability,
+and exact Git-less Docker-source membership. Source and delivery cleanup retain
+an observed descriptor through the destructive operation; a malicious
+uninstrumented same-UID process remains an explicit Linux race boundary because
+there is no atomic unlink-by-file-descriptor operation.

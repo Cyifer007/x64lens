@@ -1756,10 +1756,12 @@ acquisition and the initial environment-parity protocol, but its returned review
 rejected current acceptance. Patch 073 changed no runtime analyzer or schema
 path and recorded the public-policy decision as `defer`. Patch 074 supplied the
 next custody, parity, permission, and authority correction but was superseded
-as the closeout candidate. Patch 076 is active and adds private static
-text-relocation evidence. The matrix remains diagnostic, unfrozen, and
-publication-ineligible. Any future compatible public `0.2.x` indicator requires
-a new separately reviewed decision.
+as the closeout candidate. Patch 075 introduced private static text-relocation
+evidence, and Patch 076 implemented distinct private RPATH/RUNPATH evidence.
+Patch 076's review required the Patch 077 correction. Patch 077 is the current
+final Sprint 12 reconciliation candidate, pending complete acceptance. The
+matrix remains diagnostic, unfrozen, and publication-ineligible. Any future
+compatible public `0.2.x` indicator requires a new separately reviewed decision.
 
 
 ## Historical Sprint 12 Patch 066 corrective and metamorphic validation
@@ -1954,9 +1956,11 @@ future bounded work without adding a Patch 073 runtime field.
 
 Patch 074 carried the corrected native/container parity protocol, delivery
 reconciliation, and a Sprint 12 closeout authority, but was superseded as the
-closeout candidate. Patch 076 is active, and actual qualified parity plus
-acceptance remain pending. Patch 076 implements distinct RPATH/RUNPATH
-evidence. Sprint 13 remains planned until the active Sprint 12 gates close.
+closeout candidate. Patch 075 introduced private text-relocation evidence, and
+Patch 076 implemented distinct private RPATH/RUNPATH evidence. Patch 076's
+review required the Patch 077 correction. Patch 077 is the current final Sprint
+12 reconciliation candidate, pending complete acceptance. Sprint 13 remains
+planned and activates only after complete Patch 078 acceptance.
 
 
 ## Historical Sprint 12 Patch 074 closeout validation
@@ -2010,14 +2014,17 @@ A same-host logic replay does not substitute for Docker parity. Candidate 4,097
 must still exit 6 before stdout, malformed input must emit no partial stdout,
 and target bytes remain read-only and never executed.
 
-## Sprint 12 Patch 075 and Patch 076 continuation validation
+## Sprint 12 Patch 075 through Patch 077 reconciliation validation
 
-Patch 076 is the active Sprint 12 patch. Patch 075 keeps text-relocation evidence
-private and static, adds no public mitigation field, preserves schema `0.2.0`,
-does not reinterpret public PIE output, and makes no runtime-CET claim. Program
-headers remain executable authority; section headers remain optional metadata.
+Patch 075 introduced private static text-relocation evidence, and Patch 076
+added distinct private RPATH/RUNPATH evidence. Patch 076's review required the
+Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. These patches add no public mitigation
+field, preserve schema `0.2.0`, do not reinterpret public PIE output, and make
+no runtime-CET claim. Program headers remain executable authority; section
+headers remain optional metadata.
 
-Run the focused Patch 075/Patch 076 gates and complete candidate aggregate:
+Run the focused Patch 075/Patch 076 gates and the current candidate aggregate:
 
 ```bash
 make patch074-corrective-regression-smoke
@@ -2035,5 +2042,45 @@ header-only path and does not parse `PT_DYNAMIC`. CLI syntax, command names,
 public fields, and the report schema remain unchanged.
 
 Patch 076 implements the separate bounded private RPATH/RUNPATH evidence
-tranche. Cloud-executed, static-review-only, and WSL2-deferred evidence remain distinct
-classes; none substitutes for another or for qualified native/container parity.
+tranche. Native, container, parity, and independent-acceptance requirements
+remain separate; none substitutes for another. Patch 076's review required the
+Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
+only after complete Patch 078 acceptance.
+
+## Sprint 12 Patch 077 final reconciliation validation
+
+Patch 077 preserves the Patch 076 runtime fact model and adds the final
+corrective gate:
+
+```bash
+make patch076-corrective-regression-smoke
+make sprint12-continuation-smoke
+make sprint12-closeout-smoke
+```
+
+The corrective gate covers pinned patch bytes, descriptor-bound source recovery,
+no-replace publication and cleanup, retained-inode permission rollback,
+nonzero-comparator rejection, deterministic private failure prefixes,
+Git-independent parity source custody, parity publication, and Docker build
+isolation. The full local candidate gate is:
+
+```bash
+make sprint12-p077-acceptance-smoke
+```
+
+Expected final banner:
+
+```text
+sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=private rpath=private runpath=private public-fields-added=0 next-sprint=13
+```
+
+Sprint 13 activation remains pending until the Patch 078 aggregate and independent acceptance pass.
+
+## Sprint 13 Patch 078 correction and entry validation
+
+Patch 078 validation combines the Patch 077 corrective regression, exact
+Git-less Docker-source custody, the 16-pattern private register-role authority,
+all historical acceptance gates, fresh native and Docker validation, both
+private parity planes, and final package lifecycle verification. The acceptance
+target is `make sprint13-p078-acceptance-smoke`.

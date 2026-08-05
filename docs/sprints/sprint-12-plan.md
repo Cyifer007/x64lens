@@ -2,23 +2,29 @@
 
 ## Status
 
-Active at Patch 076. Patch 074 was a closeout candidate, but later review
-required bounded corrections and the mitigation-gap review justified continuing
-Sprint 12. Patch 075 introduced private bounded `DT_TEXTREL` / `DF_TEXTREL`
-evidence. Patch 076 corrects its remaining transaction, oracle, recovery,
-parity, and delivery findings and adds distinct bounded `DT_RPATH` and
-`DT_RUNPATH` evidence. Sprint 13 remains planned, not active.
+Closeout correction and Sprint 13 entry candidate at Patch 078, pending complete
+acceptance. Patch 077 preserved the private loader and dynamic-metadata facts but
+its review found remaining blockers in patch/root binding, permission
+normalization, expected-failure parsing, parity publication, final cleanup,
+Docker source membership, digest oracles, and delivery identity. Patch 078
+corrects those boundaries and freezes a private multi-role exact-pop decision
+for Sprint 13 without changing analyzer runtime behavior, public output, schema
+`0.2.0`, or scores.
 
-Patches 062 through 074 carry ordinary PHDR validity and explicit extended-
-numbering outcomes, retained executable-overlap provenance, private PIE/DSO and
-GNU-property evidence, authenticated natural and controlled strata, external
-reconciliation, a corrected environment-parity protocol, a non-reinterpretive
-public-policy deferral, and candidate evidence-custody corrections. Corrected
-actual native/container parity and final closure remain pending. Public schema
-`0.2.0` remains unchanged.
+Sprint 12 remains the active acceptance authority until Patch 078 passes fresh
+native, Docker, both private parity planes, delivery integrity, and independent
+Lane A review. Sprint 13 has an entry candidate at Patch 078 but public semantic
+implementation remains gated by acceptance and a later blinded task-value
+tranche.
+
+Patches 062 through 077 carry ordinary PHDR validity and explicit extended-
+numbering outcomes, executable-overlap provenance and measured normalization
+deferral, private PIE/DSO and GNU-property evidence, authenticated natural and
+controlled strata, external reconciliation, private text-relocation and distinct
+RPATH/RUNPATH evidence, and corrected native/container parity protocols. Public
+schema `0.2.0` remains unchanged.
 
 Related closeout records:
-
 - [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
 - [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md)
 - [ADR 0050](../adr/0050-fact-first-binary-role-lattice.md)
@@ -37,6 +43,11 @@ Related closeout records:
 - [Patch 075 validation](sprint-12-patch-075-validation.md)
 - [ADR 0062](../adr/0062-distinct-private-rpath-runpath-evidence.md)
 - [Patch 076 validation](sprint-12-patch-076-validation.md)
+- [ADR 0063](../adr/0063-patch076-correction-and-sprint12-final-reconciliation.md)
+- [Patch 077 validation](sprint-12-patch-077-validation.md)
+
+- [ADR 0064](../adr/0064-patch077-correction-and-sprint13-register-role-entry.md)
+- [Patch 078 validation](sprint-13-patch-078-validation.md)
 
 ## Sprint goal
 
@@ -103,8 +114,24 @@ that would otherwise corrupt corpus labels or defensive triage.
   exact byte provenance, separate states, a 64-record cap, and a 4,096-byte cap.
 - [x] Add tracked native/container parity over all private dynamic fields and
   public command closures without exposing the native result plane.
-- [ ] Complete fresh native, Docker, actual parity, and independent acceptance
-  for Patch 076.
+- [x] Define deterministic private parse-prefix semantics for every Patch 076
+  malformed or unsupported search-path fixture without projecting those facts
+  into public mitigation policy.
+- [x] Pin patch bytes across dry-run and mutation, make source recovery and
+  custody cleanup descriptor-bound and no-replace, reject nonzero comparator
+  exits, and isolate Docker builds from host-native artifacts.
+- [x] Make dynamic-metadata parity Git-independent, source-tree authenticated,
+  independently built, mount-isolated, retained, and no-replace published.
+- [x] Bind patch and permission transactions to authenticated repository roots,
+  keep expected nonzero outcomes outside JSON parsing, reauthenticate parity
+  publication, and preserve final foreign replacements during cleanup.
+- [x] Build Docker from an exact Git-less staged-tree context and require exact
+  final-image source membership.
+- [x] Freeze a private additive role authority for all 16 exact single-pop
+  patterns, including distinct System V `rcx` and Linux syscall `r10` argument-4
+  roles, with zero public-field or score changes.
+- [ ] Complete fresh native, Docker, actual parity, strict ShellCheck, final
+  package, and independent acceptance for Patch 078.
 
 
 ## Patch sequence
@@ -134,8 +161,13 @@ that would otherwise corrupt corpus labels or defensive triage.
 15. **Patch 076:** remaining Patch 075 correction plus distinct bounded
     `DT_RPATH` and `DT_RUNPATH` carrier/value evidence and complete private
     dynamic-metadata parity.
-16. **Patch 077 (planned):** reconcile Patch 076 acceptance evidence and decide
-    Sprint 12 closeout without adding unreviewed mitigation fields.
+16. **Patch 077:** correct the remaining Patch 076 transactions and oracles,
+    preserve implemented private dynamic facts, and provide the final Sprint 12
+    reconciliation and closeout candidate without adding public fields.
+17. **Patch 078:** correct the remaining Patch 077 transaction, cleanup,
+    Docker-source, comparator, parity, and delivery blockers; freeze the private
+    multi-role exact-pop entry decision for Sprint 13; and retain zero public
+    field and score changes pending acceptance and blinded task-value evidence.
 
 ## Current continuation disposition
 
@@ -155,9 +187,11 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After Patch 076 and the planned Patch 077 closeout reconciliation pass acceptance, Sprint 13 owns
-generic exact-pop semantics, the Linux syscall `r10` role, release-facing
-score/null policy, and only bounded family additions supported by measured task
-value. Any changed task definition receives a new diagnostic campaign identity.
+After Patch 078 passes the complete acceptance gate, Sprint 13 continues from
+its private role-decision authority into blinded task-value evidence. Generic
+register control, System V call arguments, Linux syscall arguments including
+`r10`, the syscall-number role, and `rsp` pivot semantics remain distinct.
+Release-facing score/null policy and any bounded family addition still require
+separate evidence. Any changed task definition receives a new diagnostic campaign identity.
 Sprint 14 remains the optional decoder/concurrency ablation stage, and Sprint 15
 remains the confirmatory campaign freeze.

@@ -857,13 +857,16 @@ are compared after target-path normalization while raw output remains retained.
 This parity evidence is a correctness condition, not a performance or resource
 comparison.
 
-## Patch 074 and Patch 075 evidence boundary
+## Patch 074 through Patch 076 evidence boundary
 
 Patch 074 proposed stronger custody and parity qualification without creating a
 new benchmark result and was superseded as the closeout candidate. Patch 075
-keeps Sprint 12 active and carries the remaining correction. External-natural
-selection is device/inode/hash bound
-through all outcome checkpoints. The corrected native/container protocol
+introduced private static text-relocation evidence, and Patch 076 implemented
+distinct private RPATH and RUNPATH evidence. Patch 076's review required the
+Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. External-natural selection is
+device/inode/hash bound through all outcome checkpoints. The corrected
+native/container protocol
 preserves executable input modes, exact tree membership, nested checksum
 authorities, and a container mount set limited to read-only inputs, read-only
 held-out objects, and one empty writable output root. The repository, native
@@ -874,9 +877,10 @@ In the Patch 073 diagnostic campaign, every x64lens row was below the timer
 floor and there were zero positive coordinate anchors. These corrections do not
 resolve below-floor x64lens latency, provide process-tree RSS, establish speed,
 superiority, parity, normalized coverage, or mitigation prevalence, or promote
-a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Any changed
-semantic task in Sprint 13 receives a new diagnostic campaign identity only
-after the active Sprint 12 gates close.
+a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 077 owns
+final Sprint 12 reconciliation and closeout. Any changed semantic task in Sprint
+13 receives a new diagnostic campaign identity only after complete Patch 077
+acceptance.
 
 
 ## Patch 076 benchmark boundary
@@ -887,3 +891,19 @@ Any post-P076 diagnostic campaign receives a new identity because the parser
 work and private fact probe changed. RPATH/RUNPATH carrier or value counts are
 not gadget populations and must not be merged with raw, exact, semantic,
 unknown, or scored candidate metrics.
+
+## Sprint 12 Patch 077 measurement boundary
+
+Patch 077 changes validation and evidence transactions but not the analyzer
+report workload. Any diagnostic run after this candidate receives a new
+identity because source and parity tooling changed. It remains separate from
+the Sprint 15-frozen campaign.
+
+## Sprint 13 Patch 078 measurement boundary
+
+Patch 078 is not a performance or coverage experiment. It changes no analyzer
+work and authorizes no reuse of earlier diagnostic timing as a new result. Its
+private register-role authority defines candidate questions for a later blinded
+task-value tranche. Any public role, score, extractor, or task-definition change
+requires a new diagnostic identity and cannot be merged into the Sprint 15-frozen
+confirmatory campaign.

@@ -11,10 +11,12 @@ correction, so Patch 071 was not accepted at its first returned review boundary.
 Patches 070, 072, and 073 likewise were not accepted at their first returned
 review boundaries. Patch 073 delivered the first custody/isolation correction
 and policy deferral. Patch 074 was a superseded Sprint 12 closeout candidate.
-Patch 076 is active, owns the remaining correction plus private static text-
-relocation evidence, and still requires complete acceptance; Patch 076 is
-planned for distinct RPATH/RUNPATH evidence. Current validation expectations are
-in the [Patch 076 validation record](sprint-12-patch-076-validation.md).
+Patch 075 introduced bounded private static text-relocation evidence, and Patch
+076 implemented distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value
+evidence. Patch 076's review required the Patch 077 correction. Patch 077 is the
+current final Sprint 12 reconciliation candidate, pending complete acceptance.
+Current validation expectations are in the
+[Patch 077 validation record](sprint-12-patch-077-validation.md).
 
 ## Source precondition
 
@@ -133,7 +135,7 @@ validation identified narrower prerequisites addressed by Patch 072. Patch
 first custody/isolation correction and policy-deferral boundary, while the
 [Patch 074 validation record](sprint-12-patch-074-validation.md) preserves the
 superseded closeout-candidate boundary. Current validation expectations are in
-the [Patch 076 validation record](sprint-12-patch-076-validation.md). None of
+the [Patch 077 validation record](sprint-12-patch-077-validation.md). None of
 these historical boundaries validates arbitrary external-
 natural objects,
 proves runtime CET enforcement, authorizes public mitigation fields, establishes

@@ -2,15 +2,20 @@
 
 ## Status
 
-Accepted for the Sprint 12 Patch 075 candidate. Public projection remains
-deferred.
+Historical design record for the Sprint 12 Patch 075 implementation candidate.
+Its review required the Patch 076 corrective pass. Patch 076 preserved the
+bounded private text-relocation side-car and extended it with distinct private
+RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance. Public projection remains deferred.
 
 ## Context
 
 The loader and mitigation review identified two bounded dynamic-table tranches
 that improve hardening analysis without requiring a decoder: text-relocation
-evidence and distinct runtime search-path evidence. Patch 075 owns the first
-tranche. The implementation must preserve program headers as runtime mapping
+evidence and distinct runtime search-path evidence. Patch 075 introduced the
+first tranche, and Patch 076 preserved and extended it. The implementation must preserve
+program headers as runtime mapping
 authority, avoid reporter inference, retain duplicate and contradiction facts,
 and keep private development evidence outside schema `0.2.0`.
 
@@ -46,8 +51,9 @@ continues to use file-backed `PT_LOAD + PF_X` ranges.
 
 ## Consequences
 
-Patch 076 extends the same bounded side-car with separate `DT_RPATH` and
+Patch 076 extended the same bounded side-car with separate `DT_RPATH` and
 `DT_RUNPATH` carrier/value evidence while preserving the Patch 075 prefix. The
 two families remain distinct and are not collapsed into one security label.
 Public projection still requires a later explicit policy and compatibility
-gate.
+gate. Patch 077 preserves these private facts without making that policy
+decision.

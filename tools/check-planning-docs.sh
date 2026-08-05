@@ -136,6 +136,14 @@ required=(
     tools/sprint10-closeout-smoke.py
     tools/sprint11-closeout-smoke.py
     tools/sprint12-closeout-smoke.py
+    docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md
+    docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md
+    docs/sprints/sprint-12-patch-077-validation.md
+    docs/sprints/sprint-13-patch-078-validation.md
+    benchmarks/task-definitions/sprint13-register-role-decision-v1.json
+    tools/patch077-corrective-regression-smoke.py
+    tools/sprint13-register-role-decision-smoke.py
+    tools/gitless-source-manifest.py
     tools/verify-checksum-manifest.py
     tools/checksum-manifest-path-smoke.py
     tests/internal/memory-effect-reconciliation.asm
@@ -215,10 +223,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Active at Patch 076' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked active at Patch 076'
-grep -q '^Planned semantic capability completion sprint' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked planned'
+grep -q '^Closeout correction and Sprint 13 entry candidate at Patch 078' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 078 closeout correction'
+grep -q '^Entry candidate at Patch 078; activation pending acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 078 entry candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -249,6 +257,14 @@ grep -q 'sprint-12-patch-074-validation.md' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link Patch 074 validation'
 grep -q 'ADR 0060' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link the closeout ADR'
+grep -q 'Patch 078' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not record the Patch 078 corrective boundary'
+grep -q 'sprint-13-patch-078-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 078 validation'
+grep -q 'ADR 0064' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link ADR 0064'
+grep -q 'Patch 079' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 plan does not record the blinded task-value tranche'
 grep -q 'sprint11-below-floor-policy-smoke' docs/sprints/sprint-11-patch-061-validation.md \
     || fail 'Patch 061 validation does not name the below-floor policy gate'
 grep -q 'ADR 0040' docs/sprints/sprint-10-plan.md \

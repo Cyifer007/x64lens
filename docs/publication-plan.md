@@ -260,21 +260,25 @@ The paper may describe deterministic ordinary-PHDR validity and explicit extende
 
 ## Sprint 12 Patch 074 through Patch 076 publication boundary
 
-Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 keeps Sprint
-12 active, carries the remaining correction, and adds bounded private static
-text-relocation evidence. Patch 076 implements distinct bounded RPATH and
+Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced
+bounded private static text-relocation evidence, but its review required the
+Patch 076 correction. Patch 076 implements distinct bounded private RPATH and
 RUNPATH evidence. None of these candidate dispositions becomes accepted
 authority before the active native, container, delivery, and independent
-acceptance gates complete on the same source.
+acceptance gates complete on the same source. Patch 076's review required the
+Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
+only after complete Patch 078 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
 publication-ineligible and supports no speed, RSS, superiority, parity, or
 normalized-coverage claim. Patch 076 does not authorize a public PIE/DSO, IBT,
 SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, normalized
-coverage, or prevalence claim. Its text-relocation evidence is private static
-evidence, not runtime enforcement. All Sprint 11-12 measurements remain outside
-the Sprint 15-frozen confirmatory campaign.
+coverage, or prevalence claim. Patch 075 text-relocation evidence and Patch 076
+RPATH/RUNPATH evidence remain private static facts, not runtime or loader-policy
+conclusions. All Sprint 11-12 measurements remain outside the Sprint 15-frozen
+confirmatory campaign.
 
 
 ## Patch 076 publication note
@@ -284,3 +288,15 @@ The paper may describe separate bounded acquisition of exact `DT_RPATH` and
 claim loader path selection, `$ORIGIN` resolution, filesystem exposure,
 misconfiguration, vulnerability, or exploitability from static carrier bytes.
 The private matrix remains development evidence and adds no public schema field.
+
+## Sprint 12 Patch 077 publication note
+
+Patch 077 supports a bounded engineering claim that the private dynamic-metadata evidence and its supporting transactions have explicit failure, custody, comparator, and parity contracts. It does not support mitigation-prevalence, runtime loader, performance, exploitability, or publication-grade coverage claims.
+
+## Sprint 13 Patch 078 publication note
+
+Patch 078 supports a bounded engineering claim that all 16 exact single-pop
+patterns are accounted for by distinct private role facets and that the
+supporting source/delivery transactions have adversarial regression coverage.
+It does not support a public role field, score change, semantic-coverage, task-
+value, performance, exploitability, or publication-grade claim.

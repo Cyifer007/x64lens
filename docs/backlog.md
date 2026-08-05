@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — active at Patch 076
+### Sprint 12: loader and mitigation precision — Patch 078 closeout correction
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -182,8 +182,8 @@ later sprints rather than Patch 037:
   delivery findings in Patch 076.
 - [x] Implement distinct bounded private RPATH/RUNPATH carrier/value evidence in
   Patch 076 without path resolution or public projection.
-- [ ] Complete fresh native, Docker, dynamic-metadata parity, and independent
-  acceptance for Patch 076.
+- [ ] Complete fresh native, Docker, dynamic-metadata parity, delivery, and
+  independent acceptance for Patch 077.
 - [ ] Run the separate comparison-qualification campaign under a new identity
   with positive role-controlled coordinate anchors, complete five-path runtime
   closure, qualified whole-batch work, and process-tree RSS. This is not a
@@ -701,17 +701,23 @@ timer floor and produced zero positive coordinate anchors, so it authorizes no
 speed, peak-RSS, parity, superiority, prevalence, or normalized-coverage claim.
 These artifacts are diagnostic, unfrozen, and publication-ineligible. Patch 073
 records public-policy deferral and selected the next bounded mitigation
-tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced private static text-relocation evidence; Patch 076 is
-active and implements distinct private RPATH/RUNPATH evidence. Positive coordinate anchors and complete
-runtime closure for all five task paths remain separate qualification gates.
+tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced
+private static text-relocation evidence, and Patch 076 added distinct private
+RPATH/RUNPATH evidence. Patch 076's review required the Patch 077 correction.
+Patch 077 review required the Patch 078 closeout correction and Sprint 13
+entry candidate, which remains pending complete acceptance. Positive coordinate anchors and complete runtime closure
+for all five task paths remain separate qualification gates.
 
-### Sprint 12 Patch 073 review through Patch 075 continuation
+### Sprint 12 Patch 073 review through Patch 077 reconciliation
 
 Patch 073 executed the public-policy deferral but was not accepted at its first
 returned review boundary. Patch 074 implemented corrections for the confirmed
 review findings without modifying runtime analyzer, include, or schema files,
-but was superseded as the closeout candidate. Patch 076 is active, corrects the remaining Patch 075 findings, and adds
-distinct private RPATH/RUNPATH evidence.
+but was superseded as the closeout candidate. Patch 075 introduced private
+static text-relocation evidence, and Patch 076 added distinct private
+RPATH/RUNPATH evidence. Patch 076's review required correction. Patch 077 is
+the current final Sprint 12 reconciliation candidate, pending complete
+acceptance.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -733,20 +739,34 @@ distinct private RPATH/RUNPATH evidence.
   validation record, and Sprint 13 handoff.
 - [x] Retain Patch 074 as a superseded closeout candidate and preserve its
   historical validation record.
-- [ ] Complete Patch 076 acceptance only after its implementation aggregate,
+- [x] Implement Patch 076 as the distinct private RPATH/RUNPATH tranche; its
+  review required the Patch 077 correction.
+- [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
+- [ ] Complete Patch 078 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent non-documentation acceptance pass on the same
   source.
-- [x] Implement Patch 076 as the distinct private RPATH/RUNPATH tranche; acceptance remains pending.
 
 
 ### Sprint 12 Patch 076 dynamic search-path evidence
 
-- [x] Preserve the accepted Patch 075 textrel prefix and private/public boundary.
+- [x] Preserve the Patch 075 textrel prefix and private/public boundary.
 - [x] Record distinct `DT_RPATH` and `DT_RUNPATH` carriers and exact bytes.
 - [x] Retain dynamic index, dynamic file offset, string-table offset, translated
   string file offset, byte-pool offset, and byte length.
 - [x] Exercise mixed carrier 65, record 65, and value byte 4,097 fail-closed
   boundaries.
 - [x] Add tracked complete private dynamic-metadata parity.
-- [ ] Accept Patch 076 and decide Patch 077 closeout.
+- [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
+  comparator, parity, Docker-build, and private failure-prefix authorities.
+- [ ] Accept Patch 078 through complete native, Docker, parity, delivery, and
+  independent validation before activating Sprint 13.
+
+
+### Sprint 13 Patch 078 entry decision
+
+- [x] Account for all 16 exact single-pop patterns with additive private role facets.
+- [x] Keep generic register control separate from call arguments, syscall arguments, syscall number, and stack pivot.
+- [x] Record `r10` as Linux syscall argument 4 and `rcx` as System V call argument 4.
+- [x] Preserve existing public semantics and scores; add zero public fields.
+- [ ] Run blinded role-query task-value evidence in Patch 079 before public promotion.

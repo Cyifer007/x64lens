@@ -3,11 +3,12 @@
 ## Status
 
 Historical superseded Sprint 12 closeout implementation candidate. Patch 074 did
-not establish complete acceptance. Patch 076 is active, owns the remaining
-correction plus private static text-relocation evidence, and still requires
-complete acceptance; Patch 076 implements distinct RPATH/RUNPATH evidence.
-Current validation expectations are in the
-[Patch 076 validation record](sprint-12-patch-076-validation.md).
+not establish complete acceptance. Patch 075 introduced bounded private static
+text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
+and `DT_RUNPATH` carrier/value evidence. Patch 076's review required the Patch
+077 correction. Patch 077 is the current final Sprint 12 reconciliation
+candidate, pending complete acceptance. Current validation expectations are in
+the [Patch 077 validation record](sprint-12-patch-077-validation.md).
 
 ## Purpose
 
@@ -199,9 +200,10 @@ At the Patch 074 boundary, passing every acceptance boundary on the same source
 would have supported a bounded claim that Sprint 12's loader and private
 mitigation-evidence work had an explicit implemented-or-deferred disposition and
 an authenticated Sprint 13 handoff. That acceptance was not established, and
-Patch 074 was superseded. Active Patch 075 owns the remaining correction and
-private static text-relocation evidence; its acceptance remains pending, while
-Patch 076 owns the planned distinct RPATH/RUNPATH tranche. The historical Patch
+Patch 074 was superseded. Patch 075 introduced private static text-relocation
+evidence, but its review required the Patch 076 correction. Patch 076 implements
+distinct private RPATH/RUNPATH evidence; complete acceptance remains pending,
+and Patch 077 owns final reconciliation. The historical Patch
 074 candidate does not close Sprint 12 or support a public PIE/DSO, IBT, SHSTK,
 runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, coverage, or
 exploitability claim beyond the existing report contract.

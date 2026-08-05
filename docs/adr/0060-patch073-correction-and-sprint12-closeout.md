@@ -3,11 +3,12 @@
 ## Status
 
 Historical design record for the superseded Patch 074 Sprint 12 closeout
-candidate. Patch 076 is active: it owns the remaining correction plus private
-static text-relocation evidence. Complete Patch 076 acceptance remains pending.
-Patch 076 implements distinct `DT_RPATH` and `DT_RUNPATH` evidence. Current
-validation expectations are in the
-[Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+candidate. Patch 075 introduced bounded private static text-relocation evidence.
+Patch 076 preserved that private prefix and implemented distinct private
+`DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
+Patch 077 correction. Patch 077 is the current final Sprint 12 reconciliation
+candidate, pending complete acceptance. Current validation expectations are in
+the [Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 
@@ -98,8 +99,9 @@ The role/property decision remains `defer`. Patch 074 added no public PIE/DSO,
 IBT, SHSTK, runtime-CET, text-relocation, RPATH, RUNPATH, or fortify field and
 did not reinterpret `mitigations.pie`. At that boundary, text relocations and
 separate validated RPATH/RUNPATH evidence remained future mitigation tranches.
-Patch 075 now owns private static text-relocation evidence; Patch 076 implements
- distinct `DT_RPATH` and `DT_RUNPATH` evidence. Public projection still
+Patch 075 introduced private static text-relocation evidence, but its review
+required the Patch 076 correction. Patch 076 implements distinct `DT_RPATH` and
+`DT_RUNPATH` evidence. Public projection still
 requires checked parser facts, complete-table and duplicate semantics, hostile
 fixtures, external reconciliation, schema review, and native/container parity.
 
@@ -107,8 +109,10 @@ fixtures, external reconciliation, schema review, and native/container parity.
 
 Patch 074 would have closed Sprint 12 and activated Sprint 13 only after its
 complete acceptance boundary passed, but it was superseded before acceptance.
-Sprint 12 remains active at Patch 076, and Sprint 13 remains planned until the
-Patch 075 and Patch 076 gates close. Sprint 13 then owns the generic
+Patch 075 introduced private text-relocation evidence, and Patch 076 added
+distinct private RPATH/RUNPATH evidence. Patch 077 is the current final Sprint
+12 reconciliation candidate, pending complete acceptance. Sprint 13 remains
+planned and activates only after complete Patch 077 acceptance. It then owns the generic
 exact-pop semantic decision, Linux syscall `r10` role decision, release-facing
 score/null policy, and only those bounded family additions justified by
 diagnostic task value.
@@ -136,7 +140,9 @@ remain executable authority. Raw, exact-suffix, semantic-exact, unknown, future
 decoder-backed, and scored facts retain their existing meanings.
 
 The corrected Patch 074 source was a closeout candidate, not evidence of
-acceptance by itself, and it was superseded by Patch 075. Native and Docker
-aggregates, retained external-natural acquisition, corrected isolated parity,
-delivery rehearsal, and independent non-documentation review remain part of the
-active Patch 075 acceptance boundary.
+acceptance by itself. Patch 075 superseded it, introduced private static
+text-relocation evidence, and then required the Patch 076 correction. Patch 076
+added distinct private RPATH/RUNPATH evidence but required the Patch 077
+correction. Native and Docker aggregates, retained external-natural acquisition,
+corrected isolated parity, delivery rehearsal, and independent
+non-documentation review remain part of the Patch 077 acceptance boundary.

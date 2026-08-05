@@ -19,11 +19,13 @@ validation; its
 Patch 072's returned review rejected acceptance. Patches 070, 071, 072, and 073
 were not accepted at their respective first returned review boundaries. Patch
 073 delivered the first custody/isolation correction and policy deferral. Patch
-074 was a superseded Sprint 12 closeout candidate. Patch 076 is active, owns the
-remaining correction plus private static text-relocation evidence, and still
-requires complete acceptance; Patch 076 implements distinct RPATH/RUNPATH
-evidence. Current validation expectations are in the
-[Patch 076 validation record](sprint-12-patch-076-validation.md). The
+074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced bounded
+private static text-relocation evidence, and Patch 076 implemented distinct
+private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch 076's review
+required the Patch 077 correction. Patch 077 is the current final Sprint 12
+reconciliation candidate, pending complete acceptance. Current validation
+expectations are in the
+[Patch 077 validation record](sprint-12-patch-077-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
 historical boundary, and the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves the
@@ -69,7 +71,7 @@ bounded, nonempty, in-range, NUL-terminated string. `ET_DYN` alone remains
 unknown. The current public PIE indicator and schema `0.2.0` remain unchanged.
 Patch 069 carried these facts forward with the intervening corrections and the
 separate bounded GNU-property IBT/SHSTK gate; the subsequent Patch 074 candidate
-left the runtime facts unchanged, as does the active Patch 075 candidate.
+left the runtime facts unchanged, as do Patches 075 and 076.
 
 ## Focused validation
 
@@ -155,7 +157,7 @@ worker profile:           one-worker reference unchanged
 
 - The internal role state is not a public PIE/DSO conclusion.
 - GNU-property IBT/SHSTK evidence was carried by Patch 069 and remains unchanged
-  in the active Patch 075 candidate; this historical Patch 064 source did not
+  in the current Patch 077 candidate; this historical Patch 064 source did not
   include it.
 - The overlap incidence measurement is one diagnostic corpus plus one system
   snapshot, not a population-wide estimate.

@@ -49,7 +49,7 @@ ACTIVE_AUTHORITY_PATHS = (
 REQUIRED_TEXT = {
     "README.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 is active",
+        "Sprint 12 remains the active",
         "Sprint 15",
         "Sprint 16",
         "Sprint 17",
@@ -57,7 +57,7 @@ REQUIRED_TEXT = {
     ),
     "docs/roadmap-22-sprints.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 is active",
+        "Sprint 12 remains the active",
         "Diagnostic measurement checkpoint",
         "Campaign freeze",
         "Research preview candidate",
@@ -66,7 +66,7 @@ REQUIRED_TEXT = {
     ),
     "docs/research-roadmap.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 is active",
+        "Sprint 12 remains the active",
         "Sprint 15 freezes",
         "Sprint 17 runs publication-grade",
     ),
@@ -80,10 +80,11 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Active at Patch 076",
+        "Closeout correction and Sprint 13 entry candidate at Patch 078",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Planned semantic capability completion sprint",
+        "Entry candidate at Patch 078; activation pending acceptance",
+        "Patch 079",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",

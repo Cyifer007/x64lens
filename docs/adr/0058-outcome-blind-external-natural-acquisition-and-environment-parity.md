@@ -9,11 +9,13 @@ private-fact parity protocol. Its returned review rejected current acceptance
 after reproducing custody and isolation defects. Patches 070, 071, 072, and 073
 were not accepted at their respective first returned review boundaries. Patch
 073 delivered the first custody/isolation correction and policy deferral. Patch
-074 was the superseded Sprint 12 closeout candidate. Patch 076 is active: it
-owns the remaining correction plus private static text-relocation evidence.
-Complete Patch 076 acceptance remains pending. Patch 076 implements distinct
-`DT_RPATH` and `DT_RUNPATH` evidence. Current validation expectations are in
-the [Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
+bounded private static text-relocation evidence. Patch 076 preserved that
+private prefix and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
+carrier/value evidence, but its review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance. Current validation expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 
@@ -167,10 +169,12 @@ The Sprint 12 sequence is:
   public-policy decision `defer`; its returned review did not accept the
   candidate;
 - Patch 074: remaining correction and superseded Sprint 12 closeout candidate;
-- Patch 075: active remaining correction plus private static text-relocation
-  evidence, with complete acceptance pending; and
-- Patch 076: distinct `DT_RPATH` and `DT_RUNPATH` evidence, with the
-  Sprint 13 handoff only after the active Sprint 12 gates close.
+- Patch 075: private static text-relocation tranche whose review required
+  correction;
+- Patch 076: corrective/search-path tranche preserving the Patch 075 private
+  prefix; its review required correction; and
+- Patch 077: current final Sprint 12 reconciliation and closeout candidate,
+  pending complete acceptance.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and
 publication-ineligible. They cannot be relabeled as Sprint 15-frozen evidence.

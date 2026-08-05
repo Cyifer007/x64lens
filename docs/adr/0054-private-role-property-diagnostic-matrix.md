@@ -7,11 +7,13 @@ candidate. Patch 069 corrected and authenticated the matrix. Patches 070, 071,
 072, and 073 were not accepted at their respective first returned review
 boundaries. Patch 073 delivered the first custody/isolation correction and the
 non-reinterpretive policy deferral without promoting the diagnostic result.
-Patch 074 was the superseded Sprint 12 closeout candidate. Patch 076 is active:
-it owns the remaining correction plus private static text-relocation evidence.
-Complete Patch 076 acceptance remains pending. Patch 076 implements distinct
-`DT_RPATH` and `DT_RUNPATH` evidence. Current validation expectations are in
-the [Patch 076 validation record](../sprints/sprint-12-patch-076-validation.md).
+Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
+bounded private static text-relocation evidence. Patch 076 preserved that
+private prefix and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
+carrier/value evidence, but its review required the Patch 077 correction. Patch
+077 is the current final Sprint 12 reconciliation candidate, pending complete
+acceptance. Current validation expectations are in the
+[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
 
 ## Context
 

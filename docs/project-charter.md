@@ -158,8 +158,9 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 
 ## Current implementation stage
 
-Sprints 1 through 11 are complete. Sprint 12 is active at Patch 076. Patch 074
-was a superseded closeout candidate. Sprint 11 established and
+Sprints 1 through 11 are complete. Sprint 12 is at the Patch 077 closeout
+candidate, pending complete acceptance. Patch 074 was a superseded closeout
+candidate. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
 comparison evidence, generated summaries, and gap register while preserving the
 unchanged dependency-free reference binary. The measurements did not resolve
@@ -167,10 +168,11 @@ x64lens single-run latency on the selected small targets and did not establish a
 common cross-tool gadget population. Sprint 12 implemented or explicitly
 deferred bounded loader validity, overlap/provenance, PIE-versus-DSO identity,
 and GNU-property evidence. Patch 075 introduced private bounded `DT_TEXTREL` / `DF_TEXTREL` evidence.
-Patch 076 carries the remaining correction and adds distinct bounded private
-`DT_RPATH` and `DT_RUNPATH` evidence without adding public role/property or
-mitigation fields. Sprint 13 remains planned until the active
-Sprint 12 gates close. Sprint 15 freezes the confirmatory method; Sprint 16
+Patch 076 added distinct bounded private `DT_RPATH` and `DT_RUNPATH` evidence
+without adding public role/property or mitigation fields, but its review
+required the Patch 077 correction. Patch 077 is the current final Sprint 12
+reconciliation candidate. Sprint 13 remains planned and activates only after
+complete Patch 078 acceptance. Sprint 15 freezes the confirmatory method; Sprint 16
 produces the preview campaign, Sprint 17 runs publication-grade trials, and
 Sprint 22 is the first research-release gate.
 
@@ -183,7 +185,20 @@ Patch 062 strengthens the bounded assembly-first parser without adding a runtime
 
 Patch 076 preserves the dependency-free one-worker reference profile, program-
 header executable authority, 4,096-candidate fail-closed behavior, and schema
-`0.2.0`. Private role/property and text-relocation evidence remains outside
-public reports, and the role/property policy remains `defer`. Sprint 13 begins
-semantic completion only after the active Sprint 12 gates close, without a
-release tag or confirmatory campaign freeze.
+`0.2.0`. Private role/property, text-relocation, and RPATH/RUNPATH evidence
+remains outside public reports, and the role/property policy remains `defer`.
+Patch 077 owns
+final Sprint 12 reconciliation and closeout. Sprint 13 remains planned and
+activates only after complete Patch 078 acceptance, without a release tag or
+confirmatory campaign freeze.
+
+## Sprint 12 Patch 077 checkpoint
+
+Patch 077 is the final loader/mitigation reconciliation candidate. It preserves the dependency-free, decoder-free, one-worker reference analyzer and adds no public mitigation field. Sprint 13 begins only after acceptance, keeping the first-release scope bounded.
+
+## Sprint 13 Patch 078 checkpoint
+
+Patch 078 preserves the dependency-free, decoder-free, one-worker reference
+analyzer and adds no public field or score. It corrects the Patch 077 acceptance
+blockers and freezes a private exact-pop role decision so the next task-value
+experiment can be scoped without broadening the runtime prematurely.

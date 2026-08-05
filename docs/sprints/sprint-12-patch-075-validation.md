@@ -67,11 +67,12 @@ successful public reports must preserve byte/fact parity.
 
 Text-relocation state is private static evidence. It does not prove that a
 runtime relocation occurred, that code pages remain writable, that the binary
-is vulnerable, or that exploitation is possible. Actual Patch 075 acceptance
-requires fresh NASM, strict ShellCheck, Docker, and independent
-non-documentation acceptance review.
+is vulnerable, or that exploitation is possible. Patch 075 introduced this
+private tranche; Patch 076 preserves it while correcting the Patch 075 review
+findings.
 
-Validation evidence keeps cloud-executed, static-review-only, and WSL2-deferred
-results in separate classes. A result in one class does not pass a check in
-another, and a deferred check remains pending until it runs in its named
-environment.
+Patch 076 extended this private evidence with distinct RPATH/RUNPATH facts, but
+its review required the Patch 077 correction. Patch 077 is the current final
+Sprint 12 reconciliation candidate, pending complete acceptance. Native,
+container, parity, and independent-acceptance requirements remain separate;
+none substitutes for another.

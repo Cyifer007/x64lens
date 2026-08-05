@@ -16,7 +16,7 @@ from pathlib import Path, PurePosixPath
 import stat
 import subprocess
 import sys
-from typing import NamedTuple
+from typing import Callable, NamedTuple
 
 O_CLOEXEC=getattr(os,"O_CLOEXEC",0); O_NOFOLLOW=getattr(os,"O_NOFOLLOW",0); O_DIRECTORY=getattr(os,"O_DIRECTORY",0)
 class PermissionErrorContract(RuntimeError): pass
@@ -28,19 +28,56 @@ class IndexRecord:
 @dataclass
 class Mutation:
     path:str; fd:int; original_mode:int; expected_identity:Identity
+@dataclass
+class RepoBinding:
+    requested:Path; root_fd:int; git_fd:int; root_identity:Identity; git_identity:Identity
+
+_TEST_AFTER_ROOT_BIND_BEFORE_INDEX_HOOK:Callable[[Path],None]|None=None
 
 def require(c:bool,m:str)->None:
     if not c: raise PermissionErrorContract(m)
 def identity(st:os.stat_result)->Identity:
     return Identity(st.st_dev,st.st_ino,stat.S_IFMT(st.st_mode),st.st_uid,st.st_gid,st.st_nlink)
-def run_git(repo:Path,*args:str)->bytes:
-    cp=subprocess.run(["git","-C",str(repo),*args],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
-    require(cp.returncode==0,f"git {' '.join(args)} failed: {cp.stderr.decode(errors='replace').strip()}"); return cp.stdout
+
+def stable_identity(left:Identity,right:Identity)->bool:
+    """Compare the retained object, not mutable directory membership."""
+    return (left.device,left.inode,left.file_type,left.uid,left.gid)==(right.device,right.inode,right.file_type,right.uid,right.gid)
+def open_repo_binding(repo:Path)->RepoBinding:
+    root_fd=os.open(repo,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)
+    try:
+        root_id=identity(os.fstat(root_fd)); require(root_id.file_type==stat.S_IFDIR,"repository root changed type")
+        git_fd=os.open(".git",os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW,dir_fd=root_fd)
+        try:
+            git_id=identity(os.fstat(git_fd)); require(git_id.file_type==stat.S_IFDIR,"repository .git changed type")
+            return RepoBinding(repo,root_fd,git_fd,root_id,git_id)
+        except BaseException:
+            os.close(git_fd); raise
+    except BaseException:
+        os.close(root_fd); raise
+
+def reauthenticate_repo(binding:RepoBinding)->None:
+    root=os.open(binding.requested,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)
+    try:
+        require(stable_identity(identity(os.fstat(root)),binding.root_identity),"repository root binding changed")
+        git_fd=os.open(".git",os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW,dir_fd=root)
+        try: require(stable_identity(identity(os.fstat(git_fd)),binding.git_identity),"repository .git binding changed")
+        finally: os.close(git_fd)
+    finally: os.close(root)
+
+def run_git(binding:RepoBinding,*args:str)->bytes:
+    root=f"/proc/self/fd/{binding.root_fd}"; git_dir=f"/proc/self/fd/{binding.git_fd}"
+    cp=subprocess.run(
+        ["git",f"--git-dir={git_dir}",f"--work-tree={root}",*args],
+        cwd=root,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False,
+        pass_fds=(binding.root_fd,binding.git_fd),
+    )
+    require(cp.returncode==0,f"git {' '.join(args)} failed: {cp.stderr.decode(errors='replace').strip()}")
+    return cp.stdout
 def safe_path(raw:str)->str:
     p=PurePosixPath(raw); require(raw and not p.is_absolute() and p.as_posix()==raw and "\\" not in raw and all(x not in {"",".",".."} for x in p.parts),f"unsafe tracked path: {raw!r}"); return raw
-def index_records(repo:Path)->list[IndexRecord]:
+def index_records(binding:RepoBinding)->list[IndexRecord]:
     out=[]
-    for item in run_git(repo,"ls-files","-s","-z").split(b"\0"):
+    for item in run_git(binding,"ls-files","-s","-z").split(b"\0"):
         if not item: continue
         header,path_raw=item.split(b"\t",1); fields=header.split(); require(len(fields)==3,"unexpected git index record")
         mode=fields[0].decode("ascii"); path=safe_path(os.fsdecode(path_raw))
@@ -82,11 +119,14 @@ def lstat_bound(root_fd:int,path:str,expected_dirs:dict[str,Identity])->os.stat_
 
 def normalize(repo:Path)->tuple[int,int]:
     repo=Path(os.path.abspath(repo)); require(repo.is_dir() and not repo.is_symlink(),f"repository root is not a real directory: {repo}")
-    records=index_records(repo); owner=os.geteuid()
-    root_fd=os.open(repo,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)
+    binding=open_repo_binding(repo); root_fd=binding.root_fd; owner=os.geteuid()
     mutations:list[Mutation]=[]; open_mutation_fds:set[int]=set()
     try:
-        root_st=os.fstat(root_fd); root_id=identity(root_st); require(root_id.file_type==stat.S_IFDIR,"repository root changed type")
+        if _TEST_AFTER_ROOT_BIND_BEFORE_INDEX_HOOK is not None:
+            _TEST_AFTER_ROOT_BIND_BEFORE_INDEX_HOOK(repo)
+        records=index_records(binding)
+        reauthenticate_repo(binding)
+        root_st=os.fstat(root_fd); root_id=identity(root_st); require(stable_identity(root_id,binding.root_identity),"repository root descriptor identity changed")
         require(root_id.uid==owner or owner==0,"repository root is not owned by current user")
         expected_dirs:{str:Identity}={"":root_id}
         directory_modes:{str:int}={"":stat.S_IMODE(root_st.st_mode)}
@@ -152,22 +192,26 @@ def normalize(repo:Path)->tuple[int,int]:
             errors=[]
             for mutation in reversed(mutations):
                 try:
-                    require(identity(os.fstat(mutation.fd))==mutation.expected_identity,f"retained mutation descriptor changed identity: {mutation.path}")
+                    require(stable_identity(identity(os.fstat(mutation.fd)),mutation.expected_identity),f"retained mutation descriptor changed identity: {mutation.path}")
                     os.fchmod(mutation.fd,mutation.original_mode)
                     if stat.S_IMODE(os.fstat(mutation.fd).st_mode)!=mutation.original_mode: errors.append(f"mode verification failed: {mutation.path}")
                 except BaseException as rollback_exc: errors.append(f"{mutation.path}: {rollback_exc}")
             suffix=f"; rollback failures: {errors}" if errors else ""
             raise PermissionErrorContract(f"permission normalization failed: {exc}{suffix}") from exc
+        reauthenticate_repo(binding)
         return changed_files,changed_dirs
     finally:
         for fd in list(open_mutation_fds):
             try: os.close(fd)
             except OSError: pass
-        os.close(root_fd)
+        try: os.close(binding.git_fd)
+        except OSError: pass
+        try: os.close(binding.root_fd)
+        except OSError: pass
 
 def main()->int:
     parser=argparse.ArgumentParser(description=__doc__); parser.add_argument("--repo",type=Path,default=Path.cwd()); args=parser.parse_args()
-    files,dirs=normalize(args.repo); print(f"normalize-tracked-permissions: ok files_changed={files} directories_changed={dirs} untracked_touched=0 descriptor_bound=1")
+    files,dirs=normalize(args.repo); print(f"normalize-tracked-permissions: ok files_changed={files} directories_changed={dirs} untracked_touched=0 descriptor_bound=1 root_bound_before_index=1")
     return 0
 if __name__=="__main__":
     try: raise SystemExit(main())
