@@ -243,7 +243,8 @@ def source_custody_probe() -> None:
     if manifest_path:
         source = load("p078_gitless_source", "tools/gitless-source-manifest.py")
         value = source.load_manifest(Path(manifest_path))
-        source.verify(ROOT, value)
+        authority_root = Path(os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT", os.fspath(ROOT)))
+        source.verify(authority_root, value)
         rows = [(item["git_mode"].encode("ascii"), item["path"]) for item in value["files"]]
     else:
         completed = subprocess.run(

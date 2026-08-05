@@ -201,3 +201,11 @@ A score change after the Sprint 15 freeze requires a new campaign identifier or
 complete rerun of every affected condition. Register-transfer and memory-family
 scores remain `null` until their required controllability and uncertainty facts
 exist.
+
+## Sprint 13 Patch 079 score decision
+
+Patch 079 changes no score. Task-qualified generic, System V, and Linux syscall
+role facets remain private and unscored. Syscall-number and pivot semantics keep
+their existing scores/treatment. LC-08B must separately justify any score or
+null-policy change with represented effects, task evidence, fixture updates,
+and campaign restart rules.

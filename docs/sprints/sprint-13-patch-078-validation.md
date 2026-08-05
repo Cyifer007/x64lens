@@ -30,7 +30,7 @@ semantic class, or score.
 ### Register-role authority
 
 The authority must account for all 16 exact single-pop patterns and preserve
-these disjoint facets:
+these additive facets:
 
 ```text
 generic register control: 15
@@ -102,8 +102,13 @@ metadata member.
 
 Patch 078 is accepted only when the complete native and Docker gates, both
 private parity planes, source/delivery integrity, final package lifecycle, and
-independent Lane A review all pass against the same source tree.
+independent non-documentation acceptance all pass against this exact source
+tree.
 
-After acceptance, Patch 079 owns blinded register-role task-value evidence. A
-public classifier or score change is a separate behavior patch and restarts any
-affected diagnostic task identity.
+Patch 078 review required Patch 079 to correct the remaining Docker, Git-less
+custody, independent-build parity, recovery, patch-transaction, and loose-
+delivery findings. Patch 079 executes blinded register-role task-value
+qualification
+before any runtime-semantic, public-field, or score projection. Any such
+projection is a separate behavior patch and restarts every affected diagnostic
+task identity.

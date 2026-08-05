@@ -398,9 +398,10 @@ custody and parity-protocol corrections and changes no public field or schema
 meaning, but it was superseded as the Sprint 12 closeout candidate. Patch 075
 introduced bounded private static text-relocation evidence, and Patch 076 added
 distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
-Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
-entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
-only after complete Patch 078 acceptance.
+Patch 077 correction. Patch 077's review required the Patch 078 closeout
+correction and Sprint 13 entry candidate, which remains pending complete
+acceptance. Sprint 13 remains planned and activates only after complete Patch
+078 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -440,8 +441,8 @@ ShellCheck, retained external-natural acquisition, corrected isolated Docker
 parity, exact delivery rehearsal, and independent non-documentation acceptance
 on the same source. Patch 075 introduced private static text-relocation
 evidence, and Patch 076 implemented separate private RPATH/RUNPATH evidence.
-Patch 076's review required the Patch 077 correction. Patch 077 is the current
-final Sprint 12 reconciliation candidate, pending complete acceptance.
+Patch 076's review required the Patch 077 correction, whose review required the
+Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate.
 The role/property policy remains `defer`, no public mitigation field
 or runtime-CET claim is added, and no Sprint 12 diagnostic artifact becomes
 preview or publication evidence.
@@ -455,17 +456,24 @@ malformed and capacity behavior, GNU `readelf` presence reconciliation, native
 and Docker execution, and complete private parity all pass. A preview artifact
 must not infer loader resolution or search-path safety from these records.
 
-## Sprint 12 Patch 077 release-gate update
+## Sprint 12 Patch 077 historical release-gate update
 
-Patch 077 is a closeout candidate, not a release candidate. Preview eligibility
-still requires complete native and Docker validation, both private parity
-planes, source and delivery custody, and the later Sprint 15-16 freeze and pilot
-gates. No public textrel, RPATH, RUNPATH, PIE/DSO, IBT, or SHSTK field is
-introduced.
+Patch 077 was a closeout candidate, not a release candidate. Its review required
+the Patch 078 correction below. It introduced no public textrel, RPATH, RUNPATH,
+PIE/DSO, IBT, or SHSTK field.
 
 ## Sprint 13 Patch 078 release-gate update
 
 Patch 078 is an implementation and closeout-correction candidate, not a release
-candidate. Preview eligibility still requires fresh native and Docker validation,
-both private parity planes, exact source and delivery custody, independent
-acceptance, and later task-value evidence before any public role or score change.
+candidate. Preview eligibility still requires fresh native and Docker
+validation, both private parity planes, exact source and delivery custody,
+independent acceptance, and Patch 079 blinded task-value qualification before
+any runtime-semantic, public-field, or score projection.
+
+## Sprint 13 Patch 079 release-gate update
+
+Patch 079 adds no release-facing field or score. Before campaign freeze, LC-08B
+must explicitly decide whether the three task-qualified private facets enter
+the runtime semantic model and how score/null policy applies. Any accepted
+change requires controlled fixtures, current-producer validation, native/Docker
+parity, and a distinct diagnostic restart before Sprint 15.

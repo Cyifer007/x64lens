@@ -2,10 +2,12 @@
 
 ## Purpose
 
-Patch 077 is the final Sprint 12 reconciliation candidate. It preserves the
-Patch 076 private textrel/RPATH/RUNPATH implementation and corrects the
-application, recovery, custody, permission, comparator, parity, Docker-build,
-and evidence boundaries that blocked acceptance.
+Historical implementation candidate. Patch 077 was a Sprint 12 reconciliation
+candidate, but its review required the Patch 078 closeout
+correction and Sprint 13 entry candidate. Patch 077 preserved the Patch 076
+private textrel/RPATH/RUNPATH implementation and corrected the application,
+recovery, custody, permission, comparator, parity, Docker-build, and evidence
+boundaries then known to block acceptance.
 
 ## Source boundary
 
@@ -117,8 +119,9 @@ Expected final banner:
 sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=private rpath=private runpath=private public-fields-added=0 next-sprint=13
 ```
 
-This banner authorizes the closeout candidate for independent acceptance. It
-does not by itself activate Sprint 13 or authorize a release tag.
+This banner authorized the Patch 077 closeout candidate for independent
+acceptance. It did not by itself activate Sprint 13 or authorize a release tag,
+and later review required the Patch 078 correction.
 
 ## Failure interpretation
 
@@ -132,7 +135,8 @@ does not by itself activate Sprint 13 or authorize a release tag.
 
 ## Handoff
 
-After Patch 077 passes the complete local aggregate and independent acceptance,
-commit the exact candidate and begin Sprint 13 as Patch 078. Preserve public
-policy deferrals unless a later non-reinterpretive gate satisfies their stated
-prerequisites.
+Patch 077 did not complete acceptance. Patch 078 corrects its remaining blockers
+and freezes a private Sprint 13 entry decision while preserving public policy
+deferrals. See the
+[Patch 078 validation record](sprint-13-patch-078-validation.md); complete
+acceptance remains pending against that exact candidate.

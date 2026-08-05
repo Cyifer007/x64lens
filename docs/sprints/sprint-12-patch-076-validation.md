@@ -90,6 +90,6 @@ target-derived paths, or claim exploitability.
 
 Patch 076 did not establish complete acceptance. Fresh NASM, strict ShellCheck,
 Docker, actual native/container parity, and independent non-documentation
-acceptance remain required for the current Patch 077 closeout candidate. These
-requirements remain separate; none substitutes for another. Patch 077 is the
-final Sprint 12 reconciliation candidate, pending complete acceptance.
+acceptance remain required for the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
+Sprint 13 entry candidate. These requirements remain separate; none substitutes
+for another. Patch 078 remains pending complete acceptance.

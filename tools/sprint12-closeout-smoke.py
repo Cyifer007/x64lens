@@ -83,13 +83,13 @@ def main() -> int:
         exact_int(closeout.get("schema_version"), 1, "closeout.schema_version")
         exact_int(closeout.get("sprint"), 12, "closeout.sprint")
         require(
-            closeout.get("status") == "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
+            closeout.get("status") == "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
             "closeout status",
         )
-        exact_int(closeout.get("closeout_patch"), 78, "closeout.closeout_patch")
-        require(closeout.get("candidate_patches") == list(range(62, 79)), "Patch sequence must cover 062-078")
+        exact_int(closeout.get("closeout_patch"), 79, "closeout.closeout_patch")
+        require(closeout.get("candidate_patches") == list(range(62, 80)), "Patch sequence must cover 062-079")
         exact_int(closeout.get("next_sprint"), 13, "next sprint")
-        require(closeout.get("acceptance_target") == "sprint13-p078-acceptance-smoke", "acceptance target")
+        require(closeout.get("acceptance_target") == "sprint13-p079-acceptance-smoke", "acceptance target")
         exact_int(stages.get("completed_sprints"), 11, "stages.completed_sprints")
         exact_int(stages.get("active_sprint"), 12, "stages.active_sprint")
 
@@ -151,6 +151,17 @@ def main() -> int:
                 require(value == "x64lens-delivery-custody-v3", "custody schema")
             else:
                 exact_bool(value, True, key)
+        for required_key in (
+            "docker_source_and_transport_single_snapshot",
+            "gitless_root_directory_file_descriptor_custody",
+            "gitless_permission_normalization_tracked_only",
+            "docker_build_failure_transparent",
+            "role_property_parity_independent_builds",
+            "role_property_parity_immutable_image_identity",
+            "patch_post_effect_exception_recovery",
+            "source_recovery_foreign_descendant_preserved",
+        ):
+            exact_bool(transaction.get(required_key), True, required_key)
 
         require(
             closeout.get("deferred_loader_and_mitigation_work")
@@ -165,13 +176,19 @@ def main() -> int:
 
         handoff = closeout.get("sprint13_handoff")
         require(isinstance(handoff, dict), "Sprint 13 handoff")
-        require(handoff.get("generic_exact_pop_semantic_decision") == "private_multi_role_decision_frozen_pending_task_value", "generic pop decision")
-        require(handoff.get("linux_syscall_r10_role_decision") == "private_linux_syscall_arg4_role_frozen_pending_task_value", "r10 decision")
-        require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_roles_unscored_pending_task_value", "score/null decision")
+        require(handoff.get("generic_exact_pop_semantic_decision") == "private_multi_role_decision_task_value_qualified", "generic pop decision")
+        require(handoff.get("linux_syscall_r10_role_decision") == "private_linux_syscall_arg4_task_value_qualified", "r10 decision")
+        require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_roles_unscored_pending_lc08b", "score/null decision")
         require(handoff.get("public_projection") == "deferred", "public projection")
-        exact_int(handoff.get("next_patch"), 79, "Sprint 13 next patch")
-        require(handoff.get("next_patch_tranche") == "blinded_register_role_task_value", "Sprint 13 next tranche")
+        exact_int(handoff.get("next_patch"), 80, "Sprint 13 next patch")
+        require(handoff.get("next_patch_tranche") == "lc08b-runtime-public-score-policy", "Sprint 13 next tranche")
         exact_bool(handoff.get("diagnostic_restart_on_task_change"), True, "diagnostic restart")
+        exact_int(handoff.get("task_value_strata"), 5, "task-value strata")
+        exact_int(handoff.get("task_value_tasks"), 60, "task-value tasks")
+        require(handoff.get("qualified_private_facets") == ["generic_control", "sysv_call_arguments", "linux_syscall_arguments"], "qualified private facets")
+        require(handoff.get("retained_existing_facets") == ["syscall_number", "stack_pivot"], "retained existing facets")
+        exact_int(handoff.get("task_value_regressions"), 0, "task-value regressions")
+        exact_int(handoff.get("task_value_incorrect_promotions"), 0, "task-value incorrect promotions")
 
         require(role.get("patch") == 78 and role.get("sprint") == 13, "role authority identity")
         contract = role.get("decision_contract")
@@ -189,22 +206,24 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing closeout document: {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Closeout correction and Sprint 13 entry candidate at Patch 078" in sprint12, "Sprint 12 marker")
-        require("Entry candidate at Patch 078; activation pending acceptance" in sprint13, "Sprint 13 marker")
+        require("Patch 079 task-value closeout candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 079 task-value candidate" in sprint13, "Sprint 13 marker")
         makefile = MAKEFILE.read_text(encoding="utf-8")
-        require("sprint13-p078-acceptance-smoke:" in makefile, "P078 acceptance target")
+        require("sprint13-p079-acceptance-smoke:" in makefile, "P079 acceptance target")
         validation = next((line for line in makefile.splitlines() if line.startswith("validation-smoke:")), "")
-        require("patch077-corrective-regression-smoke" in validation, "P077 corrective integration")
+        require("patch078-corrective-regression-smoke" in validation, "P078 corrective integration")
         require("sprint13-register-role-decision-smoke" in validation, "Sprint 13 role integration")
+        require("sprint13-register-role-task-value-smoke" in validation, "Sprint 13 task-value integration")
         require("sprint12-closeout-smoke" in validation, "closeout integration")
     except (OSError, json.JSONDecodeError, CloseoutError) as exc:
         print(f"sprint12-closeout-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
-        "sprint12-closeout-smoke: ok sprint=12 patches=17 "
-        "status=closeout-correction-and-sprint13-entry-candidate decision=defer "
-        "public_fields=0 roles=16 r10=syscall-arg4 next_patch=79"
+        "sprint12-closeout-smoke: ok sprint=12 patches=18 "
+        "status=closeout-correction-and-sprint13-task-value-candidate decision=defer "
+        "public_fields=0 roles=16 r10=syscall-arg4 qualified_private_facets=3 "
+        "deferred_facets=2 score_changes=0 next_patch=80"
     )
     return 0
 

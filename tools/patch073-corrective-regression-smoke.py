@@ -217,25 +217,25 @@ def parity_regressions(parity: Any, base: Path) -> None:
             "top parity checksum omitted nested checksum authorities")
 
     mount = base / "mount-policy"
-    inputs = mount / "inputs"
     heldout = mount / "heldout"
     output = mount / "output"
     native = mount / "native"
-    for path in (inputs, heldout, output, native):
+    for path in (heldout, output, native):
         path.mkdir(parents=True)
     valid = parity.build_container_command(
-        docker="docker", image="image", inputs=inputs, heldout=heldout, container_write_root=output
+        docker="docker", image_id="sha256:" + "3" * 64,
+        candidate_tree="4" * 40, heldout=heldout, container_write_root=output
     )
     policy = parity.validate_container_mount_policy(
-        valid, native_result=native, inputs=inputs, heldout=heldout, container_write_root=output
+        valid, native_result=native, heldout=heldout, container_write_root=output
     )
     require(policy["covering_native_mount_count"] == 0, "valid parity mount policy changed")
     bad = valid[:]
-    image_index = bad.index("image")
+    image_index = bad.index("sha256:" + "3" * 64)
     bad[image_index:image_index] = ["-v", f"{mount}:/work:ro"]
     try:
         parity.validate_container_mount_policy(
-            bad, native_result=native, inputs=inputs, heldout=heldout, container_write_root=output
+            bad, native_result=native, heldout=heldout, container_write_root=output
         )
     except parity.ParityError:
         pass

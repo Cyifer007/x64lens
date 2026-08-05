@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 078 Sprint 12 correction and Sprint 13 entry-candidate authority."""
+"""Validate the Patch 079 Sprint 12 closeout correction and Sprint 13 task-value authority."""
 from __future__ import annotations
 
 import json
@@ -50,19 +50,19 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
-            "Sprint 12 must remain pending P078 acceptance",
+            authority.get("status") == "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
+            "Sprint 12 must remain pending P079 acceptance",
         )
-        exact_int(authority.get("current_patch"), 78, "current_patch")
-        exact_int(authority.get("superseded_closeout_patch"), 77, "superseded closeout")
-        exact_int(authority.get("next_patch"), 79, "next_patch")
-        require(authority.get("next_patch_tranche") == "blinded-register-role-task-value-after-p078-acceptance", "next tranche")
-        require(authority.get("acceptance_target") == "sprint13-p078-acceptance-smoke", "acceptance target")
+        exact_int(authority.get("current_patch"), 79, "current_patch")
+        exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
+        exact_int(authority.get("next_patch"), 80, "next_patch")
+        require(authority.get("next_patch_tranche") == "lc08b-role-projection-and-score-policy-after-p079-acceptance", "next tranche")
+        require(authority.get("acceptance_target") == "sprint13-p079-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
-        boundary = authority.get("patch078_boundary")
-        require(isinstance(boundary, dict), "Patch 078 boundary")
-        exact_bool(boundary.get("remaining_patch077_corrections"), True, "remaining corrections")
+        boundary = authority.get("patch079_boundary")
+        require(isinstance(boundary, dict), "Patch 079 boundary")
+        exact_bool(boundary.get("remaining_patch078_corrections"), True, "remaining corrections")
         exact_bool(boundary.get("runtime_parser_or_report_change"), False, "runtime boundary")
         exact_bool(boundary.get("runtime_source_include_schema_change"), False, "runtime tracked boundary")
         exact_bool(boundary.get("private_dynamic_metadata_sidecar_preserved"), True, "sidecar")
@@ -78,8 +78,12 @@ def main() -> int:
         exact_bool(boundary.get("path_splitting"), False, "path splitting")
         exact_bool(boundary.get("origin_expansion"), False, "ORIGIN expansion")
         exact_int(boundary.get("target_derived_opens"), 0, "target-derived opens")
-        require(boundary.get("gitless_docker_source") == "exact_staged_tree_membership", "Git-less Docker source")
-        require(boundary.get("reviewed_base_modes") == ["staged", "committed"], "reviewed base modes")
+        require(boundary.get("gitless_docker_source") == "single_frozen_staged_tree_descriptor_bound", "Git-less Docker source")
+        require(boundary.get("gitless_permission_normalization") == "manifest_declared_tracked_members_only", "Git-less permission normalization")
+        require(boundary.get("native_container_role_property_builds") == "independent", "independent role/property builds")
+        require(boundary.get("container_image_identity") == "immutable_digest_plus_candidate_tree", "container image identity")
+        exact_bool(boundary.get("patch_post_effect_recovery"), True, "post-effect recovery")
+        exact_bool(boundary.get("foreign_recovery_descendants_preserved"), True, "foreign recovery preservation")
         exact_int(boundary.get("public_fields_added"), 0, "public fields")
         exact_int(boundary.get("score_changes"), 0, "score changes")
         exact_bool(boundary.get("existing_coarse_pie_field_reinterpreted"), False, "PIE reinterpretation")
@@ -101,7 +105,14 @@ def main() -> int:
         require(entry.get("sysv_call_arg4_register") == "rcx", "SysV call argument 4")
         require(entry.get("syscall_number_register") == "rax", "syscall number register")
         require(entry.get("stack_pivot_register") == "rsp", "stack pivot register")
-        require(entry.get("next_gate") == "blinded_task_value", "next role gate")
+        exact_int(entry.get("task_value_strata"), 5, "task-value strata")
+        exact_int(entry.get("task_value_tasks"), 60, "task-value tasks")
+        require(entry.get("qualified_private_facets") == ["generic_control", "sysv_call_arguments", "linux_syscall_arguments"], "qualified private facets")
+        require(entry.get("retained_existing_facets") == ["syscall_number", "stack_pivot"], "retained role facets")
+        exact_int(entry.get("task_value_regressions"), 0, "task-value regressions")
+        exact_int(entry.get("task_value_incorrect_promotions"), 0, "task-value incorrect promotions")
+        require(entry.get("task_value_gate") == "completed_diagnostic_candidate", "task-value gate status")
+        require(entry.get("next_gate") == "lc08b_runtime_public_score_policy", "next role gate")
 
         preserved = authority.get("preserved_authorities")
         require(isinstance(preserved, dict), "preserved authorities")
@@ -115,16 +126,17 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Closeout correction and Sprint 13 entry candidate at Patch 078" in sprint12, "Sprint 12 marker")
-        require("Entry candidate at Patch 078; activation pending acceptance" in sprint13, "Sprint 13 marker")
+        require("Patch 079 task-value closeout candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 079 task-value candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=78 textrel=private rpath=private runpath=private roles=16 "
-        "r10=syscall-arg4 public_fields_added=0 next_patch=79"
+        "patch=79 textrel=private rpath=private runpath=private roles=16 "
+        "qualified_private_facets=3 deferred_facets=2 r10=syscall-arg4 "
+        "public_fields_added=0 score_changes=0 next_patch=80"
     )
     return 0
 

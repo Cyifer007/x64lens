@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted as the Patch 077 implementation decision. Sprint 12 remains pending
-acceptance until the complete native, Docker, parity, delivery, and independent
-validation gates pass.
+Recorded as the Patch 077 implementation decision. Patch 077 did not complete
+acceptance; its review required the Patch 078 closeout correction and Sprint 13
+entry candidate.
 
 ## Context
 
@@ -21,7 +21,7 @@ supporting transactions and oracles discriminating enough for closeout.
 
 ## Decision
 
-Patch 077 is corrective and reconciliatory. It adds no analyzer field, parser
+Patch 077 was corrective and reconciliatory. It added no analyzer field, parser
 family, CLI option, schema property, candidate population, semantic class, or
 score rule.
 
@@ -53,9 +53,10 @@ The patch makes these decisions:
    publishes results with no-replace semantics.
 8. **Host build isolation.** Docker test and validation targets use image-owned
    source and build outputs rather than overwriting the host native build tree.
-9. **Closeout remains evidence-gated.** Patch 077 is a closeout candidate, not
-   automatic Sprint 12 acceptance. Sprint 13 activates only after the final
-   aggregate and independent acceptance pass.
+9. **Closeout remains evidence-gated.** Patch 077 was a closeout candidate, not
+   automatic Sprint 12 acceptance. Patch 078 is the current correction and
+   Sprint 13 entry candidate; activation still requires its complete aggregate
+   and independent acceptance against the exact source.
 
 ## Preserved architecture
 
@@ -73,10 +74,10 @@ continue to fail before partial stdout.
 
 ## Public boundary
 
-Patch 077 retains tool version `0.1.0-dev` and schema `0.2.0`. It adds no public
-PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH field. Static property
-or dynamic metadata does not prove runtime CET enforcement, loader path choice,
-path safety, vulnerability, or exploitability.
+Patch 077 retained tool version `0.1.0-dev` and schema `0.2.0`. It added no
+public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH field. Static
+property or dynamic metadata does not prove runtime CET enforcement, loader
+path choice, path safety, vulnerability, or exploitability.
 
 ## Validation consequences
 

@@ -12,9 +12,9 @@ policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
 Patch 075 introduced bounded private static text-relocation evidence. Patch 076
 preserved that private prefix and implemented distinct private `DT_RPATH` and
 `DT_RUNPATH` carrier/value evidence, but its review required the Patch 077
-correction. Patch 077 is the current final Sprint 12 reconciliation candidate,
-pending complete acceptance. Current validation expectations are in the
-[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
+correction, whose review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
+Sprint 13 entry candidate. Current validation expectations are in the
+[Patch 078 validation record](../sprints/sprint-13-patch-078-validation.md).
 
 ## Context
 
@@ -116,9 +116,11 @@ role/property acquisition. The Sprint 12 sequence is:
 - Patch 075: private static text-relocation tranche whose review required
   correction;
 - Patch 076: corrective/search-path tranche preserving the Patch 075 private
-  prefix; its review required correction; and
-- Patch 077: current final Sprint 12 reconciliation and closeout candidate,
-  pending complete acceptance.
+  prefix; its review required correction;
+- Patch 077: Sprint 12 reconciliation candidate, superseded for
+  acceptance by Patch 078; and
+- Patch 078: current closeout correction and Sprint 13 entry candidate, pending
+  complete acceptance.
 
 The batch pilot remains transaction-conformance evidence. It is not a timing
 result, and no batch elapsed time may be divided into a single-run latency.

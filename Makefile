@@ -91,7 +91,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke provisional-corpus-ready provisional-corpus-repair-modes clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-p072-acceptance-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-p073-acceptance-smoke sprint12-p074-acceptance-smoke sprint12-p075-acceptance-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-readelf-oracle sprint12-textrel-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke sprint12-search-path-readelf-oracle sprint12-search-path-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint12-p076-acceptance-smoke sprint12-p077-acceptance-smoke patch076-corrective-regression-smoke patch077-corrective-regression-smoke sprint13-register-role-decision-smoke sprint13-p078-acceptance-smoke docker-source-custody-smoke
+.PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke provisional-corpus-ready provisional-corpus-repair-modes clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-p072-acceptance-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-p073-acceptance-smoke sprint12-p074-acceptance-smoke sprint12-p075-acceptance-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-readelf-oracle sprint12-textrel-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke sprint12-search-path-readelf-oracle sprint12-search-path-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint12-p076-acceptance-smoke sprint12-p077-acceptance-smoke patch076-corrective-regression-smoke patch077-corrective-regression-smoke patch078-corrective-regression-smoke sprint13-register-role-decision-smoke sprint13-register-role-task-value-smoke sprint13-p078-acceptance-smoke sprint13-p079-acceptance-smoke docker-source-custody-smoke
 
 help:
 	@echo "x64lens development targets"
@@ -614,10 +614,10 @@ sprint12-external-natural-acquisition-smoke: dev-tools-check all $(ROLE_PROPERTY
 		--result-dir "$$result_dir"; \
 	echo "external-natural retained result: $$result_dir"
 
-# Patch 072 same-byte parity. The held-out matrix and exact analyzer/probe/schema
-# bytes are shared read-only between native and container planes; build-origin
-# and external-natural effects remain separate strata.
-sprint12-role-property-environment-parity-smoke: corpus-tools-check provisional-corpus-ready all $(ROLE_PROPERTY_FACT_PROBE_BIN) docker-build
+# Native/container private-fact parity from one exact Git-less source tree.
+# Native and container binaries are built independently; the container receives
+# no live repository, host analyzer/probe, source snapshot, or native result.
+sprint12-role-property-environment-parity-smoke: corpus-tools-check provisional-corpus-ready docker-build
 	@set -eu; \
 	result_dir="$(ROLE_PROPERTY_PARITY_RESULT_DIR)"; \
 	if [ -z "$$result_dir" ]; then \
@@ -625,11 +625,10 @@ sprint12-role-property-environment-parity-smoke: corpus-tools-check provisional-
 	fi; \
 	mkdir -p "$$(dirname "$$result_dir")"; \
 	python3 tools/sprint12-role-property-environment-parity-smoke.py run \
+		--repo . \
 		--heldout-authority "$(ROLE_PROPERTY_HELDOUT_AUTHORITY)" \
 		--provisional-corpus "$(PROVISIONAL_CORPUS_PATH)" \
-		--analyzer ./$(TARGET) \
 		--schema "$(ROLE_PROPERTY_PUBLIC_SCHEMA)" \
-		--fact-probe ./$(ROLE_PROPERTY_FACT_PROBE_BIN) \
 		--docker-image "$(DOCKER_IMAGE)" \
 		--result-dir "$$result_dir"; \
 	echo "native/container parity retained result: $$result_dir"
@@ -690,9 +689,18 @@ patch076-corrective-regression-smoke:
 patch077-corrective-regression-smoke:
 	python3 tools/patch077-corrective-regression-smoke.py
 
+patch078-corrective-regression-smoke:
+	python3 tools/patch078-corrective-regression-smoke.py
+
 sprint13-register-role-decision-smoke:
 	python3 tools/sprint13-register-role-decision-smoke.py \
 		--authority ./benchmarks/task-definitions/sprint13-register-role-decision-v1.json
+
+sprint13-register-role-task-value-smoke:
+	python3 tools/sprint13-register-role-task-value-smoke.py \
+		--authority ./benchmarks/task-definitions/sprint13-register-role-task-value-v1.json \
+		--role-authority ./benchmarks/task-definitions/sprint13-register-role-decision-v1.json \
+		--expected ./tests/expected/sprint13-register-role-task-value.json
 
 patch074-corrective-regression-smoke:
 	python3 tools/patch074-corrective-regression-smoke.py
@@ -745,6 +753,17 @@ sprint13-p078-acceptance-smoke: validation-smoke docker-validation-smoke sprint1
 	}
 	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
 	@echo "sprint13-p078-acceptance-smoke: ok patch=78 sprint12=closeout-corrected sprint13=entry-candidate roles=16 r10=syscall-arg4 public-fields-added=0 score-changes=0"
+
+# Patch 079 closes the P078 acceptance blockers and executes five independent
+# blinded role-task strata.  Qualified facets remain private and unscored;
+# runtime/public/score projection belongs to the separate LC-08B decision.
+sprint13-p079-acceptance-smoke: validation-smoke docker-validation-smoke sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint13-register-role-decision-smoke sprint13-register-role-task-value-smoke
+	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
+		echo "error: sprint13-p079-acceptance-smoke requires $(SHELLCHECK)" >&2; \
+		exit 127; \
+	}
+	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
+	@echo "sprint13-p079-acceptance-smoke: ok patch=79 sprint12=closed sprint13=active qualified-private-facets=3 deferred-facets=2 public-fields-added=0 score-changes=0"
 
 # Patch 070 prerequisite pilot. This validates complete-or-absent batch
 # publication, exact failure positions, cleanup, and signal semantics without
@@ -859,7 +878,7 @@ shellcheck-smoke:
 # Sprint closeout gate. Normal development keeps ShellCheck optional, but a
 # sprint cannot close unless strict lint is available and the complete native
 # aggregate passes. Docker remains a separate reproducibility gate.
-sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke sprint13-register-role-decision-smoke patch077-corrective-regression-smoke patch076-corrective-regression-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke
+sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke sprint13-register-role-decision-smoke sprint13-register-role-task-value-smoke patch078-corrective-regression-smoke patch077-corrective-regression-smoke patch076-corrective-regression-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke
 	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { \
 		echo "error: sprint-closeout-smoke requires $(SHELLCHECK)" >&2; \
 		exit 127; \
@@ -870,7 +889,7 @@ sprint-closeout-smoke: sprint11-closeout-smoke sprint12-closeout-smoke sprint12-
 
 # Local pre-commit validation bundle. Docker remains a separate reproducibility
 # check because Docker Desktop/Engine availability is environment-dependent.
-validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke sprint13-register-role-decision-smoke patch077-corrective-regression-smoke patch076-corrective-regression-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-smoke sprint12-search-path-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-textrel-readelf-oracle sprint12-search-path-readelf-oracle mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
+validation-smoke: script-perms-check scaffold-check diagrams-check public-docs-check public-docs-hygiene-smoke public-artifact-content-smoke public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-continuation-smoke sprint13-register-role-decision-smoke sprint13-register-role-task-value-smoke patch078-corrective-regression-smoke patch077-corrective-regression-smoke patch076-corrective-regression-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke checksum-manifest-path-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke schema-compat-smoke decoder-gap-hardening-smoke decoder-gap-smoke test validate-gadget-fixture semantic-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke json-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-smoke sprint12-search-path-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-textrel-readelf-oracle sprint12-search-path-readelf-oracle mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke
 	@echo "validation-smoke: ok"
 
 # Arena smoke target. It exercises the gadgets command path after candidate
@@ -1216,12 +1235,18 @@ script-perms-check:
 	@test -x tools/git-patch-transaction.py
 	@test -x tools/gitless-source-manifest.py
 	@test -x tools/patch077-corrective-regression-smoke.py
+	@test -x tools/patch078-corrective-regression-smoke.py
 	@test -x tools/sprint13-register-role-decision-smoke.py
+	@test -x tools/sprint13-register-role-task-value-smoke.py
 	@test -x tools/sprint12-continuation-smoke.py
 	@test -x tools/patch074-corrective-regression-smoke.py
 	@test -x tools/recover-candidate-source.py
 	@test -f benchmarks/task-definitions/sprint12-role-property-public-policy-v1.json
 	@test -f benchmarks/task-definitions/sprint13-register-role-decision-v1.json
+	@test -f benchmarks/task-definitions/sprint13-register-role-task-value-v1.json
+	@test -f tests/expected/sprint13-register-role-task-value.json
+	@test -f docs/adr/0065-patch078-correction-and-register-role-task-value.md
+	@test -f docs/sprints/sprint-13-patch-079-validation.md
 	@test -f benchmarks/task-definitions/sprint12-mitigation-competitive-gap-v1.json
 	@test -f benchmarks/task-definitions/sprint12-role-property-heldout-v1.json
 	@test -x tools/shellcheck-contract-smoke.py
@@ -1474,16 +1499,29 @@ docker-available-check:
 # and private files never enter source/, and the final image re-verifies exact
 # Git-less membership against the manifest kept outside /work.
 docker-build: docker-available-check
-	@context="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-docker-exact.XXXXXX")"; \
-	trap 'rm -rf "$$context"' EXIT; \
+	@set -eu; \
+	work="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-docker-exact.XXXXXX")"; \
+	context="$$work/context"; \
+	trap 'rm -rf "$$work"' EXIT; \
 	python3 tools/gitless-source-manifest.py create-context --repo . --context "$$context"; \
-	"$(DOCKER)" build -f "$$context/Dockerfile.transport" -t "$(DOCKER_IMAGE)" "$$context"; \
-	"$(DOCKER)" run --rm -e HOME=/tmp "$(DOCKER_IMAGE)" \
+	tree="$$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["candidate_tree"])' "$$context/context-authority.json")"; \
+	"$(DOCKER)" build \
+		--build-arg X64LENS_CANDIDATE_TREE="$$tree" \
+		--label org.x64lens.candidate-tree="$$tree" \
+		-f "$$context/Dockerfile.transport" -t "$(DOCKER_IMAGE)" "$$context"; \
+	image_id="$$("$(DOCKER)" image inspect --format '{{.Id}}' "$(DOCKER_IMAGE)")"; \
+	label="$$("$(DOCKER)" image inspect --format '{{ index .Config.Labels "org.x64lens.candidate-tree" }}' "$$image_id")"; \
+	test "$$label" = "$$tree"; \
+	"$(DOCKER)" run --rm -e HOME=/tmp -e X64LENS_CANDIDATE_TREE="$$tree" "$$image_id" \
 		python3 /work/tools/gitless-source-manifest.py verify \
-		--root /work --manifest /x64lens-source-manifest.json
+		--root /work --manifest /x64lens-source-manifest.json; \
+	echo "docker-build: ok tree=$$tree image_id=$$image_id exact_context=1"
 
 docker-source-custody-smoke: docker-build
-	"$(DOCKER)" run --rm -e HOME=/tmp "$(DOCKER_IMAGE)" \
+	@set -eu; \
+	image_id="$$("$(DOCKER)" image inspect --format '{{.Id}}' "$(DOCKER_IMAGE)")"; \
+	tree="$$("$(DOCKER)" image inspect --format '{{ index .Config.Labels "org.x64lens.candidate-tree" }}' "$$image_id")"; \
+	"$(DOCKER)" run --rm -e HOME=/tmp -e X64LENS_CANDIDATE_TREE="$$tree" "$$image_id" \
 		python3 /work/tools/gitless-source-manifest.py verify \
 		--root /work --manifest /x64lens-source-manifest.json
 
@@ -1499,7 +1537,11 @@ docker-shell: docker-available-check
 # the live repository: container builds must never overwrite native build
 # artifacts or contaminate later native evidence.
 docker-test: docker-build
-	"$(DOCKER)" run --rm -e HOME=/tmp $(DOCKER_IMAGE) bash -lc 'cd /work && make clean && make && make test'
+	@set -eu; \
+	image_id="$$("$(DOCKER)" image inspect --format '{{.Id}}' "$(DOCKER_IMAGE)")"; \
+	tree="$$("$(DOCKER)" image inspect --format '{{ index .Config.Labels "org.x64lens.candidate-tree" }}' "$$image_id")"; \
+	"$(DOCKER)" run --rm -e HOME=/tmp -e X64LENS_CANDIDATE_TREE="$$tree" "$$image_id" bash -lc \
+		'set -euo pipefail; run="$$(mktemp -d /tmp/x64lens-docker-test.XXXXXX)"; trap '''rm -rf "$$run"''' EXIT; mkdir "$$run/repo"; cp -a /work/. "$$run/repo/"; cd "$$run/repo"; make clean; make; make test'
 
 native-docker-json-parity-smoke: docker-build all samples
 	bash tools/native-docker-json-parity-smoke.sh "$(DOCKER_IMAGE)" ./$(TARGET)
@@ -1510,7 +1552,11 @@ docker-context-hygiene-smoke: docker-available-check
 # Full native-equivalent validation inside the reproducible container,
 # including deterministic malformed-input and candidate-capacity smoke tests.
 docker-validation-smoke: docker-build docker-context-hygiene-smoke docker-source-custody-smoke
-	"$(DOCKER)" run --rm -e HOME=/tmp $(DOCKER_IMAGE) bash -lc 'cd /work && make clean && make && make validation-smoke'
+	@set -eu; \
+	image_id="$$("$(DOCKER)" image inspect --format '{{.Id}}' "$(DOCKER_IMAGE)")"; \
+	tree="$$("$(DOCKER)" image inspect --format '{{ index .Config.Labels "org.x64lens.candidate-tree" }}' "$$image_id")"; \
+	"$(DOCKER)" run --rm -e HOME=/tmp -e X64LENS_CANDIDATE_TREE="$$tree" "$$image_id" bash -lc \
+		'set -euo pipefail; run="$$(mktemp -d /tmp/x64lens-docker-validation.XXXXXX)"; trap '''rm -rf "$$run"''' EXIT; mkdir "$$run/repo"; cp -a /work/. "$$run/repo/"; cd "$$run/repo"; make clean; make; make validation-smoke'
 
 print-vars:
 	@echo PROJECT=$(PROJECT)

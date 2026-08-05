@@ -269,8 +269,8 @@ Patch 073 recorded public policy as `defer`, but its returned review did not
 accept the patch. Patch 074 implemented the final custody and parity-protocol
 corrections without changing a mitigation field but was superseded. Patch 075
 introduced private text-relocation evidence, and Patch 076 added distinct
-private RPATH/RUNPATH evidence. Patch 077 is the current final Sprint 12
-reconciliation candidate, pending complete acceptance.
+private RPATH/RUNPATH evidence. Patch 077 required Patch 078; Patch 078 review then required the current
+Patch 079 corrective and task-value candidate, pending complete acceptance.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
 
@@ -287,7 +287,7 @@ native and container environments. Environment agreement does not prove that
 compiler, linker, package, or source-lineage effects generalize, and static
 IBT/SHSTK properties still do not prove runtime CET enforcement.
 
-## Sprint 12 Patch 073 policy through Patch 077 reconciliation boundary
+## Sprint 12 Patch 073 policy through Patch 078 reconciliation boundary
 
 Patch 073 executes the non-reinterpretive policy gate and records `defer`.
 No role-derived PIE/DSO, IBT, or SHSTK field or text label is admitted. The
@@ -299,15 +299,16 @@ The selected bounded mitigation tranches are text-relocation evidence from
 `DT_RPATH` and `DT_RUNPATH` indicators. Neither family was Patch 073 or Patch
 074 runtime output. Patch 075 implements the private static text-relocation
 tranche. Patch 076 implements distinct private RPATH/RUNPATH carrier/value
-evidence, but its review required the Patch 077 correction. Patch 077 preserves
-the public deferral as the current final reconciliation candidate. Public
-reporting still requires compatible policy and schema review.
+evidence, but its review required the Patch 077 correction, whose review
+required Patch 078. Patch 078 preserves the public deferral and adds only a
+private exact-pop role decision. Public reporting still requires compatible
+policy, schema, and task-value review.
 
 Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
 defects around the policy evidence. Static GNU properties remain private
 indicators and do not prove runtime CET enforcement. Corrected actual parity and
-complete Patch 077 acceptance remain pending.
+complete Patch 078 acceptance remain pending.
 
 ## Sprint 12 Patch 075 private text-relocation evidence
 
@@ -343,3 +344,10 @@ they cannot be interpreted as complete absence, loader behavior, path safety,
 or public policy. Eligible `readelf` comparison additionally requires a zero
 process exit. Public role/property and dynamic-metadata projection remains
 `defer`.
+
+## Sprint 13 Patch 079 non-mitigation boundary
+
+The register-role task-value gate does not reinterpret mitigation evidence.
+Private PIE/DSO, IBT/SHSTK, textrel, RPATH, and RUNPATH facts remain static
+evidence with their existing public deferral. No role-task outcome proves a
+mitigation, vulnerability, safety property, or runtime enforcement state.

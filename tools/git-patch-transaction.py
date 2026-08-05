@@ -285,6 +285,30 @@ def restore_with_inverse(repo: RepoHandle, raw: bytes, *, reverse: bool, expecte
         return str(exc)
 
 
+def recover_after_effect(
+    repo: RepoHandle,
+    raw: bytes,
+    *,
+    desired_tree: str,
+    inverse_reverse: bool,
+) -> str | None:
+    """Restore ``desired_tree`` after a mutating call or hook raises.
+
+    A mutating subprocess or injected test double can perform the Git effect and
+    then raise before returning.  The current index tree is therefore inspected
+    inside the exception path.  Recovery is skipped only when the desired tree
+    is already present; every other state is driven through the retained inverse
+    patch bytes and checked exactly.
+    """
+    try:
+        current = os.fsdecode(git(repo, "write-tree"))
+    except BaseException as exc:
+        return f"could not inspect post-effect tree: {exc}"
+    if current == desired_tree:
+        return None
+    return restore_with_inverse(repo, raw, reverse=inverse_reverse, expected_tree=desired_tree)
+
+
 def apply_patch(
     repo: RepoHandle,
     raw: bytes,
@@ -295,18 +319,27 @@ def apply_patch(
     candidate_tree: str,
 ) -> str:
     mode, original_head = logical_base_state(repo, branch, base_head, base_tree)
-    git_apply(repo, raw, reverse=False, check_only=True)
-    invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_CHECK_HOOK", repo)
-    reauthenticate_repo(repo)
-    git_apply(repo, raw, reverse=False, check_only=False)
     try:
+        git_apply(repo, raw, reverse=False, check_only=True)
+        invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_CHECK_HOOK", repo)
+        reauthenticate_repo(repo)
+        # The mutating call belongs inside the recovery region.  It may complete
+        # the Git effect and still raise (for example, interruption or an
+        # injected post-effect failure).
+        git_apply(repo, raw, reverse=False, check_only=False)
+        invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_APPLY_EFFECT_HOOK", repo)
         observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
         require(current_head == original_head, "HEAD changed during patch application")
         require(observed_mode == mode, "logical base mode changed during patch application")
     except BaseException as exc:
-        recovery = restore_with_inverse(repo, raw, reverse=True, expected_tree=base_tree)
+        recovery = recover_after_effect(
+            repo,
+            raw,
+            desired_tree=base_tree,
+            inverse_reverse=True,
+        )
         suffix = f"; inverse recovery failed: {recovery}" if recovery else "; inverse recovery restored the logical base"
-        raise TransactionError(f"post-application verification failed: {exc}{suffix}") from exc
+        raise TransactionError(f"patch application failed: {exc}{suffix}") from exc
     return mode
 
 
@@ -320,18 +353,24 @@ def rollback_patch(
     candidate_tree: str,
 ) -> str:
     mode, original_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
-    git_apply(repo, raw, reverse=True, check_only=True)
-    invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_REVERSE_CHECK_HOOK", repo)
-    reauthenticate_repo(repo)
-    git_apply(repo, raw, reverse=True, check_only=False)
     try:
+        git_apply(repo, raw, reverse=True, check_only=True)
+        invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_REVERSE_CHECK_HOOK", repo)
+        reauthenticate_repo(repo)
+        git_apply(repo, raw, reverse=True, check_only=False)
+        invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_ROLLBACK_EFFECT_HOOK", repo)
         observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
         require(current_head == original_head, "HEAD changed during patch rollback")
         require(observed_mode == mode, "logical base mode changed during patch rollback")
     except BaseException as exc:
-        recovery = restore_with_inverse(repo, raw, reverse=False, expected_tree=candidate_tree)
+        recovery = recover_after_effect(
+            repo,
+            raw,
+            desired_tree=candidate_tree,
+            inverse_reverse=False,
+        )
         suffix = f"; forward recovery failed: {recovery}" if recovery else "; forward recovery restored the staged candidate"
-        raise TransactionError(f"post-rollback verification failed: {exc}{suffix}") from exc
+        raise TransactionError(f"patch rollback failed: {exc}{suffix}") from exc
     return mode
 
 

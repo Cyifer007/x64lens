@@ -223,10 +223,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Closeout correction and Sprint 13 entry candidate at Patch 078' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the Patch 078 closeout correction'
-grep -q '^Entry candidate at Patch 078; activation pending acceptance' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked as the Patch 078 entry candidate'
+grep -q '^Patch 079 task-value closeout candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 079 task-value closeout candidate'
+grep -q '^Patch 079 task-value candidate; activation pending complete Patch 079 acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 079 task-value candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -251,12 +251,12 @@ grep -q 'sprint-11-patch-061-validation.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link Patch 061 validation'
 grep -q 'sprint-11-retro.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link the retrospective'
-grep -q 'Patch 074' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not record the Patch 074 closeout boundary'
-grep -q 'sprint-12-patch-074-validation.md' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not link Patch 074 validation'
-grep -q 'ADR 0060' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not link the closeout ADR'
+grep -q 'Patch 079' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not record the Patch 079 closeout-correction boundary'
+grep -q 'sprint-13-patch-079-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 079 validation'
+grep -q 'ADR 0065' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link the Patch 079 decision ADR'
 grep -q 'Patch 078' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not record the Patch 078 corrective boundary'
 grep -q 'sprint-13-patch-078-validation.md' docs/sprints/sprint-12-plan.md \

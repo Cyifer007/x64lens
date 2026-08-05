@@ -432,11 +432,128 @@ def final_verify(
         require(git_object(b"blob", payload) == record.git_oid, f"Git blob identity changed: {path}")
 
 
-def cleanup_owned_root(parent_fd: int, name: str, root_fd: int, expected: StableIdentity) -> None:
+def _snapshot_cleanup_records(root_fd: int) -> tuple[
+    dict[str, tuple[int, str, int, StableIdentity]],
+    dict[str, tuple[int, str, int, StableIdentity]],
+]:
+    """Snapshot one descriptor-bound tree for direct cleanup callers.
+
+    Normal recovery passes the original creation records instead.  This fallback
+    exists for regression and administrative callers that own a complete tree
+    before entering cleanup.  The snapshot is taken before the final injectable
+    namespace boundary so later substitutions are preserved.
+    """
+    directories: dict[str, tuple[int, str, int, StableIdentity]] = {}
+    files: dict[str, tuple[int, str, int, StableIdentity]] = {}
+
+    def visit(current_fd: int, prefix: str) -> None:
+        for name in sorted(os.listdir(current_fd), key=os.fsencode):
+            safe_component(name, "cleanup member")
+            metadata = os.stat(name, dir_fd=current_fd, follow_symlinks=False)
+            path = name if not prefix else f"{prefix}/{name}"
+            if stat.S_ISDIR(metadata.st_mode):
+                fd = os.open(name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=current_fd)
+                opened = stable(os.fstat(fd))
+                require(opened == stable(metadata), f"cleanup directory changed while opening: {path}")
+                directories[path] = (current_fd, name, fd, opened)
+                visit(fd, path)
+            elif stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1:
+                fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=current_fd)
+                opened = stable(os.fstat(fd))
+                require(opened == stable(metadata), f"cleanup file changed while opening: {path}")
+                files[path] = (current_fd, name, fd, opened)
+            else:
+                raise RecoveryError(f"cleanup encountered linked or special member; preserved: {path}")
+
+    try:
+        visit(root_fd, "")
+        return directories, files
+    except BaseException:
+        for _path, (_parent_fd, _name, fd, _opened) in files.items():
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        for _path, (_parent_fd, _name, fd, _opened) in sorted(
+            directories.items(), key=lambda item: -item[0].count("/")
+        ):
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        raise
+
+
+def _delete_recorded_tree(
+    root_fd: int,
+    root_parent_fd: int,
+    root_name: str,
+    directory_rows: dict[str, tuple[int, str, int, StableIdentity]],
+    file_rows: dict[str, tuple[int, str, int, StableIdentity]],
+) -> None:
+    """Delete only originally authenticated descendants.
+
+    Unknown, replaced, linked, or special descendants cause a fail-closed
+    residue.  No recursive pathname walker is allowed to reinterpret a foreign
+    descendant as owned cleanup material.
+    """
+    expected_children: dict[str, set[str]] = {"": set()}
+    for path in directory_rows:
+        expected_children.setdefault(path, set())
+        expected_children.setdefault(parent(path), set()).add(PurePosixPath(path).name)
+    for path in file_rows:
+        expected_children.setdefault(parent(path), set()).add(PurePosixPath(path).name)
+
+    # Confirm exact membership before any destructive operation.  A foreign
+    # replacement is therefore preserved rather than consumed by cleanup.
+    directory_fd_by_path = {"": root_fd}
+    directory_fd_by_path.update({path: row[2] for path, row in directory_rows.items()})
+    for path, fd in directory_fd_by_path.items():
+        observed = set(os.listdir(fd))
+        require(
+            observed == expected_children.get(path, set()),
+            f"cleanup membership changed; residue preserved at {path or '.'}",
+        )
+
+    for path, (parent_fd, name, fd, opened) in sorted(
+        file_rows.items(), key=lambda item: (-item[0].count("/"), os.fsencode(item[0]))
+    ):
+        current = same_path_object(parent_fd, name, fd, f"cleanup file {path}")
+        require(stable(current) == opened and stat.S_ISREG(current.st_mode) and current.st_nlink == 1,
+                f"cleanup file identity changed; residue preserved: {path}")
+        os.unlink(name, dir_fd=parent_fd)
+        require(os.fstat(fd).st_nlink == 0, f"cleanup file unlink did not remove owned inode: {path}")
+
+    for path, (parent_fd, name, fd, opened) in sorted(
+        directory_rows.items(), key=lambda item: (-item[0].count("/"), os.fsencode(item[0]))
+    ):
+        current = same_path_object(parent_fd, name, fd, f"cleanup directory {path}")
+        require(stable(current) == opened and stat.S_ISDIR(current.st_mode),
+                f"cleanup directory identity changed; residue preserved: {path}")
+        require(not os.listdir(fd), f"cleanup directory contains foreign residue: {path}")
+        os.rmdir(name, dir_fd=parent_fd)
+        require(os.fstat(fd).st_nlink == 0, f"cleanup directory unlink did not remove owned inode: {path}")
+
+    require(not os.listdir(root_fd), "cleanup root contains foreign residue")
+    os.rmdir(root_name, dir_fd=root_parent_fd)
+    require(os.fstat(root_fd).st_nlink == 0, "cleanup root unlink did not remove owned inode")
+
+
+def cleanup_owned_root(
+    parent_fd: int,
+    name: str,
+    root_fd: int,
+    expected: StableIdentity,
+    directory_records: dict[str, DirectoryRecord] | None = None,
+    file_records: dict[str, FileRecord] | None = None,
+) -> None:
     if _TEST_BEFORE_CLEANUP_HOOK is not None:
         _TEST_BEFORE_CLEANUP_HOOK(parent_fd, name, root_fd)
     first = f".x64lens-recovery-quarantine.{os.getpid()}.{os.urandom(16).hex()}"
     second = f".x64lens-recovery-delete.{os.getpid()}.{os.urandom(16).hex()}"
+    snapshot_directories: dict[str, tuple[int, str, int, StableIdentity]] = {}
+    snapshot_files: dict[str, tuple[int, str, int, StableIdentity]] = {}
+    close_snapshot = directory_records is None or file_records is None
     try:
         rename_noreplace(parent_fd, name, parent_fd, first)
     except FileNotFoundError:
@@ -445,6 +562,18 @@ def cleanup_owned_root(parent_fd: int, name: str, root_fd: int, expected: Stable
     try:
         require(stable(os.fstat(first_fd)) == expected == stable(os.fstat(root_fd)),
                 f"recovery cleanup encountered a foreign replacement; preserved as {first}")
+        if close_snapshot:
+            snapshot_directories, snapshot_files = _snapshot_cleanup_records(first_fd)
+        else:
+            assert directory_records is not None and file_records is not None
+            snapshot_directories = {
+                path: (record.parent_fd, record.name, record.fd, record.opened)
+                for path, record in directory_records.items()
+            }
+            snapshot_files = {
+                path: (record.parent_fd, record.name, record.fd, record.opened)
+                for path, record in file_records.items()
+            }
         rename_noreplace(parent_fd, first, parent_fd, second)
         second_fd = os.open(second, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
         try:
@@ -452,21 +581,35 @@ def cleanup_owned_root(parent_fd: int, name: str, root_fd: int, expected: Stable
                     f"recovery cleanup identity changed; preserved as {second}")
             if _TEST_BEFORE_FINAL_RMTREE_HOOK is not None:
                 _TEST_BEFORE_FINAL_RMTREE_HOOK(parent_fd, second, root_fd)
-            # Reopen after the last injectable namespace boundary.  rmtree's
-            # descriptor-hardened recursion begins only after this check.  A
-            # malicious uninstrumented same-UID race remains an explicit Linux
-            # namespace limitation because unlink-by-directory-fd is not atomic.
             final_fd = os.open(second, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
             try:
                 require(stable(os.fstat(final_fd)) == expected,
                         f"recovery cleanup identity changed; preserved as {second}")
-                require(shutil.rmtree.avoids_symlink_attacks, "platform rmtree is not descriptor/symlink hardened")
-                shutil.rmtree(second, dir_fd=parent_fd)
+                _delete_recorded_tree(
+                    final_fd,
+                    parent_fd,
+                    second,
+                    snapshot_directories,
+                    snapshot_files,
+                )
             finally:
                 os.close(final_fd)
         finally:
             os.close(second_fd)
     finally:
+        if close_snapshot:
+            for _path, (_parent_fd, _name, fd, _opened) in snapshot_files.items():
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+            for _path, (_parent_fd, _name, fd, _opened) in sorted(
+                snapshot_directories.items(), key=lambda item: -item[0].count("/")
+            ):
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
         os.close(first_fd)
     os.fsync(parent_fd)
 
@@ -548,6 +691,20 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         0o600,
                         dir_fd=parent_fd,
                     )
+                    opened_stat = same_path_object(parent_fd, basename, fd, f"file {name}")
+                    opened = stable(opened_stat)
+                    require(opened_stat.st_nlink == 1, f"recovered file has hard-link aliases: {name}")
+                    file_records[name] = FileRecord(
+                        name,
+                        basename,
+                        parent_fd,
+                        fd,
+                        opened,
+                        expected["sha256"],
+                        expected["size_bytes"],
+                        expected_mode,
+                        expected["git_oid"],
+                    )
                     digest = hashlib.sha256()
                     git_payload = bytearray()
                     total = 0
@@ -569,24 +726,13 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         os.fsync(fd)
                         os.fchmod(fd, expected_mode)
                         os.fsync(fd)
-                        opened_stat = same_path_object(parent_fd, basename, fd, f"file {name}")
-                        opened = stable(opened_stat)
-                        require(opened_stat.st_nlink == 1, f"recovered file has hard-link aliases: {name}")
+                        current_stat = same_path_object(parent_fd, basename, fd, f"file {name}")
+                        require(stable(current_stat) == opened and current_stat.st_nlink == 1,
+                                f"recovered file identity changed: {name}")
                         observed_sha = digest.hexdigest()
                         observed_oid = git_object(b"blob", bytes(git_payload))
                         require(observed_sha == expected["sha256"], f"file SHA-256 disagrees: {name}")
                         require(observed_oid == expected["git_oid"], f"Git blob identity disagrees: {name}")
-                        file_records[name] = FileRecord(
-                            name,
-                            basename,
-                            parent_fd,
-                            fd,
-                            opened,
-                            observed_sha,
-                            total,
-                            expected_mode,
-                            observed_oid,
-                        )
                         seen_files.add(name)
                     except BaseException:
                         os.close(fd)
@@ -648,7 +794,14 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
         cleanup_error: BaseException | None = None
         if root_fd >= 0:
             try:
-                cleanup_owned_root(parent_handle.fd, current_name, root_fd, stable(os.fstat(root_fd)))
+                cleanup_owned_root(
+                    parent_handle.fd,
+                    current_name,
+                    root_fd,
+                    stable(os.fstat(root_fd)),
+                    directory_records,
+                    file_records,
+                )
             except BaseException as candidate:
                 cleanup_error = candidate
         if cleanup_error is not None:

@@ -7,10 +7,10 @@ Historical implementation candidate. The public-policy gate executed as
 Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implemented
 distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch
-076's review required the Patch 077 correction. Patch 077 is the current final
-Sprint 12 reconciliation candidate, pending complete acceptance. Current
+076's review required the Patch 077 correction, whose review required the
+Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate. Current
 validation expectations are in the
-[Patch 077 validation record](sprint-12-patch-077-validation.md).
+[Patch 078 validation record](sprint-13-patch-078-validation.md).
 
 ## Purpose
 
@@ -171,7 +171,9 @@ Patch 074 carried the next correction, exact delivery-rehearsal requirement, and
 closeout-candidate authority, but was superseded. Patch 075 introduced private
 static text-relocation evidence, but its review required the Patch 076
 correction. Patch 076 implements distinct private RPATH/RUNPATH evidence;
-complete acceptance remains pending, and Patch 077 owns final reconciliation.
+complete acceptance remains pending, and Patch 078 owns the current closeout
+correction.
 Current validation expectations are in the
-[Patch 077 validation record](sprint-12-patch-077-validation.md). Sprint 13 owns
-semantic completion only after Sprint 12 acceptance.
+[Patch 078 validation record](sprint-13-patch-078-validation.md). Patch 079 owns
+blinded task-value qualification before any runtime, public, or score
+projection.

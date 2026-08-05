@@ -222,23 +222,21 @@ def custody_path_substitution(custody: Any, base: Path) -> None:
 
 
 def parity_plane_isolation(parity: Any, base: Path) -> None:
-    inputs = base / "inputs"
     heldout = base / "heldout"
     writable = base / "container-write"
     native = base / "native"
-    for path in (inputs, heldout, writable, native):
+    for path in (heldout, writable, native):
         path.mkdir()
     command = parity.build_container_command(
         docker="/usr/bin/docker",
-        image="x64lens-dev",
-        inputs=inputs,
+        image_id="sha256:" + "1" * 64,
+        candidate_tree="2" * 40,
         heldout=heldout,
         container_write_root=writable,
     )
     policy = parity.validate_container_mount_policy(
         command,
         native_result=native,
-        inputs=inputs,
         heldout=heldout,
         container_write_root=writable,
     )
@@ -248,7 +246,7 @@ def parity_plane_isolation(parity: Any, base: Path) -> None:
     bad[bad.index("-w"):bad.index("-w")] = ["-v", f"{native}:/native:rw"]
     try:
         parity.validate_container_mount_policy(
-            bad, native_result=native, inputs=inputs, heldout=heldout, container_write_root=writable
+            bad, native_result=native, heldout=heldout, container_write_root=writable
         )
     except parity.ParityError:
         pass

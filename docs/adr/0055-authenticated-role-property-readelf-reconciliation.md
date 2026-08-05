@@ -10,10 +10,10 @@ Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix while leaving this comparator boundary unchanged and implemented
 distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its
-review required the Patch 077 correction. Patch 077 is the current final Sprint
-12 reconciliation candidate, pending complete acceptance. Current validation
+review required the Patch 077 correction, whose review required the current
+Patch 078 closeout correction and Sprint 13 entry candidate. Current validation
 expectations are in the
-[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
+[Patch 078 validation record](../sprints/sprint-13-patch-078-validation.md).
 
 ## Context
 

@@ -1758,8 +1758,8 @@ path and recorded the public-policy decision as `defer`. Patch 074 supplied the
 next custody, parity, permission, and authority correction but was superseded
 as the closeout candidate. Patch 075 introduced private static text-relocation
 evidence, and Patch 076 implemented distinct private RPATH/RUNPATH evidence.
-Patch 076's review required the Patch 077 correction. Patch 077 is the current
-final Sprint 12 reconciliation candidate, pending complete acceptance. The
+Patch 076's review required the Patch 077 correction, whose review required the
+Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate. The
 matrix remains diagnostic, unfrozen, and publication-ineligible. Any future
 compatible public `0.2.x` indicator requires a new separately reviewed decision.
 
@@ -1958,9 +1958,9 @@ Patch 074 carried the corrected native/container parity protocol, delivery
 reconciliation, and a Sprint 12 closeout authority, but was superseded as the
 closeout candidate. Patch 075 introduced private text-relocation evidence, and
 Patch 076 implemented distinct private RPATH/RUNPATH evidence. Patch 076's
-review required the Patch 077 correction. Patch 077 is the current final Sprint
-12 reconciliation candidate, pending complete acceptance. Sprint 13 remains
-planned and activates only after complete Patch 078 acceptance.
+review required the Patch 077 correction, whose review required the current
+Patch 078 closeout correction and Sprint 13 entry candidate. Sprint 13 remains
+planned and activates only after complete Patch 079 acceptance.
 
 
 ## Historical Sprint 12 Patch 074 closeout validation
@@ -2014,15 +2014,16 @@ A same-host logic replay does not substitute for Docker parity. Candidate 4,097
 must still exit 6 before stdout, malformed input must emit no partial stdout,
 and target bytes remain read-only and never executed.
 
-## Sprint 12 Patch 075 through Patch 077 reconciliation validation
+## Sprint 12 Patch 075 through Patch 078 reconciliation validation
 
 Patch 075 introduced private static text-relocation evidence, and Patch 076
 added distinct private RPATH/RUNPATH evidence. Patch 076's review required the
-Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
-entry candidate, which remains pending complete acceptance. These patches add no public mitigation
-field, preserve schema `0.2.0`, do not reinterpret public PIE output, and make
-no runtime-CET claim. Program headers remain executable authority; section
-headers remain optional metadata.
+Patch 077 correction. Patch 077's review required the Patch 078 closeout
+correction and Sprint 13 entry candidate, which remains pending complete
+acceptance. These patches add no public mitigation field, preserve schema
+`0.2.0`, do not reinterpret public PIE output, and make no runtime-CET claim.
+Program headers remain executable authority; section headers remain optional
+metadata.
 
 Run the focused Patch 075/Patch 076 gates and the current candidate aggregate:
 
@@ -2034,6 +2035,9 @@ make sprint12-search-path-smoke
 make sprint12-dynamic-metadata-environment-parity-smoke
 make sprint12-continuation-smoke
 make sprint12-p076-acceptance-smoke
+make patch077-corrective-regression-smoke
+make sprint13-register-role-decision-smoke
+make sprint13-p078-acceptance-smoke
 ```
 
 For the supported dynamic-carrier boundary, `mitigations`, `gadgets`, and
@@ -2044,13 +2048,14 @@ public fields, and the report schema remain unchanged.
 Patch 076 implements the separate bounded private RPATH/RUNPATH evidence
 tranche. Native, container, parity, and independent-acceptance requirements
 remain separate; none substitutes for another. Patch 076's review required the
-Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
-entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
-only after complete Patch 078 acceptance.
+Patch 077 correction. Patch 077's review required the Patch 078 closeout
+correction and Sprint 13 entry candidate, which remains pending complete
+acceptance. Sprint 13 remains planned and activates only after complete Patch
+078 acceptance.
 
-## Sprint 12 Patch 077 final reconciliation validation
+## Sprint 12 Patch 077 historical final reconciliation validation
 
-Patch 077 preserves the Patch 076 runtime fact model and adds the final
+Patch 077 preserved the Patch 076 runtime fact model and added a final
 corrective gate:
 
 ```bash
@@ -2075,7 +2080,10 @@ Expected final banner:
 sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=private rpath=private runpath=private public-fields-added=0 next-sprint=13
 ```
 
-Sprint 13 activation remains pending until the Patch 078 aggregate and independent acceptance pass.
+Patch 077 did not complete acceptance; its review required Patch 078. Patch
+078 review then required Patch 079. Sprint 13 activation remains pending until
+the Patch 079 aggregate and independent acceptance pass against the exact
+candidate source.
 
 ## Sprint 13 Patch 078 correction and entry validation
 
@@ -2083,4 +2091,23 @@ Patch 078 validation combines the Patch 077 corrective regression, exact
 Git-less Docker-source custody, the 16-pattern private register-role authority,
 all historical acceptance gates, fresh native and Docker validation, both
 private parity planes, and final package lifecycle verification. The acceptance
-target is `make sprint13-p078-acceptance-smoke`.
+historical target is `make sprint13-p078-acceptance-smoke`. Patch 079 executes
+the blinded task-value gate; the current target is
+`make sprint13-p079-acceptance-smoke`. Runtime-semantic, public-field, and score
+projection remain a later LC-08B decision.
+
+## Sprint 13 Patch 079 correction and task-value validation
+
+Patch 079 acceptance requires the focused Patch 078 corrective regression, the
+16-register role authority, and the 60-task value gate in addition to the full
+native, strict ShellCheck, Docker, external-natural, role/property parity, and
+dynamic-metadata parity surfaces. The authoritative aggregate is:
+
+```bash
+make sprint13-p079-acceptance-smoke
+```
+
+The task gate must report three qualified private facets, two deferred facets,
+zero regressions, zero incorrect promotions, zero public fields, zero score
+changes, and no schema change. A same-host logic replay or container execution
+of host-built binaries does not satisfy independent native/container parity.

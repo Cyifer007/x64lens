@@ -5,9 +5,9 @@
 Historical design record for the Sprint 12 Patch 075 implementation candidate.
 Its review required the Patch 076 corrective pass. Patch 076 preserved the
 bounded private text-relocation side-car and extended it with distinct private
-RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
-077 is the current final Sprint 12 reconciliation candidate, pending complete
-acceptance. Public projection remains deferred.
+RPATH/RUNPATH evidence, but its review required the Patch 077 correction, whose
+review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and Sprint 13 entry
+candidate. Public projection remains deferred.
 
 ## Context
 
@@ -55,5 +55,5 @@ Patch 076 extended the same bounded side-car with separate `DT_RPATH` and
 `DT_RUNPATH` carrier/value evidence while preserving the Patch 075 prefix. The
 two families remain distinct and are not collapsed into one security label.
 Public projection still requires a later explicit policy and compatibility
-gate. Patch 077 preserves these private facts without making that policy
-decision.
+gate. Patch 078 preserves these private facts without making that policy
+decision and adds no public field.

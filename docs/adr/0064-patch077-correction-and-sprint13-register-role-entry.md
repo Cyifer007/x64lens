@@ -2,14 +2,16 @@
 
 ## Status
 
-Accepted as the Patch 078 implementation decision, pending complete native,
-Docker, parity, delivery, and independent acceptance.
+Recorded as the Patch 078 implementation decision, pending complete native,
+Docker, parity, delivery, and independent acceptance against the exact
+candidate.
 
 ## Context
 
-Patch 077 preserved the accepted private loader and mitigation fact model but its
-review found acceptance blockers in the surrounding transaction and validation
-surfaces. The confirmed defects covered repository-root rebinding during patch
+Patch 077 preserved the implemented private loader and mitigation fact model,
+but its review found acceptance blockers in the surrounding transaction and
+validation surfaces. The confirmed defects covered repository-root rebinding
+during patch
 application and permission normalization, expected-failure JSON parsing,
 parity-result publication through a replaced parent, final cleanup of a foreign
 replacement, a wrong-digest negative oracle that stopped before digest
@@ -65,9 +67,9 @@ syscall argument. These facets are not interchangeable.
 
 Patch 078 does not change classifier output, scores, JSON, text output, schema
 `0.2.0`, or public mitigation fields. Existing public semantic classes and
-scores remain unchanged. Newly qualified generic or syscall-role facts remain
-private and unscored until a blinded task-value gate justifies a public
-projection in a later patch.
+scores remain unchanged. The newly recorded role facets are private decision
+facts and remain unscored. Patch 079 executes blinded task-value qualification
+before any runtime-semantic, public-field, or score projection.
 
 ## Preserved boundaries
 
@@ -86,14 +88,15 @@ projection in a later patch.
 
 ## Consequences
 
-Patch 078 can close the reviewed Patch 077 acceptance blockers without modifying
-the analyzer runtime. Sprint 12 remains pending until the Patch 078 acceptance
-gate passes. Sprint 13 has an authenticated entry decision but is not activated
-for public semantic implementation until that same acceptance completes.
+Patch 078 can close the Patch 077 acceptance blockers without modifying the
+analyzer runtime. Sprint 12 remains pending until the Patch 078 acceptance gate
+passes. Sprint 13 has an authenticated entry decision; acceptance alone does
+not qualify runtime or public projection of the private role facets.
 
-Patch 079 should preregister and run blinded role-query task-value evidence. A
-public semantic or score change after that gate must update fixtures, effects,
-validators, documentation, task definitions, and diagnostic campaign identity.
+Patch 079 must preregister and run blinded role-query task-value qualification
+before any runtime-semantic, public-field, or score projection. Any such
+projection must update fixtures, effects, validators, documentation, task
+definitions, and diagnostic campaign identity.
 
 ## Validation
 
@@ -109,7 +112,7 @@ make docker-validation-smoke
 make sprint13-p078-acceptance-smoke
 ```
 
-Cloud environments without NASM, ShellCheck, or Docker may validate the changed
-Python/tooling and exact package lifecycle, but final acceptance requires a
-fresh local NASM build, strict ShellCheck, native and Docker aggregates, both
-private-fact parity planes, and independent Lane A acceptance.
+Complete acceptance requires an authenticated source, native build and test
+gates, strict ShellCheck, Docker aggregates, both private-fact parity planes,
+the exact package lifecycle, and independent non-documentation acceptance
+against the exact Patch 078 source.

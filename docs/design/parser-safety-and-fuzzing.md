@@ -349,7 +349,7 @@ Patch 074 implemented the remaining topology, hardlink, inode, parity,
 permission, and authority corrections but was superseded. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076's review required the Patch 077 correction.
-Patch 077 review required the Patch 078 closeout correction and Sprint 13
+Patch 077's review required the Patch 078 closeout correction and Sprint 13
 entry candidate, which remains pending complete acceptance.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
@@ -450,3 +450,12 @@ and exact Git-less Docker-source membership. Source and delivery cleanup retain
 an observed descriptor through the destructive operation; a malicious
 uninstrumented same-UID process remains an explicit Linux race boundary because
 there is no atomic unlink-by-file-descriptor operation.
+
+## Patch 079 tooling-custody regression boundary
+
+Patch 079 changes no ELF parser. Its corrective regression protects the source
+and validation path: one staged-tree Docker snapshot, descriptor-bound Git-less
+custody, fail-fast Docker reconstruction, independent parity builds, exact
+post-effect Git recovery, and foreign-descendant preservation. Parser capacity
+and malformed-input behavior remain unchanged and continue through the normal
+validation aggregate.

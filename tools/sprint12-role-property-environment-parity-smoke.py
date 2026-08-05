@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Prove same-byte native/container parity for the private role/property plane.
+"""Prove independently built native/container private role/property parity.
 
-The 96 authenticated held-out objects, analyzer, fact probe, and public schema
-are mounted into both environments as the same bytes.  The completed native
-plane is never mounted into the container; the container receives one dedicated
-empty write root for its own plane only.  Both planes and their comparison are
-retained and recursively sealed.  Each plane records 288 private-probe
-executions, 5,184 private field cells, and 384 public command closures.
-Comparison uses exact private probe bytes and path-normalized public output
-tuples.  This gate does not expose private fields or authorize public PIE/DSO,
-IBT, or SHSTK policy.
+One exact staged Git tree is materialized as a Git-less source authority.  The
+native analyzer/probe and container analyzer/probe are built independently from
+that tree.  The container image is bound by immutable image ID plus candidate-
+tree label; it receives only the authenticated held-out objects read-only and
+one dedicated empty output root.  The live repository, host binaries, source
+snapshot, and completed native plane are never mounted into the container.
+
+Each plane records 288 private-probe executions, 5,184 private field cells, and
+384 public command closures.  Comparison preserves separate build identities
+while requiring exact facts and normalized public-output agreement.  This gate
+does not expose private fields or authorize public PIE/DSO, IBT, or SHSTK policy.
 """
 from __future__ import annotations
 
@@ -90,9 +92,15 @@ def identity(path: Path, label: str, *, executable: bool = False) -> dict[str, A
     }
 
 
-def run(command: list[str], *, timeout: float = 30.0) -> subprocess.CompletedProcess[bytes]:
+def run(
+    command: list[str],
+    *,
+    timeout: float = 30.0,
+    cwd: Path | None = None,
+) -> subprocess.CompletedProcess[bytes]:
     return subprocess.run(
         command,
+        cwd=cwd,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
@@ -469,10 +477,17 @@ def plane(args: argparse.Namespace) -> int:
     require(end_probe_identity["sha256"] == probe_identity["sha256"], "fact probe changed during environment plane")
     require(end_schema_identity["sha256"] == schema_identity["sha256"], "schema changed during environment plane")
 
+    require(isinstance(args.build_origin, str) and args.build_origin, "plane build origin is required")
+    require(isinstance(args.candidate_tree, str) and len(args.candidate_tree) == 40
+            and all(char in "0123456789abcdef" for char in args.candidate_tree),
+            "plane candidate tree is invalid")
     plane_manifest = {
-        "format": "x64lens-sprint12-role-property-environment-plane-v1",
+        "format": "x64lens-sprint12-role-property-environment-plane-v2",
         "environment_id": args.environment_id,
         "execution_stratum": args.execution_stratum,
+        "build_origin": args.build_origin,
+        "candidate_tree": args.candidate_tree,
+        "container_image_id": args.image_id or None,
         "evidence_class": "diagnostic",
         "frozen": False,
         "publication_eligible": False,
@@ -528,15 +543,22 @@ def compare(args: argparse.Namespace) -> int:
     verify_checksums(right)
     lm = load_json(left / "manifest.json")
     rm = load_json(right / "manifest.json")
-    require(lm.get("format") == rm.get("format") == "x64lens-sprint12-role-property-environment-plane-v1",
+    require(lm.get("format") == rm.get("format") == "x64lens-sprint12-role-property-environment-plane-v2",
             "environment plane format changed")
     if not args.logic_only:
         require({lm.get("execution_stratum"), rm.get("execution_stratum")} == {"native", "container"},
                 "acceptance parity requires one native and one container plane")
     require(lm["environment_id"] != rm["environment_id"], "environment ids must be distinct")
-    for key in ("heldout_manifest", "parity_harness", "analyzer", "fact_probe", "schema"):
+    require(lm["candidate_tree"] == rm["candidate_tree"], "native/container source trees differ")
+    for key in ("heldout_manifest", "parity_harness", "schema"):
         require(lm["identities"][key]["sha256"] == rm["identities"][key]["sha256"],
-                f"same-byte authority differs across environments: {key}")
+                f"shared parity authority differs across environments: {key}")
+    if not args.logic_only:
+        require(lm["build_origin"] == "native-gitless-build", "native build origin changed")
+        require(rm["build_origin"] == "container-image-build", "container build origin changed")
+        require(lm.get("container_image_id") is None, "native plane unexpectedly names a container image")
+        require(isinstance(rm.get("container_image_id"), str) and rm["container_image_id"].startswith("sha256:"),
+                "container plane lacks immutable image identity")
 
     left_objects = indexed(read_tsv(left / "objects.tsv"), ("object",), "object")
     right_objects = indexed(read_tsv(right / "objects.tsv"), ("object",), "object")
@@ -598,6 +620,13 @@ def compare(args: argparse.Namespace) -> int:
         "private_mismatches": 0,
         "public_mismatches": 0,
         "public_policy_decision_authorized": False,
+        "source_tree": lm["candidate_tree"],
+        "build_origins": [lm["build_origin"], rm["build_origin"]],
+        "native_analyzer_sha256": lm["identities"]["analyzer"]["sha256"],
+        "container_analyzer_sha256": rm["identities"]["analyzer"]["sha256"],
+        "native_fact_probe_sha256": lm["identities"]["fact_probe"]["sha256"],
+        "container_fact_probe_sha256": rm["identities"]["fact_probe"]["sha256"],
+        "container_image_id": rm.get("container_image_id"),
         "plane_manifest_sha256": {
             lm["environment_id"]: sha256_bytes((left / "manifest.json").read_bytes()),
             rm["environment_id"]: sha256_bytes((right / "manifest.json").read_bytes()),
@@ -647,30 +676,44 @@ def recursive_tree_identity(root: Path) -> dict[str, Any]:
 def build_container_command(
     *,
     docker: str,
-    image: str,
-    inputs: Path,
+    image_id: str,
+    candidate_tree: str,
     heldout: Path,
     container_write_root: Path,
 ) -> list[str]:
-    """Build the isolated container plane command from three explicit mounts."""
+    """Build one isolated, independently compiled container plane command."""
+    script = (
+        "set -euo pipefail; "
+        "python3 /work/tools/gitless-source-manifest.py verify "
+        "--root /work --manifest /x64lens-source-manifest.json; "
+        "rm -rf /tmp/x64lens-role-build; mkdir /tmp/x64lens-role-build; "
+        "cp -a /work/. /tmp/x64lens-role-build/; "
+        "chmod -R u+rwX /tmp/x64lens-role-build; "
+        "cd /tmp/x64lens-role-build; "
+        "make clean; make; make build/tests/role-property-fact-probe; "
+        "python3 /work/tools/sprint12-role-property-environment-parity-smoke.py plane "
+        "--environment-id container --execution-stratum container "
+        "--heldout-result /heldout "
+        "--analyzer /tmp/x64lens-role-build/build/x64lens "
+        "--schema /work/schemas/x64lens-report.schema.json "
+        "--fact-probe /tmp/x64lens-role-build/build/tests/role-property-fact-probe "
+        "--build-origin container-image-build "
+        f"--candidate-tree {candidate_tree} --image-id {image_id} "
+        "--result-dir /output/plane; "
+        "python3 /work/tools/gitless-source-manifest.py verify "
+        "--root /work --manifest /x64lens-source-manifest.json"
+    )
     return [
         docker, "run", "--rm", "--read-only", "--network", "none",
-        "--user", f"{os.getuid()}:{os.getgid()}",
         "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1",
         "-e", "LC_ALL=C", "-e", "LANG=C", "-e", "TZ=UTC",
-        "--tmpfs", "/tmp:rw,nosuid,nodev,size=64m",
-        "-v", f"{inputs}:/inputs:ro",
+        "-e", f"X64LENS_CANDIDATE_TREE={candidate_tree}",
+        "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m",
         "-v", f"{heldout}:/heldout:ro",
         "-v", f"{container_write_root}:/output:rw",
         "-w", "/tmp",
-        image,
-        "python3", "/inputs/tools/sprint12-role-property-environment-parity-smoke.py", "plane",
-        "--environment-id", "container", "--execution-stratum", "container",
-        "--heldout-result", "/heldout",
-        "--analyzer", "/inputs/x64lens",
-        "--schema", "/inputs/schema.json",
-        "--fact-probe", "/inputs/role-property-fact-probe",
-        "--result-dir", "/output/plane",
+        image_id,
+        "bash", "-lc", script,
     ]
 
 
@@ -684,11 +727,10 @@ def validate_container_mount_policy(
     command: list[str],
     *,
     native_result: Path,
-    inputs: Path,
     heldout: Path,
     container_write_root: Path,
 ) -> dict[str, Any]:
-    """Authenticate exact mounts and reject any host ancestor covering native."""
+    """Authenticate exact mounts and reject any host ancestor covering native or source."""
     mounts: list[tuple[Path, str, str]] = []
     # The reviewed parity protocol deliberately accepts one exact Docker bind
     # grammar only.  Alternate spellings must not create unparsed host mounts
@@ -712,7 +754,6 @@ def validate_container_mount_policy(
         host = Path(os.path.abspath(parts[0]))
         mounts.append((host, parts[1], parts[2]))
     expected = [
-        (Path(os.path.abspath(inputs)), "/inputs", "ro"),
         (Path(os.path.abspath(heldout)), "/heldout", "ro"),
         (Path(os.path.abspath(container_write_root)), "/output", "rw"),
     ]
@@ -735,9 +776,62 @@ def validate_container_mount_policy(
     }
 
 
+def _make_writable(root: Path) -> None:
+    root.chmod(stat.S_IMODE(root.stat().st_mode) | stat.S_IWUSR | stat.S_IXUSR)
+    for path in root.rglob("*"):
+        metadata = path.lstat()
+        require(not path.is_symlink(), f"build copy contains a link: {path}")
+        if stat.S_ISDIR(metadata.st_mode):
+            path.chmod(stat.S_IMODE(metadata.st_mode) | stat.S_IWUSR | stat.S_IXUSR)
+        elif stat.S_ISREG(metadata.st_mode):
+            path.chmod(stat.S_IMODE(metadata.st_mode) | stat.S_IWUSR)
+        else:
+            raise ParityError(f"build copy contains a special member: {path}")
+
+
+def _build_native(source_root: Path, build_root: Path) -> tuple[Path, Path]:
+    shutil.copytree(source_root, build_root, symlinks=False)
+    _make_writable(build_root)
+    for command in (
+        ["make", "clean"],
+        ["make"],
+        ["make", "build/tests/role-property-fact-probe"],
+    ):
+        cp = run(command, cwd=build_root, timeout=300.0)
+        require(
+            cp.returncode == 0,
+            f"native parity build failed ({' '.join(command)}):\n{cp.stdout[-1000:]!r}\n{cp.stderr[-2000:]!r}",
+        )
+    analyzer = build_root / "build/x64lens"
+    probe = build_root / "build/tests/role-property-fact-probe"
+    identity(analyzer, "independently built native analyzer", executable=True)
+    identity(probe, "independently built native fact probe", executable=True)
+    return analyzer, probe
+
+
+def _inspect_image(docker: str, image: str, candidate_tree: str) -> tuple[str, dict[str, Any]]:
+    cp = run([docker, "image", "inspect", image], timeout=30.0)
+    require(cp.returncode == 0, f"cannot inspect Docker image {image}: {cp.stderr.decode(errors='replace')}")
+    value = json.loads(cp.stdout, object_pairs_hook=strict_object)
+    require(isinstance(value, list) and len(value) == 1 and isinstance(value[0], dict), "Docker image inspect shape changed")
+    record = value[0]
+    image_id = record.get("Id")
+    labels = ((record.get("Config") or {}).get("Labels") or {})
+    require(isinstance(image_id, str) and image_id.startswith("sha256:"), "Docker image lacks immutable ID")
+    require(labels.get("org.x64lens.candidate-tree") == candidate_tree,
+            "Docker image candidate-tree label disagrees with the source authority")
+    return image_id, {
+        "image_id": image_id,
+        "candidate_tree_label": labels.get("org.x64lens.candidate-tree"),
+        "repository_tag": image,
+    }
+
+
 def run_full(args: argparse.Namespace) -> int:
     docker = shutil.which(args.docker)
     require(docker is not None, "Docker command is unavailable")
+    repo = Path(os.path.abspath(args.repo))
+    require((repo / ".git").exists(), "parity source repository Git metadata is missing")
     final_result = Path(os.path.abspath(args.result_dir))
     require(not final_result.exists(), f"retained parity result already exists: {final_result}")
     final_result.parent.mkdir(parents=True, exist_ok=True)
@@ -747,6 +841,20 @@ def run_full(args: argparse.Namespace) -> int:
     cleanup, cleanup_identity = capture_cleanup(staging)
     completed = False
     try:
+        source_root = staging / "source-authority"
+        source_manifest = staging / "source-manifest.json"
+        gitless = load_module("p079_role_gitless", repo / "tools/gitless-source-manifest.py")
+        source_authority = gitless.create(repo, source_root, source_manifest)
+        candidate_tree = source_authority["candidate_tree"]
+        gitless.verify(source_root, source_authority)
+
+        native_build = staging / "native-build"
+        native_analyzer, native_probe = _build_native(source_root, native_build)
+        source_schema = source_root / "schemas/x64lens-report.schema.json"
+        if args.schema is not None:
+            require(identity(args.schema, "supplied schema")["sha256"] == identity(source_schema, "source schema")["sha256"],
+                    "supplied schema differs from the staged source authority")
+
         inputs = staging / "inputs"
         heldout = staging / "heldout"
         native_result = staging / "native"
@@ -754,10 +862,12 @@ def run_full(args: argparse.Namespace) -> int:
         container_result = staging / "container"
         parity_result = staging / "parity"
         inputs.mkdir()
-        container_write_root.mkdir(mode=0o700)
-        shutil.copy2(args.analyzer, inputs / "x64lens")
-        shutil.copy2(args.fact_probe, inputs / "role-property-fact-probe")
-        shutil.copy2(args.schema, inputs / "schema.json")
+        container_write_root.mkdir(mode=0o777)
+        container_write_root.chmod(0o777)
+        shutil.copy2(native_analyzer, inputs / "x64lens")
+        shutil.copy2(native_probe, inputs / "role-property-fact-probe")
+        shutil.copy2(source_schema, inputs / "schema.json")
+        shutil.copy2(source_manifest, inputs / "source-manifest.json")
         tools_root = inputs / "tools"
         tools_root.mkdir()
         parity_tools = (
@@ -768,23 +878,26 @@ def run_full(args: argparse.Namespace) -> int:
             "sprint12-gnu-property-smoke.py",
         )
         for name in parity_tools:
-            shutil.copy2(ROOT / "tools" / name, tools_root / name)
+            shutil.copy2(source_root / "tools" / name, tools_root / name)
             (tools_root / name).chmod(0o555)
         (inputs / "x64lens").chmod(0o555)
         (inputs / "role-property-fact-probe").chmod(0o555)
         (inputs / "schema.json").chmod(0o444)
-        before = {name: identity(inputs / name, name, executable=name != "schema.json") for name in (
-            "x64lens", "role-property-fact-probe", "schema.json"
-        )}
+        (inputs / "source-manifest.json").chmod(0o444)
+        before = {
+            name: identity(inputs / name, name, executable=name in {"x64lens", "role-property-fact-probe"})
+            for name in ("x64lens", "role-property-fact-probe", "schema.json", "source-manifest.json")
+        }
         before["parity_harness"] = identity(
             tools_root / "sprint12-role-property-environment-parity-smoke.py",
-            "parity_harness", executable=True,
+            "parity_harness",
+            executable=True,
         )
         seal_tree(inputs)
 
         generate = [
             sys.executable,
-            str(ROOT / "tools/sprint12-role-property-heldout-smoke.py"),
+            str(source_root / "tools/sprint12-role-property-heldout-smoke.py"),
             "--authority", str(args.heldout_authority),
             "--analyzer", str(inputs / "x64lens"),
             "--schema", str(inputs / "schema.json"),
@@ -792,14 +905,14 @@ def run_full(args: argparse.Namespace) -> int:
             "--fact-probe", str(inputs / "role-property-fact-probe"),
             "--result-dir", str(heldout),
         ]
-        cp = run(generate, timeout=180.0)
+        cp = run(generate, timeout=240.0)
         require(cp.returncode == 0, f"held-out generation failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
         verify_legacy_checksums(heldout)
         unseal_for_reseal(heldout)
         seal_tree(heldout)
         verify_checksums(heldout)
 
-        copied_harness = inputs / "tools" / "sprint12-role-property-environment-parity-smoke.py"
+        copied_harness = inputs / "tools/sprint12-role-property-environment-parity-smoke.py"
         native = [
             sys.executable, str(copied_harness), "plane",
             "--environment-id", "native", "--execution-stratum", "native",
@@ -807,31 +920,31 @@ def run_full(args: argparse.Namespace) -> int:
             "--analyzer", str(inputs / "x64lens"),
             "--schema", str(inputs / "schema.json"),
             "--fact-probe", str(inputs / "role-property-fact-probe"),
+            "--build-origin", "native-gitless-build",
+            "--candidate-tree", candidate_tree,
             "--result-dir", str(native_result),
         ]
-        cp = run(native, timeout=180.0)
+        cp = run(native, timeout=240.0)
         require(cp.returncode == 0, f"native environment plane failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
         verify_checksums(native_result)
         native_before_container = recursive_tree_identity(native_result)
 
+        image_id, image_identity = _inspect_image(docker, args.docker_image, candidate_tree)
         container_command = build_container_command(
             docker=docker,
-            image=args.docker_image,
-            inputs=inputs,
+            image_id=image_id,
+            candidate_tree=candidate_tree,
             heldout=heldout,
             container_write_root=container_write_root,
         )
-        # Exact mount policy: only the dedicated empty container-write root is
-        # writable.  The native plane is not present in the command at all.
         mount_policy = validate_container_mount_policy(
             container_command,
             native_result=native_result,
-            inputs=inputs,
             heldout=heldout,
             container_write_root=container_write_root,
         )
-        cp = run(container_command, timeout=240.0)
-        require(cp.returncode == 0, f"container environment plane failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
+        cp = run(container_command, timeout=1200.0)
+        require(cp.returncode == 0, f"container environment plane failed:\n{cp.stdout[-1000:]!r}\n{cp.stderr[-3000:]!r}")
         generated_container = container_write_root / "plane"
         require(generated_container.is_dir() and not generated_container.is_symlink(),
                 "container plane did not publish a real dedicated result")
@@ -868,26 +981,37 @@ def run_full(args: argparse.Namespace) -> int:
         cp = run(comparison, timeout=30.0)
         require(cp.returncode == 0, f"environment parity comparison failed:\n{cp.stdout[-500:]!r}\n{cp.stderr[-1000:]!r}")
         verify_checksums(parity_result)
+        gitless.verify(source_root, source_authority)
         after = {
             "x64lens": identity(inputs / "x64lens", "x64lens", executable=True),
             "role-property-fact-probe": identity(
                 inputs / "role-property-fact-probe", "role-property-fact-probe", executable=True
             ),
             "schema.json": identity(inputs / "schema.json", "schema.json"),
+            "source-manifest.json": identity(inputs / "source-manifest.json", "source-manifest.json"),
             "parity_harness": identity(copied_harness, "parity_harness", executable=True),
         }
         require(all(before[name]["sha256"] == after[name]["sha256"] for name in before),
-                "same-byte parity inputs changed during execution")
+                "native retained parity inputs changed during execution")
 
+        # Build products are represented by retained binary identities; the
+        # writable build copy itself is not part of the final evidence plane.
+        shutil.rmtree(native_build)
         run_manifest = {
-            "format": "x64lens-sprint12-role-property-environment-parity-run-v3",
+            "format": "x64lens-sprint12-role-property-environment-parity-run-v4",
             "evidence_class": "diagnostic",
             "frozen": False,
             "publication_eligible": False,
             "actual_native_container_parity_executed": True,
+            "independent_native_container_builds": True,
+            "source_tree": candidate_tree,
             "native_plane_exposed_to_container": mount_policy["native_plane_exposed_to_container"],
+            "live_repository_mounted_into_container": False,
+            "source_snapshot_mounted_into_container": False,
+            "host_analyzer_or_probe_mounted_into_container": False,
             "container_write_scope": mount_policy["container_write_scope"],
             "container_mount_policy": mount_policy,
+            "container_image": image_identity,
             "planes_retained_and_sealed": True,
             "public_policy_decision_authorized": False,
             "target_execution": False,
@@ -908,8 +1032,9 @@ def run_full(args: argparse.Namespace) -> int:
         print(cp.stdout.decode("utf-8", errors="replace").strip())
         print(
             "sprint12-role-property-environment-parity-run: ok "
-            f"result={final_result} native_exposed=0 container_write_scope=exclusive "
-            "planes_retained=1 public_policy=deferred"
+            f"result={final_result} source_tree={candidate_tree} independent_builds=1 "
+            "native_exposed=0 live_repo_mounted=0 host_binaries_mounted=0 "
+            "container_write_scope=exclusive planes_retained=1 public_policy=deferred"
         )
         return 0
     finally:
@@ -927,6 +1052,9 @@ def build_parser() -> argparse.ArgumentParser:
     plane_parser.add_argument("--analyzer", type=Path, required=True)
     plane_parser.add_argument("--schema", type=Path, required=True)
     plane_parser.add_argument("--fact-probe", type=Path, required=True)
+    plane_parser.add_argument("--build-origin", default="logic-only")
+    plane_parser.add_argument("--candidate-tree", default="0" * 40)
+    plane_parser.add_argument("--image-id", default="")
     plane_parser.add_argument("--result-dir", type=Path, required=True)
 
     compare_parser = sub.add_parser("compare")
@@ -936,11 +1064,12 @@ def build_parser() -> argparse.ArgumentParser:
     compare_parser.add_argument("--logic-only", action="store_true")
 
     run_parser = sub.add_parser("run")
+    run_parser.add_argument("--repo", type=Path, default=ROOT)
     run_parser.add_argument("--heldout-authority", type=Path, required=True)
     run_parser.add_argument("--provisional-corpus", type=Path, required=True)
-    run_parser.add_argument("--analyzer", type=Path, required=True)
-    run_parser.add_argument("--schema", type=Path, required=True)
-    run_parser.add_argument("--fact-probe", type=Path, required=True)
+    run_parser.add_argument("--analyzer", type=Path)
+    run_parser.add_argument("--schema", type=Path)
+    run_parser.add_argument("--fact-probe", type=Path)
     run_parser.add_argument("--docker-image", required=True)
     run_parser.add_argument("--docker", default="docker")
     run_parser.add_argument("--result-dir", type=Path, required=True)

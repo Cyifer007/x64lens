@@ -8,6 +8,13 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Added
 
+- Sprint 13 Patch 079 adds a preregistered five-stratum register-role
+  task-value authority and result: 60 tasks, 40 development tasks, 20 untouched
+  confirmation tasks, three qualified private facets, two retained existing
+  facets, zero regressions, zero incorrect promotions, zero public fields, zero
+  score changes, and no schema change. Deterministic A/B label permutation is
+  used without making a human double-blind claim.
+
 - Sprint 12 Patch 076 preserves the first 2,128 bytes of the private dynamic
   side-car and appends separate bounded `DT_RPATH` and `DT_RUNPATH`
   carrier/value facts, exact byte provenance, a 64-record limit, and a 4,096-
@@ -32,7 +39,8 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 078 closeout correction and Sprint 13 entry candidate.
+  acceptance of the current Patch 079 closeout correction and Sprint 13 task-value
+  candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -463,21 +471,39 @@ The project follows semantic versioning once the first public release is cut.
 
 ### Fixed
 
-- Sprint 12 Patch 077 pins patch bytes across check and mutation, makes source
+- Sprint 13 Patch 079 corrects Patch 078 Docker fail-fast behavior, exact
+  single-snapshot Git-less source construction, descriptor-bound root/directory/
+  file custody, tracked-only Git-less permission normalization, independently
+  built native/container role-property parity, immutable image identity,
+  post-effect patch recovery, foreign-descendant recovery cleanup, and complete
+  loose/package helper identity. It changes no runtime analyzer, public field,
+  score, or schema byte.
+
+- Sprint 13 Patch 078 corrects the remaining Patch 077 repository-binding,
+  expected-failure parsing, parity-publication, cleanup, Git-less Docker-source,
+  digest-oracle, and delivery boundaries. It also freezes a private additive
+  role decision for all 16 exact single-pop patterns, including System V call
+  argument 4 in `rcx` and Linux syscall argument 4 in `r10`. It changes no
+  analyzer runtime source, NASM include, public field, schema `0.2.0`, semantic
+  class, or score. Patch 078 was a Sprint 13 entry candidate whose review required Patch 079.
+  Patch 079 now owns the corrective and task-value candidate; runtime-semantic,
+  public-field, and score projection remain separate later decisions.
+
+- Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
-  rolls back tracked modes through retained inodes, rejects nonzero comparator
-  exits, defines deterministic private parse-prefix failure snapshots, isolates
-  Docker build products from host-native artifacts, and rebuilds dynamic parity
-  from one authenticated Git-less source authority. The patch preserves the
-  implemented private textrel/RPATH/RUNPATH facts, adds no public field,
-  and is the final Sprint 12 closeout candidate pending acceptance.
+  rolled back tracked modes through retained inodes, rejected nonzero comparator
+  exits, defined deterministic private parse-prefix failure snapshots, isolated
+  Docker build products from host-native artifacts, and rebuilt dynamic parity
+  from one authenticated Git-less source authority. The patch preserved the
+  implemented private textrel/RPATH/RUNPATH facts and added no public field. Its
+  acceptance review required the Patch 078 correction above.
 
 - Sprint 12 Patch 076 corrects the remaining Patch 075 textrel-oracle,
   permission-normalization, custody-publication, source-recovery, parity, and
   loose-delivery findings. Patch 075 introduced the private text-relocation
   tranche, but its review required this correction. Patch 076's review then
-  required the Patch 077 correction. Patch 077 is the current final Sprint 12
-  reconciliation candidate, pending complete acceptance.
+  required the Patch 077 correction, whose review required the current Patch
+  078 closeout correction and Sprint 13 entry candidate.
 
 - Patch 075 corrective custody and validation hardening: tracked files with
   hardlink topology are rejected before permission normalization, late
@@ -509,8 +535,8 @@ The project follows semantic versioning once the first public release is cut.
   mount, publication, permission, and authority corrections, but was
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
-  evidence. Patch 077 is the current final reconciliation candidate; Sprint 12
-  remains pending complete acceptance.
+  evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
+  entry candidate; Sprint 12 remains pending complete Patch 079 acceptance.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,
@@ -548,8 +574,9 @@ The project follows semantic versioning once the first public release is cut.
   returned review also rejected current acceptance; Patch 073 supplied the
   first custody/isolation correction, and Patch 074 supplied a superseded
   closeout candidate. Patch 075 introduced private text-relocation evidence,
-  Patch 076 added distinct bounded RPATH/RUNPATH evidence, and Patch 077 is the
-  current corrective closeout candidate.
+  Patch 076 added distinct bounded RPATH/RUNPATH evidence, Patch 077 supplied
+  the first corrective closeout candidate, and Patch 078 is the current
+  closeout correction and Sprint 13 entry candidate.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

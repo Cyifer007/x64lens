@@ -9,9 +9,9 @@ first returned review boundary. Patch 074 was a superseded Sprint 12 closeout
 candidate. Patch 075 introduced bounded private static text-relocation evidence,
 and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence. Patch 076's review required the Patch 077 correction.
-Patch 077 is the current final Sprint 12 reconciliation candidate, pending
-complete acceptance. Current validation expectations are in the
-[Patch 077 validation record](sprint-12-patch-077-validation.md).
+Patch 077's review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
+Sprint 13 entry candidate. Current validation expectations are in the
+[Patch 078 validation record](sprint-13-patch-078-validation.md).
 Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
@@ -20,7 +20,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-complete Patch 077 acceptance remain pending.
+complete Patch 078 acceptance remain pending.
 
 ## Source precondition
 
@@ -191,5 +191,6 @@ reviewed decision. Patch 074 was a superseded Sprint 12 closeout candidate.
 Patch 075 introduced private static text-relocation evidence, but its review
 required the Patch 076 correction. Patch 076 implemented distinct private
 RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
-077 is the current final reconciliation candidate, pending complete acceptance,
-so Sprint 12 remains open.
+077 was a reconciliation candidate. Patch 078 corrects its remaining blockers
+and is the current Sprint 13 entry candidate, pending
+complete acceptance, so Sprint 12 remains open.

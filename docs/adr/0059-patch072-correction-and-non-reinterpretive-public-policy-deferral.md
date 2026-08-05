@@ -9,9 +9,9 @@ policy deferral. Patch 074 was the superseded Sprint 12 closeout candidate.
 Patch 075 introduced bounded private static text-relocation evidence. Patch 076
 preserved that private prefix and implemented distinct private `DT_RPATH` and
 `DT_RUNPATH` carrier/value evidence, but its review required the Patch 077
-correction. Patch 077 is the current final Sprint 12 reconciliation candidate,
-pending complete acceptance. Current validation expectations are in the
-[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
+correction, whose review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
+Sprint 13 entry candidate. Current validation expectations are in the
+[Patch 078 validation record](../sprints/sprint-13-patch-078-validation.md).
 
 ## Context
 
@@ -108,7 +108,8 @@ substrings.
 - Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075
   introduced private static text-relocation evidence, and Patch 076 added
   distinct private RPATH/RUNPATH evidence. Patch 076's review required the
-  Patch 077 correction. Complete Patch 077 acceptance remains pending.
+  Patch 077 correction, whose review required Patch 078. Complete Patch 078
+  acceptance remains pending.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

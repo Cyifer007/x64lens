@@ -590,8 +590,8 @@ parity-protocol correction but was superseded as the closeout candidate. Patch
 075 introduced bounded private static text-relocation evidence, but its review
 required the Patch 076 correction. Patch 076 implements distinct bounded private
 RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
-077 is the current final Sprint 12 reconciliation candidate, pending complete
-acceptance before the Sprint 13 handoff.
+077 required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and Sprint 13 entry
+candidate, pending complete acceptance before the Sprint 13 handoff.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -619,7 +619,7 @@ preserves zero public role/property fields and the coarse PIE indicator. Patch
 distinct RPATH/RUNPATH tranche.
 
 
-## Sprint 12 Patch 074 through Patch 077 reconciliation research posture
+## Sprint 12 Patch 074 through Patch 078 reconciliation research posture
 
 Patch 074 changes no runtime analyzer, include, or public schema path. It
 implements corrections for the final evidence-custody and parity-protocol
@@ -634,11 +634,12 @@ RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076's review required the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 078 acceptance, then
-owns the generic exact-pop, Linux syscall `r10`, score/null, and
-measurement-gated semantic decisions. All Sprint 11-12 campaign observations
-remain diagnostic and cannot be promoted into the Sprint 15-frozen confirmatory
-dataset.
+remains planned and activates only after complete Patch 079 acceptance. Patch
+078 freezes private additive exact-pop roles, including Linux syscall argument
+4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executes the
+blinded task-value gate; runtime-semantic, public-field, and score projection
+remain a later LC-08B decision. All Sprint 11-12 campaign observations remain diagnostic and cannot
+be promoted into the Sprint 15-frozen confirmatory dataset.
 
 
 ## Sprint 12 Patch 076 research posture
@@ -650,10 +651,26 @@ capacity, external presence comparison, and public non-projection. Native and
 container facts remain separate evidence planes. No performance, prevalence,
 runtime resolution, safety, or exploitability claim follows from this tranche.
 
-## Sprint 12 Patch 077 research update
+## Sprint 12 Patch 077 historical research update
 
-Patch 077 adds no new measured capability. It converts the Patch 076 review
+Patch 077 added no new measured capability. It converted the Patch 076 review
 findings into durable transaction, comparator, parity, and evidence gates while
-preserving the private dynamic-metadata results. These are development
+preserving the private dynamic-metadata results. These were development
 correctness facts, not publication performance, coverage, or mitigation-
 prevalence evidence.
+
+## Sprint 13 Patch 078 research update
+
+Patch 078 adds no measured capability and changes no analyzer runtime or public
+schema. Its private register-role authority defines questions for Patch 079
+blinded task-value qualification; it does not authorize runtime-semantic,
+public-field, score, performance, coverage, or mitigation-prevalence claims.
+
+## Sprint 13 Patch 079 checkpoint
+
+Patch 079 corrects the remaining Patch 078 acceptance tooling and runs the
+preregistered register-role task-value gate. Three role facets qualify as
+private input to a later policy decision; two retain existing semantics. The
+patch adds no runtime family, score, public field, decoder, worker, or schema
+change. Patch 080 owns LC-08B policy and must preserve the existing evidence,
+capacity, malformed-input, and campaign-separation contracts.

@@ -1653,7 +1653,7 @@ context is 9,904 bytes, and the composite private context is 13,064 bytes.
 
 ## Sprint 12 Patch 076 private dynamic-metadata storage
 
-The bounded private dynamic-metadata context is 13,064 bytes: the accepted
+The bounded private dynamic-metadata context is 13,064 bytes: the implemented
 2,128-byte Patch 075 text-relocation prefix, a 96-byte search-path header, 64
 fixed 56-byte path records, and one 4,096-byte exact-value pool. Three current
 command-owned copies account for 39,192 fixed bytes. This allocation arithmetic
@@ -1695,4 +1695,23 @@ effect facts rather than adding a second classifier. It distinguishes generic
 register control, System V call arguments, Linux syscall arguments, the `rax`
 syscall-number role, and the `rsp` pivot. `r10` is Linux syscall argument 4;
 `rcx` is System V call argument 4. These private facets do not change current
-semantic classes, scores, reports, or schema `0.2.0`.
+semantic classes, scores, reports, or schema `0.2.0`. Patch 079 executes the
+blinded task-value gate; runtime-semantic, public-field, and score projection
+remain a later LC-08B decision.
+
+## Sprint 13 Patch 079 corrective and task-value boundary
+
+Patch 079 adds no analyzer module and changes no runtime record. Exact Git-less
+Docker source construction, permission normalization, patch transactions,
+source recovery, delivery custody, and native/container parity remain tooling
+planes outside the scanner/classifier/reporter pipeline. Docker source and its
+transport Dockerfile derive from one staged Git tree; parity rebuilds native and
+container binaries independently and binds the container plane to an immutable
+image ID and candidate tree.
+
+The task-value harness queries the existing public semantic facts and the
+private additive role lattice under deterministic A/B labels. It does not write
+semantic classes, scores, report fields, or schema bytes. Generic control,
+System V call-argument, and Linux syscall-argument facets qualify as private
+input to LC-08B. Syscall-number and stack-pivot facets retain their existing
+semantic treatment.

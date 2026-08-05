@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
-  "closeout_patch": 78,
+  "status": "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
+  "closeout_patch": 79,
   "candidate_patches": [
     62,
     63,
@@ -20,10 +20,11 @@
     75,
     76,
     77,
-    78
+    78,
+    79
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p078-acceptance-smoke",
+  "acceptance_target": "sprint13-p079-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -89,7 +90,15 @@
     "docker_build_artifacts_isolated_from_host": true,
     "wrong_digest_negative_reaches_digest_authentication": true,
     "loose_and_packaged_helper_identity_required": true,
-    "delivery_custody_schema": "x64lens-delivery-custody-v3"
+    "delivery_custody_schema": "x64lens-delivery-custody-v3",
+    "docker_source_and_transport_single_snapshot": true,
+    "gitless_root_directory_file_descriptor_custody": true,
+    "gitless_permission_normalization_tracked_only": true,
+    "docker_build_failure_transparent": true,
+    "role_property_parity_independent_builds": true,
+    "role_property_parity_immutable_image_identity": true,
+    "patch_post_effect_exception_recovery": true,
+    "source_recovery_foreign_descendant_preserved": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -98,27 +107,42 @@
     "bounded-fortify-relocation-symbol-join"
   ],
   "sprint13_handoff": {
-    "generic_exact_pop_semantic_decision": "private_multi_role_decision_frozen_pending_task_value",
-    "linux_syscall_r10_role_decision": "private_linux_syscall_arg4_role_frozen_pending_task_value",
-    "score_null_policy_freeze": "existing_scores_retained_new_roles_unscored_pending_task_value",
+    "generic_exact_pop_semantic_decision": "private_multi_role_decision_task_value_qualified",
+    "linux_syscall_r10_role_decision": "private_linux_syscall_arg4_task_value_qualified",
+    "score_null_policy_freeze": "existing_scores_retained_new_roles_unscored_pending_lc08b",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 79,
-    "next_patch_tranche": "blinded_register_role_task_value",
-    "diagnostic_restart_on_task_change": true
+    "next_patch": 80,
+    "next_patch_tranche": "lc08b-runtime-public-score-policy",
+    "diagnostic_restart_on_task_change": true,
+    "task_value_strata": 5,
+    "task_value_tasks": 60,
+    "qualified_private_facets": [
+      "generic_control",
+      "sysv_call_arguments",
+      "linux_syscall_arguments"
+    ],
+    "retained_existing_facets": [
+      "syscall_number",
+      "stack_pivot"
+    ],
+    "task_value_regressions": 0,
+    "task_value_incorrect_promotions": 0
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
     "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
     "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
     "docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md",
-    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
     "docs/sprints/sprint-12-patch-074-validation.md",
     "docs/sprints/sprint-12-patch-075-validation.md",
     "docs/sprints/sprint-12-patch-076-validation.md",
     "docs/sprints/sprint-12-patch-077-validation.md",
-    "docs/sprints/sprint-13-patch-078-validation.md",
     "docs/sprints/sprint-12-plan.md",
-    "docs/sprints/sprint-13-plan.md"
+    "docs/sprints/sprint-13-plan.md",
+    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
+    "docs/adr/0065-patch078-correction-and-register-role-task-value.md",
+    "docs/sprints/sprint-13-patch-078-validation.md",
+    "docs/sprints/sprint-13-patch-079-validation.md"
   ]
 }

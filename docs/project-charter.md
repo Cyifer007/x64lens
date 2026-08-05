@@ -158,8 +158,9 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 
 ## Current implementation stage
 
-Sprints 1 through 11 are complete. Sprint 12 is at the Patch 077 closeout
-candidate, pending complete acceptance. Patch 074 was a superseded closeout
+Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
+authority, with Patch 078 as the closeout correction and Sprint 13 entry
+candidate pending complete acceptance. Patch 074 was a superseded closeout
 candidate. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
 comparison evidence, generated summaries, and gap register while preserving the
@@ -170,11 +171,12 @@ deferred bounded loader validity, overlap/provenance, PIE-versus-DSO identity,
 and GNU-property evidence. Patch 075 introduced private bounded `DT_TEXTREL` / `DF_TEXTREL` evidence.
 Patch 076 added distinct bounded private `DT_RPATH` and `DT_RUNPATH` evidence
 without adding public role/property or mitigation fields, but its review
-required the Patch 077 correction. Patch 077 is the current final Sprint 12
-reconciliation candidate. Sprint 13 remains planned and activates only after
-complete Patch 078 acceptance. Sprint 15 freezes the confirmatory method; Sprint 16
-produces the preview campaign, Sprint 17 runs publication-grade trials, and
-Sprint 22 is the first research-release gate.
+required the Patch 077 correction. Patch 077 then required the current Patch
+078 closeout correction and Sprint 13 entry candidate. Sprint 13 remains
+planned and activates only after complete Patch 079 acceptance. Sprint 15
+freezes the confirmatory method; Sprint 16 produces the preview campaign,
+Sprint 17 runs publication-grade trials, and Sprint 22 is the first research-
+release gate.
 
 ## Sprint 12 loader-precision checkpoint
 
@@ -187,18 +189,31 @@ Patch 076 preserves the dependency-free one-worker reference profile, program-
 header executable authority, 4,096-candidate fail-closed behavior, and schema
 `0.2.0`. Private role/property, text-relocation, and RPATH/RUNPATH evidence
 remains outside public reports, and the role/property policy remains `defer`.
-Patch 077 owns
-final Sprint 12 reconciliation and closeout. Sprint 13 remains planned and
-activates only after complete Patch 078 acceptance, without a release tag or
-confirmatory campaign freeze.
+Patch 078 owns the current closeout correction and Sprint 13 entry decision.
+Sprint 13 remains planned and activates only after complete Patch 078
+acceptance, without a release tag or confirmatory campaign freeze.
 
-## Sprint 12 Patch 077 checkpoint
+## Sprint 12 Patch 077 historical checkpoint
 
-Patch 077 is the final loader/mitigation reconciliation candidate. It preserves the dependency-free, decoder-free, one-worker reference analyzer and adds no public mitigation field. Sprint 13 begins only after acceptance, keeping the first-release scope bounded.
+Patch 077 was a loader/mitigation reconciliation candidate. It
+preserved the dependency-free, decoder-free, one-worker reference analyzer and
+added no public mitigation field, but its review required the Patch 078
+correction below.
 
 ## Sprint 13 Patch 078 checkpoint
 
 Patch 078 preserves the dependency-free, decoder-free, one-worker reference
 analyzer and adds no public field or score. It corrects the Patch 077 acceptance
 blockers and freezes a private exact-pop role decision so the next task-value
-experiment can be scoped without broadening the runtime prematurely.
+experiment can be scoped without broadening the runtime prematurely. Patch 079
+owns blinded task-value qualification before any runtime-semantic, public-field,
+or score projection.
+
+## Sprint 13 Patch 079 checkpoint
+
+The current candidate retains the assembly-first, dependency-light reference
+profile while adding no public analysis capability. It corrects source, Docker,
+parity, recovery, transaction, and delivery evidence paths and records a
+preregistered task-value result for private register-role facets. The result is
+input to a later policy gate, not a claim of exploitability or complete gadget
+coverage.

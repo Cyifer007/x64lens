@@ -10,8 +10,8 @@ correction and the policy decision `defer`. Patch 074 was a superseded Sprint 12
 closeout candidate. Patch 075 introduced bounded private static text-relocation
 evidence, and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence. Patch 076's review required the Patch 077 correction.
-Patch 077 is the current final Sprint 12 reconciliation candidate, pending
-complete acceptance. The batch pilot, private-fact matrix, and `readelf`
+Patch 077's review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
+Sprint 13 entry candidate. The batch pilot, private-fact matrix, and `readelf`
 reconciliation remain diagnostic, unfrozen, and publication-ineligible.
 Qualified native/container parity also remains pending.
 

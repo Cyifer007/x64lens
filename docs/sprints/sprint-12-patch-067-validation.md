@@ -11,12 +11,13 @@ boundaries. Patch 073 delivered the first custody/isolation correction and
 policy deferral. Patch 074 was a superseded Sprint 12 closeout candidate. Patch
 075 introduced bounded private static text-relocation evidence, and Patch 076
 implemented distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value
-evidence. Patch 076's review required the Patch 077 correction. Patch 077 is the
-current final Sprint 12 reconciliation candidate, pending complete acceptance. The
+evidence. Patch 076's review required the Patch 077 correction, whose review
+required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and Sprint 13 entry
+candidate. The
 [Patch 068 plan](sprint-12-patch-068-validation.md) and
 [Patch 069 plan](sprint-12-patch-069-validation.md) preserve the intervening
 historical boundaries. Current validation expectations are recorded in the
-[Patch 077 validation record](sprint-12-patch-077-validation.md). The
+[Patch 078 validation record](sprint-13-patch-078-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary. The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its

@@ -72,7 +72,7 @@ private tranche; Patch 076 preserves it while correcting the Patch 075 review
 findings.
 
 Patch 076 extended this private evidence with distinct RPATH/RUNPATH facts, but
-its review required the Patch 077 correction. Patch 077 is the current final
-Sprint 12 reconciliation candidate, pending complete acceptance. Native,
-container, parity, and independent-acceptance requirements remain separate;
-none substitutes for another.
+its review required the Patch 077 correction, whose review required the current
+Patch 078 closeout correction and Sprint 13 entry candidate. Native, container,
+parity, and independent-acceptance requirements remain separate; none
+substitutes for another.

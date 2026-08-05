@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closeout_correction_and_sprint13_entry_candidate_pending_acceptance",
-  "current_patch": 78,
-  "superseded_closeout_patch": 77,
-  "next_patch": 79,
-  "next_patch_tranche": "blinded-register-role-task-value-after-p078-acceptance",
-  "acceptance_target": "sprint13-p078-acceptance-smoke",
+  "status": "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
+  "current_patch": 79,
+  "superseded_closeout_patch": 78,
+  "next_patch": 80,
+  "next_patch_tranche": "lc08b-role-projection-and-score-policy-after-p079-acceptance",
+  "acceptance_target": "sprint13-p079-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -16,8 +16,56 @@
     "target_mapping": "read_only",
     "target_execution": false
   },
-  "patch078_boundary": {
-    "remaining_patch077_corrections": true,
+  "sprint13_entry_decision": {
+    "exact_pop_patterns_accounted": 16,
+    "generic_register_control_patterns": 15,
+    "sysv_call_argument_patterns": 6,
+    "linux_syscall_argument_patterns": 6,
+    "linux_syscall_arg4_register": "r10",
+    "sysv_call_arg4_register": "rcx",
+    "syscall_number_register": "rax",
+    "stack_pivot_register": "rsp",
+    "new_public_fields": 0,
+    "new_scores": 0,
+    "next_gate": "lc08b_runtime_public_score_policy",
+    "task_value_gate": "completed_diagnostic_candidate",
+    "task_value_strata": 5,
+    "task_value_tasks": 60,
+    "qualified_private_facets": [
+      "generic_control",
+      "sysv_call_arguments",
+      "linux_syscall_arguments"
+    ],
+    "retained_existing_facets": [
+      "syscall_number",
+      "stack_pivot"
+    ],
+    "task_value_regressions": 0,
+    "task_value_incorrect_promotions": 0
+  },
+  "preserved_authorities": {
+    "executable_mapping": "PT_LOAD_plus_PF_X_file_backed_ranges",
+    "section_headers": "bounded_metadata_and_annotations_only",
+    "candidate_4097": "exit_6_before_stdout",
+    "malformed_parse": "no_partial_stdout",
+    "reference_runtime": "dependency_free_decoder_free_one_worker"
+  },
+  "required_documents": [
+    "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
+    "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
+    "docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md",
+    "docs/sprints/sprint-12-patch-075-validation.md",
+    "docs/sprints/sprint-12-patch-076-validation.md",
+    "docs/sprints/sprint-12-patch-077-validation.md",
+    "docs/sprints/sprint-12-plan.md",
+    "docs/sprints/sprint-13-plan.md",
+    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
+    "docs/adr/0065-patch078-correction-and-register-role-task-value.md",
+    "docs/sprints/sprint-13-patch-078-validation.md",
+    "docs/sprints/sprint-13-patch-079-validation.md"
+  ],
+  "patch079_boundary": {
+    "remaining_patch078_corrections": true,
     "runtime_parser_or_report_change": false,
     "runtime_source_include_schema_change": false,
     "private_dynamic_metadata_sidecar_preserved": true,
@@ -33,47 +81,16 @@
     "path_splitting": false,
     "origin_expansion": false,
     "target_derived_opens": 0,
-    "gitless_docker_source": "exact_staged_tree_membership",
-    "reviewed_base_modes": [
-      "staged",
-      "committed"
-    ],
+    "gitless_docker_source": "single_frozen_staged_tree_descriptor_bound",
+    "gitless_permission_normalization": "manifest_declared_tracked_members_only",
+    "native_container_role_property_builds": "independent",
+    "container_image_identity": "immutable_digest_plus_candidate_tree",
+    "patch_post_effect_recovery": true,
+    "foreign_recovery_descendants_preserved": true,
     "public_fields_added": 0,
     "score_changes": 0,
     "existing_coarse_pie_field_reinterpreted": false,
     "runtime_cet_enforcement_claimed": false,
     "schema_changed": false
-  },
-  "sprint13_entry_decision": {
-    "exact_pop_patterns_accounted": 16,
-    "generic_register_control_patterns": 15,
-    "sysv_call_argument_patterns": 6,
-    "linux_syscall_argument_patterns": 6,
-    "linux_syscall_arg4_register": "r10",
-    "sysv_call_arg4_register": "rcx",
-    "syscall_number_register": "rax",
-    "stack_pivot_register": "rsp",
-    "new_public_fields": 0,
-    "new_scores": 0,
-    "next_gate": "blinded_task_value"
-  },
-  "preserved_authorities": {
-    "executable_mapping": "PT_LOAD_plus_PF_X_file_backed_ranges",
-    "section_headers": "bounded_metadata_and_annotations_only",
-    "candidate_4097": "exit_6_before_stdout",
-    "malformed_parse": "no_partial_stdout",
-    "reference_runtime": "dependency_free_decoder_free_one_worker"
-  },
-  "required_documents": [
-    "docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md",
-    "docs/adr/0062-distinct-private-rpath-runpath-evidence.md",
-    "docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md",
-    "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
-    "docs/sprints/sprint-12-patch-075-validation.md",
-    "docs/sprints/sprint-12-patch-076-validation.md",
-    "docs/sprints/sprint-12-patch-077-validation.md",
-    "docs/sprints/sprint-13-patch-078-validation.md",
-    "docs/sprints/sprint-12-plan.md",
-    "docs/sprints/sprint-13-plan.md"
-  ]
+  }
 }

@@ -58,13 +58,14 @@ def main()->int:
         require(fired and (stat.S_IMODE(repo2.stat().st_mode),stat.S_IMODE(tracked2.stat().st_mode))==before_modes,'normalizer rollback incomplete')
 
         # Exactly five alternate mount spellings are rejected.
-        mount_root=base/'mounts'; mount_root.mkdir(); inputs=mount_root/'inputs'; held=mount_root/'held'; output=mount_root/'output'; native=mount_root/'native'
-        for p in (inputs,held,output,native): p.mkdir()
-        baseline=parity.build_container_command(docker='docker',image='image',inputs=inputs,heldout=held,container_write_root=output)
+        mount_root=base/'mounts'; mount_root.mkdir(); held=mount_root/'held'; output=mount_root/'output'; native=mount_root/'native'
+        for p in (held,output,native): p.mkdir()
+        image_id='sha256:'+'5'*64
+        baseline=parity.build_container_command(docker='docker',image_id=image_id,candidate_tree='6'*40,heldout=held,container_write_root=output)
         variants=[['--mount',f'type=bind,source={mount_root},target=/work,readonly'],[f'--mount=type=bind,source={mount_root},target=/work,readonly'],['--volume',f'{mount_root}:/work:ro'],[f'--volume={mount_root}:/work:ro'],[f'-v{mount_root}:/work:ro']]
         for extra in variants:
-            cmd=list(baseline); i=cmd.index('image'); cmd[i:i]=extra
-            try: parity.validate_container_mount_policy(cmd,native_result=native,inputs=inputs,heldout=held,container_write_root=output); raise Error(f'alternate mount accepted: {extra[0]}')
+            cmd=list(baseline); i=cmd.index(image_id); cmd[i:i]=extra
+            try: parity.validate_container_mount_policy(cmd,native_result=native,heldout=held,container_write_root=output); raise Error(f'alternate mount accepted: {extra[0]}')
             except parity.ParityError: pass
 
         # Duplicate JSON keys and Boolean-as-integer values are rejected.

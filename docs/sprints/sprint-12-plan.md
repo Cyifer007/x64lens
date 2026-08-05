@@ -2,52 +2,32 @@
 
 ## Status
 
-Closeout correction and Sprint 13 entry candidate at Patch 078, pending complete
-acceptance. Patch 077 preserved the private loader and dynamic-metadata facts but
-its review found remaining blockers in patch/root binding, permission
-normalization, expected-failure parsing, parity publication, final cleanup,
-Docker source membership, digest oracles, and delivery identity. Patch 078
-corrects those boundaries and freezes a private multi-role exact-pop decision
-for Sprint 13 without changing analyzer runtime behavior, public output, schema
-`0.2.0`, or scores.
+Patch 079 task-value closeout candidate, pending complete acceptance. Patch 078
+preserved the private loader, dynamic-metadata, and register-role facts but its
+review found remaining Docker caller, Git-less custody, independent parity-build,
+recovery, patch-transaction, and loose-delivery blockers. Patch 079 corrects
+those boundaries and executes the five independent register-role task-value
+strata without changing analyzer runtime behavior, public output, schema `0.2.0`,
+or scores.
 
-Sprint 12 remains the active acceptance authority until Patch 078 passes fresh
-native, Docker, both private parity planes, delivery integrity, and independent
-Lane A review. Sprint 13 has an entry candidate at Patch 078 but public semantic
-implementation remains gated by acceptance and a later blinded task-value
-tranche.
+Sprint 12 remains the active acceptance authority until Patch 079 passes fresh
+native, Docker, both private parity planes, strict ShellCheck, delivery integrity,
+and independent non-documentation acceptance. A passing Patch 079 closes Sprint
+12 and activates Sprint 13. Qualified task-value facets remain private and
+unscored; LC-08B owns any later runtime, public, or score projection.
 
-Patches 062 through 077 carry ordinary PHDR validity and explicit extended-
-numbering outcomes, executable-overlap provenance and measured normalization
-deferral, private PIE/DSO and GNU-property evidence, authenticated natural and
-controlled strata, external reconciliation, private text-relocation and distinct
-RPATH/RUNPATH evidence, and corrected native/container parity protocols. Public
-schema `0.2.0` remains unchanged.
+Patches 062 through 079 carry ordinary PHDR validity, executable-overlap
+provenance and measured normalization deferral, private PIE/DSO and GNU-property
+evidence, authenticated natural and controlled strata, external reconciliation,
+private text-relocation and distinct RPATH/RUNPATH evidence, corrected parity
+protocols, the private role lattice, and the register-role task-value gate.
+Public schema `0.2.0` remains unchanged.
 
-Related closeout records:
-- [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
-- [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md)
-- [ADR 0050](../adr/0050-fact-first-binary-role-lattice.md)
-- [ADR 0051](../adr/0051-bounded-private-gnu-property-evidence.md)
-- [ADR 0052](../adr/0052-role-property-metamorphic-preflight.md)
-- [ADR 0053](../adr/0053-corpus-custody-and-private-layout-attestation.md)
-- [ADR 0054](../adr/0054-private-role-property-diagnostic-matrix.md)
-- [ADR 0055](../adr/0055-authenticated-role-property-readelf-reconciliation.md)
-- [ADR 0056](../adr/0056-whole-batch-transaction-and-external-evidence-custody.md)
-- [ADR 0057](../adr/0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md)
-- [ADR 0058](../adr/0058-outcome-blind-external-natural-acquisition-and-environment-parity.md)
-- [ADR 0059](../adr/0059-patch072-correction-and-non-reinterpretive-public-policy-deferral.md)
-- [ADR 0060](../adr/0060-patch073-correction-and-sprint12-closeout.md)
-- [Patch 074 validation](sprint-12-patch-074-validation.md)
-- [ADR 0061](../adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md)
-- [Patch 075 validation](sprint-12-patch-075-validation.md)
-- [ADR 0062](../adr/0062-distinct-private-rpath-runpath-evidence.md)
-- [Patch 076 validation](sprint-12-patch-076-validation.md)
-- [ADR 0063](../adr/0063-patch076-correction-and-sprint12-final-reconciliation.md)
-- [Patch 077 validation](sprint-12-patch-077-validation.md)
-
+Related current records:
 - [ADR 0064](../adr/0064-patch077-correction-and-sprint13-register-role-entry.md)
 - [Patch 078 validation](sprint-13-patch-078-validation.md)
+- [ADR 0065](../adr/0065-patch078-correction-and-register-role-task-value.md)
+- [Patch 079 validation](sprint-13-patch-079-validation.md)
 
 ## Sprint goal
 
@@ -130,8 +110,15 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Freeze a private additive role authority for all 16 exact single-pop
   patterns, including distinct System V `rcx` and Linux syscall `r10` argument-4
   roles, with zero public-field or score changes.
+- [x] Correct the Patch 078 Docker, Git-less custody, independent-build parity,
+  recovery, patch-transaction, and helper-identity findings.
+- [x] Execute five independent register-role task-value strata with frozen
+  thresholds and zero cross-stratum pooling.
+- [x] Qualify generic control, System V call arguments, and Linux syscall
+  arguments as private input to LC-08B; retain existing syscall-number and
+  stack-pivot treatment.
 - [ ] Complete fresh native, Docker, actual parity, strict ShellCheck, final
-  package, and independent acceptance for Patch 078.
+  package, and independent acceptance for Patch 079.
 
 
 ## Patch sequence
@@ -168,6 +155,10 @@ that would otherwise corrupt corpus labels or defensive triage.
     Docker-source, comparator, parity, and delivery blockers; freeze the private
     multi-role exact-pop entry decision for Sprint 13; and retain zero public
     field and score changes pending acceptance and blinded task-value evidence.
+18. **Patch 079:** correct the remaining Patch 078 acceptance blockers, execute
+    the five independent register-role task-value strata, retain qualified
+    facets privately, and leave runtime/public/score projection to LC-08B.
+
 
 ## Current continuation disposition
 

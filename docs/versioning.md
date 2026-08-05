@@ -23,7 +23,7 @@ authority without changing the runtime report, scores, or public schema.
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 077 preserves the same public fields, reference profile, private context
+Patch 078 preserves the same public fields, reference profile, private context
 sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
 runtime-CET claim. Actual qualified parity and complete Patch 078 acceptance
 remain pending.
@@ -181,14 +181,30 @@ Sprint 13 remains planned without a release tag or campaign freeze.
 Patch 076 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
 fields, and the `v0.1.0-dev` checkpoint tag. Patch 075 private text-relocation
 facts and Patch 076 distinct private RPATH/RUNPATH facts do not change a product
-or schema version. Patch 076's review required the Patch 077 correction. Patch
-077 is the current final Sprint 12 reconciliation candidate, pending complete
-acceptance.
+or schema version. Patch 076's review required the Patch 077 correction, whose
+review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and Sprint 13 entry
+candidate.
 
-## Sprint 12 Patch 077 version state
+## Sprint 12 Patch 077 historical version state
 
-Patch 077 changes no runtime analyzer source, NASM ABI include, public schema,
-CLI syntax, output field, candidate population, or score. It retains the
-private textrel/RPATH/RUNPATH facts and strengthens only their application,
+Patch 077 changed no runtime analyzer source, NASM ABI include, public schema,
+CLI syntax, output field, candidate population, or score. It retained the
+private textrel/RPATH/RUNPATH facts and strengthened only their application,
 recovery, custody, comparator, parity, Docker-build, and evidence authorities.
-Sprint 13 begins at Patch 078 only after the Patch 078 acceptance gate passes.
+Its review required Patch 078.
+
+## Sprint 13 Patch 078 version state
+
+Patch 078 retains tool version `0.1.0-dev`, schema `0.2.0`, the public field
+set, candidate-capacity and no-partial-output contracts, and the dependency-
+free, decoder-free, one-worker reference profile. It changes no analyzer
+runtime or score. Patch 079 executes blinded task-value qualification before any
+runtime-semantic, public-field, or score projection.
+
+## Sprint 13 Patch 079 version state
+
+Patch 079 retains tool version `0.1.0-dev`, schema `0.2.0`, all public fields,
+all current scores, candidate capacity 4,096, and the dependency-free, decoder-
+free, one-worker reference profile. It adds a private diagnostic authority and
+corrective tooling only. Qualified role facets remain private and unscored; an
+LC-08B decision is required before any compatible public or runtime change.

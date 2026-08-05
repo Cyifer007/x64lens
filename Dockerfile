@@ -18,6 +18,9 @@
 
 FROM ubuntu:24.04
 
+ARG X64LENS_CANDIDATE_TREE
+LABEL org.x64lens.candidate-tree=$X64LENS_CANDIDATE_TREE
+ENV X64LENS_CANDIDATE_TREE=$X64LENS_CANDIDATE_TREE
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install the baseline tools needed for local build/test parity. GCC and
@@ -59,6 +62,7 @@ COPY source/ /work/
 COPY source-manifest.json /x64lens-source-manifest.json
 
 ENV X64LENS_SOURCE_MANIFEST=/x64lens-source-manifest.json
+ENV X64LENS_SOURCE_AUTHORITY_ROOT=/work
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Validate exact Git-less source custody and repository shape at image build

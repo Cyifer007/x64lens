@@ -258,7 +258,7 @@ comparison status as interchangeable.
 
 The paper may describe deterministic ordinary-PHDR validity and explicit extended-numbering unsupported outcomes for the reviewed fixtures. It may not claim complete ELF extended-numbering support, complete loader correctness, PIE-versus-DSO precision, CET evidence, or universal parser safety from this patch.
 
-## Sprint 12 Patch 074 through Patch 076 publication boundary
+## Sprint 12 Patch 074 through Patch 078 publication boundary
 
 Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence, but its review required the
@@ -266,9 +266,10 @@ Patch 076 correction. Patch 076 implements distinct bounded private RPATH and
 RUNPATH evidence. None of these candidate dispositions becomes accepted
 authority before the active native, container, delivery, and independent
 acceptance gates complete on the same source. Patch 076's review required the
-Patch 077 correction. Patch 077 review required the Patch 078 closeout correction and Sprint 13
-entry candidate, which remains pending complete acceptance. Sprint 13 remains planned and activates
-only after complete Patch 078 acceptance.
+Patch 077 correction. Patch 077's review required the Patch 078 closeout
+correction and Sprint 13 entry candidate, which remains pending complete
+acceptance. Sprint 13 remains planned and activates only after complete Patch
+078 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -298,5 +299,16 @@ Patch 077 supports a bounded engineering claim that the private dynamic-metadata
 Patch 078 supports a bounded engineering claim that all 16 exact single-pop
 patterns are accounted for by distinct private role facets and that the
 supporting source/delivery transactions have adversarial regression coverage.
-It does not support a public role field, score change, semantic-coverage, task-
-value, performance, exploitability, or publication-grade claim.
+It does not support a public role field, score change, semantic-coverage,
+task-value, performance, exploitability, or publication-grade claim.
+Patch 079 executes blinded task-value qualification before any runtime-semantic,
+public-field, or score projection.
+
+## Sprint 13 Patch 079 publication boundary
+
+The Patch 079 role-task result is diagnostic and publication-ineligible. The
+paper may later describe the preregistered method and the distinction between
+System V `rcx` argument 4 and Linux syscall `r10` argument 4, but it may not
+claim analyst benefit, coverage superiority, public semantic support, or score
+validity from this candidate alone. Any release-facing task claim requires the
+frozen campaign and preserved raw task evidence.

@@ -180,12 +180,12 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 is at the Patch 077 closeout candidate, pending complete acceptance.
+Sprint 12 remains the active acceptance authority, with Patch 078 as the
+closeout correction and Sprint 13 entry candidate pending complete acceptance.
 Patch 074 was a superseded closeout candidate. Patch 075 introduced private
-text-relocation evidence, and Patch 076 added distinct bounded RPATH/RUNPATH
-evidence. Patch 077 is the current corrective final reconciliation candidate.
-Sprint 13 remains planned and activates only after complete Patch 077
-acceptance. The diagnostic
+text-relocation evidence, Patch 076 added distinct bounded RPATH/RUNPATH
+evidence, and Patch 077 required the Patch 078 correction. Sprint 13 remains
+planned and activates only after complete Patch 079 acceptance. The diagnostic
 corpus and method remain provisional until Sprint 15. Sprints 13 and 14 may
 change capabilities or experimental profiles in response to diagnostic
 evidence; such changes require new diagnostic identities and do not contaminate
@@ -314,25 +314,36 @@ deferral under explicit reopening thresholds. Patches 064-076 carry the
 candidate disposition for the private role/property and GNU-property gates
 through implementation, diagnostic reconciliation, a corrected environment-
 parity protocol, a public-policy decision of `defer`, bounded private static
-text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Corrected
-actual native/container parity and Patch 077 acceptance remain pending. Any
-diagnostic campaign after acceptance requires a new identifier when its task,
-capability, schema, or method changes.
+text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Patch 078
+corrects the remaining parity and custody blockers; complete acceptance against
+the exact P078 candidate remains pending. Any diagnostic campaign after
+acceptance requires a new identifier when its task, capability, schema, or
+method changes.
 
 
 ## Sprint 12 Patch 074 superseded closeout gate update
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 is at the Patch 077 closeout candidate, pending complete acceptance.
-The overlap, PIE/DSO, and GNU-property gates are `resolved`:
+Sprint 12 remains active, with the Patch 078 closeout correction and Sprint 13
+entry candidate pending complete acceptance. The overlap, PIE/DSO, and GNU-
+property gates are `resolved`:
 overlap by measured deferral, and role/property projection by retained private
 evidence plus an explicit non-reinterpretive public deferral. Resolution does
-not mean a public field or runtime-CET claim exists. Generic exact-pop semantics
-and score/null policy remain Sprint 13 gates; optional decoder and deterministic
-concurrency remain Sprint 14 decisions.
+not mean a public field or runtime-CET claim exists. Patch 078 freezes private
+exact-pop role facets only; Patch 079 executes blinded task-value qualification
+before any runtime-semantic, public-field, or score projection. Optional decoder
+and deterministic concurrency remain Sprint 14 decisions.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
 diagnostic, unfrozen, and publication-ineligible and supports no speed, peak-
 RSS, parity, superiority, prevalence, or normalized-coverage claim.
+
+## Patch 079 register-role task-value gate
+
+The five role strata are independent capability gates. Passing requires the
+preregistered development and untouched-confirmation thresholds for that
+stratum; aggregate gains cannot rescue a failed stratum. Passing qualifies a
+private facet for LC-08B only. Runtime projection, public fields, score/null
+policy, and confirmatory-campaign inclusion remain separate gates.

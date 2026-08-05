@@ -248,3 +248,12 @@ score/null policy fit the current record model.
 
 Full disassembly, JOP, COP, SROP, symbolic execution, chain generation, other
 architectures, and other file formats remain outside the first-release core.
+
+## Sprint 13 Patch 079 private task-value decision
+
+The task-value gate qualifies private generic-control, System V call-argument,
+and Linux syscall-argument facets for a later policy decision. It does not add a
+semantic class in Patch 079. Existing `syscall_num_control`, `stack_pivot`,
+`arg_control`, and `unknown_candidate` output remains unchanged. In particular,
+`rcx` is System V argument 4 while `r10` is Linux syscall argument 4 in the
+private role authority.

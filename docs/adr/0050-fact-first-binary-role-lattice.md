@@ -11,10 +11,10 @@ Patch 074 was the superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix without changing the runtime lattice and implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review
-required the Patch 077 correction. Patch 077 is the current final Sprint 12
-reconciliation candidate, pending complete acceptance. Current validation
-expectations are in the
-[Patch 077 validation record](../sprints/sprint-12-patch-077-validation.md).
+required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
+candidate, and its review required the current Patch 079 corrective and task-
+value candidate. Current validation expectations are in the
+[Patch 079 validation record](../sprints/sprint-13-patch-079-validation.md).
 
 ## Context
 
@@ -72,7 +72,7 @@ state, not measured RSS.
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
 corrected the earlier implementation that reread mapped ELF bytes, and the
-current Patch 077 candidate carries that boundary forward without changing the
+Patch 078 candidate; Patch 079 is the current corrective and task-value candidate carries that boundary forward without changing the
 runtime analyzer:
 
 ```text
@@ -123,7 +123,7 @@ Patch 076 candidate leaves them unchanged.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the current Patch 077 candidate.
+  remains separate from public report policy in the Patch 078 candidate; Patch 079 is the current corrective and task-value candidate.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs
