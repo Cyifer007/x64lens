@@ -98,5 +98,6 @@ custody/isolation correction and policy deferral. ADR 0060 records the Patch 074
 correction and superseded closeout candidate. ADR 0061 records the Patch 075
 private static text-relocation tranche, which Patch 076 extended with distinct
 private RPATH/RUNPATH evidence. Patch 076's review required the Patch 077
-correction, whose review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
-Sprint 13 entry candidate, pending complete acceptance.
+correction. Patch 077's review required Patch 078. Patch 078's review required the
+Patch 079 corrective and private task-value candidate. Patch 079's review
+required Patch 080, which remains pending complete acceptance.

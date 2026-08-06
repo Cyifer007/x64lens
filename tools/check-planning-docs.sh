@@ -138,6 +138,17 @@ required=(
     tools/sprint12-closeout-smoke.py
     docs/adr/0063-patch076-correction-and-sprint12-final-reconciliation.md
     docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md
+    docs/adr/0065-patch078-correction-and-register-role-task-value.md
+    docs/adr/0066-patch079-correction-and-private-register-role-sidecar.md
+    docs/sprints/sprint-13-patch-079-validation.md
+    docs/sprints/sprint-13-patch-080-validation.md
+    benchmarks/task-definitions/sprint13-register-role-task-value-v2.json
+    benchmarks/task-definitions/sprint13-register-role-policy-v1.json
+    tests/expected/sprint13-register-role-task-value-v2.json
+    tests/expected/sprint13-register-role-policy.json
+    tools/patch079-corrective-regression-smoke.py
+    tools/sprint13-role-policy-smoke.py
+    tools/docker-image-authority.py
     docs/sprints/sprint-12-patch-077-validation.md
     docs/sprints/sprint-13-patch-078-validation.md
     benchmarks/task-definitions/sprint13-register-role-decision-v1.json
@@ -223,10 +234,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Patch 079 task-value closeout candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the Patch 079 task-value closeout candidate'
-grep -q '^Patch 079 task-value candidate; activation pending complete Patch 079 acceptance' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked as the Patch 079 task-value candidate'
+grep -q '^Patch 080 private register-role closeout candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 080 private register-role closeout candidate'
+grep -q '^Patch 080 private register-role candidate; activation pending complete Patch 080 acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 080 private register-role candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -251,20 +262,20 @@ grep -q 'sprint-11-patch-061-validation.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link Patch 061 validation'
 grep -q 'sprint-11-retro.md' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 plan does not link the retrospective'
-grep -q 'Patch 079' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not record the Patch 079 closeout-correction boundary'
-grep -q 'sprint-13-patch-079-validation.md' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not link Patch 079 validation'
-grep -q 'ADR 0065' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 plan does not link the Patch 079 decision ADR'
+grep -q 'Patch 080' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not record the Patch 080 closeout-correction boundary'
+grep -q 'sprint-13-patch-080-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 080 validation'
+grep -q 'ADR 0066' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link the Patch 080 decision ADR'
 grep -q 'Patch 078' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not record the Patch 078 corrective boundary'
 grep -q 'sprint-13-patch-078-validation.md' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link Patch 078 validation'
 grep -q 'ADR 0064' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link ADR 0064'
-grep -q 'Patch 079' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 plan does not record the blinded task-value tranche'
+grep -q 'Patch 080' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 plan does not record the private role-policy tranche'
 grep -q 'sprint11-below-floor-policy-smoke' docs/sprints/sprint-11-patch-061-validation.md \
     || fail 'Patch 061 validation does not name the below-floor policy gate'
 grep -q 'ADR 0040' docs/sprints/sprint-10-plan.md \

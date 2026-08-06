@@ -7,10 +7,11 @@
     "gadget_record_bytes": 112,
     "candidate_evidence_record_bytes": 56,
     "memory_effect_record_bytes": 16,
-    "analysis_arena_bytes": 851968,
+    "analysis_arena_bytes": 884736,
     "mandatory_decoder": false,
     "mandatory_threads": false,
-    "candidate_effect_record_bytes": 24
+    "candidate_effect_record_bytes": 24,
+    "candidate_role_record_bytes": 8
   },
   "families": [
     {

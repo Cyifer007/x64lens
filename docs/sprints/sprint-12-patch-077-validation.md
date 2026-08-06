@@ -135,8 +135,7 @@ and later review required the Patch 078 correction.
 
 ## Handoff
 
-Patch 077 did not complete acceptance. Patch 078 corrects its remaining blockers
-and freezes a private Sprint 13 entry decision while preserving public policy
-deferrals. See the
-[Patch 078 validation record](sprint-13-patch-078-validation.md); complete
+Patch 077 did not complete acceptance. Patch 078 corrected its remaining
+blockers, but Patch 078's review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. See the
+[Patch 080 validation record](sprint-13-patch-080-validation.md); complete
 acceptance remains pending against that exact candidate.

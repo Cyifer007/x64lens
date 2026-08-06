@@ -863,9 +863,9 @@ Patch 074 proposed stronger custody and parity qualification without creating a
 new benchmark result and was superseded as the closeout candidate. Patch 075
 introduced private static text-relocation evidence, and Patch 076 implemented
 distinct private RPATH and RUNPATH evidence. Patch 076's review required the
-Patch 077 correction. Patch 077's review required the Patch 078 closeout
-correction and Sprint 13 entry candidate, which remains pending complete
-acceptance. External-natural selection is
+Patch 077 correction. Patch 077's review required Patch 078, whose review
+required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+Complete acceptance remains pending. External-natural selection is
 device/inode/hash bound through all outcome checkpoints. The corrected
 native/container protocol
 preserves executable input modes, exact tree membership, nested checksum
@@ -878,10 +878,9 @@ In the Patch 073 diagnostic campaign, every x64lens row was below the timer
 floor and there were zero positive coordinate anchors. These corrections do not
 resolve below-floor x64lens latency, provide process-tree RSS, establish speed,
 superiority, parity, normalized coverage, or mitigation prevalence, or promote
-a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 078 owns
-the current closeout correction and Sprint 13 entry decision. Any changed
+a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was the corrective and private task-value candidate; its review required Patch 080. Any changed
 semantic task in Sprint 13 receives a new diagnostic campaign identity only
-after complete Patch 078 acceptance and the relevant task-value gate.
+after complete Patch 080 acceptance and the relevant task-value gate.
 
 
 ## Patch 076 benchmark boundary
@@ -904,8 +903,9 @@ the Sprint 15-frozen campaign.
 
 Patch 078 is not a performance or coverage experiment. It changes no analyzer
 work and authorizes no reuse of earlier diagnostic timing as a new result. Its
-private register-role authority defines candidate questions for a later blinded
-task-value tranche. Patch 079 executes that qualification before any runtime-
+private register-role authority defines candidate questions for a later
+deterministically presentation-ordered task-value tranche. Patch 079 executes that
+qualification before any runtime-
 semantic, public-field, or score projection. Any role, score, extractor, or
 task-definition change requires a new diagnostic identity and cannot be merged
 into the Sprint 15-frozen confirmatory campaign.
@@ -918,8 +918,19 @@ and twenty untouched confirmation tasks. Results are not pooled. The
 deterministic A/B permutation is reproducible query control and is not described
 as a human double-blind experiment.
 
-Three private facets qualify for a later policy decision. This result supports
-no runtime, RSS, superiority, exploitability, public-field, or score claim. A
+`generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify
+only as private, unfrozen diagnostic task-value evidence for a later policy
+decision. `syscall_number` and `stack_pivot` remain deferred. The result is not
+confirmatory or publication evidence and supports no runtime, RSS, superiority,
+exploitability, public-field, or score claim. A
 subsequent classifier, score, extractor, or task-definition change receives a
 new diagnostic campaign identity and cannot be merged into the Sprint 15-frozen
 confirmatory campaign.
+
+## Sprint 13 Patch 080 task-value correction
+
+The corrected role-task authority contains 60 unique query tuples across five
+independent strata. Development and confirmation partitions are disjoint.
+Deterministic profile order is non-causal presentation metadata and is not a
+human-blinding claim. The result is diagnostic, unfrozen, and
+publication-ineligible; it cannot be merged into the Sprint 15-frozen campaign.

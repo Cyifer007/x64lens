@@ -14,10 +14,9 @@ Patch 073 delivered the first custody/isolation correction and policy deferral.
 Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implemented
 distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch
-076's review required the Patch 077 correction, whose review required the
-Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate. Current
-validation expectations are recorded in the
-[Patch 078 validation record](sprint-13-patch-078-validation.md). The
+076's review required Patch 077. Patch 077's review required Patch 078, whose
+review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are recorded in the
+[Patch 080 validation record](sprint-13-patch-080-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
 historical boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -158,7 +157,7 @@ Patch 072 supplies the remainder plus acquisition and parity gates. Patch 075
 introduced private static text-relocation evidence, but its review required the
 Patch 076 correction. Patch 076 implements distinct private RPATH/RUNPATH
 evidence; complete acceptance and qualified native/container parity remain
-pending. Patch 078 owns the current closeout correction. The public-policy
+pending against the Patch 080 candidate. The public-policy
 decision,
 positive
 coordinate anchors, whole-batch

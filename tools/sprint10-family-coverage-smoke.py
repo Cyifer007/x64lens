@@ -132,7 +132,8 @@ def main() -> int:
         "candidate_evidence_record_bytes": 56,
         "memory_effect_record_bytes": 16,
         "candidate_effect_record_bytes": 24,
-        "analysis_arena_bytes": 851968,
+        "candidate_role_record_bytes": 8,
+        "analysis_arena_bytes": 884736,
         "mandatory_decoder": False,
         "mandatory_threads": False,
     }

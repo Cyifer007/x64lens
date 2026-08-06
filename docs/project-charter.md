@@ -159,8 +159,9 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 ## Current implementation stage
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
-authority, with Patch 078 as the closeout correction and Sprint 13 entry
-candidate pending complete acceptance. Patch 074 was a superseded closeout
+authority, with Patch 080 as the complete Patch 079 correction and private
+register-role side-car candidate
+pending complete acceptance. Patch 074 was a superseded closeout
 candidate. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
 comparison evidence, generated summaries, and gap register while preserving the
@@ -171,9 +172,9 @@ deferred bounded loader validity, overlap/provenance, PIE-versus-DSO identity,
 and GNU-property evidence. Patch 075 introduced private bounded `DT_TEXTREL` / `DF_TEXTREL` evidence.
 Patch 076 added distinct bounded private `DT_RPATH` and `DT_RUNPATH` evidence
 without adding public role/property or mitigation fields, but its review
-required the Patch 077 correction. Patch 077 then required the current Patch
-078 closeout correction and Sprint 13 entry candidate. Sprint 13 remains
-planned and activates only after complete Patch 079 acceptance. Sprint 15
+required Patch 077. Patch 077 then required Patch 078, whose review required the
+Patch 079 corrective and private task-value candidate, whose review required Patch 080. Sprint 13 remains
+planned and activates only after complete Patch 080 acceptance. Sprint 15
 freezes the confirmatory method; Sprint 16 produces the preview campaign,
 Sprint 17 runs publication-grade trials, and Sprint 22 is the first research-
 release gate.
@@ -189,9 +190,8 @@ Patch 076 preserves the dependency-free one-worker reference profile, program-
 header executable authority, 4,096-candidate fail-closed behavior, and schema
 `0.2.0`. Private role/property, text-relocation, and RPATH/RUNPATH evidence
 remains outside public reports, and the role/property policy remains `defer`.
-Patch 078 owns the current closeout correction and Sprint 13 entry decision.
-Sprint 13 remains planned and activates only after complete Patch 078
-acceptance, without a release tag or confirmatory campaign freeze.
+Patch 078 required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Sprint 13 remains an entry candidate and becomes active only after complete Patch
+080 acceptance, without a release tag or confirmatory campaign freeze.
 
 ## Sprint 12 Patch 077 historical checkpoint
 
@@ -206,7 +206,8 @@ Patch 078 preserves the dependency-free, decoder-free, one-worker reference
 analyzer and adds no public field or score. It corrects the Patch 077 acceptance
 blockers and freezes a private exact-pop role decision so the next task-value
 experiment can be scoped without broadening the runtime prematurely. Patch 079
-owns blinded task-value qualification before any runtime-semantic, public-field,
+owns deterministically presentation-ordered task-value qualification before any
+runtime-semantic, public-field,
 or score projection.
 
 ## Sprint 13 Patch 079 checkpoint
@@ -217,3 +218,10 @@ parity, recovery, transaction, and delivery evidence paths and records a
 preregistered task-value result for private register-role facets. The result is
 input to a later policy gate, not a claim of exploitability or complete gadget
 coverage.
+
+## Sprint 13 Patch 080 implementation stage
+
+Patch 080 is the current acceptance candidate. It corrects the Patch 079
+evidence and custody defects and adds a private bounded register-role side-car.
+The public analyzer contract remains unchanged. Sprint 13 becomes active only
+after the complete Patch 080 acceptance boundary passes.

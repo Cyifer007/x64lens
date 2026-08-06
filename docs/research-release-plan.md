@@ -30,10 +30,22 @@ multi-pop, register-transfer, stack-adjust, and bounded memory families. Patch
 reviewed scores, and Patch 052 corrects the resulting effect and validation
 findings. Patch 053 establishes the canonical twenty-two-sprint sequence, and
 Patch 054 closes Sprint 10 and activates Sprint 11 diagnostic measurement.
-Patches 055 through 060 establish and exercise the high-resolution runner, truthful task authority, reproducible 24-target corpus, standalone baseline adapters, matched relations, task-path runtime closure, coordinate qualification, complete condition accounting, generated summaries, and the engineering gap register. Patch 061 corrects the remaining evidence-integrity and interpretation findings, records the below-floor method, closes Sprint 11, and activates Sprint 12. The diagnostic checkpoint is complete as mutable development evidence; its rows are not preview or publication evidence.
-Loader, mitigation, semantic, and optional-profile decisions occupy Sprints 12
-through 14. The campaign freezes in Sprint 15, the preview pilot runs in Sprint
-16, and the publication campaign runs in Sprint 17.
+Patches 055 through 060 establish and exercise the high-resolution runner,
+truthful task authority, reproducible 24-target corpus, standalone baseline
+adapters, matched relations, task-path runtime closure, coordinate
+qualification, complete condition accounting, generated summaries, and the
+engineering gap register. Patch 061 corrects the remaining evidence-integrity
+and interpretation findings, records the below-floor method, closes Sprint 11,
+and activates Sprint 12. The diagnostic checkpoint is complete as mutable
+development evidence; its rows are not preview or publication evidence.
+
+Sprint 12 remains active. Patch 078's review returned
+`require_smallest_corrective_patch`; Patch 079 is the resulting corrective and
+private task-value candidate, pending exact acceptance. Sprint 13 becomes active
+only after complete Patch 080 acceptance. Loader, mitigation, semantic, and
+optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in
+Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs
+in Sprint 17.
 
 ## `v0.1.0-rc1` gate
 
@@ -398,10 +410,10 @@ custody and parity-protocol corrections and changes no public field or schema
 meaning, but it was superseded as the Sprint 12 closeout candidate. Patch 075
 introduced bounded private static text-relocation evidence, and Patch 076 added
 distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
-Patch 077 correction. Patch 077's review required the Patch 078 closeout
-correction and Sprint 13 entry candidate, which remains pending complete
-acceptance. Sprint 13 remains planned and activates only after complete Patch
-078 acceptance.
+Patch 077 correction. Patch 077's review required Patch 078, whose review
+required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+Exact Patch 080 acceptance remains pending. Sprint 13 remains an entry candidate and
+activates only after complete Patch 080 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -438,11 +450,11 @@ facts do not by themselves close Sprint 12.
 
 The complete closeout acceptance boundary requires native validation, strict
 ShellCheck, retained external-natural acquisition, corrected isolated Docker
-parity, exact delivery rehearsal, and independent non-documentation acceptance
+parity, exact delivery rehearsal, and independent exact-source acceptance
 on the same source. Patch 075 introduced private static text-relocation
 evidence, and Patch 076 implemented separate private RPATH/RUNPATH evidence.
-Patch 076's review required the Patch 077 correction, whose review required the
-Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate.
+Patch 076's review required Patch 077. Patch 077's review required Patch 078,
+whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 The role/property policy remains `defer`, no public mitigation field
 or runtime-CET claim is added, and no Sprint 12 diagnostic artifact becomes
 preview or publication evidence.
@@ -467,7 +479,8 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 is an implementation and closeout-correction candidate, not a release
 candidate. Preview eligibility still requires fresh native and Docker
 validation, both private parity planes, exact source and delivery custody,
-independent acceptance, and Patch 079 blinded task-value qualification before
+independent acceptance, and Patch 079 deterministically presentation-ordered
+task-value qualification before
 any runtime-semantic, public-field, or score projection.
 
 ## Sprint 13 Patch 079 release-gate update
@@ -477,3 +490,9 @@ must explicitly decide whether the three task-qualified private facets enter
 the runtime semantic model and how score/null policy applies. Any accepted
 change requires controlled fixtures, current-producer validation, native/Docker
 parity, and a distinct diagnostic restart before Sprint 15.
+
+## Sprint 13 Patch 080 release-gate update
+
+Patch 080 adds no release-facing field or score. Its private side-car must pass
+fresh native and Docker validation plus both parity planes before acceptance.
+Public role projection and score calibration remain separate pre-freeze gates.

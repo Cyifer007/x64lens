@@ -1678,8 +1678,9 @@ staged Git index -> Git-less source authority -> independent native/container bu
 Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
-separate private evidence layer, and Sprint 13 activation remains blocked until complete
-Patch 078 acceptance.
+separate private evidence layer, and Sprint 13 activation remains blocked until
+complete Patch 080 acceptance. Patch 078 review required the Patch 079
+corrective candidate.
 
 ## Sprint 13 Patch 078 transaction and role-decision boundary
 
@@ -1696,10 +1697,10 @@ register control, System V call arguments, Linux syscall arguments, the `rax`
 syscall-number role, and the `rsp` pivot. `r10` is Linux syscall argument 4;
 `rcx` is System V call argument 4. These private facets do not change current
 semantic classes, scores, reports, or schema `0.2.0`. Patch 079 executes the
-blinded task-value gate; runtime-semantic, public-field, and score projection
-remain a later LC-08B decision.
+deterministically presentation-ordered task-value gate; runtime-semantic,
+public-field, and score projection remain a later LC-08B decision.
 
-## Sprint 13 Patch 079 corrective and task-value boundary
+## Sprint 13 Patch 079 corrective and private task-value boundary
 
 Patch 079 adds no analyzer module and changes no runtime record. Exact Git-less
 Docker source construction, permission normalization, patch transactions,
@@ -1710,8 +1711,30 @@ container binaries independently and binds the container plane to an immutable
 image ID and candidate tree.
 
 The task-value harness queries the existing public semantic facts and the
-private additive role lattice under deterministic A/B labels. It does not write
-semantic classes, scores, report fields, or schema bytes. Generic control,
-System V call-argument, and Linux syscall-argument facets qualify as private
-input to LC-08B. Syscall-number and stack-pivot facets retain their existing
-semantic treatment.
+private additive role lattice under deterministic A/B labels. The five strata
+are independent and cannot be pooled. It does not write semantic classes,
+scores, report fields, or schema bytes. `generic_control`,
+`sysv_call_arguments`, and `linux_syscall_arguments` qualify only as private,
+unfrozen diagnostic task-value evidence for LC-08B. `syscall_number` and
+`stack_pivot` remain deferred, with existing runtime semantics and scores
+unchanged. The result is not confirmatory or publication evidence.
+
+## Sprint 13 Patch 080 private register-role side-car
+
+Patch 080 adds `candidate_role.asm` as a private candidate-index materializer.
+It consumes exact single-pop structural facts and writes one 8-byte mask per
+candidate after architectural-effect reconciliation. The side-car distinguishes
+generic non-`rsp` control, System V call arguments, and Linux syscall arguments.
+It is not passed to scoring or reporters and does not change semantic classes.
+
+```text
+gadget_record[4096]                112 bytes each
+candidate_evidence_record[4096]     48 bytes each
+memory_effect_record[4096]          16 bytes each
+candidate_effect_record[4096]       24 bytes each
+candidate_role_record[4096]          8 bytes each
+combined command arena          884736 bytes
+```
+
+The new 32 KiB slice is bounded fixed storage. Candidate capacity remains 4,096,
+and the 4,097th candidate still fails before report output.

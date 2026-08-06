@@ -581,14 +581,14 @@ def command_run(ns: argparse.Namespace) -> int:
             "set -euo pipefail; "
             "python3 /source/tools/sprint12-dynamic-metadata-environment-parity-smoke.py verify-source "
             "--root /source --manifest /authority/source-manifest.json; "
-            "rm -rf /tmp/x64lens-p077-build; cp -a /source /tmp/x64lens-p077-build; "
-            "chmod -R u+rwX /tmp/x64lens-p077-build; cd /tmp/x64lens-p077-build; "
+            "rm -rf /x64lens-build/repo; cp -a /source /x64lens-build/repo; "
+            "chmod -R u+rwX /x64lens-build/repo; cd /x64lens-build/repo; "
             "make clean; make; make build/tests/dynamic-metadata-fact-probe; "
             "python3 tools/sprint12-dynamic-metadata-environment-parity-smoke.py plane "
-            "--repo /tmp/x64lens-p077-build --source-root /source "
+            "--repo /x64lens-build/repo --source-root /source "
             "--source-manifest /authority/source-manifest.json --fixtures /inputs "
-            "--result /output/container --analyzer /tmp/x64lens-p077-build/build/x64lens "
-            "--fact-probe /tmp/x64lens-p077-build/build/tests/dynamic-metadata-fact-probe "
+            "--result /output/container --analyzer /x64lens-build/repo/build/x64lens "
+            "--fact-probe /x64lens-build/repo/build/tests/dynamic-metadata-fact-probe "
             "--schema /source/schemas/x64lens-report.schema.json "
             "--authority /source/benchmarks/task-definitions/sprint12-search-path-private-evidence-v1.json "
             "--plane-id container; "
@@ -599,6 +599,8 @@ def command_run(ns: argparse.Namespace) -> int:
             ns.docker,
             "run",
             "--rm",
+            "--tmpfs",
+            "/x64lens-build:rw,exec,nosuid,nodev,size=512m",
             "-v",
             f"{source_root}:/source:ro",
             "-v",

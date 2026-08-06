@@ -1,0 +1,695 @@
+{
+  "acceptance": {
+    "confirmation_tasks_per_stratum": 4,
+    "development_confirmation_queries_disjoint": true,
+    "development_tasks_per_stratum": 8,
+    "maximum_incorrect_promotions": 0,
+    "maximum_regressions": 0,
+    "minimum_incremental_confirmation_gains": 1,
+    "minimum_incremental_development_gains": 2,
+    "pooling_across_strata_permitted": false,
+    "required_confirmation_correct": 4,
+    "strata_evaluated_independently": true
+  },
+  "limitations": [
+    "This is diagnostic task evidence and is not publication eligible.",
+    "Deterministic profile ordering is a reproducibility control, not human blinding.",
+    "Exact suffix evidence does not establish full-window decoded validity.",
+    "A role facet does not prove exploit-chain reachability or exploitability.",
+    "Public projection and scoring require separate policy decisions."
+  ],
+  "patch": 80,
+  "presentation": {
+    "causal_to_scoring_or_decision": false,
+    "human_blind_claim": false,
+    "method": "deterministic_sha256_profile_order",
+    "profile_order_is_only_a_reproducibility_control": true,
+    "profiles": [
+      "current",
+      "additive_private"
+    ],
+    "seed_sha256": "c5cf436efee49096526ea11586727656267ca40d6402b335ca00cd796b1d1ce3"
+  },
+  "public_boundary": {
+    "next_policy_owner": "S13-P080-LC-08B",
+    "passing_stratum_authorizes_public_projection": false,
+    "passing_stratum_authorizes_score": false,
+    "private_role_sidecar_changed_by_gate": false,
+    "public_fields_added": 0,
+    "runtime_classifier_changed_by_gate": false,
+    "schema_changed": false,
+    "score_changes": 0
+  },
+  "purpose": "Correct the P079 task-value oracle by using disjoint development and confirmation queries, complete ABI-map validation, and explicitly non-causal deterministic presentation before LC-08B policy.",
+  "schema": "x64lens-sprint13-register-role-task-value-v2",
+  "source_authorities": [
+    {
+      "path": "benchmarks/task-definitions/sprint13-register-role-decision-v1.json",
+      "sha256": "f5b92def1601d54e2f5b78badd99052c6a39f438eeb9b6769b25c537d6f85ccc"
+    },
+    {
+      "path": "tools/sprint13-register-role-decision-smoke.py",
+      "sha256": "3ee9e5c403609ae24d70a6714c5c081bb9076e25763cc12068419f37fad2d633"
+    },
+    {
+      "path": "tests/expected/sprint10-exact-pattern-catalog.json",
+      "sha256": "63056468c5308ea4e2be0a8cf4c65711a10cfdbc8ea5e04431869410ea2118b6"
+    }
+  ],
+  "sprint": 13,
+  "status": "corrected_diagnostic_gate_pending_acceptance",
+  "strata": [
+    {
+      "confirmation_tasks": 4,
+      "development_tasks": 8,
+      "id": "generic_control",
+      "label": "Generic non-RSP exact-pop register control"
+    },
+    {
+      "confirmation_tasks": 4,
+      "development_tasks": 8,
+      "id": "sysv_call_arguments",
+      "label": "System V AMD64 call-argument roles"
+    },
+    {
+      "confirmation_tasks": 4,
+      "development_tasks": 8,
+      "id": "linux_syscall_arguments",
+      "label": "Linux x86_64 syscall-argument roles"
+    },
+    {
+      "confirmation_tasks": 4,
+      "development_tasks": 8,
+      "id": "syscall_number",
+      "label": "Linux x86_64 syscall-number role"
+    },
+    {
+      "confirmation_tasks": 4,
+      "development_tasks": 8,
+      "id": "stack_pivot",
+      "label": "Stack-pivot role"
+    }
+  ],
+  "tasks": [
+    {
+      "argument_index": null,
+      "id": "generic_control-development-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rdi",
+      "sequence": 1,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rsp",
+      "sequence": 2,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-03",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rax",
+      "sequence": 3,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-04",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rbx",
+      "sequence": 4,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-05",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "r10",
+      "sequence": 5,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-06",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "r11",
+      "sequence": 6,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-07",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "r8",
+      "sequence": 7,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-development-08",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "r9",
+      "sequence": 8,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-confirmation-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "register": "r12",
+      "sequence": 1,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-confirmation-02",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "register": "r13",
+      "sequence": 2,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-confirmation-03",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "register": "r14",
+      "sequence": 3,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "generic_control-confirmation-04",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "register": "r15",
+      "sequence": 4,
+      "stratum": "generic_control"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-development-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rdi",
+      "sequence": 1,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-development-02",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rcx",
+      "sequence": 2,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-development-03",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r10",
+      "sequence": 3,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-development-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rbx",
+      "sequence": 4,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": 1,
+      "id": "sysv_call_arguments-development-05",
+      "operation": "select_register",
+      "oracle": "rdi",
+      "phase": "development",
+      "register": null,
+      "sequence": 5,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": 4,
+      "id": "sysv_call_arguments-development-06",
+      "operation": "select_register",
+      "oracle": "rcx",
+      "phase": "development",
+      "register": null,
+      "sequence": 6,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": 5,
+      "id": "sysv_call_arguments-development-07",
+      "operation": "select_register",
+      "oracle": "r8",
+      "phase": "development",
+      "register": null,
+      "sequence": 7,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-development-08",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rsp",
+      "sequence": 8,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-confirmation-01",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rbp",
+      "sequence": 1,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "sysv_call_arguments-confirmation-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "r11",
+      "sequence": 2,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": 2,
+      "id": "sysv_call_arguments-confirmation-03",
+      "operation": "select_register",
+      "oracle": "rsi",
+      "phase": "confirmation",
+      "register": null,
+      "sequence": 3,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": 6,
+      "id": "sysv_call_arguments-confirmation-04",
+      "operation": "select_register",
+      "oracle": "r9",
+      "phase": "confirmation",
+      "register": null,
+      "sequence": 4,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-development-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rdi",
+      "sequence": 1,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-development-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rcx",
+      "sequence": 2,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-development-03",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "r10",
+      "sequence": 3,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-development-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rbx",
+      "sequence": 4,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": 4,
+      "id": "linux_syscall_arguments-development-05",
+      "operation": "select_register",
+      "oracle": "r10",
+      "phase": "development",
+      "register": null,
+      "sequence": 5,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": 1,
+      "id": "linux_syscall_arguments-development-06",
+      "operation": "select_register",
+      "oracle": "rdi",
+      "phase": "development",
+      "register": null,
+      "sequence": 6,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": 5,
+      "id": "linux_syscall_arguments-development-07",
+      "operation": "select_register",
+      "oracle": "r8",
+      "phase": "development",
+      "register": null,
+      "sequence": 7,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-development-08",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rax",
+      "sequence": 8,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-confirmation-01",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rbp",
+      "sequence": 1,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "linux_syscall_arguments-confirmation-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "r11",
+      "sequence": 2,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": 2,
+      "id": "linux_syscall_arguments-confirmation-03",
+      "operation": "select_register",
+      "oracle": "rsi",
+      "phase": "confirmation",
+      "register": null,
+      "sequence": 3,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": 6,
+      "id": "linux_syscall_arguments-confirmation-04",
+      "operation": "select_register",
+      "oracle": "r9",
+      "phase": "confirmation",
+      "register": null,
+      "sequence": 4,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rax",
+      "sequence": 1,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r8",
+      "sequence": 2,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-03",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r9",
+      "sequence": 3,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rsp",
+      "sequence": 4,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-05",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rbx",
+      "sequence": 5,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-06",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "rbp",
+      "sequence": 6,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-07",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r10",
+      "sequence": 7,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-development-08",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r11",
+      "sequence": 8,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-confirmation-01",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rdi",
+      "sequence": 1,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-confirmation-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rsi",
+      "sequence": 2,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-confirmation-03",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rdx",
+      "sequence": 3,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "syscall_number-confirmation-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rcx",
+      "sequence": 4,
+      "stratum": "syscall_number"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-01",
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "register": "rsp",
+      "sequence": 1,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r8",
+      "sequence": 2,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-03",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r9",
+      "sequence": 3,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r10",
+      "sequence": 4,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-05",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r11",
+      "sequence": 5,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-06",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r12",
+      "sequence": 6,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-07",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r13",
+      "sequence": 7,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-development-08",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "register": "r14",
+      "sequence": 8,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-confirmation-01",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rdi",
+      "sequence": 1,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-confirmation-02",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rsi",
+      "sequence": 2,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-confirmation-03",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rdx",
+      "sequence": 3,
+      "stratum": "stack_pivot"
+    },
+    {
+      "argument_index": null,
+      "id": "stack_pivot-confirmation-04",
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "register": "rcx",
+      "sequence": 4,
+      "stratum": "stack_pivot"
+    }
+  ]
+}

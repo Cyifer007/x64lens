@@ -204,8 +204,16 @@ exist.
 
 ## Sprint 13 Patch 079 score decision
 
-Patch 079 changes no score. Task-qualified generic, System V, and Linux syscall
-role facets remain private and unscored. Syscall-number and pivot semantics keep
-their existing scores/treatment. LC-08B must separately justify any score or
-null-policy change with represented effects, task evidence, fixture updates,
-and campaign restart rules.
+Patch 079 changes no score. `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` qualify only as private task-value evidence and remain
+unscored. The task gate defers `syscall_number` and `stack_pivot`; their existing
+scores and runtime treatment remain unchanged. LC-08B must separately justify
+any score or null-policy change with represented effects, task evidence,
+fixture updates, and campaign restart rules.
+
+## Sprint 13 Patch 080 score decision
+
+Patch 080 changes no score. The three qualified private role facets improve
+contextual task answers but do not calibrate relative candidate utility. Existing
+scores remain unchanged and newly represented exact-only roles remain `null`.
+Any future score decision requires an independent ranking and compatibility gate.

@@ -3,8 +3,8 @@
 ## Status
 
 Recorded as the Patch 077 implementation decision. Patch 077 did not complete
-acceptance; its review required the Patch 078 closeout correction and Sprint 13
-entry candidate.
+acceptance; its review required Patch 078. Patch 078's review then required the
+Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 
 ## Context
 
@@ -54,9 +54,9 @@ The patch makes these decisions:
 8. **Host build isolation.** Docker test and validation targets use image-owned
    source and build outputs rather than overwriting the host native build tree.
 9. **Closeout remains evidence-gated.** Patch 077 was a closeout candidate, not
-   automatic Sprint 12 acceptance. Patch 078 is the current correction and
-   Sprint 13 entry candidate; activation still requires its complete aggregate
-   and independent acceptance against the exact source.
+   automatic Sprint 12 acceptance. Patch 078 was the Sprint 13 entry candidate
+   and required correction. Patch 079 was the corrective and private task-value candidate; its review required Patch 080; activation still requires complete acceptance against
+   its exact source.
 
 ## Preserved architecture
 
@@ -92,12 +92,12 @@ Acceptance requires:
 - strict ShellCheck;
 - exact package application, double-application rejection, rollback, and source
   recovery; and
-- independent non-documentation acceptance.
+- independent exact-source acceptance.
 
 ## Consequences
 
 Sprint 12 may close with the public role/property and dynamic-metadata policies
-still deferred. Sprint 13 then owns generic exact-pop roles, Linux syscall
-`r10`, release-facing score/null policy, and only measured bounded semantic
-additions. A changed task definition still requires a new diagnostic campaign
-identity.
+still deferred. Patch 079 qualifies three role facets only as private task-value
+evidence and defers `syscall_number` and `stack_pivot`; LC-08B owns later
+runtime, public, and score decisions. A changed task definition still requires
+a new diagnostic campaign identity.

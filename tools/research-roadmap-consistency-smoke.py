@@ -80,10 +80,10 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Patch 079 task-value closeout candidate, pending complete acceptance",
+        "Patch 080 private register-role closeout candidate, pending complete acceptance",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Patch 079 task-value candidate; activation pending complete Patch 079 acceptance",
+        "Patch 080 private register-role candidate; activation pending complete Patch 080 acceptance",
         "Patch 080",
     ),
     "docs/benchmark-methodology.md": (

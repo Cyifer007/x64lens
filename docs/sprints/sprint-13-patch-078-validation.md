@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation candidate pending complete acceptance.
+Historical candidate. Independent review returned
+`require_smallest_corrective_patch`; Patch 079 is the resulting corrective and
+private task-value candidate, pending complete acceptance.
 
 ## Purpose
 
@@ -100,15 +102,13 @@ metadata member.
 
 ## Acceptance
 
-Patch 078 is accepted only when the complete native and Docker gates, both
-private parity planes, source/delivery integrity, final package lifecycle, and
-independent non-documentation acceptance all pass against this exact source
-tree.
-
-Patch 078 review required Patch 079 to correct the remaining Docker, Git-less
+Patch 078 did not complete acceptance. Its review required Patch 079 to correct
+the remaining Docker, Git-less
 custody, independent-build parity, recovery, patch-transaction, and loose-
-delivery findings. Patch 079 executes blinded register-role task-value
-qualification
-before any runtime-semantic, public-field, or score projection. Any such
-projection is a separate behavior patch and restarts every affected diagnostic
-task identity.
+delivery findings. Patch 079 also executes the deterministically A/B
+label-permuted register-role task-value
+gate: `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` qualify only as private task-value evidence, while
+`syscall_number` and `stack_pivot` remain deferred. LC-08B owns any later
+runtime-semantic, public-field, or score decision. Any such behavior change
+restarts every affected diagnostic task identity.

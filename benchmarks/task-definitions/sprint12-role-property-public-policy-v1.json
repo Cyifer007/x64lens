@@ -6,7 +6,7 @@
   "policy_style": "non-reinterpretive",
   "schema_version": "0.2.0",
   "decision": "defer",
-  "decision_reason": "Patch 076 extends the shared PHDR/private-context path with distinct private DT_RPATH and DT_RUNPATH evidence and therefore requires a fresh native/Docker acceptance run plus isolated role/property and dynamic-metadata parity. Build-origin, consumer-task-value, and schema-compatibility gates remain open, so no public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, or RUNPATH projection is authorized.",
+  "decision_reason": "Patch 080 preserves the bounded private role/property, text-relocation, RPATH, and RUNPATH facts, corrects the Patch 079 evidence and custody blockers, and adds a private candidate-indexed register-role side-car. The corrected task-value gate supports only private additive role facets. Fresh native/Docker acceptance, qualified parity, public-consumer compatibility, and an explicit public-value gate remain open, so no public PIE/DSO, IBT, SHSTK, text-relocation, RPATH, RUNPATH, or register-role projection is authorized.",
   "existing_public_surface": {
     "coarse_pie_field": "mitigations.pie",
     "coarse_pie_meaning": "Existing ET_DYN-based indicator; unchanged by this decision.",
@@ -44,7 +44,7 @@
     "src/mitigations.asm": "5c97c56cda54cf056abd2075c3c6d2f44b425169f51493ba87fc2c0bf375f5af",
     "include/constants.inc": "7e8ff788ec990ef2ed6e9a72c761f0e766da1a2366e529cd5904710796e739ce",
     "include/elf64.inc": "ddd4afe9577f126fde478a5b645c4b0afd69c0e171fdc5b109dabfe1d5a742ef",
-    "include/structs.inc": "3122ae88690313440bac2cbd7becb998f6aa81f1736c1f5c674beb443c02757b",
+    "include/structs.inc": "5dd2ca79ede178b7834ccd4f32d9815daf86977d860c9903c144c32fad718691",
     "src/phdr.asm": "a0e5283a429594770c7da48a235fc5bb3e948da1ab9e6e2d1b9ee8904a55120e",
     "src/binary_role.asm": "1e3310e4565ad9af4d76143ecbb761294f87819a74781db957af3c6be923a6e4",
     "src/gnu_property.asm": "2270789694e3cc17a9581027985de303de79504f822c958204b0cc7c8617b16d",
@@ -66,20 +66,20 @@
     {
       "id": "isolated-native-container-private-fact-parity",
       "required_for_authorization": true,
-      "status": "pending_patch076_local_acceptance",
-      "evidence": "Patch 076 changes PHDR analysis and the composite private context; fresh WSL2 role/property and dynamic-metadata parity runs are required."
+      "status": "pending_patch080_local_acceptance",
+      "evidence": "Patch 080 changes the private role plane and command arena; fresh WSL2 role/property and dynamic-metadata parity are required."
     },
     {
       "id": "build-origin-separation",
       "required_for_authorization": true,
-      "status": "open",
-      "evidence": "Environment parity and compiler/build-origin effects remain separate experiments."
+      "status": "pending_patch080_local_acceptance",
+      "evidence": "Independent native/container build mechanics are implemented; actual exact-source execution remains an acceptance gate."
     },
     {
       "id": "consumer-task-value",
       "required_for_authorization": true,
-      "status": "open",
-      "evidence": "No held-out defensive task has yet established value for a new public role/property projection."
+      "status": "passed_private_role_value_not_public_projection",
+      "evidence": "The corrected 60-query task gate qualifies three private facets only; it does not establish public-consumer compatibility or score value."
     },
     {
       "id": "schema-compatibility-and-default-byte-parity",
@@ -108,6 +108,6 @@
     "add_public_ibt_field": false,
     "add_public_shstk_field": false,
     "claim_runtime_cet_enforcement": false,
-    "next_owner": "post-Patch-076 acceptance and closeout reconciliation; reopen only after corrected accepted parity, task-value, and compatibility evidence"
+    "next_owner": "post-Patch-080 acceptance; reopen public projection only through a separate compatibility and consumer-value gate"
   }
 }

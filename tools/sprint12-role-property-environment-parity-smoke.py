@@ -686,17 +686,17 @@ def build_container_command(
         "set -euo pipefail; "
         "python3 /work/tools/gitless-source-manifest.py verify "
         "--root /work --manifest /x64lens-source-manifest.json; "
-        "rm -rf /tmp/x64lens-role-build; mkdir /tmp/x64lens-role-build; "
-        "cp -a /work/. /tmp/x64lens-role-build/; "
-        "chmod -R u+rwX /tmp/x64lens-role-build; "
-        "cd /tmp/x64lens-role-build; "
+        "rm -rf /x64lens-build/repo; mkdir /x64lens-build/repo; "
+        "cp -a /work/. /x64lens-build/repo/; "
+        "chmod -R u+rwX /x64lens-build/repo; "
+        "cd /x64lens-build/repo; "
         "make clean; make; make build/tests/role-property-fact-probe; "
         "python3 /work/tools/sprint12-role-property-environment-parity-smoke.py plane "
         "--environment-id container --execution-stratum container "
         "--heldout-result /heldout "
-        "--analyzer /tmp/x64lens-role-build/build/x64lens "
+        "--analyzer /x64lens-build/repo/build/x64lens "
         "--schema /work/schemas/x64lens-report.schema.json "
-        "--fact-probe /tmp/x64lens-role-build/build/tests/role-property-fact-probe "
+        "--fact-probe /x64lens-build/repo/build/tests/role-property-fact-probe "
         "--build-origin container-image-build "
         f"--candidate-tree {candidate_tree} --image-id {image_id} "
         "--result-dir /output/plane; "
@@ -708,7 +708,8 @@ def build_container_command(
         "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1",
         "-e", "LC_ALL=C", "-e", "LANG=C", "-e", "TZ=UTC",
         "-e", f"X64LENS_CANDIDATE_TREE={candidate_tree}",
-        "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m",
+        "--tmpfs", "/tmp:rw,nosuid,nodev,size=128m",
+        "--tmpfs", "/x64lens-build:rw,exec,nosuid,nodev,size=512m",
         "-v", f"{heldout}:/heldout:ro",
         "-v", f"{container_write_root}:/output:rw",
         "-w", "/tmp",

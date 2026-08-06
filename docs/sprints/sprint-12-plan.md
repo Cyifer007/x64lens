@@ -2,7 +2,7 @@
 
 ## Status
 
-Patch 079 task-value closeout candidate, pending complete acceptance. Patch 078
+Patch 080 private register-role closeout candidate, pending complete acceptance. Patch 078
 preserved the private loader, dynamic-metadata, and register-role facts but its
 review found remaining Docker caller, Git-less custody, independent parity-build,
 recovery, patch-transaction, and loose-delivery blockers. Patch 079 corrects
@@ -10,9 +10,9 @@ those boundaries and executes the five independent register-role task-value
 strata without changing analyzer runtime behavior, public output, schema `0.2.0`,
 or scores.
 
-Sprint 12 remains the active acceptance authority until Patch 079 passes fresh
+Sprint 12 remains the active acceptance authority until Patch 080 passes fresh
 native, Docker, both private parity planes, strict ShellCheck, delivery integrity,
-and independent non-documentation acceptance. A passing Patch 079 closes Sprint
+and independent exact-source acceptance. A passing Patch 079 closes Sprint
 12 and activates Sprint 13. Qualified task-value facets remain private and
 unscored; LC-08B owns any later runtime, public, or score projection.
 
@@ -23,11 +23,13 @@ private text-relocation and distinct RPATH/RUNPATH evidence, corrected parity
 protocols, the private role lattice, and the register-role task-value gate.
 Public schema `0.2.0` remains unchanged.
 
-Related current records:
+Related chronology and current records:
 - [ADR 0064](../adr/0064-patch077-correction-and-sprint13-register-role-entry.md)
 - [Patch 078 validation](sprint-13-patch-078-validation.md)
 - [ADR 0065](../adr/0065-patch078-correction-and-register-role-task-value.md)
 - [Patch 079 validation](sprint-13-patch-079-validation.md)
+- [ADR 0066](../adr/0066-patch079-correction-and-private-register-role-sidecar.md)
+- [Patch 080 validation](sprint-13-patch-080-validation.md)
 
 ## Sprint goal
 
@@ -154,7 +156,8 @@ that would otherwise corrupt corpus labels or defensive triage.
 17. **Patch 078:** correct the remaining Patch 077 transaction, cleanup,
     Docker-source, comparator, parity, and delivery blockers; freeze the private
     multi-role exact-pop entry decision for Sprint 13; and retain zero public
-    field and score changes pending acceptance and blinded task-value evidence.
+    field and score changes pending acceptance and deterministically A/B
+    label-permuted task-value evidence.
 18. **Patch 079:** correct the remaining Patch 078 acceptance blockers, execute
     the five independent register-role task-value strata, retain qualified
     facets privately, and leave runtime/public/score projection to LC-08B.
@@ -178,10 +181,12 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After Patch 078 passes the complete acceptance gate, Sprint 13 continues from
-its private role-decision authority into blinded task-value evidence. Generic
-register control, System V call arguments, Linux syscall arguments including
-`r10`, the syscall-number role, and `rsp` pivot semantics remain distinct.
+After exact Patch 080 acceptance, Sprint 13 continues from its private role and
+task-value authorities into the separate LC-08B policy gate.
+`generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify
+only as private task-value evidence; `syscall_number` and `stack_pivot` remain
+deferred. System V argument 4 remains `rcx`, while Linux syscall argument 4
+remains `r10`.
 Release-facing score/null policy and any bounded family addition still require
 separate evidence. Any changed task definition receives a new diagnostic campaign identity.
 Sprint 14 remains the optional decoder/concurrency ablation stage, and Sprint 15

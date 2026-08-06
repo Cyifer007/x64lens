@@ -388,7 +388,14 @@
 ; consumed by scoring and reporters. It adds exactly 96 KiB at capacity.
 %define CANDIDATE_EFFECT_ARENA_BYTES     (CANDIDATE_EFFECT_RECORD_SIZE * GADGET_RECORD_MAX)
 %define CANDIDATE_EFFECT_RECORD_ALIGN    16
-%define ANALYSIS_RECORD_ARENA_BYTES      (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES + MEMORY_EFFECT_ARENA_BYTES + CANDIDATE_EFFECT_ARENA_BYTES)
+
+; Sprint 13 Patch 080 additive private register-role side-car.  The compact
+; qword mask is keyed by candidate index and records contextual role facets
+; without redefining the existing semantic class, score, or report schema.
+; It adds exactly 32 KiB at the 4096-candidate boundary.
+%define CANDIDATE_ROLE_ARENA_BYTES       (CANDIDATE_ROLE_RECORD_SIZE * GADGET_RECORD_MAX)
+%define CANDIDATE_ROLE_RECORD_ALIGN      8
+%define ANALYSIS_RECORD_ARENA_BYTES      (GADGET_RECORD_ARENA_BYTES + CANDIDATE_EVIDENCE_ARENA_BYTES + MEMORY_EFFECT_ARENA_BYTES + CANDIDATE_EFFECT_ARENA_BYTES + CANDIDATE_ROLE_ARENA_BYTES)
 
 ; raw scanner terminator types
 %define GADGET_TERM_RET               1
@@ -515,6 +522,30 @@
 %define CANDIDATE_EFFECT_REGS_WRITTEN             8
 %define CANDIDATE_EFFECT_DESCRIPTOR               16
 %define CANDIDATE_EFFECT_RECORD_SIZE              24
+
+; candidate_role_record offsets and masks
+;
+; The record is private and additive.  It does not replace semantic_class,
+; registers_controlled, candidate effects, or scoring.  A register may carry
+; multiple contextual roles simultaneously.  RSP remains a pivot rather than a
+; generic non-stack register-control facet.
+%define CANDIDATE_ROLE_MASK                       0
+%define CANDIDATE_ROLE_RECORD_SIZE                8
+
+%define CANDIDATE_ROLE_GENERIC_CONTROL            (1 << 0)
+%define CANDIDATE_ROLE_SYSV_ARG1                  (1 << 8)
+%define CANDIDATE_ROLE_SYSV_ARG2                  (1 << 9)
+%define CANDIDATE_ROLE_SYSV_ARG3                  (1 << 10)
+%define CANDIDATE_ROLE_SYSV_ARG4                  (1 << 11)
+%define CANDIDATE_ROLE_SYSV_ARG5                  (1 << 12)
+%define CANDIDATE_ROLE_SYSV_ARG6                  (1 << 13)
+%define CANDIDATE_ROLE_SYSCALL_ARG1               (1 << 16)
+%define CANDIDATE_ROLE_SYSCALL_ARG2               (1 << 17)
+%define CANDIDATE_ROLE_SYSCALL_ARG3               (1 << 18)
+%define CANDIDATE_ROLE_SYSCALL_ARG4               (1 << 19)
+%define CANDIDATE_ROLE_SYSCALL_ARG5               (1 << 20)
+%define CANDIDATE_ROLE_SYSCALL_ARG6               (1 << 21)
+%define CANDIDATE_ROLE_MASK_ALLOWED               0x00000000003f3f01
 
 %define CANDIDATE_EFFECT_FLAG_PRESENT             (1 << 0)
 %define CANDIDATE_EFFECT_FLAG_MODEL_COMPLETE      (1 << 1)

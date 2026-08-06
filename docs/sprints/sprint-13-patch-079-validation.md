@@ -2,11 +2,17 @@
 
 ## Status
 
-Implementation candidate pending complete native, Docker, parity, strict-lint, delivery, and independent non-documentation acceptance.
+Patch 078's review required a smallest corrective patch. Patch 079 is the
+resulting corrective and private task-value candidate, pending the complete
+documented Patch 079 acceptance gate against the exact committed source.
 
 ## Scope
 
-Patch 079 is the smallest cohesive correction for the Patch 078 acceptance findings and the first Sprint 13 task-value gate. It changes development, validation, Docker, recovery, custody, permission, transaction, benchmark-authority, and documentation files. It changes no tracked path under `src/`, `include/`, or `schemas/`.
+Patch 079 is the smallest cohesive correction for the Patch 078 acceptance
+findings and the first Sprint 13 task-value gate. It changes development,
+validation, Docker, recovery, custody, permission, transaction,
+benchmark-authority, and documentation files. It changes no tracked path under
+`src/`, `include/`, or `schemas/`.
 
 The patch:
 
@@ -34,7 +40,7 @@ score changes:                       0
 target execution:                    never
 ```
 
-## Focused cloud-supported gates
+## Focused gates
 
 ```bash
 python3 -m py_compile \
@@ -81,14 +87,20 @@ sysv_call_arguments
 linux_syscall_arguments
 ```
 
-Retained existing facets:
+Deferred task-value strata:
 
 ```text
 syscall_number
 stack_pivot
 ```
 
-## Complete WSL2 acceptance
+The five strata are independent and cannot be pooled. The `confirmation tasks`
+label names the untouched partition in this private gate; the resulting evidence
+remains diagnostic, unfrozen, non-confirmatory, and publication-ineligible.
+Within the private role evidence, `rcx` is System V call argument 4 and `r10` is
+Linux syscall argument 4.
+
+## Complete acceptance gates
 
 ```bash
 make fix-perms
@@ -120,10 +132,18 @@ The Docker build must use a fresh tag and must report an immutable image ID and 
 - Task-value strata are evaluated separately. No aggregate total can rescue a failed stratum.
 - A qualified task-value stratum does not authorize runtime projection, public output, or scoring.
 
-## Expected final banner
+Raw candidate facts, exact-suffix facts, semantic-exact facts, unknown facts,
+future decoder-backed facts, and scored facts remain distinct. A qualified
+private facet does not authorize promotion between them. Patch 079 supports no
+performance, peak-RSS, coverage-superiority, enforcement, exploitability,
+stealth, or universal-deployment claim.
+
+## Expected candidate-aggregate banner
 
 ```text
 sprint13-p079-acceptance-smoke: ok patch=79 sprint12=closed sprint13=active qualified-private-facets=3 deferred-facets=2 public-fields-added=0 score-changes=0
 ```
 
-Sprint 12 closes and Sprint 13 becomes active only after this aggregate and the independent Lane A review return success for the exact committed candidate.
+This banner is an aggregate result, not independent acceptance or chronology
+authority. Sprint 12 closes and Sprint 13 becomes active only after the complete
+Patch 079 acceptance boundary passes against the exact committed candidate.

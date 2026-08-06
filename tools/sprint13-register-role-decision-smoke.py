@@ -5,7 +5,7 @@ Patch 078 deliberately queries existing exact-pattern and architectural-effect
 facts instead of allocating duplicate runtime role state.  The authority keeps
 generic register control, SysV call arguments, Linux syscall arguments, syscall
 number control, and stack pivoting as additive facets.  It authorizes no public
-field or score change before the blinded task-value gate.
+field or score change before the corrected task-value and policy gates.
 """
 from __future__ import annotations
 
@@ -103,7 +103,7 @@ def validate(authority: dict[str, Any], *, authenticate_sources: bool = True) ->
     }.items():
         exact_int(contract.get(key), expected, key)
     exact_bool(contract.get("schema_changed"), False, "schema_changed")
-    require(contract.get("task_value_gate") == "pending_blinded_role_queries", "task-value gate")
+    require(contract.get("task_value_gate") in {"pending_blinded_role_queries", "pending_corrected_role_queries"}, "task-value gate")
 
     roles = authority["register_roles"]
     require(isinstance(roles, list) and len(roles) == 16, "register-role count")
@@ -146,6 +146,12 @@ def validate(authority: dict[str, Any], *, authenticate_sources: bool = True) ->
     require(sum(item["generic_register_control"] for item in roles) == 15, "generic-control denominator")
     require(sum(item["sysv_call_argument_index"] is not None for item in roles) == 6, "call-argument denominator")
     require(sum(item["linux_syscall_argument_index"] is not None for item in roles) == 6, "syscall-argument denominator")
+    expected_sysv = {"rdi": 1, "rsi": 2, "rdx": 3, "rcx": 4, "r8": 5, "r9": 6}
+    expected_syscall = {"rdi": 1, "rsi": 2, "rdx": 3, "r10": 4, "r8": 5, "r9": 6}
+    actual_sysv = {register: item["sysv_call_argument_index"] for register, item in records.items() if item["sysv_call_argument_index"] is not None}
+    actual_syscall = {register: item["linux_syscall_argument_index"] for register, item in records.items() if item["linux_syscall_argument_index"] is not None}
+    require(actual_sysv == expected_sysv, "complete SysV ABI argument map changed")
+    require(actual_syscall == expected_syscall, "complete Linux syscall ABI argument map changed")
     require(records["rcx"]["sysv_call_argument_index"] == 4 and records["rcx"]["linux_syscall_argument_index"] is None,
             "RCX call/syscall distinction collapsed")
     require(records["r10"]["sysv_call_argument_index"] is None and records["r10"]["linux_syscall_argument_index"] == 4,
@@ -186,6 +192,8 @@ def negative_oracles(authority: dict[str, Any]) -> int:
     value = copy.deepcopy(authority); next(item for item in value["register_roles"] if item["register"] == "r10")["sysv_call_argument_index"] = 4; mutations.append(value)
     value = copy.deepcopy(authority); next(item for item in value["register_roles"] if item["register"] == "rcx")["linux_syscall_argument_index"] = 4; mutations.append(value)
     value = copy.deepcopy(authority); next(item for item in value["register_roles"] if item["register"] == "r10")["score"] = 90; mutations.append(value)
+    value = copy.deepcopy(authority); next(item for item in value["register_roles"] if item["register"] == "rdx")["sysv_call_argument_index"] = None; next(item for item in value["register_roles"] if item["register"] == "r13")["sysv_call_argument_index"] = 3; mutations.append(value)
+    value = copy.deepcopy(authority); next(item for item in value["register_roles"] if item["register"] == "rdx")["linux_syscall_argument_index"] = None; next(item for item in value["register_roles"] if item["register"] == "r13")["linux_syscall_argument_index"] = 3; mutations.append(value)
     value = copy.deepcopy(authority); value["decision_contract"]["new_public_fields"] = 1; mutations.append(value)
     rejected = 0
     for mutation in mutations:

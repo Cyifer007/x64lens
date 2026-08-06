@@ -2,9 +2,10 @@
 
 ## Status
 
-Recorded as the Patch 078 implementation decision, pending complete native,
-Docker, parity, delivery, and independent acceptance against the exact
-candidate.
+Recorded as the Patch 078 implementation decision. Patch 078 did not complete
+acceptance; Patch 079 supplied the resulting corrective and private task-value
+candidate. Patch 079's review required Patch 080, which remains pending complete
+acceptance against the exact committed source.
 
 ## Context
 
@@ -68,7 +69,8 @@ syscall argument. These facets are not interchangeable.
 Patch 078 does not change classifier output, scores, JSON, text output, schema
 `0.2.0`, or public mitigation fields. Existing public semantic classes and
 scores remain unchanged. The newly recorded role facets are private decision
-facts and remain unscored. Patch 079 executes blinded task-value qualification
+facts and remain unscored. Patch 079 executes deterministically A/B
+label-permuted task-value qualification
 before any runtime-semantic, public-field, or score projection.
 
 ## Preserved boundaries
@@ -88,15 +90,17 @@ before any runtime-semantic, public-field, or score projection.
 
 ## Consequences
 
-Patch 078 can close the Patch 077 acceptance blockers without modifying the
-analyzer runtime. Sprint 12 remains pending until the Patch 078 acceptance gate
-passes. Sprint 13 has an authenticated entry decision; acceptance alone does
-not qualify runtime or public projection of the private role facets.
+Patch 078 addressed the Patch 077 acceptance blockers without modifying the
+analyzer runtime, but did not complete acceptance. Sprint 12 remains active and
+Sprint 13 remains an entry candidate pending exact Patch 080 acceptance. The authenticated
+entry decision alone does not qualify runtime or public projection of the
+private role facets.
 
-Patch 079 must preregister and run blinded role-query task-value qualification
-before any runtime-semantic, public-field, or score projection. Any such
-projection must update fixtures, effects, validators, documentation, task
-definitions, and diagnostic campaign identity.
+Patch 079 has now run the deterministically presentation-ordered role-query
+task-value gate. Three facets qualify only as private task-value evidence and
+two remain deferred. LC-08B owns any later runtime-semantic, public-field, or
+score decision; any such behavior change must update fixtures, effects,
+validators, documentation, task definitions, and diagnostic campaign identity.
 
 ## Validation
 
@@ -112,7 +116,8 @@ make docker-validation-smoke
 make sprint13-p078-acceptance-smoke
 ```
 
-Complete acceptance requires an authenticated source, native build and test
+The historical Patch 078 acceptance boundary required an authenticated source,
+native build and test
 gates, strict ShellCheck, Docker aggregates, both private-fact parity planes,
-the exact package lifecycle, and independent non-documentation acceptance
-against the exact Patch 078 source.
+the exact package lifecycle, and independent exact-source acceptance
+against the exact Patch 078 source. Its review instead required Patch 079.

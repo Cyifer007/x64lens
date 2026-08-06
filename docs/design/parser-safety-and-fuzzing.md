@@ -348,9 +348,8 @@ rejected current acceptance; Patch 073 supplied the first custody correction.
 Patch 074 implemented the remaining topology, hardlink, inode, parity,
 permission, and authority corrections but was superseded. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
-RPATH/RUNPATH evidence. Patch 076's review required the Patch 077 correction.
-Patch 077's review required the Patch 078 closeout correction and Sprint 13
-entry candidate, which remains pending complete acceptance.
+RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077's
+review required Patch 078, whose review required Patch 079; Patch 079 review required Patch 080, which remains pending complete acceptance.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -459,3 +458,10 @@ custody, fail-fast Docker reconstruction, independent parity builds, exact
 post-effect Git recovery, and foreign-descendant preservation. Parser capacity
 and malformed-input behavior remain unchanged and continue through the normal
 validation aggregate.
+
+## Patch 080 role-materializer safety boundary
+
+The role materializer does not parse target bytes or ELF metadata. It validates
+candidate count/capacity and reconciles each exact single-pop pattern ID with its
+ordered register fact before writing a bounded role mask. Contradictory internal
+facts return `EXIT_BOUNDS` before report emission.

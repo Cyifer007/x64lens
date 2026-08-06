@@ -113,8 +113,9 @@ def main() -> int:
         "candidate_evidence_record_bytes": 56,
         "memory_effect_record_bytes": 16,
         "candidate_effect_record_bytes": 24,
+        "candidate_role_record_bytes": 8,
         "candidate_capacity": 4096,
-        "analysis_arena_bytes": 851968,
+        "analysis_arena_bytes": 884736,
     }
     if profile != expected_profile:
         fail(f"exact catalog reference profile mismatch: {profile!r}")
@@ -123,7 +124,7 @@ def main() -> int:
         "tool_version", "report_schema", "candidate_capacity",
         "gadget_record_bytes", "candidate_evidence_record_bytes",
         "memory_effect_record_bytes", "candidate_effect_record_bytes",
-        "analysis_arena_bytes",
+        "candidate_role_record_bytes", "analysis_arena_bytes",
     ):
         if semantic_profile.get(key) != expected_profile.get(key):
             fail(f"semantic/exact reference profile disagreement for {key}")

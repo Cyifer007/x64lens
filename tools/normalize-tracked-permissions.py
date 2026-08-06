@@ -34,6 +34,7 @@ class RepoBinding:
     requested:Path; root_fd:int; git_fd:int; root_identity:Identity; git_identity:Identity
 
 _TEST_AFTER_ROOT_BIND_BEFORE_INDEX_HOOK:Callable[[Path],None]|None=None
+_TEST_GITLESS_AFTER_MUTATION_HOOK:Callable[[Path],None]|None=None
 
 def require(c:bool,m:str)->None:
     if not c: raise PermissionErrorContract(m)
@@ -189,6 +190,10 @@ def normalize(repo:Path)->tuple[int,int]:
                     st=os.fstat(fd); require(identity(st)==ident_expected,f"tracked directory identity changed after normalization: {directory or '.'}")
                     require(stat.S_IMODE(st.st_mode)==0o755,f"tracked directory mode normalization failed: {directory or '.'}")
                 finally: os.close(fd)
+            # Final Git/root reauthentication belongs to the rollback region.
+            # A late .git or caller-visible root substitution must restore all
+            # completed mode changes before the command reports failure.
+            reauthenticate_repo(binding)
         except BaseException as exc:
             errors=[]
             for mutation in reversed(mutations):
@@ -199,7 +204,6 @@ def normalize(repo:Path)->tuple[int,int]:
                 except BaseException as rollback_exc: errors.append(f"{mutation.path}: {rollback_exc}")
             suffix=f"; rollback failures: {errors}" if errors else ""
             raise PermissionErrorContract(f"permission normalization failed: {exc}{suffix}") from exc
-        reauthenticate_repo(binding)
         return changed_files,changed_dirs
     finally:
         for fd in list(open_mutation_fds):
@@ -244,10 +248,24 @@ def verify_gitless_source(repo:Path, manifest_path:Path)->tuple[int,int]:
     spec.loader.exec_module(module)
     manifest=module.load_manifest(manifest_path)
     require(manifest.get("schema")==module.SCHEMA,"unsupported Git-less source manifest")
+    require(
+        set(manifest)=={"schema","candidate_tree","root_mode","directories","files","git_metadata_required"}
+        and manifest.get("git_metadata_required") is False,
+        "invalid Git-less source manifest shape",
+    )
     expected_tree=os.environ.get("X64LENS_CANDIDATE_TREE")
     if expected_tree:
         require(manifest.get("candidate_tree")==expected_tree,"Git-less candidate tree disagrees with environment authority")
+    # The manifest must independently derive its advertised Git tree.  This
+    # rejects an authority that omits a tracked file while retaining the old
+    # candidate-tree string, even when generated build members are present.
+    require(
+        module.derive_tree(manifest.get("files"),manifest.get("directories"))==manifest.get("candidate_tree"),
+        "Git-less source manifest does not derive its candidate tree",
+    )
 
+    visible_root_before=os.lstat(repo)
+    require(stat.S_ISDIR(visible_root_before.st_mode) and not repo.is_symlink(),"Git-less source root is not a real directory")
     root_fd=os.open(repo,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)
     owner=os.geteuid(); mutations:list[Mutation]=[]; retained:set[int]=set()
     try:
@@ -305,6 +323,9 @@ def verify_gitless_source(repo:Path, manifest_path:Path)->tuple[int,int]:
                 fd=open_regular(root_fd,record.path,expected_dirs,expected_files[record.path]); retained.add(fd)
                 os.fchmod(fd,record.expected_mode); mutations.append(Mutation(record.path,fd,file_modes[record.path],expected_files[record.path]))
 
+            if _TEST_GITLESS_AFTER_MUTATION_HOOK is not None:
+                _TEST_GITLESS_AFTER_MUTATION_HOOK(repo)
+
             final_seen:dict[tuple[int,int],str]={}
             for record in records:
                 st=lstat_bound(root_fd,record.path,expected_dirs); ident=identity(st)
@@ -322,6 +343,12 @@ def verify_gitless_source(repo:Path, manifest_path:Path)->tuple[int,int]:
                     require(identity(os.fstat(fd))==expected,f"Git-less directory identity changed: {directory or '.'}")
                     require(stat.S_IMODE(os.fstat(fd).st_mode)==0o755,f"Git-less directory mode normalization failed: {directory or '.'}")
                 finally: os.close(fd)
+            visible_fd=os.open(repo,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)
+            try:
+                require(stable_identity(identity(os.fstat(visible_fd)),root_id),"caller-visible Git-less source root changed")
+                require(stable_identity(identity(visible_root_before),root_id),"initial Git-less source root disagrees with retained descriptor")
+            finally:
+                os.close(visible_fd)
         except BaseException as exc:
             errors=[]
             for mutation in reversed(mutations):

@@ -1,0 +1,146 @@
+{
+  "acceptance": {
+    "lane_a_acceptance_required": true,
+    "native_and_docker_validation_required": true,
+    "non_pop_role_mask_zero": true,
+    "private_sidecar_not_consumed_by_reporters": true,
+    "private_sidecar_not_consumed_by_scoring": true,
+    "r10_syscall_arg4_and_not_sysv_arg4": true,
+    "rcx_sysv_arg4_and_not_syscall_arg4": true,
+    "role_masks_exact_for_all_16_single_pops": true
+  },
+  "deferred_existing_roles": {
+    "new_private_role_bits": 0,
+    "stack_pivot": "retain_existing_stack_pivot_semantics_and_scores",
+    "syscall_number": "retain_existing_syscall_num_control_semantic_and_score"
+  },
+  "limitations": [
+    "The role mask is private implementation evidence and is not a public report contract.",
+    "Exact-pop role facts remain semantic-exact and do not establish full-window decoded validity.",
+    "Register control does not prove reachability, a usable chain, vulnerability, or exploitability.",
+    "Task-value evidence is diagnostic and not publication eligible.",
+    "Score and public projection remain separate future gates."
+  ],
+  "patch": 80,
+  "policy_cells": [
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "generic_control",
+      "rationale": "The corrected task gate shows incremental value for non-RSP exact-pop control while semantic classes remain contextual.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "generic_control",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "generic_control",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    },
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "sysv_call_arguments",
+      "rationale": "The corrected task gate preserves the complete System V mapping, including RCX as call argument four.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "sysv_call_arguments",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "sysv_call_arguments",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    },
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "linux_syscall_arguments",
+      "rationale": "The corrected task gate preserves the Linux mapping, including R10 as syscall argument four and excluding RCX.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "linux_syscall_arguments",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "linux_syscall_arguments",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    }
+  ],
+  "private_storage": {
+    "analysis_arena_bytes_after": 884736,
+    "analysis_arena_bytes_before": 851968,
+    "arena_bytes": 32768,
+    "candidate_capacity": 4096,
+    "candidate_effect_record_unchanged": true,
+    "candidate_index_is_implicit_key": true,
+    "record": "candidate_role_record",
+    "record_bytes": 8,
+    "scanner_record_unchanged": true
+  },
+  "public_boundary": {
+    "candidate_count_changes": 0,
+    "candidate_order_changes": 0,
+    "capacity_semantics_changed": false,
+    "full_sequence_validity_changed": false,
+    "public_json_fields_added": 0,
+    "public_text_fields_added": 0,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_classifier_changes": 0
+  },
+  "purpose": "Execute LC-08B separately across private runtime, public output, and score surfaces after the corrected disjoint-query task-value gate.",
+  "schema": "x64lens-sprint13-register-role-policy-v1",
+  "source_authorities": [
+    {
+      "path": "benchmarks/task-definitions/sprint13-register-role-task-value-v2.json",
+      "sha256": "90ab4a95dec29b349400c41407c4addb96ff9f3bdc371b3446b731e5d9a09afa"
+    },
+    {
+      "path": "tests/expected/sprint13-register-role-task-value-v2.json",
+      "sha256": "5fe92babef798597ef2b0455087e205853b978dd7463c22db33132147cca3af8"
+    },
+    {
+      "path": "benchmarks/task-definitions/sprint13-register-role-decision-v1.json",
+      "sha256": "f5b92def1601d54e2f5b78badd99052c6a39f438eeb9b6769b25c537d6f85ccc"
+    },
+    {
+      "path": "include/structs.inc",
+      "sha256": "5dd2ca79ede178b7834ccd4f32d9815daf86977d860c9903c144c32fad718691"
+    },
+    {
+      "path": "src/candidate_role.asm",
+      "sha256": "d8608e0e4203aa4062d679151bb469cc2c2fad055022ed33ca8745bd872a8ff8"
+    }
+  ],
+  "sprint": 13,
+  "status": "private_projection_candidate_pending_acceptance",
+  "task_value_input": {
+    "deferred_facets": [
+      "syscall_number",
+      "stack_pivot"
+    ],
+    "development_confirmation_queries_disjoint": true,
+    "human_blind_claim": false,
+    "path": "tests/expected/sprint13-register-role-task-value-v2.json",
+    "presentation_causal": false,
+    "qualified_private_facets": [
+      "generic_control",
+      "sysv_call_arguments",
+      "linux_syscall_arguments"
+    ],
+    "schema": "x64lens-sprint13-register-role-task-value-result-v2",
+    "sha256": "5fe92babef798597ef2b0455087e205853b978dd7463c22db33132147cca3af8"
+  }
+}

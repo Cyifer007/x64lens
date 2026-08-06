@@ -1,0 +1,1499 @@
+{
+  "aggregate": {
+    "deferred_strata": 2,
+    "incorrect_promotions": 0,
+    "incremental_gains": 26,
+    "qualified_strata": 3,
+    "regressions": 0
+  },
+  "authority_sha256": "c8d72167b8bd43c4aff17b02b0949d58af89074a398aae2695783bab71ed1b73",
+  "denominators": {
+    "confirmation_tasks": 20,
+    "development_tasks": 40,
+    "strata": 5,
+    "tasks": 60,
+    "unique_query_tuples": 60
+  },
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "next_decision": {
+    "owner": "S13-P080-LC-08B",
+    "public_projection_authorized": false,
+    "qualified_private_facets": [
+      "generic_control",
+      "sysv_call_arguments",
+      "linux_syscall_arguments"
+    ],
+    "retained_existing_facets": [
+      "syscall_number",
+      "stack_pivot"
+    ],
+    "runtime_private_projection_authorized": false,
+    "score_change_authorized": false
+  },
+  "patch": 80,
+  "presentation": {
+    "all_profile_answers_generated_before_oracle_scoring": true,
+    "causal_to_scoring_or_decision": false,
+    "human_blind_claim": false,
+    "method": "deterministic_sha256_profile_order"
+  },
+  "public_boundary": {
+    "next_policy_owner": "S13-P080-LC-08B",
+    "passing_stratum_authorizes_public_projection": false,
+    "passing_stratum_authorizes_score": false,
+    "private_role_sidecar_changed_by_gate": false,
+    "public_fields_added": 0,
+    "runtime_classifier_changed_by_gate": false,
+    "schema_changed": false,
+    "score_changes": 0
+  },
+  "publication_eligible": false,
+  "role_authority_sha256": "55544497ef6f059ba3ff5618f2f8e198aed228e1cb7f9fd6dd72299f2e2f0c34",
+  "schema": "x64lens-sprint13-register-role-task-value-result-v2",
+  "sprint": 13,
+  "strata": [
+    {
+      "confirmation_correct": 4,
+      "confirmation_incremental_gains": 4,
+      "confirmation_tasks": 4,
+      "decision": "qualify_private_facet_for_policy_gate",
+      "development_incremental_gains": 3,
+      "development_tasks": 8,
+      "incorrect_promotions": 0,
+      "qualified": true,
+      "regressions": 0,
+      "stratum": "generic_control"
+    },
+    {
+      "confirmation_correct": 4,
+      "confirmation_incremental_gains": 2,
+      "confirmation_tasks": 4,
+      "decision": "qualify_private_facet_for_policy_gate",
+      "development_incremental_gains": 2,
+      "development_tasks": 8,
+      "incorrect_promotions": 0,
+      "qualified": true,
+      "regressions": 0,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "confirmation_correct": 4,
+      "confirmation_incremental_gains": 2,
+      "confirmation_tasks": 4,
+      "decision": "qualify_private_facet_for_policy_gate",
+      "development_incremental_gains": 4,
+      "development_tasks": 8,
+      "incorrect_promotions": 0,
+      "qualified": true,
+      "regressions": 0,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "confirmation_correct": 4,
+      "confirmation_incremental_gains": 0,
+      "confirmation_tasks": 4,
+      "decision": "retain_existing_semantic_or_unknown",
+      "development_incremental_gains": 4,
+      "development_tasks": 8,
+      "incorrect_promotions": 0,
+      "qualified": false,
+      "regressions": 0,
+      "stratum": "syscall_number"
+    },
+    {
+      "confirmation_correct": 4,
+      "confirmation_incremental_gains": 0,
+      "confirmation_tasks": 4,
+      "decision": "retain_existing_semantic_or_unknown",
+      "development_incremental_gains": 5,
+      "development_tasks": 8,
+      "incorrect_promotions": 0,
+      "qualified": false,
+      "regressions": 0,
+      "stratum": "stack_pivot"
+    }
+  ],
+  "tasks": [
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "generic_control-development-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rdi",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "generic_control-development-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rsp",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "generic_control-development-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rax",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-development-04",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "rbx",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-development-05",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r10",
+      "regression": false,
+      "sequence": 5,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-development-06",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r11",
+      "regression": false,
+      "sequence": 6,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "generic_control-development-07",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "r8",
+      "regression": false,
+      "sequence": 7,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "generic_control-development-08",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "r9",
+      "regression": false,
+      "sequence": 8,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r12",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r13",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r14",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "generic_control-confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r15",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "generic_control"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rdi",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rcx",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "sysv_call_arguments-development-03",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r10",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "sysv_call_arguments-development-04",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbx",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 1,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-05",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "rdi",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "rdi",
+        "current": "rdi"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 5,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 4,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-06",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "rcx",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "rcx",
+        "current": "rcx"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 6,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 5,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-07",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "r8",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "r8",
+        "current": "r8"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 7,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "sysv_call_arguments-development-08",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rsp",
+      "regression": false,
+      "sequence": 8,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "sysv_call_arguments-confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbp",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "sysv_call_arguments-confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r11",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 2,
+      "current_correct": true,
+      "id": "sysv_call_arguments-confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "rsi",
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "rsi",
+        "current": "rsi"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 3,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 6,
+      "current_correct": true,
+      "id": "sysv_call_arguments-confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "r9",
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "r9",
+        "current": "r9"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 4,
+      "stratum": "sysv_call_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-development-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rdi",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-development-02",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rcx",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-development-03",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": "unknown"
+      },
+      "register": "r10",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-development-04",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbx",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 4,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-development-05",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "select_register",
+      "oracle": "r10",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "r10",
+        "current": "unknown"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 5,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 1,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-development-06",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "rdi",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "rdi",
+        "current": "rdi"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 6,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 5,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-development-07",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "r8",
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "r8",
+        "current": "r8"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 7,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-development-08",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rax",
+      "regression": false,
+      "sequence": 8,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbp",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "linux_syscall_arguments-confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r11",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 2,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "rsi",
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": "rsi",
+        "current": "rsi"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 3,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": 6,
+      "current_correct": true,
+      "id": "linux_syscall_arguments-confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "select_register",
+      "oracle": "r9",
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": "r9",
+        "current": "r9"
+      },
+      "register": null,
+      "regression": false,
+      "sequence": 4,
+      "stratum": "linux_syscall_arguments"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-development-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rax",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-development-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "r8",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-development-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "r9",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-development-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rsp",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "syscall_number-development-05",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbx",
+      "regression": false,
+      "sequence": 5,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "syscall_number-development-06",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "rbp",
+      "regression": false,
+      "sequence": 6,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "syscall_number-development-07",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r10",
+      "regression": false,
+      "sequence": 7,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "syscall_number-development-08",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r11",
+      "regression": false,
+      "sequence": 8,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rdi",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rsi",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rdx",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "syscall_number-confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rcx",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "syscall_number"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-development-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": true,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": true,
+        "current": true
+      },
+      "register": "rsp",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-development-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "r8",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-development-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "r9",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "stack_pivot-development-04",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r10",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "stack_pivot-development-05",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r11",
+      "regression": false,
+      "sequence": 5,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "stack_pivot-development-06",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r12",
+      "regression": false,
+      "sequence": 6,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "stack_pivot-development-07",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r13",
+      "regression": false,
+      "sequence": 7,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": false,
+      "id": "stack_pivot-development-08",
+      "incorrect_promotion": false,
+      "incremental_gain": true,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "development",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": "unknown"
+      },
+      "register": "r14",
+      "regression": false,
+      "sequence": 8,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rdi",
+      "regression": false,
+      "sequence": 1,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rsi",
+      "regression": false,
+      "sequence": 2,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "additive_private",
+        "current"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rdx",
+      "regression": false,
+      "sequence": 3,
+      "stratum": "stack_pivot"
+    },
+    {
+      "additive_correct": true,
+      "argument_index": null,
+      "current_correct": true,
+      "id": "stack_pivot-confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "operation": "is_role",
+      "oracle": false,
+      "phase": "confirmation",
+      "presentation_order": [
+        "current",
+        "additive_private"
+      ],
+      "profile_answers": {
+        "additive_private": false,
+        "current": false
+      },
+      "register": "rcx",
+      "regression": false,
+      "sequence": 4,
+      "stratum": "stack_pivot"
+    }
+  ]
+}

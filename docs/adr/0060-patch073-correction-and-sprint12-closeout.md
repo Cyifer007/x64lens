@@ -7,9 +7,8 @@ candidate. Patch 075 introduced bounded private static text-relocation evidence.
 Patch 076 preserved that private prefix and implemented distinct private
 `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
 Patch 077 correction. Patch 078 then became the Sprint 13 entry candidate,
-and its review required the current Patch 079 corrective and task-value
-candidate. Current validation expectations are in the
-[Patch 079 validation record](../sprints/sprint-13-patch-079-validation.md).
+and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
+[Patch 080 validation record](../sprints/sprint-13-patch-080-validation.md).
 
 ## Context
 
@@ -111,11 +110,10 @@ fixtures, external reconciliation, schema review, and native/container parity.
 Patch 074 would have closed Sprint 12 and activated Sprint 13 only after its
 complete acceptance boundary passed, but it was superseded before acceptance.
 Patch 075 introduced private text-relocation evidence, and Patch 076 added
-distinct private RPATH/RUNPATH evidence. Patch 077 required the current Patch
-078 closeout correction and Sprint 13 entry candidate, pending complete
-acceptance. Patch 078 freezes private additive exact-pop roles only; Patch 079
-owns blinded task-value qualification before any runtime-semantic, public-field,
-or score projection.
+distinct private RPATH/RUNPATH evidence. Patch 077 required Patch 078, whose
+review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Patch 078 froze private additive exact-pop roles only; Patch 079 ran
+the deterministically presentation-ordered task-value gate. LC-08B owns any later
+runtime-semantic, public-field, or score decision.
 
 ## Rejected alternatives
 
@@ -143,7 +141,7 @@ The corrected Patch 074 source was a closeout candidate, not evidence of
 acceptance by itself. Patch 075 superseded it, introduced private static
 text-relocation evidence, and then required the Patch 076 correction. Patch 076
 added distinct private RPATH/RUNPATH evidence but required the Patch 077
-correction. Patch 077 was superseded by the Patch 078 correction. Native and
-Docker aggregates, retained external-natural acquisition, corrected isolated
-parity, delivery rehearsal, and independent non-documentation acceptance remain
-part of the exact Patch 078 acceptance boundary.
+correction. Patch 077 was superseded by Patch 078, whose review required Patch
+079. Native and Docker aggregates, retained external-natural acquisition,
+corrected isolated parity, delivery rehearsal, and independent exact-source
+acceptance remain part of the exact Patch 079 acceptance boundary.

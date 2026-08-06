@@ -6,14 +6,34 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 080
+
+- Correct partial patch apply/rollback recovery, Git-less manifest completeness
+  and root rebinding, final permission rollback, immutable Docker image custody,
+  executable parity-build storage, and loose helper consistency.
+- Replace the original Patch 079 role-task oracle with 60 unique disjoint query
+  tuples and a complete System V/Linux syscall ABI oracle.
+- Add an 8-byte private candidate-index role record for generic control, System
+  V call arguments, and Linux syscall arguments. The command arena becomes
+  884,736 bytes while candidate capacity remains 4,096.
+- Record a 9-cell LC-08B decision: three private facets accepted as an
+  implementation candidate; public projection and score changes deferred.
+- Preserve tool `0.1.0-dev`, schema `0.2.0`, public output, semantic classes,
+  score values, deterministic ordering, and fail-closed capacity behavior.
+
+
 ### Added
 
-- Sprint 13 Patch 079 adds a preregistered five-stratum register-role
-  task-value authority and result: 60 tasks, 40 development tasks, 20 untouched
-  confirmation tasks, three qualified private facets, two retained existing
-  facets, zero regressions, zero incorrect promotions, zero public fields, zero
-  score changes, and no schema change. Deterministic A/B label permutation is
-  used without making a human double-blind claim.
+- Sprint 13 Patch 079 adds preregistered private, diagnostic, unfrozen
+  register-role task-value evidence across five independent strata that cannot
+  be pooled: 60 tasks, 40 development tasks, 20 untouched tasks, three
+  qualified private facets, two deferred strata,
+  zero regressions, zero incorrect promotions, zero public fields, zero score
+  changes, and no schema change. The qualified facets are `generic_control`,
+  `sysv_call_arguments`, and `linux_syscall_arguments`; `syscall_number` and
+  `stack_pivot` remain deferred. Deterministic presentation-order permutation is used
+  without making a human double-blind claim. This result is not confirmatory or
+  publication evidence.
 
 - Sprint 12 Patch 076 preserves the first 2,128 bytes of the private dynamic
   side-car and appends separate bounded `DT_RPATH` and `DT_RUNPATH`
@@ -39,7 +59,7 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 079 closeout correction and Sprint 13 task-value
+  acceptance of the current Patch 080 closeout correction and private register-role
   candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
@@ -502,8 +522,8 @@ The project follows semantic versioning once the first public release is cut.
   permission-normalization, custody-publication, source-recovery, parity, and
   loose-delivery findings. Patch 075 introduced the private text-relocation
   tranche, but its review required this correction. Patch 076's review then
-  required the Patch 077 correction, whose review required the current Patch
-  078 closeout correction and Sprint 13 entry candidate.
+  required Patch 077. Patch 077's review required Patch 078, whose review
+  required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 
 - Patch 075 corrective custody and validation hardening: tracked files with
   hardlink topology are rejected before permission normalization, late
@@ -536,7 +556,7 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate; Sprint 12 remains pending complete Patch 079 acceptance.
+  entry candidate; Sprint 12 remains pending complete Patch 080 acceptance.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,
@@ -575,8 +595,8 @@ The project follows semantic versioning once the first public release is cut.
   first custody/isolation correction, and Patch 074 supplied a superseded
   closeout candidate. Patch 075 introduced private text-relocation evidence,
   Patch 076 added distinct bounded RPATH/RUNPATH evidence, Patch 077 supplied
-  the first corrective closeout candidate, and Patch 078 is the current
-  closeout correction and Sprint 13 entry candidate.
+  the first corrective closeout candidate, Patch 078 supplied the Sprint 13
+  entry candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

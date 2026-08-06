@@ -83,13 +83,13 @@ def main() -> int:
         exact_int(closeout.get("schema_version"), 1, "closeout.schema_version")
         exact_int(closeout.get("sprint"), 12, "closeout.sprint")
         require(
-            closeout.get("status") == "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
+            closeout.get("status") == "closeout_correction_and_sprint13_private_role_candidate_pending_acceptance",
             "closeout status",
         )
-        exact_int(closeout.get("closeout_patch"), 79, "closeout.closeout_patch")
-        require(closeout.get("candidate_patches") == list(range(62, 80)), "Patch sequence must cover 062-079")
+        exact_int(closeout.get("closeout_patch"), 80, "closeout.closeout_patch")
+        require(closeout.get("candidate_patches") == list(range(62, 81)), "Patch sequence must cover 062-080")
         exact_int(closeout.get("next_sprint"), 13, "next sprint")
-        require(closeout.get("acceptance_target") == "sprint13-p079-acceptance-smoke", "acceptance target")
+        require(closeout.get("acceptance_target") == "sprint13-p080-acceptance-smoke", "acceptance target")
         exact_int(stages.get("completed_sprints"), 11, "stages.completed_sprints")
         exact_int(stages.get("active_sprint"), 12, "stages.active_sprint")
 
@@ -103,8 +103,10 @@ def main() -> int:
             + integer_define(STRUCTS, "CANDIDATE_EVIDENCE_RECORD_SIZE")
             + integer_define(STRUCTS, "MEMORY_EFFECT_RECORD_SIZE")
             + integer_define(STRUCTS, "CANDIDATE_EFFECT_RECORD_SIZE")
+            + integer_define(STRUCTS, "CANDIDATE_ROLE_RECORD_SIZE")
         ) * 4096
-        require(profile.get("analysis_arena_bytes") == arena == 851968, "analysis arena")
+        require(profile.get("candidate_role_record_bytes") == integer_define(STRUCTS, "CANDIDATE_ROLE_RECORD_SIZE") == 8, "candidate role record")
+        require(profile.get("analysis_arena_bytes") == arena == 884736, "analysis arena")
         require(profile.get("phdr_summary_bytes") == integer_define(STRUCTS, "PHDR_SUMMARY_RECORD_SIZE") == 264, "PHDR summary")
         exact_int(profile.get("gnu_property_context_bytes"), 3160, "GNU property context")
         exact_int(profile.get("dynamic_metadata_context_bytes"), 9904, "dynamic context")
@@ -176,12 +178,12 @@ def main() -> int:
 
         handoff = closeout.get("sprint13_handoff")
         require(isinstance(handoff, dict), "Sprint 13 handoff")
-        require(handoff.get("generic_exact_pop_semantic_decision") == "private_multi_role_decision_task_value_qualified", "generic pop decision")
-        require(handoff.get("linux_syscall_r10_role_decision") == "private_linux_syscall_arg4_task_value_qualified", "r10 decision")
-        require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_roles_unscored_pending_lc08b", "score/null decision")
+        require(handoff.get("generic_exact_pop_semantic_decision") == "private_additive_role_sidecar_candidate", "generic pop decision")
+        require(handoff.get("linux_syscall_r10_role_decision") == "private_additive_linux_syscall_arg4_sidecar_candidate", "r10 decision")
+        require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_private_facets_unscored", "score/null decision")
         require(handoff.get("public_projection") == "deferred", "public projection")
-        exact_int(handoff.get("next_patch"), 80, "Sprint 13 next patch")
-        require(handoff.get("next_patch_tranche") == "lc08b-runtime-public-score-policy", "Sprint 13 next tranche")
+        exact_int(handoff.get("next_patch"), 81, "Sprint 13 next patch")
+        require(handoff.get("next_patch_tranche") == "ordered-two-pop-role-task-pilot-or-next-measured-semantic-gate", "Sprint 13 next tranche")
         exact_bool(handoff.get("diagnostic_restart_on_task_change"), True, "diagnostic restart")
         exact_int(handoff.get("task_value_strata"), 5, "task-value strata")
         exact_int(handoff.get("task_value_tasks"), 60, "task-value tasks")
@@ -189,6 +191,13 @@ def main() -> int:
         require(handoff.get("retained_existing_facets") == ["syscall_number", "stack_pivot"], "retained existing facets")
         exact_int(handoff.get("task_value_regressions"), 0, "task-value regressions")
         exact_int(handoff.get("task_value_incorrect_promotions"), 0, "task-value incorrect promotions")
+        exact_int(handoff.get("task_value_incremental_gains"), 26, "task-value gains")
+        exact_int(handoff.get("task_value_unique_queries"), 60, "unique task queries")
+        exact_bool(handoff.get("task_value_human_blind_claim"), False, "human blind claim")
+        exact_bool(handoff.get("task_value_presentation_causal"), False, "presentation causal")
+        exact_int(handoff.get("lc08b_policy_cells"), 9, "LC-08B policy cells")
+        exact_int(handoff.get("private_role_record_bytes"), 8, "private role record bytes")
+        exact_int(handoff.get("private_role_arena_bytes"), 32768, "private role arena bytes")
 
         require(role.get("patch") == 78 and role.get("sprint") == 13, "role authority identity")
         contract = role.get("decision_contract")
@@ -206,24 +215,26 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing closeout document: {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 079 task-value closeout candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 079 task-value candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 080 private register-role closeout candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 080 private register-role candidate" in sprint13, "Sprint 13 marker")
         makefile = MAKEFILE.read_text(encoding="utf-8")
-        require("sprint13-p079-acceptance-smoke:" in makefile, "P079 acceptance target")
+        require("sprint13-p080-acceptance-smoke:" in makefile, "P080 acceptance target")
         validation = next((line for line in makefile.splitlines() if line.startswith("validation-smoke:")), "")
-        require("patch078-corrective-regression-smoke" in validation, "P078 corrective integration")
+        require("patch079-corrective-regression-smoke" in validation, "P079 corrective integration")
         require("sprint13-register-role-decision-smoke" in validation, "Sprint 13 role integration")
         require("sprint13-register-role-task-value-smoke" in validation, "Sprint 13 task-value integration")
+        require("sprint13-role-facet-smoke" in validation, "Sprint 13 role-facet integration")
+        require("sprint13-role-policy-smoke" in validation, "Sprint 13 role-policy integration")
         require("sprint12-closeout-smoke" in validation, "closeout integration")
     except (OSError, json.JSONDecodeError, CloseoutError) as exc:
         print(f"sprint12-closeout-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
-        "sprint12-closeout-smoke: ok sprint=12 patches=18 "
-        "status=closeout-correction-and-sprint13-task-value-candidate decision=defer "
+        "sprint12-closeout-smoke: ok sprint=12 patches=19 "
+        "status=closeout-correction-and-sprint13-private-role-candidate decision=defer "
         "public_fields=0 roles=16 r10=syscall-arg4 qualified_private_facets=3 "
-        "deferred_facets=2 score_changes=0 next_patch=80"
+        "deferred_facets=2 score_changes=0 next_patch=81"
     )
     return 0
 

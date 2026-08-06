@@ -89,7 +89,7 @@ Patch 076 does not expand `$ORIGIN`, split values, emulate the loader, open
 target-derived paths, or claim exploitability.
 
 Patch 076 did not establish complete acceptance. Fresh NASM, strict ShellCheck,
-Docker, actual native/container parity, and independent non-documentation
-acceptance remain required for the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
-Sprint 13 entry candidate. These requirements remain separate; none substitutes
-for another. Patch 078 remains pending complete acceptance.
+Docker, actual native/container parity, and independent exact-source acceptance
+remain required for the Patch 080 candidate. These requirements remain
+separate; none substitutes for another. Patch 080 remains pending complete
+acceptance.

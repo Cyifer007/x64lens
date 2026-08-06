@@ -8,10 +8,9 @@ custody/isolation correction and policy deferral but was not accepted at its
 first returned review boundary. Patch 074 was a superseded Sprint 12 closeout
 candidate. Patch 075 introduced bounded private static text-relocation evidence,
 and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
-carrier/value evidence. Patch 076's review required the Patch 077 correction.
-Patch 077's review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
-Sprint 13 entry candidate. Current validation expectations are in the
-[Patch 078 validation record](sprint-13-patch-078-validation.md).
+carrier/value evidence. Patch 076's review required Patch 077. Patch 077's
+review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are
+in the [Patch 080 validation record](sprint-13-patch-080-validation.md).
 Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
@@ -20,7 +19,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-complete Patch 078 acceptance remain pending.
+complete Patch 080 acceptance remains pending.
 
 ## Source precondition
 
@@ -190,7 +189,6 @@ pending. Any future compatible `0.2.x` indicator requires a new separately
 reviewed decision. Patch 074 was a superseded Sprint 12 closeout candidate.
 Patch 075 introduced private static text-relocation evidence, but its review
 required the Patch 076 correction. Patch 076 implemented distinct private
-RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
-077 was a reconciliation candidate. Patch 078 corrects its remaining blockers
-and is the current Sprint 13 entry candidate, pending
-complete acceptance, so Sprint 12 remains open.
+RPATH/RUNPATH evidence, but its review required Patch 077. Patch 077 was a
+reconciliation candidate. Patch 078 corrected its remaining blockers, but its
+review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Complete acceptance remains pending, so Sprint 12 remains open.

@@ -14,11 +14,12 @@ versions, commands, and task definitions are frozen.
 ## Current checkpoint
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
-authority with Patch 078 as the closeout correction and Sprint 13 entry
-candidate. Patch 075 introduced private text-relocation evidence, Patch 076
+authority with Patch 080 as the complete Patch 079 correction and private
+register-role side-car candidate.
+Patch 075 introduced private text-relocation evidence, Patch 076
 added distinct private RPATH/RUNPATH evidence, and Patch 077 required a final
 transaction, parity, Docker-source, cleanup, and delivery correction. Sprint 13
-activation remains pending complete Patch 079 acceptance. The roadmap may state
+activation remains pending complete Patch 080 acceptance. The roadmap may state
 "Sprints 1 through 12 are complete" and "Sprint 13 is active" only after every
 acceptance boundary passes on the same authenticated source. Sprint 11
 delivered the provisional high-resolution runner, reproducible 24-target
@@ -37,14 +38,15 @@ isolated native/container parity protocol, and an explicit public-policy
 deferral. Patch 074 implemented corrections for the final evidence-custody,
 selection-inode, parity topology/publication, permission-normalization, and
 authority-oracle findings. Patch 075 introduced private bounded text-relocation
-evidence, and Patch 076 added distinct private RPATH/RUNPATH evidence. Patch 077 required Patch 078 as the Sprint 13 entry candidate. Patch 078
-review then required the current Patch 079 corrective and task-value candidate. Patch 078 adds zero public role/property or mitigation fields and
-preserves schema `0.2.0`.
+evidence, and Patch 076 added distinct private RPATH/RUNPATH evidence. Patch 077
+required Patch 078. Patch 078's review then required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Patch 078 adds zero public
+role/property or mitigation fields and preserves schema `0.2.0`.
 
-Sprint 13 becomes active only after complete Patch 079 acceptance. Patch 078
+Sprint 13 becomes active only after complete Patch 080 acceptance. Patch 078
 freezes private additive exact-pop roles, including Linux syscall argument 4 in
-`r10` and System V call argument 4 in `rcx`. Patch 079 executes the blinded
-task-value gate; runtime-semantic, public-field, and score projection remain a
+`r10` and System V call argument 4 in `rcx`. Patch 079 executes the
+deterministically presentation-ordered task-value gate; runtime-semantic,
+public-field, and score projection remain a
 later LC-08B decision. Positive role-controlled coordinate anchors and complete task-path
 qualification remain a separate diagnostic gate. Sprint 15 freezes the
 confirmatory campaign.
@@ -264,9 +266,9 @@ deferral. Patch 074 supplied the final topology, parity-protocol, permission,
 selection-inode, and authority-oracle correction but was superseded as the
 closeout candidate. Patch 075 introduced bounded private static text-relocation
 evidence, and Patch 076 added distinct private RPATH/RUNPATH evidence. Patch
-076's review required the Patch 077 correction. Patch 077 then required the
-Patch 078 closeout correction and Sprint 13 entry candidate, whose review required the current Patch 079 corrective and task-value candidate, pending
-complete acceptance. None of these patches advances the Sprint 15 freeze, adds
+076's review required Patch 077. Patch 077 then required Patch 078, whose review
+required the Patch 079 corrective and private task-value candidate, whose review required Patch 080,
+pending complete acceptance. None of these patches advances the Sprint 15 freeze, adds
 a public mitigation field, or changes the dependency-free one-worker reference
 profile.
 
@@ -307,21 +309,30 @@ separate exact-byte `DT_RPATH` and `DT_RUNPATH` evidence with fixed carrier,
 record, and byte budgets. It performs no path-derived open, loader emulation,
 path expansion, public projection, or schema change. Complete native/container
 private dynamic-metadata parity and independent acceptance remain required.
-Patch 078 owns the current closeout correction and Sprint 13 entry decision.
+Patch 078 required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 
 ## Sprint 12 Patch 077 historical checkpoint
 
 Patch 077 was a Sprint 12 reconciliation candidate. It preserved
 the implemented private textrel/RPATH/RUNPATH facts, corrected their surrounding
 transactions and oracles, and added no public field. Its review required Patch
-078, whose complete acceptance is still required before Sprint 13 activation;
+078, whose review in turn required Patch 079. Exact Patch 079 acceptance is
+still required before Sprint 13 activation;
 the confirmatory campaign remains frozen only in Sprint 15.
 
 ## Sprint 13 Patch 079 checkpoint
 
 Patch 079 executes the first Sprint 13 task-value gate after correcting the
-Patch 078 acceptance surface. Generic register control, System V call arguments,
-and Linux syscall arguments qualify privately; syscall-number and stack-pivot
-facets remain on their existing semantic treatment. No role is projected into
-runtime or public output and no score changes. Patch 080 owns the separate
+Patch 078 acceptance surface. `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` qualify only as private task-value evidence;
+`syscall_number` and `stack_pivot` remain deferred by the Patch 079 task gate,
+with existing runtime semantics and scores unchanged. No role is projected into
+runtime or public output. Patch 080 owns the separate
 LC-08B decision before any semantic surface is frozen for Sprint 15.
+
+## Sprint 13 Patch 080 checkpoint
+
+Patch 080 corrects Patch 079 and materializes generic-control, System V
+call-argument, and Linux syscall-argument facets in a private bounded side-car.
+It adds no public field, score, schema change, decoder, or worker. Patch 081 owns
+the next evidence-selected semantic tranche after complete Patch 080 acceptance.

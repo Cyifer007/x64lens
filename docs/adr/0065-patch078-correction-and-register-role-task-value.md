@@ -1,18 +1,26 @@
-# ADR 0065: Patch 078 Correction and Register-Role Task Value
+# ADR 0065: Patch 079 Correction of Patch 078 and Register-Role Task Value
 
 ## Status
 
-Proposed by Patch 079; acceptance requires `make sprint13-p079-acceptance-smoke` and the independent non-documentation review lane.
+Proposed by Patch 079; acceptance requires
+`make sprint13-p079-acceptance-smoke` plus complete independent acceptance
+against the same committed candidate.
 
 ## Context
 
-Patch 078 froze an additive private role lattice for all sixteen exact single-pop register patterns. Review preserved that role model but identified acceptance defects in the surrounding source, Docker, parity, recovery, permission, patch-transaction, and delivery authorities. The same review also confirmed that a role label is not enough to justify runtime semantic promotion or a score change. The project therefore needs one corrective patch and one preregistered task-value decision before any role reaches the classifier or public report.
+Patch 078 froze an additive private role lattice for all sixteen exact single-pop
+register patterns. Its review preserved that role model but required a smallest
+corrective patch for acceptance defects in the surrounding source, Docker,
+parity, recovery, permission, patch-transaction, and delivery authorities. Patch
+079 is that corrective and private task-value candidate, pending acceptance. The
+same review also confirmed that a role label is not enough to justify runtime
+semantic promotion or a score change.
 
 The implementation must preserve these boundaries:
 
 - file-backed `PT_LOAD + PF_X` ranges remain executable authority;
-- exact suffix evidence remains distinct from decoded sequence validity;
-- existing raw, exact, semantic-exact, unknown, scored, and future decoder-backed facts keep their current meanings;
+- raw candidate, exact-suffix, semantic-exact, unknown, future decoder-backed,
+  and scored facts remain distinct;
 - candidate 4,097 returns exit code 6 before stdout;
 - malformed input emits no partial report;
 - the reference runtime remains dependency-free, decoder-free, deterministic, and one-worker;
@@ -43,7 +51,7 @@ Patch 079 evaluates these strata independently:
 4. Linux syscall-number control;
 5. stack-pivot roles.
 
-Each stratum uses eight development tasks and four untouched confirmation tasks. Current public semantic facts and the additive private role facets are presented through a deterministic A/B label permutation. The project makes no human double-blind claim.
+Each stratum uses eight development tasks and four untouched confirmation tasks. Current public semantic facts and the additive private role facets are presented through a deterministic presentation-order permutation. The project makes no human double-blind claim.
 
 A stratum qualifies only when it has:
 
@@ -63,7 +71,12 @@ The task-value result qualifies:
 - System V call-argument roles; and
 - Linux syscall-argument roles.
 
-The syscall-number and stack-pivot strata retain their existing semantic treatment because they do not demonstrate the required incremental confirmation gain. Passing task strata remain private, additive, and unscored. A later LC-08B policy decision owns runtime semantic projection, public output, and score/null treatment.
+The `syscall_number` and `stack_pivot` strata remain deferred by the Patch 079
+task gate because they do not demonstrate the required incremental confirmation
+gain. Passing task strata remain private, diagnostic, unfrozen, additive,
+unscored, non-confirmatory, and publication-ineligible. A later LC-08B policy
+decision owns runtime semantic projection, public output, and score/null
+treatment.
 
 ## Consequences
 
@@ -72,9 +85,12 @@ The syscall-number and stack-pivot strata retain their existing semantic treatme
 - Schema remains `0.2.0`.
 - Public report fields and report bytes remain unchanged.
 - Existing scores remain unchanged.
-- `rcx` remains System V call argument 4; `r10` remains Linux syscall argument 4 in the private role authority.
+- `rcx` remains System V call argument 4; `r10` remains Linux syscall argument 4
+  in the private role evidence.
 - A qualified private facet is evidence for a later policy decision, not a runtime class, decoded-validity fact, exploitability statement, or release claim.
 - Any later classifier or task-definition change starts a distinct diagnostic campaign identity.
+- No performance, peak-RSS, coverage-superiority, enforcement, exploitability,
+  stealth, or universal-deployment claim follows from Patch 079.
 
 ## Validation
 
@@ -86,7 +102,7 @@ make sprint13-register-role-decision-smoke
 make sprint13-register-role-task-value-smoke
 ```
 
-Complete local acceptance:
+Complete acceptance:
 
 ```bash
 make clean

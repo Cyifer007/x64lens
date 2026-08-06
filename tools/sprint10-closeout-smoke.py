@@ -131,6 +131,7 @@ def source_reference_profile(stages: dict[str, Any]) -> dict[str, Any]:
         "candidate_evidence_record_bytes": integer("CANDIDATE_EVIDENCE_RECORD_SIZE"),
         "memory_effect_record_bytes": integer("MEMORY_EFFECT_RECORD_SIZE"),
         "candidate_effect_record_bytes": integer("CANDIDATE_EFFECT_RECORD_SIZE"),
+        "candidate_role_record_bytes": integer("CANDIDATE_ROLE_RECORD_SIZE"),
         "candidate_capacity": integer("GADGET_RECORD_MAX"),
         "analysis_arena_bytes": integer("ANALYSIS_RECORD_ARENA_BYTES"),
         "mandatory_decoder": defaults["candidate_scoped_decoder"],

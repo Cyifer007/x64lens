@@ -12,9 +12,8 @@ bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix without changing the runtime lattice and implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review
 required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
-candidate, and its review required the current Patch 079 corrective and task-
-value candidate. Current validation expectations are in the
-[Patch 079 validation record](../sprints/sprint-13-patch-079-validation.md).
+candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
+[Patch 080 validation record](../sprints/sprint-13-patch-080-validation.md).
 
 ## Context
 
@@ -71,9 +70,8 @@ state, not measured RSS.
 
 `src/binary_role.asm` consumes only completed PHDR-summary facts, including the
 copied ELF type and entrypoint, and assigns exactly one internal state. Patch 065
-corrected the earlier implementation that reread mapped ELF bytes, and the
-Patch 078 candidate; Patch 079 is the current corrective and task-value candidate carries that boundary forward without changing the
-runtime analyzer:
+corrected the earlier implementation that reread mapped ELF bytes. Patch 079
+carries that boundary forward without changing the runtime analyzer:
 
 ```text
 unknown
@@ -111,8 +109,8 @@ bounded, nonempty, NUL-terminated string before it becomes shared-object
 evidence. Dynamic role tags are consumed only through the existing bounded
 `PT_DYNAMIC` iterator. On role-consuming command paths, malformed or unsupported
 outcomes remain fail-closed before report output. Patch 065 introduced these
-string-validation corrections, Patch 069 carried them forward, and the active
-Patch 076 candidate leaves them unchanged.
+string-validation corrections, Patch 069 carried them forward, and the Patch
+079 candidate leaves them unchanged.
 
 ## Consequences
 
@@ -123,7 +121,7 @@ Patch 076 candidate leaves them unchanged.
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy in the Patch 078 candidate; Patch 079 is the current corrective and task-value candidate.
+  remains separate from public report policy. Patch 079 was the corrective and private task-value candidate; its review required Patch 080.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

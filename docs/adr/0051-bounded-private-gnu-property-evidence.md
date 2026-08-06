@@ -15,9 +15,8 @@ static text-relocation evidence. Patch 076 preserved that private prefix without
 changing this GNU-property runtime boundary and implemented distinct private
 `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
 Patch 077 correction. Patch 078 then became the Sprint 13 entry candidate,
-and its review required the current Patch 079 corrective and task-value
-candidate. Current validation expectations are in the
-[Patch 079 validation record](../sprints/sprint-13-patch-079-validation.md).
+and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
+[Patch 080 validation record](../sprints/sprint-13-patch-080-validation.md).
 
 ## Context
 
@@ -108,7 +107,8 @@ mapped ELF header or dynamic/string bytes.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Patch 069 added authenticated external reconciliation without changing public
-  report fields. The Patch 078 candidate; Patch 079 is the current corrective and task-value candidate preserves those fields. Patch
-  073 executed the public-policy gate as `defer`; corrected actual native/
-  container parity and complete Patch 078 acceptance remain pending, and any
-  future public field requires a new separately reviewed decision.
+  report fields. Patch 079 preserves those fields and remains the current
+  corrective and private task-value candidate. Patch 073 executed the
+  public-policy gate as `defer`; corrected actual native/container parity and
+  complete Patch 080 acceptance remains pending, and any future public field
+  requires a new separately reviewed decision.

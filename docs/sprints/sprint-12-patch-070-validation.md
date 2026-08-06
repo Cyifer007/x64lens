@@ -9,9 +9,9 @@ returned review boundaries. Patch 073 delivered the first custody/isolation
 correction and the policy decision `defer`. Patch 074 was a superseded Sprint 12
 closeout candidate. Patch 075 introduced bounded private static text-relocation
 evidence, and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
-carrier/value evidence. Patch 076's review required the Patch 077 correction.
-Patch 077's review required the Patch 078 closeout correction, whose review required the current Patch 079 corrective and task-value candidate and
-Sprint 13 entry candidate. The batch pilot, private-fact matrix, and `readelf`
+carrier/value evidence. Patch 076's review required Patch 077. Patch 077's
+review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. The batch pilot, private-fact
+matrix, and `readelf`
 reconciliation remain diagnostic, unfrozen, and publication-ineligible.
 Qualified native/container parity also remains pending.
 
@@ -126,4 +126,4 @@ first custody/isolation correction and policy deferral are recorded in
 the superseded closeout-candidate boundary is recorded in
 [`sprint-12-patch-074-validation.md`](sprint-12-patch-074-validation.md).
 Current validation expectations are in
-[`sprint-12-patch-077-validation.md`](sprint-12-patch-077-validation.md).
+[`sprint-13-patch-079-validation.md`](sprint-13-patch-079-validation.md).

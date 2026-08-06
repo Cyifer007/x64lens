@@ -1,0 +1,97 @@
+{
+  "accepted": false,
+  "authority_sha256": "40099ba7c94fbaff26438c9fe5f546fa6db3b57823997e7e1d958bc342c9cdf1",
+  "deferred_existing_facets": [
+    "syscall_number",
+    "stack_pivot"
+  ],
+  "evidence_class": "implementation_candidate",
+  "next_decision": {
+    "condition": "Accept the private side-car only after fresh native and Docker validation; public and score projection remain deferred.",
+    "next_patch_after_acceptance": "S13-P081",
+    "owner": "S13-P080-Lane-A"
+  },
+  "patch": 80,
+  "policy_cells": [
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "generic_control",
+      "rationale": "The corrected task gate shows incremental value for non-RSP exact-pop control while semantic classes remain contextual.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "generic_control",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "generic_control",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    },
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "sysv_call_arguments",
+      "rationale": "The corrected task gate preserves the complete System V mapping, including RCX as call argument four.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "sysv_call_arguments",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "sysv_call_arguments",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    },
+    {
+      "decision": "accept_additive_private_sidecar",
+      "facet": "linux_syscall_arguments",
+      "rationale": "The corrected task gate preserves the Linux mapping, including R10 as syscall argument four and excluding RCX.",
+      "surface": "private_runtime"
+    },
+    {
+      "decision": "defer",
+      "facet": "linux_syscall_arguments",
+      "rationale": "No compatibility and consumer-value gate authorizes a public schema or text field.",
+      "surface": "public_output"
+    },
+    {
+      "decision": "retain_existing_scores_and_null_new_facets",
+      "facet": "linux_syscall_arguments",
+      "rationale": "Role-task correctness does not calibrate relative utility or justify score migration.",
+      "surface": "score"
+    }
+  ],
+  "public_boundary": {
+    "candidate_count_changes": 0,
+    "candidate_order_changes": 0,
+    "capacity_semantics_changed": false,
+    "full_sequence_validity_changed": false,
+    "public_json_fields_added": 0,
+    "public_text_fields_added": 0,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_classifier_changes": 0
+  },
+  "qualified_private_facets": [
+    "generic_control",
+    "sysv_call_arguments",
+    "linux_syscall_arguments"
+  ],
+  "schema": "x64lens-sprint13-register-role-policy-result-v1",
+  "source_contract": {
+    "analysis_arena_bytes": 884736,
+    "materializer_calls": 2,
+    "reporter_consumers": 0,
+    "role_arena_bytes": 32768,
+    "role_record_bytes": 8,
+    "scoring_consumers": 0
+  },
+  "sprint": 13
+}

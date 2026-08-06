@@ -192,13 +192,66 @@ def repository_identity(repo: RepoHandle) -> tuple[str, str, str, str]:
     return branch, head, head_tree, index_tree
 
 
+def tracked_worktree_clean(repo: RepoHandle) -> bool:
+    return run(
+        repo,
+        ["git", f"--git-dir={repo.git_proc}", f"--work-tree={repo.root_proc}", "diff", "--quiet", "--"],
+    ).returncode == 0
+
+
+def nonignored_untracked(repo: RepoHandle) -> bytes:
+    return git(repo, "ls-files", "--others", "--exclude-standard", "-z")
+
+
 def require_no_unstaged_or_untracked(repo: RepoHandle) -> None:
-    require(
-        run(repo, ["git", f"--git-dir={repo.git_proc}", f"--work-tree={repo.root_proc}", "diff", "--quiet", "--"]).returncode == 0,
-        "unstaged tracked changes are present",
-    )
-    untracked = git(repo, "ls-files", "--others", "--exclude-standard", "-z")
-    require(untracked == b"", "nonignored untracked files are present")
+    require(tracked_worktree_clean(repo), "unstaged tracked changes are present")
+    require(nonignored_untracked(repo) == b"", "nonignored untracked files are present")
+
+
+def exact_tree_state(repo: RepoHandle, expected_tree: str) -> bool:
+    try:
+        return (
+            os.fsdecode(git(repo, "write-tree")) == expected_tree
+            and tracked_worktree_clean(repo)
+            and nonignored_untracked(repo) == b""
+        )
+    except BaseException:
+        return False
+
+
+def changed_paths(repo: RepoHandle, left_tree: str, right_tree: str) -> list[str]:
+    raw = git(repo, "diff", "--name-only", "-z", left_tree, right_tree)
+    paths = [os.fsdecode(item) for item in raw.split(b"\0") if item]
+    require(all(path and not path.startswith("/") and ".." not in Path(path).parts for path in paths),
+            "tree delta contains an unsafe path")
+    return paths
+
+
+def restore_exact_tree(repo: RepoHandle, desired_tree: str, alternate_tree: str) -> str | None:
+    """Restore the index and tracked worktree to one authenticated Git tree.
+
+    This path is reserved for partial-effect recovery where the index and
+    worktree no longer describe one coherent patch state.  Only paths in the
+    authenticated base/candidate tree delta may be cleaned, so unrelated local
+    material cannot be removed.
+    """
+    try:
+        paths = changed_paths(repo, desired_tree, alternate_tree)
+        # Remove only patch-owned untracked residue that could block read-tree.
+        if paths:
+            run(
+                repo,
+                ["git", f"--git-dir={repo.git_proc}", f"--work-tree={repo.root_proc}",
+                 "clean", "-f", "-d", "--", *paths],
+                check=True,
+            )
+        git(repo, "read-tree", "--reset", "-u", desired_tree)
+        reauthenticate_repo(repo)
+        if not exact_tree_state(repo, desired_tree):
+            return f"exact tree recovery did not restore {desired_tree}"
+        return None
+    except BaseException as exc:
+        return str(exc)
 
 
 def logical_base_state(repo: RepoHandle, branch: str, base_head: str, base_tree: str) -> tuple[str, str]:
@@ -272,14 +325,27 @@ def git_apply(repo: RepoHandle, raw: bytes, *, reverse: bool, check_only: bool) 
         raise TransactionError(f"git apply failed ({cp.returncode}): {detail}")
 
 
-def restore_with_inverse(repo: RepoHandle, raw: bytes, *, reverse: bool, expected_tree: str) -> str | None:
-    """Best-effort exact inverse using the retained repository and patch bytes."""
+def restore_with_inverse(
+    repo: RepoHandle,
+    raw: bytes,
+    *,
+    reverse: bool,
+    expected_tree: str,
+    alternate_tree: str,
+) -> str | None:
+    """Best-effort exact inverse using retained repository and patch bytes."""
     try:
+        current = os.fsdecode(git(repo, "write-tree"))
+        if not tracked_worktree_clean(repo) or nonignored_untracked(repo):
+            repair = restore_exact_tree(repo, current, alternate_tree if current == expected_tree else expected_tree)
+            if repair is not None:
+                return f"could not normalize partial state before inverse: {repair}"
         git_apply(repo, raw, reverse=reverse, check_only=True)
         git_apply(repo, raw, reverse=reverse, check_only=False)
-        actual = os.fsdecode(git(repo, "write-tree"))
-        if actual != expected_tree:
-            return f"inverse produced tree {actual}, expected {expected_tree}"
+        reauthenticate_repo(repo)
+        if not exact_tree_state(repo, expected_tree):
+            actual = os.fsdecode(git(repo, "write-tree"))
+            return f"inverse produced index tree {actual} or a dirty worktree; expected clean {expected_tree}"
         return None
     except BaseException as exc:
         return str(exc)
@@ -290,23 +356,34 @@ def recover_after_effect(
     raw: bytes,
     *,
     desired_tree: str,
+    alternate_tree: str,
     inverse_reverse: bool,
 ) -> str | None:
-    """Restore ``desired_tree`` after a mutating call or hook raises.
+    """Restore one exact index *and worktree* state after a failed effect.
 
-    A mutating subprocess or injected test double can perform the Git effect and
-    then raise before returning.  The current index tree is therefore inspected
-    inside the exception path.  Recovery is skipped only when the desired tree
-    is already present; every other state is driven through the retained inverse
-    patch bytes and checked exactly.
+    A mutating subprocess can update only the index, only the worktree, or both
+    before raising.  Tree equality alone is therefore insufficient.  Recovery
+    first attempts the retained inverse patch when the alternate tree is
+    present, then falls back to an exact authenticated tree restore for partial
+    states.  Success requires the desired index tree, a clean tracked worktree,
+    and no nonignored untracked residue.
     """
     try:
         current = os.fsdecode(git(repo, "write-tree"))
     except BaseException as exc:
         return f"could not inspect post-effect tree: {exc}"
-    if current == desired_tree:
+    if exact_tree_state(repo, desired_tree):
         return None
-    return restore_with_inverse(repo, raw, reverse=inverse_reverse, expected_tree=desired_tree)
+    if current == alternate_tree:
+        inverse = restore_with_inverse(
+            repo, raw, reverse=inverse_reverse, expected_tree=desired_tree, alternate_tree=alternate_tree
+        )
+        if inverse is None:
+            return None
+    repair = restore_exact_tree(repo, desired_tree, alternate_tree)
+    if repair is not None:
+        return f"exact recovery failed: {repair}"
+    return None
 
 
 def apply_patch(
@@ -336,6 +413,7 @@ def apply_patch(
             repo,
             raw,
             desired_tree=base_tree,
+            alternate_tree=candidate_tree,
             inverse_reverse=True,
         )
         suffix = f"; inverse recovery failed: {recovery}" if recovery else "; inverse recovery restored the logical base"
@@ -367,6 +445,7 @@ def rollback_patch(
             repo,
             raw,
             desired_tree=candidate_tree,
+            alternate_tree=base_tree,
             inverse_reverse=False,
         )
         suffix = f"; forward recovery failed: {recovery}" if recovery else "; forward recovery restored the staged candidate"

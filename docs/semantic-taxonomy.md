@@ -251,9 +251,20 @@ architectures, and other file formats remain outside the first-release core.
 
 ## Sprint 13 Patch 079 private task-value decision
 
-The task-value gate qualifies private generic-control, System V call-argument,
-and Linux syscall-argument facets for a later policy decision. It does not add a
-semantic class in Patch 079. Existing `syscall_num_control`, `stack_pivot`,
-`arg_control`, and `unknown_candidate` output remains unchanged. In particular,
-`rcx` is System V argument 4 while `r10` is Linux syscall argument 4 in the
-private role authority.
+The task-value gate qualifies `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` only as private, unfrozen diagnostic task-value
+evidence for a later policy decision. It defers `syscall_number` and
+`stack_pivot` and adds no semantic class in Patch 079. Existing
+`syscall_num_control`, `stack_pivot`, `arg_control`, and `unknown_candidate`
+output remains unchanged. In particular, `rcx` is System V argument 4 while
+`r10` is Linux syscall argument 4 in the private role authority. The result is
+not confirmatory or publication evidence.
+
+## Sprint 13 Patch 080 private role facets
+
+Patch 080 keeps primitive class and contextual register role separate. A single
+exact pop may carry one or more private role facets without changing its current
+semantic class. Generic control excludes `rsp`; System V call arguments use
+`rdi,rsi,rdx,rcx,r8,r9`; Linux syscall arguments use
+`rdi,rsi,rdx,r10,r8,r9`. The side-car is private and does not authorize public
+projection or score changes.

@@ -437,3 +437,11 @@ candidate provenance. Every retained carrier records its dynamic-table index,
 checked file offset, tag, and raw value. The aggregate text-relocation state
 does not upgrade raw, exact-suffix, semantic-exact, unknown, or scored gadget
 facts and is not emitted through schema `0.2.0`.
+
+## Patch 080 private role-facet boundary
+
+The private register-role record is additive contextual metadata derived from
+existing exact single-pop and effect facts. It does not create a provenance tier,
+set `full_sequence_valid`, or promote an exact-only candidate into a public
+semantic class. Raw, exact-suffix, semantic-exact, unknown, decoder-backed, and
+scored facts retain their existing meanings.

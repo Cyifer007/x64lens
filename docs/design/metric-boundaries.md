@@ -391,3 +391,10 @@ and private text-relocation state are metadata facts. They are not candidate,
 semantic, scored, decoder, coverage, vulnerability, or exploitability metrics.
 Carrier-capacity failure is a command failure and does not authorize partial
 public output.
+
+## Patch 080 role-facet metric boundary
+
+Private role masks do not add a candidate population or alter any current count.
+They are candidate-index metadata over already retained exact-pop records. The
+32,768-byte role slice is a storage fact, not RSS, runtime, coverage, or task-value
+performance evidence.

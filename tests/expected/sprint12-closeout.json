@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closeout_correction_and_sprint13_task_value_candidate_pending_acceptance",
-  "closeout_patch": 79,
+  "status": "closeout_correction_and_sprint13_private_role_candidate_pending_acceptance",
+  "closeout_patch": 80,
   "candidate_patches": [
     62,
     63,
@@ -21,15 +21,17 @@
     76,
     77,
     78,
-    79
+    79,
+    80
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p079-acceptance-smoke",
+  "acceptance_target": "sprint13-p080-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
     "candidate_capacity": 4096,
-    "analysis_arena_bytes": 851968,
+    "candidate_role_record_bytes": 8,
+    "analysis_arena_bytes": 884736,
     "phdr_summary_bytes": 264,
     "gnu_property_context_bytes": 3160,
     "dynamic_metadata_context_bytes": 9904,
@@ -98,7 +100,16 @@
     "role_property_parity_independent_builds": true,
     "role_property_parity_immutable_image_identity": true,
     "patch_post_effect_exception_recovery": true,
-    "source_recovery_foreign_descendant_preserved": true
+    "source_recovery_foreign_descendant_preserved": true,
+    "patch_partial_effect_exact_worktree_recovery": true,
+    "gitless_manifest_complete_tree_required": true,
+    "gitless_caller_visible_root_reauthenticated": true,
+    "final_git_reauthentication_inside_permission_rollback": true,
+    "docker_immutable_image_id_authority": true,
+    "parity_container_build_tmpfs_exec": true,
+    "task_development_confirmation_queries_disjoint": true,
+    "task_presentation_noncausal": true,
+    "complete_sysv_and_syscall_abi_oracle": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -107,13 +118,13 @@
     "bounded-fortify-relocation-symbol-join"
   ],
   "sprint13_handoff": {
-    "generic_exact_pop_semantic_decision": "private_multi_role_decision_task_value_qualified",
-    "linux_syscall_r10_role_decision": "private_linux_syscall_arg4_task_value_qualified",
-    "score_null_policy_freeze": "existing_scores_retained_new_roles_unscored_pending_lc08b",
+    "generic_exact_pop_semantic_decision": "private_additive_role_sidecar_candidate",
+    "linux_syscall_r10_role_decision": "private_additive_linux_syscall_arg4_sidecar_candidate",
+    "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 80,
-    "next_patch_tranche": "lc08b-runtime-public-score-policy",
+    "next_patch": 81,
+    "next_patch_tranche": "ordered-two-pop-role-task-pilot-or-next-measured-semantic-gate",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -127,7 +138,14 @@
       "stack_pivot"
     ],
     "task_value_regressions": 0,
-    "task_value_incorrect_promotions": 0
+    "task_value_incorrect_promotions": 0,
+    "task_value_incremental_gains": 26,
+    "task_value_unique_queries": 60,
+    "task_value_human_blind_claim": false,
+    "task_value_presentation_causal": false,
+    "lc08b_policy_cells": 9,
+    "private_role_record_bytes": 8,
+    "private_role_arena_bytes": 32768
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -143,6 +161,8 @@
     "docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md",
     "docs/adr/0065-patch078-correction-and-register-role-task-value.md",
     "docs/sprints/sprint-13-patch-078-validation.md",
-    "docs/sprints/sprint-13-patch-079-validation.md"
+    "docs/sprints/sprint-13-patch-079-validation.md",
+    "docs/adr/0066-patch079-correction-and-private-register-role-sidecar.md",
+    "docs/sprints/sprint-13-patch-080-validation.md"
   ]
 }
