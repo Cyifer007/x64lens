@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Record and verify one immutable Docker image authority.
 
-The repository tag is descriptive only.  Downstream validation consumes the
-recorded immutable image ID and candidate-tree label, so retargeting the tag
-after ``docker-build`` cannot redirect source custody, tests, or parity.
+The repository tag is descriptive only. Downstream validation consumes the
+recorded immutable image ID plus candidate-tree, exact-context, and source-
+manifest labels. Retargeting the tag or substituting provenance records after
+``docker-build`` cannot redirect source custody, tests, or parity.
 """
 from __future__ import annotations
 
@@ -54,13 +55,17 @@ def run_inspect(docker: str, reference: str) -> dict[str, Any]:
     return value[0]
 
 
-def image_identity(record: dict[str, Any]) -> tuple[str, str]:
+def image_identity(record: dict[str, Any]) -> tuple[str, str, str, str]:
     image_id = record.get("Id")
     labels = ((record.get("Config") or {}).get("Labels") or {})
     tree = labels.get("org.x64lens.candidate-tree")
+    context_sha256 = labels.get("org.x64lens.context-authority-sha256")
+    source_sha256 = labels.get("org.x64lens.source-manifest-sha256")
     require(isinstance(image_id, str) and image_id.startswith("sha256:") and len(image_id) == 71, "Docker image lacks immutable ID")
     require(isinstance(tree, str) and len(tree) == 40 and all(c in "0123456789abcdef" for c in tree), "Docker image lacks candidate-tree label")
-    return image_id, tree
+    require(isinstance(context_sha256, str) and len(context_sha256) == 64 and all(c in "0123456789abcdef" for c in context_sha256), "Docker image lacks context-authority digest label")
+    require(isinstance(source_sha256, str) and len(source_sha256) == 64 and all(c in "0123456789abcdef" for c in source_sha256), "Docker image lacks source-manifest digest label")
+    return image_id, tree, context_sha256, source_sha256
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -117,19 +122,23 @@ def publish(path: Path, payload: bytes) -> None:
 
 def record(args: argparse.Namespace) -> int:
     inspected = run_inspect(args.docker, args.tag)
-    image_id, tree = image_identity(inspected)
+    image_id, tree, image_context_sha256, image_source_sha256 = image_identity(inspected)
     require(tree == args.candidate_tree, "Docker tag resolved to the wrong candidate tree")
     context = json.loads(args.context_authority.read_text(encoding="utf-8"), object_pairs_hook=strict_pairs)
     require(context.get("candidate_tree") == tree, "Docker context authority tree disagrees with image")
     source_manifest = args.context_authority.parent / "source-manifest.json"
     require(source_manifest.is_file(), "Docker context source manifest is missing")
+    context_sha256 = sha256(args.context_authority)
+    source_sha256 = sha256(source_manifest)
+    require(image_context_sha256 == context_sha256, "Docker image context-authority label disagrees with exact context")
+    require(image_source_sha256 == source_sha256, "Docker image source-manifest label disagrees with exact context")
     value = {
         "schema": SCHEMA,
         "tag": args.tag,
         "image_id": image_id,
         "candidate_tree": tree,
-        "context_authority_sha256": sha256(args.context_authority),
-        "source_manifest_sha256": sha256(source_manifest),
+        "context_authority_sha256": context_sha256,
+        "source_manifest_sha256": source_sha256,
         "tag_is_descriptive_only": True,
     }
     publish(args.path, canonical(value))
@@ -140,9 +149,11 @@ def record(args: argparse.Namespace) -> int:
 
 def verify_value(value: dict[str, Any], docker: str) -> None:
     inspected = run_inspect(docker, value["image_id"])
-    image_id, tree = image_identity(inspected)
+    image_id, tree, context_sha256, source_sha256 = image_identity(inspected)
     require(image_id == value["image_id"], "Docker immutable image ID changed")
     require(tree == value["candidate_tree"], "Docker immutable image tree label changed")
+    require(context_sha256 == value["context_authority_sha256"], "Docker immutable image context provenance changed")
+    require(source_sha256 == value["source_manifest_sha256"], "Docker immutable image source provenance changed")
 
 
 def verify(args: argparse.Namespace) -> int:

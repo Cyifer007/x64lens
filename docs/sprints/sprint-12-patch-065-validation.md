@@ -189,5 +189,6 @@ correction and recorded the public-policy decision as `defer`; Patch 074 was a
 superseded closeout candidate. Patch 075 introduced private static
 text-relocation evidence, but its review required the Patch 076 correction.
 Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch 078's review
-required the Patch 079 corrective and private task-value candidate, whose review required Patch 080;
-complete acceptance remains pending against the exact Patch 079 source.
+required the Patch 079 corrective and private task-value candidate; Patch 079's
+review required Patch 080. Complete acceptance remains pending against the exact
+Patch 080 source.

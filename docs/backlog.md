@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — Patch 079 closeout candidate
+### Sprint 12: loader and mitigation precision — Patch 080 closeout candidate
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -185,7 +185,7 @@ later sprints rather than Patch 037:
 - [x] Record the Patch 078 review disposition as requiring the Patch 079
   corrective and private task-value candidate.
 - [ ] Complete fresh native, Docker, both parity planes, delivery, and
-  independent acceptance for Patch 079 against the same authenticated source
+  independent acceptance for Patch 080 against the same authenticated source
   tree.
 - [ ] Run the separate comparison-qualification campaign under a new identity
   with positive role-controlled coordinate anchors, complete five-path runtime
@@ -197,11 +197,11 @@ later sprints rather than Patch 037:
 - [x] Freeze a private additive exact-pop role decision for all 16 GPRs.
 - [x] Record Linux syscall argument 4 in `r10`, distinct from System V call
   argument 4 in `rcx`, as private decision facts.
-- [x] Execute the deterministically presentation-ordered Patch 079 task-value gate
-  independently for all five
+- [x] Execute the non-causal, deterministically presentation-ordered Patch 079
+  task-value gate independently for all five
   strata; retain three qualified facets privately and defer two facets.
-- [ ] Decide any runtime, public, or score projection at the later LC-08B
-  policy gate.
+- [x] Record the Patch 080 LC-08B decision: retain three facets privately and
+  defer public and score projection.
 - [ ] Score/null policy freeze for every release-facing family.
 - [ ] Only measured bounded family additions with complete effects and fixtures.
 - [ ] Diagnostic restart for any changed task definition.
@@ -718,7 +718,7 @@ Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 079 candidate
+### Sprint 12 Patch 073 through Patch 080 candidate
 
 Patch 073 executed the public-policy deferral but was not accepted at its first
 returned review boundary. Patch 074 implemented corrections for the confirmed
@@ -753,7 +753,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 079 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 080 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -770,7 +770,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [ ] Accept Patch 079 through complete native, Docker, parity, delivery, and
+- [ ] Accept Patch 080 through complete native, Docker, parity, delivery, and
   independent validation before activating Sprint 13.
 
 
@@ -784,7 +784,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
   task-value strata in Patch
   079 without runtime-semantic, public-field, or score projection.
 
-### Sprint 13 Patch 079 task-value checkpoint
+### Historical Sprint 13 Patch 079 task-value checkpoint
 
 - [x] Correct Patch 078 Docker caller and stale-image failure masking.
 - [x] Bind Git-less root, directory, file, mode, byte, topology, and transport
@@ -794,8 +794,9 @@ candidate, and its review required the Patch 079 corrective and private task-val
 - [x] Execute five independent register-role task-value strata.
 - [x] Qualify generic control, System V call arguments, and Linux syscall
   arguments as private LC-08B inputs.
-- [ ] Decide runtime/public/score projection in Patch 080; syscall-number and
-  stack-pivot facets retain their existing treatment until separately justified.
+- [x] Record the Patch 080 LC-08B decision: retain three role facets in a private
+  additive side-car while deferring public projection and score changes;
+  syscall-number and stack-pivot treatment remains unchanged.
 
 ### Sprint 13 Patch 080 private role checkpoint
 
@@ -807,3 +808,11 @@ candidate, and its review required the Patch 079 corrective and private task-val
 - [x] Keep public output, semantic classes, scores, and schema unchanged.
 - [ ] Complete native, Docker, parity, strict-lint, and independent acceptance.
 - [ ] Run the next measured Sprint 13 tranche only after Patch 080 acceptance.
+
+### Sprint 13 Patch 081 decision
+
+- [x] Record the Sprint 12 retrospective.
+- [x] Correct the Patch 080 transaction, Git-less, Docker-provenance, and delivery findings.
+- [x] Evaluate all 30 ordered System V two-pop pairs; defer a redundant runtime tuple after zero incremental task gains.
+- [x] Freeze 25 score/null cells through 50 independent mutation rejections.
+- [ ] Select the next semantic family or consumer only after incremental task value is demonstrated.

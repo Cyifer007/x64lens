@@ -2014,7 +2014,7 @@ A same-host logic replay does not substitute for Docker parity. Candidate 4,097
 must still exit 6 before stdout, malformed input must emit no partial stdout,
 and target bytes remain read-only and never executed.
 
-## Sprint 12 Patch 075 through Patch 079 candidate validation
+## Sprint 12 Patch 075 through Patch 080 candidate validation
 
 Patch 075 introduced private static text-relocation evidence, and Patch 076
 added distinct private RPATH/RUNPATH evidence. Patch 076's review required the
@@ -2042,6 +2042,9 @@ make sprint13-p078-acceptance-smoke
 make patch078-corrective-regression-smoke
 make sprint13-register-role-task-value-smoke
 make sprint13-p079-acceptance-smoke
+make sprint13-role-policy-smoke
+make sprint13-role-facet-smoke
+make sprint13-p080-acceptance-smoke
 ```
 
 For the supported dynamic-carrier boundary, `mitigations`, `gadgets`, and
@@ -2084,10 +2087,10 @@ Expected final banner:
 sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=private rpath=private runpath=private public-fields-added=0 next-sprint=13
 ```
 
-Patch 077 did not complete acceptance; its review required Patch 078. Patch
-078 review then required Patch 079. Sprint 13 activation remains pending until
-the Patch 079 aggregate and independent acceptance pass against the exact
-candidate source.
+Patch 077 did not complete acceptance; its review required Patch 078. Patch 078
+review then required Patch 079, whose review required Patch 080. Sprint 13
+activation remains pending until the Patch 080 aggregate and independent
+acceptance pass against the exact candidate source.
 
 ## Sprint 13 Patch 078 correction and entry validation
 
@@ -2095,14 +2098,14 @@ Patch 078 validation combines the Patch 077 corrective regression, exact
 Git-less Docker-source custody, the 16-pattern private register-role authority,
 all historical acceptance gates, fresh native and Docker validation, both
 private parity planes, and final package lifecycle verification. The acceptance
-historical target is `make sprint13-p078-acceptance-smoke`. Patch 079 executes
-the deterministically presentation-ordered task-value gate; the current target is
-`make sprint13-p079-acceptance-smoke`. Runtime-semantic, public-field, and score
-projection remain a later LC-08B decision.
+historical target is `make sprint13-p078-acceptance-smoke`. Patch 079 ran the
+non-causal, deterministically presentation-ordered task-value gate; its
+historical target is `make sprint13-p079-acceptance-smoke`. Patch 080 records the
+LC-08B private-side-car/public-deferral decision and owns the current aggregate.
 
-## Sprint 13 Patch 079 correction and task-value validation
+## Historical Sprint 13 Patch 079 correction and task-value validation
 
-Patch 079 acceptance requires the focused Patch 078 corrective regression, the
+The Patch 079 acceptance boundary required the focused Patch 078 corrective regression, the
 16-register role authority, and the 60-task value gate in addition to the full
 native, strict ShellCheck, Docker, external-natural, role/property parity, and
 dynamic-metadata parity surfaces. The authoritative aggregate is:
@@ -2124,3 +2127,7 @@ policy authority, and the executable private role-facet reconciliation. Fresh
 NASM, native, Docker, strict ShellCheck, external-natural, and both private parity
 planes remain part of `sprint13-p080-acceptance-smoke`. Public JSON and text must
 remain byte/fact compatible because the new side-car is not a reporter input.
+
+## Sprint 13 Patch 081 validation boundary
+
+Patch 081 adds `make patch080-corrective-regression-smoke`, `make sprint13-ordered-two-pop-role-task-value-smoke`, and `make sprint13-score-null-authority-smoke`. The tuple pilot must retain all 30 structural pairs and reject duplicate, `rsp`, and `r10` controls while recording zero incremental gains. The score/null authority must reject 25 mutations through two independent gates. Complete acceptance still requires fresh native, Docker, parity, ShellCheck, capacity, malformed-input, and delivery validation.

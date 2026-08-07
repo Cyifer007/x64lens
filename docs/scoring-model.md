@@ -202,14 +202,13 @@ complete rerun of every affected condition. Register-transfer and memory-family
 scores remain `null` until their required controllability and uncertainty facts
 exist.
 
-## Sprint 13 Patch 079 score decision
+## Historical Sprint 13 Patch 079 score boundary
 
 Patch 079 changes no score. `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` qualify only as private task-value evidence and remain
 unscored. The task gate defers `syscall_number` and `stack_pivot`; their existing
-scores and runtime treatment remain unchanged. LC-08B must separately justify
-any score or null-policy change with represented effects, task evidence,
-fixture updates, and campaign restart rules.
+scores and runtime treatment remained unchanged. Patch 080 subsequently retained
+the three qualified facets privately and made no score or null-policy change.
 
 ## Sprint 13 Patch 080 score decision
 
@@ -217,3 +216,7 @@ Patch 080 changes no score. The three qualified private role facets improve
 contextual task answers but do not calibrate relative candidate utility. Existing
 scores remain unchanged and newly represented exact-only roles remain `null`.
 Any future score decision requires an independent ranking and compatibility gate.
+
+## Sprint 13 Patch 081 score/null authority
+
+Patch 081 changes no score. It freezes all 25 exact-pattern cells: 14 retain numeric scores and 11 retain `null`. The three private role facets also remain unscored. Every pattern cell is mutated and rejected by two independent catalog/report gates. The ordered two-pop family retains score 95; a zero-gain convenience tuple proposal does not justify recalibration.

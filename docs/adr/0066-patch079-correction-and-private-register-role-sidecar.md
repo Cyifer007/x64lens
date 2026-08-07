@@ -2,17 +2,26 @@
 
 ## Status
 
-Accepted as the Patch 080 implementation decision. Product acceptance remains pending the complete native, Docker, parity, and independent validation gates.
+Accepted as the Patch 080 implementation decision. Product acceptance remains
+pending the complete native, Docker, parity, and independent validation gates.
 
 ## Context
 
-Patch 079 established useful private register-role task evidence, but its review found acceptance defects in patch recovery, Git-less permission custody, Docker image identity, parity build execution, and the task-value oracle. The original task authority reused development queries in the confirmation partition, the presentation permutation did not affect the decision, and the ABI oracle did not reject an invalid System V argument-three reassignment.
+Patch 079 established useful private register-role task evidence, but its review
+found acceptance defects in patch recovery, Git-less permission custody, Docker
+image identity, parity build execution, and the task-value oracle. The original
+task authority reused development queries in the confirmation partition, the
+presentation permutation did not affect the decision, and the ABI oracle did
+not reject an invalid System V argument-three reassignment.
 
-The existing runtime already preserves exact single-pop patterns and architectural effects for all 16 GPRs. The missing release-facing decision is contextual role, not byte discovery or decoded validity.
+The existing runtime already preserves exact single-pop patterns and
+architectural effects for all 16 GPRs. The missing release-facing decision is
+contextual role, not byte discovery or decoded validity.
 
 ## Decision
 
-Patch 080 corrects the complete Patch 079 acceptance finding set and adds one private, dense, candidate-indexed register-role side-car:
+Patch 080 corrects the complete Patch 079 acceptance finding set and adds one
+private, dense, candidate-indexed register-role side-car:
 
 ```text
 candidate_role_record[4096]
@@ -33,13 +42,22 @@ Linux syscall argument 4:     r10
 System V/Linux argument 3:    rdx
 ```
 
-`rsp` remains a stack-pivot role rather than generic register control. `rax` retains its existing syscall-number semantic class and score; the new generic-control facet is private only.
+`rsp` remains a stack-pivot role rather than generic register control. `rax`
+retains its existing syscall-number semantic class and score; the new
+generic-control facet is private only.
 
-The side-car is materialized after exact-pattern and architectural-effect reconciliation and before scoring. Scoring and reporters do not receive the side-car in Patch 080.
+The side-car is materialized after exact-pattern and architectural-effect
+reconciliation and before scoring. Scoring and reporters do not receive the
+side-car in Patch 080.
 
 ## Corrected task-value authority
 
-The replacement task authority contains five independent strata, 60 total query tuples, and no query reuse between development and confirmation partitions. Profile answers are generated from the complete role authority before oracle scoring. Deterministic presentation order is retained only as reproducible display metadata; it is explicitly non-causal and carries no human-blinding claim.
+The replacement task authority contains five independent strata, 60 total query
+tuples, and no query reuse between development and confirmation partitions.
+Profile answers are generated from the complete role authority before oracle
+scoring. Deterministic presentation order is retained only as reproducible
+display metadata; it is explicitly non-causal and carries no human-blinding
+claim.
 
 Three strata qualify as private policy input:
 
@@ -47,11 +65,14 @@ Three strata qualify as private policy input:
 - System V call arguments; and
 - Linux syscall arguments.
 
-Syscall-number and stack-pivot task strata remain deferred under their existing public semantics and scores.
+Syscall-number and stack-pivot task strata remain deferred under their existing
+public semantics and scores.
 
 ## LC-08B policy decision
 
-Patch 080 accepts the three qualified facets only in the private runtime side-car. It defers public text/JSON projection and retains existing score values while leaving newly represented private facets unscored.
+Patch 080 accepts the three qualified facets only in the private runtime
+side-car. It defers public text/JSON projection and retains existing score values
+while leaving newly represented private facets unscored.
 
 Therefore Patch 080 changes none of the following:
 
@@ -80,12 +101,16 @@ This is a fixed allocation fact, not measured RSS or performance evidence.
 ## Preserved boundaries
 
 - File-backed `PT_LOAD + PF_X` ranges remain executable authority.
-- Raw, exact-suffix, semantic-exact, unknown, future decoder-backed, and scored facts remain distinct.
+- Raw, exact-suffix, semantic-exact, unknown, future decoder-backed, and scored
+  facts remain distinct.
 - Candidate 4,097 still returns exit code 6 before stdout.
 - Malformed parser failures still emit no partial stdout.
 - Target files remain read-only and are never executed.
-- The reference analyzer remains dependency-free, decoder-free, one-worker, bounded, and deterministic.
+- The reference analyzer remains dependency-free, decoder-free, one-worker,
+  bounded, and deterministic.
 
 ## Consequences
 
-Patch 081 may evaluate an ordered two-pop role-tuple pilot or another separately measured Sprint 13 tranche. It must not treat Patch 080 private-role qualification as authority for public output or score changes.
+Patch 081 may evaluate an ordered two-pop role-tuple pilot or another separately
+measured Sprint 13 tranche. It must not treat Patch 080 private-role
+qualification as authority for public output or score changes.

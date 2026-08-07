@@ -217,7 +217,7 @@ if args[:2]==["image","inspect"]:
  ref=args[2]
  rec=data["refs"].get(ref)
  if rec is None: raise SystemExit(1)
- print(json.dumps([{"Id":rec["id"],"Config":{"Labels":{"org.x64lens.candidate-tree":rec["tree"]}}}]))
+ print(json.dumps([{"Id":rec["id"],"Config":{"Labels":rec["labels"]}}]))
  raise SystemExit(0)
 raise SystemExit(64)
 ''', encoding="utf-8")
@@ -231,15 +231,27 @@ def test_immutable_docker_authority(tmp: Path) -> int:
     write_fake_docker(fake)
     tree1, tree2 = "1" * 40, "2" * 40
     id1, id2 = "sha256:" + "a" * 64, "sha256:" + "b" * 64
-    state.write_text(json.dumps({"refs": {"x64lens:test": {"id": id1, "tree": tree1}, id1: {"id": id1, "tree": tree1}, id2: {"id": id2, "tree": tree2}}}), encoding="utf-8")
     log.write_text("", encoding="utf-8")
     context = tmp / "context"; context.mkdir()
     (context / "source-manifest.json").write_text("{}\n", encoding="utf-8")
     (context / "context-authority.json").write_text(json.dumps({"candidate_tree": tree1}) + "\n", encoding="utf-8")
+    context_sha = hashlib.sha256((context / "context-authority.json").read_bytes()).hexdigest()
+    source_sha = hashlib.sha256((context / "source-manifest.json").read_bytes()).hexdigest()
+    def rec(image_id: str, tree: str, context_digest: str = context_sha, source_digest: str = source_sha) -> dict[str, Any]:
+        return {
+            "id": image_id,
+            "tree": tree,
+            "labels": {
+                "org.x64lens.candidate-tree": tree,
+                "org.x64lens.context-authority-sha256": context_digest,
+                "org.x64lens.source-manifest-sha256": source_digest,
+            },
+        }
+    state.write_text(json.dumps({"refs": {"x64lens:test": rec(id1, tree1), id1: rec(id1, tree1), id2: rec(id2, tree2)}}), encoding="utf-8")
     authority = tmp / "image-authority.json"
     env = os.environ.copy(); env["P080_DOCKER_STATE"] = str(state); env["P080_DOCKER_LOG"] = str(log)
     run([sys.executable, str(ROOT / "tools/docker-image-authority.py"), "record", "--path", str(authority), "--docker", str(fake), "--tag", "x64lens:test", "--candidate-tree", tree1, "--context-authority", str(context / "context-authority.json")], env=env)
-    data = json.loads(state.read_text()); data["refs"]["x64lens:test"] = {"id": id2, "tree": tree2}; state.write_text(json.dumps(data), encoding="utf-8")
+    data = json.loads(state.read_text()); data["refs"]["x64lens:test"] = rec(id2, tree2); state.write_text(json.dumps(data), encoding="utf-8")
     run([sys.executable, str(ROOT / "tools/docker-image-authority.py"), "verify", "--path", str(authority), "--docker", str(fake)], env=env)
     entries = [json.loads(x) for x in log.read_text().splitlines()]
     require(entries[-1][2] == id1, "Docker authority verification re-resolved mutable tag")

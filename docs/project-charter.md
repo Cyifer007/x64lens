@@ -210,14 +210,14 @@ owns deterministically presentation-ordered task-value qualification before any
 runtime-semantic, public-field,
 or score projection.
 
-## Sprint 13 Patch 079 checkpoint
+## Historical Sprint 13 Patch 079 checkpoint
 
-The current candidate retains the assembly-first, dependency-light reference
+The Patch 079 candidate retained the assembly-first, dependency-light reference
 profile while adding no public analysis capability. It corrects source, Docker,
 parity, recovery, transaction, and delivery evidence paths and records a
-preregistered task-value result for private register-role facets. The result is
-input to a later policy gate, not a claim of exploitability or complete gadget
-coverage.
+preregistered task-value result for private register-role facets. Its review
+required Patch 080; the result was policy input, not a claim of exploitability
+or complete gadget coverage.
 
 ## Sprint 13 Patch 080 implementation stage
 

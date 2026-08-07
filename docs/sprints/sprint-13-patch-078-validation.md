@@ -2,9 +2,9 @@
 
 ## Status
 
-Historical candidate. Independent review returned
-`require_smallest_corrective_patch`; Patch 079 is the resulting corrective and
-private task-value candidate, pending complete acceptance.
+Historical candidate. Patch 078 was superseded by the Patch 079 corrective and
+private task-value candidate; Patch 079's review required Patch 080. Patch 080
+remains pending complete acceptance.
 
 ## Purpose
 
@@ -105,10 +105,11 @@ metadata member.
 Patch 078 did not complete acceptance. Its review required Patch 079 to correct
 the remaining Docker, Git-less
 custody, independent-build parity, recovery, patch-transaction, and loose-
-delivery findings. Patch 079 also executes the deterministically A/B
-label-permuted register-role task-value
+delivery findings. Patch 079 also ran the non-causal, deterministically
+presentation-ordered register-role task-value
 gate: `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` qualify only as private task-value evidence, while
-`syscall_number` and `stack_pivot` remain deferred. LC-08B owns any later
-runtime-semantic, public-field, or score decision. Any such behavior change
-restarts every affected diagnostic task identity.
+`syscall_number` and `stack_pivot` remain deferred. Patch 080 subsequently
+retained the three qualified facets privately and deferred public-field and score
+projection. Any future behavior change restarts every affected diagnostic task
+identity.

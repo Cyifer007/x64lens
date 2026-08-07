@@ -2,15 +2,16 @@
 
 **x64lens is an assembly-first ELF64 x86_64 binary analysis tool that maps executable regions, discovers return-oriented candidate windows, classifies supported semantic primitives, evaluates mitigation context, assigns bounded heuristic scores, and produces reproducible text and JSON reports for defensive triage and authorized security research.**
 
-> Status: Sprints 1 through 11 are complete. Sprint 12 remains the active
-> acceptance authority while Patch 080 corrects the complete Patch 079
-> transaction, Git-less custody, immutable-image, parity-build, task-oracle,
-> and loose-delivery finding set. Patch 080 replaces the overlapping P079 task
-> partitions with 60 unique query tuples and materializes three qualified role
-> facets in a private 8-byte candidate-index side-car. Public output, semantic
-> classes, scores, candidate capacity, and schema `0.2.0` remain unchanged.
-> Sprint 12 closes and Sprint 13 becomes active only after complete Patch 080
-> acceptance.
+> Status: Sprints 1 through 11 are complete. Sprint 12's loader and mitigation
+> engineering scope is recorded in the repository retrospective. Sprint 12 remains the acceptance authority
+> for its inherited loader and mitigation facts while Patch 081 carries remaining
+> exact-source acceptance corrections into Sprint 13.
+> Patch 081 records a negative ordered two-pop task-value result: existing
+> `stack_pop_order` facts already answer the frozen tasks, so no redundant
+> runtime tuple record is added. The complete score/null partition is retained.
+> Public output, semantic classes, scores, candidate capacity, and schema
+> `0.2.0` remain unchanged. Complete native, Docker, parity, and independent
+> acceptance remains required.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -25,7 +26,7 @@
 > 6,361,100 ns reliable single-process floor. This is unresolved latency, not
 > zero runtime or a speed result. Two Python baseline closures and coordinate
 > calibration failed, so the replay was not comparison-qualified and did not
-> qualify the Patch 061 evidence stratum. Measurements after Patch 079 require
+> qualify the Patch 061 evidence stratum. Measurements after Patch 080 require
 > a distinct diagnostic campaign identity. Tool-native record totals remain
 > definition-specific, and address-level comparisons remain blocked until
 > positive coordinate anchors exist.
@@ -42,6 +43,23 @@
 >
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
+
+## Sprint 13 Patch 081 correction and ordered two-pop decision
+
+Patch 081 corrects the Patch 080 transaction, recovery, Git-less source,
+Docker-provenance, helper-identity, and evidence-seal findings. It also adds the
+repository-facing [Sprint 12 retrospective](docs/sprints/sprint-12-retro.md).
+
+A test-only authority covers all 30 ordered distinct pairs among the six System
+V argument registers. Existing exact `stack_pop_order`, control-mask, effect,
+and semantic-exact facts answer all 30 frozen tasks. Because a proposed
+convenience tuple record adds zero development and zero confirmation gains, the
+new runtime representation is deferred. The current ordered two-pop family and
+score 95 remain unchanged.
+
+A separate authority mutates every one of the 25 exact-pattern score/null cells.
+Two independent gates reject all 25 mutations, preserving 14 numeric scores, 11
+null scores, and null scores for all three private role facets.
 
 ## Sprint 13 Patch 080 correction and private role-policy gate
 
@@ -60,7 +78,7 @@ syscall argument 4 remains `r10`; argument 3 remains `rdx` in both mappings.
 The corrected task presentation order is reproducible display metadata only. It
 is non-causal and carries no human-blinding claim.
 
-## Sprint 13 Patch 079 correction and role-task gate
+## Historical Sprint 13 Patch 079 correction and role-task gate
 
 Patch 079 changes no runtime analyzer, NASM include, public schema, semantic
 class, or score. It constructs Docker source and the transport Dockerfile from
@@ -70,14 +88,16 @@ a writable Git-less validation copy, builds native and container parity binaries
 independently, restores exact Git state after post-effect transaction failures,
 and preserves foreign recovery descendants.
 
-The task-value gate evaluates five strata independently over eight development
-and four untouched confirmation tasks per stratum. The deterministic A/B label
-permutation is a reproducible query-control mechanism, not a human double-blind
-claim. `generic_control`, `sysv_call_arguments`, and
-`linux_syscall_arguments` meet the preregistered incremental-gain thresholds
-only as private task-value evidence. `syscall_number` and `stack_pivot` remain
-deferred by the Patch 079 task gate, with existing runtime semantics and scores
-unchanged. LC-08B owns any later runtime, public, or score projection.
+The Patch 079 task-value gate evaluated five strata independently over eight
+development and four confirmation-labeled tasks per stratum. Patch 080 found
+query reuse across those partitions and replaced that authority. The Patch 079
+presentation order was reproducible display metadata, not a causal experiment
+or human-blinding method. `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` met the original incremental-gain thresholds only as
+private task-value evidence. `syscall_number` and `stack_pivot` were deferred by
+the Patch 079 task gate, with existing runtime semantics and scores unchanged.
+Patch 080 subsequently recorded the LC-08B private-retention decision and
+deferred public and score projection.
 
 ## Why this project exists
 
@@ -106,6 +126,7 @@ read-only file mapping
   -> candidate-indexed loader-region contributor reconciliation
   -> candidate-indexed structured memory effects
   -> candidate-indexed architectural register, flag, control-flow, and stack-source effects
+  -> candidate-indexed private register-role side-car materialization
   -> heuristic scores
   -> command-owned report identity and complete-analysis summary
   -> text or JSON reporting
@@ -407,7 +428,7 @@ rehearsal, or independent exact-source acceptance.
 See [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md) and
 the [Patch 074 validation record](docs/sprints/sprint-12-patch-074-validation.md).
 
-## Sprint 12 Patch 075 through Patch 079 closeout checkpoint
+## Sprint 12 Patch 075 through Patch 080 closeout checkpoint
 
 Patch 075 superseded the Patch 074 closeout candidate and introduced bounded
 private static `DT_TEXTREL` / `DF_TEXTREL` evidence. Patch 076 corrected the
@@ -421,9 +442,10 @@ exact-pop role decision. Neither patch splits or expands path strings, applies
 loader policy, opens target-derived paths, adds a public field, revises schema
 `0.2.0`, reinterprets PIE, changes scores, or makes a runtime-CET claim.
 Program headers remain executable authority; section headers remain bounded
-metadata and annotations. Patch 078 review required Patch 079, which records
-three qualified private task-value facets and defers `syscall_number` and
-`stack_pivot` without runtime, public-field, schema, or score changes.
+metadata and annotations. Patch 078 review required Patch 079, which recorded
+three qualified private task-value facets and deferred `syscall_number` and
+`stack_pivot`. Patch 079 review required Patch 080; Patch 080 retains the three
+qualified facets privately without public-field, schema, or score changes.
 
 See [ADR 0061][a61], [ADR 0062][a62],
 [P075 validation](docs/sprints/sprint-12-patch-075-validation.md),
@@ -433,7 +455,9 @@ See [ADR 0061][a61], [ADR 0062][a62],
 [ADR 0064](docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md),
 [P078 validation](docs/sprints/sprint-13-patch-078-validation.md),
 [ADR 0065](docs/adr/0065-patch078-correction-and-register-role-task-value.md),
-and [P079 validation](docs/sprints/sprint-13-patch-079-validation.md).
+[P079 validation](docs/sprints/sprint-13-patch-079-validation.md),
+[ADR 0066](docs/adr/0066-patch079-correction-and-private-register-role-sidecar.md),
+and [P080 validation](docs/sprints/sprint-13-patch-080-validation.md).
 
 ## Quick start on Ubuntu 24.04
 
@@ -1008,8 +1032,8 @@ private RPATH/RUNPATH carrier and exact-value evidence. Patch 077 corrects the
 first surrounding transaction set and closes no public-policy deferral. Patch
 078 corrects the remaining Patch 077 blockers and freezes a private exact-pop
 role decision without runtime, public-field, or score projection. Its review
-required Patch 079. Sprint 13 becomes active only after complete Patch 079
-acceptance. See
+required Patch 079, whose review required Patch 080. Sprint 13 becomes active
+only after complete Patch 080 acceptance. See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
 [P074 validation](docs/sprints/sprint-12-patch-074-validation.md),
@@ -1021,7 +1045,9 @@ historical
 [ADR 0064](docs/adr/0064-patch077-correction-and-sprint13-register-role-entry.md),
 [P078 validation](docs/sprints/sprint-13-patch-078-validation.md),
 [ADR 0065](docs/adr/0065-patch078-correction-and-register-role-task-value.md),
-and [P079 validation](docs/sprints/sprint-13-patch-079-validation.md).
+[P079 validation](docs/sprints/sprint-13-patch-079-validation.md),
+[ADR 0066](docs/adr/0066-patch079-correction-and-private-register-role-sidecar.md),
+and [P080 validation](docs/sprints/sprint-13-patch-080-validation.md).
 
 [a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
 [a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

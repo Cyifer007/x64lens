@@ -2,40 +2,27 @@
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
-authority with Patch 080 as the complete Patch 079 correction and private
-register-role side-car candidate.
-Patch 077 preserved the private textrel/RPATH/RUNPATH implementation
-but required further transaction, cleanup, parity-publication, Git-less Docker
-source, digest-oracle, and delivery correction. Patch 078 froze a private
-multi-role exact-pop decision without changing runtime output or scores; its
-review required Patch 079. The roadmap may state "Sprints 1 through 12 are
-complete" and "Sprint 13 is active" only after complete Patch 080 acceptance
-passes on one authenticated source. Sprint 9
-established report identity, schema `0.2.0`, candidate provenance, and the
-decoder-free reference profile. Sprint 10 added bounded semantic-exact primitive
-and effect coverage.
-Sprint 11 established the provisional corpus, high-resolution runner, normalized
-baseline adapters, and diagnostic gap register. Sprint 12 established ordinary
-program-header validity, explicit extended-numbering outcomes, executable-
-overlap contributor provenance and measured normalization deferral, a private
-PIE/DSO role lattice, bounded private GNU-property IBT/SHSTK facts, natural and
-controlled private-fact strata, exact GNU `readelf` reconciliation, outcome-
-blind external-natural acquisition, a corrected isolated native/container
-parity protocol, and a non-reinterpretive public-policy decision of `defer`.
+Sprints 1 through 11 are complete. Sprint 12 remains the acceptance authority
+for its loader and mitigation facts while Patch 081 records the public
+retrospective and continues the remaining corrective work in Sprint 13.
 
-Patch 074 implemented corrections for the final Patch 073 custody, hardlink,
-selection-inode, parity-membership/mount/publication, tracked-permission, and
-authority-oracle findings. It changes no runtime analyzer, include, or public
-schema path. Public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH,
-and RUNPATH fields remain unadded. Actual qualified parity and independent
-acceptance remain pending. Sprint 15 still freezes the confirmatory campaign,
-and all Sprint 11-12 measurement evidence remains diagnostic, unfrozen, and
-publication-ineligible.
+Sprint 12 established ordinary program-header validity, explicit
+extended-numbering outcomes, executable-overlap contributor provenance and
+measured normalization deferral, a private PIE/DSO role lattice, bounded private
+GNU-property IBT/SHSTK facts, natural and controlled private-fact strata, exact
+GNU `readelf` reconciliation, outcome-blind external-natural acquisition,
+corrected native/container parity protocols, private textrel/RPATH/RUNPATH
+facts, and a public-policy decision of `defer`.
 
-The Patch 073 diagnostic campaign retained every x64lens row below its measured
-timer floor and produced zero positive coordinate anchors. It supports no speed,
-peak-RSS, parity, superiority, prevalence, or normalized-coverage claim.
+Patch 080 added three private single-pop role facets without public or score
+projection. Patch 081 corrects its acceptance infrastructure, records
+`docs/sprints/sprint-12-retro.md`, and runs the ordered two-pop task-value pilot.
+Because current exact ordered-pop facts already answer the frozen tasks, a new
+runtime tuple representation is deferred. Existing semantic classes and scores
+remain unchanged.
+
+All measurement evidence remains diagnostic, unfrozen, and
+publication-ineligible. Sprint 15 still freezes the confirmatory campaign.
 
 The repository now provides:
 
@@ -639,11 +626,11 @@ distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076's review required the Patch 077 correction. Sprint 13
 remains planned and activates only after complete Patch 080 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
-4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executes the
-deterministically presentation-ordered task-value gate; runtime-semantic,
-public-field, and score projection
-remain a later LC-08B decision. All Sprint 11-12 campaign observations remain diagnostic and cannot
-be promoted into the Sprint 15-frozen confirmatory dataset.
+4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
+deterministically presentation-ordered task-value gate. Patch 080 records the
+LC-08B private-retention and public/score-projection deferral decision. All
+Sprint 11-12 campaign observations remain diagnostic and cannot be promoted
+into the Sprint 15-frozen confirmatory dataset.
 
 
 ## Sprint 12 Patch 076 research posture
@@ -670,16 +657,15 @@ schema. Its private register-role authority defines questions for Patch 079
 deterministically presentation-ordered task-value qualification; it does not authorize runtime-semantic,
 public-field, score, performance, coverage, or mitigation-prevalence claims.
 
-## Sprint 13 Patch 079 checkpoint
+## Historical Sprint 13 Patch 079 checkpoint
 
-Patch 079 corrects the remaining Patch 078 acceptance tooling and runs the
+Patch 079 corrected the remaining Patch 078 acceptance tooling and ran the
 preregistered register-role task-value gate. `generic_control`,
 `sysv_call_arguments`, and `linux_syscall_arguments` qualify only as private
 task-value evidence; `syscall_number` and `stack_pivot` remain deferred, with
 existing runtime semantics and scores unchanged. The
-patch adds no runtime family, score, public field, decoder, worker, or schema
-change. Patch 080 owns LC-08B policy and must preserve the existing evidence,
-capacity, malformed-input, and campaign-separation contracts.
+patch added no runtime family, score, public field, decoder, worker, or schema
+change. Its review required Patch 080.
 
 ## Sprint 13 Patch 080 checkpoint
 
@@ -688,3 +674,7 @@ the first private additive role side-car. Three facets qualify privately; public
 projection and score changes remain deferred. Patch 081 may run the ordered
 two-pop role-tuple pilot or the next independently measured Sprint 13 gate after
 Patch 080 acceptance.
+
+## Sprint 13 Patch 081 decision
+
+The first ordered two-pop consumer pilot does not justify another runtime representation. All 30 structural pairs reconcile, but existing `stack_pop_order` facts already satisfy the frozen tasks. The roadmap therefore retains the current exact family and moves the next semantic or consumer addition behind a new incremental-value gate.

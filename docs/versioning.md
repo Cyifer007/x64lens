@@ -14,21 +14,20 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 ## Current version and roadmap state
 
 Patch 080 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains pending acceptance while Patch 080 corrects the
-remaining Patch 078 Docker, Git-less custody, parity-build, recovery,
-patch-transaction, and delivery boundaries. Patch 078 froze a private exact-pop
-role authority; Patch 079 records private task-value evidence without changing
-the runtime report, scores, or public schema.
+moves. Sprint 12 remains pending acceptance while Patch 080 corrects the Patch
+079 acceptance findings and adds a private additive role side-car. Patch 078
+froze a private exact-pop role authority; Patch 079 recorded private task-value
+evidence without changing the runtime report, scores, or public schema.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 079 preserves the same public fields, reference profile, private context
+Patch 080 preserves the same public fields, reference profile, private context
 sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
 runtime-CET claim. Actual qualified parity and complete Patch 080 acceptance
 remain pending.
 
-Measurements after Patch 079 require a distinct diagnostic campaign identity
+Measurements after Patch 080 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
 not freeze until Sprint 15.
 
@@ -201,7 +200,7 @@ runtime or score. Patch 079 executes deterministically presentation-ordered
 task-value qualification before any runtime-semantic, public-field, or score
 projection.
 
-## Sprint 13 Patch 079 version state
+## Historical Sprint 13 Patch 079 version state
 
 Patch 079 retains tool version `0.1.0-dev`, schema `0.2.0`, all public fields,
 all current scores, candidate capacity 4,096, and the dependency-free, decoder-
@@ -209,11 +208,15 @@ free, one-worker reference profile. It records private task-value evidence and
 corrective tooling only. `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` qualify only as private task-value evidence;
 `syscall_number` and `stack_pivot` remain deferred, with existing runtime
-semantics and scores unchanged. An LC-08B decision is required before any
-compatible public or runtime change.
+semantics and scores unchanged. Patch 080 subsequently retained the three
+qualified facets privately and deferred compatible public and score changes.
 
 ## Sprint 13 Patch 080 version state
 
 Patch 080 retains tool version `0.1.0-dev` and schema `0.2.0`. The private role
-record is not a public schema field. No release tag, required JSON property,
-semantic class, candidate count, or score changes.
+record is not a public schema field. It changes no release tag, required JSON
+property, semantic class, candidate count, or score.
+
+## Patch 081 version boundary
+
+Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field, required property, count meaning, semantic class, or score changes.

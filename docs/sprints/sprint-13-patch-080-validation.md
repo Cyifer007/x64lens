@@ -6,7 +6,10 @@ Implementation candidate pending complete native, Docker, parity, and independen
 
 ## Purpose
 
-Patch 080 corrects the Patch 079 transaction, Git-less source, immutable-image, parity-build, task-oracle, and loose-delivery findings. It then materializes the three qualified register-role facets in a private additive side-car without changing public semantics, scores, or schema `0.2.0`.
+Patch 080 corrects the Patch 079 transaction, Git-less source, immutable-image,
+parity-build, task-oracle, and loose-delivery findings. It then materializes the
+three qualified register-role facets in a private additive side-car without
+changing public semantics, scores, or schema `0.2.0`.
 
 ## Exact implementation boundary
 
@@ -22,7 +25,8 @@ Patch 080 adds:
 - a 9-cell LC-08B private/public/score policy authority; and
 - an 8-byte candidate-indexed private role record.
 
-Patch 080 does not add a public field, semantic class, score, schema revision, decoder, worker, or target-derived file open.
+Patch 080 does not add a public field, semantic class, score, schema revision,
+decoder, worker, or target-derived file open.
 
 ## Focused validation
 
@@ -69,7 +73,9 @@ make validation-smoke
 SHELLCHECK_STRICT=1 make shellcheck-smoke
 ```
 
-The fresh NASM build is required because Patch 080 adds `src/candidate_role.asm`, changes the command arena, and adds materializer calls in `gadgets` and `analyze`.
+The fresh NASM build is required because Patch 080 adds
+`src/candidate_role.asm`, changes the command arena, and adds materializer calls
+in `gadgets` and `analyze`.
 
 ## Docker and parity validation
 
@@ -84,14 +90,17 @@ make sprint12-role-property-environment-parity-smoke
 make sprint12-dynamic-metadata-environment-parity-smoke
 ```
 
-Every downstream Docker target consumes the immutable image ID recorded by `tools/docker-image-authority.py`. Re-resolving the mutable tag after build is not an accepted validation path.
+Every downstream Docker target consumes the immutable image ID recorded by
+`tools/docker-image-authority.py`. Re-resolving the mutable tag after build is
+not an accepted validation path.
 
 ## Capacity and malformed-input expectations
 
 - Candidate 4,096 can still produce one complete report.
 - Candidate 4,097 returns exit code 6 before text or JSON stdout.
 - Malformed parser inputs retain their documented nonzero class and emit no partial stdout.
-- The private role slice is allocated within the fixed command arena and does not change candidate capacity.
+- The private role slice is allocated within the fixed command arena and does
+  not change candidate capacity.
 
 ## Acceptance aggregate
 
@@ -105,17 +114,22 @@ Expected banner:
 sprint13-p080-acceptance-smoke: ok patch=80 sprint12=closed sprint13=active private-role-facets=3 public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
 ```
 
-The banner is valid only after all prerequisites complete against the exact candidate source. It does not independently prove acceptance.
+The banner is valid only after all prerequisites complete against the exact
+candidate source. It does not independently prove acceptance.
 
 ## Failure interpretation
 
 - A partial patch effect that leaves the index or worktree dirty is a transaction failure.
 - An incomplete Git-less manifest or caller-visible root replacement is a source-custody failure.
-- A downstream Docker command that resolves a mutable tag instead of the recorded immutable image ID is an identity failure.
+- A downstream Docker command that resolves a mutable tag instead of the
+  recorded immutable image ID is an identity failure.
 - A container parity build on a non-executable mount is a harness failure.
-- Any development/confirmation query overlap, ABI reassignment, public projection, or score change is an oracle failure.
+- Any development/confirmation query overlap, ABI reassignment, public
+  projection, or score change is an oracle failure.
 - Any output difference caused solely by the private role side-car is a product regression.
 
 ## Next step
 
-After complete Patch 080 acceptance, Patch 081 may run the ordered two-pop role-tuple pilot or the next independently selected Sprint 13 semantic gate. Public role projection and score changes remain separate decisions.
+After complete Patch 080 acceptance, Patch 081 may run the ordered two-pop
+role-tuple pilot or the next independently selected Sprint 13 semantic gate. Public
+role projection and score changes remain separate decisions.

@@ -39,10 +39,11 @@ and interpretation findings, records the below-floor method, closes Sprint 11,
 and activates Sprint 12. The diagnostic checkpoint is complete as mutable
 development evidence; its rows are not preview or publication evidence.
 
-Sprint 12 remains active. Patch 078's review returned
-`require_smallest_corrective_patch`; Patch 079 is the resulting corrective and
-private task-value candidate, pending exact acceptance. Sprint 13 becomes active
-only after complete Patch 080 acceptance. Loader, mitigation, semantic, and
+Sprint 12 remains active. Patch 078 was superseded by the Patch 079 corrective
+and private task-value candidate; Patch 079's review then required Patch 080.
+Patch 080 is the current correction and private role-side-car candidate, pending
+complete acceptance. Sprint 13 becomes active only after complete Patch 080
+acceptance. Loader, mitigation, semantic, and
 optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in
 Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs
 in Sprint 17.
@@ -474,25 +475,28 @@ Patch 077 was a closeout candidate, not a release candidate. Its review required
 the Patch 078 correction below. It introduced no public textrel, RPATH, RUNPATH,
 PIE/DSO, IBT, or SHSTK field.
 
-## Sprint 13 Patch 078 release-gate update
+## Historical Sprint 13 Patch 078 release-gate update
 
-Patch 078 is an implementation and closeout-correction candidate, not a release
-candidate. Preview eligibility still requires fresh native and Docker
-validation, both private parity planes, exact source and delivery custody,
-independent acceptance, and Patch 079 deterministically presentation-ordered
-task-value qualification before
-any runtime-semantic, public-field, or score projection.
+Patch 078 was an implementation and closeout-correction candidate, not a
+release candidate. Its review required Patch 079, whose review required Patch
+080. Preview eligibility still requires complete Patch 080 acceptance before
+any later release-facing capability work.
 
-## Sprint 13 Patch 079 release-gate update
+## Historical Sprint 13 Patch 079 release-gate update
 
-Patch 079 adds no release-facing field or score. Before campaign freeze, LC-08B
-must explicitly decide whether the three task-qualified private facets enter
-the runtime semantic model and how score/null policy applies. Any accepted
-change requires controlled fixtures, current-producer validation, native/Docker
-parity, and a distinct diagnostic restart before Sprint 15.
+Patch 079 added no release-facing field or score. Patch 080 records the LC-08B
+decision: retain the three qualified facets only in the private side-car, defer
+public projection, retain existing scores, and leave the new private facets
+unscored. Product acceptance remains pending. Any later public or score change
+requires controlled fixtures, current-producer validation, native/Docker parity,
+and a distinct diagnostic restart before Sprint 15.
 
 ## Sprint 13 Patch 080 release-gate update
 
 Patch 080 adds no release-facing field or score. Its private side-car must pass
 fresh native and Docker validation plus both parity planes before acceptance.
 Public role projection and score calibration remain separate pre-freeze gates.
+
+## Patch 081 release-gate note
+
+Patch 081 adds no release-facing field or score. Its tuple pilot is diagnostic and negative for new runtime state; its score/null authority freezes existing values. The research-preview gate still requires accepted native/Docker validation, private-fact parity, corpus/method freeze, and checksummed release artifacts.

@@ -6,6 +6,23 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 081
+
+- Correct Patch 080 transaction recovery, literal path handling, unrelated-state
+  preservation, Git-less preauthentication, already-state checks, Docker
+  provenance binding, portable checksum paths, and loose/package helper
+  consistency.
+- Add a repository-facing Sprint 12 retrospective covering the completed loader
+  and mitigation engineering program and its explicit remaining acceptance debt.
+- Execute a 30-pair ordered two-pop role-tuple pilot. Existing exact ordered-pop
+  facts produce zero incremental task gains, so no new runtime tuple record is
+  added.
+- Freeze the complete score/null partition with 25 mutations and 50 independent
+  gate rejections: 14 scored patterns, 11 null patterns, and three private role
+  facets retained null.
+- Preserve tool `0.1.0-dev`, schema `0.2.0`, all public output, semantic classes,
+  scores, candidate capacity, deterministic ordering, and fail-closed behavior.
+
 ### Sprint 13 Patch 080
 
 - Correct partial patch apply/rollback recovery, Git-less manifest completeness
@@ -26,14 +43,15 @@ The project follows semantic versioning once the first public release is cut.
 
 - Sprint 13 Patch 079 adds preregistered private, diagnostic, unfrozen
   register-role task-value evidence across five independent strata that cannot
-  be pooled: 60 tasks, 40 development tasks, 20 untouched tasks, three
-  qualified private facets, two deferred strata,
+  be pooled: 60 tasks, 40 development tasks, 20 confirmation-labeled tasks,
+  three qualified private facets, two deferred strata,
   zero regressions, zero incorrect promotions, zero public fields, zero score
   changes, and no schema change. The qualified facets are `generic_control`,
   `sysv_call_arguments`, and `linux_syscall_arguments`; `syscall_number` and
-  `stack_pivot` remain deferred. Deterministic presentation-order permutation is used
-  without making a human double-blind claim. This result is not confirmatory or
-  publication evidence.
+  `stack_pivot` remain deferred. Deterministic presentation order was non-causal
+  display metadata, not a human-blinding method. Patch 080 found query reuse
+  across the labeled partitions and replaced the task authority. The Patch 079
+  result is not confirmatory or publication evidence.
 
 - Sprint 12 Patch 076 preserves the first 2,128 bytes of the private dynamic
   side-car and appends separate bounded `DT_RPATH` and `DT_RUNPATH`
@@ -505,9 +523,9 @@ The project follows semantic versioning once the first public release is cut.
   role decision for all 16 exact single-pop patterns, including System V call
   argument 4 in `rcx` and Linux syscall argument 4 in `r10`. It changes no
   analyzer runtime source, NASM include, public field, schema `0.2.0`, semantic
-  class, or score. Patch 078 was a Sprint 13 entry candidate whose review required Patch 079.
-  Patch 079 now owns the corrective and task-value candidate; runtime-semantic,
-  public-field, and score projection remain separate later decisions.
+  class, or score. Patch 078 was a Sprint 13 entry candidate whose review
+  required Patch 079; Patch 079's review then required Patch 080. Patch 080 is
+  the current acceptance candidate and retains public-field and score deferral.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,

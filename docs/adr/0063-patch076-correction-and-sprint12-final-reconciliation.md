@@ -55,8 +55,9 @@ The patch makes these decisions:
    source and build outputs rather than overwriting the host native build tree.
 9. **Closeout remains evidence-gated.** Patch 077 was a closeout candidate, not
    automatic Sprint 12 acceptance. Patch 078 was the Sprint 13 entry candidate
-   and required correction. Patch 079 was the corrective and private task-value candidate; its review required Patch 080; activation still requires complete acceptance against
-   its exact source.
+   and required correction. Patch 079 was the corrective and private task-value
+   candidate; its review required Patch 080. Activation still requires complete
+   acceptance against the exact Patch 080 source.
 
 ## Preserved architecture
 
@@ -97,7 +98,7 @@ Acceptance requires:
 ## Consequences
 
 Sprint 12 may close with the public role/property and dynamic-metadata policies
-still deferred. Patch 079 qualifies three role facets only as private task-value
-evidence and defers `syscall_number` and `stack_pivot`; LC-08B owns later
-runtime, public, and score decisions. A changed task definition still requires
-a new diagnostic campaign identity.
+still deferred. Patch 079 qualified three role facets only as private task-value
+evidence and deferred `syscall_number` and `stack_pivot`; Patch 080 retained the
+three qualified facets privately while deferring public and score projection. A
+changed task definition still requires a new diagnostic campaign identity.

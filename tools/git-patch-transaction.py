@@ -20,7 +20,7 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import stat
 import subprocess
 import sys
@@ -55,6 +55,27 @@ class RepoHandle:
     @property
     def pass_fds(self) -> tuple[int, int]:
         return (self.root_fd, self.git_fd)
+
+
+@dataclass(frozen=True)
+class TreeEntry:
+    mode: str
+    oid: str
+
+
+@dataclass(frozen=True)
+class PathState:
+    exists: bool
+    device: int = 0
+    inode: int = 0
+    file_type: int = 0
+    mode: int = 0
+    size: int = 0
+    oid: str | None = None
+
+
+class AlreadyState(TransactionError):
+    """Raised when the requested exact state is already present."""
 
 
 def require(condition: bool, message: str) -> None:
@@ -219,39 +240,350 @@ def exact_tree_state(repo: RepoHandle, expected_tree: str) -> bool:
         return False
 
 
+def safe_patch_path(raw: str) -> str:
+    path = PurePosixPath(raw)
+    require(
+        raw
+        and not path.is_absolute()
+        and path.as_posix() == raw
+        and "\\" not in raw
+        and all(part not in {"", ".", ".."} for part in path.parts),
+        f"tree delta contains an unsafe path: {raw!r}",
+    )
+    return raw
+
+
+def patch_paths(repo: RepoHandle, raw_patch: bytes) -> list[str]:
+    """Derive the authenticated path scope from patch bytes alone.
+
+    A recipient may have the exact base commit without the unreferenced
+    candidate-tree object.  Path preflight must therefore not dereference the
+    candidate tree before the patch has been applied and ``git write-tree`` has
+    materialized it locally.  The package format deliberately rejects rename
+    and copy metadata so ``git apply --numstat -z`` yields one literal path per
+    changed entry, including additions and deletions.
+    """
+    for marker in (b"\nrename from ", b"\nrename to ", b"\ncopy from ", b"\ncopy to "):
+        require(marker not in raw_patch, "renames and copies are unsupported in guarded package patches")
+    argv = [
+        "git",
+        f"--git-dir={repo.git_proc}",
+        f"--work-tree={repo.root_proc}",
+        "apply",
+        "--numstat",
+        "-z",
+        "-",
+    ]
+    cp = run(repo, argv, input_bytes=raw_patch)
+    if cp.returncode != 0:
+        detail = (cp.stderr or cp.stdout).decode("utf-8", "replace").strip()
+        raise TransactionError(f"cannot derive authenticated patch paths ({cp.returncode}): {detail}")
+    paths: set[str] = set()
+    for record in (item for item in cp.stdout.split(b"\0") if item):
+        fields = record.split(b"\t", 2)
+        require(len(fields) == 3, "malformed git apply --numstat record")
+        added, deleted, encoded_path = fields
+        require(
+            (added == b"-" and deleted == b"-")
+            or (added.isdigit() and deleted.isdigit()),
+            "malformed git apply --numstat counts",
+        )
+        paths.add(safe_patch_path(os.fsdecode(encoded_path)))
+    ordered = sorted(paths, key=os.fsencode)
+    require(ordered, "authenticated patch path scope is empty")
+    return ordered
+
+
 def changed_paths(repo: RepoHandle, left_tree: str, right_tree: str) -> list[str]:
-    raw = git(repo, "diff", "--name-only", "-z", left_tree, right_tree)
-    paths = [os.fsdecode(item) for item in raw.split(b"\0") if item]
-    require(all(path and not path.startswith("/") and ".." not in Path(path).parts for path in paths),
-            "tree delta contains an unsafe path")
+    # Disable rename folding so every old and new pathname belongs to the
+    # authenticated tree delta.  Paths are always passed back to Git through
+    # literal, NUL-delimited pathspec input.
+    raw = git(repo, "diff", "--no-renames", "--name-only", "-z", left_tree, right_tree)
+    paths = sorted(
+        {safe_patch_path(os.fsdecode(item)) for item in raw.split(b"\0") if item},
+        key=os.fsencode,
+    )
+    require(paths, "authenticated patch tree delta is empty")
     return paths
 
 
-def restore_exact_tree(repo: RepoHandle, desired_tree: str, alternate_tree: str) -> str | None:
-    """Restore the index and tracked worktree to one authenticated Git tree.
+def require_patch_scope_matches_trees(
+    repo: RepoHandle, raw_patch: bytes, left_tree: str, right_tree: str
+) -> list[str]:
+    byte_scope = patch_paths(repo, raw_patch)
+    tree_scope = changed_paths(repo, left_tree, right_tree)
+    require(byte_scope == tree_scope, "patch-byte path scope disagrees with authenticated tree delta")
+    return byte_scope
 
-    This path is reserved for partial-effect recovery where the index and
-    worktree no longer describe one coherent patch state.  Only paths in the
-    authenticated base/candidate tree delta may be cleaned, so unrelated local
-    material cannot be removed.
+
+def _git_literal(repo: RepoHandle, args: Sequence[str], *, input_bytes: bytes | None = None) -> bytes:
+    argv = [
+        "git",
+        f"--git-dir={repo.git_proc}",
+        f"--work-tree={repo.root_proc}",
+        "--literal-pathspecs",
+        *args,
+    ]
+    cp = run(repo, argv, input_bytes=input_bytes)
+    if cp.returncode != 0:
+        detail = (cp.stderr or cp.stdout).decode("utf-8", "replace").strip()
+        raise TransactionError(f"{' '.join(argv)} failed ({cp.returncode}): {detail}")
+    return cp.stdout
+
+
+def _parse_tree_entry(raw: bytes, path: str) -> TreeEntry | None:
+    rows = [item for item in raw.split(b"\0") if item]
+    if not rows:
+        return None
+    require(len(rows) == 1, f"ambiguous Git tree entry for {path}")
+    header, observed = rows[0].split(b"\t", 1)
+    mode_raw, type_raw, oid_raw = header.split()
+    require(os.fsdecode(observed) == path, f"Git tree returned the wrong path for {path}")
+    require(type_raw == b"blob", f"unsupported Git object type at patch path: {path}")
+    mode = mode_raw.decode("ascii")
+    require(mode in {"100644", "100755", "120000"}, f"unsupported Git mode {mode}: {path}")
+    return TreeEntry(mode=mode, oid=oid_raw.decode("ascii"))
+
+
+def tree_entry(repo: RepoHandle, tree: str, path: str) -> TreeEntry | None:
+    return _parse_tree_entry(
+        _git_literal(repo, ["ls-tree", "-z", "--full-tree", tree, "--", safe_patch_path(path)]),
+        path,
+    )
+
+
+def index_entry(repo: RepoHandle, path: str) -> TreeEntry | None:
+    raw = _git_literal(repo, ["ls-files", "--stage", "-z", "--", safe_patch_path(path)])
+    rows = [item for item in raw.split(b"\0") if item]
+    if not rows:
+        return None
+    require(len(rows) == 1, f"unmerged or ambiguous index entry at patch path: {path}")
+    header, observed = rows[0].split(b"\t", 1)
+    mode_raw, oid_raw, stage_raw = header.split()
+    require(os.fsdecode(observed) == path and stage_raw == b"0", f"unexpected index stage at {path}")
+    mode = mode_raw.decode("ascii")
+    require(mode in {"100644", "100755", "120000"}, f"unsupported index mode {mode}: {path}")
+    return TreeEntry(mode=mode, oid=oid_raw.decode("ascii"))
+
+
+def _open_parent(repo: RepoHandle, path: str) -> tuple[int, str]:
+    parts = PurePosixPath(safe_patch_path(path)).parts
+    fd = os.dup(repo.root_fd)
+    try:
+        for component in parts[:-1]:
+            child = os.open(component, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        return fd, parts[-1]
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _blob_oid_from_fd(fd: int, size: int) -> str:
+    digest = hashlib.sha1(b"blob " + str(size).encode("ascii") + b"\0")
+    os.lseek(fd, 0, os.SEEK_SET)
+    total = 0
+    while True:
+        chunk = os.read(fd, 1024 * 1024)
+        if not chunk:
+            break
+        digest.update(chunk)
+        total += len(chunk)
+    require(total == size, "patch-path file size changed while hashing")
+    return digest.hexdigest()
+
+
+def path_state(repo: RepoHandle, path: str) -> PathState:
+    parent_fd, name = _open_parent(repo, path)
+    try:
+        try:
+            initial = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            return PathState(False)
+        file_type = stat.S_IFMT(initial.st_mode)
+        oid: str | None = None
+        if stat.S_ISREG(initial.st_mode):
+            fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+            try:
+                opened = os.fstat(fd)
+                require(fd_identity(opened) == fd_identity(initial), f"patch path changed before hashing: {path}")
+                oid = _blob_oid_from_fd(fd, opened.st_size)
+                final = os.fstat(fd)
+                require(
+                    (opened.st_dev, opened.st_ino, opened.st_mode, opened.st_size, opened.st_nlink)
+                    == (final.st_dev, final.st_ino, final.st_mode, final.st_size, final.st_nlink),
+                    f"patch path changed while hashing: {path}",
+                )
+                initial = final
+            finally:
+                os.close(fd)
+        elif stat.S_ISLNK(initial.st_mode):
+            payload = os.fsencode(os.readlink(name, dir_fd=parent_fd))
+            oid = hashlib.sha1(b"blob " + str(len(payload)).encode("ascii") + b"\0" + payload).hexdigest()
+            final = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+            require(fd_identity(final) == fd_identity(initial), f"patch symlink changed while reading: {path}")
+            initial = final
+        return PathState(
+            True,
+            initial.st_dev,
+            initial.st_ino,
+            file_type,
+            stat.S_IMODE(initial.st_mode),
+            initial.st_size,
+            oid,
+        )
+    finally:
+        os.close(parent_fd)
+
+
+def state_matches_entry(state: PathState, entry: TreeEntry | None) -> bool:
+    if entry is None:
+        return not state.exists
+    if not state.exists or state.oid != entry.oid:
+        return False
+    if entry.mode == "120000":
+        return state.file_type == stat.S_IFLNK
+    if state.file_type != stat.S_IFREG:
+        return False
+    expected_exec = entry.mode == "100755"
+    return bool(state.mode & stat.S_IXUSR) == expected_exec
+
+
+def state_identity_equal(left: PathState, right: PathState) -> bool:
+    if left.exists != right.exists:
+        return False
+    if not left.exists:
+        return True
+    return (
+        left.device, left.inode, left.file_type, left.mode, left.size, left.oid
+    ) == (
+        right.device, right.inode, right.file_type, right.mode, right.size, right.oid
+    )
+
+
+def capture_scope(repo: RepoHandle, paths: Sequence[str]) -> dict[str, PathState]:
+    return {path: path_state(repo, path) for path in paths}
+
+
+def scope_matches_tree(repo: RepoHandle, tree: str, paths: Sequence[str]) -> bool:
+    for path in paths:
+        expected = tree_entry(repo, tree, path)
+        if index_entry(repo, path) != expected or not state_matches_entry(path_state(repo, path), expected):
+            return False
+    return True
+
+
+def _unlink_bound_path(repo: RepoHandle, path: str, expected: PathState) -> None:
+    require(expected.exists and expected.file_type in {stat.S_IFREG, stat.S_IFLNK},
+            f"cannot remove unsupported patch residue: {path}")
+    parent_fd, name = _open_parent(repo, path)
+    held_fd = -1
+    try:
+        if expected.file_type == stat.S_IFREG:
+            held_fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+            observed = path_state(repo, path)
+            require(state_identity_equal(observed, expected), f"foreign replacement preserved before unlink: {path}")
+        else:
+            observed = path_state(repo, path)
+            require(state_identity_equal(observed, expected), f"foreign replacement preserved before unlink: {path}")
+        final = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require(
+            (final.st_dev, final.st_ino, stat.S_IFMT(final.st_mode))
+            == (expected.device, expected.inode, expected.file_type),
+            f"foreign replacement preserved at final unlink: {path}",
+        )
+        os.unlink(name, dir_fd=parent_fd)
+        if held_fd >= 0:
+            require(os.fstat(held_fd).st_nlink == 0, f"patch residue was not unlinked: {path}")
+    finally:
+        if held_fd >= 0:
+            os.close(held_fd)
+        os.close(parent_fd)
+
+
+def _remove_index_entry(repo: RepoHandle, path: str) -> None:
+    _git_literal(repo, ["update-index", "--force-remove", "--", safe_patch_path(path)])
+
+
+def _scope_safe_for_recovery(
+    repo: RepoHandle,
+    paths: Sequence[str],
+    *,
+    desired_tree: str,
+    alternate_tree: str,
+    before: dict[str, PathState] | None,
+    effect: dict[str, PathState] | None,
+) -> None:
+    for path in paths:
+        current = path_state(repo, path)
+        if effect is not None:
+            require(state_identity_equal(current, effect[path]), f"foreign replacement preserved at patch path: {path}")
+        elif before is not None and state_identity_equal(current, before[path]):
+            pass
+        else:
+            alternate = tree_entry(repo, alternate_tree, path)
+            desired = tree_entry(repo, desired_tree, path)
+            require(
+                state_matches_entry(current, alternate) or state_matches_entry(current, desired),
+                f"foreign or ambiguous object preserved at patch path: {path}",
+            )
+        current_index = index_entry(repo, path)
+        require(
+            current_index in {tree_entry(repo, desired_tree, path), tree_entry(repo, alternate_tree, path)},
+            f"foreign index divergence preserved at patch path: {path}",
+        )
+
+
+def restore_exact_tree(
+    repo: RepoHandle,
+    desired_tree: str,
+    alternate_tree: str,
+    *,
+    paths: Sequence[str],
+    before: dict[str, PathState] | None = None,
+    effect: dict[str, PathState] | None = None,
+) -> str | None:
+    """Restore only authenticated patch paths and preserve unrelated state.
+
+    No repository-wide reset or path-based clean is used.  Every path is passed
+    through Git's literal NUL-delimited pathspec interface.  A late foreign
+    replacement or unrelated tracked/untracked divergence is preserved and
+    causes fail-closed recovery rather than deletion.
     """
     try:
-        paths = changed_paths(repo, desired_tree, alternate_tree)
-        # Remove only patch-owned untracked residue that could block read-tree.
-        if paths:
-            run(
+        _scope_safe_for_recovery(
+            repo, paths, desired_tree=desired_tree, alternate_tree=alternate_tree, before=before, effect=effect
+        )
+        present_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is not None]
+        absent_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is None]
+        if present_paths:
+            payload = b"\0".join(os.fsencode(path) for path in present_paths) + b"\0"
+            _git_literal(
                 repo,
-                ["git", f"--git-dir={repo.git_proc}", f"--work-tree={repo.root_proc}",
-                 "clean", "-f", "-d", "--", *paths],
-                check=True,
+                [
+                    "restore",
+                    f"--source={desired_tree}",
+                    "--staged",
+                    "--worktree",
+                    "--pathspec-from-file=-",
+                    "--pathspec-file-nul",
+                ],
+                input_bytes=payload,
             )
-        git(repo, "read-tree", "--reset", "-u", desired_tree)
+        for path in absent_paths:
+            current = path_state(repo, path)
+            if current.exists:
+                _unlink_bound_path(repo, path, current)
+            _remove_index_entry(repo, path)
         reauthenticate_repo(repo)
-        if not exact_tree_state(repo, desired_tree):
-            return f"exact tree recovery did not restore {desired_tree}"
-        return None
+        require(scope_matches_tree(repo, desired_tree, paths), f"patch-scope recovery did not restore {desired_tree}")
+        if exact_tree_state(repo, desired_tree):
+            return None
+        return "patch paths restored; unrelated tracked or untracked divergence was preserved"
     except BaseException as exc:
         return str(exc)
+
 
 
 def logical_base_state(repo: RepoHandle, branch: str, base_head: str, base_tree: str) -> tuple[str, str]:
@@ -332,21 +664,22 @@ def restore_with_inverse(
     reverse: bool,
     expected_tree: str,
     alternate_tree: str,
+    paths: Sequence[str],
+    before: dict[str, PathState] | None,
+    effect: dict[str, PathState] | None,
 ) -> str | None:
-    """Best-effort exact inverse using retained repository and patch bytes."""
+    """Apply the exact inverse only while patch-path identities remain bound."""
     try:
-        current = os.fsdecode(git(repo, "write-tree"))
-        if not tracked_worktree_clean(repo) or nonignored_untracked(repo):
-            repair = restore_exact_tree(repo, current, alternate_tree if current == expected_tree else expected_tree)
-            if repair is not None:
-                return f"could not normalize partial state before inverse: {repair}"
+        _scope_safe_for_recovery(
+            repo, paths, desired_tree=expected_tree, alternate_tree=alternate_tree, before=before, effect=effect
+        )
         git_apply(repo, raw, reverse=reverse, check_only=True)
         git_apply(repo, raw, reverse=reverse, check_only=False)
         reauthenticate_repo(repo)
-        if not exact_tree_state(repo, expected_tree):
-            actual = os.fsdecode(git(repo, "write-tree"))
-            return f"inverse produced index tree {actual} or a dirty worktree; expected clean {expected_tree}"
-        return None
+        require(scope_matches_tree(repo, expected_tree, paths), f"inverse did not restore patch scope {expected_tree}")
+        if exact_tree_state(repo, expected_tree):
+            return None
+        return "inverse restored patch paths; unrelated tracked or untracked divergence was preserved"
     except BaseException as exc:
         return str(exc)
 
@@ -358,32 +691,37 @@ def recover_after_effect(
     desired_tree: str,
     alternate_tree: str,
     inverse_reverse: bool,
+    paths: Sequence[str],
+    before: dict[str, PathState],
+    effect: dict[str, PathState] | None,
 ) -> str | None:
-    """Restore one exact index *and worktree* state after a failed effect.
-
-    A mutating subprocess can update only the index, only the worktree, or both
-    before raising.  Tree equality alone is therefore insufficient.  Recovery
-    first attempts the retained inverse patch when the alternate tree is
-    present, then falls back to an exact authenticated tree restore for partial
-    states.  Success requires the desired index tree, a clean tracked worktree,
-    and no nonignored untracked residue.
-    """
+    """Recover only authenticated patch effects after a failed mutation."""
+    if exact_tree_state(repo, desired_tree):
+        return None
     try:
         current = os.fsdecode(git(repo, "write-tree"))
     except BaseException as exc:
         return f"could not inspect post-effect tree: {exc}"
-    if exact_tree_state(repo, desired_tree):
-        return None
     if current == alternate_tree:
         inverse = restore_with_inverse(
-            repo, raw, reverse=inverse_reverse, expected_tree=desired_tree, alternate_tree=alternate_tree
+            repo,
+            raw,
+            reverse=inverse_reverse,
+            expected_tree=desired_tree,
+            alternate_tree=alternate_tree,
+            paths=paths,
+            before=before,
+            effect=effect,
         )
         if inverse is None:
             return None
-    repair = restore_exact_tree(repo, desired_tree, alternate_tree)
-    if repair is not None:
-        return f"exact recovery failed: {repair}"
-    return None
+        # An inverse that preserved unrelated state is already the safest result.
+        if "unrelated" in inverse or "foreign" in inverse:
+            return inverse
+    return restore_exact_tree(
+        repo, desired_tree, alternate_tree, paths=paths, before=before, effect=effect
+    )
+
 
 
 def apply_patch(
@@ -395,7 +733,17 @@ def apply_patch(
     base_tree: str,
     candidate_tree: str,
 ) -> str:
-    mode, original_head = logical_base_state(repo, branch, base_head, base_tree)
+    try:
+        mode, original_head = logical_base_state(repo, branch, base_head, base_tree)
+    except TransactionError as original:
+        try:
+            candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+        except TransactionError:
+            raise original
+        raise AlreadyState("patch is already applied at the exact candidate state")
+    paths = patch_paths(repo, raw)
+    before = capture_scope(repo, paths)
+    effect: dict[str, PathState] | None = None
     try:
         git_apply(repo, raw, reverse=False, check_only=True)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_CHECK_HOOK", repo)
@@ -404,10 +752,12 @@ def apply_patch(
         # the Git effect and still raise (for example, interruption or an
         # injected post-effect failure).
         git_apply(repo, raw, reverse=False, check_only=False)
+        effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_APPLY_EFFECT_HOOK", repo)
         observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
         require(current_head == original_head, "HEAD changed during patch application")
         require(observed_mode == mode, "logical base mode changed during patch application")
+        require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -415,6 +765,9 @@ def apply_patch(
             desired_tree=base_tree,
             alternate_tree=candidate_tree,
             inverse_reverse=True,
+            paths=paths,
+            before=before,
+            effect=effect,
         )
         suffix = f"; inverse recovery failed: {recovery}" if recovery else "; inverse recovery restored the logical base"
         raise TransactionError(f"patch application failed: {exc}{suffix}") from exc
@@ -430,16 +783,28 @@ def rollback_patch(
     base_tree: str,
     candidate_tree: str,
 ) -> str:
-    mode, original_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+    try:
+        mode, original_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+    except TransactionError as original:
+        try:
+            logical_base_state(repo, branch, base_head, base_tree)
+        except TransactionError:
+            raise original
+        raise AlreadyState("patch is already rolled back at the exact logical base")
+    paths = patch_paths(repo, raw)
+    before = capture_scope(repo, paths)
+    effect: dict[str, PathState] | None = None
     try:
         git_apply(repo, raw, reverse=True, check_only=True)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_REVERSE_CHECK_HOOK", repo)
         reauthenticate_repo(repo)
         git_apply(repo, raw, reverse=True, check_only=False)
+        effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_ROLLBACK_EFFECT_HOOK", repo)
         observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
         require(current_head == original_head, "HEAD changed during patch rollback")
         require(observed_mode == mode, "logical base mode changed during patch rollback")
+        require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -447,6 +812,9 @@ def rollback_patch(
             desired_tree=candidate_tree,
             alternate_tree=base_tree,
             inverse_reverse=False,
+            paths=paths,
+            before=before,
+            effect=effect,
         )
         suffix = f"; forward recovery failed: {recovery}" if recovery else "; forward recovery restored the staged candidate"
         raise TransactionError(f"patch rollback failed: {exc}{suffix}") from exc
@@ -513,6 +881,9 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
+    except AlreadyState as exc:
+        print(f"git-patch-transaction: already-state: {exc}", file=sys.stderr)
+        raise SystemExit(3)
     except (OSError, TransactionError, subprocess.SubprocessError) as exc:
         print(f"git-patch-transaction: error: {exc}", file=sys.stderr)
         raise SystemExit(1)

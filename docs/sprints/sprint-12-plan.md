@@ -2,21 +2,21 @@
 
 ## Status
 
-Patch 080 private register-role closeout candidate, pending complete acceptance. Patch 078
-preserved the private loader, dynamic-metadata, and register-role facts but its
-review found remaining Docker caller, Git-less custody, independent parity-build,
-recovery, patch-transaction, and loose-delivery blockers. Patch 079 corrects
-those boundaries and executes the five independent register-role task-value
-strata without changing analyzer runtime behavior, public output, schema `0.2.0`,
-or scores.
+Patch 081 retrospective and corrective candidate, pending complete acceptance.
+The Sprint 12 engineering scope is complete and its repository-facing
+retrospective is recorded in [`sprint-12-retro.md`](sprint-12-retro.md). Patch
+081 carries the remaining Patch 080 acceptance corrections into Sprint 13,
+executes a test-only ordered two-pop task-value pilot, and freezes the complete
+score/null partition. Public output, schema `0.2.0`, semantic classes, scores,
+and candidate capacity remain unchanged.
 
-Sprint 12 remains the active acceptance authority until Patch 080 passes fresh
-native, Docker, both private parity planes, strict ShellCheck, delivery integrity,
-and independent exact-source acceptance. A passing Patch 079 closes Sprint
-12 and activates Sprint 13. Qualified task-value facets remain private and
-unscored; LC-08B owns any later runtime, public, or score projection.
+Sprint 12 remains the acceptance authority for its inherited loader and
+mitigation facts until Patch 081 passes fresh native, Docker, both private parity
+planes, strict ShellCheck, delivery integrity, and independent exact-source
+acceptance. The retrospective records the completed semester work without
+claiming that these later acceptance gates have already passed.
 
-Patches 062 through 079 carry ordinary PHDR validity, executable-overlap
+Patches 062 through 080 carry ordinary PHDR validity, executable-overlap
 provenance and measured normalization deferral, private PIE/DSO and GNU-property
 evidence, authenticated natural and controlled strata, external reconciliation,
 private text-relocation and distinct RPATH/RUNPATH evidence, corrected parity
@@ -30,6 +30,9 @@ Related chronology and current records:
 - [Patch 079 validation](sprint-13-patch-079-validation.md)
 - [ADR 0066](../adr/0066-patch079-correction-and-private-register-role-sidecar.md)
 - [Patch 080 validation](sprint-13-patch-080-validation.md)
+- [ADR 0067](../adr/0067-patch080-correction-and-ordered-two-pop-task-value.md)
+- [Patch 081 validation](sprint-13-patch-081-validation.md)
+- [Sprint 12 retrospective](sprint-12-retro.md)
 
 ## Sprint goal
 
@@ -119,8 +122,10 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Qualify generic control, System V call arguments, and Linux syscall
   arguments as private input to LC-08B; retain existing syscall-number and
   stack-pivot treatment.
+- [x] Record the repository-facing Sprint 12 retrospective for the completed
+  semester engineering scope.
 - [ ] Complete fresh native, Docker, actual parity, strict ShellCheck, final
-  package, and independent acceptance for Patch 079.
+  package, and independent acceptance for Patch 081.
 
 
 ## Patch sequence
@@ -156,11 +161,18 @@ that would otherwise corrupt corpus labels or defensive triage.
 17. **Patch 078:** correct the remaining Patch 077 transaction, cleanup,
     Docker-source, comparator, parity, and delivery blockers; freeze the private
     multi-role exact-pop entry decision for Sprint 13; and retain zero public
-    field and score changes pending acceptance and deterministically A/B
-    label-permuted task-value evidence.
+    field and score changes pending non-causal, deterministically ordered
+    task-value evidence.
 18. **Patch 079:** correct the remaining Patch 078 acceptance blockers, execute
     the five independent register-role task-value strata, retain qualified
     facets privately, and leave runtime/public/score projection to LC-08B.
+19. **Patch 080:** correct Patch 079, execute the disjoint task and LC-08B policy
+    gates, and add the private candidate-index register-role side-car without a
+    public-field, semantic-class, schema, or score change.
+20. **Patch 081:** correct the Patch 080 application, recovery, Git-less,
+    Docker-provenance, helper-identity, and evidence-seal findings; record the
+    Sprint 12 retrospective; defer a redundant ordered two-pop runtime tuple
+    after a zero-gain task-value pilot; and retain all existing score/null cells.
 
 
 ## Current continuation disposition
@@ -181,8 +193,9 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After exact Patch 080 acceptance, Sprint 13 continues from its private role and
-task-value authorities into the separate LC-08B policy gate.
+After exact Patch 081 acceptance, Sprint 13 continues from its private role,
+task-value, and LC-08B authorities into the next independently selected bounded
+semantic gate.
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify
 only as private task-value evidence; `syscall_number` and `stack_pivot` remain
 deferred. System V argument 4 remains `rcx`, while Linux syscall argument 4

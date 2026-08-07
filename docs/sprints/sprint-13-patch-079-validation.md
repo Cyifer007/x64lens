@@ -2,16 +2,16 @@
 
 ## Status
 
-Patch 078's review required a smallest corrective patch. Patch 079 is the
-resulting corrective and private task-value candidate, pending the complete
-documented Patch 079 acceptance gate against the exact committed source.
+Historical candidate. Patch 078's review required the Patch 079 correction and
+private task-value gate; Patch 079's review then required Patch 080. Patch 080 is
+the current candidate, pending complete acceptance against the exact source.
 
 ## Scope
 
-Patch 079 is the smallest cohesive correction for the Patch 078 acceptance
-findings and the first Sprint 13 task-value gate. It changes development,
+Patch 079 was the smallest cohesive correction for the Patch 078 acceptance
+findings and the first Sprint 13 task-value gate. It changed development,
 validation, Docker, recovery, custody, permission, transaction,
-benchmark-authority, and documentation files. It changes no tracked path under
+benchmark-authority, and documentation files. It changed no tracked path under
 `src/`, `include/`, or `schemas/`.
 
 The patch:
@@ -94,13 +94,14 @@ syscall_number
 stack_pivot
 ```
 
-The five strata are independent and cannot be pooled. The `confirmation tasks`
-label names the untouched partition in this private gate; the resulting evidence
-remains diagnostic, unfrozen, non-confirmatory, and publication-ineligible.
+The five strata were independent and could not be pooled. The `confirmation
+tasks` label did not establish an untouched partition: Patch 080 found query
+reuse and replaced the task authority. The Patch 079 evidence remains
+diagnostic, unfrozen, non-confirmatory, and publication-ineligible.
 Within the private role evidence, `rcx` is System V call argument 4 and `r10` is
 Linux syscall argument 4.
 
-## Complete acceptance gates
+## Historical complete acceptance gates
 
 ```bash
 make fix-perms
@@ -144,6 +145,7 @@ stealth, or universal-deployment claim.
 sprint13-p079-acceptance-smoke: ok patch=79 sprint12=closed sprint13=active qualified-private-facets=3 deferred-facets=2 public-fields-added=0 score-changes=0
 ```
 
-This banner is an aggregate result, not independent acceptance or chronology
-authority. Sprint 12 closes and Sprint 13 becomes active only after the complete
-Patch 079 acceptance boundary passes against the exact committed candidate.
+This was the expected Patch 079 aggregate banner, not independent acceptance or
+chronology authority. Patch 079 did not complete acceptance; its review required
+Patch 080. Sprint 12 closes and Sprint 13 becomes active only after complete
+Patch 080 acceptance against the exact candidate source.

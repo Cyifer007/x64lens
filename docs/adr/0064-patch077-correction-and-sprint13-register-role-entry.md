@@ -69,9 +69,9 @@ syscall argument. These facets are not interchangeable.
 Patch 078 does not change classifier output, scores, JSON, text output, schema
 `0.2.0`, or public mitigation fields. Existing public semantic classes and
 scores remain unchanged. The newly recorded role facets are private decision
-facts and remain unscored. Patch 079 executes deterministically A/B
-label-permuted task-value qualification
-before any runtime-semantic, public-field, or score projection.
+facts and remain unscored. Patch 079 used deterministic presentation order as
+non-causal display metadata before any runtime-semantic, public-field, or score
+projection.
 
 ## Preserved boundaries
 
@@ -96,11 +96,12 @@ Sprint 13 remains an entry candidate pending exact Patch 080 acceptance. The aut
 entry decision alone does not qualify runtime or public projection of the
 private role facets.
 
-Patch 079 has now run the deterministically presentation-ordered role-query
-task-value gate. Three facets qualify only as private task-value evidence and
-two remain deferred. LC-08B owns any later runtime-semantic, public-field, or
-score decision; any such behavior change must update fixtures, effects,
-validators, documentation, task definitions, and diagnostic campaign identity.
+Patch 079 ran the deterministically presentation-ordered role-query task-value
+gate. Three facets qualified only as private task-value evidence and two remained
+deferred. Patch 080 subsequently retained the three facets in a private additive
+side-car and deferred public-field and score changes; any future behavior change
+must update fixtures, effects, validators, documentation, task definitions, and
+diagnostic campaign identity.
 
 ## Validation
 

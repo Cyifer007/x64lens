@@ -174,9 +174,11 @@ The Sprint 12 sequence is:
   prefix; its review required correction;
 - Patch 077: Sprint 12 reconciliation candidate, superseded for acceptance by
   Patch 078;
-- Patch 078: Sprint 13 entry candidate whose review required correction; and
-- Patch 079: current corrective and private task-value candidate, pending
-  complete acceptance.
+- Patch 078: Sprint 13 entry candidate whose review required correction;
+- Patch 079: corrective and private task-value candidate whose review required
+  Patch 080; and
+- Patch 080: current correction and private additive role-side-car candidate,
+  pending complete acceptance.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and
 publication-ineligible. They cannot be relabeled as Sprint 15-frozen evidence.

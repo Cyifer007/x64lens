@@ -1,0 +1,17 @@
+{
+  "catalog_policy_rejections": 25,
+  "decision": "retain_existing_scores_and_nulls",
+  "mutations": 25,
+  "null_patterns": 11,
+  "patch": 81,
+  "pattern_rows": 25,
+  "private_null_facets": 3,
+  "public_fields_added": 0,
+  "report_effect_rejections": 25,
+  "schema": "x64lens-sprint13-score-null-result-v1",
+  "schema_changed": false,
+  "score_changes": 0,
+  "scored_patterns": 14,
+  "sprint": 13,
+  "total_independent_rejections": 50
+}

@@ -180,8 +180,8 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 remains the active acceptance authority, with Patch 079 as the
-corrective and private task-value candidate pending complete acceptance.
+Sprint 12 remains the active acceptance authority, with Patch 080 as the
+current correction and private role-side-car candidate pending complete acceptance.
 Patch 074 was a superseded closeout candidate. Patch 075 introduced private
 text-relocation evidence, Patch 076 added distinct bounded RPATH/RUNPATH
 evidence, and Patch 077 required Patch 078, whose review required Patch 079.
@@ -317,8 +317,8 @@ through implementation, diagnostic reconciliation, a corrected environment-
 parity protocol, a public-policy decision of `defer`, bounded private static
 text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Patch 078
 corrected the next parity and custody blockers, but its review required the
-Patch 079 corrective and private task-value candidate, whose review required Patch 080. Exact Patch 079
-acceptance remains pending. Any diagnostic campaign after
+Patch 079 corrective and private task-value candidate; Patch 079's review
+required Patch 080. Exact Patch 080 acceptance remains pending. Any diagnostic campaign after
 acceptance requires a new identifier when its task, capability, schema, or
 method changes.
 
@@ -327,15 +327,15 @@ method changes.
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 remains active, with the Patch 079 corrective and private task-value
+Sprint 12 remains active, with the Patch 080 correction and private role-side-car
 candidate pending complete acceptance. The overlap, PIE/DSO, and GNU-
 property gates are `resolved`:
 overlap by measured deferral, and role/property projection by retained private
 evidence plus an explicit non-reinterpretive public deferral. Resolution does
-not mean a public field or runtime-CET claim exists. Patch 078 freezes private
-exact-pop role facets only; Patch 079 executes deterministically A/B
-label-permuted task-value qualification
-before any runtime-semantic, public-field, or score projection. Optional decoder
+not mean a public field or runtime-CET claim exists. Patch 078 froze private
+exact-pop role facets only; Patch 079 used non-causal deterministic presentation
+order for private task-value qualification. Patch 080 retained three facets
+privately and deferred public-field and score projection. Optional decoder
 and deterministic concurrency remain Sprint 14 decisions.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
@@ -345,8 +345,9 @@ RSS, parity, superiority, prevalence, or normalized-coverage claim.
 
 ## Patch 079 register-role task-value gate
 
-The five role strata are independent capability gates. Passing requires the
-preregistered development and untouched-confirmation thresholds for that
-stratum; aggregate gains cannot rescue a failed stratum. Passing qualifies a
-private facet for LC-08B only. Runtime projection, public fields, score/null
-policy, and confirmatory-campaign inclusion remain separate gates.
+The five Patch 079 role strata were independent capability gates; aggregate
+gains could not rescue a failed stratum. Patch 080 found query reuse across the
+development and confirmation-labeled partitions and replaced the task
+authority. The Patch 079 result qualified a private facet for LC-08B input only.
+Runtime projection, public fields, score/null policy, and confirmatory-campaign
+inclusion remained separate gates.

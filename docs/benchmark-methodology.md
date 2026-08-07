@@ -912,11 +912,12 @@ into the Sprint 15-frozen confirmatory campaign.
 
 ## Sprint 13 Patch 079 task-value boundary
 
-Patch 079 is a diagnostic task-value gate, not a performance or generic
-coverage benchmark. It uses five independent strata, forty development tasks,
-and twenty untouched confirmation tasks. Results are not pooled. The
-deterministic A/B permutation is reproducible query control and is not described
-as a human double-blind experiment.
+Patch 079 was a diagnostic task-value gate, not a performance or generic
+coverage benchmark. It used five independent strata, forty development tasks,
+and twenty confirmation-labeled tasks. Patch 080 found query reuse across those
+partitions and replaced the task authority. Results were not pooled. The
+deterministic presentation order was non-causal display metadata, not a
+human-blinding method.
 
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify
 only as private, unfrozen diagnostic task-value evidence for a later policy
@@ -934,3 +935,7 @@ independent strata. Development and confirmation partitions are disjoint.
 Deterministic profile order is non-causal presentation metadata and is not a
 human-blinding claim. The result is diagnostic, unfrozen, and
 publication-ineligible; it cannot be merged into the Sprint 15-frozen campaign.
+
+## Sprint 13 Patch 081 task-value interpretation
+
+The ordered two-pop pilot is a diagnostic semantic-consumer experiment, not a performance or coverage benchmark. Its zero-gain result means existing exact ordered-pop facts answer the frozen tasks. It authorizes no timing, RSS, superiority, exploitability, or publication claim and is not merged into the Sprint 15-frozen campaign.

@@ -170,9 +170,11 @@ Patch 074 carried the next correction, exact delivery-rehearsal requirement, and
 closeout-candidate authority, but was superseded. Patch 075 introduced private
 static text-relocation evidence, but its review required the Patch 076
 correction. Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch
-078's review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080; complete acceptance remains pending against the exact Patch 079 source.
+078's review required the Patch 079 corrective and private task-value candidate;
+Patch 079's review required Patch 080. Complete acceptance remains pending
+against the exact Patch 080 source.
 Current validation expectations are in the
 [Patch 080 validation record](sprint-13-patch-080-validation.md). Patch 079's
-deterministically presentation-ordered task gate qualifies only private task-value
-evidence. Any runtime semantic promotion, public field, or score remains for the
-later LC-08B policy gate.
+non-causal, deterministically presentation-ordered task gate qualified only
+private task-value evidence. Patch 080 retains three facets privately and defers
+public-field and score projection.

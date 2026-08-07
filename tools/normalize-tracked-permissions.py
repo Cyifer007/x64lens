@@ -11,7 +11,8 @@ chmod'd as though it were the tracked object.
 from __future__ import annotations
 import argparse
 from dataclasses import dataclass
-import importlib.util
+import hashlib
+import json
 import os
 from pathlib import Path, PurePosixPath
 import stat
@@ -35,6 +36,11 @@ class RepoBinding:
 
 _TEST_AFTER_ROOT_BIND_BEFORE_INDEX_HOOK:Callable[[Path],None]|None=None
 _TEST_GITLESS_AFTER_MUTATION_HOOK:Callable[[Path],None]|None=None
+
+GITLESS_SCHEMA="x64lens-gitless-source-v2"
+GITLESS_MAX_FILES=8192
+GITLESS_MAX_DIRECTORIES=2048
+GITLESS_MAX_MANIFEST_BYTES=32*1024*1024
 
 def require(c:bool,m:str)->None:
     if not c: raise PermissionErrorContract(m)
@@ -230,6 +236,81 @@ def _hash_gitless_fd(fd:int)->tuple[str,int,str]:
     return sha.hexdigest(),total,blob.hexdigest()
 
 
+def _strict_json_pairs(items:list[tuple[str,object]])->dict[str,object]:
+    out:dict[str,object]={}
+    for key,value in items:
+        require(key not in out,f"duplicate JSON key: {key}")
+        out[key]=value
+    return out
+
+def _git_object(kind:bytes,payload:bytes)->str:
+    return hashlib.sha1(kind+b" "+str(len(payload)).encode("ascii")+b"\0"+payload).hexdigest()
+
+def _gitless_directory_path(item:object)->str:
+    require(isinstance(item,dict) and set(item)=={"path","mode"},"invalid Git-less directory record")
+    require(item["mode"]=="0755",f"invalid Git-less directory mode authority: {item.get('path')}")
+    return safe_path(item["path"])
+
+def _tree_payload(entries:list[tuple[str,bool,str,str]])->bytes:
+    ordered=sorted(
+        ((os.fsencode(name)+(b"/" if is_dir else b""),is_dir,mode,oid) for name,is_dir,mode,oid in entries),
+        key=lambda row:row[0],
+    )
+    chunks:list[bytes]=[]
+    for ordered_name,is_dir,mode,oid in ordered:
+        name=ordered_name[:-1] if is_dir else ordered_name
+        chunks.append(mode.encode("ascii")+b" "+name+b"\0"+bytes.fromhex(oid))
+    return b"".join(chunks)
+
+def _derive_gitless_tree(files:list[dict],directories:list[dict])->str:
+    directory_set={_gitless_directory_path(item) for item in directories}
+    require(len(directory_set)==len(directories),"duplicate Git-less directory record")
+    all_directories={"",*directory_set}
+    children:dict[str,list[tuple[str,bool,str,str]]]={item:[] for item in all_directories}
+    for directory in directory_set:
+        require(parent_path(directory) in all_directories,f"Git-less directory parent missing: {directory}")
+    seen_files:set[str]=set()
+    for item in files:
+        require(isinstance(item,dict) and set(item)=={"path","git_mode","git_oid","mode","sha256","size_bytes"},"invalid Git-less file record")
+        path=safe_path(item["path"]); require(path not in seen_files,f"duplicate Git-less file record: {path}"); seen_files.add(path)
+        mode=item["git_mode"]; require(mode in {"100644","100755"},f"unsupported Git-less source mode: {path}")
+        expected_mode="0755" if mode=="100755" else "0644"
+        require(item["mode"]==expected_mode,f"Git-less manifest mode contradiction: {path}")
+        oid=item["git_oid"]; sha=item["sha256"]; size=item["size_bytes"]
+        require(isinstance(oid,str) and len(oid)==40 and all(c in "0123456789abcdef" for c in oid),f"invalid Git OID: {path}")
+        require(isinstance(sha,str) and len(sha)==64 and all(c in "0123456789abcdef" for c in sha),f"invalid SHA-256: {path}")
+        require(type(size) is int and 0<=size<=2**63-1,f"invalid Git-less size: {path}")
+        require(parent_path(path) in all_directories,f"Git-less file parent missing: {path}")
+        children[parent_path(path)].append((PurePosixPath(path).name,False,mode,oid))
+    for directory in sorted(directory_set,key=lambda item:(-item.count("/"),os.fsencode(item))):
+        entries=children[directory]; require(entries,f"empty Git-less directory cannot belong to Git tree: {directory}")
+        children[parent_path(directory)].append((PurePosixPath(directory).name,True,"40000",_git_object(b"tree",_tree_payload(entries))))
+    require(children[""],"Git-less source tree has no root members")
+    return _git_object(b"tree",_tree_payload(children[""]))
+
+def _load_gitless_manifest(path:Path)->dict:
+    fd=os.open(path,os.O_RDONLY|O_CLOEXEC|O_NOFOLLOW)
+    try:
+        opened=os.fstat(fd)
+        require(stat.S_ISREG(opened.st_mode) and opened.st_nlink==1,"Git-less manifest must be one regular non-hard-linked file")
+        require(opened.st_size<=GITLESS_MAX_MANIFEST_BYTES,"Git-less manifest exceeds bounded size")
+        chunks=[]; total=0
+        while True:
+            chunk=os.read(fd,1024*1024)
+            if not chunk: break
+            total+=len(chunk); require(total<=GITLESS_MAX_MANIFEST_BYTES,"Git-less manifest exceeds bounded size"); chunks.append(chunk)
+        final=os.fstat(fd)
+        require((opened.st_dev,opened.st_ino,opened.st_mode,opened.st_size,opened.st_nlink)==(final.st_dev,final.st_ino,final.st_mode,final.st_size,final.st_nlink),"Git-less manifest changed while reading")
+    finally: os.close(fd)
+    value=json.loads(b"".join(chunks).decode("utf-8"),object_pairs_hook=_strict_json_pairs)
+    require(isinstance(value,dict) and set(value)=={"schema","candidate_tree","root_mode","directories","files","git_metadata_required"},"invalid Git-less source manifest shape")
+    require(value["schema"]==GITLESS_SCHEMA and value["root_mode"]=="0755" and value["git_metadata_required"] is False,"unsupported Git-less source manifest")
+    tree=value["candidate_tree"]; require(isinstance(tree,str) and len(tree)==40 and all(c in "0123456789abcdef" for c in tree),"invalid Git-less candidate tree")
+    require(isinstance(value["directories"],list) and len(value["directories"])<=GITLESS_MAX_DIRECTORIES,"invalid Git-less directory array")
+    require(isinstance(value["files"],list) and 0<len(value["files"])<=GITLESS_MAX_FILES,"invalid Git-less file array")
+    require(_derive_gitless_tree(value["files"],value["directories"])==tree,"Git-less source manifest does not derive its candidate tree")
+    return value
+
 def verify_gitless_source(repo:Path, manifest_path:Path)->tuple[int,int]:
     """Normalize only manifest-declared files in a Git-less validation copy.
 
@@ -239,31 +320,13 @@ def verify_gitless_source(repo:Path, manifest_path:Path)->tuple[int,int]:
     mode before mutation.  Any failure rolls mode changes back through retained
     descriptors; untracked/generated objects are never chmod'd.
     """
-    helper=repo/"tools/gitless-source-manifest.py"
-    require(helper.is_file(),"Git-less source verifier is missing")
-    spec=importlib.util.spec_from_file_location("x64lens_gitless_normalizer",helper)
-    require(spec is not None and spec.loader is not None,"cannot load Git-less source verifier")
-    module=importlib.util.module_from_spec(spec)
-    sys.modules[spec.name]=module
-    spec.loader.exec_module(module)
-    manifest=module.load_manifest(manifest_path)
-    require(manifest.get("schema")==module.SCHEMA,"unsupported Git-less source manifest")
-    require(
-        set(manifest)=={"schema","candidate_tree","root_mode","directories","files","git_metadata_required"}
-        and manifest.get("git_metadata_required") is False,
-        "invalid Git-less source manifest shape",
-    )
+    # The manifest contract is implemented locally.  No source-tree helper is
+    # imported or executed before the manifest and every declared member are
+    # authenticated.
+    manifest=_load_gitless_manifest(manifest_path)
     expected_tree=os.environ.get("X64LENS_CANDIDATE_TREE")
     if expected_tree:
         require(manifest.get("candidate_tree")==expected_tree,"Git-less candidate tree disagrees with environment authority")
-    # The manifest must independently derive its advertised Git tree.  This
-    # rejects an authority that omits a tracked file while retaining the old
-    # candidate-tree string, even when generated build members are present.
-    require(
-        module.derive_tree(manifest.get("files"),manifest.get("directories"))==manifest.get("candidate_tree"),
-        "Git-less source manifest does not derive its candidate tree",
-    )
-
     visible_root_before=os.lstat(repo)
     require(stat.S_ISDIR(visible_root_before.st_mode) and not repo.is_symlink(),"Git-less source root is not a real directory")
     root_fd=os.open(repo,os.O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW)

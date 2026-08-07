@@ -20,12 +20,16 @@ gadget_record:                   112 bytes
 candidate_evidence_record:        56 bytes
 memory_effect_record:             16 bytes
 candidate_effect_record:          24 bytes
-combined analysis arena:      851968 bytes
+candidate_role_record:              8 bytes
+combined analysis arena:      884736 bytes
 mandatory runtime decoder:       no
 mandatory runtime threads:       no
 ```
 
-The arena size is a fixed allocation fact, not a measured maximum-RSS result. Patch 063 adds an internal 64-bit loader-contributor mask to each evidence record; it changes no public candidate population or schema field.
+The role record is a private additive Patch 080 side-car. The arena size is a
+fixed allocation fact, not a measured maximum-RSS result. Patch 063 adds an
+internal 64-bit loader-contributor mask to each evidence record; it changes no
+public candidate population or schema field.
 See [ADR 0049](../adr/0049-executable-overlap-provenance-seam.md) and the
 [Patch 063 validation record](../sprints/sprint-12-patch-063-validation.md).
 

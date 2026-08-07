@@ -301,13 +301,12 @@ patterns are accounted for by distinct private role facets and that the
 supporting source/delivery transactions have adversarial regression coverage.
 It does not support a public role field, score change, semantic-coverage,
 task-value, performance, exploitability, or publication-grade claim.
-Patch 079 executes deterministically presentation-ordered task-value qualification
-before any runtime-semantic,
-public-field, or score projection.
+Patch 079 used deterministic presentation order as non-causal display metadata
+before any runtime-semantic, public-field, or score projection.
 
-## Sprint 13 Patch 079 publication boundary
+## Historical Sprint 13 Patch 079 publication boundary
 
-The Patch 079 role-task result is diagnostic and publication-ineligible. The
+The Patch 079 role-task result was diagnostic and publication-ineligible. The
 paper may later describe the preregistered method and the distinction between
 System V `rcx` argument 4 and Linux syscall `r10` argument 4, but it may not
 claim analyst benefit, coverage superiority, public semantic support, or score
@@ -321,3 +320,7 @@ role facets are represented in a private side-car after a corrected diagnostic
 task gate. It does not support a public-role, score, performance, coverage,
 analyst-utility, or exploitability claim. The task rows remain diagnostic and
 publication-ineligible.
+
+## Patch 081 publication note
+
+The ordered two-pop pilot may be reported as a negative design result: existing exact ordered-pop facts answered the frozen tasks, so no redundant runtime tuple representation was introduced. It is not publication-grade comparative evidence and supports no performance, coverage, or exploitability claim.

@@ -20,6 +20,7 @@ x64lens CLI
   -> loader-region contributor reconciliation
   -> memory-effect side-car materializer
   -> architectural-effect side-car materializer
+  -> private register-role side-car materializer
   -> scoring engine
   -> mitigation-aware interpretation
   -> text and JSON reporters
@@ -52,6 +53,7 @@ x64lens CLI
 | `candidate_mapping.asm` | Dense per-candidate loader-region contributor provenance | Parse ELF, select/merge regions, scan, deduplicate, classify, score, or report |
 | `memory_effect.asm` | Dense per-candidate structured memory-access side-car | Parse ELF, scan candidates, decide scores, or format output |
 | `candidate_effect.asm` | Dense per-candidate architectural GPR, flag, control-flow, stack-source, and model-completeness facts | Parse ELF, scan bytes, classify, score, or format output |
+| `candidate_role.asm` | Dense private contextual role masks derived from exact single-pop structural facts | Parse ELF, classify, score, report, or change public contracts |
 | `scoring.asm` | Gadget and primitive usefulness scoring | CLI handling |
 | `analysis_summary.asm` | Command identity and bounded analysis-completeness facts after successful shared analysis | Scan, classify, score, or enable partial output |
 | `report_context.asm` | Short-lived text composition context for integrated reports | Analysis decisions or long-lived global state |
@@ -1696,11 +1698,11 @@ effect facts rather than adding a second classifier. It distinguishes generic
 register control, System V call arguments, Linux syscall arguments, the `rax`
 syscall-number role, and the `rsp` pivot. `r10` is Linux syscall argument 4;
 `rcx` is System V call argument 4. These private facets do not change current
-semantic classes, scores, reports, or schema `0.2.0`. Patch 079 executes the
-deterministically presentation-ordered task-value gate; runtime-semantic,
-public-field, and score projection remain a later LC-08B decision.
+semantic classes, scores, reports, or schema `0.2.0`. Patch 079 ran the
+task-value gate; Patch 080 then retained three facets privately and deferred
+public-field and score projection.
 
-## Sprint 13 Patch 079 corrective and private task-value boundary
+## Historical Sprint 13 Patch 079 corrective and private task-value boundary
 
 Patch 079 adds no analyzer module and changes no runtime record. Exact Git-less
 Docker source construction, permission normalization, patch transactions,
@@ -1710,9 +1712,10 @@ transport Dockerfile derive from one staged Git tree; parity rebuilds native and
 container binaries independently and binds the container plane to an immutable
 image ID and candidate tree.
 
-The task-value harness queries the existing public semantic facts and the
-private additive role lattice under deterministic A/B labels. The five strata
-are independent and cannot be pooled. It does not write semantic classes,
+The task-value harness queried the existing public semantic facts and the
+private additive role lattice in deterministic presentation order. That order
+was non-causal display metadata, not a human-blinding method. The five strata
+are independent and cannot be pooled. The harness does not write semantic classes,
 scores, report fields, or schema bytes. `generic_control`,
 `sysv_call_arguments`, and `linux_syscall_arguments` qualify only as private,
 unfrozen diagnostic task-value evidence for LC-08B. `syscall_number` and
@@ -1729,7 +1732,7 @@ It is not passed to scoring or reporters and does not change semantic classes.
 
 ```text
 gadget_record[4096]                112 bytes each
-candidate_evidence_record[4096]     48 bytes each
+candidate_evidence_record[4096]     56 bytes each
 memory_effect_record[4096]          16 bytes each
 candidate_effect_record[4096]       24 bytes each
 candidate_role_record[4096]          8 bytes each
@@ -1738,3 +1741,7 @@ combined command arena          884736 bytes
 
 The new 32 KiB slice is bounded fixed storage. Candidate capacity remains 4,096,
 and the 4,097th candidate still fails before report output.
+
+## Sprint 13 Patch 081 no-new-state decision
+
+Patch 081 adds no runtime module or record. Existing exact ordered-pop metadata and the private candidate-role side-car remain sufficient for the frozen two-pop role tasks. Transaction, Git-less source, Docker provenance, recovery, and delivery corrections remain tooling boundaries and do not alter the analysis pipeline.

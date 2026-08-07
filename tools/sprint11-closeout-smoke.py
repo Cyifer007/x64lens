@@ -126,7 +126,7 @@ def main() -> int:
         sprint11 = (ROOT / "docs/sprints/sprint-11-plan.md").read_text(encoding="utf-8")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         require("Closed by Patch 061" in sprint11, "Sprint 11 plan is not closed")
-        require("Patch 080 private register-role closeout candidate, pending complete acceptance" in sprint12, "Sprint 12 continuation chronology is missing")
+        require("Patch 081 retrospective and corrective candidate, pending complete acceptance" in sprint12, "Sprint 12 continuation chronology is missing")
 
         makefile = MAKEFILE.read_text(encoding="utf-8")
         require("sprint11-closeout-smoke:" in makefile, "Sprint 11 closeout Make target is missing")

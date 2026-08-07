@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 080 Sprint 12 closeout correction and private Sprint 13 role authority."""
+"""Validate the Patch 081 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -50,18 +50,18 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "closeout_correction_and_sprint13_private_role_candidate_pending_acceptance",
-            "Sprint 12 must remain pending P080 acceptance",
+            authority.get("status") == "retrospective_recorded_and_sprint13_p081_candidate_pending_acceptance",
+            "Sprint 12 retrospective must remain pending P081 acceptance",
         )
-        exact_int(authority.get("current_patch"), 80, "current_patch")
+        exact_int(authority.get("current_patch"), 81, "current_patch")
         exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
-        exact_int(authority.get("prior_corrective_patch"), 79, "prior corrective patch")
-        exact_int(authority.get("next_patch"), 81, "next_patch")
+        exact_int(authority.get("prior_corrective_patch"), 80, "prior corrective patch")
+        exact_int(authority.get("next_patch"), 82, "next_patch")
         require(
-            authority.get("next_patch_tranche") == "ordered-two-pop-role-task-pilot-or-next-measured-semantic-gate",
+            authority.get("next_patch_tranche") == "next-evidence-selected-semantic-or-consumer-gate",
             "next tranche",
         )
-        require(authority.get("acceptance_target") == "sprint13-p080-acceptance-smoke", "acceptance target")
+        require(authority.get("acceptance_target") == "sprint13-p081-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
         reference = authority.get("reference_profile")
@@ -149,6 +149,28 @@ def main() -> int:
         require(entry.get("public_projection_decision") == "defer", "public decision")
         require(entry.get("score_decision") == "retain_existing_scores_and_null_new_facets", "score decision")
 
+        patch081 = authority.get("patch081_boundary")
+        require(isinstance(patch081, dict), "Patch 081 boundary")
+        for key in {
+            "complete_patch080_correction", "sprint12_retrospective_recorded",
+            "transaction_foreign_replacement_preserved", "git_pathspec_magic_literalized",
+            "unrelated_state_preserved", "gitless_manifest_preauthenticated",
+            "docker_provenance_digests_bound", "portable_checksum_paths_required",
+        }:
+            exact_bool(patch081.get(key), True, key)
+        exact_bool(patch081.get("runtime_source_include_schema_change"), False, "runtime source/include/schema change")
+        for key, expected in {
+            "runtime_records_added": 0, "public_fields_added": 0,
+            "semantic_classifier_changes": 0, "score_changes": 0,
+            "candidate_capacity": 4096, "ordered_two_pop_structural_pairs": 30,
+            "ordered_two_pop_incremental_gains": 0, "score_pattern_rows": 25,
+            "score_null_mutations": 25, "score_null_independent_rejections": 50,
+        }.items():
+            exact_int(patch081.get(key), expected, key)
+        require(patch081.get("candidate_4097") == "exit_6_before_stdout", "P081 capacity boundary")
+        require(patch081.get("malformed_parse") == "no_partial_stdout", "P081 malformed boundary")
+        require(patch081.get("ordered_two_pop_task_decision") == "defer_new_runtime_tuple_representation", "P081 tuple decision")
+
         preserved = authority.get("preserved_authorities")
         require(isinstance(preserved, dict), "preserved authorities")
         require(preserved.get("executable_mapping") == "PT_LOAD_plus_PF_X_file_backed_ranges", "executable mapping")
@@ -164,18 +186,18 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 080 private register-role closeout candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 080 private register-role candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 081 retrospective and corrective candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 081 ordered two-pop decision candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=80 textrel=private rpath=private runpath=private roles=16 "
+        "patch=81 textrel=private rpath=private runpath=private roles=16 "
         "qualified_private_facets=3 retained_facets=2 role_record_bytes=8 "
         "role_arena_bytes=32768 analysis_arena_bytes=884736 public_fields_added=0 "
-        "semantic_changes=0 score_changes=0 next_patch=81"
+        "semantic_changes=0 score_changes=0 tuple_decision=defer next_patch=82"
     )
     return 0
 

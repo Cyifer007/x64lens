@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closeout_correction_and_sprint13_private_role_candidate_pending_acceptance",
-  "current_patch": 80,
+  "status": "retrospective_recorded_and_sprint13_p081_candidate_pending_acceptance",
+  "current_patch": 81,
   "superseded_closeout_patch": 78,
-  "prior_corrective_patch": 79,
-  "next_patch": 81,
-  "next_patch_tranche": "ordered-two-pop-role-task-pilot-or-next-measured-semantic-gate",
-  "acceptance_target": "sprint13-p080-acceptance-smoke",
+  "prior_corrective_patch": 80,
+  "next_patch": 82,
+  "next_patch_tranche": "next-evidence-selected-semantic-or-consumer-gate",
+  "acceptance_target": "sprint13-p081-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -53,7 +53,15 @@
     "private_runtime_decision": "accept_additive_sidecar_pending_exact_acceptance",
     "public_projection_decision": "defer",
     "score_decision": "retain_existing_scores_and_null_new_facets",
-    "next_gate": "ordered_two_pop_or_next_measured_semantic_gate"
+    "next_gate": "next_evidence_selected_semantic_or_consumer_gate",
+    "ordered_two_pop_task_decision": "defer_new_runtime_tuple_representation",
+    "ordered_two_pop_structural_pairs": 30,
+    "ordered_two_pop_incremental_gains": 0,
+    "score_pattern_rows": 25,
+    "scored_pattern_rows": 14,
+    "null_pattern_rows": 11,
+    "score_null_mutations": 25,
+    "score_null_independent_rejections": 50
   },
   "patch080_boundary": {
     "complete_patch079_correction": true,
@@ -112,6 +120,33 @@
     "docs/sprints/sprint-13-patch-078-validation.md",
     "docs/sprints/sprint-13-patch-079-validation.md",
     "docs/sprints/sprint-13-patch-080-validation.md",
-    "docs/sprints/sprint-13-plan.md"
-  ]
+    "docs/sprints/sprint-13-plan.md",
+    "docs/sprints/sprint-12-retro.md",
+    "docs/adr/0067-patch080-correction-and-ordered-two-pop-task-value.md",
+    "docs/sprints/sprint-13-patch-081-validation.md"
+  ],
+  "patch081_boundary": {
+    "complete_patch080_correction": true,
+    "runtime_source_include_schema_change": false,
+    "runtime_records_added": 0,
+    "public_fields_added": 0,
+    "semantic_classifier_changes": 0,
+    "score_changes": 0,
+    "candidate_capacity": 4096,
+    "candidate_4097": "exit_6_before_stdout",
+    "malformed_parse": "no_partial_stdout",
+    "ordered_two_pop_structural_pairs": 30,
+    "ordered_two_pop_task_decision": "defer_new_runtime_tuple_representation",
+    "score_pattern_rows": 25,
+    "score_null_mutations": 25,
+    "score_null_independent_rejections": 50,
+    "sprint12_retrospective_recorded": true,
+    "transaction_foreign_replacement_preserved": true,
+    "git_pathspec_magic_literalized": true,
+    "unrelated_state_preserved": true,
+    "gitless_manifest_preauthenticated": true,
+    "docker_provenance_digests_bound": true,
+    "portable_checksum_paths_required": true,
+    "ordered_two_pop_incremental_gains": 0
+  }
 }

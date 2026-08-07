@@ -49,7 +49,7 @@ ACTIVE_AUTHORITY_PATHS = (
 REQUIRED_TEXT = {
     "README.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the active",
+        "Sprint 12 remains the acceptance authority",
         "Sprint 15",
         "Sprint 16",
         "Sprint 17",
@@ -57,7 +57,7 @@ REQUIRED_TEXT = {
     ),
     "docs/roadmap-22-sprints.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the active",
+        "Sprint 12 remains the acceptance authority",
         "Diagnostic measurement checkpoint",
         "Campaign freeze",
         "Research preview candidate",
@@ -66,7 +66,7 @@ REQUIRED_TEXT = {
     ),
     "docs/research-roadmap.md": (
         "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the active",
+        "Sprint 12 remains the acceptance authority",
         "Sprint 15 freezes",
         "Sprint 17 runs publication-grade",
     ),
@@ -80,11 +80,11 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Patch 080 private register-role closeout candidate, pending complete acceptance",
+        "Patch 081 retrospective and corrective candidate, pending complete acceptance",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Patch 080 private register-role candidate; activation pending complete Patch 080 acceptance",
-        "Patch 080",
+        "Patch 081 ordered two-pop decision candidate; activation pending complete Patch 081 acceptance",
+        "Patch 081",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",

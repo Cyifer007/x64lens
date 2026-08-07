@@ -397,73 +397,136 @@ def test_parity_independent_build_and_mounts(tmp: Path) -> tuple[int, int]:
 
 
 def write_fake_docker(path: Path) -> None:
-    path.write_text(
-        '''#!/usr/bin/env python3\n'''
-        '''import json, os, pathlib, subprocess, sys\n'''
-        '''state_path=pathlib.Path(os.environ["FAKE_DOCKER_STATE"])\n'''
-        '''log_path=pathlib.Path(os.environ["FAKE_DOCKER_LOG"])\n'''
-        '''log_path.parent.mkdir(parents=True,exist_ok=True)\n'''
-        '''with log_path.open("a",encoding="utf-8") as h: h.write(json.dumps(sys.argv[1:])+"\\n")\n'''
-        '''args=sys.argv[1:]\n'''
-        '''if args and args[0]=="info": raise SystemExit(0)\n'''
-        '''if args and args[0]=="build":\n'''
-        '''    if os.environ.get("FAKE_DOCKER_BUILD_FAIL")=="1": raise SystemExit(42)\n'''
-        '''    context=pathlib.Path(args[-1])\n'''
-        '''    authority=json.loads((context/"context-authority.json").read_text())\n'''
-        '''    state={"tree":authority["candidate_tree"],"context":str(context),"image_id":"sha256:"+"7"*64}\n'''
-        '''    state_path.write_text(json.dumps(state))\n'''
-        '''    raise SystemExit(0)\n'''
-        '''if len(args)>=2 and args[:2]==["image","inspect"]:\n'''
-        '''    state=json.loads(state_path.read_text())\n'''
-        '''    if "--format" in args:\n'''
-        '''        fmt=args[args.index("--format")+1]\n'''
-        '''        print(state["image_id"] if ".Id" in fmt else state["tree"])\n'''
-        '''    else:\n'''
-        '''        print(json.dumps([{"Id":state["image_id"],"Config":{"Labels":{"org.x64lens.candidate-tree":state["tree"]}}}]))\n'''
-        '''    raise SystemExit(0)\n'''
-        '''if args and args[0]=="run":\n'''
-        '''    state=json.loads(state_path.read_text())\n'''
-        '''    context=pathlib.Path(state["context"])\n'''
-        '''    cp=subprocess.run([sys.executable,str(context/"source/tools/gitless-source-manifest.py"),"verify","--root",str(context/"source"),"--manifest",str(context/"source-manifest.json")])\n'''
-        '''    raise SystemExit(cp.returncode)\n'''
-        '''raise SystemExit(64)\n''',
-        encoding="utf-8",
-    )
+    script = """#!/usr/bin/env python3
+import json
+import os
+import pathlib
+import subprocess
+import sys
+
+state_path = pathlib.Path(os.environ["FAKE_DOCKER_STATE"])
+log_path = pathlib.Path(os.environ["FAKE_DOCKER_LOG"])
+log_path.parent.mkdir(parents=True, exist_ok=True)
+with log_path.open("a", encoding="utf-8") as handle:
+    handle.write(json.dumps(sys.argv[1:]) + "\\n")
+args = sys.argv[1:]
+if args and args[0] == "info":
+    raise SystemExit(0)
+if args and args[0] == "build":
+    if os.environ.get("FAKE_DOCKER_BUILD_FAIL") == "1":
+        raise SystemExit(42)
+    context = pathlib.Path(args[-1])
+    authority = json.loads((context / "context-authority.json").read_text())
+    labels = {}
+    for index, item in enumerate(args):
+        if item == "--label" and index + 1 < len(args):
+            key, value = args[index + 1].split("=", 1)
+            labels[key] = value
+    state = {
+        "tree": authority["candidate_tree"],
+        "context": str(context),
+        "image_id": "sha256:" + "7" * 64,
+        "labels": labels,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    raise SystemExit(0)
+if len(args) >= 2 and args[:2] == ["image", "inspect"]:
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    labels = state.get("labels", {})
+    labels.setdefault("org.x64lens.candidate-tree", state["tree"])
+    print(json.dumps([{"Id": state["image_id"], "Config": {"Labels": labels}}]))
+    raise SystemExit(0)
+if args and args[0] == "run":
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    context = pathlib.Path(state["context"])
+    cp = subprocess.run([
+        sys.executable,
+        str(context / "source/tools/gitless-source-manifest.py"),
+        "verify",
+        "--root",
+        str(context / "source"),
+        "--manifest",
+        str(context / "source-manifest.json"),
+    ])
+    raise SystemExit(cp.returncode)
+raise SystemExit(64)
+"""
+    path.write_text(script, encoding="utf-8")
     path.chmod(0o755)
+
+
+def materialize_regression_repo(source: Path, destination: Path) -> None:
+    """Create an isolated Git authority even when the caller is Git-less."""
+    ignored = shutil.ignore_patterns(
+        ".git", ".local", ".env.local", "build", "tests/bin", "tests/results",
+        "__pycache__", "*.pyc", "*.o", "*.zip", "*.tar", "*.tar.gz",
+    )
+    shutil.copytree(source, destination, ignore=ignored, symlinks=False)
+    for cache in destination.rglob("__pycache__"):
+        shutil.rmtree(cache, ignore_errors=True)
+    run(["git", "init", "-q", "-b", "main"], cwd=destination)
+    run(["git", "config", "user.email", "x64lens-regression@example.invalid"], cwd=destination)
+    run(["git", "config", "user.name", "x64lens regression"], cwd=destination)
+    run(["git", "add", "-A"], cwd=destination)
+    run(["git", "commit", "-q", "-m", "exact source"], cwd=destination)
 
 
 def test_make_level_docker_caller(tmp: Path) -> tuple[int, int]:
     fake = tmp / "fake-docker"
     state = tmp / "fake-state.json"
     log = tmp / "fake-docker.log"
+    authority_path = tmp / "isolated-docker-image-authority.json"
+    source_repo = tmp / "isolated-source-repo"
+    materialize_regression_repo(ROOT, source_repo)
     write_fake_docker(fake)
+
+    default_authority = ROOT / ".local/docker-image-authority.json"
+    before_default = default_authority.read_bytes() if default_authority.is_file() else None
     env = os.environ.copy()
     env.update(
         {
             "DOCKER": str(fake),
             "DOCKER_IMAGE": "x64lens:p079-regression",
+            "DOCKER_IMAGE_AUTHORITY": str(authority_path),
             "FAKE_DOCKER_STATE": str(state),
             "FAKE_DOCKER_LOG": str(log),
             "TMPDIR": str(tmp),
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )
-    cp = run(["make", "--no-print-directory", "docker-build"], cwd=ROOT, env=env)
+    cp = run(["make", "--no-print-directory", "docker-build"], cwd=source_repo, env=env)
     require(b"docker-build: ok" in cp.stdout, "Make-level Docker build did not complete")
+    require(authority_path.is_file(), "isolated Docker authority was not published")
     entries = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     require(any(item and item[0] == "build" for item in entries), "fake Docker did not receive build")
     require(any(item and item[0] == "run" for item in entries), "fake Docker did not receive source verification")
+    labels = json.loads(state.read_text(encoding="utf-8"))["labels"]
+    require(
+        set(labels) >= {
+            "org.x64lens.candidate-tree",
+            "org.x64lens.context-authority-sha256",
+            "org.x64lens.source-manifest-sha256",
+        },
+        "Make-level Docker build omitted immutable provenance labels",
+    )
+
+    after_default = default_authority.read_bytes() if default_authority.is_file() else None
+    require(after_default == before_default, "regression overwrote the caller's Docker image authority")
 
     log.write_text("", encoding="utf-8")
     fail_env = env.copy()
     fail_env["FAKE_DOCKER_BUILD_FAIL"] = "1"
-    failed = run(["make", "--no-print-directory", "docker-build"], cwd=ROOT, env=fail_env, expected=None)
+    failed = run(["make", "--no-print-directory", "docker-build"], cwd=source_repo, env=fail_env, expected=None)
     require(failed.returncode != 0, "Make-level Docker build masked the injected build failure")
     failed_entries = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     build_index = next(index for index, item in enumerate(failed_entries) if item and item[0] == "build")
     require(
         not any(item and item[0] in {"run", "image"} for item in failed_entries[build_index + 1 :]),
         "Make-level Docker recipe continued to a stale image after build failure",
+    )
+    require(
+        (default_authority.read_bytes() if default_authority.is_file() else None) == before_default,
+        "failed regression run overwrote the caller's Docker image authority",
     )
     return 1, 1
 

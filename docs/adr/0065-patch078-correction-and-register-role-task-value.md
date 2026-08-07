@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed by Patch 079; acceptance requires
-`make sprint13-p079-acceptance-smoke` plus complete independent acceptance
-against the same committed candidate.
+Historical Patch 079 implementation decision. Patch 079 did not complete
+acceptance; its review required Patch 080, which remains pending complete
+acceptance against the exact candidate source.
 
 ## Context
 
@@ -12,9 +12,9 @@ Patch 078 froze an additive private role lattice for all sixteen exact single-po
 register patterns. Its review preserved that role model but required a smallest
 corrective patch for acceptance defects in the surrounding source, Docker,
 parity, recovery, permission, patch-transaction, and delivery authorities. Patch
-079 is that corrective and private task-value candidate, pending acceptance. The
-same review also confirmed that a role label is not enough to justify runtime
-semantic promotion or a score change.
+079 was that corrective and private task-value candidate. Its review required
+Patch 080. The same review also confirmed that a role label is not enough to
+justify runtime semantic promotion or a score change.
 
 The implementation must preserve these boundaries:
 
@@ -51,7 +51,11 @@ Patch 079 evaluates these strata independently:
 4. Linux syscall-number control;
 5. stack-pivot roles.
 
-Each stratum uses eight development tasks and four untouched confirmation tasks. Current public semantic facts and the additive private role facets are presented through a deterministic presentation-order permutation. The project makes no human double-blind claim.
+Each stratum used eight development tasks and four confirmation-labeled tasks.
+Patch 080 later found query reuse across those partitions and replaced the task
+authority. Current public semantic facts and the additive private role facets
+were presented in deterministic order as non-causal display metadata, not as a
+human-blinding method.
 
 A stratum qualifies only when it has:
 
@@ -74,9 +78,9 @@ The task-value result qualifies:
 The `syscall_number` and `stack_pivot` strata remain deferred by the Patch 079
 task gate because they do not demonstrate the required incremental confirmation
 gain. Passing task strata remain private, diagnostic, unfrozen, additive,
-unscored, non-confirmatory, and publication-ineligible. A later LC-08B policy
-decision owns runtime semantic projection, public output, and score/null
-treatment.
+unscored, non-confirmatory, and publication-ineligible. Patch 080 subsequently
+retained the three qualified facets privately while deferring public projection
+and score/null changes.
 
 ## Consequences
 
@@ -87,7 +91,9 @@ treatment.
 - Existing scores remain unchanged.
 - `rcx` remains System V call argument 4; `r10` remains Linux syscall argument 4
   in the private role evidence.
-- A qualified private facet is evidence for a later policy decision, not a runtime class, decoded-validity fact, exploitability statement, or release claim.
+- A qualified private facet was evidence for the separate Patch 080 policy
+  decision, not a runtime class, decoded-validity fact, exploitability statement,
+  or release claim.
 - Any later classifier or task-definition change starts a distinct diagnostic campaign identity.
 - No performance, peak-RSS, coverage-superiority, enforcement, exploitability,
   stealth, or universal-deployment claim follows from Patch 079.
@@ -102,7 +108,7 @@ make sprint13-register-role-decision-smoke
 make sprint13-register-role-task-value-smoke
 ```
 
-Complete acceptance:
+Historical Patch 079 acceptance boundary:
 
 ```bash
 make clean

@@ -288,7 +288,7 @@ native and container environments. Environment agreement does not prove that
 compiler, linker, package, or source-lineage effects generalize, and static
 IBT/SHSTK properties still do not prove runtime CET enforcement.
 
-## Sprint 12 Patch 073 policy through Patch 079 candidate boundary
+## Sprint 12 Patch 073 policy through Patch 080 candidate boundary
 
 Patch 073 executes the non-reinterpretive policy gate and records `defer`.
 No role-derived PIE/DSO, IBT, or SHSTK field or text label is admitted. The
@@ -302,8 +302,9 @@ The selected bounded mitigation tranches are text-relocation evidence from
 tranche. Patch 076 implements distinct private RPATH/RUNPATH carrier/value
 evidence, but its review required Patch 077, whose review required Patch 078.
 Patch 078 preserves the public deferral and adds only a private exact-pop role
-decision. Patch 079 qualifies only private task-value evidence; public reporting
-still requires the later LC-08B policy gate plus compatible schema review.
+decision. Patch 079 qualified only private task-value evidence; Patch 080 retained
+three role facets in a private side-car and continued the public-reporting
+deferral.
 
 Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
@@ -346,7 +347,7 @@ or public policy. Eligible `readelf` comparison additionally requires a zero
 process exit. Public role/property and dynamic-metadata projection remains
 `defer`.
 
-## Sprint 13 Patch 079 non-mitigation boundary
+## Historical Sprint 13 Patch 079 non-mitigation boundary
 
 The register-role task-value gate does not reinterpret mitigation evidence.
 Private PIE/DSO, IBT/SHSTK, textrel, RPATH, and RUNPATH facts remain static

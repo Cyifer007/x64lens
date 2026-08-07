@@ -107,8 +107,7 @@ mapped ELF header or dynamic/string bytes.
 - Public mitigation language remains conservative until a later gate.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Patch 069 added authenticated external reconciliation without changing public
-  report fields. Patch 079 preserves those fields and remains the current
-  corrective and private task-value candidate. Patch 073 executed the
-  public-policy gate as `defer`; corrected actual native/container parity and
-  complete Patch 080 acceptance remains pending, and any future public field
-  requires a new separately reviewed decision.
+  report fields. Patch 079 preserved those fields, but its review required Patch
+  080. Patch 073 executed the public-policy gate as `defer`; Patch 080 remains
+  the current acceptance candidate, and any future public field requires a new
+  separately reviewed decision.

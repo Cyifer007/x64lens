@@ -109,7 +109,8 @@ substrings.
   introduced private static text-relocation evidence, and Patch 076 added
   distinct private RPATH/RUNPATH evidence. Patch 076's review required the
   Patch 077 correction. Patch 077's review required Patch 078, whose review
-  required Patch 079. Complete Patch 079 acceptance remains pending.
+  required Patch 079; Patch 079's review required Patch 080. Complete Patch 080
+  acceptance remains pending.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

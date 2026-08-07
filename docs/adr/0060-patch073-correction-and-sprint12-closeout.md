@@ -111,9 +111,10 @@ Patch 074 would have closed Sprint 12 and activated Sprint 13 only after its
 complete acceptance boundary passed, but it was superseded before acceptance.
 Patch 075 introduced private text-relocation evidence, and Patch 076 added
 distinct private RPATH/RUNPATH evidence. Patch 077 required Patch 078, whose
-review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Patch 078 froze private additive exact-pop roles only; Patch 079 ran
-the deterministically presentation-ordered task-value gate. LC-08B owns any later
-runtime-semantic, public-field, or score decision.
+review required the Patch 079 corrective and private task-value candidate; Patch
+079's review required Patch 080. Patch 078 froze private additive exact-pop roles
+only, Patch 079 ran the task-value gate, and Patch 080 retained three facets in a
+private side-car while deferring public-field and score changes.
 
 ## Rejected alternatives
 
@@ -142,6 +143,7 @@ acceptance by itself. Patch 075 superseded it, introduced private static
 text-relocation evidence, and then required the Patch 076 correction. Patch 076
 added distinct private RPATH/RUNPATH evidence but required the Patch 077
 correction. Patch 077 was superseded by Patch 078, whose review required Patch
-079. Native and Docker aggregates, retained external-natural acquisition,
-corrected isolated parity, delivery rehearsal, and independent exact-source
-acceptance remain part of the exact Patch 079 acceptance boundary.
+079; Patch 079's review required Patch 080. Native and Docker aggregates,
+retained external-natural acquisition, corrected isolated parity, delivery
+rehearsal, and independent exact-source acceptance remain part of the exact
+Patch 080 acceptance boundary.

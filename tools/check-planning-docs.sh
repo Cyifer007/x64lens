@@ -234,10 +234,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Patch 080 private register-role closeout candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the Patch 080 private register-role closeout candidate'
-grep -q '^Patch 080 private register-role candidate; activation pending complete Patch 080 acceptance' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked as the Patch 080 private register-role candidate'
+grep -q '^Patch 081 retrospective and corrective candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 081 retrospective and corrective candidate'
+grep -q '^Patch 081 ordered two-pop decision candidate; activation pending complete Patch 081 acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 081 ordered two-pop decision candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -276,6 +276,14 @@ grep -q 'ADR 0064' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link ADR 0064'
 grep -q 'Patch 080' docs/sprints/sprint-13-plan.md \
     || fail 'Sprint 13 plan does not record the private role-policy tranche'
+grep -q 'Patch 081' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 plan does not record the ordered two-pop decision tranche'
+grep -q 'sprint-12-retro.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link the retrospective'
+grep -q 'sprint-13-patch-081-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 081 validation'
+grep -q 'ADR 0067' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link ADR 0067'
 grep -q 'sprint11-below-floor-policy-smoke' docs/sprints/sprint-11-patch-061-validation.md \
     || fail 'Patch 061 validation does not name the below-floor policy gate'
 grep -q 'ADR 0040' docs/sprints/sprint-10-plan.md \

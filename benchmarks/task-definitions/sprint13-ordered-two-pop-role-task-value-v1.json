@@ -1,0 +1,1151 @@
+{
+  "controls": {
+    "duplicates_rejected": [
+      "rdi-rdi",
+      "rsi-rsi",
+      "rdx-rdx",
+      "rcx-rcx",
+      "r8-r8",
+      "r9-r9"
+    ],
+    "r10_rejected": [
+      "r10-rdi",
+      "rdi-r10"
+    ],
+    "reversals_distinct": true,
+    "rsp_rejected": [
+      "rsp-rdi",
+      "rdi-rsp"
+    ]
+  },
+  "limitations": [
+    "Existing schema 0.2.0 reports already retain exact ordered pop facts through stack_pop_order.",
+    "The pilot evaluates marginal representation value and does not validate full instruction sequences.",
+    "A negative task-value result does not remove the existing ordered two-pop semantic-exact family.",
+    "No exploitability, chain-construction, performance, or publication claim follows from this authority."
+  ],
+  "patch": 81,
+  "public_boundary": {
+    "capacity_changed": false,
+    "dependency_changes": 0,
+    "public_json_fields_added": 0,
+    "public_text_fields_added": 0,
+    "runtime_records_added": 0,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_changes": 0,
+    "worker_changes": 0
+  },
+  "purpose": "Measure whether a new ordered role-tuple representation adds task value beyond existing exact ordered-pop facts.",
+  "registers": [
+    {
+      "arg_index": 1,
+      "bit": 5,
+      "bytes": "5f",
+      "name": "rdi"
+    },
+    {
+      "arg_index": 2,
+      "bit": 4,
+      "bytes": "5e",
+      "name": "rsi"
+    },
+    {
+      "arg_index": 3,
+      "bit": 3,
+      "bytes": "5a",
+      "name": "rdx"
+    },
+    {
+      "arg_index": 4,
+      "bit": 2,
+      "bytes": "59",
+      "name": "rcx"
+    },
+    {
+      "arg_index": 5,
+      "bit": 8,
+      "bytes": "41 58",
+      "name": "r8"
+    },
+    {
+      "arg_index": 6,
+      "bit": 9,
+      "bytes": "41 59",
+      "name": "r9"
+    }
+  ],
+  "schema": "x64lens-sprint13-ordered-two-pop-role-task-value-v1",
+  "source_model": {
+    "candidate_capacity": 4096,
+    "evidence_kind": "semantic_exact",
+    "full_sequence_validity_changed": false,
+    "pattern_id": 21,
+    "pattern_label": "pop reg; pop reg; ret",
+    "register_count": 2,
+    "score": 95,
+    "semantic_class": "arg_control",
+    "stack_delta": 24
+  },
+  "sprint": 13,
+  "structural_pairs": [
+    {
+      "argument_order": [
+        1,
+        2
+      ],
+      "controlled_register_mask": 48,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdi-rsi",
+      "pattern_register_order": 69,
+      "register_order": [
+        "rdi",
+        "rsi"
+      ],
+      "suffix_bytes": "5f 5e c3"
+    },
+    {
+      "argument_order": [
+        1,
+        3
+      ],
+      "controlled_register_mask": 40,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdi-rdx",
+      "pattern_register_order": 53,
+      "register_order": [
+        "rdi",
+        "rdx"
+      ],
+      "suffix_bytes": "5f 5a c3"
+    },
+    {
+      "argument_order": [
+        1,
+        4
+      ],
+      "controlled_register_mask": 36,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdi-rcx",
+      "pattern_register_order": 37,
+      "register_order": [
+        "rdi",
+        "rcx"
+      ],
+      "suffix_bytes": "5f 59 c3"
+    },
+    {
+      "argument_order": [
+        1,
+        5
+      ],
+      "controlled_register_mask": 288,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdi-r8",
+      "pattern_register_order": 133,
+      "register_order": [
+        "rdi",
+        "r8"
+      ],
+      "suffix_bytes": "5f 41 58 c3"
+    },
+    {
+      "argument_order": [
+        1,
+        6
+      ],
+      "controlled_register_mask": 544,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdi-r9",
+      "pattern_register_order": 149,
+      "register_order": [
+        "rdi",
+        "r9"
+      ],
+      "suffix_bytes": "5f 41 59 c3"
+    },
+    {
+      "argument_order": [
+        2,
+        1
+      ],
+      "controlled_register_mask": 48,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rsi-rdi",
+      "pattern_register_order": 84,
+      "register_order": [
+        "rsi",
+        "rdi"
+      ],
+      "suffix_bytes": "5e 5f c3"
+    },
+    {
+      "argument_order": [
+        2,
+        3
+      ],
+      "controlled_register_mask": 24,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rsi-rdx",
+      "pattern_register_order": 52,
+      "register_order": [
+        "rsi",
+        "rdx"
+      ],
+      "suffix_bytes": "5e 5a c3"
+    },
+    {
+      "argument_order": [
+        2,
+        4
+      ],
+      "controlled_register_mask": 20,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rsi-rcx",
+      "pattern_register_order": 36,
+      "register_order": [
+        "rsi",
+        "rcx"
+      ],
+      "suffix_bytes": "5e 59 c3"
+    },
+    {
+      "argument_order": [
+        2,
+        5
+      ],
+      "controlled_register_mask": 272,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rsi-r8",
+      "pattern_register_order": 132,
+      "register_order": [
+        "rsi",
+        "r8"
+      ],
+      "suffix_bytes": "5e 41 58 c3"
+    },
+    {
+      "argument_order": [
+        2,
+        6
+      ],
+      "controlled_register_mask": 528,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rsi-r9",
+      "pattern_register_order": 148,
+      "register_order": [
+        "rsi",
+        "r9"
+      ],
+      "suffix_bytes": "5e 41 59 c3"
+    },
+    {
+      "argument_order": [
+        3,
+        1
+      ],
+      "controlled_register_mask": 40,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdx-rdi",
+      "pattern_register_order": 83,
+      "register_order": [
+        "rdx",
+        "rdi"
+      ],
+      "suffix_bytes": "5a 5f c3"
+    },
+    {
+      "argument_order": [
+        3,
+        2
+      ],
+      "controlled_register_mask": 24,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdx-rsi",
+      "pattern_register_order": 67,
+      "register_order": [
+        "rdx",
+        "rsi"
+      ],
+      "suffix_bytes": "5a 5e c3"
+    },
+    {
+      "argument_order": [
+        3,
+        4
+      ],
+      "controlled_register_mask": 12,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdx-rcx",
+      "pattern_register_order": 35,
+      "register_order": [
+        "rdx",
+        "rcx"
+      ],
+      "suffix_bytes": "5a 59 c3"
+    },
+    {
+      "argument_order": [
+        3,
+        5
+      ],
+      "controlled_register_mask": 264,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdx-r8",
+      "pattern_register_order": 131,
+      "register_order": [
+        "rdx",
+        "r8"
+      ],
+      "suffix_bytes": "5a 41 58 c3"
+    },
+    {
+      "argument_order": [
+        3,
+        6
+      ],
+      "controlled_register_mask": 520,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rdx-r9",
+      "pattern_register_order": 147,
+      "register_order": [
+        "rdx",
+        "r9"
+      ],
+      "suffix_bytes": "5a 41 59 c3"
+    },
+    {
+      "argument_order": [
+        4,
+        1
+      ],
+      "controlled_register_mask": 36,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rcx-rdi",
+      "pattern_register_order": 82,
+      "register_order": [
+        "rcx",
+        "rdi"
+      ],
+      "suffix_bytes": "59 5f c3"
+    },
+    {
+      "argument_order": [
+        4,
+        2
+      ],
+      "controlled_register_mask": 20,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rcx-rsi",
+      "pattern_register_order": 66,
+      "register_order": [
+        "rcx",
+        "rsi"
+      ],
+      "suffix_bytes": "59 5e c3"
+    },
+    {
+      "argument_order": [
+        4,
+        3
+      ],
+      "controlled_register_mask": 12,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rcx-rdx",
+      "pattern_register_order": 50,
+      "register_order": [
+        "rcx",
+        "rdx"
+      ],
+      "suffix_bytes": "59 5a c3"
+    },
+    {
+      "argument_order": [
+        4,
+        5
+      ],
+      "controlled_register_mask": 260,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rcx-r8",
+      "pattern_register_order": 130,
+      "register_order": [
+        "rcx",
+        "r8"
+      ],
+      "suffix_bytes": "59 41 58 c3"
+    },
+    {
+      "argument_order": [
+        4,
+        6
+      ],
+      "controlled_register_mask": 516,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "rcx-r9",
+      "pattern_register_order": 146,
+      "register_order": [
+        "rcx",
+        "r9"
+      ],
+      "suffix_bytes": "59 41 59 c3"
+    },
+    {
+      "argument_order": [
+        5,
+        1
+      ],
+      "controlled_register_mask": 288,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r8-rdi",
+      "pattern_register_order": 88,
+      "register_order": [
+        "r8",
+        "rdi"
+      ],
+      "suffix_bytes": "41 58 5f c3"
+    },
+    {
+      "argument_order": [
+        5,
+        2
+      ],
+      "controlled_register_mask": 272,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r8-rsi",
+      "pattern_register_order": 72,
+      "register_order": [
+        "r8",
+        "rsi"
+      ],
+      "suffix_bytes": "41 58 5e c3"
+    },
+    {
+      "argument_order": [
+        5,
+        3
+      ],
+      "controlled_register_mask": 264,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r8-rdx",
+      "pattern_register_order": 56,
+      "register_order": [
+        "r8",
+        "rdx"
+      ],
+      "suffix_bytes": "41 58 5a c3"
+    },
+    {
+      "argument_order": [
+        5,
+        4
+      ],
+      "controlled_register_mask": 260,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r8-rcx",
+      "pattern_register_order": 40,
+      "register_order": [
+        "r8",
+        "rcx"
+      ],
+      "suffix_bytes": "41 58 59 c3"
+    },
+    {
+      "argument_order": [
+        5,
+        6
+      ],
+      "controlled_register_mask": 768,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r8-r9",
+      "pattern_register_order": 152,
+      "register_order": [
+        "r8",
+        "r9"
+      ],
+      "suffix_bytes": "41 58 41 59 c3"
+    },
+    {
+      "argument_order": [
+        6,
+        1
+      ],
+      "controlled_register_mask": 544,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r9-rdi",
+      "pattern_register_order": 89,
+      "register_order": [
+        "r9",
+        "rdi"
+      ],
+      "suffix_bytes": "41 59 5f c3"
+    },
+    {
+      "argument_order": [
+        6,
+        2
+      ],
+      "controlled_register_mask": 528,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r9-rsi",
+      "pattern_register_order": 73,
+      "register_order": [
+        "r9",
+        "rsi"
+      ],
+      "suffix_bytes": "41 59 5e c3"
+    },
+    {
+      "argument_order": [
+        6,
+        3
+      ],
+      "controlled_register_mask": 520,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r9-rdx",
+      "pattern_register_order": 57,
+      "register_order": [
+        "r9",
+        "rdx"
+      ],
+      "suffix_bytes": "41 59 5a c3"
+    },
+    {
+      "argument_order": [
+        6,
+        4
+      ],
+      "controlled_register_mask": 516,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r9-rcx",
+      "pattern_register_order": 41,
+      "register_order": [
+        "r9",
+        "rcx"
+      ],
+      "suffix_bytes": "41 59 59 c3"
+    },
+    {
+      "argument_order": [
+        6,
+        5
+      ],
+      "controlled_register_mask": 768,
+      "expected_pattern_id": 21,
+      "expected_score": 95,
+      "expected_semantic_class": "arg_control",
+      "id": "r9-r8",
+      "pattern_register_order": 137,
+      "register_order": [
+        "r9",
+        "r8"
+      ],
+      "suffix_bytes": "41 59 41 58 c3"
+    }
+  ],
+  "task_contract": {
+    "confirmation": 6,
+    "development_negative": 12,
+    "development_positive": 12,
+    "minimum_confirmation_gains_to_qualify": 1,
+    "minimum_development_gains_to_qualify": 4,
+    "required_confirmation_correct": 6,
+    "required_generations": 3,
+    "total": 30,
+    "zero_incorrect_promotions_required": true,
+    "zero_regressions_required": true
+  },
+  "tasks": [
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        1,
+        2
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdi",
+        "rsi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        2,
+        1
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rsi",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        1,
+        3
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdi",
+        "rdx"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        3,
+        1
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdx",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-05",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        4,
+        5
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rcx",
+        "r8"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-06",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        5,
+        4
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r8",
+        "rcx"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-07",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        6,
+        1
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r9",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-08",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        1,
+        6
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdi",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-09",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        2,
+        5
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rsi",
+        "r8"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-10",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        5,
+        2
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r8",
+        "rsi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-11",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        3,
+        6
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdx",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "development-positive-12",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        6,
+        3
+      ],
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r9",
+        "rdx"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "rsi",
+        "rdi"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-01-reverse-rdi-rsi",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdi",
+        "rsi"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "rcx",
+        "rdx"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-02-reverse-rdx-rcx",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdx",
+        "rcx"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "r9",
+        "r8"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-03-reverse-r8-r9",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "r8",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "r9",
+        "rdi"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-04-reverse-rdi-r9",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdi",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "r8",
+        "rsi"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-05-reverse-rsi-r8",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rsi",
+        "r8"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": [
+        "r9",
+        "rdx"
+      ],
+      "existing_exact_correct": true,
+      "id": "development-negative-06-reverse-rdx-r9",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "permutation_negative",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdx",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-07-duplicate-rdi",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdi",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-08-duplicate-r8",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "r8",
+        "r8"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-09-rsp-first",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rsp",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-10-rsp-second",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdi",
+        "rsp"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-11-r10-first",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "r10",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "comparison_order": null,
+      "existing_exact_correct": true,
+      "id": "development-negative-12-r10-second",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "out_of_family",
+      "oracle": false,
+      "phase": "development",
+      "proposed_tuple_correct": true,
+      "query_order": [
+        "rdi",
+        "r10"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-01",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        1,
+        4
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdi",
+        "rcx"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-02",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        4,
+        1
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rcx",
+        "rdi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-03",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        2,
+        6
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rsi",
+        "r9"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-04",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        6,
+        2
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r9",
+        "rsi"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-05",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        3,
+        5
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "rdx",
+        "r8"
+      ],
+      "regression": false
+    },
+    {
+      "existing_exact_correct": true,
+      "id": "confirmation-06",
+      "incorrect_promotion": false,
+      "incremental_gain": false,
+      "kind": "positive_role_tuple",
+      "oracle_argument_order": [
+        5,
+        3
+      ],
+      "phase": "confirmation",
+      "proposed_tuple_correct": true,
+      "register_order": [
+        "r8",
+        "rdx"
+      ],
+      "regression": false
+    }
+  ]
+}

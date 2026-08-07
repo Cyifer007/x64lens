@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "closeout_correction_and_sprint13_private_role_candidate_pending_acceptance",
-  "closeout_patch": 80,
+  "status": "retrospective_recorded_and_sprint13_p081_candidate_pending_acceptance",
+  "closeout_patch": 81,
   "candidate_patches": [
     62,
     63,
@@ -22,10 +22,11 @@
     77,
     78,
     79,
-    80
+    80,
+    81
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p080-acceptance-smoke",
+  "acceptance_target": "sprint13-p081-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -109,7 +110,14 @@
     "parity_container_build_tmpfs_exec": true,
     "task_development_confirmation_queries_disjoint": true,
     "task_presentation_noncausal": true,
-    "complete_sysv_and_syscall_abi_oracle": true
+    "complete_sysv_and_syscall_abi_oracle": true,
+    "patch_scope_recovery_preserves_foreign_replacement": true,
+    "git_pathspec_magic_literalized": true,
+    "unrelated_tracked_and_untracked_state_preserved": true,
+    "gitless_manifest_authenticated_before_helper_execution": true,
+    "already_state_requires_exact_branch_and_no_untracked": true,
+    "docker_context_and_source_digests_bound": true,
+    "portable_checksum_paths_required": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -123,8 +131,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 81,
-    "next_patch_tranche": "ordered-two-pop-role-task-pilot-or-next-measured-semantic-gate",
+    "next_patch": 82,
+    "next_patch_tranche": "next-evidence-selected-semantic-or-consumer-gate",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -145,7 +153,15 @@
     "task_value_presentation_causal": false,
     "lc08b_policy_cells": 9,
     "private_role_record_bytes": 8,
-    "private_role_arena_bytes": 32768
+    "private_role_arena_bytes": 32768,
+    "ordered_two_pop_structural_pairs": 30,
+    "ordered_two_pop_task_decision": "defer_new_runtime_tuple_representation",
+    "ordered_two_pop_incremental_gains": 0,
+    "score_pattern_rows": 25,
+    "scored_pattern_rows": 14,
+    "null_pattern_rows": 11,
+    "score_null_mutations": 25,
+    "score_null_independent_rejections": 50
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -163,6 +179,9 @@
     "docs/sprints/sprint-13-patch-078-validation.md",
     "docs/sprints/sprint-13-patch-079-validation.md",
     "docs/adr/0066-patch079-correction-and-private-register-role-sidecar.md",
-    "docs/sprints/sprint-13-patch-080-validation.md"
+    "docs/sprints/sprint-13-patch-080-validation.md",
+    "docs/sprints/sprint-12-retro.md",
+    "docs/adr/0067-patch080-correction-and-ordered-two-pop-task-value.md",
+    "docs/sprints/sprint-13-patch-081-validation.md"
   ]
 }
