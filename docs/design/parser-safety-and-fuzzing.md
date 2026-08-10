@@ -349,7 +349,9 @@ Patch 074 implemented the remaining topology, hardlink, inode, parity,
 permission, and authority corrections but was superseded. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077's
-review required Patch 078, whose review required Patch 079; Patch 079 review required Patch 080, which remains pending complete acceptance.
+review required Patch 078, whose review required Patch 079; Patch 079 review
+required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+remains pending.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions
 
@@ -465,3 +467,11 @@ The role materializer does not parse target bytes or ELF metadata. It validates
 candidate count/capacity and reconciles each exact single-pop pattern ID with its
 ordered register fact before writing a bounded role mask. Contradictory internal
 facts return `EXIT_BOUNDS` before report emission.
+
+## Patch 082 source and producer validation boundary
+
+Patch 082 changes no ELF parser. Its new controlled ELF objects are fixed,
+bounded calibration fixtures and do not broaden accepted input semantics.
+Git-less source verification now requires an explicit manifest/root pair, and
+Docker validation keeps generated objects outside the pristine source root.
+Malformed-input and candidate-capacity behavior remain unchanged.

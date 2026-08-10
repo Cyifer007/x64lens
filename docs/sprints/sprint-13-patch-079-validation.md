@@ -3,8 +3,9 @@
 ## Status
 
 Historical candidate. Patch 078's review required the Patch 079 correction and
-private task-value gate; Patch 079's review then required Patch 080. Patch 080 is
-the current candidate, pending complete acceptance against the exact source.
+private task-value gate; Patch 079's review then required Patch 080, whose review
+required Patch 081. Patch 081 is the current candidate, pending complete
+acceptance against the exact source.
 
 ## Scope
 
@@ -147,5 +148,6 @@ sprint13-p079-acceptance-smoke: ok patch=79 sprint12=closed sprint13=active qual
 
 This was the expected Patch 079 aggregate banner, not independent acceptance or
 chronology authority. Patch 079 did not complete acceptance; its review required
-Patch 080. Sprint 12 closes and Sprint 13 becomes active only after complete
-Patch 080 acceptance against the exact candidate source.
+Patch 080, whose review required Patch 081. Sprint 12 closes and Sprint 13
+becomes active only after complete Patch 081 acceptance against the exact
+candidate source.

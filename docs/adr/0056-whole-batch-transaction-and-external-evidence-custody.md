@@ -100,4 +100,5 @@ private static text-relocation tranche, which Patch 076 extended with distinct
 private RPATH/RUNPATH evidence. Patch 076's review required the Patch 077
 correction. Patch 077's review required Patch 078. Patch 078's review required the
 Patch 079 corrective and private task-value candidate. Patch 079's review
-required Patch 080, which remains pending complete acceptance.
+required Patch 080, whose review required Patch 081. Patch 081 remains pending
+complete acceptance.

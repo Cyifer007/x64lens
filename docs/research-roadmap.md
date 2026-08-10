@@ -16,10 +16,11 @@ facts, and a public-policy decision of `defer`.
 
 Patch 080 added three private single-pop role facets without public or score
 projection. Patch 081 corrects its acceptance infrastructure, records
-`docs/sprints/sprint-12-retro.md`, and runs the ordered two-pop task-value pilot.
-Because current exact ordered-pop facts already answer the frozen tasks, a new
-runtime tuple representation is deferred. Existing semantic classes and scores
-remain unchanged.
+`docs/sprints/sprint-12-retro.md`, and adds a test-only ordered two-pop
+task-value manifest. The manifest declares existing and proposed correctness
+with zero incremental gains, while its static smoke does not execute an
+independent task consumer. The resulting policy decision defers a new runtime
+tuple representation. Existing semantic classes and scores remain unchanged.
 
 All measurement evidence remains diagnostic, unfrozen, and
 publication-ineligible. Sprint 15 still freezes the confirmatory campaign.
@@ -580,8 +581,8 @@ required the Patch 076 correction. Patch 076 implements distinct bounded private
 RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
 077 required the Patch 078 entry candidate. Patch 078's review required the
 Patch 079 corrective and private task-value candidate. Patch 079's review
-required Patch 080, which remains pending complete acceptance before the Sprint
-13 handoff.
+required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+remains pending before the Sprint 13 handoff.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -624,7 +625,7 @@ RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076's review required the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 080 acceptance. Patch
+remains planned and activates only after complete Patch 081 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
 4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
 deterministically presentation-ordered task-value gate. Patch 080 records the
@@ -671,10 +672,22 @@ change. Its review required Patch 080.
 
 Patch 080 corrects the complete Patch 079 acceptance finding set and implements
 the first private additive role side-car. Three facets qualify privately; public
-projection and score changes remain deferred. Patch 081 may run the ordered
-two-pop role-tuple pilot or the next independently measured Sprint 13 gate after
-Patch 080 acceptance.
+projection and score changes remain deferred. Its review required Patch 081.
 
 ## Sprint 13 Patch 081 decision
 
-The first ordered two-pop consumer pilot does not justify another runtime representation. All 30 structural pairs reconcile, but existing `stack_pop_order` facts already satisfy the frozen tasks. The roadmap therefore retains the current exact family and moves the next semantic or consumer addition behind a new incremental-value gate.
+The test-only ordered two-pop manifest records all 30 structural pairs and
+declares existing and proposed correctness with zero incremental gains. The
+smoke validates structure and declarations but does not execute an independent
+task consumer. The resulting policy decision defers another runtime
+representation and moves the next semantic or consumer addition behind a new
+incremental-value gate.
+
+## Sprint 13 Patch 082 checkpoint
+
+Patch 082 is the current exact-source acceptance candidate. It retains the
+private role side-car and ordered-tuple deferral, validates the score/null and
+ordered-pair decisions against three independent builds, and completes a
+controlled positive-coordinate preflight. The next bounded work is a natural
+coordinate campaign plus named-consumer contract freeze; decoder, concurrency,
+public projection, and score changes remain separate gates.

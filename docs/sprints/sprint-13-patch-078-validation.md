@@ -3,8 +3,8 @@
 ## Status
 
 Historical candidate. Patch 078 was superseded by the Patch 079 corrective and
-private task-value candidate; Patch 079's review required Patch 080. Patch 080
-remains pending complete acceptance.
+private task-value candidate; Patch 079's review required Patch 080, whose
+review required Patch 081. Patch 081 remains pending complete acceptance.
 
 ## Purpose
 

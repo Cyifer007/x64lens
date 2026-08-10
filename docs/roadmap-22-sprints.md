@@ -32,10 +32,12 @@ recorded in [`sprints/sprint-12-retro.md`](sprints/sprint-12-retro.md).
 Patch 080 added a private candidate-index role side-car for three qualified
 single-pop facets while preserving public output and scores. Patch 081 corrects
 its transaction, Git-less source, Docker provenance, helper-identity, and
-evidence-seal findings. Patch 081 also runs a test-only ordered two-pop
-role-tuple pilot. Existing `stack_pop_order` facts answer all frozen tasks, so a
-new runtime tuple record is deferred. A separate authority retains the complete
-25-pattern score/null partition.
+evidence-seal findings. Patch 081 also records a test-only ordered two-pop
+role-tuple manifest. The manifest declares existing and proposed correctness
+with zero incremental gains, and its static smoke validates those declarations
+without executing an independent task consumer. The resulting policy decision
+defers a new runtime tuple record. A separate static authority retains the
+complete 25-pattern score/null partition.
 
 All Sprint 11-13 campaign observations remain diagnostic, unfrozen, and
 publication-ineligible. The retained P080 campaign had zero x64lens rows above
@@ -254,8 +256,9 @@ selection-inode, and authority-oracle correction but was superseded as the
 closeout candidate. Patch 075 introduced bounded private static text-relocation
 evidence, and Patch 076 added distinct private RPATH/RUNPATH evidence. Patch
 076's review required Patch 077. Patch 077 then required Patch 078, whose review
-required the Patch 079 corrective and private task-value candidate, whose review required Patch 080,
-pending complete acceptance. None of these patches advances the Sprint 15 freeze, adds
+required the Patch 079 corrective and private task-value candidate, whose review
+required Patch 080; Patch 080's review required Patch 081, pending complete
+acceptance. None of these patches advances the Sprint 15 freeze, adds
 a public mitigation field, or changes the dependency-free one-worker reference
 profile.
 
@@ -304,7 +307,8 @@ Patch 077 was a Sprint 12 reconciliation candidate. It preserved
 the implemented private textrel/RPATH/RUNPATH facts, corrected their surrounding
 transactions and oracles, and added no public field. Its review required Patch
 078, whose review in turn required Patch 079; Patch 079's review required Patch
-080. Exact Patch 080 acceptance is still required before Sprint 13 activation;
+080, whose review required Patch 081. Exact Patch 081 acceptance is still
+required before Sprint 13 activation;
 the confirmatory campaign remains frozen only in Sprint 15.
 
 ## Historical Sprint 13 Patch 079 checkpoint
@@ -317,13 +321,27 @@ with existing runtime semantics and scores unchanged. Patch 079 projected no
 role into runtime or public output. Patch 080 subsequently retained three role
 facets privately and deferred public and score projection.
 
-## Sprint 13 Patch 080 checkpoint
+## Historical Sprint 13 Patch 080 checkpoint
 
 Patch 080 corrects Patch 079 and materializes generic-control, System V
 call-argument, and Linux syscall-argument facets in a private bounded side-car.
-It adds no public field, score, schema change, decoder, or worker. Patch 081 owns
-the next evidence-selected semantic tranche after complete Patch 080 acceptance.
+It adds no public field, score, schema change, decoder, or worker. Its review
+required Patch 081.
 
 ## Sprint 13 Patch 081 checkpoint
 
-Patch 081 records the Sprint 12 retrospective, corrects the Patch 080 acceptance tooling, and closes the ordered two-pop convenience-record question with a negative task-value result. Existing exact ordered-pop facts remain sufficient; no runtime record, public field, semantic class, score, schema, capacity, dependency, or worker change is introduced. The next Sprint 13 tranche remains evidence-selected.
+Patch 081 records the Sprint 12 retrospective, corrects the Patch 080 acceptance
+tooling, and adds a test-only ordered-pair manifest. The manifest declares zero
+incremental gains, while the smoke validates structure and declarations without
+executing an independent task consumer. The resulting policy decision defers a
+new runtime tuple; no runtime record, public field, semantic class, score,
+schema, capacity, dependency, or worker change is introduced. The next Sprint
+13 tranche remains evidence-selected.
+
+## Sprint 13 Patch 082 checkpoint
+
+Patch 082 corrects the remaining Patch 081 delivery and Docker-source boundary,
+adds independent producer-backed policy validation, and qualifies controlled
+coordinate mechanics. It changes no runtime or schema fact. Natural coordinate
+evidence and a frozen role consumer remain required before the next semantic or
+comparative decision. Sprint 15 remains the confirmatory campaign freeze.

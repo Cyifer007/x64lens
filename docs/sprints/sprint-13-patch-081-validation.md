@@ -1,11 +1,17 @@
 # Sprint 13 Patch 081 Validation
 
+## Status
+
+Implementation candidate pending complete exact-source native, Docker, parity,
+delivery, documentation, and independent validation.
+
 ## Purpose
 
 Patch 081 corrects the Patch 080 transaction, recovery, Git-less custody,
 Docker-provenance, already-state, helper-identity, and evidence-seal findings.
-It also records the Sprint 12 retrospective, runs a test-only ordered two-pop
-role-tuple pilot, and freezes the complete score/null partition.
+It also records the Sprint 12 retrospective, adds a test-only ordered two-pop
+role-tuple manifest, and retains the complete score/null partition through
+static-fixture comparisons.
 
 ## Source boundary
 
@@ -64,15 +70,21 @@ score 95, two ordered registers, the exact control mask, and semantic-exact
 evidence. Duplicate registers, `rsp`, and `r10` controls remain outside the
 family.
 
-The pilot's result is negative for a new runtime representation because existing
-`stack_pop_order` facts already answer all frozen tasks. The exact multi-pop
-family itself is not removed or downgraded.
+The test-only manifest declares existing and proposed correctness with zero
+incremental gains across 24 development and six confirmation-labeled tasks.
+The smoke validates the 30-pair structure, source-contract literals, declared
+outcomes, and unchanged public boundary; it does not execute an independent
+task consumer. The resulting policy decision defers a new runtime
+representation. The exact multi-pop family itself is not removed or downgraded.
 
 ## Score/null authority
 
-The authority freezes 25 exact-pattern rows, 14 numeric scores, 11 null scores,
-and three private role facets with null score. Each pattern cell is mutated and
-must be rejected by two independent gates.
+The authority retains 25 exact-pattern rows, 14 numeric scores, 11 null scores,
+and three private role facets with null score. Each authority-row score is
+toggled and compared with two distinct static fixtures: the exact-pattern
+catalog and controlled-report score columns. The 25 toggles yield 50
+deterministic check failures. A separate role-policy check retains the three
+private facets as null; this authority does not execute the runtime scorer.
 
 ## Failure expectations
 
@@ -92,5 +104,15 @@ must be rejected by two independent gates.
 ## Acceptance
 
 Patch 081 is accepted only after complete native, Docker, parity, source,
-delivery, capacity, malformed-input, documentation, and independent Lane A
-validation agree on one exact candidate tree.
+delivery, capacity, malformed-input, documentation, and independent exact-source
+validation agree on one candidate tree.
+
+## Review outcome and Patch 082 handoff
+
+Patch 081 was not accepted as the final exact-source candidate. Follow-up
+validation confirmed no analyzer-runtime defect, but required correction for
+ordinary extraction modes, loose helper identity, Git-less manifest/root
+pairing, Docker source/build separation, nested Make authority isolation, and
+producer-blind tuple/score gates. Patch 082 owns those corrections. Historical
+P081 static-fixture outcomes remain policy evidence and are not represented as
+independent producer execution.

@@ -1,0 +1,188 @@
+{
+  "contract": {
+    "catalog_rejection_gate": true,
+    "mutate_every_pattern_cell": true,
+    "null_patterns": 11,
+    "pattern_rows": 25,
+    "private_null_facets": 3,
+    "producer_generations": 3,
+    "producer_manifest_schema": "x64lens-sprint13-producer-authority-v1",
+    "public_fields_added": 0,
+    "schema_changed": false,
+    "score_changes": 0,
+    "scored_patterns": 14
+  },
+  "patch": 82,
+  "patterns": [
+    {
+      "label": "ret",
+      "pattern_id": 1,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 45
+    },
+    {
+      "label": "ret imm16",
+      "pattern_id": 2,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 40
+    },
+    {
+      "label": "pop rax; ret",
+      "pattern_id": 3,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 85
+    },
+    {
+      "label": "pop rcx; ret",
+      "pattern_id": 4,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop rdx; ret",
+      "pattern_id": 5,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop rbx; ret",
+      "pattern_id": 6,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop rsp; ret",
+      "pattern_id": 7,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 70
+    },
+    {
+      "label": "pop rbp; ret",
+      "pattern_id": 8,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop rsi; ret",
+      "pattern_id": 9,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop rdi; ret",
+      "pattern_id": 10,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop r8; ret",
+      "pattern_id": 11,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop r9; ret",
+      "pattern_id": 12,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 90
+    },
+    {
+      "label": "pop r10; ret",
+      "pattern_id": 13,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop r11; ret",
+      "pattern_id": 14,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop r12; ret",
+      "pattern_id": 15,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop r13; ret",
+      "pattern_id": 16,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop r14; ret",
+      "pattern_id": 17,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "pop r15; ret",
+      "pattern_id": 18,
+      "rationale": "No supported semantic class exists for this exact-only pattern.",
+      "score": null
+    },
+    {
+      "label": "leave; ret",
+      "pattern_id": 19,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 75
+    },
+    {
+      "label": "syscall; ret",
+      "pattern_id": 20,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 85
+    },
+    {
+      "label": "pop reg; pop reg; ret",
+      "pattern_id": 21,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 95
+    },
+    {
+      "label": "mov reg, reg; ret",
+      "pattern_id": 22,
+      "rationale": "Source-value controllability and chain context are not represented.",
+      "score": null
+    },
+    {
+      "label": "add rsp, imm8; ret",
+      "pattern_id": 23,
+      "rationale": "Retain the reviewed Sprint 5 or Sprint 10 relative-utility value.",
+      "score": 35
+    },
+    {
+      "label": "mov [base], value; ret",
+      "pattern_id": 24,
+      "rationale": "Address and value controllability remain unknown; dereference risk is not calibrated.",
+      "score": null
+    },
+    {
+      "label": "mov value, [base]; ret",
+      "pattern_id": 25,
+      "rationale": "Address and value controllability remain unknown; dereference risk is not calibrated.",
+      "score": null
+    }
+  ],
+  "private_role_facets": [
+    {
+      "facet": "generic_control",
+      "rationale": "Task correctness does not calibrate candidate utility.",
+      "score": null
+    },
+    {
+      "facet": "sysv_call_arguments",
+      "rationale": "Role overlap and chain context are not a numeric score authority.",
+      "score": null
+    },
+    {
+      "facet": "linux_syscall_arguments",
+      "rationale": "Syscall-role evidence does not calibrate candidate utility.",
+      "score": null
+    }
+  ],
+  "purpose": "Freeze every score/null cell against the exact catalog and three independently built analyzer producer generations.",
+  "schema": "x64lens-sprint13-score-null-authority-v2",
+  "sprint": 13
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 081 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 082 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -50,18 +50,18 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "retrospective_recorded_and_sprint13_p081_candidate_pending_acceptance",
-            "Sprint 12 retrospective must remain pending P081 acceptance",
+            authority.get("status") == "retrospective_recorded_and_sprint13_p082_candidate_pending_acceptance",
+            "Sprint 12 retrospective must remain pending P082 acceptance",
         )
-        exact_int(authority.get("current_patch"), 81, "current_patch")
+        exact_int(authority.get("current_patch"), 82, "current_patch")
         exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
-        exact_int(authority.get("prior_corrective_patch"), 80, "prior corrective patch")
-        exact_int(authority.get("next_patch"), 82, "next_patch")
+        exact_int(authority.get("prior_corrective_patch"), 81, "prior corrective patch")
+        exact_int(authority.get("next_patch"), 83, "next_patch")
         require(
-            authority.get("next_patch_tranche") == "next-evidence-selected-semantic-or-consumer-gate",
+            authority.get("next_patch_tranche") == "natural-positive-coordinate-campaign-and-consumer-contract-freeze",
             "next tranche",
         )
-        require(authority.get("acceptance_target") == "sprint13-p081-acceptance-smoke", "acceptance target")
+        require(authority.get("acceptance_target") == "sprint13-p082-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
         reference = authority.get("reference_profile")
@@ -171,6 +171,34 @@ def main() -> int:
         require(patch081.get("malformed_parse") == "no_partial_stdout", "P081 malformed boundary")
         require(patch081.get("ordered_two_pop_task_decision") == "defer_new_runtime_tuple_representation", "P081 tuple decision")
 
+        patch082 = authority.get("patch082_boundary")
+        require(isinstance(patch082, dict), "Patch 082 boundary")
+        for key in {
+            "complete_patch081_correction", "gitless_manifest_root_pair_required",
+            "docker_pristine_source_separated_from_build", "nested_make_authority_isolated",
+            "ordinary_unzip_custody_portable", "scoped_loose_helpers",
+            "package_custody_modes_consistent",
+        }:
+            exact_bool(patch082.get(key), True, key)
+        exact_bool(patch082.get("runtime_source_include_schema_change"), False, "P082 runtime source/include/schema change")
+        for key, expected in {
+            "runtime_records_added": 0, "public_fields_added": 0,
+            "semantic_classifier_changes": 0, "score_changes": 0,
+            "candidate_capacity": 4096, "producer_generations": 3,
+            "producer_pair_checks": 90, "score_null_mutations": 25,
+            "score_null_independent_rejections": 100,
+            "controlled_coordinate_targets": 6, "controlled_coordinate_positive_cases": 8,
+            "controlled_coordinate_mutation_rejections": 4,
+            "controlled_coordinate_semantic_negatives": 4, "controlled_coordinate_cells": 9,
+            "controlled_coordinate_qualified_cells": 9,
+            "controlled_coordinate_positive_anchors": 18,
+        }.items():
+            exact_int(patch082.get(key), expected, key)
+        exact_bool(patch082.get("natural_coordinate_campaign_qualified"), False, "P082 natural coordinate campaign")
+        exact_bool(patch082.get("comparative_coverage_claim_authorized"), False, "P082 comparative coverage")
+        require(patch082.get("candidate_4097") == "exit_6_before_stdout", "P082 capacity boundary")
+        require(patch082.get("malformed_parse") == "no_partial_stdout", "P082 malformed boundary")
+
         preserved = authority.get("preserved_authorities")
         require(isinstance(preserved, dict), "preserved authorities")
         require(preserved.get("executable_mapping") == "PT_LOAD_plus_PF_X_file_backed_ranges", "executable mapping")
@@ -186,18 +214,18 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 081 retrospective and corrective candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 081 ordered two-pop decision candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 082 corrective and exact-source acceptance candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 082 producer and coordinate preflight candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=81 textrel=private rpath=private runpath=private roles=16 "
+        "patch=82 textrel=private rpath=private runpath=private roles=16 "
         "qualified_private_facets=3 retained_facets=2 role_record_bytes=8 "
         "role_arena_bytes=32768 analysis_arena_bytes=884736 public_fields_added=0 "
-        "semantic_changes=0 score_changes=0 tuple_decision=defer next_patch=82"
+        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 next_patch=83"
     )
     return 0
 

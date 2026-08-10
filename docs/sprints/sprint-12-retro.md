@@ -419,10 +419,10 @@ Private role qualification does not automatically authorize a new semantic
 class, public field, or score.
 
 Patch 081 records the retrospective and executes a test-only ordered two-pop
-role-tuple pilot plus complete score/null mutation authority. The pilot may
-return a negative result when existing `stack_pop_order` facts already answer
-the frozen tasks. That result should prevent redundant runtime state rather than
-be treated as a failed sprint.
+role-tuple authority plus a complete score/null mutation authority. The tuple
+manifest declares zero incremental gains, and its static checker therefore
+records a policy deferral for redundant runtime state. It does not execute an
+independent task consumer or provide confirmatory measured task-value evidence.
 
 ## Final assessment
 

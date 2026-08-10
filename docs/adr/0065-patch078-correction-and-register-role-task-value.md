@@ -3,8 +3,8 @@
 ## Status
 
 Historical Patch 079 implementation decision. Patch 079 did not complete
-acceptance; its review required Patch 080, which remains pending complete
-acceptance against the exact candidate source.
+acceptance; its review required Patch 080, whose review required Patch 081.
+Patch 081 remains pending complete acceptance against the exact candidate source.
 
 ## Context
 

@@ -219,4 +219,18 @@ Any future score decision requires an independent ranking and compatibility gate
 
 ## Sprint 13 Patch 081 score/null authority
 
-Patch 081 changes no score. It freezes all 25 exact-pattern cells: 14 retain numeric scores and 11 retain `null`. The three private role facets also remain unscored. Every pattern cell is mutated and rejected by two independent catalog/report gates. The ordered two-pop family retains score 95; a zero-gain convenience tuple proposal does not justify recalibration.
+Patch 081 changes no score. It retains all 25 exact-pattern cells: 14 have
+numeric scores and 11 have `null`. Each row's score is toggled and compared
+with two distinct static fixtures, the exact-pattern catalog and
+controlled-report score columns, yielding 50 deterministic check failures.
+Neither comparison executes the runtime scorer. A separate policy check retains
+the three private role facets as `null`. The ordered two-pop family retains
+score 95; the declarative zero-gain tuple policy does not justify recalibration.
+
+## Patch 082 producer-backed score/null gate
+
+Patch 082 does not recalibrate a score. Each of the 25 exact-pattern score/null
+cells is checked against the exact catalog and reports from three independently
+built analyzers. Toggling one cell must be rejected by the catalog and by all
+three producer generations. The result retains 14 numeric scores, 11 null
+scores, and null scores for all three private role facets.

@@ -240,10 +240,15 @@ def custody_probe(custody: Any, base: Path) -> None:
 
 def source_custody_probe() -> None:
     manifest_path = os.environ.get("X64LENS_SOURCE_MANIFEST")
+    authority_root_path = os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT")
+    require(
+        bool(manifest_path) == bool(authority_root_path),
+        "Git-less source manifest and authority root must be supplied as one pair",
+    )
     if manifest_path:
-        source = load("p078_gitless_source", "tools/gitless-source-manifest.py")
+        source = load("p082_gitless_source", "tools/gitless-source-manifest.py")
         value = source.load_manifest(Path(manifest_path))
-        authority_root = Path(os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT", os.fspath(ROOT)))
+        authority_root = Path(authority_root_path)
         source.verify(authority_root, value)
         rows = [(item["git_mode"].encode("ascii"), item["path"]) for item in value["files"]]
     else:

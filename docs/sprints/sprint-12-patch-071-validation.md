@@ -16,7 +16,7 @@ Patch 075 introduced bounded private static text-relocation evidence, and Patch
 evidence. Patch 076's review required Patch 077. Patch 077's review required
 Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
 Current validation expectations are in the
-[Patch 080 validation record](sprint-13-patch-080-validation.md).
+[Patch 081 validation record](sprint-13-patch-081-validation.md).
 
 ## Source precondition
 
@@ -135,7 +135,7 @@ validation identified narrower prerequisites addressed by Patch 072. Patch
 first custody/isolation correction and policy-deferral boundary, while the
 [Patch 074 validation record](sprint-12-patch-074-validation.md) preserves the
 superseded closeout-candidate boundary. Current validation expectations are in
-the [Patch 080 validation record](sprint-13-patch-080-validation.md). None of
+the [Patch 081 validation record](sprint-13-patch-081-validation.md). None of
 these historical boundaries validates arbitrary external-
 natural objects,
 proves runtime CET enforcement, authorizes public mitigation fields, establishes

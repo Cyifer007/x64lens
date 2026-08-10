@@ -40,10 +40,10 @@ and activates Sprint 12. The diagnostic checkpoint is complete as mutable
 development evidence; its rows are not preview or publication evidence.
 
 Sprint 12 remains active. Patch 078 was superseded by the Patch 079 corrective
-and private task-value candidate; Patch 079's review then required Patch 080.
-Patch 080 is the current correction and private role-side-car candidate, pending
-complete acceptance. Sprint 13 becomes active only after complete Patch 080
-acceptance. Loader, mitigation, semantic, and
+and private task-value candidate; Patch 079's review then required Patch 080,
+whose review required Patch 081. Patch 081 is the current corrective candidate,
+pending complete acceptance. Sprint 13 becomes active only after complete Patch
+081 acceptance. Loader, mitigation, semantic, and
 optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in
 Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs
 in Sprint 17.
@@ -412,9 +412,10 @@ meaning, but it was superseded as the Sprint 12 closeout candidate. Patch 075
 introduced bounded private static text-relocation evidence, and Patch 076 added
 distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077's review required Patch 078, whose review
-required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
-Exact Patch 080 acceptance remains pending. Sprint 13 remains an entry candidate and
-activates only after complete Patch 080 acceptance.
+required the Patch 079 corrective and private task-value candidate, whose review
+required Patch 080; Patch 080's review required Patch 081. Exact Patch 081
+acceptance remains pending. Sprint 13 remains an entry candidate and activates
+only after complete Patch 081 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -455,7 +456,8 @@ parity, exact delivery rehearsal, and independent exact-source acceptance
 on the same source. Patch 075 introduced private static text-relocation
 evidence, and Patch 076 implemented separate private RPATH/RUNPATH evidence.
 Patch 076's review required Patch 077. Patch 077's review required Patch 078,
-whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+whose review required the Patch 079 corrective and private task-value candidate,
+whose review required Patch 080; Patch 080's review required Patch 081.
 The role/property policy remains `defer`, no public mitigation field
 or runtime-CET claim is added, and no Sprint 12 diagnostic artifact becomes
 preview or publication evidence.
@@ -479,8 +481,8 @@ PIE/DSO, IBT, or SHSTK field.
 
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
-080. Preview eligibility still requires complete Patch 080 acceptance before
-any later release-facing capability work.
+080; Patch 080's review required Patch 081. Preview eligibility still requires
+complete Patch 081 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -499,4 +501,18 @@ Public role projection and score calibration remain separate pre-freeze gates.
 
 ## Patch 081 release-gate note
 
-Patch 081 adds no release-facing field or score. Its tuple pilot is diagnostic and negative for new runtime state; its score/null authority freezes existing values. The research-preview gate still requires accepted native/Docker validation, private-fact parity, corpus/method freeze, and checksummed release artifacts.
+Patch 081 adds no release-facing field or score. Its test-only tuple manifest
+declares zero incremental gains, and the static smoke records a policy deferral
+without executing an independent task consumer. The score/null authority
+compares toggled authority rows with two static fixtures; it does not execute
+the runtime scorer. The research-preview gate still requires accepted native/
+Docker validation, private-fact parity, corpus/method freeze, and checksummed
+release artifacts.
+
+## Patch 082 gate update
+
+Patch 082 closes additional exact-source, Docker-source, nested-authority,
+ordinary-extraction, and producer-oracle gaps without changing the runtime or
+schema. The research preview still requires fresh native and Docker validation,
+actual private-fact parity, natural coordinate qualification, frozen campaign
+inputs, and independent reproduction.

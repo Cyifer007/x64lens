@@ -56,8 +56,9 @@ The patch makes these decisions:
 9. **Closeout remains evidence-gated.** Patch 077 was a closeout candidate, not
    automatic Sprint 12 acceptance. Patch 078 was the Sprint 13 entry candidate
    and required correction. Patch 079 was the corrective and private task-value
-   candidate; its review required Patch 080. Activation still requires complete
-   acceptance against the exact Patch 080 source.
+   candidate; its review required Patch 080, whose review required Patch 081.
+   Activation still requires complete acceptance against the exact Patch 081
+   source.
 
 ## Preserved architecture
 

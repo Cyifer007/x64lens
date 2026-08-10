@@ -11,7 +11,7 @@ preserved that private prefix and implemented distinct private `DT_RPATH` and
 `DT_RUNPATH` carrier/value evidence, but its review required Patch 077. Patch
 077's review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations
 are in the
-[Patch 080 validation record](../sprints/sprint-13-patch-080-validation.md).
+[Patch 081 validation record](../sprints/sprint-13-patch-081-validation.md).
 
 ## Context
 
@@ -109,8 +109,8 @@ substrings.
   introduced private static text-relocation evidence, and Patch 076 added
   distinct private RPATH/RUNPATH evidence. Patch 076's review required the
   Patch 077 correction. Patch 077's review required Patch 078, whose review
-  required Patch 079; Patch 079's review required Patch 080. Complete Patch 080
-  acceptance remains pending.
+  required Patch 079; Patch 079's review required Patch 080, whose review
+  required Patch 081. Complete Patch 081 acceptance remains pending.
 - Public role/property fields remain a future evidence gate rather than a
   calendar commitment.
 

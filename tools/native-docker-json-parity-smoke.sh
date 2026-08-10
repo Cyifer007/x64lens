@@ -45,8 +45,17 @@ done
 # The image contains its own source snapshot from docker-build. Stream only the
 # generated result tree through tar so container build artifacts never alter the
 # host worktree.
-docker run --rm "$IMAGE" bash -lc '
+docker run --rm \
+    -e X64LENS_SOURCE_MANIFEST=/x64lens-source-manifest.json \
+    -e X64LENS_SOURCE_AUTHORITY_ROOT=/work \
+    "$IMAGE" bash -lc '
     set -euo pipefail
+    run=/x64lens-run
+    rm -rf "$run"
+    mkdir "$run"
+    cp -a /work/. "$run"/
+    chmod -R u+w "$run"
+    cd "$run"
     make clean >/dev/null
     make >/dev/null
     make samples >/dev/null
@@ -65,6 +74,7 @@ docker run --rm "$IMAGE" bash -lc '
                 > "$out/${command}-${fixture}.json"
         done
     done
+    python3 /work/tools/gitless-source-manifest.py verify --root /work --manifest /x64lens-source-manifest.json >/dev/null
     tar -C "$out" -cf - .
 ' | tar -C "$tmp/docker" -xf -
 

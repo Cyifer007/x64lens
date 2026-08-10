@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation candidate pending complete native, Docker, parity, and independent acceptance.
+Historical implementation candidate. Patch 080 did not complete acceptance; its
+review required Patch 081. Current requirements are recorded in the
+[Patch 081 validation record](sprint-13-patch-081-validation.md).
 
 ## Purpose
 
@@ -130,6 +132,7 @@ candidate source. It does not independently prove acceptance.
 
 ## Next step
 
-After complete Patch 080 acceptance, Patch 081 may run the ordered two-pop
-role-tuple pilot or the next independently selected Sprint 13 semantic gate. Public
-role projection and score changes remain separate decisions.
+Patch 081 records a test-only ordered two-pop manifest whose declared outcomes
+produce zero incremental gains and therefore defer a redundant runtime tuple.
+That authority is a policy input, not confirmatory measured task-value evidence.
+Public role projection and score changes remain separate decisions.

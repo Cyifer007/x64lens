@@ -4,8 +4,9 @@
 
 Recorded as the Patch 078 implementation decision. Patch 078 did not complete
 acceptance; Patch 079 supplied the resulting corrective and private task-value
-candidate. Patch 079's review required Patch 080, which remains pending complete
-acceptance against the exact committed source.
+candidate. Patch 079's review required Patch 080, whose review required Patch
+081. Patch 081 remains pending complete acceptance against the exact committed
+source.
 
 ## Context
 
@@ -92,9 +93,9 @@ projection.
 
 Patch 078 addressed the Patch 077 acceptance blockers without modifying the
 analyzer runtime, but did not complete acceptance. Sprint 12 remains active and
-Sprint 13 remains an entry candidate pending exact Patch 080 acceptance. The authenticated
-entry decision alone does not qualify runtime or public projection of the
-private role facets.
+Sprint 13 remains an entry candidate pending exact Patch 081 acceptance. The
+authenticated entry decision alone does not qualify runtime or public projection
+of the private role facets.
 
 Patch 079 ran the deterministically presentation-ordered role-query task-value
 gate. Three facets qualified only as private task-value evidence and two remained

@@ -3,43 +3,47 @@
 ## Status
 
 Proposed by Patch 081; acceptance remains subject to exact-source native,
-Docker, parity, delivery, and independent Lane A validation.
+Docker, parity, delivery, and independent validation.
 
 ## Context
 
 Patch 080 added a private candidate-index role side-car and retained three
 qualified single-pop role facets without changing public output or scores. Its
-review confirmed the runtime role model but found defects in patch recovery,
-Git-less source authentication, Docker provenance binding, already-state
-application checks, loose helper identity, and evidence closure.
+acceptance boundary remained incomplete because patch recovery, Git-less source
+authentication, Docker provenance binding, already-state application checks,
+loose helper identity, and evidence closure required correction.
 
-The strategic review selected an ordered two-pop role-tuple pilot as the
-smallest next Sprint 13 experiment. The existing exact multi-pop family already
-retains ordered registers through `stack_pop_order`, semantic-exact provenance,
-controlled-register masks, stack delta, effects, and score 95. A new runtime
-tuple record is justified only if it adds independent task value.
+An ordered two-pop role-tuple pilot was selected as the smallest next Sprint 13
+experiment because the existing exact multi-pop family already retains ordered
+registers through `stack_pop_order`, semantic-exact provenance, controlled-
+register masks, stack delta, effects, and score 95. A new runtime tuple record
+is justified only if it adds independently demonstrated task value.
 
 ## Decision
 
 Patch 081:
 
 1. corrects the complete Patch 080 acceptance finding set;
-2. applies the accepted public-Markdown final-file corrections;
+2. updates tracked public documentation to the Patch 081 chronology and
+   preserved contract boundaries;
 3. records `docs/sprints/sprint-12-retro.md`;
-4. freezes all 30 ordered pairs over the six System V argument registers;
-5. evaluates 12 positive development tasks, 12 negative/permutation controls,
-   and six untouched confirmation tasks;
-6. runs three byte-identical authority generations;
-7. mutates every one of the 25 exact-pattern score/null cells through two
-   independent gates; and
+4. records all 30 ordered pairs over the six System V argument registers in a
+   test-only manifest;
+5. records 12 positive development tasks, 12 negative/permutation controls,
+   and six confirmation-labeled tasks;
+6. serializes the same authority three times and confirms byte-identical output;
+7. toggles every one of the 25 exact-pattern score/null rows and compares each
+   result with two distinct static fixtures; and
 8. adds no runtime record, public field, semantic class, score, schema,
    capacity, dependency, or worker change.
 
 ## Ordered tuple result
 
-The structural authority passes all 30 ordered pairs and all out-of-family
-controls. Existing exact facts answer every frozen task. The proposed convenience
-representation produces zero incremental development or confirmation gains.
+The test-only manifest records all 30 ordered pairs and declares existing and
+proposed correctness with zero incremental gains across 24 development and six
+confirmation-labeled tasks. The smoke validates the pair structure, source-
+contract literals, declared outcomes, and unchanged public boundary; it does
+not execute an independent task consumer.
 
 The decision is therefore:
 
@@ -47,9 +51,9 @@ The decision is therefore:
 defer_new_runtime_tuple_representation
 ```
 
-This is a successful negative result. Existing `stack_pop_order` and related
-facts remain sufficient for the represented task. The current multi-pop family
-is preserved unchanged.
+This is a policy deferral, not confirmatory measured task-value evidence. The
+current multi-pop family and its existing `stack_pop_order` facts are preserved
+unchanged.
 
 ## Score/null result
 
@@ -62,9 +66,11 @@ null:                 11
 private role facets:   3, all score-null
 ```
 
-Every pattern cell is mutated once. Both the catalog-policy gate and controlled
-report/effect gate reject all 25 mutations, for 50 independent rejections.
-Existing scores and nulls are retained.
+Each authority-row score is toggled once. Two distinct static-fixture
+comparisons—the exact-pattern catalog and controlled-report score columns—
+reject all 25 toggles, yielding 50 deterministic check failures. A separate
+role-policy check retains the three private facets as null. Existing scores and
+nulls are retained; this authority does not execute the runtime scorer.
 
 ## Preserved boundaries
 
@@ -85,3 +91,10 @@ Patch 081 removes one proposed runtime-state expansion from the near-term
 roadmap. Later Sprint 13 work should select another bounded family or consumer
 only when it demonstrates incremental task value and retains separate semantic,
 public, and score decisions.
+
+## Patch 082 superseding validation note
+
+Patch 081 review found that this ADR's tuple and score/null policy conclusions
+were not yet producer-backed. Patch 082 preserves the conclusions but replaces
+the static acceptance path with three independently built analyzer generations.
+ADR 0068 owns that correction and the controlled coordinate preflight.

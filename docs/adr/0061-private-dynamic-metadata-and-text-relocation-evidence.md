@@ -6,7 +6,9 @@ Historical design record for the Sprint 12 Patch 075 implementation candidate.
 Its review required the Patch 076 corrective pass. Patch 076 preserved the
 bounded private text-relocation side-car and extended it with distinct private
 RPATH/RUNPATH evidence, but its review required Patch 077. Patch 077's review
-required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Public projection remains deferred.
+required Patch 078, whose review required the Patch 079 corrective and private
+task-value candidate, whose review required Patch 080; Patch 080's review
+required Patch 081. Public projection remains deferred.
 
 ## Context
 

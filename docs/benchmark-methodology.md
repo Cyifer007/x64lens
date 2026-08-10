@@ -878,9 +878,11 @@ In the Patch 073 diagnostic campaign, every x64lens row was below the timer
 floor and there were zero positive coordinate anchors. These corrections do not
 resolve below-floor x64lens latency, provide process-tree RSS, establish speed,
 superiority, parity, normalized coverage, or mitigation prevalence, or promote
-a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was the corrective and private task-value candidate; its review required Patch 080. Any changed
-semantic task in Sprint 13 receives a new diagnostic campaign identity only
-after complete Patch 080 acceptance and the relevant task-value gate.
+a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
+the corrective and private task-value candidate; its review required Patch 080,
+whose review required Patch 081. Any changed semantic task in Sprint 13 receives
+a new diagnostic campaign identity only after complete Patch 081 acceptance and
+the relevant task-value gate.
 
 
 ## Patch 076 benchmark boundary
@@ -938,4 +940,24 @@ publication-ineligible; it cannot be merged into the Sprint 15-frozen campaign.
 
 ## Sprint 13 Patch 081 task-value interpretation
 
-The ordered two-pop pilot is a diagnostic semantic-consumer experiment, not a performance or coverage benchmark. Its zero-gain result means existing exact ordered-pop facts answer the frozen tasks. It authorizes no timing, RSS, superiority, exploitability, or publication claim and is not merged into the Sprint 15-frozen campaign.
+The test-only ordered two-pop manifest records 30 structural pairs and declares
+existing and proposed correctness with zero incremental gains. Its smoke
+validates those declarations but does not execute an independent semantic
+consumer oracle. Patch 081 therefore records a policy deferral, not
+confirmatory measured task-value evidence or a performance or coverage
+benchmark. It authorizes no timing, RSS, superiority, exploitability, or
+publication claim and is not merged into the Sprint 15-frozen campaign.
+
+## Patch 082 controlled coordinate preflight
+
+Patch 082 adds controlled coordinate-classification evidence, not a comparative
+coverage result. Six deterministic ELF64 objects provide distinct file-offset
+and virtual-address coordinates. Eight positive cases, four one-field
+mutations, four semantic negatives, and eighteen anchors across nine
+baseline-by-role cells validate the calibration mechanics.
+
+The modeled baseline relation is not a retained natural tool execution. A
+fresh campaign must bind native baseline output, x64lens relations, target
+bytes, commands, versions, exits, and result artifacts before a coordinate cell
+can enter comparative coverage analysis. No generic gadget-count, runtime, RSS,
+or superiority claim follows from the controlled preflight.

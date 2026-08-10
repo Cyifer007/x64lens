@@ -1681,8 +1681,9 @@ Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
 separate private evidence layer, and Sprint 13 activation remains blocked until
-complete Patch 080 acceptance. Patch 078 review required the Patch 079
-corrective candidate.
+complete Patch 081 acceptance. Patch 078 review required the Patch 079
+corrective candidate; Patch 079 review required Patch 080, whose review required
+Patch 081.
 
 ## Sprint 13 Patch 078 transaction and role-decision boundary
 
@@ -1744,4 +1745,24 @@ and the 4,097th candidate still fails before report output.
 
 ## Sprint 13 Patch 081 no-new-state decision
 
-Patch 081 adds no runtime module or record. Existing exact ordered-pop metadata and the private candidate-role side-car remain sufficient for the frozen two-pop role tasks. Transaction, Git-less source, Docker provenance, recovery, and delivery corrections remain tooling boundaries and do not alter the analysis pipeline.
+Patch 081 adds no runtime module or record. A test-only manifest declares that
+existing exact ordered-pop metadata and a proposed tuple representation answer
+the frozen two-pop role tasks with zero incremental gains. Its smoke validates
+the manifest's structure and declarations but does not execute an independent
+task consumer; the runtime tuple is therefore deferred as a policy decision,
+not confirmatory measured task-value evidence. Transaction, Git-less source,
+Docker provenance, recovery, and delivery corrections remain tooling
+boundaries and do not alter the analysis pipeline.
+
+## Sprint 13 Patch 082 producer and Docker-source boundary
+
+Patch 082 adds no runtime analysis module. Development validation now preserves
+an authenticated Git-less source root separately from mutable build output and
+requires every manifest/root pair to agree. Three independent build roots
+produce the analyzer reports consumed by the ordered-pair and score/null policy
+gates. These producer records validate existing matcher, classifier, and scorer
+output; they do not become reporter inputs or new candidate side-cars.
+
+The controlled coordinate preflight consumes mapping facts only. It does not
+change program-header executable authority, region construction, candidate
+coordinates, or report fields.

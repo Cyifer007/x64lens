@@ -111,6 +111,8 @@ This is a fixed allocation fact, not measured RSS or performance evidence.
 
 ## Consequences
 
-Patch 081 may evaluate an ordered two-pop role-tuple pilot or another separately
-measured Sprint 13 tranche. It must not treat Patch 080 private-role
-qualification as authority for public output or score changes.
+Patch 081 records a test-only ordered two-pop manifest whose declared outcomes
+produce zero incremental gains and therefore defer a redundant runtime tuple.
+The static authority is policy input, not confirmatory measured task-value
+evidence, and Patch 080 private-role qualification remains insufficient
+authority for public output or score changes.

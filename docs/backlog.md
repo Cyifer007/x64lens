@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — Patch 080 closeout candidate
+### Sprint 12: loader and mitigation precision — Patch 081 corrective candidate
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -185,7 +185,7 @@ later sprints rather than Patch 037:
 - [x] Record the Patch 078 review disposition as requiring the Patch 079
   corrective and private task-value candidate.
 - [ ] Complete fresh native, Docker, both parity planes, delivery, and
-  independent acceptance for Patch 080 against the same authenticated source
+  independent acceptance for Patch 081 against the same authenticated source
   tree.
 - [ ] Run the separate comparison-qualification campaign under a new identity
   with positive role-controlled coordinate anchors, complete five-path runtime
@@ -713,12 +713,14 @@ records public-policy deferral and selected the next bounded mitigation
 tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077's
-review required Patch 078, whose review required Patch 079; Patch 079 review required Patch 080, which remains pending complete acceptance.
+review required Patch 078, whose review required Patch 079; Patch 079 review
+required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 080 candidate
+### Sprint 12 Patch 073 through Patch 081 candidate
 
 Patch 073 executed the public-policy deferral but was not accepted at its first
 returned review boundary. Patch 074 implemented corrections for the confirmed
@@ -727,7 +729,9 @@ but was superseded as the closeout candidate. Patch 075 introduced private
 static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076's review required correction. Patch 077 was
 a Sprint 12 reconciliation candidate; Patch 078 followed as a Sprint 13 entry
-candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+candidate, and its review required the Patch 079 corrective and private
+task-value candidate, whose review required Patch 080; Patch 080's review
+required Patch 081.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -753,7 +757,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 080 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 081 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -770,7 +774,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [ ] Accept Patch 080 through complete native, Docker, parity, delivery, and
+- [ ] Accept Patch 081 through complete native, Docker, parity, delivery, and
   independent validation before activating Sprint 13.
 
 
@@ -798,7 +802,7 @@ candidate, and its review required the Patch 079 corrective and private task-val
   additive side-car while deferring public projection and score changes;
   syscall-number and stack-pivot treatment remains unchanged.
 
-### Sprint 13 Patch 080 private role checkpoint
+### Historical Sprint 13 Patch 080 private role checkpoint
 
 - [x] Correct partial patch-effect recovery and final permission rollback.
 - [x] Require complete Git-less tree custody and immutable Docker image identity.
@@ -806,13 +810,32 @@ candidate, and its review required the Patch 079 corrective and private task-val
 - [x] Reject incorrect System V or Linux syscall ABI mappings.
 - [x] Add the private 8-byte candidate-index role side-car.
 - [x] Keep public output, semantic classes, scores, and schema unchanged.
-- [ ] Complete native, Docker, parity, strict-lint, and independent acceptance.
-- [ ] Run the next measured Sprint 13 tranche only after Patch 080 acceptance.
+- [x] Record that Patch 080 did not complete acceptance and required Patch 081.
 
 ### Sprint 13 Patch 081 decision
 
 - [x] Record the Sprint 12 retrospective.
 - [x] Correct the Patch 080 transaction, Git-less, Docker-provenance, and delivery findings.
-- [x] Evaluate all 30 ordered System V two-pop pairs; defer a redundant runtime tuple after zero incremental task gains.
-- [x] Freeze 25 score/null cells through 50 independent mutation rejections.
+- [x] Retain a test-only 30-pair manifest that declares existing and proposed
+  correctness with zero incremental gains; its static smoke does not execute an
+  independent task consumer, so the runtime tuple is deferred as policy rather
+  than confirmatory measured task-value evidence.
+- [x] Toggle 25 score/null rows against two distinct static fixtures, yielding
+  50 deterministic check failures; retain the three private facets as `null`
+  through a separate policy check.
 - [ ] Select the next semantic family or consumer only after incremental task value is demonstrated.
+
+### Sprint 13 Patch 082 acceptance candidate
+
+- [x] Bind each Git-less source manifest to its matching authority root.
+- [x] Separate pristine Docker source custody from generated build output.
+- [x] Isolate nested Make invocations from caller-selected authority files.
+- [x] Replace producer-blind ordered-pair and score/null checks with three
+  independently built producer generations.
+- [x] Add a controlled six-object positive-coordinate preflight with two
+  anchors for each of nine baseline-by-role cells.
+- [ ] Run a fresh authenticated natural coordinate campaign before comparative
+  coverage interpretation.
+- [ ] Freeze the named consumer contract before additional role projection.
+- [ ] Complete Patch 082 native, Docker, parity, delivery, and independent
+  acceptance.

@@ -6,6 +6,22 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 082
+
+- Correct Git-less manifest/root pairing, Docker pristine-source custody,
+  nested Make authority isolation, ordinary extraction modes, and scoped loose
+  helper delivery.
+- Replace the producer-blind ordered-pair and score/null checks with three
+  independently built analyzer generations from one authenticated source tree.
+- Validate all 30 ordered pairs across three generations and mutation-test all
+  25 score/null cells against the exact catalog and producer reports.
+- Add a controlled source-valid coordinate preflight with six ELF objects,
+  eight positive cases, four mutation rejections, four semantic negatives, and
+  two anchors for each of nine baseline-by-role cells.
+- Keep natural coordinate qualification, comparative coverage claims, runtime
+  tuple state, public fields, semantic classes, scores, schema `0.2.0`, and
+  candidate capacity unchanged.
+
 ### Sprint 13 Patch 081
 
 - Correct Patch 080 transaction recovery, literal path handling, unrelated-state
@@ -14,12 +30,16 @@ The project follows semantic versioning once the first public release is cut.
   consistency.
 - Add a repository-facing Sprint 12 retrospective covering the completed loader
   and mitigation engineering program and its explicit remaining acceptance debt.
-- Execute a 30-pair ordered two-pop role-tuple pilot. Existing exact ordered-pop
-  facts produce zero incremental task gains, so no new runtime tuple record is
-  added.
-- Freeze the complete score/null partition with 25 mutations and 50 independent
-  gate rejections: 14 scored patterns, 11 null patterns, and three private role
-  facets retained null.
+- Add a test-only manifest for 30 ordered two-pop pairs. It declares existing
+  and proposed correctness with zero incremental gains across 24 development
+  and six confirmation-labeled tasks. The smoke validates the structure and
+  declarations but does not execute an independent task consumer, so the result
+  records a policy deferral rather than confirmatory measured task-value
+  evidence.
+- Retain the complete score/null partition by toggling 25 authority rows
+  against two distinct static fixtures, yielding 50 deterministic check
+  failures: 14 scored patterns, 11 null patterns, and three private role facets
+  retained null.
 - Preserve tool `0.1.0-dev`, schema `0.2.0`, all public output, semantic classes,
   scores, candidate capacity, deterministic ordering, and fail-closed behavior.
 
@@ -77,8 +97,7 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 080 closeout correction and private register-role
-  candidate.
+  acceptance of the current Patch 081 corrective candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -524,8 +543,9 @@ The project follows semantic versioning once the first public release is cut.
   argument 4 in `rcx` and Linux syscall argument 4 in `r10`. It changes no
   analyzer runtime source, NASM include, public field, schema `0.2.0`, semantic
   class, or score. Patch 078 was a Sprint 13 entry candidate whose review
-  required Patch 079; Patch 079's review then required Patch 080. Patch 080 is
-  the current acceptance candidate and retains public-field and score deferral.
+  required Patch 079; Patch 079's review then required Patch 080, whose review
+  required Patch 081. Patch 081 is the current corrective candidate and retains
+  public-field and score deferral.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
@@ -574,7 +594,7 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate; Sprint 12 remains pending complete Patch 080 acceptance.
+  entry candidate; Sprint 12 remains pending complete Patch 081 acceptance.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,

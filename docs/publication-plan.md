@@ -258,7 +258,7 @@ comparison status as interchangeable.
 
 The paper may describe deterministic ordinary-PHDR validity and explicit extended-numbering unsupported outcomes for the reviewed fixtures. It may not claim complete ELF extended-numbering support, complete loader correctness, PIE-versus-DSO precision, CET evidence, or universal parser safety from this patch.
 
-## Sprint 12 Patch 074 through Patch 079 publication boundary
+## Sprint 12 Patch 074 through Patch 081 publication boundary
 
 Patch 074 was a superseded Sprint 12 closeout candidate. Patch 075 introduced
 bounded private static text-relocation evidence, but its review required the
@@ -267,9 +267,10 @@ RUNPATH evidence. None of these candidate dispositions becomes accepted
 authority before the active native, container, delivery, and independent
 acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077's review required Patch 078, whose review
-required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
-Exact Patch 080 acceptance remains pending. Sprint 13 remains an entry candidate and
-activates only after complete Patch 080 acceptance.
+required the Patch 079 corrective and private task-value candidate, whose review
+required Patch 080; Patch 080's review required Patch 081. Exact Patch 081
+acceptance remains pending. Sprint 13 remains an entry candidate and activates
+only after complete Patch 081 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -323,4 +324,18 @@ publication-ineligible.
 
 ## Patch 081 publication note
 
-The ordered two-pop pilot may be reported as a negative design result: existing exact ordered-pop facts answered the frozen tasks, so no redundant runtime tuple representation was introduced. It is not publication-grade comparative evidence and supports no performance, coverage, or exploitability claim.
+The test-only ordered two-pop manifest may be reported as a policy deferral. It
+declares existing and proposed correctness with zero incremental gains, while
+the smoke validates structure and declarations without executing an independent
+task consumer. It is not confirmatory measured task-value or publication-grade
+comparative evidence and supports no performance, coverage, or exploitability
+claim.
+
+## Patch 082 publication boundary
+
+The three-generation producer evidence may support a bounded claim that current
+ordered-pair and score/null facts were checked against independently built
+analyzer outputs. The controlled coordinate preflight may support description
+of the calibration oracle. Neither artifact is publication-grade comparative
+evidence. Natural baseline runs, frozen commands, target identities, and the
+Sprint 15 campaign authority remain required before coverage interpretation.

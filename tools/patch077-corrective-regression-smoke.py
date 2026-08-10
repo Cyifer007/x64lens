@@ -339,17 +339,23 @@ def gitless_and_docker_context() -> tuple[int, int, int]:
 
         # Exercise Patch 070's Git-less branch against the exact source tree.
         old_root = patch070.ROOT
-        old_env = os.environ.get("X64LENS_SOURCE_MANIFEST")
+        old_manifest = os.environ.get("X64LENS_SOURCE_MANIFEST")
+        old_authority_root = os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT")
         patch070.ROOT = context / "source"
         os.environ["X64LENS_SOURCE_MANIFEST"] = str(context / "source-manifest.json")
+        os.environ["X64LENS_SOURCE_AUTHORITY_ROOT"] = str(context / "source")
         try:
             patch070.source_custody_probe()
         finally:
             patch070.ROOT = old_root
-            if old_env is None:
+            if old_manifest is None:
                 os.environ.pop("X64LENS_SOURCE_MANIFEST", None)
             else:
-                os.environ["X64LENS_SOURCE_MANIFEST"] = old_env
+                os.environ["X64LENS_SOURCE_MANIFEST"] = old_manifest
+            if old_authority_root is None:
+                os.environ.pop("X64LENS_SOURCE_AUTHORITY_ROOT", None)
+            else:
+                os.environ["X64LENS_SOURCE_AUTHORITY_ROOT"] = old_authority_root
         gitless_ok = 1
 
         (context / "source/extra").write_text("extra\n")

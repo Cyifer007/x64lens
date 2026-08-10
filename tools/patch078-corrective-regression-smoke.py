@@ -483,6 +483,11 @@ def test_make_level_docker_caller(tmp: Path) -> tuple[int, int]:
     default_authority = ROOT / ".local/docker-image-authority.json"
     before_default = default_authority.read_bytes() if default_authority.is_file() else None
     env = os.environ.copy()
+    # A recursive GNU Make carries command-line variable origins in MAKEFLAGS
+    # and MAKEOVERRIDES.  This isolated regression must not inherit a caller's
+    # authority path and overwrite it with synthetic image evidence.
+    for key in ("MAKEFLAGS", "MAKEOVERRIDES", "MFLAGS", "MAKELEVEL"):
+        env.pop(key, None)
     env.update(
         {
             "DOCKER": str(fake),

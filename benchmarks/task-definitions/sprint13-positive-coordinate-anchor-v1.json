@@ -1,0 +1,286 @@
+{
+  "evidence_class": "diagnostic",
+  "limitations": [
+    "Controlled modeled baseline relations do not prove the coordinate emitted by a natural external-tool run.",
+    "The gate authorizes only a controlled preflight; a fresh authenticated natural campaign remains required before comparative coverage interpretation.",
+    "No generic gadget-count, performance, RSS, or exploitability claim follows."
+  ],
+  "mutation_cases": [
+    {
+      "expected": "rejected",
+      "field": "sha256",
+      "id": "mutation-01",
+      "target_id": "et_exec-anchor-1"
+    },
+    {
+      "expected": "rejected",
+      "field": "role",
+      "id": "mutation-02",
+      "target_id": "et_exec-anchor-2"
+    },
+    {
+      "expected": "rejected",
+      "field": "p_vaddr",
+      "id": "mutation-03",
+      "target_id": "pie_et_dyn-anchor-1"
+    },
+    {
+      "expected": "rejected",
+      "field": "pattern_file_offset",
+      "id": "mutation-04",
+      "target_id": "pie_et_dyn-anchor-2"
+    }
+  ],
+  "oracle_positive_cases": [
+    {
+      "coordinate": "virtual_address",
+      "expected_status": "virtual_address",
+      "id": "positive-01",
+      "target_id": "et_exec-anchor-1"
+    },
+    {
+      "coordinate": "virtual_address",
+      "expected_status": "virtual_address",
+      "id": "positive-02",
+      "target_id": "et_exec-anchor-2"
+    },
+    {
+      "coordinate": "virtual_address",
+      "expected_status": "virtual_address",
+      "id": "positive-03",
+      "target_id": "pie_et_dyn-anchor-1"
+    },
+    {
+      "coordinate": "virtual_address",
+      "expected_status": "virtual_address",
+      "id": "positive-04",
+      "target_id": "pie_et_dyn-anchor-2"
+    },
+    {
+      "coordinate": "file_offset",
+      "expected_status": "file_offset",
+      "id": "positive-05",
+      "target_id": "shared_et_dyn-anchor-1"
+    },
+    {
+      "coordinate": "file_offset",
+      "expected_status": "file_offset",
+      "id": "positive-06",
+      "target_id": "shared_et_dyn-anchor-2"
+    },
+    {
+      "coordinate": "file_offset",
+      "expected_status": "file_offset",
+      "id": "positive-07",
+      "target_id": "et_exec-anchor-1"
+    },
+    {
+      "coordinate": "file_offset",
+      "expected_status": "file_offset",
+      "id": "positive-08",
+      "target_id": "et_exec-anchor-2"
+    }
+  ],
+  "patch": 82,
+  "publication_eligible": false,
+  "purpose": "Qualify coordinate-classification mechanics with source-valid controlled ELF anchors before a separate natural baseline campaign.",
+  "qualification_cells": [
+    {
+      "expected_status": "virtual_address",
+      "role": "et_exec",
+      "target_ids": [
+        "et_exec-anchor-1",
+        "et_exec-anchor-2"
+      ],
+      "tool": "ropgadget"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "pie_et_dyn",
+      "target_ids": [
+        "pie_et_dyn-anchor-1",
+        "pie_et_dyn-anchor-2"
+      ],
+      "tool": "ropgadget"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "shared_et_dyn",
+      "target_ids": [
+        "shared_et_dyn-anchor-1",
+        "shared_et_dyn-anchor-2"
+      ],
+      "tool": "ropgadget"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "et_exec",
+      "target_ids": [
+        "et_exec-anchor-1",
+        "et_exec-anchor-2"
+      ],
+      "tool": "ropper"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "pie_et_dyn",
+      "target_ids": [
+        "pie_et_dyn-anchor-1",
+        "pie_et_dyn-anchor-2"
+      ],
+      "tool": "ropper"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "shared_et_dyn",
+      "target_ids": [
+        "shared_et_dyn-anchor-1",
+        "shared_et_dyn-anchor-2"
+      ],
+      "tool": "ropper"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "et_exec",
+      "target_ids": [
+        "et_exec-anchor-1",
+        "et_exec-anchor-2"
+      ],
+      "tool": "ropr"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "pie_et_dyn",
+      "target_ids": [
+        "pie_et_dyn-anchor-1",
+        "pie_et_dyn-anchor-2"
+      ],
+      "tool": "ropr"
+    },
+    {
+      "expected_status": "virtual_address",
+      "role": "shared_et_dyn",
+      "target_ids": [
+        "shared_et_dyn-anchor-1",
+        "shared_et_dyn-anchor-2"
+      ],
+      "tool": "ropr"
+    }
+  ],
+  "qualification_contract": {
+    "anchors_per_cell": 2,
+    "eligible_cells": 9,
+    "global_interpretation_requires_all_cells": true,
+    "mutation_cases": 4,
+    "natural_campaign_required_before_comparative_claim": true,
+    "positive_oracle_cases": 8,
+    "required_qualified_cells": 9,
+    "semantic_negative_cases": 4
+  },
+  "roles": [
+    "et_exec",
+    "pie_et_dyn",
+    "shared_et_dyn"
+  ],
+  "schema": "x64lens-sprint13-positive-coordinate-anchor-v1",
+  "semantic_negative_cases": [
+    {
+      "baseline": [],
+      "expected_status": "insufficient_relation_evidence",
+      "id": "negative-empty",
+      "offsets": [
+        "0x0000000000000100"
+      ],
+      "virtual": [
+        "0x0000000000400100"
+      ]
+    },
+    {
+      "baseline": [
+        "0x0000000000000100"
+      ],
+      "expected_status": "ambiguous",
+      "id": "negative-ambiguous",
+      "offsets": [
+        "0x0000000000000100"
+      ],
+      "virtual": [
+        "0x0000000000000100"
+      ]
+    },
+    {
+      "baseline": [
+        "0x0000000000009999"
+      ],
+      "expected_status": "mismatch",
+      "id": "negative-mismatch",
+      "offsets": [
+        "0x0000000000000100"
+      ],
+      "virtual": [
+        "0x0000000000400100"
+      ]
+    },
+    {
+      "baseline": [
+        "0x0000000000000100"
+      ],
+      "expected_status": "insufficient_relation_evidence",
+      "id": "negative-missing-virtual",
+      "offsets": [
+        "0x0000000000000100"
+      ],
+      "virtual": []
+    }
+  ],
+  "sprint": 13,
+  "targets": [
+    {
+      "id": "et_exec-anchor-1",
+      "p_vaddr": 4194304,
+      "pattern_file_offset": 256,
+      "role": "et_exec",
+      "sha256": "90282927e7e8c6330376893ac0519824e86856a32d77f91def3f3ca72bbc9567"
+    },
+    {
+      "id": "et_exec-anchor-2",
+      "p_vaddr": 5242880,
+      "pattern_file_offset": 288,
+      "role": "et_exec",
+      "sha256": "3db11194f445b7422b07c6a48bdde8849668738ef6015f1a9702f6bc1b3888b2"
+    },
+    {
+      "id": "pie_et_dyn-anchor-1",
+      "p_vaddr": 1048576,
+      "pattern_file_offset": 256,
+      "role": "pie_et_dyn",
+      "sha256": "7af43bd6edd826faf3b1496e56fe72775beb3dfd29e0795cbe94555a5455e8b8"
+    },
+    {
+      "id": "pie_et_dyn-anchor-2",
+      "p_vaddr": 1114112,
+      "pattern_file_offset": 288,
+      "role": "pie_et_dyn",
+      "sha256": "28b9d03f1c9f392bf35e3ed4a7cd0da0f65d540035231b79ecdf32fe1c6249ed"
+    },
+    {
+      "id": "shared_et_dyn-anchor-1",
+      "p_vaddr": 2097152,
+      "pattern_file_offset": 256,
+      "role": "shared_et_dyn",
+      "sha256": "b582290e1d7c2e940793a151ccc2198507be60c0f2ece123dbee623004ac3f32"
+    },
+    {
+      "id": "shared_et_dyn-anchor-2",
+      "p_vaddr": 2162688,
+      "pattern_file_offset": 288,
+      "role": "shared_et_dyn",
+      "sha256": "b9e86cbfd2c20483983e46c3f3bd8ed0ee7943c0ca7cc9b8c6441b94ca75e5c1"
+    }
+  ],
+  "tools": [
+    "ropgadget",
+    "ropper",
+    "ropr"
+  ]
+}

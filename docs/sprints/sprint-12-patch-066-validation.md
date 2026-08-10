@@ -21,7 +21,7 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current validation expectations are in the
-[Patch 080 validation record](sprint-13-patch-080-validation.md); the
+[Patch 081 validation record](sprint-13-patch-081-validation.md); the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -173,7 +173,8 @@ deferral, and Patch 074 was a superseded closeout candidate. Patch 075
 introduced private static text-relocation evidence, but its review required the
 Patch 076 correction. Patch 076 implements distinct private RPATH/RUNPATH
 evidence. Patch 078's review required the Patch 079 corrective and private
-task-value candidate; Patch 079's review required Patch 080. Complete acceptance
-remains pending against the exact Patch 080 source.
+task-value candidate; Patch 079's review required Patch 080, whose review
+required Patch 081. Complete acceptance remains pending against the exact Patch
+081 source.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

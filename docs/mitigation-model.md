@@ -288,7 +288,7 @@ native and container environments. Environment agreement does not prove that
 compiler, linker, package, or source-lineage effects generalize, and static
 IBT/SHSTK properties still do not prove runtime CET enforcement.
 
-## Sprint 12 Patch 073 policy through Patch 080 candidate boundary
+## Sprint 12 Patch 073 policy through Patch 081 candidate boundary
 
 Patch 073 executes the non-reinterpretive policy gate and records `defer`.
 No role-derived PIE/DSO, IBT, or SHSTK field or text label is admitted. The
@@ -304,13 +304,14 @@ evidence, but its review required Patch 077, whose review required Patch 078.
 Patch 078 preserves the public deferral and adds only a private exact-pop role
 decision. Patch 079 qualified only private task-value evidence; Patch 080 retained
 three role facets in a private side-car and continued the public-reporting
-deferral.
+deferral. Patch 080's review required Patch 081, which changes no mitigation
+field or policy meaning.
 
 Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
 defects around the policy evidence. Static GNU properties remain private
 indicators and do not prove runtime CET enforcement. Corrected actual parity and
-complete Patch 080 acceptance remains pending.
+complete Patch 081 acceptance remains pending.
 
 ## Sprint 12 Patch 075 private text-relocation evidence
 
@@ -359,3 +360,11 @@ mitigation, vulnerability, safety property, or runtime enforcement state.
 The private register-role side-car is not mitigation evidence and changes no
 loader or mitigation field. PIE/DSO, IBT/SHSTK, text-relocation, RPATH, and
 RUNPATH public projection remain deferred under their existing authorities.
+
+## Patch 082 boundary
+
+Patch 082 adds no mitigation detector or public mitigation field. The producer
+and coordinate authorities validate development evidence around existing facts.
+Private PIE/DSO, GNU-property, text-relocation, RPATH, and RUNPATH facts remain
+unprojected; static evidence does not establish runtime CET enforcement or
+exploitability.

@@ -16,7 +16,7 @@ changing this GNU-property runtime boundary and implemented distinct private
 `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
 Patch 077 correction. Patch 078 then became the Sprint 13 entry candidate,
 and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
-[Patch 080 validation record](../sprints/sprint-13-patch-080-validation.md).
+[Patch 081 validation record](../sprints/sprint-13-patch-081-validation.md).
 
 ## Context
 
@@ -108,6 +108,6 @@ mapped ELF header or dynamic/string bytes.
 - The dependency-free, decoder-free, one-worker runtime profile is preserved.
 - Patch 069 added authenticated external reconciliation without changing public
   report fields. Patch 079 preserved those fields, but its review required Patch
-  080. Patch 073 executed the public-policy gate as `defer`; Patch 080 remains
-  the current acceptance candidate, and any future public field requires a new
-  separately reviewed decision.
+  080. Patch 080's review required Patch 081. Patch 073 executed the public-policy
+  gate as `defer`; Patch 081 remains the current acceptance candidate, and any
+  future public field requires a new separately reviewed decision.

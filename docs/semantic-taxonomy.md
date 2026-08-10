@@ -271,4 +271,18 @@ projection or score changes.
 
 ## Sprint 13 Patch 081 ordered two-pop decision
 
-The existing ordered two-pop `arg_control` family remains semantic-exact and retains `stack_pop_order`. A 30-pair task-value pilot found no incremental value from a second runtime tuple representation, so Patch 081 adds no semantic class, role record, reporter field, or score. This negative result preserves the existing family while avoiding redundant state.
+The existing ordered two-pop `arg_control` family remains semantic-exact and
+retains `stack_pop_order`. A test-only 30-pair manifest declares that existing
+and proposed representations answer the frozen tasks with zero incremental
+gains. Its smoke validates those declarations but does not execute an
+independent task consumer, so Patch 081 records a policy deferral rather than
+confirmatory measured task-value evidence. It adds no semantic class, role
+record, reporter field, or score.
+
+## Patch 082 ordered-pair and coordinate boundary
+
+Patch 082 adds no semantic class. The existing ordered two-pop family remains
+`arg_control` with exact `stack_pop_order`; three independent producer builds
+confirm all 30 represented ordered pairs. The zero-gain policy decision still
+defers redundant tuple state. Controlled coordinate anchors describe address
+representation and do not promote candidate semantics or decoded validity.

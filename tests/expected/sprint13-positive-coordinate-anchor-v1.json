@@ -1,0 +1,76 @@
+{
+  "anchors_per_cell": 2,
+  "cells": [
+    {
+      "anchors": 2,
+      "role": "et_exec",
+      "status": "virtual_address",
+      "tool": "ropgadget"
+    },
+    {
+      "anchors": 2,
+      "role": "pie_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropgadget"
+    },
+    {
+      "anchors": 2,
+      "role": "shared_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropgadget"
+    },
+    {
+      "anchors": 2,
+      "role": "et_exec",
+      "status": "virtual_address",
+      "tool": "ropper"
+    },
+    {
+      "anchors": 2,
+      "role": "pie_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropper"
+    },
+    {
+      "anchors": 2,
+      "role": "shared_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropper"
+    },
+    {
+      "anchors": 2,
+      "role": "et_exec",
+      "status": "virtual_address",
+      "tool": "ropr"
+    },
+    {
+      "anchors": 2,
+      "role": "pie_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropr"
+    },
+    {
+      "anchors": 2,
+      "role": "shared_et_dyn",
+      "status": "virtual_address",
+      "tool": "ropr"
+    }
+  ],
+  "comparative_coverage_claim_authorized": false,
+  "controlled_targets": 6,
+  "decision": "controlled_coordinate_preflight_qualified",
+  "mutation_rejections": 4,
+  "natural_campaign_qualified": false,
+  "patch": 82,
+  "positive_anchors": 18,
+  "positive_oracle_cases": 8,
+  "public_fields_added": 0,
+  "qualification_cells": 9,
+  "qualified_cells": 9,
+  "schema": "x64lens-sprint13-positive-coordinate-anchor-result-v1",
+  "schema_changed": false,
+  "score_changes": 0,
+  "semantic_changes": 0,
+  "semantic_negative_cases": 4,
+  "sprint": 13
+}

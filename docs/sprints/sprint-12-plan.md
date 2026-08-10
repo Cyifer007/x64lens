@@ -2,36 +2,29 @@
 
 ## Status
 
-Patch 081 retrospective and corrective candidate, pending complete acceptance.
-The Sprint 12 engineering scope is complete and its repository-facing
-retrospective is recorded in [`sprint-12-retro.md`](sprint-12-retro.md). Patch
-081 carries the remaining Patch 080 acceptance corrections into Sprint 13,
-executes a test-only ordered two-pop task-value pilot, and freezes the complete
-score/null partition. Public output, schema `0.2.0`, semantic classes, scores,
-and candidate capacity remain unchanged.
+Patch 082 corrective and exact-source acceptance candidate, pending complete acceptance.
+The Sprint 12 engineering scope and repository-facing retrospective remain
+complete. Patch 082 carries the remaining Patch 081 delivery, Docker source
+custody, nested authority, and producer-oracle corrections into Sprint 13. It
+also records a controlled coordinate preflight while preserving the requirement
+for a separate natural baseline campaign. Public output, schema `0.2.0`,
+semantic classes, scores, and candidate capacity remain unchanged.
 
 Sprint 12 remains the acceptance authority for its inherited loader and
-mitigation facts until Patch 081 passes fresh native, Docker, both private parity
+mitigation facts until Patch 082 passes fresh native, Docker, both private parity
 planes, strict ShellCheck, delivery integrity, and independent exact-source
-acceptance. The retrospective records the completed semester work without
-claiming that these later acceptance gates have already passed.
+acceptance. The retrospective records completed semester work without claiming
+that these later acceptance gates have already passed.
 
-Patches 062 through 080 carry ordinary PHDR validity, executable-overlap
-provenance and measured normalization deferral, private PIE/DSO and GNU-property
-evidence, authenticated natural and controlled strata, external reconciliation,
-private text-relocation and distinct RPATH/RUNPATH evidence, corrected parity
-protocols, the private role lattice, and the register-role task-value gate.
-Public schema `0.2.0` remains unchanged.
-
-Related chronology and current records:
+Related current records:
 - [ADR 0064](../adr/0064-patch077-correction-and-sprint13-register-role-entry.md)
 - [Patch 078 validation](sprint-13-patch-078-validation.md)
-- [ADR 0065](../adr/0065-patch078-correction-and-register-role-task-value.md)
-- [Patch 079 validation](sprint-13-patch-079-validation.md)
 - [ADR 0066](../adr/0066-patch079-correction-and-private-register-role-sidecar.md)
 - [Patch 080 validation](sprint-13-patch-080-validation.md)
 - [ADR 0067](../adr/0067-patch080-correction-and-ordered-two-pop-task-value.md)
 - [Patch 081 validation](sprint-13-patch-081-validation.md)
+- [ADR 0068](../adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md)
+- [Patch 082 validation](sprint-13-patch-082-validation.md)
 - [Sprint 12 retrospective](sprint-12-retro.md)
 
 ## Sprint goal
@@ -171,8 +164,9 @@ that would otherwise corrupt corpus labels or defensive triage.
     public-field, semantic-class, schema, or score change.
 20. **Patch 081:** correct the Patch 080 application, recovery, Git-less,
     Docker-provenance, helper-identity, and evidence-seal findings; record the
-    Sprint 12 retrospective; defer a redundant ordered two-pop runtime tuple
-    after a zero-gain task-value pilot; and retain all existing score/null cells.
+    Sprint 12 retrospective; retain a declarative ordered two-pop manifest and
+    defer the redundant runtime tuple as policy; and retain all existing
+    score/null cells.
 
 
 ## Current continuation disposition

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p081_candidate_pending_acceptance",
-  "closeout_patch": 81,
+  "status": "retrospective_recorded_and_sprint13_p082_candidate_pending_acceptance",
+  "closeout_patch": 82,
   "candidate_patches": [
     62,
     63,
@@ -23,10 +23,11 @@
     78,
     79,
     80,
-    81
+    81,
+    82
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p081-acceptance-smoke",
+  "acceptance_target": "sprint13-p082-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -70,7 +71,10 @@
     "external_natural_unavailable": 192,
     "publication_eligible": false,
     "performance_claim_authorized": false,
-    "positive_coordinate_anchors": 0
+    "positive_coordinate_anchors": 18,
+    "controlled_coordinate_preflight": "qualified",
+    "natural_coordinate_campaign_qualified": false,
+    "comparative_coverage_claim_authorized": false
   },
   "corrective_transaction_boundary": {
     "patch_bytes_pinned_across_check_and_mutation": true,
@@ -117,7 +121,14 @@
     "gitless_manifest_authenticated_before_helper_execution": true,
     "already_state_requires_exact_branch_and_no_untracked": true,
     "docker_context_and_source_digests_bound": true,
-    "portable_checksum_paths_required": true
+    "portable_checksum_paths_required": true,
+    "gitless_manifest_root_pair_required": true,
+    "docker_pristine_source_separated_from_build": true,
+    "nested_make_authority_isolated": true,
+    "producer_authority_independent_builds": true,
+    "portable_ordinary_extraction_modes": true,
+    "package_custody_modes_consistent": true,
+    "scoped_loose_helpers": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -131,8 +142,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 82,
-    "next_patch_tranche": "next-evidence-selected-semantic-or-consumer-gate",
+    "next_patch": 83,
+    "next_patch_tranche": "natural-positive-coordinate-campaign-and-consumer-contract-freeze",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -161,7 +172,19 @@
     "scored_pattern_rows": 14,
     "null_pattern_rows": 11,
     "score_null_mutations": 25,
-    "score_null_independent_rejections": 50
+    "score_null_independent_rejections": 100,
+    "ordered_two_pop_producer_generations": 3,
+    "ordered_two_pop_producer_pair_checks": 90,
+    "score_null_producer_generations": 3,
+    "controlled_coordinate_targets": 6,
+    "controlled_coordinate_positive_cases": 8,
+    "controlled_coordinate_mutation_rejections": 4,
+    "controlled_coordinate_semantic_negatives": 4,
+    "controlled_coordinate_cells": 9,
+    "controlled_coordinate_qualified_cells": 9,
+    "controlled_coordinate_positive_anchors": 18,
+    "natural_coordinate_campaign_qualified": false,
+    "comparative_coverage_claim_authorized": false
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -182,6 +205,8 @@
     "docs/sprints/sprint-13-patch-080-validation.md",
     "docs/sprints/sprint-12-retro.md",
     "docs/adr/0067-patch080-correction-and-ordered-two-pop-task-value.md",
-    "docs/sprints/sprint-13-patch-081-validation.md"
+    "docs/sprints/sprint-13-patch-081-validation.md",
+    "docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md",
+    "docs/sprints/sprint-13-patch-082-validation.md"
   ]
 }

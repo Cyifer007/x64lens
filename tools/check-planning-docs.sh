@@ -234,10 +234,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Patch 081 retrospective and corrective candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the Patch 081 retrospective and corrective candidate'
-grep -q '^Patch 081 ordered two-pop decision candidate; activation pending complete Patch 081 acceptance' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked as the Patch 081 ordered two-pop decision candidate'
+grep -q '^Patch 082 corrective and exact-source acceptance candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 082 corrective and exact-source acceptance candidate'
+grep -q '^Patch 082 producer and coordinate preflight candidate; activation pending complete Patch 082 acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 082 producer and coordinate preflight candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \
@@ -278,6 +278,12 @@ grep -q 'Patch 080' docs/sprints/sprint-13-plan.md \
     || fail 'Sprint 13 plan does not record the private role-policy tranche'
 grep -q 'Patch 081' docs/sprints/sprint-13-plan.md \
     || fail 'Sprint 13 plan does not record the ordered two-pop decision tranche'
+grep -q 'Patch 082' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 plan does not record the producer and coordinate-preflight tranche'
+grep -q 'sprint-13-patch-082-validation.md' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link Patch 082 validation'
+grep -q 'ADR 0068' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 plan does not link ADR 0068'
 grep -q 'sprint-12-retro.md' docs/sprints/sprint-12-plan.md \
     || fail 'Sprint 12 plan does not link the retrospective'
 grep -q 'sprint-13-patch-081-validation.md' docs/sprints/sprint-12-plan.md \
