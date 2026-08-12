@@ -4,7 +4,7 @@
 
 Historical implementation candidate. Patch 080 did not complete acceptance; its
 review required Patch 081. Current requirements are recorded in the
-[Patch 083 validation record](sprint-13-patch-083-validation.md).
+[Patch 084 validation record](sprint-13-patch-084-validation.md).
 
 ## Purpose
 

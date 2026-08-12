@@ -2,7 +2,8 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, campaign, parity, and independent acceptance gates.
+Implementation candidate pending exact-source native, Docker, ABI-closure,
+campaign, parity, producer, delivery, and independent acceptance gates.
 
 ## Scope
 
@@ -17,7 +18,9 @@ base tree: 1369bf61a5381adb129198db316f20e281a91c07
 tracked state: clean
 ```
 
-The committed base contains one generated ordered-pair binary that Patch 084 removes from tracked source.
+The committed base tracks one generated ordered-pair binary in conflict with
+the tracked-source boundary. Patch 084 removes it from tracked source and
+reserves its path for generated output.
 
 ## Focused validation
 
@@ -55,11 +58,13 @@ make validation-smoke
 SHELLCHECK_STRICT=1 make shellcheck-smoke
 ```
 
-The fresh analyzer is required for the 96-command ABI-role public-closure gate:
+The fresh analyzer is required for the 96-command ABI-role closure gate that
+confirms unchanged public text and JSON:
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<P084_TREE> \
-S13_ABI_ROLE_RESULT_DIR=/absolute/absent/abi-role-result \
+mkdir -p .local/p084-results
+S13_EXPECTED_CANDIDATE_TREE=178f1d1c93a5a05fba5a77af2c378e63e5dc017b \
+S13_ABI_ROLE_RESULT_DIR=./.local/p084-results/abi-role-closure \
   make sprint13-abi-role-query-smoke
 ```
 
@@ -68,18 +73,23 @@ S13_ABI_ROLE_RESULT_DIR=/absolute/absent/abi-role-result \
 The campaign retains terminal states even when comparison qualification fails:
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<P084_TREE> \
-S13_NATURAL_COORDINATE_RESULT_DIR=/absolute/absent/natural-result \
+mkdir -p .local/p084-results
+S13_EXPECTED_CANDIDATE_TREE=178f1d1c93a5a05fba5a77af2c378e63e5dc017b \
+S13_NATURAL_COORDINATE_RESULT_DIR=./.local/p084-results/natural-structural \
   make sprint13-natural-coordinate-campaign-structural
 ```
 
-This requires twelve selected targets, 48 tool executions, nine terminal cell dispositions, and 108 controls. It does not require nine qualified cells and authorizes no comparative claim.
+This requires twelve selected targets, 48 tool executions, nine terminal cell
+dispositions, and 108 controls. The retained P083 result has zero qualified,
+five insufficient, and four unavailable cells. Structural completion does not
+require nine qualified cells and authorizes no comparative claim.
 
 The stricter historical comparison-qualification entry point remains:
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<P084_TREE> \
-S13_NATURAL_COORDINATE_RESULT_DIR=/absolute/absent/qualified-result \
+mkdir -p .local/p084-results
+S13_EXPECTED_CANDIDATE_TREE=178f1d1c93a5a05fba5a77af2c378e63e5dc017b \
+S13_NATURAL_COORDINATE_RESULT_DIR=./.local/p084-results/natural-qualified \
   make sprint13-natural-coordinate-campaign
 ```
 
@@ -88,7 +98,7 @@ That command fails after retaining the result unless all nine cells qualify.
 ## Docker and parity validation
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<P084_TREE> make docker-build
+S13_EXPECTED_CANDIDATE_TREE=178f1d1c93a5a05fba5a77af2c378e63e5dc017b make docker-build
 make docker-run-root-smoke
 make docker-source-custody-smoke
 make docker-test
@@ -102,10 +112,11 @@ The immutable source plane must remain root-owned and unwritable to the runtime 
 ## Complete acceptance candidate
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<P084_TREE> \
-S13_ABI_ROLE_RESULT_DIR=/absolute/absent/abi-role-result \
-S13_NATURAL_COORDINATE_RESULT_DIR=/absolute/absent/natural-result \
-S13_PRODUCER_RESULT_DIR=/absolute/absent/producer-result \
+mkdir -p .local/p084-results
+S13_EXPECTED_CANDIDATE_TREE=178f1d1c93a5a05fba5a77af2c378e63e5dc017b \
+S13_ABI_ROLE_RESULT_DIR=./.local/p084-results/abi-role-acceptance \
+S13_NATURAL_COORDINATE_RESULT_DIR=./.local/p084-results/natural-acceptance \
+S13_PRODUCER_RESULT_DIR=./.local/p084-results/producer-acceptance \
   make sprint13-p084-acceptance-smoke
 ```
 
@@ -127,4 +138,4 @@ sprint13-p084-acceptance-smoke: ok patch=84 sprint12=closed sprint13=active natu
 
 ## Evidence classification
 
-Cloud-supported static and corrective checks do not substitute for a fresh NASM build, strict ShellCheck, Docker execution, parity, or the complete natural campaign. Diagnostic terminal states remain publication-ineligible.
+Static and corrective checks alone do not substitute for a fresh NASM build, strict ShellCheck, Docker execution, parity, or the complete natural campaign. Diagnostic terminal states remain publication-ineligible.

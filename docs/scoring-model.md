@@ -233,6 +233,8 @@ Patch 082 does not recalibrate a score. It implements a gate requiring each of
 the 25 exact-pattern score/null cells to agree with the exact catalog and reports
 from three independently built analyzers. A later exact-source P082 run rejected
 each toggle through the catalog and all three producer generations. P083
-requires a fresh producer run bound to its own tree. Existing scores remain
+subsequently required a fresh producer run bound to its own tree; its review
+returned the current P084 corrective candidate, whose acceptance likewise
+requires a fresh producer run bound to the exact P084 tree. Existing scores remain
 relative utility hypotheses, not exploitability values: 14 cells retain numeric
 scores, 11 retain null, and all three private role facets remain null.

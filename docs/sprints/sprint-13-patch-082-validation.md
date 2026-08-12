@@ -36,8 +36,9 @@ P082 acceptance:             not accepted; superseded by P083
   remained blocked or incomplete.
 - **Accepted** applies here to the Patch 081 findings used as correction inputs,
   not to Patch 081 or Patch 082 as a product checkpoint.
-- **Pending** now applies to the distinct P083 natural campaign and complete
-  independent exact-source P083 acceptance, not to historical P082 acceptance.
+- **Historical handoff** applied to the distinct P083 natural campaign and P083
+  exact-source review, not to historical P082 acceptance. That review returned
+  the current P084 corrective candidate.
 
 ## Focused commands
 

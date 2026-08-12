@@ -31,7 +31,7 @@
     "The 96-command closure proves disabled public projection only for controlled inputs and the authenticated analyzer.",
     "Natural role incidence and representation cost remain separate measurement gates."
   ],
-  "patch": 84,
+  "patch": 85,
   "public_closure": {
     "closure_denominator": 96,
     "command_count": 4,

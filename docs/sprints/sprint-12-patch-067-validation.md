@@ -16,7 +16,7 @@ Patch 078, whose review required the Patch 079 corrective and private task-value
 [Patch 068 plan](sprint-12-patch-068-validation.md) and
 [Patch 069 plan](sprint-12-patch-069-validation.md) preserve the intervening
 historical boundaries. Current validation expectations are recorded in the
-[Patch 083 validation record](sprint-13-patch-083-validation.md). The
+[Patch 084 validation record](sprint-13-patch-084-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary. The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its

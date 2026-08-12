@@ -4,8 +4,9 @@
 
 Historical candidate. Patch 078 was superseded by the Patch 079 corrective and
 private task-value candidate; Patch 079 was superseded by Patch 080, and Patch
-080 by Patch 081. Patch 081 was not accepted; Patch 082 was not accepted; Patch 083 is the current candidate,
-pending independent exact-source acceptance.
+080 by Patch 081. Patches 081 and 082 were not accepted. Independent review of
+Patch 083 returned the bounded corrections now carried by the current Patch 084
+candidate, pending independent exact-source acceptance.
 
 ## Purpose
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 084 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 085 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -50,18 +50,18 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "retrospective_recorded_and_sprint13_p084_candidate_pending_acceptance",
-            "Sprint 12 retrospective must remain pending P084 acceptance",
+            authority.get("status") == "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
+            "Sprint 12 retrospective must remain pending P085 acceptance",
         )
-        exact_int(authority.get("current_patch"), 84, "current_patch")
+        exact_int(authority.get("current_patch"), 85, "current_patch")
         exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
-        exact_int(authority.get("prior_corrective_patch"), 83, "prior corrective patch")
-        exact_int(authority.get("next_patch"), 85, "next_patch")
+        exact_int(authority.get("prior_corrective_patch"), 84, "prior corrective patch")
+        exact_int(authority.get("next_patch"), 86, "next_patch")
         require(
-            authority.get("next_patch_tranche") == "frozen-natural-replay-and-unsupported-terminal-attribution",
+            authority.get("next_patch_tranche") == "full-vector-abi-role-representation-equivalence",
             "next tranche",
         )
-        require(authority.get("acceptance_target") == "sprint13-p084-acceptance-smoke", "acceptance target")
+        require(authority.get("acceptance_target") == "sprint13-p085-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
         reference = authority.get("reference_profile")
@@ -284,6 +284,53 @@ def main() -> int:
         require(patch084.get("malformed_parse") == "no_partial_stdout", "P084 malformed boundary")
         require(patch084.get("natural_coordinate_campaign_status") == "retained_terminal_diagnostic_zero_qualified", "P084 natural status")
 
+        patch085 = authority.get("patch085_boundary")
+        require(isinstance(patch085, dict), "Patch 085 boundary")
+        for key in {
+            "complete_patch084_correction",
+            "gitless_full_topology_reauthenticated",
+            "source_recovery_initial_open_residue_removed",
+            "source_recovery_posthash_topology_reauthenticated",
+            "explicit_candidate_tree_authority_required",
+            "abi_semantic_disjointness_required",
+            "abi_analyzer_copy_pinned",
+            "abi_target_reauthentication_per_command",
+            "abi_no_replace_publication",
+        }:
+            exact_bool(patch085.get(key), True, key)
+        for key in {
+            "runtime_source_include_schema_change",
+            "natural_replay_reroll",
+            "comparative_coverage_claim_authorized",
+        }:
+            exact_bool(patch085.get(key), False, key)
+        for key, expected in {
+            "runtime_records_added": 0,
+            "public_fields_added": 0,
+            "semantic_classifier_changes": 0,
+            "score_changes": 0,
+            "candidate_capacity": 4096,
+            "lifecycle_floors": 24,
+            "lifecycle_successor_deltas": 5,
+            "lifecycle_mutations": 13,
+            "lifecycle_new_canonical_events": 0,
+            "abi_role_queries": 36,
+            "abi_role_development_queries": 24,
+            "abi_role_confirmation_queries": 12,
+            "abi_role_public_closures": 96,
+            "natural_replay_targets": 12,
+            "natural_replay_tool_executions": 48,
+            "natural_terminal_execution_outcomes": 48,
+            "natural_terminal_relation_outcomes": 48,
+            "natural_terminal_observations": 36,
+            "natural_terminal_cells": 9,
+            "natural_terminal_precedence_mutations": 16,
+        }.items():
+            exact_int(patch085.get(key), expected, key)
+        require(patch085.get("candidate_4097") == "exit_6_before_stdout", "P085 capacity boundary")
+        require(patch085.get("malformed_parse") == "no_partial_stdout", "P085 malformed boundary")
+        require(patch085.get("natural_replay_campaign_id") == "s13-p085-natural-frozen-replay-v1", "P085 replay campaign id")
+
         preserved = authority.get("preserved_authorities")
         require(isinstance(preserved, dict), "preserved authorities")
         require(preserved.get("executable_mapping") == "PT_LOAD_plus_PF_X_file_backed_ranges", "executable mapping")
@@ -299,18 +346,18 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 084 corrective and exact-source acceptance candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 084 correction and private ABI-role contract candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 085 corrective, frozen replay, and terminal-attribution candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 085 correction, frozen replay, and layered terminal-attribution candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=84 textrel=private rpath=private runpath=private roles=16 "
+        "patch=85 textrel=private rpath=private runpath=private roles=16 "
         "qualified_private_facets=3 retained_facets=2 role_record_bytes=8 "
         "role_arena_bytes=32768 analysis_arena_bytes=884736 public_fields_added=0 "
-        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=85"
+        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=86"
     )
     return 0
 

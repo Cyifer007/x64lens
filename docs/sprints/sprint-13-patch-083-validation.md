@@ -2,11 +2,13 @@
 
 ## Status
 
-Implementation candidate with artifact-backed corrective and natural-campaign
-gate definitions. Exact-source native, Docker, producer, natural-campaign,
-parity, delivery, documentation, and independent acceptance remain pending
-against one Patch 083 candidate tree. Environment-specific unavailability is
-blocked evidence, not acceptance.
+Historical implementation candidate. Independent exact-source review did not
+accept Patch 083 and returned the bounded corrections now carried by Patch 084.
+The retained P083 natural campaign is structurally complete but
+comparison-unqualified: twelve targets, 48 executions, nine terminal cells,
+and 108 controls, with zero qualified, five insufficient, and four unavailable
+cells. Environment-specific unavailability remains blocked evidence, not
+acceptance.
 
 ## Purpose
 
@@ -49,10 +51,11 @@ A retained producer execution must bind all three independent builds to the
 exact candidate tree:
 
 ```bash
+mkdir -p .local/p083-results
 expected_candidate_tree=39671c27342a1c093de2e37806e58bdf209677d2
 test "$(git write-tree)" = "$expected_candidate_tree"
 S13_EXPECTED_CANDIDATE_TREE="$expected_candidate_tree" \
-S13_PRODUCER_RESULT_DIR=/absolute/absent/result \
+S13_PRODUCER_RESULT_DIR=./.local/p083-results/producer \
   make sprint13-producer-authority-smoke
 ```
 
@@ -80,7 +83,8 @@ The complete campaign requires installed ROPgadget, Ropper, ropr, GNU readelf,
 dpkg-query, and the freshly built analyzer:
 
 ```bash
-S13_NATURAL_COORDINATE_RESULT_DIR=/absolute/absent/result \
+mkdir -p .local/p083-results
+S13_NATURAL_COORDINATE_RESULT_DIR=./.local/p083-results/natural \
   make sprint13-natural-coordinate-campaign
 ```
 
@@ -107,10 +111,11 @@ make test
 make validation-smoke
 make shellcheck-smoke
 make docker-validation-smoke
+mkdir -p .local/p083-results
 expected_candidate_tree=39671c27342a1c093de2e37806e58bdf209677d2
 test "$(git write-tree)" = "$expected_candidate_tree"
-S13_NATURAL_COORDINATE_RESULT_DIR=/absolute/absent/result \
-S13_PRODUCER_RESULT_DIR=/absolute/absent/producer \
+S13_NATURAL_COORDINATE_RESULT_DIR=./.local/p083-results/natural-acceptance \
+S13_PRODUCER_RESULT_DIR=./.local/p083-results/producer-acceptance \
 S13_EXPECTED_CANDIDATE_TREE="$expected_candidate_tree" \
   make sprint13-p083-acceptance-smoke
 ```
@@ -144,10 +149,8 @@ replace independent exact-source review.
 
 ## Patch 084 handoff
 
-Patch 084 is conditional on the independent exact-source P083 result. If review
-returns corrections, P084 carries only the smallest corrective tranche. If P083
-is accepted, P084 may begin separately reviewed reconciliation of the retained
-natural-coordinate terminal states and freeze a named ABI-role consumer/
-equivalence contract. Neither branch authorizes a public-field, semantic, score,
-schema, capacity, decoder, concurrency, comparative-coverage, performance, or
-exploitability change.
+Independent review of Patch 083 returned the bounded corrections now carried by
+the P084 implementation candidate. P084 preserves the retained natural-coordinate
+terminal states and freezes the private ABI-role query contract. It authorizes
+no public field, semantic, score, schema, capacity, decoder, concurrency,
+comparative-coverage, performance, or exploitability change.

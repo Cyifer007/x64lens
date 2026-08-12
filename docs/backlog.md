@@ -716,8 +716,8 @@ tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
-required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 083 acceptance
-remains pending.
+required Patch 080, which was superseded by Patch 081. Independent exact-source
+Patch 085 acceptance remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
@@ -733,8 +733,9 @@ RPATH/RUNPATH evidence. Patch 076's review required correction. Patch 077 was
 a Sprint 12 reconciliation candidate; Patch 078 followed as a Sprint 13 entry
 candidate, and its review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review
-required Patch 081. Patches 081 and 082 were not accepted; Patch 083 is the
-current exact-source implementation candidate.
+required Patch 081. Patches 081 and 082 were not accepted. Independent review
+of Patch 083 returned the bounded corrections now carried by the current Patch
+085 exact-source implementation candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -760,7 +761,7 @@ current exact-source implementation candidate.
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 083 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 085 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -849,18 +850,6 @@ current exact-source implementation candidate.
   correction inputs to Patch 083.
 
 
-### Sprint 13 Patch 084 checkpoint
-
-- [x] Correct post-effect repository/parent rebinding and corrupt-recovery residue.
-- [x] Bind Docker source construction and natural evidence to the exact candidate tree.
-- [x] Keep authenticated Docker source read-only to the runtime user.
-- [x] Separate natural structural completion from nine-cell comparison qualification.
-- [x] Retain the complete P083 result: 12 targets, 48 executions, 108 controls, zero qualified, five insufficient, four unavailable cells.
-- [x] Freeze 36 private ABI-role queries, including 12 source-disjoint confirmations, and define 96 public disabled-output closures.
-- [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
-- [ ] Complete fresh native, Docker, ABI closure, producer, parity, delivery, and independent Lane A acceptance.
-- [ ] After acceptance, replay the same frozen natural targets and attribute every unsupported terminal outcome privately.
-
 ### Sprint 13 Patch 083 checkpoint
 
 - [x] Exact committed base and check-to-effect patch-path binding.
@@ -869,15 +858,35 @@ current exact-source implementation candidate.
 - [x] Exact-tree and exact-mode three-generation producer custody.
 - [x] Non-root Docker run-root lifecycle while `/work` remains pristine.
 - [x] Outcome-blind natural coordinate campaign implementation and 108-control self-test.
-- [ ] Complete retained natural campaign on a host with all baseline tools and twelve selected role targets.
-- [ ] Exact-source native, Docker, producer, parity, delivery, and independent acceptance.
+- [x] Complete and retain the natural campaign with twelve selected role targets;
+  its zero-qualified result remains diagnostic and comparison-unqualified.
+- [x] Record the independent review outcome as the bounded corrections carried
+  by Patch 084.
 
-### Sprint 13 Patch 084 handoff
 
-- [ ] Carry only the smallest corrective tranche if independent P083 review
-  returns corrections.
-- [ ] Otherwise reconcile retained natural-coordinate terminal states and
-  freeze a separately reviewed named ABI-role consumer/equivalence contract.
+### Sprint 13 Patch 085 checkpoint
+
+- [x] Enforce all 24 lifecycle floors and retain an explicit Patch 084 zero-count delta without event 88 or new canonical identifiers.
+- [x] Require semantically disjoint ABI development and confirmation queries, a pinned analyzer copy, per-command target reauthentication, and no-replace evidence publication.
+- [x] Recompute natural campaign structure from exact membership and reauthenticate every target before and after each tool execution.
+- [x] Freeze the exact twelve predecessor target hashes and four tool identities for a 48-execution no-reroll replay.
+- [x] Layer private terminal attribution over 48 execution outcomes, 48 relation outcomes, 36 observations, and nine cells with 16 precedence mutations.
+- [ ] Complete fresh native, Docker, frozen replay, producer, ABI closure, both parity planes, delivery, and independent exact-source acceptance.
+- [ ] After acceptance, measure full-vector ABI-role representation equivalence without public projection or score changes.
+
+### Sprint 13 Patch 084 checkpoint
+
+- [x] Correct post-effect repository/parent rebinding and corrupt-recovery residue.
+- [x] Bind Docker source construction and natural evidence to the exact candidate tree.
+- [x] Keep authenticated Docker source read-only to the runtime user.
+- [x] Separate natural structural completion from nine-cell comparison qualification.
+- [x] Retain the complete P083 result: 12 targets, 48 executions, 108 controls, zero qualified, five insufficient, four unavailable cells.
+- [x] Freeze 36 private ABI-role queries, including 12 source-disjoint
+  confirmations, and define 96 disabled-output closures confirming unchanged
+  public text and JSON.
+- [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
+- [ ] Complete fresh native, Docker, ABI closure, producer, parity, delivery, and independent exact-source acceptance.
+- [ ] After acceptance, replay the same frozen natural targets and attribute every unsupported terminal outcome privately.
 - [ ] Preserve the 12-target, 48-execution, nine-cell, 108-control no-reroll
   diagnostic boundary without authorizing public fields, semantics, scores,
   schema or capacity changes, decoder or concurrency work, or comparative

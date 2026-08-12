@@ -269,9 +269,9 @@ acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 083 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 084 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 083 acceptance.
+only after complete Patch 084 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -348,6 +348,13 @@ and the Sprint 15 campaign authority remain required before coverage
 interpretation.
 
 
+## Patch 083 publication boundary
+
+Natural coordinate results may document whether address-coordinate calibration
+is available for the selected installed-package stratum. They are not a coverage
+comparison, prevalence estimate, or performance result and cannot be merged into
+the Sprint 15-frozen campaign.
+
 ## Patch 084 publication boundary
 
 Patch 084 adds no publication claim. The retained natural campaign is complete
@@ -356,10 +363,3 @@ insufficient and four are unavailable. It cannot support comparative coverage,
 performance, parity, prevalence, or superiority claims. The ABI-role query and
 lifecycle authorities are private engineering evidence and are not paper result
 tables.
-
-## Patch 083 publication boundary
-
-Natural coordinate results may document whether address-coordinate calibration
-is available for the selected installed-package stratum. They are not a coverage
-comparison, prevalence estimate, or performance result and cannot be merged into
-the Sprint 15-frozen campaign.

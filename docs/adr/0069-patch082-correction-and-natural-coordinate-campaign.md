@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted as the Patch 083 implementation decision; exact-source acceptance remains pending.
+Accepted as the historical Patch 083 implementation decision. Independent
+exact-source review of Patch 083 returned the bounded corrections now carried by
+Patch 084; P083 itself was not accepted.
 
 ## Context
 

@@ -13,6 +13,7 @@ The tool does not change runtime semantics, scores, schema, or public output.
 from __future__ import annotations
 
 import argparse
+import ctypes
 import hashlib
 import importlib.util
 import json
@@ -145,7 +146,7 @@ def validate_authority(authority: Any) -> dict[str, Any]:
         "contract", "claim_boundary", "source_authorities", "limitations",
     }, "authority")
     require(authority["schema"] == "x64lens-sprint13-abi-role-query-authority-v1", "authority schema changed")
-    require(authority["sprint"] == 13 and authority["patch"] == 84, "authority identity changed")
+    require(authority["sprint"] == 13 and authority["patch"] == 85, "authority identity changed")
     require(authority["evidence_class"] == "diagnostic" and authority["publication_eligible"] is False, "authority evidence boundary changed")
 
     masks = authority["register_masks"]
@@ -159,6 +160,15 @@ def validate_authority(authority: Any) -> dict[str, Any]:
     require(sum(item["split"] == "development" for item in queries) == 24, "development query denominator changed")
     require(sum(item["split"] == "confirmation" for item in queries) == 12, "confirmation query denominator changed")
     require({item["expected"] for item in queries} <= {"present", "absent", "unknown"}, "query state vocabulary changed")
+    def signature(item: dict[str, Any]) -> tuple[Any, ...]:
+        return (
+            item.get("candidate_state"), item.get("register"), item.get("facet"),
+            item.get("argument_index"), item.get("expected"),
+        )
+    development = {signature(item) for item in queries if item["split"] == "development"}
+    confirmation = {signature(item) for item in queries if item["split"] == "confirmation"}
+    require(len(development) == 24 and len(confirmation) == 12, "query semantic identities are not unique")
+    require(not development & confirmation, "development and confirmation query semantics overlap")
 
     closure = exact_keys(authority["public_closure"], {
         "targets", "commands", "target_count", "command_count",
@@ -239,7 +249,7 @@ def contract_result(authority: dict[str, Any]) -> dict[str, Any]:
     result = {
         "schema": "x64lens-sprint13-abi-role-query-result-v1",
         "sprint": 13,
-        "patch": 84,
+        "patch": 85,
         "registers": 16,
         "queries": 36,
         "development_queries": 24,
@@ -299,12 +309,105 @@ def nested_forbidden(value: Any, tokens: tuple[str, ...]) -> bool:
     return False
 
 
-def tool_identity(path: Path) -> dict[str, Any]:
-    path = path.resolve(strict=True)
-    meta = path.stat()
-    require(stat.S_ISREG(meta.st_mode) and meta.st_mode & stat.S_IXUSR, "analyzer is not one executable regular file")
-    return {"sha256": sha256_file(path), "size_bytes": meta.st_size, "mode": f"{stat.S_IMODE(meta.st_mode):04o}"}
+def file_fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int, int, int, int, int]:
+    return (
+        metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_nlink,
+        metadata.st_uid, metadata.st_gid, metadata.st_size,
+        metadata.st_mtime_ns, metadata.st_ctime_ns,
+    )
 
+
+def regular_identity(
+    path: Path,
+    *,
+    expected_mode: int | None = None,
+    expected_sha256: str | None = None,
+    require_executable: bool = False,
+) -> dict[str, Any]:
+    absolute = Path(os.path.abspath(path))
+    parent_fd = os.open(absolute.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    fd = -1
+    try:
+        fd = os.open(absolute.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent_fd)
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, f"unsafe regular authority: {absolute}")
+        if expected_mode is not None:
+            require(stat.S_IMODE(before.st_mode) == expected_mode, f"authority mode changed: {absolute}")
+        if require_executable:
+            require(bool(before.st_mode & stat.S_IXUSR), f"authority is not executable: {absolute}")
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+            total += len(chunk)
+        after = os.fstat(fd)
+        visible = os.stat(absolute.name, dir_fd=parent_fd, follow_symlinks=False)
+        require(file_fingerprint(before) == file_fingerprint(after) == file_fingerprint(visible),
+                f"authority changed while hashing: {absolute}")
+        observed_sha = digest.hexdigest()
+        require(total == before.st_size, f"authority size changed: {absolute}")
+        if expected_sha256 is not None:
+            require(observed_sha == expected_sha256, f"authority digest changed: {absolute}")
+        return {
+            "sha256": observed_sha,
+            "size_bytes": total,
+            "mode": f"{stat.S_IMODE(before.st_mode):04o}",
+            "device": before.st_dev,
+            "inode": before.st_ino,
+            "links": before.st_nlink,
+            "mtime_ns": before.st_mtime_ns,
+            "ctime_ns": before.st_ctime_ns,
+        }
+    finally:
+        if fd >= 0:
+            os.close(fd)
+        os.close(parent_fd)
+
+
+def copy_executable_authority(source: Path, destination: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    source_identity = regular_identity(source, require_executable=True)
+    source_fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    target_fd = os.open(
+        destination,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+        0o500,
+    )
+    try:
+        while True:
+            chunk = os.read(source_fd, 1024 * 1024)
+            if not chunk:
+                break
+            view = memoryview(chunk)
+            while view:
+                written = os.write(target_fd, view)
+                require(written > 0, "short analyzer copy")
+                view = view[written:]
+        os.fchmod(target_fd, 0o555)
+        os.fsync(target_fd)
+    finally:
+        os.close(target_fd)
+        os.close(source_fd)
+    executed_identity = regular_identity(destination, expected_mode=0o555, expected_sha256=source_identity["sha256"], require_executable=True)
+    return source_identity, executed_identity
+
+
+def rename_noreplace(source: Path, destination: Path) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    function = getattr(libc, "renameat2", None)
+    require(function is not None, "renameat2 is unavailable")
+    function.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    function.restype = ctypes.c_int
+    result = function(-100, os.fsencode(source), -100, os.fsencode(destination), 1)
+    if result != 0:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error), destination)
+
+
+def tool_identity(path: Path) -> dict[str, Any]:
+    return regular_identity(path, require_executable=True)
 
 def source_authority(root: Path, manifest_path: Path, expected_tree: str) -> dict[str, Any]:
     require(re.fullmatch(r"[0-9a-f]{40}", expected_tree) is not None, "invalid expected candidate tree")
@@ -322,14 +425,17 @@ def source_authority(root: Path, manifest_path: Path, expected_tree: str) -> dic
 
 
 def run_closures(args: argparse.Namespace, authority: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
-    analyzer = args.analyzer.resolve(strict=True)
+    analyzer_source = args.analyzer.resolve(strict=True)
     result_dir = Path(os.path.abspath(args.result_dir))
-    require(not result_dir.exists(), "ABI-role result directory already exists")
+    require(not result_dir.exists() and not result_dir.is_symlink(), "ABI-role result directory already exists")
+    require(result_dir.parent.is_dir() and not result_dir.parent.is_symlink(), "ABI-role result parent is missing or linked")
     source = source_authority(args.source_root, args.source_manifest, args.expected_candidate_tree)
     stage = Path(tempfile.mkdtemp(prefix=f".{result_dir.name}.stage.", dir=result_dir.parent))
     tokens = tuple(authority["public_closure"]["forbidden_public_tokens"])
     closures: list[dict[str, Any]] = []
     try:
+        analyzer = stage / "analyzer"
+        analyzer_source_identity, analyzer_identity = copy_executable_authority(analyzer_source, analyzer)
         target_root = stage / "targets"
         output_root = stage / "outputs"
         target_root.mkdir(mode=0o755)
@@ -339,7 +445,12 @@ def run_closures(args: argparse.Namespace, authority: dict[str, Any], contract: 
             path.write_bytes(payload)
             path.chmod(0o444)
             target_sha = hashlib.sha256(payload).hexdigest()
+            frozen_target = regular_identity(path, expected_mode=0o444, expected_sha256=target_sha)
             for command in COMMANDS:
+                require(regular_identity(analyzer, expected_mode=0o555, expected_sha256=analyzer_identity["sha256"], require_executable=True) == analyzer_identity,
+                        "executed analyzer identity changed before closure")
+                require(regular_identity(path, expected_mode=0o444, expected_sha256=target_sha) == frozen_target,
+                        f"target identity changed before closure: {target['id']}/{command}")
                 if command == "info":
                     argv = [os.fspath(analyzer), "info", os.fspath(path)]
                 elif command == "mitigations":
@@ -349,6 +460,10 @@ def run_closures(args: argparse.Namespace, authority: dict[str, Any], contract: 
                 else:
                     argv = [os.fspath(analyzer), "analyze", "--format", "json", "--max-depth", "4", os.fspath(path)]
                 cp = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=10)
+                require(regular_identity(path, expected_mode=0o444, expected_sha256=target_sha) == frozen_target,
+                        f"target identity changed after closure: {target['id']}/{command}")
+                require(regular_identity(analyzer, expected_mode=0o555, expected_sha256=analyzer_identity["sha256"], require_executable=True) == analyzer_identity,
+                        "executed analyzer identity changed after closure")
                 require(cp.returncode == 0, f"public closure failed: {target['id']}/{command}: {cp.stderr[-1000:]!r}")
                 require(len(cp.stdout) <= MAX_OUTPUT and len(cp.stderr) <= MAX_OUTPUT, "public closure output exceeded bound")
                 if command.endswith("_json"):
@@ -365,20 +480,24 @@ def run_closures(args: argparse.Namespace, authority: dict[str, Any], contract: 
                 (out_dir / "stderr").write_bytes(cp.stderr); (out_dir / "stderr").chmod(0o444)
                 closures.append({
                     "target_id": target["id"], "target_sha256": target_sha,
+                    "target_identity": frozen_target,
                     "command": command, "exit_code": cp.returncode,
                     "stdout_sha256": hashlib.sha256(cp.stdout).hexdigest(),
                     "stderr_sha256": hashlib.sha256(cp.stderr).hexdigest(),
                 })
         require(len(closures) == 96, "public closure denominator changed")
         require(source_authority(args.source_root, args.source_manifest, args.expected_candidate_tree) == source, "ABI-role source authority changed during closures")
+        require(regular_identity(analyzer_source, expected_sha256=analyzer_source_identity["sha256"], require_executable=True) == analyzer_source_identity,
+                "source analyzer identity changed during closures")
         manifest = {
             "schema": "x64lens-sprint13-abi-role-query-evidence-v1",
-            "sprint": 13, "patch": 84, "evidence_class": "diagnostic",
+            "sprint": 13, "patch": 85, "evidence_class": "diagnostic",
             "publication_eligible": False,
             "authority_sha256": sha256_file(args.authority.resolve(strict=True)),
             "expected_sha256": sha256_file(args.expected.resolve(strict=True)),
             "source_authority": source,
-            "analyzer": tool_identity(analyzer),
+            "analyzer_source": analyzer_source_identity,
+            "executed_analyzer": analyzer_identity,
             "query_contract": contract,
             "public_closure_count": len(closures),
             "closures": closures,
@@ -389,13 +508,12 @@ def run_closures(args: argparse.Namespace, authority: dict[str, Any], contract: 
         for path in sorted((p for p in stage.rglob("*") if p.is_file()), key=lambda p: os.fsencode(p.relative_to(stage).as_posix())):
             lines.append(f"{sha256_file(path)}  {path.relative_to(stage).as_posix()}\n")
         (stage / "SHA256SUMS.txt").write_text("".join(lines), encoding="utf-8"); (stage / "SHA256SUMS.txt").chmod(0o444)
-        os.rename(stage, result_dir)
+        rename_noreplace(stage, result_dir)
         stage = result_dir
         return manifest
     finally:
         if stage.exists() and stage != result_dir:
             shutil.rmtree(stage, ignore_errors=True)
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)

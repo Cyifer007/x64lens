@@ -2,9 +2,9 @@
   "decision": "prefix_and_successor_deltas_preserved",
   "denominator_floors": 24,
   "event_88_authorized": false,
-  "mutation_rejections": 12,
+  "mutation_rejections": 13,
   "new_canonical_ids_authorized": false,
-  "patch": 84,
+  "patch": 85,
   "schema": "x64lens-sprint13-lifecycle-denominator-result-v1",
   "sealed_aliases": 29,
   "sealed_events": 87,
@@ -14,5 +14,5 @@
   "sealed_roots": 20,
   "sealed_tombstones": 15,
   "sprint": 13,
-  "successor_deltas": 4
+  "successor_deltas": 5
 }

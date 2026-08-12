@@ -478,6 +478,7 @@ def test_make_level_docker_caller(tmp: Path) -> tuple[int, int]:
     authority_path = tmp / "isolated-docker-image-authority.json"
     source_repo = tmp / "isolated-source-repo"
     materialize_regression_repo(ROOT, source_repo)
+    source_tree = run(["git", "rev-parse", "HEAD^{tree}"], cwd=source_repo).stdout.decode("ascii").strip()
     write_fake_docker(fake)
 
     default_authority = ROOT / ".local/docker-image-authority.json"
@@ -497,6 +498,7 @@ def test_make_level_docker_caller(tmp: Path) -> tuple[int, int]:
             "FAKE_DOCKER_LOG": str(log),
             "TMPDIR": str(tmp),
             "PYTHONDONTWRITEBYTECODE": "1",
+            "S13_EXPECTED_CANDIDATE_TREE": source_tree,
         }
     )
     cp = run(["make", "--no-print-directory", "docker-build"], cwd=source_repo, env=env)

@@ -63,6 +63,20 @@ class StableIdentity(NamedTuple):
     gid: int
 
 
+class FileFingerprint(NamedTuple):
+    """Stable file topology/content metadata excluding read-mutated atime."""
+
+    device: int
+    inode: int
+    mode: int
+    links: int
+    uid: int
+    gid: int
+    size: int
+    mtime_ns: int
+    ctime_ns: int
+
+
 @dataclass
 class AncestorBinding:
     parent_fd: int
@@ -153,6 +167,20 @@ def stable(metadata: os.stat_result) -> StableIdentity:
         stat.S_IFMT(metadata.st_mode),
         metadata.st_uid,
         metadata.st_gid,
+    )
+
+
+def file_fingerprint(metadata: os.stat_result) -> FileFingerprint:
+    return FileFingerprint(
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_nlink,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
     )
 
 
@@ -430,12 +458,18 @@ def final_verify(
         require(tuple(sorted(os.listdir(record.fd), key=os.fsencode)) == children[path],
                 f"directory membership changed: {path}")
     for path, record in file_records.items():
-        metadata = same_path_object(record.parent_fd, record.name, record.fd, f"file {path}")
-        require(stable(metadata) == record.opened, f"file descriptor identity changed: {path}")
-        require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
+        before = same_path_object(record.parent_fd, record.name, record.fd, f"file {path}")
+        require(stable(before) == record.opened, f"file descriptor identity changed: {path}")
+        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1,
                 f"file topology changed: {path}")
-        require(stat.S_IMODE(metadata.st_mode) == record.mode, f"file mode changed: {path}")
+        require(stat.S_IMODE(before.st_mode) == record.mode, f"file mode changed: {path}")
+        before_fingerprint = file_fingerprint(before)
         observed, size, payload = hash_fd(record.fd)
+        after = same_path_object(record.parent_fd, record.name, record.fd, f"file {path}")
+        require(
+            file_fingerprint(after) == before_fingerprint,
+            f"file topology or metadata changed while hashing: {path}",
+        )
         require(observed == record.sha256 and size == record.size, f"file bytes changed: {path}")
         assert payload is not None
         require(git_object(b"blob", payload) == record.git_oid, f"Git blob identity changed: {path}")
@@ -623,6 +657,28 @@ def cleanup_owned_root(
     os.fsync(parent_fd)
 
 
+def cleanup_unopened_stage(parent: ParentHandle, name: str, opened: StableIdentity) -> None:
+    """Remove only the empty staging directory created before its first open.
+
+    This path exists for failures in the first directory open itself.  The
+    namespace entry is deleted only when it is still the exact directory that
+    was created and remains empty; a replacement is preserved and reported.
+    """
+    reauthenticate_parent(parent)
+    metadata = os.stat(name, dir_fd=parent.fd, follow_symlinks=False)
+    require(stable(metadata) == opened, "unopened staging root was replaced; residue preserved")
+    require(stat.S_ISDIR(metadata.st_mode), "unopened staging root changed type; residue preserved")
+    probe = os.open(name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent.fd)
+    try:
+        require(stable(os.fstat(probe)) == opened, "unopened staging root changed while reopening")
+        require(not os.listdir(probe), "unopened staging root is not empty; residue preserved")
+        os.rmdir(name, dir_fd=parent.fd)
+        require(os.fstat(probe).st_nlink == 0, "unopened staging root removal did not detach owned inode")
+    finally:
+        os.close(probe)
+    os.fsync(parent.fd)
+
+
 def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple[str, int, int, Path]:
     value = load_manifest(manifest_path)
     directories, files, derived_tree = parse_manifest(value)
@@ -636,6 +692,8 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
     parent_handle = open_parent_chain(destination)
     stage_name = f".x64lens-recovery-stage.{os.getpid()}.{os.urandom(16).hex()}"
     root_fd = -1
+    stage_created = False
+    unopened_stage_identity: StableIdentity | None = None
     published = False
     current_name = stage_name
     directory_records: dict[str, DirectoryRecord] = {}
@@ -651,6 +709,11 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
         else:
             raise RecoveryError("destination already exists")
         mkdir_exact(stage_name, 0o700, dir_fd=parent_handle.fd)
+        stage_created = True
+        unopened_stage_identity = stable(
+            os.stat(stage_name, dir_fd=parent_handle.fd, follow_symlinks=False)
+        )
+        require(unopened_stage_identity.file_type == stat.S_IFDIR, "staging root changed type before open")
         root_fd = os.open(stage_name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_handle.fd)
         root_identity = stable(os.fstat(root_fd))
         require(root_identity.file_type == stat.S_IFDIR, "staging root changed type")
@@ -815,6 +878,11 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                     directory_records,
                     file_records,
                 )
+            except BaseException as candidate:
+                cleanup_error = candidate
+        elif stage_created and unopened_stage_identity is not None:
+            try:
+                cleanup_unopened_stage(parent_handle, stage_name, unopened_stage_identity)
             except BaseException as candidate:
                 cleanup_error = candidate
         if cleanup_error is not None:

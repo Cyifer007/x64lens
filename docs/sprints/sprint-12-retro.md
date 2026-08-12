@@ -457,3 +457,14 @@ transaction, recovery, Docker, authority, and delivery findings; and freezes a
 private ABI-role query contract. Fresh native, Docker, parity, producer, strict
 ShellCheck, delivery, and independent acceptance remain separate from the
 retrospective’s semester-completion claim.
+
+## Post-retrospective Patch 085 acceptance update
+
+The completed semester engineering record remains unchanged. Patch 085 carries
+forward the remaining exact-source acceptance debt from the Patch 084 review.
+It freezes the same twelve natural target hashes and 48 tool executions without
+reroll, layers terminal attribution without favorable reinterpretation, and
+strengthens Git-less source, recovery, lifecycle, ABI-query, and delivery
+authorities. Fresh native, Docker, frozen-replay, parity, producer, strict
+ShellCheck, delivery, and independent acceptance remain separate from the
+retrospective's semester-completion claim.

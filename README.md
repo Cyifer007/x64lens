@@ -4,17 +4,16 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts until Patch 084 completes its local acceptance gates.
-> Sprint 13 Patch 084 is the current implementation candidate. It corrects the
-> Patch 083 transaction, corrupt-recovery, Docker source-custody, exact-tree,
-> natural-authority, source-binding, strict-shell, generated-artifact, and
-> delivery findings. The complete P083 natural result is retained as terminal
-> diagnostic evidence: twelve targets, 48 executions, 108 controls, zero
-> qualified cells, five insufficient cells, and four unavailable cells. Patch
-> 084 also freezes a private 36-query ABI-role contract and the sealed lifecycle
-> denominator. Public output, semantic classes, scores, candidate capacity, and
-> schema `0.2.0` remain unchanged. Fresh native, Docker, ABI-closure, parity,
-> producer, delivery, and independent acceptance remain pending.
+> and mitigation facts until Patch 085 completes its local acceptance gates.
+> Sprint 13 Patch 085 is the current implementation candidate. It corrects the
+> Patch 084 Git-less source, recovery, lifecycle, ABI-query, natural-campaign,
+> explicit-tree, and delivery findings. It freezes the exact twelve predecessor
+> target hashes and 48 tool executions with no reroll and records layered
+> terminal attribution across 48 execution outcomes, 48 relation outcomes, 36
+> observations, and nine cells. Public output, semantic classes, scores,
+> candidate capacity, and schema `0.2.0` remain unchanged. Fresh native, Docker,
+> frozen-replay, ABI-closure, parity, producer, delivery, and independent
+> acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -47,6 +46,34 @@
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
 
+## Sprint 13 Patch 085 correction, frozen replay, and terminal attribution
+
+Patch 085 retains the complete P083 natural campaign as diagnostic evidence and
+freezes its exact twelve target hashes, four tool identities, and 48 executions
+for a no-reroll corrective replay. The predecessor result remains zero qualified,
+five insufficient, and four unavailable cells. Replay failure or continued
+unavailability cannot trigger target substitution.
+
+Terminal attribution remains layered rather than flattened:
+
+```text
+execution outcomes: 48
+relation outcomes:  48
+observations:        36
+cells:                9
+precedence mutations:16
+```
+
+The patch also enforces every lifecycle floor, records an explicit Patch 084
+zero-count delta, requires semantically disjoint ABI development and confirmation
+queries, pins and reauthenticates analyzer and target bytes, and strengthens
+Git-less source and candidate-recovery topology checks. It adds no analyzer
+runtime, public field, semantic class, score, schema, capacity, decoder, or
+concurrency change.
+
+See [ADR 0071](docs/adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md)
+and the [Patch 085 validation record](docs/sprints/sprint-13-patch-085-validation.md).
+
 ## Sprint 13 Patch 084 correction and private ABI-role contract
 
 Patch 084 preserves the complete Patch 083 natural campaign as a structurally
@@ -60,8 +87,9 @@ The patch corrects post-effect repository and parent rebinding, corrupt source
 recovery residue, Docker candidate-tree and source immutability, natural
 authority shape, exact source binding, generated-artifact custody, and strict
 shell lint. It also freezes 36 private ABI-role queries: 24 development queries,
-12 source-disjoint confirmation queries, and 96 disabled-output public command
-closures. These facts remain private and additive.
+12 source-disjoint confirmation queries, and 96 disabled-output command
+closures that must preserve unchanged public text and JSON. These facts remain
+private and additive.
 
 ```text
 public fields added:          0
@@ -69,7 +97,8 @@ semantic changes:             0
 score changes:                0
 schema:                       0.2.0
 natural cells:                0 qualified / 5 insufficient / 4 unavailable
-ABI role queries:             36 private; 96 public closures pending fresh build
+ABI role queries:             36 private
+unchanged-public closures:    96 disabled-output closures pending fresh build
 P084 acceptance:              pending exact-source local validation
 ```
 
@@ -108,8 +137,8 @@ public fields added:       0
 semantic changes:          0
 score changes:             0
 schema:                    0.2.0
-natural campaign:          implemented; complete execution pending environment
-P083 acceptance:           pending exact-source validation
+natural campaign:          implemented; terminal result retained
+P083 acceptance:           not accepted; corrections carried by P084
 ```
 
 ## Sprint 13 Patch 082 producer authority and coordinate preflight
@@ -382,8 +411,9 @@ evidence; Patch 076 added the distinct private search-path tranche, but its
 review required the Patch 077 correction. Patch 077 then required the Patch 078
 entry candidate, whose review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080. Patch 080's review
-required Patch 081. Patch 082 was not accepted; its findings are correction
-inputs to the current Patch 083 candidate.
+required Patch 081. Patch 082 was not accepted; its findings became correction
+inputs to the historical Patch 083 candidate. Independent review of Patch 083
+returned the bounded corrections now carried by Patch 084.
 
 GNU property entries are now aligned relative to the property descriptor. Exact
 duplicate physical carriers remain canonicalized, while any non-identical
@@ -955,11 +985,11 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 083 are later
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 085 are later
 pre-release work. Patch 079 was the corrective and private task-value candidate;
 it was superseded by Patch 080, and Patch 080 by Patch 081. Patches 081 and 082
-were not accepted; Patch 083 is the current implementation candidate pending
-complete exact-source acceptance. Patch 054 closes
+were not accepted. Independent review of Patch 083 returned the bounded
+corrections carried by Patch 084 and now superseded by the current Patch 085 corrective, frozen-replay, and terminal-attribution candidate, pending complete exact-source acceptance. Patch 054 closes
 Sprint 10, Patch 061 closes Sprint 11, and Patch 062 begins Sprint 12
 loader-precision work. Patch 063 adds corrective hardening plus internal overlap
 provenance, and Patch 064 records the measured
@@ -1155,9 +1185,10 @@ first surrounding transaction set and closes no public-policy deferral. Patch
 078 corrects the remaining Patch 077 blockers and freezes a private exact-pop
 role decision without runtime, public-field, or score projection. Its review
 required Patch 079, which was superseded by Patch 080; Patch 080's review required
-Patch 081. Patch 082 was not accepted; its findings are correction inputs to
-Patch 083. Sprint 13 becomes active only after complete exact-source Patch 083
-acceptance.
+Patch 081. Patch 082 was not accepted; its findings became correction inputs to
+Patch 083. Independent review of Patch 083 then returned the bounded corrections now
+carried by P084. Sprint 13 becomes active only after complete exact-source
+Patch 084 acceptance.
 See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
@@ -1177,14 +1208,14 @@ historical
 [P081 validation](docs/sprints/sprint-13-patch-081-validation.md),
 [ADR 0068](docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md),
 the [historical P082 validation](docs/sprints/sprint-13-patch-082-validation.md),
-and the [P083 validation record](docs/sprints/sprint-13-patch-083-validation.md).
+the [historical P083 validation](docs/sprints/sprint-13-patch-083-validation.md),
+and the [P084 validation record](docs/sprints/sprint-13-patch-084-validation.md).
 
-Patch 084 owns the conditional handoff after independent P083 review. If that
-review returns corrections, P084 carries only the smallest corrective tranche.
-If P083 is accepted, P084 may begin separately reviewed natural-coordinate
-reconciliation and a named ABI-role consumer/equivalence contract. Neither
-branch preauthorizes a public field, semantic, score, schema, capacity, decoder,
-concurrency, comparative coverage, performance, or exploitability change.
+Independent review of Patch 083 returned the bounded corrections now carried by
+the P084 implementation candidate. P084 preserves the retained natural-coordinate
+terminal states and freezes the private ABI-role query contract. It authorizes
+no public field, semantic, score, schema, capacity, decoder, concurrency,
+comparative-coverage, performance, or exploitability change.
 
 [a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
 [a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

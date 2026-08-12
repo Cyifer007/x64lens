@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 084 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 085 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -83,13 +83,13 @@ def main() -> int:
         exact_int(closeout.get("schema_version"), 1, "closeout.schema_version")
         exact_int(closeout.get("sprint"), 12, "closeout.sprint")
         require(
-            closeout.get("status") == "retrospective_recorded_and_sprint13_p084_candidate_pending_acceptance",
+            closeout.get("status") == "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
             "closeout status",
         )
-        exact_int(closeout.get("closeout_patch"), 84, "closeout.closeout_patch")
-        require(closeout.get("candidate_patches") == list(range(62, 85)), "Patch sequence must cover 062-084")
+        exact_int(closeout.get("closeout_patch"), 85, "closeout.closeout_patch")
+        require(closeout.get("candidate_patches") == list(range(62, 86)), "Patch sequence must cover 062-085")
         exact_int(closeout.get("next_sprint"), 13, "next sprint")
-        require(closeout.get("acceptance_target") == "sprint13-p084-acceptance-smoke", "acceptance target")
+        require(closeout.get("acceptance_target") == "sprint13-p085-acceptance-smoke", "acceptance target")
         exact_int(stages.get("completed_sprints"), 11, "stages.completed_sprints")
         exact_int(stages.get("active_sprint"), 12, "stages.active_sprint")
 
@@ -182,8 +182,8 @@ def main() -> int:
         require(handoff.get("linux_syscall_r10_role_decision") == "private_additive_linux_syscall_arg4_sidecar_candidate", "r10 decision")
         require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_private_facets_unscored", "score/null decision")
         require(handoff.get("public_projection") == "deferred", "public projection")
-        exact_int(handoff.get("next_patch"), 85, "Sprint 13 next patch")
-        require(handoff.get("next_patch_tranche") == "frozen-natural-replay-and-unsupported-terminal-attribution", "Sprint 13 next tranche")
+        exact_int(handoff.get("next_patch"), 86, "Sprint 13 next patch")
+        require(handoff.get("next_patch_tranche") == "full-vector-abi-role-representation-equivalence", "Sprint 13 next tranche")
         exact_bool(handoff.get("diagnostic_restart_on_task_change"), True, "diagnostic restart")
         exact_int(handoff.get("task_value_strata"), 5, "task-value strata")
         exact_int(handoff.get("task_value_tasks"), 60, "task-value tasks")
@@ -219,7 +219,7 @@ def main() -> int:
         exact_bool(handoff.get("natural_coordinate_campaign_qualified"), False, "natural coordinate campaign")
         exact_bool(handoff.get("comparative_coverage_claim_authorized"), False, "comparative coverage claim")
         require(handoff.get("natural_coordinate_campaign_id") == "s13-p083-natural-coordinate-v1", "natural campaign id")
-        require(handoff.get("natural_coordinate_campaign_status") == "retained_terminal_diagnostic_zero_qualified", "natural campaign status")
+        require(handoff.get("natural_coordinate_campaign_status") == "frozen_replay_and_layered_terminal_attribution_candidate", "natural campaign status")
         exact_int(handoff.get("natural_coordinate_planned_targets"), 12, "natural campaign targets")
         exact_int(handoff.get("natural_coordinate_planned_executions"), 48, "natural campaign executions")
         exact_int(handoff.get("natural_coordinate_cells"), 9, "natural campaign cells")
@@ -263,14 +263,47 @@ def main() -> int:
         exact_int(contract.get("new_public_fields"), 0, "role public fields")
         exact_int(contract.get("score_changes"), 0, "role score changes")
 
+        exact_int(evidence.get("natural_coordinate_frozen_replay_targets"), 12, "frozen replay targets")
+        exact_int(evidence.get("natural_coordinate_frozen_replay_executions"), 48, "frozen replay executions")
+        exact_int(evidence.get("natural_coordinate_terminal_execution_outcomes"), 48, "terminal executions")
+        exact_int(evidence.get("natural_coordinate_terminal_relation_outcomes"), 48, "terminal relations")
+        exact_int(evidence.get("natural_coordinate_terminal_observations"), 36, "terminal observations")
+        exact_int(evidence.get("natural_coordinate_terminal_cells"), 9, "terminal cells")
+        exact_int(evidence.get("natural_coordinate_terminal_precedence_mutations"), 16, "terminal precedence mutations")
+        require(evidence.get("natural_coordinate_frozen_replay_id") == "s13-p085-natural-frozen-replay-v1", "frozen replay id")
+
+        for required_key in (
+            "gitless_full_topology_reauthenticated",
+            "source_recovery_initial_open_residue_removed",
+            "source_recovery_posthash_topology_reauthenticated",
+            "abi_development_confirmation_semantically_disjoint",
+            "abi_analyzer_copy_pinned_and_reauthenticated",
+            "abi_targets_reauthenticated_per_command",
+            "abi_evidence_no_replace_publication",
+            "natural_targets_reauthenticated_per_tool",
+            "natural_structure_recomputed_from_membership",
+            "explicit_candidate_tree_authority_required",
+            "frozen_natural_target_reroll_prohibited",
+            "terminal_attribution_layered",
+        ):
+            exact_bool(transaction.get(required_key), True, required_key)
+
+        exact_int(handoff.get("natural_coordinate_frozen_replay_targets"), 12, "handoff replay targets")
+        exact_int(handoff.get("natural_coordinate_frozen_replay_executions"), 48, "handoff replay executions")
+        exact_int(handoff.get("natural_coordinate_terminal_execution_outcomes"), 48, "handoff terminal executions")
+        exact_int(handoff.get("natural_coordinate_terminal_relation_outcomes"), 48, "handoff terminal relations")
+        exact_int(handoff.get("natural_coordinate_terminal_observations"), 36, "handoff terminal observations")
+        exact_int(handoff.get("natural_coordinate_terminal_cells"), 9, "handoff terminal cells")
+        exact_int(handoff.get("natural_coordinate_terminal_precedence_mutations"), 16, "handoff terminal precedence")
+
         for relative in closeout.get("required_closeout_documents", []):
             require((ROOT / relative).is_file(), f"missing closeout document: {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 084 corrective and exact-source acceptance candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 084 correction and private ABI-role contract candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 085 corrective, frozen replay, and terminal-attribution candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 085 correction, frozen replay, and layered terminal-attribution candidate" in sprint13, "Sprint 13 marker")
         makefile = MAKEFILE.read_text(encoding="utf-8")
-        require("sprint13-p084-acceptance-smoke:" in makefile, "P082 acceptance target")
+        require("sprint13-p085-acceptance-smoke:" in makefile, "P085 acceptance target")
         validation = next((line for line in makefile.splitlines() if line.startswith("validation-smoke:")), "")
         require("patch079-corrective-regression-smoke" in validation, "P079 corrective integration")
         require("sprint13-register-role-decision-smoke" in validation, "Sprint 13 role integration")
@@ -292,10 +325,10 @@ def main() -> int:
         return 1
 
     print(
-        "sprint12-closeout-smoke: ok sprint=12 patches=23 "
-        "status=retrospective-recorded-and-sprint13-p084-candidate decision=defer "
+        "sprint12-closeout-smoke: ok sprint=12 patches=24 "
+        "status=retrospective-recorded-and-sprint13-p085-candidate decision=defer "
         "public_fields=0 roles=16 r10=syscall-arg4 qualified_private_facets=3 "
-        "deferred_facets=2 tuple_decision=defer score_changes=0 producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=85"
+        "deferred_facets=2 tuple_decision=defer score_changes=0 producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=86"
     )
     return 0
 

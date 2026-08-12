@@ -415,9 +415,9 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 083 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 084 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 083 acceptance.
+only after complete Patch 084 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -484,7 +484,7 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
 080; Patch 080 was superseded by Patch 081. Preview eligibility still requires
-complete Patch 083 acceptance before any later release-facing capability work.
+complete Patch 084 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -520,6 +520,14 @@ actual private-fact parity, natural coordinate qualification, frozen campaign
 inputs, and independent reproduction.
 
 
+## Patch 083 preview-gate note
+
+The preview gate records either retained natural-coordinate evidence or an
+explicit unavailable disposition. Only qualifying evidence, followed by the
+Sprint 15 method freeze, can support later comparative address-level use; an
+unavailable disposition keeps that use blocked. The controlled preflight alone
+is not release comparison evidence.
+
 ## Patch 084 preview-gate note
 
 Patch 084 does not advance the research-preview gate by calendar progress. It
@@ -528,11 +536,3 @@ comparison-unqualified diagnostic evidence, and freezes a private ABI-role query
 contract. Preview eligibility still requires fresh native/Docker validation,
 qualified parity, reproducible producer runs, campaign freeze, and accepted
 release artifacts.
-
-## Patch 083 preview-gate note
-
-The preview gate records either retained natural-coordinate evidence or an
-explicit unavailable disposition. Only qualifying evidence, followed by the
-Sprint 15 method freeze, can support later comparative address-level use; an
-unavailable disposition keeps that use blocked. The controlled preflight alone
-is not release comparison evidence.

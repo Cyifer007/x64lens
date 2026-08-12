@@ -159,9 +159,11 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 ## Current implementation stage
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
-authority. Patch 081 was not accepted; Patch 082 was not accepted; Patch 083 is the current
+authority. Patches 081 and 082 were not accepted. Independent review of Patch
+083 returned the bounded corrections now carried by the current Patch 084
 implementation candidate, pending full local execution and independent
-acceptance. Patch 080 supplied the private register-role side-car but did not
+acceptance. Patch 080 supplied the private
+register-role side-car but did not
 complete acceptance; it was superseded by Patch 081. Patch 074 was a superseded closeout
 candidate. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
@@ -176,7 +178,7 @@ without adding public role/property or mitigation fields, but its review
 required Patch 077. Patch 077 then required Patch 078, whose review required the
 Patch 079 corrective and private task-value candidate, whose review required
 Patch 080; Patch 080 was superseded by Patch 081. Sprint 13 remains planned and
-activates only after complete Patch 083 acceptance. Sprint 15
+activates only after complete Patch 084 acceptance. Sprint 15
 freezes the confirmatory method; Sprint 16 produces the preview campaign,
 Sprint 17 runs publication-grade trials, and Sprint 22 is the first research-
 release gate.
@@ -193,10 +195,12 @@ header executable authority, 4,096-candidate fail-closed behavior, and schema
 `0.2.0`. Private role/property, text-relocation, and RPATH/RUNPATH evidence
 remains outside public reports, and the role/property policy remains `defer`.
 Patch 078 required the Patch 079 corrective and private task-value candidate,
-which was superseded by Patch 080; Patch 080 was superseded by Patch 081. Patch
-081 and 082 were not accepted. Patch 083 is the current candidate. Sprint 13 remains an entry
-candidate and becomes active only after complete Patch 083 acceptance, without a
-release tag or confirmatory campaign freeze.
+which was superseded by Patch 080; Patch 080 was superseded by Patch 081.
+Patches 081 and 082 were not accepted. Independent review of Patch 083 returned
+the bounded corrections now carried by the current Patch 084 candidate. Sprint
+13 remains an entry candidate and becomes active
+only after complete Patch 084 acceptance, without a release tag or confirmatory
+campaign freeze.
 
 ## Sprint 12 Patch 077 historical checkpoint
 

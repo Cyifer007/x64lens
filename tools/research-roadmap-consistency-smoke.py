@@ -80,11 +80,11 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Patch 084 corrective and exact-source acceptance candidate, pending complete acceptance",
+        "Patch 085 corrective, frozen replay, and terminal-attribution candidate, pending complete acceptance",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Patch 084 correction and private ABI-role contract candidate; activation pending complete Patch 084 acceptance",
-        "Patch 084",
+        "Patch 085 correction, frozen replay, and layered terminal-attribution candidate; activation pending complete Patch 085 acceptance",
+        "Patch 085",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p084_candidate_pending_acceptance",
-  "closeout_patch": 84,
+  "status": "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
+  "closeout_patch": 85,
   "candidate_patches": [
     62,
     63,
@@ -26,10 +26,11 @@
     81,
     82,
     83,
-    84
+    84,
+    85
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p084-acceptance-smoke",
+  "acceptance_target": "sprint13-p085-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -78,13 +79,21 @@
     "natural_coordinate_campaign_qualified": false,
     "comparative_coverage_claim_authorized": false,
     "natural_coordinate_campaign_id": "s13-p083-natural-coordinate-v1",
-    "natural_coordinate_campaign_status": "pending_local_execution",
+    "natural_coordinate_campaign_status": "frozen_replay_and_layered_terminal_attribution_candidate",
     "natural_coordinate_planned_targets": 12,
     "natural_coordinate_planned_executions": 48,
     "natural_coordinate_cells": 9,
     "natural_coordinate_controls": 108,
     "natural_coordinate_outcome_blind": true,
-    "natural_coordinate_reroll": false
+    "natural_coordinate_reroll": false,
+    "natural_coordinate_frozen_replay_id": "s13-p085-natural-frozen-replay-v1",
+    "natural_coordinate_frozen_replay_targets": 12,
+    "natural_coordinate_frozen_replay_executions": 48,
+    "natural_coordinate_terminal_execution_outcomes": 48,
+    "natural_coordinate_terminal_relation_outcomes": 48,
+    "natural_coordinate_terminal_observations": 36,
+    "natural_coordinate_terminal_cells": 9,
+    "natural_coordinate_terminal_precedence_mutations": 16
   },
   "corrective_transaction_boundary": {
     "patch_bytes_pinned_across_check_and_mutation": true,
@@ -148,7 +157,19 @@
     "producer_modes_bound": true,
     "docker_nonroot_writable_run_root": true,
     "natural_coordinate_authority_outcome_blind": true,
-    "natural_coordinate_complete_denominator_required_for_acceptance": true
+    "natural_coordinate_complete_denominator_required_for_acceptance": true,
+    "gitless_full_topology_reauthenticated": true,
+    "source_recovery_initial_open_residue_removed": true,
+    "source_recovery_posthash_topology_reauthenticated": true,
+    "abi_development_confirmation_semantically_disjoint": true,
+    "abi_analyzer_copy_pinned_and_reauthenticated": true,
+    "abi_targets_reauthenticated_per_command": true,
+    "abi_evidence_no_replace_publication": true,
+    "natural_targets_reauthenticated_per_tool": true,
+    "natural_structure_recomputed_from_membership": true,
+    "explicit_candidate_tree_authority_required": true,
+    "frozen_natural_target_reroll_prohibited": true,
+    "terminal_attribution_layered": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -162,8 +183,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 85,
-    "next_patch_tranche": "frozen-natural-replay-and-unsupported-terminal-attribution",
+    "next_patch": 86,
+    "next_patch_tranche": "full-vector-abi-role-representation-equivalence",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -206,7 +227,7 @@
     "natural_coordinate_campaign_qualified": false,
     "comparative_coverage_claim_authorized": false,
     "natural_coordinate_campaign_id": "s13-p083-natural-coordinate-v1",
-    "natural_coordinate_campaign_status": "retained_terminal_diagnostic_zero_qualified",
+    "natural_coordinate_campaign_status": "frozen_replay_and_layered_terminal_attribution_candidate",
     "natural_coordinate_planned_targets": 12,
     "natural_coordinate_planned_executions": 48,
     "natural_coordinate_cells": 9,
@@ -233,7 +254,15 @@
     "lifecycle_folds": 2,
     "lifecycle_tombstones": 15,
     "lifecycle_lineage_records": 161,
-    "lifecycle_events": 87
+    "lifecycle_events": 87,
+    "natural_coordinate_frozen_replay_id": "s13-p085-natural-frozen-replay-v1",
+    "natural_coordinate_frozen_replay_targets": 12,
+    "natural_coordinate_frozen_replay_executions": 48,
+    "natural_coordinate_terminal_execution_outcomes": 48,
+    "natural_coordinate_terminal_relation_outcomes": 48,
+    "natural_coordinate_terminal_observations": 36,
+    "natural_coordinate_terminal_cells": 9,
+    "natural_coordinate_terminal_precedence_mutations": 16
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -260,6 +289,8 @@
     "docs/adr/0069-patch082-correction-and-natural-coordinate-campaign.md",
     "docs/sprints/sprint-13-patch-083-validation.md",
     "docs/adr/0070-patch083-correction-and-abi-role-contract.md",
-    "docs/sprints/sprint-13-patch-084-validation.md"
+    "docs/sprints/sprint-13-patch-084-validation.md",
+    "docs/adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md",
+    "docs/sprints/sprint-13-patch-085-validation.md"
   ]
 }

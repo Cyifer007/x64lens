@@ -8,7 +8,7 @@ Accepted as the Patch 084 implementation decision. Exact-source acceptance remai
 
 Patch 083 completed an outcome-blind natural-coordinate campaign but its review found a bounded set of acceptance defects outside the analyzer runtime:
 
-- a generated ordered-pair binary was committed as source;
+- a generated ordered-pair binary conflicted with the tracked-source boundary;
 - the campaign's structural-completion option did not distinguish a fully accounted diagnostic result from comparison qualification;
 - material campaign policy fields and source identity were not authenticated completely;
 - a post-effect patch-path parent could be rebound before success verification;
@@ -57,7 +57,9 @@ Freeze 36 named queries:
 - `rax` syscall-number and `rsp` pivot controls; and
 - explicit `rcx`/`r10` cross-ABI negative cases.
 
-The full local gate also runs 96 public command closures over 24 controlled ELF64 objects. Those closures must contain no private role projection.
+The full local gate also runs 96 disabled-output command closures over 24
+controlled ELF64 objects. Those closures must preserve unchanged public text
+and schema `0.2.0` JSON with no private role projection.
 
 ### Lifecycle and denominator continuity
 
@@ -80,7 +82,8 @@ Patches 080 through 083 remain explicit unsealed deltas. No event 88, new canoni
 - The natural campaign may close structurally with zero qualified cells while still withholding all comparative claims.
 - Public output remains schema `0.2.0` and exposes no role-query result.
 - Existing role records remain the sole runtime representation; representation value and charged-memory cost remain separate experiments.
-- Docker and full public-closure evidence remain local gates where the required tools are unavailable.
+- Docker and full unchanged-public closure evidence remain local gates where
+  the required tools are unavailable.
 - Future work can use the frozen ABI query lattice without silently changing role semantics.
 
 ## Rejected alternatives

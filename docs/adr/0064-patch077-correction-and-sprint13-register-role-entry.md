@@ -5,8 +5,9 @@
 Recorded as the Patch 078 implementation decision. Patch 078 did not complete
 acceptance; Patch 079 supplied the resulting corrective and private task-value
 candidate. Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081.
-Patch 081 was not accepted; Patch 082 was not accepted; Patch 083 is the current
-implementation candidate, pending independent exact-source acceptance.
+Patches 081 and 082 were not accepted. Independent review of Patch 083 returned
+the bounded corrections now carried by the current Patch 084 implementation
+candidate, pending independent exact-source acceptance.
 
 ## Context
 
@@ -93,7 +94,7 @@ projection.
 
 Patch 078 addressed the Patch 077 acceptance blockers without modifying the
 analyzer runtime, but did not complete acceptance. Sprint 12 remains active and
-Sprint 13 remains an entry candidate pending complete Patch 083 acceptance. The
+Sprint 13 remains an entry candidate pending complete Patch 084 acceptance. The
 authenticated entry decision alone does not qualify runtime or public projection
 of the private role facets.
 

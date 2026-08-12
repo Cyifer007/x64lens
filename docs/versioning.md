@@ -13,18 +13,18 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 082 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains pending exact-source acceptance while Patch 082
-corrects the remaining Patch 081 delivery, Docker-source, nested-authority, and
-producer-oracle findings. Patch 080's private additive role side-car remains
-unchanged and unprojected.
+Patch 085 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains pending exact-source acceptance while Patch 085
+corrects the Patch 084 source-custody, recovery, lifecycle, ABI-query, natural-
+campaign, explicit-tree, and delivery findings. Patch 080's private additive
+role side-car remains unchanged and unprojected.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
 Patch 081 preserves the same public fields, reference profile, private context
 sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
-runtime-CET claim. Actual qualified parity and complete Patch 083 acceptance
+runtime-CET claim. Actual qualified parity, the exact frozen replay, and complete Patch 085 acceptance
 remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
@@ -221,7 +221,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; independent exact-source Patch 083 acceptance remains
+review required this corrective candidate; independent exact-source Patch 085 acceptance remains
 pending.
 
 
@@ -234,6 +234,11 @@ authorities are development-validation contracts, not product or schema
 versions. Natural coordinate qualification remains a separate diagnostic gate.
 
 
+## Patch 083 compatibility note
+
+Patch 083 leaves tool version `0.1.0-dev` and schema `0.2.0` unchanged. Its new
+artifacts are diagnostic campaign authorities, not public report fields.
+
 ## Patch 084 compatibility note
 
 Patch 084 retains tool version `0.1.0-dev` and schema `0.2.0`. It changes no
@@ -242,7 +247,10 @@ meaning, candidate capacity, decoder profile, or worker policy. The new ABI-role
 query and lifecycle authorities are private validation artifacts. The retained
 P083 natural campaign remains diagnostic and comparison-unqualified.
 
-## Patch 083 compatibility note
+## Patch 085 compatibility note
 
-Patch 083 leaves tool version `0.1.0-dev` and schema `0.2.0` unchanged. Its new
-artifacts are diagnostic campaign authorities, not public report fields.
+Patch 085 retains tool version `0.1.0-dev` and schema `0.2.0`. It changes no
+assembly runtime, include contract, public field, semantic class, score, count
+meaning, candidate capacity, decoder profile, or worker policy. Frozen replay,
+terminal attribution, lifecycle, ABI-query, source-custody, recovery, and
+delivery records are private diagnostic or validation authorities.

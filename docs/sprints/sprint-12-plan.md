@@ -2,18 +2,17 @@
 
 ## Status
 
-Patch 084 corrective and exact-source acceptance candidate, pending complete acceptance.
+Patch 085 corrective, frozen replay, and terminal-attribution candidate, pending complete acceptance.
 The Sprint 12 engineering scope and repository-facing retrospective remain
-complete. Patch 084 carries the smallest corrective tranche returned by the
-Patch 083 review and preserves the complete P083 natural campaign as terminal
+complete. Patch 085 carries the smallest corrective tranche returned by the
+Patch 084 review and preserves the complete P083 natural campaign as terminal
 diagnostic evidence: twelve targets, 48 executions, 108 controls, zero qualified
-cells, five insufficient cells, and four unavailable cells. Patch 084 also
-freezes a private 36-query ABI-role contract and the sealed lifecycle denominator
+cells, five insufficient cells, and four unavailable cells. Patch 085 retains the private 36-query ABI-role contract and the sealed lifecycle denominator
 without changing public output, schema `0.2.0`, semantic classes, scores, or
 candidate capacity.
 
 Sprint 12 remains the acceptance authority for its inherited loader and
-mitigation facts until Patch 084 passes fresh native, Docker, both private parity
+mitigation facts until Patch 085 passes fresh native, Docker, both private parity
 planes, strict ShellCheck, delivery integrity, and independent exact-source
 acceptance. The retrospective records completed semester work without claiming
 that these later acceptance gates have already passed.
@@ -30,6 +29,8 @@ Related current records:
 - [Patch 083 validation](sprint-13-patch-083-validation.md)
 - [ADR 0070](../adr/0070-patch083-correction-and-abi-role-contract.md)
 - [Patch 084 validation](sprint-13-patch-084-validation.md)
+- [ADR 0071](../adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md)
+- [Patch 085 validation](sprint-13-patch-085-validation.md)
 - [ADR 0069](../adr/0069-patch082-correction-and-natural-coordinate-campaign.md)
 - [Sprint 12 retrospective](sprint-12-retro.md)
 
@@ -128,7 +129,11 @@ that would otherwise corrupt corpus labels or defensive triage.
   controlled-coordinate gate definitions.
 - [x] Retain the complete P083 natural campaign as terminal diagnostic evidence without treating zero qualified cells as comparison acceptance.
 - [x] Freeze the private 36-query ABI-role contract and sealed P079 lifecycle denominator without public or score projection.
-- [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck, producer, ABI public-closure, delivery, and independent acceptance for Patch 084.
+- [x] Enforce all 24 lifecycle floors and record an explicit Patch 084 zero-count delta without event 88 or new canonical identities.
+- [x] Require semantically disjoint ABI development/confirmation queries, pinned analyzer bytes, per-command target reauthentication, and no-replace evidence publication.
+- [x] Recompute natural-campaign structure from exact target/tool/control/cell membership and reauthenticate every target around every tool execution.
+- [x] Freeze the exact twelve predecessor hashes and 48 tool executions with no target reroll, then layer execution, relation, observation, and cell terminal attribution without reinterpretation.
+- [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck, producer, ABI public-closure, delivery, and independent acceptance for Patch 085.
 
 
 ## Patch sequence
@@ -183,6 +188,7 @@ that would otherwise corrupt corpus labels or defensive triage.
     contracts.
 22. **Patch 083:** correct Patch 082 transaction, Docker, producer, recovery, and delivery findings and run the outcome-blind natural coordinate campaign.
 23. **Patch 084:** correct Patch 083 acceptance findings, bind natural evidence to exact source, separate structural completion from comparison qualification, freeze the private ABI-role query contract, and preserve the sealed lifecycle denominator.
+24. **Patch 085:** correct Patch 084 source/recovery/lifecycle/ABI/natural authority findings, freeze the exact no-reroll natural replay, and add layered terminal attribution without changing runtime or public facts.
 
 
 ## Current continuation disposition
@@ -203,7 +209,7 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After complete Patch 084 acceptance, Sprint 13 continues from its private role,
+After complete Patch 085 acceptance, Sprint 13 continues from its private role,
 task-value, and LC-08B authorities into the next independently selected bounded
 semantic gate.
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify

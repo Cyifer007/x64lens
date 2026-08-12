@@ -223,19 +223,45 @@ def natural_authority_probe(tmp: Path) -> tuple[int, int, int]:
         else: raise RegressionError("natural authority mutation was accepted")
     require(rejected == 8, "natural authority mutation denominator changed")
 
+    target_records: dict[str, dict[str, Any]] = {}
+    outcomes: dict[str, dict[str, Any]] = {}
+    for role in module.ROLES:
+        for slot in range(1, 5):
+            target_id = f"{role}-{slot}"
+            target = {
+                "target_id": target_id,
+                "role": role,
+                "sha256": hashlib.sha256(target_id.encode()).hexdigest(),
+            }
+            target_records[target_id] = target
+            outcomes[target_id] = {
+                "target": target,
+                "tools": {name: {} for name in ("x64lens", *module.BASELINES)},
+            }
     cells=[]
     states=["insufficient"]*5+["unavailable"]*4
-    for index,state in enumerate(states):
-        cells.append({
-            "terminal_state":state,
-            "observations":[{} for _ in range(4)],
-            "controls":[{"expected":"x","observed":"x"} for _ in range(12)],
-        })
+    index = 0
+    for baseline in module.BASELINES:
+        for role in module.ROLES:
+            status = "insufficient_relation_evidence" if states[index] == "insufficient" else "unavailable"
+            observations = [
+                {
+                    "target_id": target_id,
+                    "target_sha256": target_records[target_id]["sha256"],
+                    "status": status,
+                }
+                for target_id in sorted(
+                    (item for item, target in target_records.items() if target["role"] == role),
+                    key=os.fsencode,
+                )
+            ]
+            cells.append(module.cell_result(baseline, role, observations))
+            index += 1
     result={
         "selection_freeze":{"selected_count":12,"role_counts":{role:4 for role in module.ROLES}},
-        "execution_count":48,"complete_execution_denominator":48,"cells":cells,
-        "cell_counts":{"qualified":0,"insufficient":5,"unavailable":4,"mismatch":0,"ambiguous":0},
-        "control_count":108,
+        "execution_count":48,"complete_execution_denominator":48,"outcomes":outcomes,"cells":cells,
+        "cell_counts":{state:sum(cell["terminal_state"] == state for cell in cells) for state in ("qualified","insufficient","unavailable","mismatch","ambiguous")},
+        "control_count":sum(len(cell["controls"]) for cell in cells),
     }
     module.require_structural_complete(result)
     try: module.require_acceptance_complete(result)
@@ -271,12 +297,33 @@ def docker_contract_probe() -> tuple[int, int]:
 
 
 def source_state_probe() -> int:
-    cp=run(["git","check-ignore","-q","tests/toy-src/gadgets_sprint13_ordered_pairs"],cwd=ROOT,expected=None)
-    require(cp.returncode==0,"generated ordered-pair binary is not ignored")
-    cp2=run(["git","ls-files","--error-unmatch","tests/toy-src/gadgets_sprint13_ordered_pairs"],cwd=ROOT,expected=None)
-    require(cp2.returncode!=0,"generated ordered-pair binary remains tracked")
-    return 1
+    generated = "tests/toy-src/gadgets_sprint13_ordered_pairs"
+    ignore_lines = {
+        line.strip()
+        for line in (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+    require(generated in ignore_lines or f"/{generated}" in ignore_lines,
+            "generated ordered-pair binary is not ignored")
+    git_probe = run(["git", "rev-parse", "--is-inside-work-tree"], cwd=ROOT, expected=None)
+    if git_probe.returncode == 0:
+        cp=run(["git","check-ignore","-q",generated],cwd=ROOT,expected=None)
+        require(cp.returncode==0,"generated ordered-pair binary is not ignored")
+        cp2=run(["git","ls-files","--error-unmatch",generated],cwd=ROOT,expected=None)
+        require(cp2.returncode!=0,"generated ordered-pair binary remains tracked")
+        return 1
 
+    manifest_raw = os.environ.get("X64LENS_SOURCE_MANIFEST", "/x64lens-source-manifest.json")
+    root_raw = os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT", os.fspath(ROOT))
+    manifest_path = Path(manifest_raw)
+    source_root = Path(root_raw)
+    require(manifest_path.is_file(), "Git-less generated-source check requires X64LENS_SOURCE_MANIFEST")
+    helper = load_module("p084_gitless_source_state", GITLESS)
+    manifest = helper.load_manifest(manifest_path)
+    helper.verify(source_root, manifest)
+    require(generated not in {item["path"] for item in manifest["files"]},
+            "generated ordered-pair binary remains in Git-less source authority")
+    return 1
 
 def shell_contract_probe() -> int:
     text=(ROOT/"tools/docker-run-root-smoke.sh").read_text(encoding="utf-8")

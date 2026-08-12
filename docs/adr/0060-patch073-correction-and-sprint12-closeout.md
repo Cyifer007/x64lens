@@ -8,7 +8,7 @@ Patch 076 preserved that private prefix and implemented distinct private
 `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
 Patch 077 correction. Patch 078 then became the Sprint 13 entry candidate,
 and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 083 validation record](../sprints/sprint-13-patch-083-validation.md).
+[Patch 084 validation record](../sprints/sprint-13-patch-084-validation.md).
 
 ## Context
 
@@ -146,4 +146,4 @@ correction. Patch 077 was superseded by Patch 078, whose review required Patch
 079; Patch 079 was superseded by Patch 080, which was superseded by Patch 081.
 Native and Docker aggregates, retained external-natural acquisition, corrected
 isolated parity, delivery rehearsal, and independent exact-source acceptance
-remain part of the independent exact-source Patch 083 acceptance boundary.
+remain part of the independent exact-source Patch 084 acceptance boundary.

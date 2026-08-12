@@ -881,7 +881,7 @@ superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
 the corrective and private task-value candidate; it was superseded by Patch 080,
 which was superseded by Patch 081. Any changed semantic task in Sprint 13 receives
-a new diagnostic campaign identity only after complete Patch 083 acceptance and
+a new diagnostic campaign identity only after complete Patch 085 acceptance and
 the relevant task-value gate.
 
 
@@ -964,18 +964,6 @@ can enter comparative coverage analysis. No generic gadget-count, runtime, RSS,
 or superiority claim follows from the controlled preflight.
 
 
-## Patch 084 natural terminal-state reconciliation
-
-Patch 084 distinguishes a structurally complete natural campaign from a
-comparison-qualified campaign. The P083 run retained twelve targets, 48 tool
-executions, nine terminal cells, and 108 controls, but no cell qualified. Five
-cells were insufficient and four were unavailable. Those terminal states are
-results, not missing rows, yet they do not authorize cross-tool coordinate or
-coverage comparison.
-
-A future corrective replay must use the same frozen target hashes and preserve
-all unavailable and unsupported outcomes. No reroll is permitted.
-
 ## Patch 083 natural coordinate qualification
 
 The controlled Patch 082 preflight validates coordinate-method mechanics only.
@@ -990,3 +978,31 @@ trigger replacement or reroll. Nine baseline-by-role cells retain four
 observations each plus 108 classifier controls. A qualified cell still does not
 authorize a coverage or performance claim; task-equivalent comparison and the
 Sprint 15 method freeze remain required.
+
+## Patch 084 natural terminal-state reconciliation
+
+Patch 084 distinguishes a structurally complete natural campaign from a
+comparison-qualified campaign. The P083 run retained twelve targets, 48 tool
+executions, nine terminal cells, and 108 controls, but no cell qualified. Five
+cells were insufficient and four were unavailable. Those terminal states are
+results, not missing rows, yet they do not authorize cross-tool coordinate or
+coverage comparison.
+
+A future corrective replay must use the same frozen target hashes and preserve
+all unavailable and unsupported outcomes. No reroll is permitted.
+
+
+## Patch 085 frozen replay and terminal-attribution boundary
+
+Patch 085 reuses the exact twelve target hashes and 48 tool execution slots from
+the retained natural campaign. Target reroll is prohibited. Replay output is
+diagnostic and remains separate from the Sprint 15-frozen confirmatory
+campaign. A failed, unsupported, timed-out, output-limited, or unavailable
+outcome remains terminal evidence and cannot be replaced with a favorable
+object.
+
+Attribution is layered across 48 executions, 48 relation outcomes, 36
+observations, and nine cells. Those categories must not be collapsed into a
+single success count or comparative coverage result. The replay authorizes no
+performance, RSS, superiority, publication, public-field, score, decoder, or
+concurrency claim.

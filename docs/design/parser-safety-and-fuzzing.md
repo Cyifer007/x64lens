@@ -350,7 +350,7 @@ permission, and authority corrections but was superseded. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
-required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 083 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 084 acceptance
 remains pending.
 
 ## Sprint 12 Patch 071 cleanup and output-bound regressions

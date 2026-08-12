@@ -341,13 +341,23 @@ def load_manifest(path: Path) -> dict[str, Any]:
     return value
 
 
-def _identity(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+def _identity(metadata: os.stat_result) -> tuple[int, int, int, int, int, int, int, int, int]:
+    """Return the complete stable topology and content metadata we authenticate.
+
+    Atime is deliberately excluded because reads may update it.  Mode, link
+    count, ownership, size, mtime, and ctime are included so chmod, hard-link,
+    ownership, and same-size replacement drift cannot pass a post-hash check.
+    """
     return (
         metadata.st_dev,
         metadata.st_ino,
-        stat.S_IFMT(metadata.st_mode),
+        metadata.st_mode,
+        metadata.st_nlink,
+        metadata.st_uid,
+        metadata.st_gid,
         metadata.st_size,
         metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
     )
 
 

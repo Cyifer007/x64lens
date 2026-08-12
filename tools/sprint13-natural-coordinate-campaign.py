@@ -82,6 +82,84 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int, int, int, int, int]:
+    return (
+        metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_nlink,
+        metadata.st_uid, metadata.st_gid, metadata.st_size,
+        metadata.st_mtime_ns, metadata.st_ctime_ns,
+    )
+
+
+def regular_identity(
+    path: Path,
+    *,
+    expected_mode: int | None = None,
+    expected_sha256: str | None = None,
+    require_single_link: bool = False,
+) -> dict[str, Any]:
+    absolute = Path(os.path.abspath(path))
+    parent_fd = os.open(absolute.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    fd = -1
+    try:
+        fd = os.open(absolute.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent_fd)
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode), f"target authority is not a regular file: {absolute}")
+        if require_single_link:
+            require(before.st_nlink == 1, f"target authority has hard-link aliases: {absolute}")
+        if expected_mode is not None:
+            require(stat.S_IMODE(before.st_mode) == expected_mode, f"target authority mode changed: {absolute}")
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+            total += len(chunk)
+        after = os.fstat(fd)
+        visible = os.stat(absolute.name, dir_fd=parent_fd, follow_symlinks=False)
+        require(file_fingerprint(before) == file_fingerprint(after) == file_fingerprint(visible),
+                f"target authority changed while hashing: {absolute}")
+        observed_sha = digest.hexdigest()
+        require(total == before.st_size, f"target authority size changed: {absolute}")
+        if expected_sha256 is not None:
+            require(observed_sha == expected_sha256, f"target authority digest changed: {absolute}")
+        return {
+            "sha256": observed_sha,
+            "size_bytes": total,
+            "mode": f"{stat.S_IMODE(before.st_mode):04o}",
+            "device": before.st_dev,
+            "inode": before.st_ino,
+            "links": before.st_nlink,
+            "mtime_ns": before.st_mtime_ns,
+            "ctime_ns": before.st_ctime_ns,
+        }
+    finally:
+        if fd >= 0:
+            os.close(fd)
+        os.close(parent_fd)
+
+
+def read_regular_authority(path: Path, maximum_size: int) -> tuple[bytes, dict[str, Any]]:
+    identity = regular_identity(path)
+    require(identity["size_bytes"] <= maximum_size, f"selected target exceeds size bound: {path}")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        payload = b"".join(chunks)
+    finally:
+        os.close(fd)
+    require(hashlib.sha256(payload).hexdigest() == identity["sha256"], f"selected target changed while reading: {path}")
+    require(regular_identity(path, expected_sha256=identity["sha256"]) == identity,
+            f"selected target changed after reading: {path}")
+    return payload, identity
+
+
 def safe_name(raw: str) -> str:
     path = PurePosixPath(raw)
     require(raw and not path.is_absolute() and "\\" not in raw and all(p not in {"", ".", ".."} for p in path.parts), f"unsafe path: {raw!r}")
@@ -452,14 +530,19 @@ def freeze_pool(
     for raw in sorted(ownership, key=os.fsencode):
         path = Path(raw)
         try:
-            metadata = path.lstat()
-        except OSError:
+            identity = regular_identity(path)
+        except (OSError, CampaignError):
             continue
-        if not stat.S_ISREG(metadata.st_mode) or stat.S_ISLNK(metadata.st_mode) or metadata.st_size > MAX_POOL_BYTES:
+        if identity["size_bytes"] > MAX_POOL_BYTES:
             continue
         if not elf64_x86_64(path):
             continue
         role, readelf_output = readelf_role(path, readelf)
+        try:
+            require(regular_identity(path, expected_sha256=identity["sha256"]) == identity,
+                    f"eligible target changed during role acquisition: {path}")
+        except (OSError, CampaignError):
+            continue
         if role is None:
             continue
         package, lineage = ownership[raw]
@@ -468,9 +551,10 @@ def freeze_pool(
             "lineage": lineage,
             "binary_package": package,
             "source_path": raw,
-            "sha256": sha256_file(path),
-            "size_bytes": metadata.st_size,
-            "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+            "sha256": identity["sha256"],
+            "size_bytes": identity["size_bytes"],
+            "mode": identity["mode"],
+            "source_identity": identity,
             "readelf_sha256": sha256_bytes(readelf_output),
         })
         require(len(pool) <= MAX_ELF_CANDIDATES, "eligible ELF pool capacity exceeded")
@@ -494,11 +578,22 @@ def freeze_pool(
             source = Path(item["source_path"])
             target_id = f"{role}-{slot}-{hashlib.sha256(lineage.encode()).hexdigest()[:12]}"
             snapshot = targets_root / target_id
-            payload = source.read_bytes()
-            require(sha256_bytes(payload) == item["sha256"], f"selected target changed before freeze: {source}")
+            payload, source_identity = read_regular_authority(source, MAX_POOL_BYTES)
+            require(source_identity == item["source_identity"], f"selected target changed before freeze: {source}")
             snapshot.write_bytes(payload)
             snapshot.chmod(0o444)
+            snapshot_identity = regular_identity(
+                snapshot,
+                expected_mode=0o444,
+                expected_sha256=item["sha256"],
+                require_single_link=True,
+            )
             role_again, selected_readelf = readelf_role(snapshot, readelf)
+            require(
+                regular_identity(snapshot, expected_mode=0o444, expected_sha256=item["sha256"], require_single_link=True)
+                == snapshot_identity,
+                f"selected snapshot changed during role verification: {source}",
+            )
             require(role_again == role, f"selected role changed before freeze: {source}")
             readelf_path = stage / "readelf" / f"{target_id}.txt"
             write_regular(readelf_path, selected_readelf)
@@ -507,7 +602,8 @@ def freeze_pool(
                 "slot": slot,
                 "snapshot_path": snapshot.relative_to(stage).as_posix(),
                 "readelf_path": readelf_path.relative_to(stage).as_posix(),
-                "snapshot_sha256": sha256_file(snapshot),
+                "snapshot_sha256": snapshot_identity["sha256"],
+                "snapshot_identity": snapshot_identity,
             })
             selected.append(item)
     freeze = {
@@ -670,16 +766,32 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
         execution = authority["execution"]
         for target_record in selected:
             target = stage / target_record["snapshot_path"]
+            frozen_target = target_record["snapshot_identity"]
+            require(
+                regular_identity(target, expected_mode=0o444, expected_sha256=target_record["sha256"], require_single_link=True)
+                == frozen_target,
+                f"frozen target changed before execution: {target_record['target_id']}",
+            )
             target_outcomes: dict[str, Any] = {}
             x_sets: tuple[set[str], set[str]] | None = None
             for tool in ("x64lens", *BASELINES):
                 argv = tool_commands(tool, tools[tool], target, execution["x64lens_max_depth"])
+                require(
+                    regular_identity(target, expected_mode=0o444, expected_sha256=target_record["sha256"], require_single_link=True)
+                    == frozen_target,
+                    f"frozen target changed before tool execution: {target_record['target_id']}/{tool}",
+                )
                 result = run_bounded(
                     argv,
                     cwd=ROOT,
                     timeout=execution["timeout_seconds"],
                     stdout_limit=execution["stdout_limit_bytes"],
                     stderr_limit=execution["stderr_limit_bytes"],
+                )
+                require(
+                    regular_identity(target, expected_mode=0o444, expected_sha256=target_record["sha256"], require_single_link=True)
+                    == frozen_target,
+                    f"frozen target changed after tool execution: {target_record['target_id']}/{tool}",
                 )
                 execution_count += 1
                 member_dir = stage / "runs" / target_record["target_id"] / tool
@@ -795,26 +907,70 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
 
 
 def require_structural_complete(result: dict[str, Any]) -> None:
-    require(result["selection_freeze"]["selected_count"] == 12, "structural completion requires 12 selected targets")
-    require(
-        result["selection_freeze"]["role_counts"] == {role: 4 for role in ROLES},
-        "structural completion requires four targets in every role",
-    )
-    require(result["execution_count"] == 48, "structural completion requires 48 tool executions")
-    require(result["complete_execution_denominator"] == 48, "execution denominator changed")
-    require(len(result["cells"]) == 9, "structural completion requires nine cells")
-    require(sum(result["cell_counts"].values()) == 9, "terminal cell accounting changed")
-    require(result["control_count"] == 108, "structural completion requires 108 controls")
-    require(
-        all(
-            len(cell["observations"]) == 4
-            and len(cell["controls"]) == 12
-            and all(control["expected"] == control["observed"] for control in cell["controls"])
-            for cell in result["cells"]
-        ),
-        "natural campaign observation/control closure changed",
-    )
+    require(isinstance(result, dict), "natural campaign result must be an object")
+    require(result.get("complete_execution_denominator") == 48, "execution denominator changed")
+    outcomes = result.get("outcomes")
+    require(isinstance(outcomes, dict) and len(outcomes) == 12, "structural completion requires 12 outcome targets")
+    target_records: dict[str, dict[str, Any]] = {}
+    recomputed_executions = 0
+    for target_id, outcome in outcomes.items():
+        require(isinstance(outcome, dict) and set(outcome) == {"target", "tools"}, f"outcome shape changed: {target_id}")
+        target = outcome["target"]
+        require(isinstance(target, dict) and target.get("target_id") == target_id, f"outcome target identity changed: {target_id}")
+        require(target.get("role") in ROLES, f"outcome role changed: {target_id}")
+        require(isinstance(target.get("sha256"), str) and len(target["sha256"]) == 64, f"outcome hash changed: {target_id}")
+        require(target_id not in target_records, f"duplicate outcome target: {target_id}")
+        target_records[target_id] = target
+        tools = outcome["tools"]
+        require(isinstance(tools, dict) and set(tools) == {"x64lens", *BASELINES}, f"outcome tool set changed: {target_id}")
+        recomputed_executions += len(tools)
+    role_counts = {role: sum(target["role"] == role for target in target_records.values()) for role in ROLES}
+    selection = result.get("selection_freeze")
+    require(isinstance(selection, dict), "selection-freeze summary changed")
+    require(selection.get("selected_count") == len(target_records) == 12, "structural completion requires 12 selected targets")
+    require(selection.get("role_counts") == role_counts == {role: 4 for role in ROLES},
+            "structural completion requires four targets in every role")
+    require(result.get("execution_count") == recomputed_executions == 48,
+            "structural completion requires 48 recomputed tool executions")
 
+    cells = result.get("cells")
+    require(isinstance(cells, list) and len(cells) == 9, "structural completion requires nine cells")
+    expected_cell_ids = {f"{baseline}-{role}" for baseline in BASELINES for role in ROLES}
+    observed_cell_ids: set[str] = set()
+    recomputed_counts = {state: 0 for state in ("qualified", "insufficient", "unavailable", "mismatch", "ambiguous")}
+    recomputed_controls = 0
+    for cell in cells:
+        require(isinstance(cell, dict), "natural campaign cell must be an object")
+        baseline = cell.get("tool")
+        role = cell.get("role")
+        cell_id = cell.get("cell_id")
+        require(baseline in BASELINES and role in ROLES and cell_id == f"{baseline}-{role}", f"cell identity changed: {cell_id}")
+        require(cell_id not in observed_cell_ids, f"duplicate natural campaign cell: {cell_id}")
+        observed_cell_ids.add(cell_id)
+        state = cell.get("terminal_state")
+        require(state in recomputed_counts, f"cell terminal state changed: {cell_id}")
+        recomputed_counts[state] += 1
+        observations = cell.get("observations")
+        expected_targets = {target_id for target_id, target in target_records.items() if target["role"] == role}
+        require(isinstance(observations, list) and len(observations) == 4, f"cell observation denominator changed: {cell_id}")
+        observed_targets: set[str] = set()
+        for observation in observations:
+            require(isinstance(observation, dict), f"cell observation shape changed: {cell_id}")
+            target_id = observation.get("target_id")
+            require(target_id in expected_targets and target_id not in observed_targets, f"cell observation target changed: {cell_id}")
+            observed_targets.add(target_id)
+            require(observation.get("target_sha256") == target_records[target_id]["sha256"], f"cell observation hash changed: {cell_id}/{target_id}")
+        require(observed_targets == expected_targets, f"cell observation membership changed: {cell_id}")
+        controls = cell.get("controls")
+        require(isinstance(controls, list) and len(controls) == 12, f"cell control denominator changed: {cell_id}")
+        control_ids = [control.get("id") for control in controls if isinstance(control, dict)]
+        require(len(control_ids) == 12 and len(set(control_ids)) == 12, f"cell control identities changed: {cell_id}")
+        require(all(control.get("expected") == control.get("observed") for control in controls), f"cell control result changed: {cell_id}")
+        recomputed_controls += len(controls)
+    require(observed_cell_ids == expected_cell_ids, "natural campaign cell membership changed")
+    require(result.get("cell_counts") == recomputed_counts, "terminal cell accounting changed")
+    require(result.get("control_count") == recomputed_controls == 108,
+            "structural completion requires 108 recomputed controls")
 
 def require_acceptance_complete(result: dict[str, Any]) -> None:
     require_structural_complete(result)

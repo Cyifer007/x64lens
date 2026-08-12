@@ -91,13 +91,13 @@ path.
 ## Private parity and acquisition
 
 ```bash
-ROLE_PROPERTY_EXTERNAL_NATURAL_RESULT_DIR=/absolute/result/path \
+ROLE_PROPERTY_EXTERNAL_NATURAL_RESULT_DIR=./.local/p077-results/external-natural \
   make sprint12-external-natural-acquisition-smoke
 
-ROLE_PROPERTY_PARITY_RESULT_DIR=/absolute/result/path \
+ROLE_PROPERTY_PARITY_RESULT_DIR=./.local/p077-results/role-property-parity \
   make sprint12-role-property-environment-parity-smoke
 
-DYNAMIC_METADATA_PARITY_RESULT_DIR=/absolute/result/path \
+DYNAMIC_METADATA_PARITY_RESULT_DIR=./.local/p077-results/dynamic-metadata-parity \
   make sprint12-dynamic-metadata-environment-parity-smoke
 ```
 
@@ -138,6 +138,8 @@ and later review required the Patch 078 correction.
 Patch 077 did not complete acceptance. Patch 078 corrected its remaining
 blockers, but Patch 078 was superseded by the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review
-required Patch 081, which was not accepted. See the [Patch 082 validation
-record](sprint-13-patch-083-validation.md); complete acceptance remains pending
-against that exact candidate.
+required Patch 081. Patches 081 and 082 were not accepted. Independent review
+of Patch 083 returned the bounded corrections now carried by the current P084
+corrective candidate. See the
+[Patch 084 validation record](sprint-13-patch-084-validation.md); complete
+acceptance remains pending against that exact candidate.

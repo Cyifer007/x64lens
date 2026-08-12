@@ -100,6 +100,6 @@ private static text-relocation tranche, which Patch 076 extended with distinct
 private RPATH/RUNPATH evidence. Patch 076 was superseded by the Patch 077
 correction, Patch 077 by Patch 078, Patch 078 by the Patch 079 corrective and
 private task-value candidate, Patch 079 by Patch 080, and Patch 080 by Patch 081.
-Patch 081 was not accepted; Patch 082 was not accepted; Patch 083 is the current
-implementation candidate, pending full local execution and independent
-acceptance.
+Patches 081 and 082 were not accepted. Independent review of Patch 083 returned
+the bounded corrections now carried by the current Patch 084 implementation
+candidate, pending full local execution and independent acceptance.
