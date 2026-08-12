@@ -180,8 +180,8 @@ Sprint 13 remains an entry candidate without a release tag or campaign freeze.
 Patch 076 retains tool version `0.1.0-dev`, JSON schema `0.2.0`, all public
 fields, and the `v0.1.0-dev` checkpoint tag. Patch 075 private text-relocation
 facts and Patch 076 distinct private RPATH/RUNPATH facts do not change a product
-or schema version. Patch 076's review required Patch 077; Patch 077's review
-required Patch 078; and Patch 078's review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+or schema version. Patch 076 was superseded by Patch 077; Patch 077's review
+required Patch 078; and Patch 078 was superseded by the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 
 ## Sprint 12 Patch 077 historical version state
 
@@ -221,7 +221,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; exact Patch 081 acceptance remains
+review required this corrective candidate; independent exact-source Patch 082 acceptance remains
 pending.
 
 
@@ -232,3 +232,9 @@ semantic classes, scores, candidate populations, and the dependency-free,
 decoder-free, one-worker reference profile. The producer and coordinate
 authorities are development-validation contracts, not product or schema
 versions. Natural coordinate qualification remains a separate diagnostic gate.
+
+
+## Patch 083 compatibility note
+
+Patch 083 leaves tool version `0.1.0-dev` and schema `0.2.0` unchanged. Its new
+artifacts are diagnostic campaign authorities, not public report fields.

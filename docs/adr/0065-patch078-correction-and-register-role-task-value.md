@@ -3,17 +3,18 @@
 ## Status
 
 Historical Patch 079 implementation decision. Patch 079 did not complete
-acceptance; its review required Patch 080, whose review required Patch 081.
-Patch 081 remains pending complete acceptance against the exact candidate source.
+acceptance; it was superseded by Patch 080, and Patch 080 by Patch 081. Patch 081
+was not accepted; Patch 082 is the current artifact-backed implementation
+candidate, pending independent exact-source acceptance.
 
 ## Context
 
 Patch 078 froze an additive private role lattice for all sixteen exact single-pop
-register patterns. Its review preserved that role model but required a smallest
-corrective patch for acceptance defects in the surrounding source, Docker,
+register patterns. Acceptance validation preserved that role model but required
+a corrective patch for defects in the surrounding source, Docker,
 parity, recovery, permission, patch-transaction, and delivery authorities. Patch
-079 was that corrective and private task-value candidate. Its review required
-Patch 080. The same review also confirmed that a role label is not enough to
+079 was that corrective and private task-value candidate and was superseded by
+Patch 080. The validation findings also confirmed that a role label is not enough to
 justify runtime semantic promotion or a score change.
 
 The implementation must preserve these boundaries:

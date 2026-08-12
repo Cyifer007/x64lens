@@ -6,18 +6,28 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 083
+
+- Require the exact committed Patch 082 base for guarded application and rollback; bind patch-path parents and files across check-only validation and include status publication inside inverse-recovery coverage.
+- Parse all `.PHONY` declarations, make source recovery independent of caller umask, and bind three-generation producer artifacts to the exact candidate tree and exact retained modes.
+- Move Docker mutable builds to the configured non-root home run root while preserving authenticated `/work` source, with a dynamic recreate/execute regression used by all supported container callers.
+- Add the outcome-blind natural coordinate campaign: twelve deterministic installed-package targets, 48 planned target/tool executions, nine cells, and 108 controls, with no reroll and no comparative/publication claim.
+- Add no runtime analyzer, public field, semantic-class, score, schema, capacity, decoder, or worker change.
+
 ### Sprint 13 Patch 082
 
 - Correct Git-less manifest/root pairing, Docker pristine-source custody,
   nested Make authority isolation, ordinary extraction modes, and scoped loose
   helper delivery.
-- Replace the producer-blind ordered-pair and score/null checks with three
-  independently built analyzer generations from one authenticated source tree.
-- Validate all 30 ordered pairs across three generations and mutation-test all
-  25 score/null cells against the exact catalog and producer reports.
-- Add a controlled source-valid coordinate preflight with six ELF objects,
-  eight positive cases, four mutation rejections, four semantic negatives, and
-  two anchors for each of nine baseline-by-role cells.
+- Implement a producer-backed ordered-pair and score/null gate that requires
+  three independently built analyzer generations from one authenticated source
+  tree; full retained execution remains pending local validation.
+- Define a successful full run as 90 ordered-pair producer checks and 100
+  score/null mutation rejections against the exact catalog and producer reports.
+- Add a controlled source-valid coordinate method-discrimination preflight with
+  six ELF targets, eight positive cases, four mutation rejections, four semantic
+  negatives, and two modeled observations for each of nine tool-label-by-role
+  cells (18 cell observations total).
 - Keep natural coordinate qualification, comparative coverage claims, runtime
   tuple state, public fields, semantic classes, scores, schema `0.2.0`, and
   candidate capacity unchanged.
@@ -97,7 +107,8 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 081 corrective candidate.
+  acceptance of the current Patch 082 corrective candidate. Patch 081 was not
+  accepted; its validation findings were accepted as correction inputs to Patch 082.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -542,10 +553,11 @@ The project follows semantic versioning once the first public release is cut.
   role decision for all 16 exact single-pop patterns, including System V call
   argument 4 in `rcx` and Linux syscall argument 4 in `r10`. It changes no
   analyzer runtime source, NASM include, public field, schema `0.2.0`, semantic
-  class, or score. Patch 078 was a Sprint 13 entry candidate whose review
-  required Patch 079; Patch 079's review then required Patch 080, whose review
-  required Patch 081. Patch 081 is the current corrective candidate and retains
-  public-field and score deferral.
+  class, or score. Patch 078 was superseded by Patch 079, Patch 079 by Patch 080,
+  and Patch 080 by Patch 081. Patch 081 was not accepted; its validation findings
+  were accepted as correction inputs. The current Patch 082 candidate implements
+  the resulting corrections. Public-field and
+  score deferral remains unchanged, and independent P082 acceptance is pending.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
@@ -553,15 +565,15 @@ The project follows semantic versioning once the first public release is cut.
   exits, defined deterministic private parse-prefix failure snapshots, isolated
   Docker build products from host-native artifacts, and rebuilt dynamic parity
   from one authenticated Git-less source authority. The patch preserved the
-  implemented private textrel/RPATH/RUNPATH facts and added no public field. Its
-  acceptance review required the Patch 078 correction above.
+  implemented private textrel/RPATH/RUNPATH facts and added no public field. It
+  was superseded by the Patch 078 correction above.
 
 - Sprint 12 Patch 076 corrects the remaining Patch 075 textrel-oracle,
   permission-normalization, custody-publication, source-recovery, parity, and
   loose-delivery findings. Patch 075 introduced the private text-relocation
-  tranche, but its review required this correction. Patch 076's review then
-  required Patch 077. Patch 077's review required Patch 078, whose review
-  required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+  tranche and was superseded by this correction. Patch 076 was superseded by
+  Patch 077, Patch 077 by Patch 078, Patch 078 by the Patch 079 corrective and
+  private task-value candidate, and Patch 079 by Patch 080.
 
 - Patch 075 corrective custody and validation hardening: tracked files with
   hardlink topology are rejected before permission normalization, late
@@ -594,7 +606,9 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate; Sprint 12 remains pending complete Patch 081 acceptance.
+  entry candidate. Patch 081 was not accepted; Patch 082 is the current
+  artifact-backed implementation candidate, pending full local execution and
+  independent acceptance.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,
@@ -634,7 +648,7 @@ The project follows semantic versioning once the first public release is cut.
   closeout candidate. Patch 075 introduced private text-relocation evidence,
   Patch 076 added distinct bounded RPATH/RUNPATH evidence, Patch 077 supplied
   the first corrective closeout candidate, Patch 078 supplied the Sprint 13
-  entry candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+  entry candidate, and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 
 - Sprint 12 Patch 069 correction of the remaining Patch 068 corpus-repair and
   private-fact matrix custody defects: descriptor-authoritative semantic

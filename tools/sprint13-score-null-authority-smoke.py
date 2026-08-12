@@ -85,9 +85,11 @@ def gate_catalog(authority_rows: list[dict[str, Any]]) -> bool:
     return actual == expected
 
 
-def producer_rows(manifest_path: Path) -> list[list[tuple[str, Any]]]:
+def producer_rows(
+    manifest_path: Path, expected_candidate_tree: str
+) -> list[list[tuple[str, Any]]]:
     producer = producer_module()
-    manifest = producer.validate_manifest(manifest_path)
+    manifest = producer.validate_manifest(manifest_path, expected_candidate_tree)
     root = manifest_path.parent
     rows: list[list[tuple[str, Any]]] = []
     for generation in manifest["generations"]:
@@ -109,11 +111,14 @@ def main() -> int:
     parser.add_argument("--authority", type=Path, default=DEFAULT_AUTHORITY)
     parser.add_argument("--expected", type=Path, default=DEFAULT_EXPECTED)
     parser.add_argument("--producer-manifest", type=Path, required=True)
+    parser.add_argument("--expected-candidate-tree", required=True)
     args = parser.parse_args()
     try:
         authority = load(args.authority)
         rows = validate_authority(authority)
-        generations = producer_rows(args.producer_manifest.resolve(strict=True))
+        generations = producer_rows(
+            args.producer_manifest.resolve(strict=True), args.expected_candidate_tree
+        )
         require(gate_catalog(rows), "authority disagrees with exact-pattern catalog")
         require(gate_producer(rows, generations), "authority disagrees with independent producer output")
         role = load(ROLE_POLICY)

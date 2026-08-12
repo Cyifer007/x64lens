@@ -7,8 +7,8 @@ candidate. Patch 075 introduced bounded private static text-relocation evidence.
 Patch 076 preserved that private prefix and implemented distinct private
 `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review required the
 Patch 077 correction. Patch 078 then became the Sprint 13 entry candidate,
-and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
-[Patch 081 validation record](../sprints/sprint-13-patch-081-validation.md).
+and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
+[Patch 082 validation record](../sprints/sprint-13-patch-082-validation.md).
 
 ## Context
 
@@ -143,7 +143,7 @@ acceptance by itself. Patch 075 superseded it, introduced private static
 text-relocation evidence, and then required the Patch 076 correction. Patch 076
 added distinct private RPATH/RUNPATH evidence but required the Patch 077
 correction. Patch 077 was superseded by Patch 078, whose review required Patch
-079; Patch 079's review required Patch 080, whose review required Patch 081.
+079; Patch 079 was superseded by Patch 080, which was superseded by Patch 081.
 Native and Docker aggregates, retained external-natural acquisition, corrected
 isolated parity, delivery rehearsal, and independent exact-source acceptance
-remain part of the exact Patch 081 acceptance boundary.
+remain part of the independent exact-source Patch 082 acceptance boundary.

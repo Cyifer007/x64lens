@@ -50,7 +50,7 @@ docker run --rm \
     -e X64LENS_SOURCE_AUTHORITY_ROOT=/work \
     "$IMAGE" bash -lc '
     set -euo pipefail
-    run=/x64lens-run
+    run=${X64LENS_RUN_ROOT:?}
     rm -rf "$run"
     mkdir "$run"
     cp -a /work/. "$run"/

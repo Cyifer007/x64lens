@@ -106,6 +106,15 @@ def require(condition: bool, message: str) -> None:
         raise RecoveryError(message)
 
 
+def mkdir_exact(name: str, mode: int, *, dir_fd: int) -> None:
+    """Create one directory with a usable exact initial mode under any umask."""
+    previous = os.umask(0)
+    try:
+        os.mkdir(name, mode, dir_fd=dir_fd)
+    finally:
+        os.umask(previous)
+
+
 def strict(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for key, value in pairs:
@@ -641,7 +650,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
             pass
         else:
             raise RecoveryError("destination already exists")
-        os.mkdir(stage_name, 0o700, dir_fd=parent_handle.fd)
+        mkdir_exact(stage_name, 0o700, dir_fd=parent_handle.fd)
         root_fd = os.open(stage_name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_handle.fd)
         root_identity = stable(os.fstat(root_fd))
         require(root_identity.file_type == stat.S_IFDIR, "staging root changed type")
@@ -669,7 +678,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                     require(name in directories and name not in seen_directories,
                             f"undeclared/duplicate directory: {name}")
                     require(member.mode & 0o7777 == 0o755, f"TAR directory mode disagrees: {name}")
-                    os.mkdir(basename, 0o700, dir_fd=parent_fd)
+                    mkdir_exact(basename, 0o700, dir_fd=parent_fd)
                     fd = os.open(basename, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
                     os.fchmod(fd, 0o755)
                     opened = stable(os.fstat(fd))

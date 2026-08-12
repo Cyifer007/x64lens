@@ -12,8 +12,8 @@ bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix without changing the runtime lattice and implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review
 required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
-candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
-[Patch 081 validation record](../sprints/sprint-13-patch-081-validation.md).
+candidate, and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
+[Patch 082 validation record](../sprints/sprint-13-patch-082-validation.md).
 
 ## Context
 
@@ -121,7 +121,7 @@ string-validation corrections, Patch 069 carried them forward, and the Patch
 - Unknown, ambiguous, and contradictory states remain explicit internally;
   duplicate or conflicting carriers force the contradictory state.
 - GNU-property IBT/SHSTK parsing was introduced privately by Patch 065 and
-  remains separate from public report policy. Patch 079 was the corrective and private task-value candidate; its review required Patch 080.
+  remains separate from public report policy. Patch 079 was the corrective and private task-value candidate; it was superseded by Patch 080.
 - The dependency-free, decoder-free, one-worker reference profile is unchanged.
 
 ### Costs

@@ -3,8 +3,8 @@
 ## Status
 
 Recorded as the Patch 077 implementation decision. Patch 077 did not complete
-acceptance; its review required Patch 078. Patch 078's review then required the
-Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+acceptance; its review required Patch 078. Patch 078 was superseded by the
+Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 
 ## Context
 
@@ -56,9 +56,9 @@ The patch makes these decisions:
 9. **Closeout remains evidence-gated.** Patch 077 was a closeout candidate, not
    automatic Sprint 12 acceptance. Patch 078 was the Sprint 13 entry candidate
    and required correction. Patch 079 was the corrective and private task-value
-   candidate; its review required Patch 080, whose review required Patch 081.
-   Activation still requires complete acceptance against the exact Patch 081
-   source.
+   candidate; it was superseded by Patch 080, and Patch 080 by Patch 081. Patch
+   081 was not accepted. Activation still requires complete acceptance against
+   the exact Patch 082 source.
 
 ## Preserved architecture
 

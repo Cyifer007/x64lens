@@ -91,5 +91,6 @@ target-derived paths, or claim exploitability.
 Patch 076 did not establish complete acceptance. Fresh NASM, strict ShellCheck,
 Docker, actual native/container parity, and independent exact-source acceptance
 remain required for the current candidate. These requirements remain separate;
-none substitutes for another. Patch 080's review required Patch 081, which
-remains pending complete acceptance.
+none substitutes for another. Patch 080 was superseded by Patch 081, which
+was not accepted. Complete acceptance remains pending against the exact Patch
+082 source.

@@ -2,15 +2,40 @@
 
 ## Status
 
-Implementation candidate pending complete exact-source native, Docker, parity,
-delivery, and independent validation.
+Implementation candidate with artifact-backed gate definitions. The full
+retained three-build run and complete exact-source native, Docker, parity,
+delivery, and independent validation remain pending.
 
 ## Purpose
 
 Patch 082 corrects the remaining Patch 081 delivery, Docker, nested-authority,
-source-root, and producer-oracle findings. It also executes a bounded controlled
-positive-coordinate preflight. It changes no analyzer assembly, include file,
+source-root, and producer-oracle findings. It also implements a bounded
+controlled coordinate method-discrimination preflight. It changes no analyzer assembly, include file,
 public schema, semantic class, score, candidate capacity, or output field.
+
+```text
+public fields added:         0
+semantic changes:            0
+score changes:               0
+schema:                      0.2.0
+natural coordinate campaign: pending
+P082 acceptance:             pending independent exact-source validation
+```
+
+## Evidence-state vocabulary
+
+- **Artifact-backed** means the Patch 082 tree contains the implemented gate
+  definitions and controlled inputs. It does not mean that the full gate set
+  has been executed and retained.
+- **Cloud-validated** applies only to an explicitly named retained cloud check.
+  It is not inferred for Patch 082 from the presence of implementation
+  artifacts and does not close the deferred WSL2 checks.
+- **WSL2-deferred** means the full exact-source native, Docker, parity, and
+  three-build producer execution still requires retained local evidence.
+- **Accepted** applies here to the Patch 081 findings used as correction inputs,
+  not to Patch 081 or Patch 082 as a product checkpoint.
+- **Pending** applies to the natural coordinate campaign and independent
+  exact-source Patch 082 acceptance.
 
 ## Focused commands
 
@@ -32,10 +57,16 @@ sprint13-ordered-two-pop-role-task-value-smoke: ok ... producer_pair_checks=90 .
 sprint13-score-null-authority-smoke: ok ... producer_rejections=75 ...
 ```
 
+The `positive-coordinate-anchor` target name and the `qualified_cells` banner
+field are retained command-contract labels. Here they count controlled
+method-discrimination cells only; they do not establish natural anchors or
+comparative qualification.
+
 ## Producer authority
 
-Three distinct build roots are materialized from one authenticated Git or
-Git-less source tree. Each root independently runs:
+A complete retained local execution materializes three distinct build roots
+from one authenticated Git or Git-less source tree. Each root then independently
+runs:
 
 ```text
 make clean
@@ -43,15 +74,16 @@ make -j1
 make -j1 samples
 ```
 
-Each resulting analyzer processes the 25-pattern score/effect fixture and the
+Each resulting analyzer is required to process the 25-pattern score/effect fixture and the
 30-pair ordered-pop fixture. The retained reports, binaries, fixtures, source
 tree, and build logs are hash-bound. Normalized facts must agree across all
 three generations. Score mutation or ordered-pop reordering must be rejected by
-producer output, not merely by static catalogs.
+producer output, not merely by static catalogs. The gate is implemented at
+Patch 082; the full retained three-build run remains pending local validation.
 
 ## Coordinate preflight
 
-The controlled preflight generates six deterministic ELF64 objects, two for
+The controlled preflight generates six deterministic ELF64 targets, two for
 each of `ET_EXEC`, PIE-intended `ET_DYN`, and shared-object `ET_DYN`. Each object
 contains one executable `pop rdi; ret` at a file offset whose mapped virtual
 address is distinct. The gate requires:
@@ -60,13 +92,15 @@ address is distinct. The gate requires:
 8 positive oracle cases
 4 one-field mutation rejections
 4 semantic negative cases
-9 baseline-by-role cells
-2 distinct controlled targets per cell
-18 cell-anchor observations from 6 unique controlled targets
+9 tool-label-by-role cells
+2 modeled controlled-target observations per cell
+18 cell observations from 6 unique controlled targets
 ```
 
-This is controlled diagnostic evidence. A fresh authenticated natural campaign
-is still required before any comparative coverage claim.
+This is a controlled method-discrimination gate. The named external tools are
+matrix labels and are not executed by the preflight; its observations are not
+natural anchors. A fresh authenticated natural campaign is still required
+before any comparative coverage claim.
 
 ## Complete local validation
 
@@ -101,6 +135,7 @@ make sprint13-p082-acceptance-smoke
 
 ## Acceptance
 
-Patch 082 is accepted only when native, Docker, parity, source, package,
-capacity, malformed-input, documentation, and independent exact-source evidence
-agree on one candidate tree.
+Patch 082 is not yet accepted. Acceptance requires native, Docker, parity,
+source, package, capacity, malformed-input, documentation, full retained
+three-build, and independent exact-source evidence to agree on one candidate
+tree.

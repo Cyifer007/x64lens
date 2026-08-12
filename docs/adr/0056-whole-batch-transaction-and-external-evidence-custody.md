@@ -97,8 +97,9 @@ review rejected current acceptance. ADR 0059 records the first Patch 073
 custody/isolation correction and policy deferral. ADR 0060 records the Patch 074
 correction and superseded closeout candidate. ADR 0061 records the Patch 075
 private static text-relocation tranche, which Patch 076 extended with distinct
-private RPATH/RUNPATH evidence. Patch 076's review required the Patch 077
-correction. Patch 077's review required Patch 078. Patch 078's review required the
-Patch 079 corrective and private task-value candidate. Patch 079's review
-required Patch 080, whose review required Patch 081. Patch 081 remains pending
-complete acceptance.
+private RPATH/RUNPATH evidence. Patch 076 was superseded by the Patch 077
+correction, Patch 077 by Patch 078, Patch 078 by the Patch 079 corrective and
+private task-value candidate, Patch 079 by Patch 080, and Patch 080 by Patch 081.
+Patch 081 was not accepted; Patch 082 is the current artifact-backed
+implementation candidate, pending full local execution and independent
+acceptance.

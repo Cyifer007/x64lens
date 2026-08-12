@@ -180,13 +180,14 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 remains the active acceptance authority, with Patch 081 as the
-current retrospective and corrective candidate pending complete acceptance.
+Sprint 12 remains the active acceptance authority. Patch 081 was not accepted;
+its validation findings were accepted as correction inputs to the current Patch 082
+artifact-backed implementation candidate.
 Patch 074 was a superseded closeout candidate. Patch 075 introduced private
 text-relocation evidence, Patch 076 added distinct bounded RPATH/RUNPATH
 evidence, and Patch 077 required Patch 078, whose review required Patch 079.
-Patch 080's review required Patch 081. Sprint 13 remains planned and activates
-only after complete Patch 081 acceptance. The diagnostic
+Patch 080 was superseded by Patch 081. Sprint 13 remains planned and activates
+only after complete Patch 082 acceptance. The diagnostic
 corpus and method remain provisional until Sprint 15. Sprints 13 and 14 may
 change capabilities or experimental profiles in response to diagnostic
 evidence; such changes require new diagnostic identities and do not contaminate
@@ -318,7 +319,7 @@ parity protocol, a public-policy decision of `defer`, bounded private static
 text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Patch 078
 corrected the next parity and custody blockers, but its review required the
 Patch 079 corrective and private task-value candidate; Patch 079's review
-required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance
 remains pending. Any diagnostic campaign after acceptance requires a new
 identifier when its task, capability, schema, or method changes.
 
@@ -327,8 +328,9 @@ identifier when its task, capability, schema, or method changes.
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 remains active, with the Patch 081 retrospective and corrective
-candidate pending complete acceptance. The overlap, PIE/DSO, and GNU-
+Sprint 12 remains active. Patch 081 was not accepted; Patch 082 is the current
+artifact-backed corrective candidate pending complete local validation and
+independent acceptance. The overlap, PIE/DSO, and GNU-
 property gates are `resolved`:
 overlap by measured deferral, and role/property projection by retained private
 evidence plus an explicit non-reinterpretive public deferral. Resolution does
@@ -354,8 +356,10 @@ inclusion remained separate gates.
 
 ## Patch 082 coordinate and producer gates
 
-The controlled coordinate preflight is a method gate only. Natural baseline
-qualification remains separate. Producer-backed ordered-pair and score/null
-checks establish current implementation agreement across three independent
-build roots but do not freeze a campaign, authorize a public field, or add a
-semantic family.
+The controlled coordinate preflight is a method-discrimination gate over six
+generated targets, nine tool-label-by-role cells, and two modeled observations
+per cell. It does not execute natural baselines; natural qualification remains
+separate. The implemented producer-backed ordered-pair and score/null gate
+requires agreement across three independent build roots, but full retained
+execution remains pending local validation. Neither gate freezes a campaign,
+authorizes a public field, or adds a semantic family.

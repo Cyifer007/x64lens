@@ -2,14 +2,15 @@
 
 ## Status
 
-Patch 082 producer and coordinate preflight candidate; activation pending complete Patch 082 acceptance.
+Patch 083 natural coordinate campaign candidate; activation pending complete Patch 083 acceptance.
 Patch 080 retains `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` only in the private side-car. Patch 081 records the
 Sprint 12 retrospective and declaratively defers redundant ordered tuple state.
-Patch 082 makes that tuple decision and the score/null partition producer-backed
-through three independent builds, then qualifies controlled coordinate
-mechanics without treating them as natural baseline evidence. Public projection,
-score changes, semantic changes, and schema changes remain deferred.
+Patch 082 implements a producer-backed tuple/score authority and controlled
+coordinate method preflight. Patch 083 corrects the remaining transaction,
+Docker, producer, corpus, recovery, and delivery findings and implements the
+outcome-blind natural coordinate campaign. Public projection, score changes,
+semantic changes, and schema changes remain deferred.
 
 ## Sprint goal
 
@@ -30,6 +31,11 @@ general-purpose decoder or chain generator.
 - [x] Retain the complete score/null partition: 25 exact patterns, 14 scored,
   11 null, and three private role facets retained null. Toggle the 25 rows
   against two distinct static fixtures, yielding 50 deterministic failures.
+- [x] Implement the three-build producer gate and the six-target controlled
+  coordinate method-discrimination preflight.
+- [ ] Complete and retain the full local three-build producer run.
+- [x] Implement the outcome-blind natural coordinate campaign with a complete eligible-pool freeze, twelve target slots, nine cells, and 108 controls.
+- [ ] Execute and retain the complete natural coordinate campaign in an environment with all three baseline tools and complete role strata.
 - [ ] Use Sprint 11-12 diagnostics to select only bounded additional multi-pop, transfer, stack, or memory families that materially affect research tasks.
 - [ ] Add exact fixtures, effects, false-positive boundaries, schema validation, and score decisions for any selected family.
 - [ ] Record unsupported family gaps that remain outside the release scope.
@@ -46,8 +52,12 @@ general-purpose decoder or chain generator.
    a declarative ordered two-pop task-value manifest, defer the tuple record as
    policy, and retain the complete score/null authority without runtime or
    public changes.
-5. **Patch 082:** correct Patch 081 delivery/Docker/authority findings, add three-generation producer authority, and run the controlled positive-coordinate preflight.
-6. **Later evidence-selected patches:** add only bounded families or consumers
+5. **Patch 082:** correct Patch 081 delivery/Docker/authority findings and
+   implement the three-generation producer authority plus the controlled
+   coordinate method-discrimination preflight; retain full local execution as
+   an acceptance gate.
+6. **Patch 083:** correct Patch 082 transaction, corpus, Docker, producer, recovery, and delivery findings; implement the outcome-blind natural coordinate campaign without changing runtime or public facts.
+7. **Later evidence-selected patches:** add only bounded families or consumers
    that demonstrate incremental task value.
 
 ## Acceptance criteria
@@ -78,5 +88,5 @@ changes, and results could not be pooled across strata.
 
 Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
-projection. Patch 080's review required Patch 081; complete Patch 082 acceptance
+projection. Patch 080 was superseded by Patch 081; complete Patch 082 acceptance
 remains required before the next Sprint 13 tranche.

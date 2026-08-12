@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — Patch 081 corrective candidate
+### Sprint 12: loader and mitigation precision — through Patch 082 corrective candidate
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -184,9 +184,11 @@ later sprints rather than Patch 037:
   Patch 076 without path resolution or public projection.
 - [x] Record the Patch 078 review disposition as requiring the Patch 079
   corrective and private task-value candidate.
-- [ ] Complete fresh native, Docker, both parity planes, delivery, and
-  independent acceptance for Patch 081 against the same authenticated source
-  tree.
+- [x] Record that Patch 081 was not accepted and that its validation findings
+  were accepted as correction inputs to Patch 082.
+- [ ] Complete fresh native, Docker, both parity planes, delivery, full
+  three-build producer execution, and independent acceptance for Patch 082
+  against the same authenticated source tree.
 - [ ] Run the separate comparison-qualification campaign under a new identity
   with positive role-controlled coordinate anchors, complete five-path runtime
   closure, qualified whole-batch work, and process-tree RSS. This is not a
@@ -712,15 +714,15 @@ These artifacts are diagnostic, unfrozen, and publication-ineligible. Patch 073
 records public-policy deferral and selected the next bounded mitigation
 tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
-RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077's
+RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
-required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance
 remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 081 candidate
+### Sprint 12 Patch 073 through Patch 082 candidate
 
 Patch 073 executed the public-policy deferral but was not accepted at its first
 returned review boundary. Patch 074 implemented corrections for the confirmed
@@ -730,8 +732,9 @@ static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076's review required correction. Patch 077 was
 a Sprint 12 reconciliation candidate; Patch 078 followed as a Sprint 13 entry
 candidate, and its review required the Patch 079 corrective and private
-task-value candidate, whose review required Patch 080; Patch 080's review
-required Patch 081.
+task-value candidate, which was superseded by Patch 080; Patch 080's review
+required Patch 081. Patch 081 was not accepted; Patch 082 is the current
+artifact-backed corrective candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -757,7 +760,7 @@ required Patch 081.
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 081 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 082 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -774,8 +777,9 @@ required Patch 081.
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [ ] Accept Patch 081 through complete native, Docker, parity, delivery, and
-  independent validation before activating Sprint 13.
+- [ ] Accept Patch 082 only after complete native, Docker, parity, delivery,
+  retained three-build producer, and independent validation before activating
+  Sprint 13.
 
 
 ### Sprint 13 Patch 078 entry decision
@@ -830,12 +834,26 @@ required Patch 081.
 - [x] Bind each Git-less source manifest to its matching authority root.
 - [x] Separate pristine Docker source custody from generated build output.
 - [x] Isolate nested Make invocations from caller-selected authority files.
-- [x] Replace producer-blind ordered-pair and score/null checks with three
-  independently built producer generations.
-- [x] Add a controlled six-object positive-coordinate preflight with two
-  anchors for each of nine baseline-by-role cells.
+- [x] Implement a gate that requires three independently built producer
+  generations for the ordered-pair and score/null checks.
+- [ ] Complete and retain the full local three-build producer run.
+- [x] Add a controlled six-target coordinate method-discrimination preflight
+  with two modeled observations for each of nine tool-label-by-role cells (18
+  observations total).
 - [ ] Run a fresh authenticated natural coordinate campaign before comparative
   coverage interpretation.
 - [ ] Freeze the named consumer contract before additional role projection.
-- [ ] Complete Patch 082 native, Docker, parity, delivery, and independent
-  acceptance.
+- [ ] Complete Patch 082 native, Docker, parity, delivery, full three-build, and
+  independent acceptance.
+
+
+### Sprint 13 Patch 083 checkpoint
+
+- [x] Exact committed base and check-to-effect patch-path binding.
+- [x] Post-effect status publication covered by inverse recovery.
+- [x] Complete `.PHONY` declaration oracle and all-umask source staging.
+- [x] Exact-tree and exact-mode three-generation producer custody.
+- [x] Non-root Docker run-root lifecycle while `/work` remains pristine.
+- [x] Outcome-blind natural coordinate campaign implementation and 108-control self-test.
+- [ ] Complete retained natural campaign on a host with all baseline tools and twelve selected role targets.
+- [ ] Exact-source native, Docker, producer, parity, delivery, and independent acceptance.

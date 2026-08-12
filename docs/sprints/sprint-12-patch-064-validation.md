@@ -23,8 +23,8 @@ were not accepted at their respective first returned review boundaries. Patch
 private static text-relocation evidence, and Patch 076 implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch 076's review
 required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
-candidate, and its review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. Current validation expectations are in the
-[Patch 081 validation record](sprint-13-patch-081-validation.md). The
+candidate, and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
+[Patch 082 validation record](sprint-13-patch-082-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
 historical boundary, and the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves the
@@ -156,7 +156,7 @@ worker profile:           one-worker reference unchanged
 
 - The internal role state is not a public PIE/DSO conclusion.
 - GNU-property IBT/SHSTK evidence was carried by Patch 069 and remains unchanged
-  through Patch 079. Patch 079 was the corrective and private task-value candidate; its review required Patch 080; this historical Patch 064 source did not include it.
+  through Patch 079. Patch 079 was the corrective and private task-value candidate; it was superseded by Patch 080; this historical Patch 064 source did not include it.
 - The overlap incidence measurement is one diagnostic corpus plus one system
   snapshot, not a population-wide estimate.
 - Toolchain-limited static review does not substitute for the required native,

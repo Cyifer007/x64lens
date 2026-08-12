@@ -112,7 +112,9 @@ def run(
     return completed
 
 
-def source_authority(repo: Path, workspace: Path) -> tuple[Any, Path, dict[str, Any], str]:
+def source_authority(
+    repo: Path, workspace: Path, expected_candidate_tree: str
+) -> tuple[Any, Path, dict[str, Any], str]:
     helper = load_module("p082_gitless_source", repo / "tools/gitless-source-manifest.py")
     env_manifest = os.environ.get("X64LENS_SOURCE_MANIFEST")
     env_root = os.environ.get("X64LENS_SOURCE_AUTHORITY_ROOT")
@@ -122,12 +124,20 @@ def source_authority(repo: Path, workspace: Path) -> tuple[Any, Path, dict[str, 
         root = Path(env_root).resolve(strict=True)
         manifest = helper.load_manifest(manifest_path)
         helper.verify(root, manifest)
+        require(
+            manifest.get("candidate_tree") == expected_candidate_tree,
+            "Git-less producer source is not the required candidate tree",
+        )
         return helper, root, manifest, sha256_file(manifest_path)
 
     source_root = workspace / "authenticated-source"
     manifest_path = workspace / "authenticated-source-manifest.json"
     manifest = helper.create(repo, source_root, manifest_path)
     helper.verify(source_root, manifest)
+    require(
+        manifest.get("candidate_tree") == expected_candidate_tree,
+        "producer source is not the required candidate tree",
+    )
     return helper, source_root, manifest, sha256_file(manifest_path)
 
 
@@ -167,6 +177,7 @@ def report_descriptor(path: Path, result_root: Path) -> dict[str, Any]:
         "path": path.relative_to(result_root).as_posix(),
         "sha256": sha256_bytes(data),
         "size_bytes": len(data),
+        "mode": f"{stat.S_IMODE(path.stat().st_mode):04o}",
         "command": value.get("command"),
         "candidate_count": value.get("counts", {}).get("raw_candidate_count"),
     }
@@ -250,9 +261,9 @@ def build_generation(
     analyzer_copy = retained / "x64lens"
     fixture_effects_copy = retained / "gadgets_sprint10_effects"
     fixture_pairs_copy = retained / "gadgets_sprint13_ordered_pairs"
-    retain_file(analyzer, analyzer_copy, 0o555)
-    retain_file(effects, fixture_effects_copy, 0o444)
-    retain_file(pairs, fixture_pairs_copy, 0o444)
+    analyzer_descriptor = retain_file(analyzer, analyzer_copy, 0o555)
+    effects_descriptor = retain_file(effects, fixture_effects_copy, 0o444)
+    pairs_descriptor = retain_file(pairs, fixture_pairs_copy, 0o444)
     log.chmod(0o444)
 
     effects_value = load_json(effects_report)
@@ -266,20 +277,14 @@ def build_generation(
         "source_candidate_tree": manifest["candidate_tree"],
         "source_manifest_sha256": source_manifest_sha256,
         "build_commands": ["make clean", "make -j1", "make -j1 samples"],
-        "analyzer": {
-            "path": analyzer_copy.relative_to(result_root).as_posix(),
-            "sha256": sha256_file(analyzer_copy),
-            "size_bytes": analyzer_copy.stat().st_size,
-        },
-        "effects_fixture": {
-            "path": fixture_effects_copy.relative_to(result_root).as_posix(),
-            "sha256": sha256_file(fixture_effects_copy),
-            "size_bytes": fixture_effects_copy.stat().st_size,
-        },
-        "ordered_pairs_fixture": {
-            "path": fixture_pairs_copy.relative_to(result_root).as_posix(),
-            "sha256": sha256_file(fixture_pairs_copy),
-            "size_bytes": fixture_pairs_copy.stat().st_size,
+        "analyzer": {**analyzer_descriptor, "path": analyzer_copy.relative_to(result_root).as_posix()},
+        "effects_fixture": {**effects_descriptor, "path": fixture_effects_copy.relative_to(result_root).as_posix()},
+        "ordered_pairs_fixture": {**pairs_descriptor, "path": fixture_pairs_copy.relative_to(result_root).as_posix()},
+        "build_log": {
+            "path": log.relative_to(result_root).as_posix(),
+            "sha256": sha256_file(log),
+            "size_bytes": log.stat().st_size,
+            "mode": "0444",
         },
         "effects_report": report_descriptor(effects_report, result_root),
         "ordered_pairs_report": report_descriptor(pairs_report, result_root),
@@ -287,7 +292,7 @@ def build_generation(
     }
 
 
-def validate_manifest(path: Path) -> dict[str, Any]:
+def validate_manifest(path: Path, expected_candidate_tree: str) -> dict[str, Any]:
     value = load_json(path)
     require(isinstance(value, dict), "producer manifest must be an object")
     require(set(value) == {
@@ -296,15 +301,21 @@ def validate_manifest(path: Path) -> dict[str, Any]:
         "generations", "normalized_fact_sha256", "public_boundary", "limitations",
     }, "producer manifest shape changed")
     require(value["schema"] == SCHEMA and value["sprint"] == 13 and value["patch"] == 82, "producer manifest identity changed")
+    require(
+        value["source_candidate_tree"] == expected_candidate_tree,
+        "producer manifest is not bound to the required candidate tree",
+    )
     require(value["evidence_class"] == "diagnostic" and value["publication_eligible"] is False, "producer evidence boundary changed")
     source_manifest = value.get("source_manifest")
-    require(isinstance(source_manifest, dict) and set(source_manifest) == {"path", "sha256", "size_bytes"}, "producer source-manifest descriptor changed")
+    require(isinstance(source_manifest, dict) and set(source_manifest) == {"path", "sha256", "size_bytes", "mode"}, "producer source-manifest descriptor changed")
     relative_manifest = PurePosixPath(source_manifest["path"])
     require(not relative_manifest.is_absolute() and ".." not in relative_manifest.parts, "unsafe producer source-manifest path")
     source_manifest_path = path.parent / relative_manifest
     require(source_manifest_path.is_file() and not source_manifest_path.is_symlink(), "producer source manifest missing")
     require(sha256_file(source_manifest_path) == source_manifest["sha256"] == value["source_manifest_sha256"], "producer source-manifest identity changed")
     require(source_manifest_path.stat().st_size == source_manifest["size_bytes"], "producer source-manifest size changed")
+    require(stat.S_IMODE(source_manifest_path.stat().st_mode) == int(source_manifest["mode"], 8) == 0o444,
+            "producer source-manifest mode changed")
     retained_source = load_json(source_manifest_path)
     require(retained_source.get("candidate_tree") == value["source_candidate_tree"], "retained producer source tree changed")
     require(value["generation_count"] == GENERATION_COUNT, "producer generation denominator changed")
@@ -318,7 +329,15 @@ def validate_manifest(path: Path) -> dict[str, Any]:
     require(fact_hashes == {value["normalized_fact_sha256"]}, "producer normalized facts disagree")
     root = path.parent
     for item in generations:
-        for key in ("analyzer", "effects_fixture", "ordered_pairs_fixture", "effects_report", "ordered_pairs_report"):
+        expected_modes = {
+            "analyzer": 0o555,
+            "effects_fixture": 0o444,
+            "ordered_pairs_fixture": 0o444,
+            "effects_report": 0o444,
+            "ordered_pairs_report": 0o444,
+            "build_log": 0o444,
+        }
+        for key, expected_mode in expected_modes.items():
             record = item.get(key)
             require(isinstance(record, dict) and isinstance(record.get("path"), str), f"producer record missing: {key}")
             relative = PurePosixPath(record["path"])
@@ -326,6 +345,8 @@ def validate_manifest(path: Path) -> dict[str, Any]:
             member = root / relative
             require(member.is_file() and not member.is_symlink(), f"producer member missing: {record['path']}")
             require(sha256_file(member) == record["sha256"] and member.stat().st_size == record["size_bytes"], f"producer member identity changed: {record['path']}")
+            require(record.get("mode") == f"{expected_mode:04o}", f"producer recorded mode changed: {record['path']}")
+            require(stat.S_IMODE(member.stat().st_mode) == expected_mode, f"producer member mode changed: {record['path']}")
     require(value["public_boundary"] == {
         "runtime_records_added": 0,
         "public_fields_added": 0,
@@ -336,13 +357,15 @@ def validate_manifest(path: Path) -> dict[str, Any]:
     return value
 
 
-def execute(repo: Path, result_dir: Path) -> dict[str, Any]:
+def execute(repo: Path, result_dir: Path, expected_candidate_tree: str) -> dict[str, Any]:
     require(not result_dir.exists(), f"result directory already exists: {result_dir}")
     result_dir.parent.mkdir(parents=True, exist_ok=True)
     result_dir.mkdir(mode=0o755)
     with tempfile.TemporaryDirectory(prefix="x64lens-p082-producer-") as raw:
         workspace = Path(raw)
-        helper, authority_root, source_manifest, source_manifest_file_sha = source_authority(repo, workspace)
+        helper, authority_root, source_manifest, source_manifest_file_sha = source_authority(
+            repo, workspace, expected_candidate_tree
+        )
         retained_source_manifest = result_dir / "source-manifest.json"
         retained_source_manifest.write_bytes(canonical(source_manifest))
         retained_source_manifest.chmod(0o444)
@@ -373,6 +396,7 @@ def execute(repo: Path, result_dir: Path) -> dict[str, Any]:
             "path": retained_source_manifest.name,
             "sha256": retained_source_manifest_sha,
             "size_bytes": retained_source_manifest.stat().st_size,
+            "mode": "0444",
         },
         "source_manifest_sha256": generations[0]["source_manifest_sha256"],
         "generation_count": GENERATION_COUNT,
@@ -394,7 +418,7 @@ def execute(repo: Path, result_dir: Path) -> dict[str, Any]:
     manifest = result_dir / "manifest.json"
     manifest.write_bytes(canonical(value))
     manifest.chmod(0o444)
-    validate_manifest(manifest)
+    validate_manifest(manifest, expected_candidate_tree)
     return value
 
 
@@ -404,16 +428,22 @@ def main() -> int:
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--repo", type=Path, default=ROOT)
     run_parser.add_argument("--result-dir", type=Path, required=True)
+    run_parser.add_argument("--expected-candidate-tree", required=True)
     verify_parser = subparsers.add_parser("verify")
     verify_parser.add_argument("--manifest", type=Path, required=True)
+    verify_parser.add_argument("--expected-candidate-tree", required=True)
     args = parser.parse_args()
     try:
         if args.action == "run":
-            value = execute(args.repo.resolve(strict=True), args.result_dir.resolve())
+            value = execute(
+                args.repo.resolve(strict=True),
+                args.result_dir.resolve(),
+                args.expected_candidate_tree,
+            )
             manifest_path = args.result_dir.resolve() / "manifest.json"
         else:
             manifest_path = args.manifest.resolve(strict=True)
-            value = validate_manifest(manifest_path)
+            value = validate_manifest(manifest_path, args.expected_candidate_tree)
     except (OSError, subprocess.SubprocessError, json.JSONDecodeError, ProducerError) as exc:
         fail(str(exc))
     print(

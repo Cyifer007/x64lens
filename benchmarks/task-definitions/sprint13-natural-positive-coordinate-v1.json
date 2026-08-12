@@ -1,0 +1,53 @@
+{
+  "schema": "x64lens-sprint13-natural-positive-coordinate-authority-v1",
+  "sprint": 13,
+  "patch": 83,
+  "campaign_id": "s13-p083-natural-coordinate-v1",
+  "evidence_class": "diagnostic",
+  "frozen": false,
+  "publication_eligible": false,
+  "relation_id": "canonical_exact_pop_rdi_ret",
+  "selection": {
+    "package_universe": "all installed dpkg packages",
+    "file_universe": "regular non-symlink ELF64 little-endian x86_64 package members",
+    "lineage_key": "dpkg source package, binary package fallback",
+    "roles": ["et_exec", "pie_et_dyn", "shared_et_dyn"],
+    "lineages_per_role": 4,
+    "targets_total": 12,
+    "ordering": "role order, lineage byte order, path byte order",
+    "target_rule": "first eligible path in each of the first four distinct lineages",
+    "outcome_blind": true,
+    "reroll": false
+  },
+  "execution": {
+    "tools": ["x64lens", "ropgadget", "ropper", "ropr"],
+    "executions_per_complete_target": 4,
+    "complete_execution_denominator": 48,
+    "x64lens_max_depth": 4,
+    "timeout_seconds": 120,
+    "stdout_limit_bytes": 16777216,
+    "stderr_limit_bytes": 4194304
+  },
+  "qualification": {
+    "cells": 9,
+    "observations_per_cell": 4,
+    "positive_targets_required": 2,
+    "distinct_target_hashes_required": true,
+    "consistent_coordinate_class_required": true,
+    "mismatch_allowed": false,
+    "ambiguous_allowed": false,
+    "controls_per_cell": 12,
+    "control_total": 108,
+    "terminal_states": ["qualified", "insufficient", "unavailable", "mismatch", "ambiguous"]
+  },
+  "claim_boundary": {
+    "comparison_qualified": false,
+    "coverage_claim_authorized": false,
+    "performance_claim_authorized": false,
+    "publication_claim_authorized": false,
+    "public_fields_added": 0,
+    "semantic_changes": 0,
+    "score_changes": 0,
+    "schema_changed": false
+  }
+}

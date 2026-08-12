@@ -1681,8 +1681,8 @@ Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
 separate private evidence layer, and Sprint 13 activation remains blocked until
-complete Patch 081 acceptance. Patch 078 review required the Patch 079
-corrective candidate; Patch 079 review required Patch 080, whose review required
+complete Patch 082 acceptance. Patch 078 was superseded by the Patch 079
+corrective candidate; Patch 079 was superseded by Patch 080, whose review required
 Patch 081.
 
 ## Sprint 13 Patch 078 transaction and role-decision boundary
@@ -1758,11 +1758,25 @@ boundaries and do not alter the analysis pipeline.
 
 Patch 082 adds no runtime analysis module. Development validation now preserves
 an authenticated Git-less source root separately from mutable build output and
-requires every manifest/root pair to agree. Three independent build roots
-produce the analyzer reports consumed by the ordered-pair and score/null policy
-gates. These producer records validate existing matcher, classifier, and scorer
-output; they do not become reporter inputs or new candidate side-cars.
+requires every manifest/root pair to agree. The implemented producer gate
+requires a complete retained local run to materialize three independent build
+roots and consume their analyzer reports in the ordered-pair and score/null
+policy gates. A successful run validates existing matcher, classifier, and
+scorer output; its records do not become reporter inputs or new candidate
+side-cars. Full three-build execution remains pending local validation.
 
-The controlled coordinate preflight consumes mapping facts only. It does not
-change program-header executable authority, region construction, candidate
-coordinates, or report fields.
+The controlled coordinate method-discrimination preflight consumes modeled
+mapping facts over six controlled targets only. It neither executes the named
+external tools nor changes program-header executable authority, region
+construction, candidate coordinates, or report fields.
+
+
+## Patch 083 natural coordinate evidence plane
+
+The natural coordinate campaign is development infrastructure outside the
+analyzer process. It consumes authenticated analyzer and baseline executables,
+read-only snapshots selected from installed package membership, and GNU
+`readelf` loader-role evidence. It cannot map files for the runtime analyzer,
+change executable-region authority, classify candidates, score candidates, or
+format public reports. The campaign retains complete pool, selection, command,
+native-output, relation, and cell evidence under a separate diagnostic identity.

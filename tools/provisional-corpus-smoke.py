@@ -535,10 +535,39 @@ def spawn_window_probe(temporary: pathlib.Path) -> None:
     require(completed.stdout.strip() == "spawn-window-probe: ok", f"unexpected spawn-window probe output: {completed.stdout!r}")
 
 
+def parse_phony_targets(makefile_text: str) -> set[str]:
+    """Return every target declared across all .PHONY statements.
+
+    GNU Make permits more than one declaration and permits continued logical
+    lines.  The corpus oracle must not treat the first declaration as the whole
+    authority.
+    """
+    logical_lines: list[str] = []
+    pending = ""
+    for physical in makefile_text.splitlines():
+        stripped = physical.rstrip()
+        pending += stripped[:-1] + " " if stripped.endswith("\\") else stripped
+        if stripped.endswith("\\"):
+            continue
+        logical_lines.append(pending)
+        pending = ""
+    if pending:
+        logical_lines.append(pending)
+    targets: set[str] = set()
+    for line in logical_lines:
+        if not line.lstrip().startswith(".PHONY:"):
+            continue
+        _prefix, _colon, body = line.partition(":")
+        targets.update(body.split())
+    return targets
+
+
 def clean_target_probe(source_corpus: pathlib.Path, temporary: pathlib.Path) -> None:
     makefile_text = (ROOT / "Makefile").read_text(encoding="utf-8")
-    phony_line = next((line for line in makefile_text.splitlines() if line.startswith(".PHONY:")), "")
-    require("clean-provisional-corpus" in phony_line.split(), "clean-provisional-corpus is not phony")
+    require(
+        "clean-provisional-corpus" in parse_phony_targets(makefile_text),
+        "clean-provisional-corpus is not phony",
+    )
     require('rm -rf "$(PROVISIONAL_CORPUS_PATH)"' not in makefile_text, "clean target still contains unbounded rm -rf")
 
     root = temporary / "clean-root"

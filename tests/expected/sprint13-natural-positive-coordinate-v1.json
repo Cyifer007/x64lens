@@ -1,0 +1,18 @@
+{
+  "schema": "x64lens-sprint13-natural-positive-coordinate-selftest-result-v1",
+  "sprint": 13,
+  "patch": 83,
+  "roles": 3,
+  "baselines": 3,
+  "cells": 9,
+  "observations": 36,
+  "qualified_cells": 9,
+  "controls": 108,
+  "control_terminal_states": 108,
+  "outcome_blind_selection": true,
+  "reroll": false,
+  "public_fields_added": 0,
+  "semantic_changes": 0,
+  "score_changes": 0,
+  "schema_changed": false
+}

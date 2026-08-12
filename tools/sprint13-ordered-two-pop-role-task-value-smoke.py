@@ -117,9 +117,11 @@ def validate_authority(authority: dict[str, Any]) -> tuple[list[dict[str, Any]],
     return pairs, contract
 
 
-def validate_producer(pairs: list[dict[str, Any]], manifest_path: Path) -> tuple[int, int]:
+def validate_producer(
+    pairs: list[dict[str, Any]], manifest_path: Path, expected_candidate_tree: str
+) -> tuple[int, int]:
     producer = producer_module()
-    manifest = producer.validate_manifest(manifest_path)
+    manifest = producer.validate_manifest(manifest_path, expected_candidate_tree)
     root = manifest_path.parent
     checks = 0
     fact_hashes: set[str] = set()
@@ -150,9 +152,11 @@ def validate_producer(pairs: list[dict[str, Any]], manifest_path: Path) -> tuple
     return len(manifest["generations"]), checks
 
 
-def evaluate(authority: dict[str, Any], manifest_path: Path) -> dict[str, Any]:
+def evaluate(
+    authority: dict[str, Any], manifest_path: Path, expected_candidate_tree: str
+) -> dict[str, Any]:
     pairs, _contract = validate_authority(authority)
-    generations, checks = validate_producer(pairs, manifest_path)
+    generations, checks = validate_producer(pairs, manifest_path, expected_candidate_tree)
     tasks = authority.get("tasks")
     require(isinstance(tasks, list) and len(tasks) == 30, "task denominator changed")
     dev_positive = sum(item.get("phase") == "development" and item.get("kind") == "positive_role_tuple" for item in tasks)
@@ -187,10 +191,15 @@ def main() -> int:
     parser.add_argument("--authority", type=Path, default=DEFAULT_AUTHORITY)
     parser.add_argument("--expected", type=Path, default=DEFAULT_EXPECTED)
     parser.add_argument("--producer-manifest", type=Path, required=True)
+    parser.add_argument("--expected-candidate-tree", required=True)
     args = parser.parse_args()
     try:
         validate_source_contract()
-        result = evaluate(load(args.authority), args.producer_manifest.resolve(strict=True))
+        result = evaluate(
+            load(args.authority),
+            args.producer_manifest.resolve(strict=True),
+            args.expected_candidate_tree,
+        )
         require(result == load(args.expected), "result differs from expected authority")
     except (OSError, json.JSONDecodeError, GateError) as exc:
         fail(str(exc))

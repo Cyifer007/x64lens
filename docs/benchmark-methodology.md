@@ -863,8 +863,8 @@ Patch 074 proposed stronger custody and parity qualification without creating a
 new benchmark result and was superseded as the closeout candidate. Patch 075
 introduced private static text-relocation evidence, and Patch 076 implemented
 distinct private RPATH and RUNPATH evidence. Patch 076's review required the
-Patch 077 correction. Patch 077's review required Patch 078, whose review
-required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
+required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 Complete acceptance remains pending. External-natural selection is
 device/inode/hash bound through all outcome checkpoints. The corrected
 native/container protocol
@@ -879,9 +879,9 @@ floor and there were zero positive coordinate anchors. These corrections do not
 resolve below-floor x64lens latency, provide process-tree RSS, establish speed,
 superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
-the corrective and private task-value candidate; its review required Patch 080,
-whose review required Patch 081. Any changed semantic task in Sprint 13 receives
-a new diagnostic campaign identity only after complete Patch 081 acceptance and
+the corrective and private task-value candidate; it was superseded by Patch 080,
+which was superseded by Patch 081. Any changed semantic task in Sprint 13 receives
+a new diagnostic campaign identity only after complete Patch 082 acceptance and
 the relevant task-value gate.
 
 
@@ -950,14 +950,28 @@ publication claim and is not merged into the Sprint 15-frozen campaign.
 
 ## Patch 082 controlled coordinate preflight
 
-Patch 082 adds controlled coordinate-classification evidence, not a comparative
-coverage result. Six deterministic ELF64 objects provide distinct file-offset
-and virtual-address coordinates. Eight positive cases, four one-field
-mutations, four semantic negatives, and eighteen anchors across nine
-baseline-by-role cells validate the calibration mechanics.
+Patch 082 adds a controlled coordinate method-discrimination gate, not a
+comparative coverage result. Six deterministic ELF64 targets provide distinct
+file-offset and virtual-address coordinates. Eight positive cases, four
+one-field mutations, four semantic negatives, and two modeled observations in
+each of nine tool-label-by-role cells provide 18 cell observations total.
 
-The modeled baseline relation is not a retained natural tool execution. A
+The tool names are matrix labels, not executed baselines, and the modeled
+relation is not a retained natural tool execution. A
 fresh campaign must bind native baseline output, x64lens relations, target
 bytes, commands, versions, exits, and result artifacts before a coordinate cell
 can enter comparative coverage analysis. No generic gadget-count, runtime, RSS,
 or superiority claim follows from the controlled preflight.
+
+
+## Patch 083 natural coordinate qualification
+
+The controlled Patch 082 preflight validates coordinate-method mechanics only.
+Patch 083 adds a separate outcome-blind natural campaign. The campaign freezes
+the complete ordered installed-package ELF pool and twelve target snapshots
+before analyzer or baseline outcomes, then runs x64lens, ROPgadget, Ropper, and
+ropr over each available selected target. Nine baseline-by-role cells retain all
+observations plus 108 classifier controls. Missing tools, role strata, empty
+relations, mismatches, and ambiguous coordinates remain explicit. A qualified
+cell still does not authorize a coverage or performance claim; task-equivalent
+comparison and the Sprint 15 method freeze remain required.

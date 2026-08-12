@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p082_candidate_pending_acceptance",
-  "closeout_patch": 82,
+  "status": "retrospective_recorded_and_sprint13_p083_candidate_pending_acceptance",
+  "closeout_patch": 83,
   "candidate_patches": [
     62,
     63,
@@ -24,10 +24,11 @@
     79,
     80,
     81,
-    82
+    82,
+    83
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p082-acceptance-smoke",
+  "acceptance_target": "sprint13-p083-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -74,7 +75,15 @@
     "positive_coordinate_anchors": 18,
     "controlled_coordinate_preflight": "qualified",
     "natural_coordinate_campaign_qualified": false,
-    "comparative_coverage_claim_authorized": false
+    "comparative_coverage_claim_authorized": false,
+    "natural_coordinate_campaign_id": "s13-p083-natural-coordinate-v1",
+    "natural_coordinate_campaign_status": "pending_local_execution",
+    "natural_coordinate_planned_targets": 12,
+    "natural_coordinate_planned_executions": 48,
+    "natural_coordinate_cells": 9,
+    "natural_coordinate_controls": 108,
+    "natural_coordinate_outcome_blind": true,
+    "natural_coordinate_reroll": false
   },
   "corrective_transaction_boundary": {
     "patch_bytes_pinned_across_check_and_mutation": true,
@@ -128,7 +137,17 @@
     "producer_authority_independent_builds": true,
     "portable_ordinary_extraction_modes": true,
     "package_custody_modes_consistent": true,
-    "scoped_loose_helpers": true
+    "scoped_loose_helpers": true,
+    "multiple_phony_declarations_supported": true,
+    "exact_base_head_required": true,
+    "patch_parent_chain_reauthenticated": true,
+    "post_effect_output_recovery": true,
+    "source_recovery_umask_0777_supported": true,
+    "producer_candidate_tree_bound": true,
+    "producer_modes_bound": true,
+    "docker_nonroot_writable_run_root": true,
+    "natural_coordinate_authority_outcome_blind": true,
+    "natural_coordinate_complete_denominator_required_for_acceptance": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -142,8 +161,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 83,
-    "next_patch_tranche": "natural-positive-coordinate-campaign-and-consumer-contract-freeze",
+    "next_patch": 84,
+    "next_patch_tranche": "natural-coordinate-reconciliation-and-named-role-consumer-contract",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -184,7 +203,15 @@
     "controlled_coordinate_qualified_cells": 9,
     "controlled_coordinate_positive_anchors": 18,
     "natural_coordinate_campaign_qualified": false,
-    "comparative_coverage_claim_authorized": false
+    "comparative_coverage_claim_authorized": false,
+    "natural_coordinate_campaign_id": "s13-p083-natural-coordinate-v1",
+    "natural_coordinate_campaign_status": "pending_local_execution",
+    "natural_coordinate_planned_targets": 12,
+    "natural_coordinate_planned_executions": 48,
+    "natural_coordinate_cells": 9,
+    "natural_coordinate_controls": 108,
+    "natural_coordinate_outcome_blind": true,
+    "natural_coordinate_reroll": false
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -207,6 +234,8 @@
     "docs/adr/0067-patch080-correction-and-ordered-two-pop-task-value.md",
     "docs/sprints/sprint-13-patch-081-validation.md",
     "docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md",
-    "docs/sprints/sprint-13-patch-082-validation.md"
+    "docs/sprints/sprint-13-patch-082-validation.md",
+    "docs/adr/0069-patch082-correction-and-natural-coordinate-campaign.md",
+    "docs/sprints/sprint-13-patch-083-validation.md"
   ]
 }

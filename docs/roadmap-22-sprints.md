@@ -13,12 +13,11 @@ versions, commands, and task definitions are frozen.
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 remains the acceptance authority
-for its loader and mitigation facts while Patch 081 records the semester
-retrospective and carries the remaining Patch 080 corrective boundary into
-Sprint 13. The roadmap may state "Sprints 1 through 12 are complete" and
-"Sprint 13 is active" only after every exact-source native, Docker, parity,
-delivery, and independent acceptance gate passes.
+Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
+mitigation facts. Patch 083 is the current implementation candidate. The
+roadmap may state that Sprint 13 is fully active only after every Patch 083
+exact-source native, Docker, parity, producer, natural-coordinate, delivery,
+and independent acceptance gate passes.
 
 Sprint 12 delivered bounded ordinary-PHDR validity, explicit extended-numbering
 outcomes, executable-overlap contributor provenance and measured normalization
@@ -30,14 +29,17 @@ private RPATH/RUNPATH evidence. The completed engineering scope and lessons are
 recorded in [`sprints/sprint-12-retro.md`](sprints/sprint-12-retro.md).
 
 Patch 080 added a private candidate-index role side-car for three qualified
-single-pop facets while preserving public output and scores. Patch 081 corrects
+single-pop facets while preserving public output and scores. Patch 081 corrected
 its transaction, Git-less source, Docker provenance, helper-identity, and
-evidence-seal findings. Patch 081 also records a test-only ordered two-pop
+evidence-seal findings. Patch 081 also recorded a test-only ordered two-pop
 role-tuple manifest. The manifest declares existing and proposed correctness
 with zero incremental gains, and its static smoke validates those declarations
 without executing an independent task consumer. The resulting policy decision
 defers a new runtime tuple record. A separate static authority retains the
-complete 25-pattern score/null partition.
+complete 25-pattern score/null partition. Patch 082 implements producer-backed validation for those retained decisions.
+Patch 083 corrects the remaining P082 acceptance infrastructure and implements
+the outcome-blind natural-coordinate campaign; full local execution remains
+pending.
 
 All Sprint 11-13 campaign observations remain diagnostic, unfrozen, and
 publication-ineligible. The retained P080 campaign had zero x64lens rows above
@@ -257,8 +259,9 @@ closeout candidate. Patch 075 introduced bounded private static text-relocation
 evidence, and Patch 076 added distinct private RPATH/RUNPATH evidence. Patch
 076's review required Patch 077. Patch 077 then required Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
-required Patch 080; Patch 080's review required Patch 081, pending complete
-acceptance. None of these patches advances the Sprint 15 freeze, adds
+required Patch 080; Patch 080 was superseded by Patch 081. Patch 081 was not
+accepted; Patch 082 is the current artifact-backed candidate pending complete
+local and independent acceptance. None of these patches advances the Sprint 15 freeze, adds
 a public mitigation field, or changes the dependency-free one-worker reference
 profile.
 
@@ -299,7 +302,7 @@ separate exact-byte `DT_RPATH` and `DT_RUNPATH` evidence with fixed carrier,
 record, and byte budgets. It performs no path-derived open, loader emulation,
 path expansion, public projection, or schema change. Complete native/container
 private dynamic-metadata parity and independent acceptance remain required.
-Patch 078 required the Patch 079 corrective and private task-value candidate, whose review required Patch 080.
+Patch 078 required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 
 ## Sprint 12 Patch 077 historical checkpoint
 
@@ -307,7 +310,7 @@ Patch 077 was a Sprint 12 reconciliation candidate. It preserved
 the implemented private textrel/RPATH/RUNPATH facts, corrected their surrounding
 transactions and oracles, and added no public field. Its review required Patch
 078, whose review in turn required Patch 079; Patch 079's review required Patch
-080, whose review required Patch 081. Exact Patch 081 acceptance is still
+080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance is still
 required before Sprint 13 activation;
 the confirmatory campaign remains frozen only in Sprint 15.
 
@@ -326,7 +329,7 @@ facets privately and deferred public and score projection.
 Patch 080 corrects Patch 079 and materializes generic-control, System V
 call-argument, and Linux syscall-argument facets in a private bounded side-car.
 It adds no public field, score, schema change, decoder, or worker. Its review
-required Patch 081.
+required Patch 081. Patch 081 was not accepted and is historical.
 
 ## Sprint 13 Patch 081 checkpoint
 
@@ -341,7 +344,17 @@ schema, capacity, dependency, or worker change is introduced. The next Sprint
 ## Sprint 13 Patch 082 checkpoint
 
 Patch 082 corrects the remaining Patch 081 delivery and Docker-source boundary,
-adds independent producer-backed policy validation, and qualifies controlled
-coordinate mechanics. It changes no runtime or schema fact. Natural coordinate
-evidence and a frozen role consumer remain required before the next semantic or
-comparative decision. Sprint 15 remains the confirmatory campaign freeze.
+implements a producer-backed policy gate, and adds a controlled coordinate
+method-discrimination preflight. Full retained three-build execution remains
+pending local validation. It changes no runtime or schema fact. Natural
+coordinate evidence and a frozen role consumer remain required before the next
+semantic or comparative decision. Sprint 15 remains the confirmatory campaign
+freeze.
+
+
+## Sprint 13 Patch 083 checkpoint
+
+Patch 083 is a corrective and diagnostic-campaign candidate. It implements the
+outcome-blind natural coordinate campaign selected after the controlled
+preflight while preserving all runtime and public contracts. Natural results
+remain diagnostic; Sprint 15 still owns campaign freeze.

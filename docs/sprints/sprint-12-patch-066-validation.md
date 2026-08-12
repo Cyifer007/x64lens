@@ -11,8 +11,8 @@ respective first returned review boundaries. Patch 073 delivered the first
 custody/isolation correction and policy deferral. Patch 074 was a superseded
 Sprint 12 closeout candidate. Patch 075 introduced bounded private static
 text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
-and `DT_RUNPATH` carrier/value evidence. Patch 076's review required Patch 077.
-Patch 077's review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, whose review required Patch 080. The
+and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
+Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. The
 [Patch 067 validation plan](sprint-12-patch-067-validation.md) preserves that
 historical boundary, and the
 [Patch 068 validation plan](sprint-12-patch-068-validation.md) preserves the next
@@ -21,7 +21,7 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current validation expectations are in the
-[Patch 081 validation record](sprint-13-patch-081-validation.md); the
+[Patch 082 validation record](sprint-13-patch-082-validation.md); the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -172,9 +172,9 @@ gate. Patch 073 delivered the first custody/isolation correction and policy
 deferral, and Patch 074 was a superseded closeout candidate. Patch 075
 introduced private static text-relocation evidence, but its review required the
 Patch 076 correction. Patch 076 implements distinct private RPATH/RUNPATH
-evidence. Patch 078's review required the Patch 079 corrective and private
-task-value candidate; Patch 079's review required Patch 080, whose review
-required Patch 081. Complete acceptance remains pending against the exact Patch
-081 source.
+evidence. Patch 078 was superseded by the Patch 079 corrective and private
+task-value candidate; Patch 079 was superseded by Patch 080, and Patch 080 by
+Patch 081. Patch 081 was not accepted; complete acceptance remains pending
+against the exact Patch 082 source.
 Whole-batch workload ladders and process-tree RSS calibration remain separate
 benchmark-method decisions.

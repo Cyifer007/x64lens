@@ -229,8 +229,10 @@ score 95; the declarative zero-gain tuple policy does not justify recalibration.
 
 ## Patch 082 producer-backed score/null gate
 
-Patch 082 does not recalibrate a score. Each of the 25 exact-pattern score/null
-cells is checked against the exact catalog and reports from three independently
-built analyzers. Toggling one cell must be rejected by the catalog and by all
-three producer generations. The result retains 14 numeric scores, 11 null
-scores, and null scores for all three private role facets.
+Patch 082 does not recalibrate a score. It implements a gate requiring each of
+the 25 exact-pattern score/null cells to agree with the exact catalog and reports
+from three independently built analyzers. A successful full run must reject each
+toggle through the catalog and all three producer generations. Full retained
+three-build execution remains pending local validation. Existing scores remain
+relative utility hypotheses, not exploitability values: 14 cells retain numeric
+scores, 11 retain null, and all three private role facets remain null.

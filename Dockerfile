@@ -80,5 +80,6 @@ RUN python3 /work/tools/gitless-source-manifest.py verify \
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+ENV X64LENS_RUN_ROOT=${HOME}/x64lens-run
 
 CMD ["bash"]

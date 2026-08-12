@@ -282,7 +282,9 @@ record, reporter field, or score.
 ## Patch 082 ordered-pair and coordinate boundary
 
 Patch 082 adds no semantic class. The existing ordered two-pop family remains
-`arg_control` with exact `stack_pop_order`; three independent producer builds
-confirm all 30 represented ordered pairs. The zero-gain policy decision still
-defers redundant tuple state. Controlled coordinate anchors describe address
-representation and do not promote candidate semantics or decoded validity.
+`arg_control` with exact `stack_pop_order`. It implements a gate requiring three
+independent producer builds to agree on all 30 represented ordered pairs; full
+retained execution remains pending local validation. The zero-gain policy
+decision still defers redundant tuple state. The controlled coordinate preflight
+uses 18 modeled observations for method discrimination and does not promote
+candidate semantics, natural anchors, or decoded validity.

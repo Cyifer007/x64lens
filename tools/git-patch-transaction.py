@@ -74,6 +74,16 @@ class PathState:
     oid: str | None = None
 
 
+@dataclass(frozen=True)
+class ParentBinding:
+    """Identity of one retained patch-path ancestor."""
+
+    path: str
+    device: int
+    inode: int
+    file_type: int
+
+
 class AlreadyState(TransactionError):
     """Raised when the requested exact state is already present."""
 
@@ -466,6 +476,53 @@ def capture_scope(repo: RepoHandle, paths: Sequence[str]) -> dict[str, PathState
     return {path: path_state(repo, path) for path in paths}
 
 
+def parent_chain(repo: RepoHandle, path: str) -> tuple[ParentBinding, ...]:
+    """Capture every caller-visible parent identity for one literal path."""
+    parts = PurePosixPath(safe_patch_path(path)).parts
+    fd = os.dup(repo.root_fd)
+    bindings: list[ParentBinding] = []
+    prefix: list[str] = []
+    try:
+        for component in parts[:-1]:
+            child = os.open(component, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=fd)
+            metadata = os.fstat(child)
+            require(stat.S_ISDIR(metadata.st_mode), f"patch-path ancestor is not a directory: {path}")
+            prefix.append(component)
+            bindings.append(
+                ParentBinding(
+                    path="/".join(prefix),
+                    device=metadata.st_dev,
+                    inode=metadata.st_ino,
+                    file_type=stat.S_IFMT(metadata.st_mode),
+                )
+            )
+            os.close(fd)
+            fd = child
+        return tuple(bindings)
+    finally:
+        os.close(fd)
+
+
+def capture_parent_bindings(
+    repo: RepoHandle, paths: Sequence[str]
+) -> dict[str, tuple[ParentBinding, ...]]:
+    return {path: parent_chain(repo, path) for path in paths}
+
+
+def require_pre_effect_bindings(
+    repo: RepoHandle,
+    before: dict[str, PathState],
+    parents: dict[str, tuple[ParentBinding, ...]],
+) -> None:
+    """Reject any patch path or ancestor rebound after the check-only pass."""
+    for path in before:
+        require(parent_chain(repo, path) == parents[path], f"patch-path parent binding changed: {path}")
+        require(
+            state_identity_equal(path_state(repo, path), before[path]),
+            f"patch path changed after check-only validation: {path}",
+        )
+
+
 def scope_matches_tree(repo: RepoHandle, tree: str, paths: Sequence[str]) -> bool:
     for path in paths:
         expected = tree_entry(repo, tree, path)
@@ -587,24 +644,14 @@ def restore_exact_tree(
 
 
 def logical_base_state(repo: RepoHandle, branch: str, base_head: str, base_tree: str) -> tuple[str, str]:
-    """Accept either the reviewed staged base or a later commit of that tree.
-
-    Review bundles may carry a candidate as an exact staged tree while the
-    user may commit that tree before applying the next package.  The logical
-    base is therefore the authenticated index tree.  The HEAD must either be
-    the declared reviewed parent or itself have the logical base tree.
-    """
+    """Require the exact declared committed base and its clean tree."""
     actual_branch, head, head_tree, index_tree = repository_identity(repo)
     require(actual_branch == branch, f"branch mismatch: {actual_branch}")
     require_no_unstaged_or_untracked(repo)
+    require(head == base_head, f"base HEAD mismatch: {head}")
+    require(head_tree == base_tree, f"base HEAD tree mismatch: {head_tree}")
     require(index_tree == base_tree, f"logical base index tree mismatch: {index_tree}")
-    if head == base_head:
-        return "reviewed-staged", head
-    if head_tree == base_tree:
-        return "committed-tree", head
-    raise TransactionError(
-        f"HEAD {head} is neither declared reviewed parent {base_head} nor a commit of logical base tree {base_tree}"
-    )
+    return "exact-committed-base", head
 
 
 def candidate_state(
@@ -617,14 +664,33 @@ def candidate_state(
     actual_branch, head, head_tree, index_tree = repository_identity(repo)
     require(actual_branch == branch, f"branch mismatch: {actual_branch}")
     require_no_unstaged_or_untracked(repo)
+    require(head == base_head, f"candidate base HEAD mismatch: {head}")
+    require(head_tree == base_tree, f"candidate base HEAD tree mismatch: {head_tree}")
     require(index_tree == candidate_tree, f"staged candidate tree mismatch: {index_tree}")
-    if head == base_head:
-        return "reviewed-staged", head
-    if head_tree == base_tree:
-        return "committed-tree", head
-    raise TransactionError(
-        f"HEAD {head} is neither declared reviewed parent {base_head} nor a commit of logical base tree {base_tree}"
-    )
+    return "exact-staged-candidate", head
+
+
+def write_all(fd: int, payload: bytes) -> None:
+    view = memoryview(payload)
+    while view:
+        written = os.write(fd, view)
+        require(written > 0, "zero-length transaction status write")
+        view = view[written:]
+
+
+def emit_mutation_success(
+    action: str,
+    *,
+    mode: str,
+    base_tree: str,
+    candidate_tree: str,
+) -> None:
+    line = (
+        f"git-patch-transaction: ok action={action} "
+        f"logical_base_tree={base_tree} candidate_tree={candidate_tree} "
+        f"base_mode={mode} pinned_patch=1 pinned_repo=1 pinned_paths=1\n"
+    ).encode("utf-8")
+    write_all(sys.stdout.fileno(), line)
 
 
 def invoke_hook(name: str, repo: RepoHandle) -> None:
@@ -743,21 +809,25 @@ def apply_patch(
         raise AlreadyState("patch is already applied at the exact candidate state")
     paths = patch_paths(repo, raw)
     before = capture_scope(repo, paths)
+    parents = capture_parent_bindings(repo, paths)
     effect: dict[str, PathState] | None = None
     try:
         git_apply(repo, raw, reverse=False, check_only=True)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_CHECK_HOOK", repo)
         reauthenticate_repo(repo)
+        require_pre_effect_bindings(repo, before, parents)
         # The mutating call belongs inside the recovery region.  It may complete
         # the Git effect and still raise (for example, interruption or an
         # injected post-effect failure).
         git_apply(repo, raw, reverse=False, check_only=False)
         effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_APPLY_EFFECT_HOOK", repo)
-        observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+        _observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
         require(current_head == original_head, "HEAD changed during patch application")
-        require(observed_mode == mode, "logical base mode changed during patch application")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
+        emit_mutation_success(
+            "apply", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+        )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -793,18 +863,22 @@ def rollback_patch(
         raise AlreadyState("patch is already rolled back at the exact logical base")
     paths = patch_paths(repo, raw)
     before = capture_scope(repo, paths)
+    parents = capture_parent_bindings(repo, paths)
     effect: dict[str, PathState] | None = None
     try:
         git_apply(repo, raw, reverse=True, check_only=True)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_REVERSE_CHECK_HOOK", repo)
         reauthenticate_repo(repo)
+        require_pre_effect_bindings(repo, before, parents)
         git_apply(repo, raw, reverse=True, check_only=False)
         effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_ROLLBACK_EFFECT_HOOK", repo)
-        observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
+        _observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
         require(current_head == original_head, "HEAD changed during patch rollback")
-        require(observed_mode == mode, "logical base mode changed during patch rollback")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
+        emit_mutation_success(
+            "rollback", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+        )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -837,32 +911,22 @@ def main() -> int:
     repo = open_repo(args.repo)
     try:
         if args.action == "apply":
-            mode = apply_patch(
+            apply_patch(
                 repo,
                 raw,
                 branch=args.branch,
                 base_head=args.base_head,
                 base_tree=args.base_tree,
                 candidate_tree=args.candidate_tree,
-            )
-            print(
-                "git-patch-transaction: ok action=apply "
-                f"logical_base_tree={args.base_tree} candidate_tree={args.candidate_tree} "
-                f"base_mode={mode} pinned_patch=1 pinned_repo=1"
             )
         elif args.action == "rollback":
-            mode = rollback_patch(
+            rollback_patch(
                 repo,
                 raw,
                 branch=args.branch,
                 base_head=args.base_head,
                 base_tree=args.base_tree,
                 candidate_tree=args.candidate_tree,
-            )
-            print(
-                "git-patch-transaction: ok action=rollback "
-                f"logical_base_tree={args.base_tree} candidate_tree={args.candidate_tree} "
-                f"base_mode={mode} pinned_patch=1 pinned_repo=1"
             )
         else:
             mode, _head = candidate_state(

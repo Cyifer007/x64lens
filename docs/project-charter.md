@@ -159,9 +159,10 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 ## Current implementation stage
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance
-authority, with Patch 081 as the current corrective candidate pending complete
+authority. Patch 081 was not accepted; Patch 082 is the current artifact-backed
+implementation candidate, pending full local execution and independent
 acceptance. Patch 080 supplied the private register-role side-car but did not
-complete acceptance; its review required Patch 081. Patch 074 was a superseded closeout
+complete acceptance; it was superseded by Patch 081. Patch 074 was a superseded closeout
 candidate. Sprint 11 established and
 hardened the diagnostic runner, provisional corpus, normalized task definitions,
 comparison evidence, generated summaries, and gap register while preserving the
@@ -174,8 +175,8 @@ Patch 076 added distinct bounded private `DT_RPATH` and `DT_RUNPATH` evidence
 without adding public role/property or mitigation fields, but its review
 required Patch 077. Patch 077 then required Patch 078, whose review required the
 Patch 079 corrective and private task-value candidate, whose review required
-Patch 080; Patch 080's review required Patch 081. Sprint 13 remains planned and
-activates only after complete Patch 081 acceptance. Sprint 15
+Patch 080; Patch 080 was superseded by Patch 081. Sprint 13 remains planned and
+activates only after complete Patch 082 acceptance. Sprint 15
 freezes the confirmatory method; Sprint 16 produces the preview campaign,
 Sprint 17 runs publication-grade trials, and Sprint 22 is the first research-
 release gate.
@@ -192,9 +193,10 @@ header executable authority, 4,096-candidate fail-closed behavior, and schema
 `0.2.0`. Private role/property, text-relocation, and RPATH/RUNPATH evidence
 remains outside public reports, and the role/property policy remains `defer`.
 Patch 078 required the Patch 079 corrective and private task-value candidate,
-whose review required Patch 080; Patch 080's review required Patch 081. Sprint
-13 remains an entry candidate and becomes active only after complete Patch 081
-acceptance, without a release tag or confirmatory campaign freeze.
+which was superseded by Patch 080; Patch 080 was superseded by Patch 081. Patch
+081 was not accepted and is superseded by Patch 082. Sprint 13 remains an entry
+candidate and becomes active only after complete Patch 082 acceptance, without a
+release tag or confirmatory campaign freeze.
 
 ## Sprint 12 Patch 077 historical checkpoint
 
@@ -226,20 +228,22 @@ or complete gadget coverage.
 
 Patch 080 corrected the Patch 079
 evidence and custody defects and adds a private bounded register-role side-car.
-Its review required Patch 081. The public analyzer contract remains unchanged.
+It was superseded by Patch 081. The public analyzer contract remains unchanged.
 
-## Sprint 13 Patch 081 current stage
+## Historical Sprint 13 Patch 081 stage
 
-Patch 081 is the current corrective candidate. It records a declarative,
-test-only ordered-pair authority and retains the complete score/null partition
-without changing runtime output, semantic classes, scores, capacity, or schema
-`0.2.0`. Sprint 13 becomes active only after complete Patch 081 acceptance.
+Patch 081 was not accepted. It records a declarative, test-only ordered-pair
+authority and retains the complete score/null partition without changing runtime
+output, semantic classes, scores, capacity, or schema `0.2.0`. Its validation
+findings were accepted as correction inputs to Patch 082.
 
 ## Patch 082 evidence-integrity checkpoint
 
 Patch 082 preserves the assembly-first product scope while strengthening the
-reproduction surface. The analyzer is built independently three times for
-policy validation, Docker source custody is separated from mutable build
-output, and controlled coordinate mechanics are qualified before any natural
-comparison claim. These are evidence and delivery improvements, not new public
-analysis capabilities.
+reproduction surface. It implements a policy gate that requires three
+independent analyzer builds, separates Docker source custody from mutable build
+output, and adds a controlled coordinate method-discrimination preflight over
+six targets and 18 modeled cell observations. Full retained three-build
+execution, natural comparison evidence, and independent acceptance remain
+pending. These are evidence and delivery improvements, not new public analysis
+capabilities.

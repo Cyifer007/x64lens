@@ -145,7 +145,12 @@ def ordinary_extraction_custody(tmp: Path) -> int:
 
 
 def descriptor(path: Path, root: Path) -> dict[str, Any]:
-    return {"path": path.relative_to(root).as_posix(), "sha256": sha(path), "size_bytes": path.stat().st_size}
+    return {
+        "path": path.relative_to(root).as_posix(),
+        "sha256": sha(path),
+        "size_bytes": path.stat().st_size,
+        "mode": f"{path.stat().st_mode & 0o7777:04o}",
+    }
 
 
 def create_synthetic_producer(tmp: Path) -> Path:
@@ -181,6 +186,8 @@ def create_synthetic_producer(tmp: Path) -> Path:
         effects.write_bytes(canonical(effects_template)); effects.chmod(0o444)
         pairs = directory / "ordered-pairs.json"
         pairs.write_bytes(canonical(pair_report)); pairs.chmod(0o444)
+        build_log = directory / "build.log"
+        build_log.write_text("synthetic build\n", encoding="utf-8"); build_log.chmod(0o444)
         generations.append({
             "generation": number, "build_id": f"p082-independent-build-{number}",
             "source_candidate_tree": "1" * 40, "source_manifest_sha256": source_manifest_sha,
@@ -190,6 +197,7 @@ def create_synthetic_producer(tmp: Path) -> Path:
             "ordered_pairs_fixture": descriptor(directory / "gadgets_sprint13_ordered_pairs", result),
             "effects_report": {**descriptor(effects, result), "command": "gadgets", "candidate_count": 25},
             "ordered_pairs_report": {**descriptor(pairs, result), "command": "gadgets", "candidate_count": 30},
+            "build_log": descriptor(build_log, result),
             "normalized_fact_sha256": fact_hash,
         })
     manifest_value = {
@@ -227,12 +235,14 @@ def producer_oracle_discrimination(tmp: Path) -> tuple[int, int, int]:
         "--authority", str(ROOT / "benchmarks/task-definitions/sprint13-ordered-two-pop-role-task-value-v2.json"),
         "--expected", str(ROOT / "tests/expected/sprint13-ordered-two-pop-role-task-value-v2.json"),
         "--producer-manifest", str(manifest),
+        "--expected-candidate-tree", "1" * 40,
     ]
     score_command = [
         sys.executable, str(ROOT / "tools/sprint13-score-null-authority-smoke.py"),
         "--authority", str(ROOT / "benchmarks/task-definitions/sprint13-score-null-authority-v2.json"),
         "--expected", str(ROOT / "tests/expected/sprint13-score-null-authority-v2.json"),
         "--producer-manifest", str(manifest),
+        "--expected-candidate-tree", "1" * 40,
     ]
     run(tuple_command); run(score_command)
     baseline_pass = 1
@@ -268,12 +278,12 @@ def producer_oracle_discrimination(tmp: Path) -> tuple[int, int, int]:
 def docker_source_build_separation() -> int:
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
     parity = (ROOT / "tools/native-docker-json-parity-smoke.sh").read_text(encoding="utf-8")
-    require(makefile.count("run=/x64lens-run") >= 2, "Docker test/validation recipes lack a separate run tree")
+    require(makefile.count('run="$${X64LENS_RUN_ROOT:?}"') >= 2, "Docker test/validation recipes lack the configured writable run root")
     require("python3 /work/tools/gitless-source-manifest.py verify --root /work" in makefile, "Docker recipes do not reverify pristine source")
     require(makefile.count("X64LENS_SOURCE_MANIFEST=/x64lens-source-manifest.json") >= 2, "Docker mutable recipes do not pass the paired source manifest")
     require(makefile.count("X64LENS_SOURCE_AUTHORITY_ROOT=/work") >= 2, "Docker mutable recipes do not pass the paired source root")
     require("cd /work; make clean; make" not in makefile, "Docker recipe still builds in the source authority root")
-    require("run=/x64lens-run" in parity and "cd \"$run\"" in parity, "native/Docker JSON parity still builds in /work")
+    require("run=${X64LENS_RUN_ROOT:?}" in parity and 'cd "$run"' in parity, "native/Docker JSON parity still builds in /work")
     require("X64LENS_SOURCE_MANIFEST=/x64lens-source-manifest.json" in parity and "X64LENS_SOURCE_AUTHORITY_ROOT=/work" in parity, "native/Docker JSON parity lacks paired source authority")
     return 1
 

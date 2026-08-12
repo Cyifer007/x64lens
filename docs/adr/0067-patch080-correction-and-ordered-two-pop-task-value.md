@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed by Patch 081; acceptance remains subject to exact-source native,
-Docker, parity, delivery, and independent validation.
+Historical Patch 081 decision. Patch 081 was not accepted; its validation
+findings were accepted as correction inputs to Patch 082.
 
 ## Context
 
@@ -92,9 +92,10 @@ roadmap. Later Sprint 13 work should select another bounded family or consumer
 only when it demonstrates incremental task value and retains separate semantic,
 public, and score decisions.
 
-## Patch 082 superseding validation note
+## Patch 082 superseding implementation note
 
-Patch 081 review found that this ADR's tuple and score/null policy conclusions
-were not yet producer-backed. Patch 082 preserves the conclusions but replaces
-the static acceptance path with three independently built analyzer generations.
-ADR 0068 owns that correction and the controlled coordinate preflight.
+Patch 081's tuple and score/null policy conclusions were not producer-backed.
+Patch 082 preserves the conclusions and implements a gate that requires three
+independently built analyzer generations. Full retained execution remains
+pending local validation. ADR 0068 owns that correction and the controlled
+coordinate method-discrimination preflight.

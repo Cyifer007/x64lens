@@ -136,8 +136,8 @@ and later review required the Patch 078 correction.
 ## Handoff
 
 Patch 077 did not complete acceptance. Patch 078 corrected its remaining
-blockers, but Patch 078's review required the Patch 079 corrective and private
-task-value candidate, whose review required Patch 080; Patch 080's review
-required Patch 081. See the [Patch 081 validation
-record](sprint-13-patch-081-validation.md); complete acceptance remains pending
+blockers, but Patch 078 was superseded by the Patch 079 corrective and private
+task-value candidate, which was superseded by Patch 080; Patch 080's review
+required Patch 081, which was not accepted. See the [Patch 082 validation
+record](sprint-13-patch-082-validation.md); complete acceptance remains pending
 against that exact candidate.

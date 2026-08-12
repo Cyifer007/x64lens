@@ -48,16 +48,16 @@ ACTIVE_AUTHORITY_PATHS = (
 
 REQUIRED_TEXT = {
     "README.md": (
-        "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the acceptance authority",
+        "Sprints 1 through 12 are recorded as completed engineering work",
+        "Sprint 12 remains the exact-source acceptance authority",
         "Sprint 15",
         "Sprint 16",
         "Sprint 17",
         "Sprint 22",
     ),
     "docs/roadmap-22-sprints.md": (
-        "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the acceptance authority",
+        "Sprints 1 through 12 are recorded as completed engineering work",
+        "Sprint 12 remains the exact-source acceptance authority",
         "Diagnostic measurement checkpoint",
         "Campaign freeze",
         "Research preview candidate",
@@ -65,8 +65,8 @@ REQUIRED_TEXT = {
         "First research release",
     ),
     "docs/research-roadmap.md": (
-        "Sprints 1 through 11 are complete",
-        "Sprint 12 remains the acceptance authority",
+        "Sprints 1 through 12 are recorded as completed engineering work",
+        "Sprint 12 remains the exact-source acceptance authority",
         "Sprint 15 freezes",
         "Sprint 17 runs publication-grade",
     ),
@@ -80,11 +80,11 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Patch 082 corrective and exact-source acceptance candidate, pending complete acceptance",
+        "Patch 083 corrective and exact-source acceptance candidate, pending complete acceptance",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Patch 082 producer and coordinate preflight candidate; activation pending complete Patch 082 acceptance",
-        "Patch 082",
+        "Patch 083 natural coordinate campaign candidate; activation pending complete Patch 083 acceptance",
+        "Patch 083",
     ),
     "docs/benchmark-methodology.md": (
         "Sprint 11",

@@ -4,15 +4,15 @@
 
 Recorded as the Patch 078 implementation decision. Patch 078 did not complete
 acceptance; Patch 079 supplied the resulting corrective and private task-value
-candidate. Patch 079's review required Patch 080, whose review required Patch
-081. Patch 081 remains pending complete acceptance against the exact committed
-source.
+candidate. Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081.
+Patch 081 was not accepted; Patch 082 is the current artifact-backed
+implementation candidate, pending independent exact-source acceptance.
 
 ## Context
 
 Patch 077 preserved the implemented private loader and mitigation fact model,
-but its review found acceptance blockers in the surrounding transaction and
-validation surfaces. The confirmed defects covered repository-root rebinding
+but acceptance validation identified blockers in the surrounding transaction
+and validation surfaces. The confirmed defects covered repository-root rebinding
 during patch
 application and permission normalization, expected-failure JSON parsing,
 parity-result publication through a replaced parent, final cleanup of a foreign
@@ -93,7 +93,7 @@ projection.
 
 Patch 078 addressed the Patch 077 acceptance blockers without modifying the
 analyzer runtime, but did not complete acceptance. Sprint 12 remains active and
-Sprint 13 remains an entry candidate pending exact Patch 081 acceptance. The
+Sprint 13 remains an entry candidate pending complete Patch 082 acceptance. The
 authenticated entry decision alone does not qualify runtime or public projection
 of the private role facets.
 

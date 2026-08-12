@@ -2,8 +2,8 @@
 
 ## Status
 
-Implementation candidate pending complete exact-source native, Docker, parity,
-delivery, documentation, and independent validation.
+Historical implementation candidate. Patch 081 was not accepted; its validation
+findings were accepted as correction inputs to Patch 082.
 
 ## Purpose
 
@@ -101,18 +101,21 @@ private facets as null; this authority does not execute the runtime scorer.
 - Candidate 4,097 must return exit 6 before stdout.
 - Malformed inputs must emit no partial stdout.
 
-## Acceptance
+## Historical acceptance boundary
 
-Patch 081 is accepted only after complete native, Docker, parity, source,
-delivery, capacity, malformed-input, documentation, and independent exact-source
-validation agree on one candidate tree.
+Patch 081 required complete native, Docker, parity, source, delivery, capacity,
+malformed-input, documentation, and independent exact-source validation to agree
+on one candidate tree. It did not complete that boundary and is superseded by
+Patch 082.
 
-## Review outcome and Patch 082 handoff
+## Validation outcome and Patch 082 handoff
 
-Patch 081 was not accepted as the final exact-source candidate. Follow-up
-validation confirmed no analyzer-runtime defect, but required correction for
+Patch 081 was not accepted as the final exact-source candidate. Its validation
+findings were accepted as correction inputs. They reported no analyzer-runtime defect, but required correction for
 ordinary extraction modes, loose helper identity, Git-less manifest/root
 pairing, Docker source/build separation, nested Make authority isolation, and
-producer-blind tuple/score gates. Patch 082 owns those corrections. Historical
+producer-blind tuple/score gates. Patch 082 implements those corrections, while
+full retained three-build execution and independent acceptance remain pending
+local validation. Historical
 P081 static-fixture outcomes remain policy evidence and are not represented as
 independent producer execution.

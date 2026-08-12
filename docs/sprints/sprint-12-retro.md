@@ -5,7 +5,7 @@
 Sprint 12 completed the semester's loader-precision and mitigation-evidence
 engineering program. The implementation work spans Patches 062 through 077,
 with later Sprint 13 corrective patches carrying forward acceptance and delivery
-hardening that was discovered during independent review.
+hardening identified during exact-source validation.
 
 This retrospective records what was designed, implemented, tested, learned, and
 deferred. It is a technical completion record for the sprint's engineering
@@ -239,7 +239,7 @@ verdict.
 
 ### 13. Transaction, cleanup, and delivery hardening
 
-Independent review repeatedly exposed a broader engineering lesson: correct
+Acceptance validation repeatedly exposed a broader engineering lesson: correct
 analysis facts are not sufficient when the application, evidence, cleanup, and
 delivery paths can mutate or misidentify bytes.
 
@@ -423,6 +423,13 @@ role-tuple authority plus a complete score/null mutation authority. The tuple
 manifest declares zero incremental gains, and its static checker therefore
 records a policy deferral for redundant runtime state. It does not execute an
 independent task consumer or provide confirmatory measured task-value evidence.
+
+Patch 081 was not accepted. Its validation findings were accepted as correction
+inputs to Patch 082, which implements a producer-backed gate and a controlled
+coordinate method-discrimination preflight. The full retained three-build run,
+natural coordinate campaign, and independent P082 acceptance remain pending;
+the controlled observations are neither natural anchors nor comparative
+qualification.
 
 ## Final assessment
 

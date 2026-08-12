@@ -2,16 +2,16 @@
 
 ## Status
 
-Patch 082 corrective and exact-source acceptance candidate, pending complete acceptance.
+Patch 083 corrective and exact-source acceptance candidate, pending complete acceptance.
 The Sprint 12 engineering scope and repository-facing retrospective remain
-complete. Patch 082 carries the remaining Patch 081 delivery, Docker source
-custody, nested authority, and producer-oracle corrections into Sprint 13. It
-also records a controlled coordinate preflight while preserving the requirement
-for a separate natural baseline campaign. Public output, schema `0.2.0`,
+complete. Patch 083 carries the remaining Patch 082 transaction, Docker run-root,
+producer, corpus, recovery, and delivery corrections into Sprint 13. It also
+implements the outcome-blind natural coordinate campaign while keeping its
+results diagnostic and requiring the full denominator for acceptance. Public output, schema `0.2.0`,
 semantic classes, scores, and candidate capacity remain unchanged.
 
 Sprint 12 remains the acceptance authority for its inherited loader and
-mitigation facts until Patch 082 passes fresh native, Docker, both private parity
+mitigation facts until Patch 083 passes fresh native, Docker, both private parity
 planes, strict ShellCheck, delivery integrity, and independent exact-source
 acceptance. The retrospective records completed semester work without claiming
 that these later acceptance gates have already passed.
@@ -25,6 +25,8 @@ Related current records:
 - [Patch 081 validation](sprint-13-patch-081-validation.md)
 - [ADR 0068](../adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md)
 - [Patch 082 validation](sprint-13-patch-082-validation.md)
+- [Patch 083 validation](sprint-13-patch-083-validation.md)
+- [ADR 0069](../adr/0069-patch082-correction-and-natural-coordinate-campaign.md)
 - [Sprint 12 retrospective](sprint-12-retro.md)
 
 ## Sprint goal
@@ -117,8 +119,11 @@ that would otherwise corrupt corpus labels or defensive triage.
   stack-pivot treatment.
 - [x] Record the repository-facing Sprint 12 retrospective for the completed
   semester engineering scope.
+- [x] Record that Patch 081 was not accepted, accept its validation findings as
+  P082 correction inputs, and implement the artifact-backed producer and
+  controlled-coordinate gate definitions.
 - [ ] Complete fresh native, Docker, actual parity, strict ShellCheck, final
-  package, and independent acceptance for Patch 081.
+  package, full retained three-build, and independent acceptance for Patch 082.
 
 
 ## Patch sequence
@@ -167,6 +172,10 @@ that would otherwise corrupt corpus labels or defensive triage.
     Sprint 12 retrospective; retain a declarative ordered two-pop manifest and
     defer the redundant runtime tuple as policy; and retain all existing
     score/null cells.
+21. **Patch 082:** implement the documented Patch 081 corrections, the
+    three-build producer gate, and the six-target controlled coordinate
+    method-discrimination preflight without changing runtime or public
+    contracts.
 
 
 ## Current continuation disposition
@@ -187,7 +196,7 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After exact Patch 081 acceptance, Sprint 13 continues from its private role,
+After complete Patch 082 acceptance, Sprint 13 continues from its private role,
 task-value, and LC-08B authorities into the next independently selected bounded
 semantic gate.
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify

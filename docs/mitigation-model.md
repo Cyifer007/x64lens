@@ -270,8 +270,9 @@ accept the patch. Patch 074 implemented the final custody and parity-protocol
 corrections without changing a mitigation field but was superseded. Patch 075
 introduced private text-relocation evidence, and Patch 076 added distinct
 private RPATH/RUNPATH evidence. Patch 077 required Patch 078; Patch 078's review
-then required the Patch 079 corrective and private task-value candidate, whose review required Patch 080,
-pending complete acceptance.
+then required the Patch 079 corrective and private task-value candidate, which
+was superseded by Patch 080. Patch 081 was not accepted; complete acceptance
+remains pending against the exact Patch 082 source.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
 
@@ -304,14 +305,14 @@ evidence, but its review required Patch 077, whose review required Patch 078.
 Patch 078 preserves the public deferral and adds only a private exact-pop role
 decision. Patch 079 qualified only private task-value evidence; Patch 080 retained
 three role facets in a private side-car and continued the public-reporting
-deferral. Patch 080's review required Patch 081, which changes no mitigation
+deferral. Patch 080 was superseded by Patch 081, which changes no mitigation
 field or policy meaning.
 
 Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
 defects around the policy evidence. Static GNU properties remain private
 indicators and do not prove runtime CET enforcement. Corrected actual parity and
-complete Patch 081 acceptance remains pending.
+complete Patch 082 acceptance remains pending.
 
 ## Sprint 12 Patch 075 private text-relocation evidence
 

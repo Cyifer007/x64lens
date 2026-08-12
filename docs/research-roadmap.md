@@ -2,9 +2,10 @@
 
 ## Current checkpoint
 
-Sprints 1 through 11 are complete. Sprint 12 remains the acceptance authority
-for its loader and mitigation facts while Patch 081 records the public
-retrospective and continues the remaining corrective work in Sprint 13.
+Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
+mitigation facts. Patch 083 is the current implementation candidate. Its full
+producer run, natural-coordinate campaign, native and Docker gates, parity, and
+independent exact-source acceptance remain pending.
 
 Sprint 12 established ordinary program-header validity, explicit
 extended-numbering outcomes, executable-overlap contributor provenance and
@@ -15,12 +16,15 @@ corrected native/container parity protocols, private textrel/RPATH/RUNPATH
 facts, and a public-policy decision of `defer`.
 
 Patch 080 added three private single-pop role facets without public or score
-projection. Patch 081 corrects its acceptance infrastructure, records
-`docs/sprints/sprint-12-retro.md`, and adds a test-only ordered two-pop
+projection. Patch 081 corrected its acceptance infrastructure, recorded
+`docs/sprints/sprint-12-retro.md`, and added a test-only ordered two-pop
 task-value manifest. The manifest declares existing and proposed correctness
 with zero incremental gains, while its static smoke does not execute an
 independent task consumer. The resulting policy decision defers a new runtime
-tuple representation. Existing semantic classes and scores remain unchanged.
+tuple representation. Patch 082 implements producer-backed validation for that decision. Patch 083
+corrects the remaining acceptance infrastructure and implements the
+outcome-blind natural-coordinate campaign without changing existing semantic
+classes, scores, or schema.
 
 All measurement evidence remains diagnostic, unfrozen, and
 publication-ineligible. Sprint 15 still freezes the confirmatory campaign.
@@ -579,9 +583,9 @@ parity-protocol correction but was superseded as the closeout candidate. Patch
 075 introduced bounded private static text-relocation evidence, but its review
 required the Patch 076 correction. Patch 076 implements distinct bounded private
 RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
-077 required the Patch 078 entry candidate. Patch 078's review required the
+077 required the Patch 078 entry candidate. Patch 078 was superseded by the
 Patch 079 corrective and private task-value candidate. Patch 079's review
-required Patch 080, whose review required Patch 081. Exact Patch 081 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance
 remains pending before the Sprint 13 handoff.
 
 
@@ -624,8 +628,8 @@ The public role/property decision remains `defer`. Text-relocation and separate
 RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
-CET claim. Patch 076's review required the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 081 acceptance. Patch
+CET claim. Patch 076 was superseded by the Patch 077 correction. Sprint 13
+remains planned and activates only after complete Patch 082 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
 4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
 deterministically presentation-ordered task-value gate. Patch 080 records the
@@ -666,13 +670,13 @@ preregistered register-role task-value gate. `generic_control`,
 task-value evidence; `syscall_number` and `stack_pivot` remain deferred, with
 existing runtime semantics and scores unchanged. The
 patch added no runtime family, score, public field, decoder, worker, or schema
-change. Its review required Patch 080.
+change. It was superseded by Patch 080.
 
 ## Sprint 13 Patch 080 checkpoint
 
 Patch 080 corrects the complete Patch 079 acceptance finding set and implements
 the first private additive role side-car. Three facets qualify privately; public
-projection and score changes remain deferred. Its review required Patch 081.
+projection and score changes remain deferred. It was superseded by Patch 081.
 
 ## Sprint 13 Patch 081 decision
 
@@ -685,9 +689,20 @@ incremental-value gate.
 
 ## Sprint 13 Patch 082 checkpoint
 
-Patch 082 is the current exact-source acceptance candidate. It retains the
-private role side-car and ordered-tuple deferral, validates the score/null and
-ordered-pair decisions against three independent builds, and completes a
-controlled positive-coordinate preflight. The next bounded work is a natural
-coordinate campaign plus named-consumer contract freeze; decoder, concurrency,
-public projection, and score changes remain separate gates.
+Patch 082 is the current artifact-backed exact-source implementation candidate.
+It retains the private role side-car and ordered-tuple deferral, implements a
+gate that requires score/null and ordered-pair agreement across three independent
+builds, and adds a controlled coordinate method-discrimination preflight. Full
+retained three-build execution and independent acceptance remain pending local
+validation. The next bounded work is a natural coordinate campaign plus a
+named-consumer contract freeze; decoder, concurrency, public projection, and
+score changes remain separate gates.
+
+
+## Patch 083 research decision
+
+The next comparison-qualification step is the outcome-blind natural coordinate
+campaign, not a new runtime semantic family. Its twelve selected package objects,
+48 planned tool processes, nine cells, and 108 controls remain mutable diagnostic
+evidence. Public role projection, score changes, decoder admission, and
+concurrency remain separate gates.
