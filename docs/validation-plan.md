@@ -1961,7 +1961,7 @@ Patch 076 implemented distinct private RPATH/RUNPATH evidence. Patch 076's
 review required Patch 077. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081. Sprint 13 remains an
-entry candidate and becomes active only after complete Patch 082 acceptance.
+entry candidate and becomes active only after complete Patch 083 acceptance.
 
 
 ## Historical Sprint 12 Patch 074 closeout validation
@@ -2022,7 +2022,7 @@ added distinct private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 082 acceptance remains pending. These patches add no public
+accepted. Independent exact-source Patch 083 acceptance remains pending. These patches add no public
 mitigation field, preserve schema
 `0.2.0`, do not reinterpret public PIE output, and make no runtime-CET claim.
 Program headers remain executable authority; section headers remain optional
@@ -2068,9 +2068,9 @@ remain separate; none substitutes for another. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 082 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 083 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 082 acceptance.
+only after complete Patch 083 acceptance.
 
 ## Sprint 12 Patch 077 historical final reconciliation validation
 
@@ -2102,7 +2102,7 @@ sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=p
 Patch 077 did not complete acceptance and was superseded by Patch 078. Patches
 078 through 080 were likewise superseded by successive corrective candidates.
 Patch 081 was not accepted; its validation findings were accepted as correction
-inputs implemented by Patch 082. Sprint 13 activation remains pending until the P082 full local
+inputs implemented by Patch 082. Sprint 13 activation remains pending until the P083 full local
 aggregate and independent acceptance pass against the exact candidate source.
 
 ## Sprint 13 Patch 078 correction and entry validation
@@ -2114,8 +2114,8 @@ private parity planes, and final package lifecycle verification. The acceptance
 historical target is `make sprint13-p078-acceptance-smoke`. Patch 079 ran the
 non-causal, deterministically presentation-ordered task-value gate; its
 historical target is `make sprint13-p079-acceptance-smoke`. Patch 080 records the
-LC-08B private-side-car/public-deferral decision. Patch 081 superseded it but was
-not accepted; Patch 082 owns the current aggregate.
+LC-08B private-side-car/public-deferral decision. Patches 081 and 082 were not
+accepted; Patch 083 owns the current candidate aggregate.
 
 ## Historical Sprint 13 Patch 079 correction and task-value validation
 
@@ -2168,12 +2168,25 @@ make sprint13-producer-authority-smoke
 ```
 
 The producer target requires NASM and builds three isolated analyzer/fixture
-sets. Its implementation is artifact-backed, but the full retained three-build
-execution remains pending local validation. Complete acceptance still requires the native aggregate, strict
-ShellCheck, exact-source Docker build/test/validation, external-natural
-acquisition, both private parity planes, package custody, and
-`sprint13-p082-acceptance-smoke`.
+sets. A later exact-source P082 run completed all three builds. P082 nevertheless
+did not complete the native, Docker, parity, package, delivery, documentation,
+and independent acceptance boundary and was not accepted. P083 requires a fresh
+producer run bound to its own candidate tree.
 
+
+## Sprint 13 Patch 084 validation
+
+Patch 084 must pass the Patch 083 corrective regression, lifecycle-denominator
+gate, private ABI-role contract, 96 public disabled-output closures, and the
+structurally complete natural-campaign authority. The historical P083 result is
+valid diagnostic evidence with zero qualified, five insufficient, and four
+unavailable cells; it must not satisfy the separate comparison-qualified gate.
+
+Local acceptance additionally requires a fresh NASM build, complete native and
+Docker validation, strict ShellCheck, three-generation producer authority, both
+native/container parity planes, exact package custody, and independent Lane A
+acceptance. Candidate 4,097 and malformed-input no-partial-output behavior remain
+unchanged.
 
 ## Sprint 13 Patch 083 validation
 
@@ -2185,9 +2198,15 @@ make sprint13-natural-coordinate-campaign-smoke
 make docker-run-root-smoke
 ```
 
-The retained natural campaign requires `S13_NATURAL_COORDINATE_RESULT_DIR` and
-installed ROPgadget, Ropper, and ropr commands. The producer gate requires the
-exact candidate tree. Complete acceptance runs `make sprint13-p083-acceptance-smoke`
-with both retained result directories supplied. No successful Patch 083 check
-may change schema `0.2.0`, candidate capacity, malformed-input no-partial-output
-behavior, or deterministic one-worker output.
+The retained natural campaign requires `S13_NATURAL_COORDINATE_RESULT_DIR`, the
+freshly built analyzer, and installed ROPgadget, Ropper, and ropr commands. A
+complete run accounts for twelve targets, 48 target/tool executions, nine cell
+dispositions, and 108 controls. Missing executables block launch; after
+selection, terminal observations never trigger replacement or reroll. The
+producer gate must be bound to candidate tree
+`39671c27342a1c093de2e37806e58bdf209677d2`. The candidate aggregate runs
+`make sprint13-p083-acceptance-smoke` with both retained result directories
+supplied. An aggregate pass is necessary but not independently sufficient for
+acceptance. No successful Patch 083 check may change schema `0.2.0`, candidate
+capacity, malformed-input no-partial-output behavior, or deterministic
+one-worker output.

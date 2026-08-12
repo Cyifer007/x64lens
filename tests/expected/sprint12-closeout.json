@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p083_candidate_pending_acceptance",
-  "closeout_patch": 83,
+  "status": "retrospective_recorded_and_sprint13_p084_candidate_pending_acceptance",
+  "closeout_patch": 84,
   "candidate_patches": [
     62,
     63,
@@ -25,10 +25,11 @@
     80,
     81,
     82,
-    83
+    83,
+    84
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p083-acceptance-smoke",
+  "acceptance_target": "sprint13-p084-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -161,8 +162,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 84,
-    "next_patch_tranche": "natural-coordinate-reconciliation-and-named-role-consumer-contract",
+    "next_patch": 85,
+    "next_patch_tranche": "frozen-natural-replay-and-unsupported-terminal-attribution",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -205,13 +206,34 @@
     "natural_coordinate_campaign_qualified": false,
     "comparative_coverage_claim_authorized": false,
     "natural_coordinate_campaign_id": "s13-p083-natural-coordinate-v1",
-    "natural_coordinate_campaign_status": "pending_local_execution",
+    "natural_coordinate_campaign_status": "retained_terminal_diagnostic_zero_qualified",
     "natural_coordinate_planned_targets": 12,
     "natural_coordinate_planned_executions": 48,
     "natural_coordinate_cells": 9,
     "natural_coordinate_controls": 108,
     "natural_coordinate_outcome_blind": true,
-    "natural_coordinate_reroll": false
+    "natural_coordinate_reroll": false,
+    "natural_coordinate_selected_targets": 12,
+    "natural_coordinate_completed_executions": 48,
+    "natural_coordinate_completed_controls": 108,
+    "natural_coordinate_qualified_cells": 0,
+    "natural_coordinate_insufficient_cells": 5,
+    "natural_coordinate_unavailable_cells": 4,
+    "natural_coordinate_mismatch_cells": 0,
+    "natural_coordinate_ambiguous_cells": 0,
+    "abi_role_query_contract_version": 1,
+    "abi_role_queries": 36,
+    "abi_role_development_queries": 24,
+    "abi_role_confirmation_queries": 12,
+    "abi_role_public_closures": 96,
+    "abi_role_public_projection": false,
+    "lifecycle_roots": 20,
+    "lifecycle_leaves": 30,
+    "lifecycle_aliases": 29,
+    "lifecycle_folds": 2,
+    "lifecycle_tombstones": 15,
+    "lifecycle_lineage_records": 161,
+    "lifecycle_events": 87
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -236,6 +258,8 @@
     "docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md",
     "docs/sprints/sprint-13-patch-082-validation.md",
     "docs/adr/0069-patch082-correction-and-natural-coordinate-campaign.md",
-    "docs/sprints/sprint-13-patch-083-validation.md"
+    "docs/sprints/sprint-13-patch-083-validation.md",
+    "docs/adr/0070-patch083-correction-and-abi-role-contract.md",
+    "docs/sprints/sprint-13-patch-084-validation.md"
   ]
 }

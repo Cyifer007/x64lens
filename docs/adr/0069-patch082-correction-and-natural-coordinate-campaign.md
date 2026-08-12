@@ -7,8 +7,8 @@ Accepted as the Patch 083 implementation decision; exact-source acceptance remai
 ## Context
 
 Patch 082 established a controlled coordinate-method preflight and a
-three-generation producer authority. Review confirmed that the analyzer runtime
-and public schema remained stable, but found localized defects in package
+three-generation producer authority. The analyzer runtime and public schema
+remained stable, while exact-source review found localized defects in package
 consistency, provisional-corpus `.PHONY` inspection, Docker run-root ownership,
 transaction base/path binding, producer source/mode custody, and extreme-umask
 source recovery. The controlled coordinate preflight also could not substitute
@@ -57,9 +57,11 @@ role order
   -> first object from each of the first four distinct lineages
 ```
 
-There is no outcome-based target replacement. Missing packages, tools, role
-strata, nonzero exits, parse failures, empty relations, ambiguous coordinates,
-and mismatches remain explicit terminal evidence.
+There is no outcome-based target replacement. Missing role strata remain
+explicit selection shortfalls, and all four analyzer/baseline executables are
+prerequisites for a retained run. After the selection freeze, nonzero exits,
+parse failures, empty relations, unavailable observations, ambiguous
+coordinates, and mismatches remain explicit terminal evidence.
 
 A complete stratum executes:
 
@@ -69,10 +71,11 @@ x 4 tools (x64lens, ROPgadget, Ropper, ropr)
 = 48 target/tool processes
 ```
 
-The nine baseline-by-role cells retain all four observations. A cell qualifies
-only when the first two deterministic positive observations use distinct target
-hashes, agree on virtual-address or file-offset coordinates, and no observation
-is a mismatch or ambiguous. The campaign also executes twelve classifier
+In a complete twelve-target run, the nine baseline-by-role cells retain all
+four observations. A cell qualifies when two positive observations from
+distinct target hashes share one coordinate class (virtual address preferred,
+otherwise file offset) and no observation is a mismatch or ambiguous. The
+campaign also executes twelve classifier
 controls per cell, for 108 empty, ambiguous, and mismatch controls.
 
 ## Public boundary

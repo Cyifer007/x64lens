@@ -24,7 +24,7 @@ diagnostic. The public-policy authority records `defer`, adds zero fields,
 preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
 Patch 081 preserves the same public fields, reference profile, private context
 sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
-runtime-CET claim. Actual qualified parity and complete Patch 082 acceptance
+runtime-CET claim. Actual qualified parity and complete Patch 083 acceptance
 remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
@@ -221,7 +221,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; independent exact-source Patch 082 acceptance remains
+review required this corrective candidate; independent exact-source Patch 083 acceptance remains
 pending.
 
 
@@ -233,6 +233,14 @@ decoder-free, one-worker reference profile. The producer and coordinate
 authorities are development-validation contracts, not product or schema
 versions. Natural coordinate qualification remains a separate diagnostic gate.
 
+
+## Patch 084 compatibility note
+
+Patch 084 retains tool version `0.1.0-dev` and schema `0.2.0`. It changes no
+assembly runtime, include contract, public field, semantic class, score, count
+meaning, candidate capacity, decoder profile, or worker policy. The new ABI-role
+query and lifecycle authorities are private validation artifacts. The retained
+P083 natural campaign remains diagnostic and comparison-unqualified.
 
 ## Patch 083 compatibility note
 

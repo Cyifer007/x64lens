@@ -105,8 +105,8 @@ private facets as null; this authority does not execute the runtime scorer.
 
 Patch 081 required complete native, Docker, parity, source, delivery, capacity,
 malformed-input, documentation, and independent exact-source validation to agree
-on one candidate tree. It did not complete that boundary and is superseded by
-Patch 082.
+on one candidate tree. It did not complete that boundary and was superseded by
+Patch 082, which was not accepted and was superseded by Patch 083.
 
 ## Validation outcome and Patch 082 handoff
 
@@ -114,8 +114,9 @@ Patch 081 was not accepted as the final exact-source candidate. Its validation
 findings were accepted as correction inputs. They reported no analyzer-runtime defect, but required correction for
 ordinary extraction modes, loose helper identity, Git-less manifest/root
 pairing, Docker source/build separation, nested Make authority isolation, and
-producer-blind tuple/score gates. Patch 082 implements those corrections, while
-full retained three-build execution and independent acceptance remain pending
-local validation. Historical
+producer-blind tuple/score gates. Patch 082 implemented those corrections, and
+a later exact-source P082 run completed the three-build producer gate. P082 was
+not accepted; P083 requires its own exact-tree producer run and independent
+acceptance. Historical
 P081 static-fixture outcomes remain policy evidence and are not represented as
 independent producer execution.

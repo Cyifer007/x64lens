@@ -1,0 +1,115 @@
+{
+  "denominator_floors": {
+    "abi_role_public_closures": 96,
+    "abi_role_queries": 36,
+    "batch_transaction_cases": 29,
+    "batch_transaction_executions": 87,
+    "candidate_capacity": 4096,
+    "diagnostic_x64lens_rows": 60,
+    "dynamic_lookup_confirmations": 64,
+    "natural_coordinate_cells": 9,
+    "natural_coordinate_controls": 108,
+    "natural_coordinate_executions": 48,
+    "natural_coordinate_targets": 12,
+    "producer_generations": 3,
+    "producer_ordered_pair_observations": 90,
+    "producer_score_null_cells": 75,
+    "role_property_combined_private_parity_fields": 10368,
+    "role_property_combined_public_parity_closures": 768,
+    "role_property_eligible_matches": 1224,
+    "role_property_field_dispositions": 1728,
+    "role_property_objects": 96,
+    "role_property_private_probe_executions": 288,
+    "role_property_public_command_executions": 384,
+    "role_property_readelf_processes": 384,
+    "workload_confirmation_batches": 162,
+    "workload_confirmation_members": 3402
+  },
+  "limitations": [
+    "This authority preserves lifecycle and denominator continuity; it does not accept a product patch or publish benchmark claims.",
+    "P080-P083 remain explicit unsealed deltas and are not presumed empty or silently canonicalized."
+  ],
+  "negative_lineage": {
+    "canonical_tombstones_retained": 15,
+    "noncanonical_aliases": [
+      {
+        "canonical_tombstone": false,
+        "disposition": "rejected_negative_alias",
+        "id": "P083-N01-redundant-ordered-two-pop-tuple"
+      }
+    ],
+    "reopening_requires_explicit_authority": true
+  },
+  "patch": 84,
+  "policy": {
+    "denominator_decrease_authorized": false,
+    "event_88_authorized": false,
+    "new_canonical_ids_authorized": false,
+    "provisional_items_must_not_disappear": true,
+    "public_fields_added": 0,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_changes": 0,
+    "supersession_requires_named_authority": true
+  },
+  "purpose": "Preserve the last sealed lifecycle prefix, explicit P080-P083 unsealed deltas, negative lineage, and nondecreasing validation denominators before any event 88 or new canonical identity.",
+  "schema": "x64lens-sprint13-lifecycle-denominator-authority-v1",
+  "sealed_prefix": {
+    "aliases": 29,
+    "canonical_leaves": 30,
+    "canonical_roots": 20,
+    "events": 87,
+    "folds": 2,
+    "lineage_records": 161,
+    "next_event": 88,
+    "through_patch": 79,
+    "tombstones": 15
+  },
+  "sprint": 13,
+  "successor_deltas": [
+    {
+      "new_aliases": 0,
+      "new_canonical_leaves": 0,
+      "new_canonical_roots": 0,
+      "new_events": 0,
+      "new_folds": 0,
+      "new_tombstones": 0,
+      "patch": 80,
+      "status": "unsealed_explicit_delta",
+      "summary": "private role-sidecar and corrected role-policy evidence"
+    },
+    {
+      "new_aliases": 0,
+      "new_canonical_leaves": 0,
+      "new_canonical_roots": 0,
+      "new_events": 0,
+      "new_folds": 0,
+      "new_tombstones": 0,
+      "patch": 81,
+      "status": "unsealed_explicit_delta",
+      "summary": "ordered-two-pop negative result and score/null retention"
+    },
+    {
+      "new_aliases": 0,
+      "new_canonical_leaves": 0,
+      "new_canonical_roots": 0,
+      "new_events": 0,
+      "new_folds": 0,
+      "new_tombstones": 0,
+      "patch": 82,
+      "status": "unsealed_explicit_delta",
+      "summary": "producer authority and controlled coordinate preflight"
+    },
+    {
+      "new_aliases": 0,
+      "new_canonical_leaves": 0,
+      "new_canonical_roots": 0,
+      "new_events": 0,
+      "new_folds": 0,
+      "new_tombstones": 0,
+      "patch": 83,
+      "status": "unsealed_explicit_delta",
+      "summary": "outcome-blind natural coordinate campaign"
+    }
+  ]
+}

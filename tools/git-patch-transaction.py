@@ -523,6 +523,30 @@ def require_pre_effect_bindings(
         )
 
 
+def require_post_effect_bindings(
+    repo: RepoHandle,
+    effect: dict[str, PathState],
+    parents: dict[str, tuple[ParentBinding, ...]],
+) -> None:
+    """Reject any patch path or ancestor rebound after the mutating effect.
+
+    Git may have completed the candidate/base mutation before an injected hook,
+    signal seam, or late verification path runs.  Success is therefore bound to
+    the exact caller-visible parents and leaf identities captured immediately
+    after that effect, not merely to candidate-equivalent bytes recreated under
+    a foreign directory.
+    """
+    for path in effect:
+        require(
+            parent_chain(repo, path) == parents[path],
+            f"patch-path parent binding changed after effect: {path}",
+        )
+        require(
+            state_identity_equal(path_state(repo, path), effect[path]),
+            f"patch path identity changed after effect: {path}",
+        )
+
+
 def scope_matches_tree(repo: RepoHandle, tree: str, paths: Sequence[str]) -> bool:
     for path in paths:
         expected = tree_entry(repo, tree, path)
@@ -571,6 +595,7 @@ def _scope_safe_for_recovery(
     alternate_tree: str,
     before: dict[str, PathState] | None,
     effect: dict[str, PathState] | None,
+    allow_index_mode_normalization: bool = False,
 ) -> None:
     for path in paths:
         current = path_state(repo, path)
@@ -586,10 +611,23 @@ def _scope_safe_for_recovery(
                 f"foreign or ambiguous object preserved at patch path: {path}",
             )
         current_index = index_entry(repo, path)
-        require(
-            current_index in {tree_entry(repo, desired_tree, path), tree_entry(repo, alternate_tree, path)},
-            f"foreign index divergence preserved at patch path: {path}",
-        )
+        desired_index = tree_entry(repo, desired_tree, path)
+        alternate_index = tree_entry(repo, alternate_tree, path)
+        index_allowed = current_index in {desired_index, alternate_index}
+        if (
+            not index_allowed
+            and allow_index_mode_normalization
+            and current_index is not None
+            and desired_index is not None
+            and current_index.oid == desired_index.oid
+            and {current_index.mode, desired_index.mode} <= {"100644", "100755"}
+        ):
+            # Git's binary-patch reverse path can recreate an executable blob
+            # with mode 100644 even when the authenticated tree requires
+            # 100755.  Accept only this exact same-blob regular-file mode drift
+            # for immediate normalization from the retained desired tree.
+            index_allowed = True
+        require(index_allowed, f"foreign index divergence preserved at patch path: {path}")
 
 
 def restore_exact_tree(
@@ -600,6 +638,7 @@ def restore_exact_tree(
     paths: Sequence[str],
     before: dict[str, PathState] | None = None,
     effect: dict[str, PathState] | None = None,
+    allow_index_mode_normalization: bool = False,
 ) -> str | None:
     """Restore only authenticated patch paths and preserve unrelated state.
 
@@ -610,7 +649,13 @@ def restore_exact_tree(
     """
     try:
         _scope_safe_for_recovery(
-            repo, paths, desired_tree=desired_tree, alternate_tree=alternate_tree, before=before, effect=effect
+            repo,
+            paths,
+            desired_tree=desired_tree,
+            alternate_tree=alternate_tree,
+            before=before,
+            effect=effect,
+            allow_index_mode_normalization=allow_index_mode_normalization,
         )
         present_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is not None]
         absent_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is None]
@@ -741,6 +786,22 @@ def restore_with_inverse(
         )
         git_apply(repo, raw, reverse=reverse, check_only=True)
         git_apply(repo, raw, reverse=reverse, check_only=False)
+        inverse_effect = capture_scope(repo, paths)
+        # Binary deletion reversal can recreate the authenticated blob with a
+        # default 0644 index mode.  Normalize only the same-blob 0644/0755
+        # drift from the already present expected tree before deciding whether
+        # inverse recovery succeeded.
+        observed_tree = os.fsdecode(git(repo, "write-tree"))
+        if observed_tree != expected_tree or not scope_matches_tree(repo, expected_tree, paths):
+            normalized = restore_exact_tree(
+                repo,
+                expected_tree,
+                alternate_tree,
+                paths=paths,
+                effect=inverse_effect,
+                allow_index_mode_normalization=True,
+            )
+            require(normalized is None, f"inverse normalization failed: {normalized}")
         reauthenticate_repo(repo)
         require(scope_matches_tree(repo, expected_tree, paths), f"inverse did not restore patch scope {expected_tree}")
         if exact_tree_state(repo, expected_tree):
@@ -785,7 +846,13 @@ def recover_after_effect(
         if "unrelated" in inverse or "foreign" in inverse:
             return inverse
     return restore_exact_tree(
-        repo, desired_tree, alternate_tree, paths=paths, before=before, effect=effect
+        repo,
+        desired_tree,
+        alternate_tree,
+        paths=paths,
+        before=before,
+        effect=effect,
+        allow_index_mode_normalization=True,
     )
 
 
@@ -818,10 +885,30 @@ def apply_patch(
         require_pre_effect_bindings(repo, before, parents)
         # The mutating call belongs inside the recovery region.  It may complete
         # the Git effect and still raise (for example, interruption or an
-        # injected post-effect failure).
+        # injected post-effect failure).  Normalize the patch scope from the
+        # authenticated candidate tree after Git's binary-patch application;
+        # this also restores exact executable modes when Git's patch machinery
+        # materializes a binary member with a default regular-file mode.
         git_apply(repo, raw, reverse=False, check_only=False)
         effect = capture_scope(repo, paths)
+        # `git write-tree` both authenticates the complete applied index and
+        # materializes the expected candidate tree object in an ordinary fresh
+        # clone where that unreferenced object did not exist before application.
+        observed_tree = os.fsdecode(git(repo, "write-tree"))
+        if observed_tree != candidate_tree or not scope_matches_tree(repo, candidate_tree, paths):
+            normalization = restore_exact_tree(
+                repo,
+                candidate_tree,
+                base_tree,
+                paths=paths,
+                effect=effect,
+                allow_index_mode_normalization=True,
+            )
+            require(normalization is None, f"candidate patch-scope normalization failed: {normalization}")
+        effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_APPLY_EFFECT_HOOK", repo)
+        reauthenticate_repo(repo)
+        require_post_effect_bindings(repo, effect, parents)
         _observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
         require(current_head == original_head, "HEAD changed during patch application")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
@@ -872,7 +959,21 @@ def rollback_patch(
         require_pre_effect_bindings(repo, before, parents)
         git_apply(repo, raw, reverse=True, check_only=False)
         effect = capture_scope(repo, paths)
+        observed_tree = os.fsdecode(git(repo, "write-tree"))
+        if observed_tree != base_tree or not scope_matches_tree(repo, base_tree, paths):
+            normalization = restore_exact_tree(
+                repo,
+                base_tree,
+                candidate_tree,
+                paths=paths,
+                effect=effect,
+                allow_index_mode_normalization=True,
+            )
+            require(normalization is None, f"base patch-scope normalization failed: {normalization}")
+        effect = capture_scope(repo, paths)
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_ROLLBACK_EFFECT_HOOK", repo)
+        reauthenticate_repo(repo)
+        require_post_effect_bindings(repo, effect, parents)
         _observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
         require(current_head == original_head, "HEAD changed during patch rollback")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)

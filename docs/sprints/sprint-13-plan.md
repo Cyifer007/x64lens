@@ -2,15 +2,17 @@
 
 ## Status
 
-Patch 083 natural coordinate campaign candidate; activation pending complete Patch 083 acceptance.
+Patch 084 correction and private ABI-role contract candidate; activation pending complete Patch 084 acceptance.
 Patch 080 retains `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` only in the private side-car. Patch 081 records the
 Sprint 12 retrospective and declaratively defers redundant ordered tuple state.
-Patch 082 implements a producer-backed tuple/score authority and controlled
-coordinate method preflight. Patch 083 corrects the remaining transaction,
-Docker, producer, corpus, recovery, and delivery findings and implements the
-outcome-blind natural coordinate campaign. Public projection, score changes,
-semantic changes, and schema changes remain deferred.
+Patch 082 implements producer-backed tuple/score authority and controlled
+coordinate preflight. Patch 083 completes the outcome-blind natural campaign,
+which remains terminal diagnostic evidence with zero qualified, five
+insufficient, and four unavailable cells. Patch 084 corrects its acceptance
+infrastructure, freezes a private 36-query ABI-role contract and lifecycle
+denominator, and changes no public field, semantic class, score, schema, or
+capacity contract.
 
 ## Sprint goal
 
@@ -33,9 +35,12 @@ general-purpose decoder or chain generator.
   against two distinct static fixtures, yielding 50 deterministic failures.
 - [x] Implement the three-build producer gate and the six-target controlled
   coordinate method-discrimination preflight.
-- [ ] Complete and retain the full local three-build producer run.
+- [x] Complete and retain the exact-source P082 three-build producer run; P083
+  still requires a fresh run bound to its candidate tree.
 - [x] Implement the outcome-blind natural coordinate campaign with a complete eligible-pool freeze, twelve target slots, nine cells, and 108 controls.
-- [ ] Execute and retain the complete natural coordinate campaign in an environment with all three baseline tools and complete role strata.
+- [x] Retain the complete 12-target, 48-execution natural coordinate campaign with all nine terminal cells and 108 controls; zero cells qualified.
+- [x] Freeze 36 private ABI-role queries with 12 source-disjoint confirmations and 96 disabled-output public closures.
+- [ ] Run the P084 ABI public-closure gate against freshly built exact-source native and container artifacts.
 - [ ] Use Sprint 11-12 diagnostics to select only bounded additional multi-pop, transfer, stack, or memory families that materially affect research tasks.
 - [ ] Add exact fixtures, effects, false-positive boundaries, schema validation, and score decisions for any selected family.
 - [ ] Record unsupported family gaps that remain outside the release scope.
@@ -57,7 +62,9 @@ general-purpose decoder or chain generator.
    coordinate method-discrimination preflight; retain full local execution as
    an acceptance gate.
 6. **Patch 083:** correct Patch 082 transaction, corpus, Docker, producer, recovery, and delivery findings; implement the outcome-blind natural coordinate campaign without changing runtime or public facts.
-7. **Later evidence-selected patches:** add only bounded families or consumers
+7. **Patch 084:** correct the P083 transaction, recovery, Docker, natural-authority, source-binding, strict-shell, and delivery findings; freeze the private ABI-role query and lifecycle-denominator contracts.
+8. **Patch 085:** perform the frozen-target corrective natural replay and private unsupported-terminal attribution if P084 is accepted.
+9. **Later evidence-selected patches:** add only bounded families or consumers
    that demonstrate incremental task value.
 
 ## Acceptance criteria
@@ -70,8 +77,7 @@ general-purpose decoder or chain generator.
 
 ## Handoff
 
-Sprint 14 tests optional validity and acceleration profiles against the stable
-one-worker core.
+Patch 085 is conditional on complete P084 acceptance. It owns an exact frozen-target replay over the same twelve target hashes and 48 tool executions, plus private unsupported-terminal attribution with exactly one reason per outcome. The P084 ABI-role contract remains private and additive; representation equivalence, natural role incidence, charged-memory cost, public projection, score changes, decoder integration, and concurrency remain separate evidence gates.
 
 
 ## Historical Patch 079 boundary
@@ -88,5 +94,5 @@ changes, and results could not be pooled across strata.
 
 Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
-projection. Patch 080 was superseded by Patch 081; complete Patch 082 acceptance
+projection. Patch 080 was superseded by Patch 081; complete Patch 084 acceptance
 remains required before the next Sprint 13 tranche.

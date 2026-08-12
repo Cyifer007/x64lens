@@ -75,7 +75,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 RUN python3 /work/tools/gitless-source-manifest.py verify \
         --root /work --manifest /x64lens-source-manifest.json \
     && make scaffold-check \
-    && chown -R ubuntu:ubuntu /work \
     && chmod 0444 /x64lens-source-manifest.json
 
 USER ubuntu

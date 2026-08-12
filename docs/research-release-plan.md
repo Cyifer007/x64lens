@@ -41,10 +41,10 @@ development evidence; its rows are not preview or publication evidence.
 
 Sprint 12 remains active. Patch 078 was superseded by the Patch 079 corrective
 and private task-value candidate; Patch 079 was superseded by Patch 080,
-which was superseded by Patch 081. Patch 081 was not accepted; Patch 082 is the
-current artifact-backed implementation candidate, pending full local execution
+which was superseded by Patch 081. Patches 081 and 082 were not accepted; Patch
+083 is the current exact-source implementation candidate, pending complete local
 and independent acceptance. Sprint 13 becomes active only after complete Patch
-082 acceptance. Loader, mitigation, semantic, and
+083 acceptance. Loader, mitigation, semantic, and
 optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in
 Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs
 in Sprint 17.
@@ -415,9 +415,9 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 082 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 083 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 082 acceptance.
+only after complete Patch 083 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -484,7 +484,7 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
 080; Patch 080 was superseded by Patch 081. Preview eligibility still requires
-complete Patch 082 acceptance before any later release-facing capability work.
+complete Patch 083 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -520,8 +520,19 @@ actual private-fact parity, natural coordinate qualification, frozen campaign
 inputs, and independent reproduction.
 
 
+## Patch 084 preview-gate note
+
+Patch 084 does not advance the research-preview gate by calendar progress. It
+corrects exact-source and delivery authorities, retains the natural campaign as
+comparison-unqualified diagnostic evidence, and freezes a private ABI-role query
+contract. Preview eligibility still requires fresh native/Docker validation,
+qualified parity, reproducible producer runs, campaign freeze, and accepted
+release artifacts.
+
 ## Patch 083 preview-gate note
 
-The preview gate requires retained natural coordinate evidence or an explicit
-unavailable disposition before comparative address-level relations are used.
-The controlled preflight alone is not release comparison evidence.
+The preview gate records either retained natural-coordinate evidence or an
+explicit unavailable disposition. Only qualifying evidence, followed by the
+Sprint 15 method freeze, can support later comparative address-level use; an
+unavailable disposition keeps that use blocked. The controlled preflight alone
+is not release comparison evidence.

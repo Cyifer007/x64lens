@@ -109,23 +109,123 @@ def load_module(name: str, path: Path) -> Any:
     return module
 
 
+def exact_keys(value: Any, keys: set[str], label: str) -> dict[str, Any]:
+    require(isinstance(value, dict), f"{label} must be an object")
+    require(set(value) == keys, f"{label} shape changed: {sorted(set(value) ^ keys)}")
+    return value
+
+
+def valid_hex40(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
 def validate_authority(value: Any) -> dict[str, Any]:
-    require(isinstance(value, dict), "authority must be an object")
-    require(value.get("schema") == "x64lens-sprint13-natural-positive-coordinate-authority-v1", "authority schema changed")
-    require(type(value.get("sprint")) is int and value["sprint"] == 13, "authority sprint changed")
-    require(type(value.get("patch")) is int and value["patch"] == 83, "authority patch changed")
-    require(value.get("evidence_class") == "diagnostic" and value.get("publication_eligible") is False, "authority evidence boundary changed")
-    selection = value.get("selection")
-    require(isinstance(selection, dict), "selection contract missing")
-    require(selection.get("roles") == list(ROLES), "role ordering changed")
-    require(selection.get("lineages_per_role") == 4 and selection.get("targets_total") == 12, "selection denominator changed")
-    require(selection.get("outcome_blind") is True and selection.get("reroll") is False, "selection blindness changed")
-    execution = value.get("execution")
-    require(isinstance(execution, dict) and execution.get("tools") == ["x64lens", *BASELINES], "tool authority changed")
-    require(execution.get("complete_execution_denominator") == 48, "execution denominator changed")
-    qualification = value.get("qualification")
-    require(isinstance(qualification, dict) and qualification.get("cells") == 9 and qualification.get("control_total") == 108, "qualification denominator changed")
-    boundary = value.get("claim_boundary")
+    exact_keys(
+        value,
+        {
+            "schema", "sprint", "patch", "campaign_id", "evidence_class",
+            "frozen", "publication_eligible", "relation_id", "selection",
+            "execution", "qualification", "claim_boundary",
+        },
+        "authority",
+    )
+    require(value["schema"] == "x64lens-sprint13-natural-positive-coordinate-authority-v1", "authority schema changed")
+    require(type(value["sprint"]) is int and value["sprint"] == 13, "authority sprint changed")
+    require(type(value["patch"]) is int and value["patch"] == 83, "authority patch changed")
+    require(value["campaign_id"] == "s13-p083-natural-coordinate-v1", "campaign identity changed")
+    require(value["relation_id"] == "canonical_exact_pop_rdi_ret", "relation identity changed")
+    require(
+        value["evidence_class"] == "diagnostic"
+        and value["frozen"] is False
+        and value["publication_eligible"] is False,
+        "authority evidence boundary changed",
+    )
+
+    selection = exact_keys(
+        value["selection"],
+        {
+            "package_universe", "file_universe", "lineage_key", "roles",
+            "lineages_per_role", "targets_total", "ordering", "target_rule",
+            "outcome_blind", "reroll",
+        },
+        "selection contract",
+    )
+    expected_selection = {
+        "package_universe": "all installed dpkg packages",
+        "file_universe": "regular non-symlink ELF64 little-endian x86_64 package members",
+        "lineage_key": "dpkg source package, binary package fallback",
+        "roles": list(ROLES),
+        "lineages_per_role": 4,
+        "targets_total": 12,
+        "ordering": "role order, lineage byte order, path byte order",
+        "target_rule": "first eligible path in each of the first four distinct lineages",
+        "outcome_blind": True,
+        "reroll": False,
+    }
+    require(selection == expected_selection, "selection authority changed")
+
+    execution = exact_keys(
+        value["execution"],
+        {
+            "tools", "executions_per_complete_target",
+            "complete_execution_denominator", "x64lens_max_depth",
+            "timeout_seconds", "stdout_limit_bytes", "stderr_limit_bytes",
+        },
+        "execution contract",
+    )
+    expected_execution = {
+        "tools": ["x64lens", *BASELINES],
+        "executions_per_complete_target": 4,
+        "complete_execution_denominator": 48,
+        "x64lens_max_depth": 4,
+        "timeout_seconds": 120,
+        "stdout_limit_bytes": 16_777_216,
+        "stderr_limit_bytes": 4_194_304,
+    }
+    require(execution == expected_execution, "execution authority changed")
+
+    qualification = exact_keys(
+        value["qualification"],
+        {
+            "cells", "observations_per_cell", "positive_targets_required",
+            "distinct_target_hashes_required",
+            "consistent_coordinate_class_required", "mismatch_allowed",
+            "ambiguous_allowed", "controls_per_cell", "control_total",
+            "terminal_states",
+        },
+        "qualification contract",
+    )
+    expected_qualification = {
+        "cells": 9,
+        "observations_per_cell": 4,
+        "positive_targets_required": 2,
+        "distinct_target_hashes_required": True,
+        "consistent_coordinate_class_required": True,
+        "mismatch_allowed": False,
+        "ambiguous_allowed": False,
+        "controls_per_cell": 12,
+        "control_total": 108,
+        "terminal_states": [
+            "qualified", "insufficient", "unavailable", "mismatch",
+            "ambiguous",
+        ],
+    }
+    require(qualification == expected_qualification, "qualification authority changed")
+
+    boundary = exact_keys(
+        value["claim_boundary"],
+        {
+            "comparison_qualified", "coverage_claim_authorized",
+            "performance_claim_authorized", "publication_claim_authorized",
+            "public_fields_added", "semantic_changes", "score_changes",
+            "schema_changed",
+        },
+        "claim boundary",
+    )
     require(boundary == {
         "comparison_qualified": False,
         "coverage_claim_authorized": False,
@@ -137,6 +237,35 @@ def validate_authority(value: Any) -> dict[str, Any]:
         "schema_changed": False,
     }, "claim boundary changed")
     return value
+
+
+def authenticate_source_authority(
+    source_root: Path,
+    source_manifest_path: Path,
+    expected_candidate_tree: str,
+) -> dict[str, Any]:
+    require(valid_hex40(expected_candidate_tree), "invalid expected candidate tree")
+    source_root = source_root.resolve(strict=True)
+    source_manifest_path = source_manifest_path.resolve(strict=True)
+    helper = load_module("s13_p084_gitless_source", ROOT / "tools/gitless-source-manifest.py")
+    manifest = helper.load_manifest(source_manifest_path)
+    helper.verify(source_root, manifest)
+    require(
+        manifest["candidate_tree"] == expected_candidate_tree,
+        f"source authority tree differs from expected candidate tree: {manifest['candidate_tree']}",
+    )
+    metadata = source_manifest_path.stat()
+    require(stat.S_ISREG(metadata.st_mode), "source manifest is not a regular file")
+    return {
+        "schema": manifest["schema"],
+        "candidate_tree": manifest["candidate_tree"],
+        "source_manifest_sha256": sha256_file(source_manifest_path),
+        "source_manifest_size_bytes": metadata.st_size,
+        "source_manifest_mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "source_file_count": len(manifest["files"]),
+        "source_directory_count": len(manifest["directories"]),
+        "source_root_mode": manifest["root_mode"],
+    }
 
 
 @dataclass
@@ -309,7 +438,9 @@ def package_paths(package: str, dpkg_query: Path) -> list[str]:
     return [line for line in cp.stdout.decode("utf-8", "surrogateescape").splitlines() if line.startswith("/")]
 
 
-def freeze_pool(*, stage: Path, readelf: Path, dpkg_query: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def freeze_pool(
+    *, stage: Path, readelf: Path, dpkg_query: Path, campaign_id: str
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     ownership: dict[str, tuple[str, str]] = {}
     total_paths = 0
     for package, lineage in installed_packages(dpkg_query):
@@ -381,7 +512,7 @@ def freeze_pool(*, stage: Path, readelf: Path, dpkg_query: Path) -> tuple[dict[s
             selected.append(item)
     freeze = {
         "schema": "x64lens-sprint13-natural-positive-coordinate-freeze-v1",
-        "campaign_id": "s13-p083-natural-coordinate-v1",
+        "campaign_id": campaign_id,
         "selection_complete_before_outcomes": True,
         "reroll": False,
         "package_count": len(installed_packages(dpkg_query)),
@@ -521,11 +652,17 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
     }
     readelf = args.readelf.resolve(strict=True)
     dpkg_query = args.dpkg_query.resolve(strict=True)
+    source_authority = authenticate_source_authority(
+        args.source_root, args.source_manifest, args.expected_candidate_tree
+    )
     try:
         tool_records = {name: command_identity(path) for name, path in tools.items()}
         tool_records["readelf"] = command_identity(readelf)
         tool_records["dpkg_query"] = command_identity(dpkg_query)
-        freeze, selected = freeze_pool(stage=stage, readelf=readelf, dpkg_query=dpkg_query)
+        freeze, selected = freeze_pool(
+            stage=stage, readelf=readelf, dpkg_query=dpkg_query,
+            campaign_id=authority["campaign_id"],
+        )
         # No target outcome is inspected before selection-freeze.json exists.
         require((stage / "selection-freeze.json").is_file(), "selection freeze was not published before outcomes")
         outcomes: dict[str, dict[str, Any]] = {}
@@ -605,6 +742,7 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
             "frozen": False,
             "publication_eligible": False,
             "authority_sha256": sha256_file(args.authority),
+            "source_authority": source_authority,
             "tool_identities": tool_records,
             "selection_freeze": {
                 "path": "selection-freeze.json",
@@ -625,6 +763,12 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
                 "Coordinate qualification does not establish cross-tool coverage equivalence or performance superiority.",
             ],
         }
+        require(
+            authenticate_source_authority(
+                args.source_root, args.source_manifest, args.expected_candidate_tree
+            ) == source_authority,
+            "source authority changed during campaign",
+        )
         manifest_path = stage / "manifest.json"
         write_regular(manifest_path, canonical(manifest))
         # Complete recursive checksums before no-replace publication.
@@ -648,6 +792,43 @@ def execute_campaign(args: argparse.Namespace, authority: dict[str, Any]) -> dic
         if stage.exists() and stage != result_dir:
             import shutil
             shutil.rmtree(stage, ignore_errors=True)
+
+
+def require_structural_complete(result: dict[str, Any]) -> None:
+    require(result["selection_freeze"]["selected_count"] == 12, "structural completion requires 12 selected targets")
+    require(
+        result["selection_freeze"]["role_counts"] == {role: 4 for role in ROLES},
+        "structural completion requires four targets in every role",
+    )
+    require(result["execution_count"] == 48, "structural completion requires 48 tool executions")
+    require(result["complete_execution_denominator"] == 48, "execution denominator changed")
+    require(len(result["cells"]) == 9, "structural completion requires nine cells")
+    require(sum(result["cell_counts"].values()) == 9, "terminal cell accounting changed")
+    require(result["control_count"] == 108, "structural completion requires 108 controls")
+    require(
+        all(
+            len(cell["observations"]) == 4
+            and len(cell["controls"]) == 12
+            and all(control["expected"] == control["observed"] for control in cell["controls"])
+            for cell in result["cells"]
+        ),
+        "natural campaign observation/control closure changed",
+    )
+
+
+def require_acceptance_complete(result: dict[str, Any]) -> None:
+    require_structural_complete(result)
+    require(
+        result["cell_counts"]
+        == {
+            "qualified": 9,
+            "insufficient": 0,
+            "unavailable": 0,
+            "mismatch": 0,
+            "ambiguous": 0,
+        },
+        "acceptance completion requires all nine cells qualified",
+    )
 
 
 def selftest(authority: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
@@ -699,10 +880,18 @@ def main() -> int:
     parser.add_argument("--ropr", type=Path)
     parser.add_argument("--readelf", type=Path, default=Path("/usr/bin/readelf"))
     parser.add_argument("--dpkg-query", type=Path, default=Path("/usr/bin/dpkg-query"))
+    parser.add_argument("--source-root", type=Path)
+    parser.add_argument("--source-manifest", type=Path)
+    parser.add_argument("--expected-candidate-tree")
+    parser.add_argument(
+        "--require-structural-complete",
+        action="store_true",
+        help="fail after retaining the result unless all targets, executions, cells, and controls are accounted for",
+    )
     parser.add_argument(
         "--require-complete",
         action="store_true",
-        help="fail after retaining the diagnostic result unless all 12 targets and 48 executions completed",
+        help="fail after retaining the result unless all nine baseline-by-role cells qualify for acceptance",
     )
     args = parser.parse_args()
     try:
@@ -715,16 +904,16 @@ def main() -> int:
                 "outcome_blind=1 reroll=0 public_fields_added=0 semantic_changes=0 score_changes=0 schema_changed=0"
             )
         else:
-            for name in ("result_dir", "x64lens", "ropgadget", "ropper", "ropr"):
+            for name in (
+                "result_dir", "x64lens", "ropgadget", "ropper", "ropr",
+                "source_root", "source_manifest", "expected_candidate_tree",
+            ):
                 require(getattr(args, name) is not None, f"--{name.replace('_', '-')} is required for run")
             result = execute_campaign(args, authority)
+            if args.require_structural_complete or args.require_complete:
+                require_structural_complete(result)
             if args.require_complete:
-                require(result["selection_freeze"]["selected_count"] == 12, "complete campaign requires 12 selected targets")
-                require(
-                    result["selection_freeze"]["role_counts"] == {role: 4 for role in ROLES},
-                    "complete campaign requires four targets in every role",
-                )
-                require(result["execution_count"] == 48, "complete campaign requires 48 tool executions")
+                require_acceptance_complete(result)
             print(
                 "sprint13-natural-coordinate-campaign: ok "
                 f"selected={result['selection_freeze']['selected_count']} executions={result['execution_count']}/48 "

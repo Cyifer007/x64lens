@@ -716,7 +716,7 @@ tranches. Patch 074 was a superseded closeout candidate. Patch 075 introduced
 private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
-required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 083 acceptance
 remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
@@ -733,8 +733,8 @@ RPATH/RUNPATH evidence. Patch 076's review required correction. Patch 077 was
 a Sprint 12 reconciliation candidate; Patch 078 followed as a Sprint 13 entry
 candidate, and its review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review
-required Patch 081. Patch 081 was not accepted; Patch 082 is the current
-artifact-backed corrective candidate.
+required Patch 081. Patches 081 and 082 were not accepted; Patch 083 is the
+current exact-source implementation candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -760,7 +760,7 @@ artifact-backed corrective candidate.
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 082 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 083 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -777,9 +777,9 @@ artifact-backed corrective candidate.
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [ ] Accept Patch 082 only after complete native, Docker, parity, delivery,
-  retained three-build producer, and independent validation before activating
-  Sprint 13.
+- [ ] Complete Patch 083 exact-source native, Docker, parity, delivery,
+  retained three-build producer, natural-campaign, documentation, and
+  independent acceptance before activating Sprint 13.
 
 
 ### Sprint 13 Patch 078 entry decision
@@ -829,23 +829,37 @@ artifact-backed corrective candidate.
   through a separate policy check.
 - [ ] Select the next semantic family or consumer only after incremental task value is demonstrated.
 
-### Sprint 13 Patch 082 acceptance candidate
+### Historical Sprint 13 Patch 082 candidate
 
 - [x] Bind each Git-less source manifest to its matching authority root.
 - [x] Separate pristine Docker source custody from generated build output.
 - [x] Isolate nested Make invocations from caller-selected authority files.
 - [x] Implement a gate that requires three independently built producer
   generations for the ordered-pair and score/null checks.
-- [ ] Complete and retain the full local three-build producer run.
+- [x] Complete and retain the exact-source P082 three-build producer run.
 - [x] Add a controlled six-target coordinate method-discrimination preflight
   with two modeled observations for each of nine tool-label-by-role cells (18
   observations total).
-- [ ] Run a fresh authenticated natural coordinate campaign before comparative
-  coverage interpretation.
+- [x] Retain the separate exact-pinned P082 diagnostic campaign: 30/30
+  conditions and 180/180 rows, with all 60 x64lens timings below the 6,303,525
+  ns floor and 0/9 positive natural coordinate cells. It remains diagnostic,
+  unfrozen, publication-ineligible, and non-comparative.
 - [ ] Freeze the named consumer contract before additional role projection.
-- [ ] Complete Patch 082 native, Docker, parity, delivery, full three-build, and
-  independent acceptance.
+- [x] Record that Patch 082 was not accepted and its returned findings became
+  correction inputs to Patch 083.
 
+
+### Sprint 13 Patch 084 checkpoint
+
+- [x] Correct post-effect repository/parent rebinding and corrupt-recovery residue.
+- [x] Bind Docker source construction and natural evidence to the exact candidate tree.
+- [x] Keep authenticated Docker source read-only to the runtime user.
+- [x] Separate natural structural completion from nine-cell comparison qualification.
+- [x] Retain the complete P083 result: 12 targets, 48 executions, 108 controls, zero qualified, five insufficient, four unavailable cells.
+- [x] Freeze 36 private ABI-role queries, including 12 source-disjoint confirmations, and define 96 public disabled-output closures.
+- [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
+- [ ] Complete fresh native, Docker, ABI closure, producer, parity, delivery, and independent Lane A acceptance.
+- [ ] After acceptance, replay the same frozen natural targets and attribute every unsupported terminal outcome privately.
 
 ### Sprint 13 Patch 083 checkpoint
 
@@ -857,3 +871,14 @@ artifact-backed corrective candidate.
 - [x] Outcome-blind natural coordinate campaign implementation and 108-control self-test.
 - [ ] Complete retained natural campaign on a host with all baseline tools and twelve selected role targets.
 - [ ] Exact-source native, Docker, producer, parity, delivery, and independent acceptance.
+
+### Sprint 13 Patch 084 handoff
+
+- [ ] Carry only the smallest corrective tranche if independent P083 review
+  returns corrections.
+- [ ] Otherwise reconcile retained natural-coordinate terminal states and
+  freeze a separately reviewed named ABI-role consumer/equivalence contract.
+- [ ] Preserve the 12-target, 48-execution, nine-cell, 108-control no-reroll
+  diagnostic boundary without authorizing public fields, semantics, scores,
+  schema or capacity changes, decoder or concurrency work, or comparative
+  coverage, performance, or exploitability claims.

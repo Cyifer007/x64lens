@@ -4,7 +4,7 @@
 
 Historical Patch 079 implementation decision. Patch 079 did not complete
 acceptance; it was superseded by Patch 080, and Patch 080 by Patch 081. Patch 081
-was not accepted; Patch 082 is the current artifact-backed implementation
+was not accepted; Patch 082 was not accepted; Patch 083 is the current implementation
 candidate, pending independent exact-source acceptance.
 
 ## Context

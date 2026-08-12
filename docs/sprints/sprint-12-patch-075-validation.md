@@ -75,5 +75,5 @@ Patch 076 extended this private evidence with distinct RPATH/RUNPATH facts, but
 its review required Patch 077. Patch 077 was superseded by Patch 078, whose
 review required the Patch 079 corrective and private task-value candidate, whose
 review required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Native, container, parity, and independent Patch 082 acceptance
+accepted. Native, container, parity, and independent Patch 083 acceptance
 requirements remain separate; none substitutes for another.

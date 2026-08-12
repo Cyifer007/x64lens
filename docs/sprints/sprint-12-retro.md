@@ -424,12 +424,14 @@ manifest declares zero incremental gains, and its static checker therefore
 records a policy deferral for redundant runtime state. It does not execute an
 independent task consumer or provide confirmatory measured task-value evidence.
 
-Patch 081 was not accepted. Its validation findings were accepted as correction
-inputs to Patch 082, which implements a producer-backed gate and a controlled
-coordinate method-discrimination preflight. The full retained three-build run,
-natural coordinate campaign, and independent P082 acceptance remain pending;
-the controlled observations are neither natural anchors nor comparative
-qualification.
+Patch 081 was not accepted. Its validation findings became correction inputs to
+Patch 082, which implemented a producer-backed gate and a controlled coordinate
+method-discrimination preflight. Patch 082 was also not accepted. A later
+exact-source P082 run completed the three-build gate and a separate diagnostic
+campaign, but that campaign's x64lens timings were 0/60 above floor and its
+natural cells were 0/9 positive. P083 therefore requires a distinct producer
+run and 12-target natural campaign; the P082 observations remain diagnostic,
+unfrozen, publication-ineligible, and non-comparative.
 
 ## Final assessment
 
@@ -444,3 +446,14 @@ The sprint leaves x64lens better prepared for Sprint 13 semantic completion and
 the later Sprint 15 campaign freeze. Remaining corrective acceptance work can
 continue without erasing the completed semester contribution or weakening the
 architecture established here.
+
+## Post-retrospective Patch 084 acceptance update
+
+The semester engineering record remains complete. Patch 084 carries exact-source
+acceptance debt forward without revising the completed Sprint 12 technical work.
+It preserves the complete P083 natural campaign as diagnostic terminal evidence
+with zero qualified, five insufficient, and four unavailable cells; corrects the
+transaction, recovery, Docker, authority, and delivery findings; and freezes a
+private ABI-role query contract. Fresh native, Docker, parity, producer, strict
+ShellCheck, delivery, and independent acceptance remain separate from the
+retrospective’s semester-completion claim.

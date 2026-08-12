@@ -1681,7 +1681,7 @@ Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
 separate private evidence layer, and Sprint 13 activation remains blocked until
-complete Patch 082 acceptance. Patch 078 was superseded by the Patch 079
+complete Patch 083 acceptance. Patch 078 was superseded by the Patch 079
 corrective candidate; Patch 079 was superseded by Patch 080, whose review required
 Patch 081.
 
@@ -1761,15 +1761,31 @@ an authenticated Git-less source root separately from mutable build output and
 requires every manifest/root pair to agree. The implemented producer gate
 requires a complete retained local run to materialize three independent build
 roots and consume their analyzer reports in the ordered-pair and score/null
-policy gates. A successful run validates existing matcher, classifier, and
-scorer output; its records do not become reporter inputs or new candidate
-side-cars. Full three-build execution remains pending local validation.
+policy gates. A later exact-source P082 run completed all three builds and
+validated existing matcher, classifier, and scorer output; its records do not
+become reporter inputs or new candidate side-cars. P083 requires a fresh
+producer run bound to its own candidate tree.
 
 The controlled coordinate method-discrimination preflight consumes modeled
 mapping facts over six controlled targets only. It neither executes the named
 external tools nor changes program-header executable authority, region
 construction, candidate coordinates, or report fields.
 
+
+## Patch 084 authority and private ABI-role boundary
+
+Patch 084 changes no runtime assembly, include, or schema file. It hardens the
+transaction, recovery, Docker source, natural-campaign, and exact-source custody
+planes around the accepted analyzer architecture. The P083 natural result remains
+a separate diagnostic evidence plane with twelve selected targets, 48 executions,
+nine terminal cells, and 108 controls. Structural completion and comparison
+qualification are distinct authorities.
+
+The private ABI-role query authority reads existing exact single-pop and role
+facts. It does not add a candidate record, classifier input, reporter field, or
+score consumer. Its 36 queries and 96 disabled-output public closures therefore
+validate an existing private interpretation without changing the analysis
+pipeline.
 
 ## Patch 083 natural coordinate evidence plane
 

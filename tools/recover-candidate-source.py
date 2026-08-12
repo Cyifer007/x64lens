@@ -744,7 +744,11 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         require(observed_oid == expected["git_oid"], f"Git blob identity disagrees: {name}")
                         seen_files.add(name)
                     except BaseException:
-                        os.close(fd)
+                        # Keep the retained descriptor open for identity-qualified
+                        # rollback.  Closing it here leaves a stale FileRecord and
+                        # prevents cleanup from authenticating and deleting the
+                        # owned corrupt member.  The outer finally block closes all
+                        # retained descriptors after rollback completes.
                         raise
                 else:
                     raise RecoveryError(f"unsupported TAR member type: {name}")

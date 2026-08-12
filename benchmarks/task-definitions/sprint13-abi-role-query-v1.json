@@ -1,0 +1,585 @@
+{
+  "claim_boundary": {
+    "human_blind_claim": false,
+    "private_contract_frozen": true,
+    "public_fields_added": 0,
+    "publication_claim_authorized": false,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_changes": 0
+  },
+  "contract": {
+    "all_16_exact_single_pop_registers": true,
+    "confirmation_queries": 12,
+    "development_confirmation_disjoint": true,
+    "development_queries": 24,
+    "linux_syscall_argument_4": "r10",
+    "linux_syscall_number": "rax",
+    "query_states": [
+      "present",
+      "absent",
+      "unknown"
+    ],
+    "query_total": 36,
+    "stack_pivot": "rsp",
+    "sysv_argument_4": "rcx"
+  },
+  "evidence_class": "diagnostic",
+  "limitations": [
+    "The query lattice is private additive evidence and is not a public report contract.",
+    "Exact suffix role facts do not establish full-window decoded validity or exploitability.",
+    "The 96-command closure proves disabled public projection only for controlled inputs and the authenticated analyzer.",
+    "Natural role incidence and representation cost remain separate measurement gates."
+  ],
+  "patch": 84,
+  "public_closure": {
+    "closure_denominator": 96,
+    "command_count": 4,
+    "commands": [
+      "info",
+      "mitigations",
+      "gadgets_json",
+      "analyze_json"
+    ],
+    "forbidden_public_tokens": [
+      "abi_role",
+      "candidate_role",
+      "generic_control",
+      "sysv_arg",
+      "syscall_arg"
+    ],
+    "target_count": 24,
+    "targets": [
+      {
+        "id": "pop-rax",
+        "kind": "single_pop",
+        "register": "rax"
+      },
+      {
+        "id": "pop-rcx",
+        "kind": "single_pop",
+        "register": "rcx"
+      },
+      {
+        "id": "pop-rdx",
+        "kind": "single_pop",
+        "register": "rdx"
+      },
+      {
+        "id": "pop-rbx",
+        "kind": "single_pop",
+        "register": "rbx"
+      },
+      {
+        "id": "pop-rsp",
+        "kind": "single_pop",
+        "register": "rsp"
+      },
+      {
+        "id": "pop-rbp",
+        "kind": "single_pop",
+        "register": "rbp"
+      },
+      {
+        "id": "pop-rsi",
+        "kind": "single_pop",
+        "register": "rsi"
+      },
+      {
+        "id": "pop-rdi",
+        "kind": "single_pop",
+        "register": "rdi"
+      },
+      {
+        "id": "pop-r8",
+        "kind": "single_pop",
+        "register": "r8"
+      },
+      {
+        "id": "pop-r9",
+        "kind": "single_pop",
+        "register": "r9"
+      },
+      {
+        "id": "pop-r10",
+        "kind": "single_pop",
+        "register": "r10"
+      },
+      {
+        "id": "pop-r11",
+        "kind": "single_pop",
+        "register": "r11"
+      },
+      {
+        "id": "pop-r12",
+        "kind": "single_pop",
+        "register": "r12"
+      },
+      {
+        "id": "pop-r13",
+        "kind": "single_pop",
+        "register": "r13"
+      },
+      {
+        "id": "pop-r14",
+        "kind": "single_pop",
+        "register": "r14"
+      },
+      {
+        "id": "pop-r15",
+        "kind": "single_pop",
+        "register": "r15"
+      },
+      {
+        "bytes_hex": "c3",
+        "id": "control-ret",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "c9c3",
+        "id": "control-leave-ret",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "0f05c3",
+        "id": "control-syscall-ret",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "5f5ec3",
+        "id": "control-two-pop",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "4889d8c3",
+        "id": "control-reg-transfer",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "4883c408c3",
+        "id": "control-stack-adjust",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "488b03c3",
+        "id": "control-memory-read",
+        "kind": "bytes"
+      },
+      {
+        "bytes_hex": "9090c3",
+        "id": "control-unknown",
+        "kind": "bytes"
+      }
+    ]
+  },
+  "publication_eligible": false,
+  "purpose": "Freeze the private named ABI-role query lattice and public disabled-projection closure without changing runtime semantics, scores, schema, or output.",
+  "queries": [
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rax",
+      "register": "rax",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rcx",
+      "register": "rcx",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rdx",
+      "register": "rdx",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rbx",
+      "register": "rbx",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "absent",
+      "facet": "generic_control",
+      "id": "dev-generic-rsp",
+      "register": "rsp",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rbp",
+      "register": "rbp",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rsi",
+      "register": "rsi",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-rdi",
+      "register": "rdi",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r8",
+      "register": "r8",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r9",
+      "register": "r9",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r10",
+      "register": "r10",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r11",
+      "register": "r11",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r12",
+      "register": "r12",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r13",
+      "register": "r13",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r14",
+      "register": "r14",
+      "split": "development"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "generic_control",
+      "id": "dev-generic-r15",
+      "register": "r15",
+      "split": "development"
+    },
+    {
+      "argument_index": 1,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "dev-sysv-arg1-rdi",
+      "register": "rdi",
+      "split": "development"
+    },
+    {
+      "argument_index": 2,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "dev-sysv-arg2-rsi",
+      "register": "rsi",
+      "split": "development"
+    },
+    {
+      "argument_index": 3,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "dev-sysv-arg3-rdx",
+      "register": "rdx",
+      "split": "development"
+    },
+    {
+      "argument_index": 4,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "dev-sysv-arg4-rcx",
+      "register": "rcx",
+      "split": "development"
+    },
+    {
+      "argument_index": 1,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "dev-syscall-arg1-rdi",
+      "register": "rdi",
+      "split": "development"
+    },
+    {
+      "argument_index": 2,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "dev-syscall-arg2-rsi",
+      "register": "rsi",
+      "split": "development"
+    },
+    {
+      "argument_index": 3,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "dev-syscall-arg3-rdx",
+      "register": "rdx",
+      "split": "development"
+    },
+    {
+      "argument_index": 4,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "dev-syscall-arg4-r10",
+      "register": "r10",
+      "split": "development"
+    },
+    {
+      "argument_index": 5,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "confirm-sysv-arg5-r8",
+      "register": "r8",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 6,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "sysv_argument",
+      "id": "confirm-sysv-arg6-r9",
+      "register": "r9",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 5,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "confirm-syscall-arg5-r8",
+      "register": "r8",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 6,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_argument",
+      "id": "confirm-syscall-arg6-r9",
+      "register": "r9",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 4,
+      "candidate_state": "known",
+      "expected": "absent",
+      "facet": "sysv_argument",
+      "id": "confirm-sysv-arg4-r10-negative",
+      "register": "r10",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 4,
+      "candidate_state": "known",
+      "expected": "absent",
+      "facet": "syscall_argument",
+      "id": "confirm-syscall-arg4-rcx-negative",
+      "register": "rcx",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "syscall_number",
+      "id": "confirm-syscall-number-rax",
+      "register": "rax",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "known",
+      "expected": "present",
+      "facet": "stack_pivot",
+      "id": "confirm-stack-pivot-rsp",
+      "register": "rsp",
+      "split": "confirmation"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "unknown",
+      "expected": "unknown",
+      "facet": "generic_control",
+      "id": "confirm-unknown-generic_control",
+      "register": null,
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 1,
+      "candidate_state": "unknown",
+      "expected": "unknown",
+      "facet": "sysv_argument",
+      "id": "confirm-unknown-sysv_argument",
+      "register": null,
+      "split": "confirmation"
+    },
+    {
+      "argument_index": 1,
+      "candidate_state": "unknown",
+      "expected": "unknown",
+      "facet": "syscall_argument",
+      "id": "confirm-unknown-syscall_argument",
+      "register": null,
+      "split": "confirmation"
+    },
+    {
+      "argument_index": null,
+      "candidate_state": "unknown",
+      "expected": "unknown",
+      "facet": "stack_pivot",
+      "id": "confirm-unknown-stack_pivot",
+      "register": null,
+      "split": "confirmation"
+    }
+  ],
+  "register_masks": [
+    {
+      "mask": 1,
+      "register": "rax"
+    },
+    {
+      "mask": 2049,
+      "register": "rcx"
+    },
+    {
+      "mask": 263169,
+      "register": "rdx"
+    },
+    {
+      "mask": 1,
+      "register": "rbx"
+    },
+    {
+      "mask": 0,
+      "register": "rsp"
+    },
+    {
+      "mask": 1,
+      "register": "rbp"
+    },
+    {
+      "mask": 131585,
+      "register": "rsi"
+    },
+    {
+      "mask": 65793,
+      "register": "rdi"
+    },
+    {
+      "mask": 1052673,
+      "register": "r8"
+    },
+    {
+      "mask": 2105345,
+      "register": "r9"
+    },
+    {
+      "mask": 524289,
+      "register": "r10"
+    },
+    {
+      "mask": 1,
+      "register": "r11"
+    },
+    {
+      "mask": 1,
+      "register": "r12"
+    },
+    {
+      "mask": 1,
+      "register": "r13"
+    },
+    {
+      "mask": 1,
+      "register": "r14"
+    },
+    {
+      "mask": 1,
+      "register": "r15"
+    }
+  ],
+  "schema": "x64lens-sprint13-abi-role-query-authority-v1",
+  "source_authorities": [
+    {
+      "path": "src/candidate_role.asm",
+      "sha256": "d8608e0e4203aa4062d679151bb469cc2c2fad055022ed33ca8745bd872a8ff8"
+    },
+    {
+      "path": "include/structs.inc",
+      "sha256": "5dd2ca79ede178b7834ccd4f32d9815daf86977d860c9903c144c32fad718691"
+    },
+    {
+      "path": "tests/internal/register-role-facet-reconciliation.asm",
+      "sha256": "60029d9e19351fb0a901b695b5aecf750aad9f9d5a7ad9f07f5de6eba8483713"
+    }
+  ],
+  "sprint": 13
+}

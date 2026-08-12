@@ -2,13 +2,14 @@
 
 ## Status
 
-Implementation candidate with artifact-backed gate definitions. The full
-retained three-build run and complete exact-source native, Docker, parity,
-delivery, and independent validation remain pending.
+Historical implementation candidate; not accepted and superseded by Patch 083.
+A later exact-source P082 run completed the retained three-build producer gate
+and a separate diagnostic campaign, but the complete native, Docker, parity,
+delivery, and independent acceptance boundary did not complete.
 
 ## Purpose
 
-Patch 082 corrects the remaining Patch 081 delivery, Docker, nested-authority,
+Patch 082 corrected the remaining Patch 081 delivery, Docker, nested-authority,
 source-root, and producer-oracle findings. It also implements a bounded
 controlled coordinate method-discrimination preflight. It changes no analyzer assembly, include file,
 public schema, semantic class, score, candidate capacity, or output field.
@@ -18,8 +19,8 @@ public fields added:         0
 semantic changes:            0
 score changes:               0
 schema:                      0.2.0
-natural coordinate campaign: pending
-P082 acceptance:             pending independent exact-source validation
+P082 diagnostic campaign:    completed; 0/60 eligible x64lens timings, 0/9 positive cells
+P082 acceptance:             not accepted; superseded by P083
 ```
 
 ## Evidence-state vocabulary
@@ -30,12 +31,13 @@ P082 acceptance:             pending independent exact-source validation
 - **Cloud-validated** applies only to an explicitly named retained cloud check.
   It is not inferred for Patch 082 from the presence of implementation
   artifacts and does not close the deferred WSL2 checks.
-- **WSL2-deferred** means the full exact-source native, Docker, parity, and
-  three-build producer execution still requires retained local evidence.
+- **Later exact-source evidence** completed the three-build producer gate and a
+  separate P082 diagnostic campaign. Docker and exact native/container parity
+  remained blocked or incomplete.
 - **Accepted** applies here to the Patch 081 findings used as correction inputs,
   not to Patch 081 or Patch 082 as a product checkpoint.
-- **Pending** applies to the natural coordinate campaign and independent
-  exact-source Patch 082 acceptance.
+- **Pending** now applies to the distinct P083 natural campaign and complete
+  independent exact-source P083 acceptance, not to historical P082 acceptance.
 
 ## Focused commands
 
@@ -78,8 +80,9 @@ Each resulting analyzer is required to process the 25-pattern score/effect fixtu
 30-pair ordered-pop fixture. The retained reports, binaries, fixtures, source
 tree, and build logs are hash-bound. Normalized facts must agree across all
 three generations. Score mutation or ordered-pop reordering must be rejected by
-producer output, not merely by static catalogs. The gate is implemented at
-Patch 082; the full retained three-build run remains pending local validation.
+producer output, not merely by static catalogs. A later exact-source P082 run
+completed all three builds, 90 producer-backed pair observations, and the
+complete score/null authority. P083 requires a new run bound to its own tree.
 
 ## Coordinate preflight
 
@@ -102,7 +105,7 @@ matrix labels and are not executed by the preflight; its observations are not
 natural anchors. A fresh authenticated natural campaign is still required
 before any comparative coverage claim.
 
-## Complete local validation
+## Historical complete gate
 
 ```bash
 make fix-perms
@@ -135,7 +138,7 @@ make sprint13-p082-acceptance-smoke
 
 ## Acceptance
 
-Patch 082 is not yet accepted. Acceptance requires native, Docker, parity,
-source, package, capacity, malformed-input, documentation, full retained
-three-build, and independent exact-source evidence to agree on one candidate
-tree.
+Patch 082 was not accepted. Its later three-build and diagnostic-campaign
+evidence did not substitute for the incomplete native, Docker, parity, source,
+package, delivery, documentation, and independent exact-source boundary. Its
+returned findings are correction inputs to Patch 083.

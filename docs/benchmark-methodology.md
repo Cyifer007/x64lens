@@ -881,7 +881,7 @@ superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
 the corrective and private task-value candidate; it was superseded by Patch 080,
 which was superseded by Patch 081. Any changed semantic task in Sprint 13 receives
-a new diagnostic campaign identity only after complete Patch 082 acceptance and
+a new diagnostic campaign identity only after complete Patch 083 acceptance and
 the relevant task-value gate.
 
 
@@ -964,14 +964,29 @@ can enter comparative coverage analysis. No generic gadget-count, runtime, RSS,
 or superiority claim follows from the controlled preflight.
 
 
+## Patch 084 natural terminal-state reconciliation
+
+Patch 084 distinguishes a structurally complete natural campaign from a
+comparison-qualified campaign. The P083 run retained twelve targets, 48 tool
+executions, nine terminal cells, and 108 controls, but no cell qualified. Five
+cells were insufficient and four were unavailable. Those terminal states are
+results, not missing rows, yet they do not authorize cross-tool coordinate or
+coverage comparison.
+
+A future corrective replay must use the same frozen target hashes and preserve
+all unavailable and unsupported outcomes. No reroll is permitted.
+
 ## Patch 083 natural coordinate qualification
 
 The controlled Patch 082 preflight validates coordinate-method mechanics only.
 Patch 083 adds a separate outcome-blind natural campaign. The campaign freezes
 the complete ordered installed-package ELF pool and twelve target snapshots
 before analyzer or baseline outcomes, then runs x64lens, ROPgadget, Ropper, and
-ropr over each available selected target. Nine baseline-by-role cells retain all
-observations plus 108 classifier controls. Missing tools, role strata, empty
-relations, mismatches, and ambiguous coordinates remain explicit. A qualified
-cell still does not authorize a coverage or performance claim; task-equivalent
-comparison and the Sprint 15 method freeze remain required.
+ropr for 48 target/tool executions. All four executables are prerequisites for
+a retained run; missing role strata remain explicit selection shortfalls. After
+selection, nonzero exits, parse failures, empty relations, unavailable
+observations, mismatches, and ambiguous coordinates are terminal and never
+trigger replacement or reroll. Nine baseline-by-role cells retain four
+observations each plus 108 classifier controls. A qualified cell still does not
+authorize a coverage or performance claim; task-equivalent comparison and the
+Sprint 15 method freeze remain required.

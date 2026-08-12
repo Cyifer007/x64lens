@@ -216,13 +216,28 @@ def _open_directory_chain(root_fd: int, raw: str) -> int:
         raise
 
 
-def create(repo: Path, root: Path, manifest_path: Path) -> dict[str, Any]:
+def create(
+    repo: Path,
+    root: Path,
+    manifest_path: Path,
+    expected_candidate_tree: str | None = None,
+) -> dict[str, Any]:
     repo = Path(os.path.abspath(repo))
     root = Path(os.path.abspath(root))
     manifest_path = Path(os.path.abspath(manifest_path))
     require(not root.exists() and not root.is_symlink(), "source root already exists")
     require(manifest_path.parent.is_dir() and not manifest_path.parent.is_symlink(), "manifest parent is missing or linked")
     tree, records = index_records(repo)
+    if expected_candidate_tree is not None:
+        require(
+            len(expected_candidate_tree) == 40
+            and all(char in "0123456789abcdef" for char in expected_candidate_tree),
+            "invalid expected candidate tree",
+        )
+        require(
+            tree == expected_candidate_tree,
+            f"staged Git tree differs from expected candidate tree: {tree}",
+        )
     directory_names = sorted(
         {
             "/".join(PurePosixPath(path).parts[:index])
@@ -514,14 +529,32 @@ def _read_manifest_file(source: Path, manifest: dict[str, Any], path: str) -> by
         os.close(root_fd)
 
 
-def create_context(repo: Path, context: Path) -> dict[str, Any]:
+def create_context(
+    repo: Path,
+    context: Path,
+    expected_candidate_tree: str | None = None,
+) -> dict[str, Any]:
     context = Path(os.path.abspath(context))
     require(not context.exists() and not context.is_symlink(), "Docker context already exists")
+    if expected_candidate_tree is not None:
+        tree, _records = index_records(repo)
+        require(
+            tree == expected_candidate_tree,
+            f"staged Git tree differs from expected candidate tree: {tree}",
+        )
     os.mkdir(context, ROOT_MODE)
     os.chmod(context, ROOT_MODE)
     source = context / "source"
     manifest_path = context / "source-manifest.json"
-    manifest = create(repo, source, manifest_path)
+    if expected_candidate_tree is None:
+        # Preserve the three-argument helper seam used by historical adversarial
+        # regressions while the P084 caller supplies the explicit tree gate.
+        manifest = create(repo, source, manifest_path)
+    else:
+        manifest = create(
+            repo, source, manifest_path,
+            expected_candidate_tree=expected_candidate_tree,
+        )
     verify(source, manifest)
     dockerfile_payload = _read_manifest_file(source, manifest, "Dockerfile")
     transport = context / "Dockerfile.transport"
@@ -561,22 +594,24 @@ def main() -> int:
     create_parser.add_argument("--repo", type=Path, required=True)
     create_parser.add_argument("--root", type=Path, required=True)
     create_parser.add_argument("--manifest", type=Path, required=True)
+    create_parser.add_argument("--expected-candidate-tree")
     verify_parser = sub.add_parser("verify")
     verify_parser.add_argument("--root", type=Path, required=True)
     verify_parser.add_argument("--manifest", type=Path, required=True)
     context_parser = sub.add_parser("create-context")
     context_parser.add_argument("--repo", type=Path, required=True)
     context_parser.add_argument("--context", type=Path, required=True)
+    context_parser.add_argument("--expected-candidate-tree")
     args = parser.parse_args()
     if args.command == "create":
-        value = create(args.repo, args.root, args.manifest)
+        value = create(args.repo, args.root, args.manifest, args.expected_candidate_tree)
         print(f"gitless-source-manifest: ok action=create tree={value['candidate_tree']} files={len(value['files'])} directories={len(value['directories'])} schema={SCHEMA}")
     elif args.command == "verify":
         value = load_manifest(args.manifest)
         verify(args.root, value)
         print(f"gitless-source-manifest: ok action=verify tree={value['candidate_tree']} files={len(value['files'])} directories={len(value['directories'])} schema={SCHEMA}")
     else:
-        value = create_context(args.repo, args.context)
+        value = create_context(args.repo, args.context, args.expected_candidate_tree)
         print(f"gitless-source-manifest: ok action=create-context tree={value['candidate_tree']} files={value['source_files']} ignored_or_untracked=0 schema={CONTEXT_SCHEMA}")
     return 0
 

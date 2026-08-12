@@ -1,0 +1,18 @@
+{
+  "decision": "prefix_and_successor_deltas_preserved",
+  "denominator_floors": 24,
+  "event_88_authorized": false,
+  "mutation_rejections": 12,
+  "new_canonical_ids_authorized": false,
+  "patch": 84,
+  "schema": "x64lens-sprint13-lifecycle-denominator-result-v1",
+  "sealed_aliases": 29,
+  "sealed_events": 87,
+  "sealed_folds": 2,
+  "sealed_leaves": 30,
+  "sealed_lineage_records": 161,
+  "sealed_roots": 20,
+  "sealed_tombstones": 15,
+  "sprint": 13,
+  "successor_deltas": 4
+}

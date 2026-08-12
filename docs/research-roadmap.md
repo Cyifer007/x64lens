@@ -3,7 +3,7 @@
 ## Current checkpoint
 
 Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
-mitigation facts. Patch 083 is the current implementation candidate. Its full
+mitigation facts. Patch 084 is the current implementation candidate. Its full
 producer run, natural-coordinate campaign, native and Docker gates, parity, and
 independent exact-source acceptance remain pending.
 
@@ -21,7 +21,8 @@ projection. Patch 081 corrected its acceptance infrastructure, recorded
 task-value manifest. The manifest declares existing and proposed correctness
 with zero incremental gains, while its static smoke does not execute an
 independent task consumer. The resulting policy decision defers a new runtime
-tuple representation. Patch 082 implements producer-backed validation for that decision. Patch 083
+tuple representation. Patch 082 implemented producer-backed validation for
+that decision. Patch 083
 corrects the remaining acceptance infrastructure and implements the
 outcome-blind natural-coordinate campaign without changing existing semantic
 classes, scores, or schema.
@@ -585,7 +586,7 @@ required the Patch 076 correction. Patch 076 implements distinct bounded private
 RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
 077 required the Patch 078 entry candidate. Patch 078 was superseded by the
 Patch 079 corrective and private task-value candidate. Patch 079's review
-required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 082 acceptance
+required Patch 080, which was superseded by Patch 081. Independent exact-source Patch 083 acceptance
 remains pending before the Sprint 13 handoff.
 
 
@@ -629,7 +630,7 @@ RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076 was superseded by the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 082 acceptance. Patch
+remains planned and activates only after complete Patch 083 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
 4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
 deterministically presentation-ordered task-value gate. Patch 080 records the
@@ -689,15 +690,32 @@ incremental-value gate.
 
 ## Sprint 13 Patch 082 checkpoint
 
-Patch 082 is the current artifact-backed exact-source implementation candidate.
-It retains the private role side-car and ordered-tuple deferral, implements a
-gate that requires score/null and ordered-pair agreement across three independent
-builds, and adds a controlled coordinate method-discrimination preflight. Full
-retained three-build execution and independent acceptance remain pending local
-validation. The next bounded work is a natural coordinate campaign plus a
-named-consumer contract freeze; decoder, concurrency, public projection, and
-score changes remain separate gates.
+Patch 082 was not accepted; Patch 083 is the current exact-source implementation
+candidate. P082 retained the private role side-car and ordered-tuple deferral,
+implemented a gate requiring score/null and ordered-pair agreement across three
+independent builds, and added a controlled coordinate method-discrimination
+preflight. A later exact-source P082 execution completed the three-build gate and
+a separate 30-condition/180-row diagnostic campaign. All 60 x64lens timing rows
+were below its 6,303,525 ns floor and all nine natural coordinate cells had zero
+positive anchors. That result remains diagnostic, unfrozen, and publication-
+ineligible; P083 requires its own exact-tree producer run and distinct 12-target
+natural campaign.
 
+
+## Patch 084 research decision
+
+Patch 084 preserves the P083 natural result as terminal diagnostic evidence and
+corrects the authority and source-custody gaps that prevented acceptance. The
+complete result has 12 targets, 48 executions, nine cells, 108 controls, zero
+qualified cells, five insufficient cells, and four unavailable cells. No
+comparative coverage claim follows.
+
+The bounded strategic addition is a private ABI-role query contract: 36
+source-derived queries with 12 source-disjoint confirmations and 96 public
+disabled-output closures. The contract freezes the distinction between System V
+argument 4 (`rcx`) and Linux syscall argument 4 (`r10`) without changing runtime
+semantics, public output, or scores. Patch 085 may perform only the frozen-target
+corrective replay and private unsupported-terminal attribution after acceptance.
 
 ## Patch 083 research decision
 
@@ -706,3 +724,13 @@ campaign, not a new runtime semantic family. Its twelve selected package objects
 48 planned tool processes, nine cells, and 108 controls remain mutable diagnostic
 evidence. Public role projection, score changes, decoder admission, and
 concurrency remain separate gates.
+
+## Patch 084 handoff
+
+Patch 084 is conditional on the independent exact-source P083 result. Returned
+corrections are limited to the smallest corrective tranche. If P083 is accepted,
+P084 may begin separately reviewed natural-coordinate reconciliation and a
+named ABI-role consumer/equivalence contract. It does not preauthorize public
+projection, semantics, scores, schema or capacity changes, decoder or
+concurrency work, or comparative coverage, performance, or exploitability
+claims.

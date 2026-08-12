@@ -14,7 +14,7 @@ text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
 and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
 Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are
 recorded in the
-[Patch 082 validation record](sprint-13-patch-082-validation.md). The
+[Patch 083 validation record](sprint-13-patch-083-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary. The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves that
@@ -23,7 +23,7 @@ historical boundary, and the
 rejected boundary. The matrix and
 `readelf` reconciliation remain diagnostic, unfrozen, and publication-
 ineligible. Patch 072 added the environment-parity protocol, but corrected
-actual native/container parity evidence and complete Patch 082 acceptance remain
+actual native/container parity evidence and complete Patch 083 acceptance remain
 pending.
 Patch 073 records the public-policy decision as `defer`. Results below are
 historical candidate contracts or

@@ -1,0 +1,26 @@
+{
+  "confirmation_queries": 12,
+  "decision": "private_contract_frozen_public_projection_disabled",
+  "development_queries": 24,
+  "patch": 84,
+  "public_closure_denominator": 96,
+  "public_fields_added": 0,
+  "public_target_count": 24,
+  "queries": 36,
+  "query_states": {
+    "absent": 3,
+    "present": 29,
+    "unknown": 4
+  },
+  "registers": 16,
+  "schema": "x64lens-sprint13-abi-role-query-result-v1",
+  "schema_changed": false,
+  "score_changes": 0,
+  "semantic_changes": 0,
+  "source_masks_attested": 16,
+  "sprint": 13,
+  "stack_pivot_rsp": true,
+  "syscall_arg4_r10": true,
+  "syscall_number_rax": true,
+  "sysv_arg4_rcx": true
+}

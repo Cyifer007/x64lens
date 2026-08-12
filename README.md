@@ -4,15 +4,17 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts until Patch 083 completes its local acceptance gates.
-> Sprint 13 Patch 083 is the current implementation candidate. It corrects the
-> remaining Patch 082 transaction, corpus-oracle, Docker run-root, producer,
-> recovery, and delivery-custody findings and adds an outcome-blind natural
-> coordinate campaign over twelve installed-package ELF64 objects when the
-> environment supplies four source-package lineages for each loader role.
-> Public output, semantic classes, scores, candidate capacity, and schema
-> `0.2.0` remain unchanged. Exact-source native, Docker, producer, natural-
-> campaign, parity, and independent acceptance remain pending.
+> and mitigation facts until Patch 084 completes its local acceptance gates.
+> Sprint 13 Patch 084 is the current implementation candidate. It corrects the
+> Patch 083 transaction, corrupt-recovery, Docker source-custody, exact-tree,
+> natural-authority, source-binding, strict-shell, generated-artifact, and
+> delivery findings. The complete P083 natural result is retained as terminal
+> diagnostic evidence: twelve targets, 48 executions, 108 controls, zero
+> qualified cells, five insufficient cells, and four unavailable cells. Patch
+> 084 also freezes a private 36-query ABI-role contract and the sealed lifecycle
+> denominator. Public output, semantic classes, scores, candidate capacity, and
+> schema `0.2.0` remain unchanged. Fresh native, Docker, ABI-closure, parity,
+> producer, delivery, and independent acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -45,6 +47,35 @@
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
 
+## Sprint 13 Patch 084 correction and private ABI-role contract
+
+Patch 084 preserves the complete Patch 083 natural campaign as a structurally
+complete but comparison-unqualified diagnostic result. The twelve selected
+target hashes, 48 tool executions, nine terminal cells, and 108 classifier
+controls remain fixed. Zero cells qualified; five were insufficient and four
+were unavailable. Structural completion no longer satisfies the separate
+nine-qualified-cell comparison gate.
+
+The patch corrects post-effect repository and parent rebinding, corrupt source
+recovery residue, Docker candidate-tree and source immutability, natural
+authority shape, exact source binding, generated-artifact custody, and strict
+shell lint. It also freezes 36 private ABI-role queries: 24 development queries,
+12 source-disjoint confirmation queries, and 96 disabled-output public command
+closures. These facts remain private and additive.
+
+```text
+public fields added:          0
+semantic changes:             0
+score changes:                0
+schema:                       0.2.0
+natural cells:                0 qualified / 5 insufficient / 4 unavailable
+ABI role queries:             36 private; 96 public closures pending fresh build
+P084 acceptance:              pending exact-source local validation
+```
+
+See [ADR 0070](docs/adr/0070-patch083-correction-and-abi-role-contract.md) and
+the [Patch 084 validation record](docs/sprints/sprint-13-patch-084-validation.md).
+
 ## Sprint 13 Patch 083 correction and natural coordinate campaign
 
 Patch 083 keeps the controlled Patch 082 coordinate preflight as a method
@@ -53,8 +84,11 @@ coordinate interpretation. Installed dpkg package membership and GNU
 `readelf -hW -lW -dW` role facts are enumerated first. The complete eligible
 pool, twelve target snapshots, and deterministic four-lineage-per-role
 selection are frozen before x64lens, ROPgadget, Ropper, or ropr target outcomes
-are inspected. Missing strata and unavailable tools remain terminal evidence;
-targets are never rerolled after outcomes.
+are inspected. Missing role strata remain explicit selection shortfalls, and
+all four analyzer/baseline executables are prerequisites for a retained run.
+After the selection freeze, nonzero exits, parse failures, empty relations,
+unavailable observations, ambiguous coordinates, and mismatches remain terminal
+evidence; selected targets are never replaced or rerolled.
 
 A complete campaign contains 48 target/tool processes, nine baseline-by-role
 cells, four observations per cell, and 108 empty, ambiguity, and mismatch
@@ -80,18 +114,17 @@ P083 acceptance:           pending exact-source validation
 
 ## Sprint 13 Patch 082 producer authority and coordinate preflight
 
-Patch 082 corrects the remaining Patch 081 delivery, ordinary-extraction,
+Patch 082 corrected the remaining Patch 081 delivery, ordinary-extraction,
 Docker source/build, Git-less authority pairing, nested-Make authority, and
 producer-oracle findings. The analyzer runtime, public reports, schema, scores,
 semantic classes, and candidate-capacity behavior are unchanged.
 
-The ordered two-pop and score/null gates are implemented to consume reports from
+The ordered two-pop and score/null gates consume reports from
 three independently built analyzers materialized from one authenticated source
-tree. A complete retained local run will perform 90 ordered-pair producer checks
-and 100 score/null mutation rejections across the exact catalog and three
-producer generations. That full three-build execution remains pending local
-validation. The gate validates existing runtime facts; it adds no redundant
-tuple record and retains all existing scores and nulls.
+tree. A later exact-source P082 execution completed all three builds, 90
+ordered-pair producer checks, and 100 score/null checks across the exact catalog.
+The gate validates existing runtime facts; it adds no redundant tuple record and
+retains all existing scores and nulls.
 
 A separate controlled method-discrimination preflight generates six
 deterministic ELF64 targets and requires eight positive cases, four mutation
@@ -99,7 +132,12 @@ rejections, four semantic negatives, and two modeled controlled-target
 observations in each of nine tool-label-by-role cells: 18 cell observations in
 total. The external-tool names are labels in this controlled matrix, not
 executed natural baselines. Natural tool-native evidence remains required before
-comparative coverage claims. See
+comparative coverage claims. A separate exact-pinned P082 diagnostic campaign
+completed 30/30 conditions and 180/180 process rows, but all 60 x64lens rows
+were below the 6,303,525 ns timing floor and all nine natural coordinate cells
+had zero positive anchors. The result remains diagnostic, unfrozen, and
+publication-ineligible; it is not confirmatory evidence and supports no
+performance, RSS, parity, coverage, or superiority claim. See
 [ADR 0068](docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md)
 and the [Patch 082 validation record](docs/sprints/sprint-13-patch-082-validation.md).
 
@@ -108,8 +146,8 @@ public fields added:         0
 semantic changes:            0
 score changes:               0
 schema:                      0.2.0
-natural coordinate campaign: pending
-P082 acceptance:             pending independent exact-source validation
+P082 diagnostic campaign:    completed; 0/60 eligible x64lens timings, 0/9 positive cells
+P082 acceptance:             not accepted; superseded by P083
 ```
 
 ## Sprint 13 Patch 081 correction and ordered two-pop decision
@@ -344,7 +382,8 @@ evidence; Patch 076 added the distinct private search-path tranche, but its
 review required the Patch 077 correction. Patch 077 then required the Patch 078
 entry candidate, whose review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080. Patch 080's review
-required Patch 081; independent exact-source Patch 082 acceptance remains pending.
+required Patch 081. Patch 082 was not accepted; its findings are correction
+inputs to the current Patch 083 candidate.
 
 GNU property entries are now aligned relative to the property descriptor. Exact
 duplicate physical carriers remain canonicalized, while any non-identical
@@ -916,10 +955,11 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 082 are later
+identifies the Sprint 6 integrated checkpoint; Patches 046 through 083 are later
 pre-release work. Patch 079 was the corrective and private task-value candidate;
-it was superseded by Patch 080, and Patch 080 by Patch 081. Patch 081 was not
-accepted; independent exact-source Patch 082 acceptance remains pending. Patch 054 closes
+it was superseded by Patch 080, and Patch 080 by Patch 081. Patches 081 and 082
+were not accepted; Patch 083 is the current implementation candidate pending
+complete exact-source acceptance. Patch 054 closes
 Sprint 10, Patch 061 closes Sprint 11, and Patch 062 begins Sprint 12
 loader-precision work. Patch 063 adds corrective hardening plus internal overlap
 provenance, and Patch 064 records the measured
@@ -1115,7 +1155,9 @@ first surrounding transaction set and closes no public-policy deferral. Patch
 078 corrects the remaining Patch 077 blockers and freezes a private exact-pop
 role decision without runtime, public-field, or score projection. Its review
 required Patch 079, which was superseded by Patch 080; Patch 080's review required
-Patch 081, which was superseded by Patch 082. Sprint 13 becomes active only after complete Patch 082 acceptance.
+Patch 081. Patch 082 was not accepted; its findings are correction inputs to
+Patch 083. Sprint 13 becomes active only after complete exact-source Patch 083
+acceptance.
 See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
@@ -1134,7 +1176,15 @@ historical
 [ADR 0067](docs/adr/0067-patch080-correction-and-ordered-two-pop-task-value.md),
 [P081 validation](docs/sprints/sprint-13-patch-081-validation.md),
 [ADR 0068](docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md),
-and [P082 validation](docs/sprints/sprint-13-patch-082-validation.md).
+the [historical P082 validation](docs/sprints/sprint-13-patch-082-validation.md),
+and the [P083 validation record](docs/sprints/sprint-13-patch-083-validation.md).
+
+Patch 084 owns the conditional handoff after independent P083 review. If that
+review returns corrections, P084 carries only the smallest corrective tranche.
+If P083 is accepted, P084 may begin separately reviewed natural-coordinate
+reconciliation and a named ABI-role consumer/equivalence contract. Neither
+branch preauthorizes a public field, semantic, score, schema, capacity, decoder,
+concurrency, comparative coverage, performance, or exploitability change.
 
 [a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
 [a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

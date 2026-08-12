@@ -6,6 +6,15 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 084
+
+- Correct Patch 083 strict-shell, source-custody, post-effect transaction, corrupt-recovery cleanup, Docker source immutability, exact candidate-tree, natural-authority, and natural-source-binding findings.
+- Remove the accidentally committed generated ordered-pair binary and reserve its path as generated output.
+- Preserve the complete 12-target, 48-execution, nine-cell, 108-control P083 natural result as terminal diagnostic evidence: zero qualified, five insufficient, and four unavailable cells.
+- Separate structural campaign completion from comparison qualification; a terminal diagnostic run no longer satisfies a nine-qualified-cell acceptance gate.
+- Freeze a private 36-query ABI-role contract with 24 development queries, 12 source-disjoint confirmation queries, and 96 disabled-output public closures; add no public field, semantic class, score, schema, capacity, decoder, or worker change.
+- Preserve the sealed P079 lifecycle prefix of 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, and 87 events; P080 through P084 remain explicit unsealed deltas.
+
 ### Sprint 13 Patch 083
 
 - Require the exact committed Patch 082 base for guarded application and rollback; bind patch-path parents and files across check-only validation and include status publication inside inverse-recovery coverage.
@@ -13,6 +22,9 @@ The project follows semantic versioning once the first public release is cut.
 - Move Docker mutable builds to the configured non-root home run root while preserving authenticated `/work` source, with a dynamic recreate/execute regression used by all supported container callers.
 - Add the outcome-blind natural coordinate campaign: twelve deterministic installed-package targets, 48 planned target/tool executions, nine cells, and 108 controls, with no reroll and no comparative/publication claim.
 - Add no runtime analyzer, public field, semantic-class, score, schema, capacity, decoder, or worker change.
+- Record Patch 082 as not accepted and make Patch 083 the sole current
+  implementation candidate; reserve Patch 084 as the conditional post-review
+  handoff without preauthorizing a runtime or public-contract change.
 
 ### Sprint 13 Patch 082
 
@@ -21,7 +33,7 @@ The project follows semantic versioning once the first public release is cut.
   helper delivery.
 - Implement a producer-backed ordered-pair and score/null gate that requires
   three independently built analyzer generations from one authenticated source
-  tree; full retained execution remains pending local validation.
+  tree. A later exact-source P082 run completed all three generations.
 - Define a successful full run as 90 ordered-pair producer checks and 100
   score/null mutation rejections against the exact catalog and producer reports.
 - Add a controlled source-valid coordinate method-discrimination preflight with
@@ -31,6 +43,12 @@ The project follows semantic versioning once the first public release is cut.
 - Keep natural coordinate qualification, comparative coverage claims, runtime
   tuple state, public fields, semantic classes, scores, schema `0.2.0`, and
   candidate capacity unchanged.
+- A separate exact-pinned P082 diagnostic campaign later completed 30/30
+  conditions and 180/180 process rows, but all 60 x64lens timing rows were below
+  the 6,303,525 ns floor and all nine natural coordinate cells had zero positive
+  anchors. The result remains diagnostic, unfrozen, publication-ineligible, and
+  non-comparative. Patch 082 was not accepted; its findings became correction
+  inputs to Patch 083.
 
 ### Sprint 13 Patch 081
 
@@ -107,8 +125,9 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 082 corrective candidate. Patch 081 was not
-  accepted; its validation findings were accepted as correction inputs to Patch 082.
+  acceptance of the current Patch 083 corrective candidate. Patches 081 and 082
+  were not accepted; their returned findings became correction inputs to the
+  next candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
   external-natural selection checkpoints, exact parity-tree custody, and a
   Git-tracked-only transactional permission normalizer.
@@ -555,9 +574,9 @@ The project follows semantic versioning once the first public release is cut.
   analyzer runtime source, NASM include, public field, schema `0.2.0`, semantic
   class, or score. Patch 078 was superseded by Patch 079, Patch 079 by Patch 080,
   and Patch 080 by Patch 081. Patch 081 was not accepted; its validation findings
-  were accepted as correction inputs. The current Patch 082 candidate implements
+  were accepted as correction inputs. The current Patch 083 candidate implements
   the resulting corrections. Public-field and
-  score deferral remains unchanged, and independent P082 acceptance is pending.
+  score deferral remains unchanged, and independent P083 acceptance is pending.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
@@ -606,8 +625,8 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate. Patch 081 was not accepted; Patch 082 is the current
-  artifact-backed implementation candidate, pending full local execution and
+  entry candidate. Patches 081 and 082 were not accepted. Patch 083 is the
+  current implementation candidate, pending complete exact-source local and
   independent acceptance.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
