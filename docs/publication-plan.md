@@ -269,9 +269,9 @@ acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 084 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 085 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 084 acceptance.
+only after complete Patch 085 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -363,3 +363,13 @@ insufficient and four are unavailable. It cannot support comparative coverage,
 performance, parity, prevalence, or superiority claims. The ABI-role query and
 lifecycle authorities are private engineering evidence and are not paper result
 tables.
+
+## Patch 085 publication boundary
+
+Patch 085 adds no publication result. It defines frozen-input replay and layered
+terminal-attribution authorities over the unchanged 12-target, 48-execution,
+nine-cell, 108-control predecessor denominator. The predecessor remains zero
+qualified, five insufficient, and four unavailable cells. Actual replay remains
+pending; any replay evidence is diagnostic, `frozen=false`, and publication-
+ineligible. No comparative coverage, performance, RSS, parity, prevalence,
+superiority, exploitability, public-role, decoder, or concurrency claim follows.

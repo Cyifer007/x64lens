@@ -71,10 +71,10 @@ is vulnerable, or that exploitation is possible. Patch 075 introduced this
 private tranche; Patch 076 preserves it while correcting the Patch 075 review
 findings.
 
-Patch 076 extended this private evidence with distinct RPATH/RUNPATH facts, but
-its review required Patch 077. Patch 077 was superseded by Patch 078, whose
-review required the Patch 079 corrective and private task-value candidate, whose
-review required Patch 080; Patches 081 and 082 were not accepted. Independent
-review of Patch 083 returned the bounded corrections now carried by the current
-P084 corrective candidate. Native, container, parity, and independent P084
-acceptance requirements remain separate; none substitutes for another.
+Patch 076 extended this private evidence with distinct RPATH/RUNPATH facts, but its
+review required Patch 077. Patch 077 was superseded by Patch 078, whose review required
+the Patch 079 corrective and private task-value candidate, whose review required Patch
+080; Patches 081 and 082 were not accepted. Patches 083 and 084 also did not complete
+acceptance; Patch 085 is the current exact-source implementation candidate. Native,
+container, parity, and independent P085 acceptance requirements remain separate; none
+substitutes for another.

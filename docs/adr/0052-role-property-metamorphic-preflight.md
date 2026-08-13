@@ -13,7 +13,7 @@ private prefix while leaving these role/property runtime and schema boundaries
 unchanged and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence, but its review required Patch 077. Patch 077's review
 required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 084 validation record](../sprints/sprint-13-patch-084-validation.md).
+[Patch 085 validation record](../sprints/sprint-13-patch-085-validation.md).
 
 ## Context
 
@@ -131,6 +131,6 @@ Whole-batch timing and process-tree RSS also remain separate measurement gates.
   indicator. Patch 078 corrected the next parity and custody blockers, but its
   review required the Patch 079 corrective and private task-value candidate,
   which was superseded by Patch 080. Patch 080 was superseded by Patch 081, which
-  was not accepted. Independent exact-source Patch 084 acceptance remains
+  was not accepted. Independent exact-source Patch 085 acceptance remains
   pending. Any future compatible-output decision
   requires a new separately reviewed gate.

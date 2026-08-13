@@ -3,13 +3,14 @@
 ## Status
 
 Patch 085 corrective, frozen replay, and terminal-attribution candidate, pending complete acceptance.
-The Sprint 12 engineering scope and repository-facing retrospective remain
-complete. Patch 085 carries the smallest corrective tranche returned by the
-Patch 084 review and preserves the complete P083 natural campaign as terminal
-diagnostic evidence: twelve targets, 48 executions, 108 controls, zero qualified
-cells, five insufficient cells, and four unavailable cells. Patch 085 retains the private 36-query ABI-role contract and the sealed lifecycle denominator
-without changing public output, schema `0.2.0`, semantic classes, scores, or
-candidate capacity.
+Here, `frozen replay` names the frozen-input, no-reroll authority; actual replay
+execution remains pending. The Sprint 12 engineering scope and repository-facing
+retrospective remain complete. Patch 084 did not complete acceptance; Patch 085 carries
+the bounded corrective tranche and preserves the complete P083 natural campaign as
+terminal diagnostic evidence: twelve targets, 48 executions, 108 controls, zero
+qualified cells, five insufficient cells, and four unavailable cells. Patch 085 retains
+the private 36-query ABI-role contract and the sealed lifecycle denominator without
+changing public output, schema `0.2.0`, semantic classes, scores, or candidate capacity.
 
 Sprint 12 remains the acceptance authority for its inherited loader and
 mitigation facts until Patch 085 passes fresh native, Docker, both private parity
@@ -132,7 +133,11 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Enforce all 24 lifecycle floors and record an explicit Patch 084 zero-count delta without event 88 or new canonical identities.
 - [x] Require semantically disjoint ABI development/confirmation queries, pinned analyzer bytes, per-command target reauthentication, and no-replace evidence publication.
 - [x] Recompute natural-campaign structure from exact target/tool/control/cell membership and reauthenticate every target around every tool execution.
-- [x] Freeze the exact twelve predecessor hashes and 48 tool executions with no target reroll, then layer execution, relation, observation, and cell terminal attribution without reinterpretation.
+- [x] Define the frozen-input authority for the exact twelve predecessor hashes
+  and 48 no-reroll execution slots, plus execution, relation, observation, and
+  cell terminal-attribution denominators.
+- [ ] Execute the actual replay and generated P085 attribution result; any result
+  remains diagnostic, `frozen=false`, and publication-ineligible.
 - [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck, producer, ABI public-closure, delivery, and independent acceptance for Patch 085.
 
 
@@ -188,7 +193,10 @@ that would otherwise corrupt corpus labels or defensive triage.
     contracts.
 22. **Patch 083:** correct Patch 082 transaction, Docker, producer, recovery, and delivery findings and run the outcome-blind natural coordinate campaign.
 23. **Patch 084:** correct Patch 083 acceptance findings, bind natural evidence to exact source, separate structural completion from comparison qualification, freeze the private ABI-role query contract, and preserve the sealed lifecycle denominator.
-24. **Patch 085:** correct Patch 084 source/recovery/lifecycle/ABI/natural authority findings, freeze the exact no-reroll natural replay, and add layered terminal attribution without changing runtime or public facts.
+24. **Patch 085:** correct Patch 084 source, recovery, lifecycle, ABI, and natural-
+    authority findings and define exact frozen-input, no-reroll replay and layered
+    terminal-attribution authorities without changing runtime or public facts;
+    actual execution remains pending.
 
 
 ## Current continuation disposition

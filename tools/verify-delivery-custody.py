@@ -22,6 +22,8 @@ from dataclasses import dataclass, field
 import hashlib
 import json
 import os
+import signal
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 import resource
 import stat
@@ -53,6 +55,30 @@ _TEST_BEFORE_FINAL_UNLINK_HOOK: Callable[[int, str, int, str], None] | None = No
 
 class CustodyError(RuntimeError):
     """Raised when a delivery tree is incomplete, unsafe, or unauthenticated."""
+
+
+class CatchableTermination(CustodyError):
+    """Raised when a catchable termination signal interrupts publication."""
+
+
+@contextmanager
+def catchable_termination_guard(label: str):
+    """Turn HUP/INT/TERM into recoverable exceptions during mutation."""
+    guarded = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
+    previous = {sig: signal.getsignal(sig) for sig in guarded}
+
+    def handler(signum, _frame):
+        for candidate in guarded:
+            signal.signal(candidate, signal.SIG_IGN)
+        raise CatchableTermination(f"{label} interrupted by {signal.Signals(signum).name}")
+
+    for sig in guarded:
+        signal.signal(sig, handler)
+    try:
+        yield
+    finally:
+        for sig, old in previous.items():
+            signal.signal(sig, old)
 
 
 class Fingerprint(NamedTuple):
@@ -893,7 +919,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.create:
         label = args.label if args.label is not None else Path(os.path.abspath(args.root)).name
-        value = create(args.root, args.manifest, label)
+        with catchable_termination_guard("delivery custody publication"):
+            value = create(args.root, args.manifest, label)
         print(
             "delivery-custody-create: ok "
             f"schema={SCHEMA_ID} directories={len(value['directories'])} "

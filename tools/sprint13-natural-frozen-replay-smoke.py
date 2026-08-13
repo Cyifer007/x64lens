@@ -141,5 +141,5 @@ def main()->int:
             result=selftest(authority); print('sprint13-natural-frozen-replay-smoke: ok targets=12 roles=3 tools=4 executions=48 reroll=0 adapters=2 run=deferred'); return 0
         for name in ('input_dir','result_dir','x64lens','ropgadget','ropper','ropr','source_root','source_manifest','expected_candidate_tree'): require(getattr(args,name) is not None,f'--{name.replace("_","-")} is required for run')
         result=run_replay(args,authority); print(f'sprint13-natural-frozen-replay-smoke: ok targets=12 executions={result["execution_count"]}/48 cells=9 controls={result["control_count"]}/108 qualified={result["cell_counts"]["qualified"]} reroll=0 diagnostic=1'); return 0
-    except (OSError,subprocess.SubprocessError,json.JSONDecodeError,ReplayError) as exc: fail(str(exc))
+    except Exception as exc: fail(f"{type(exc).__name__}: {exc}")
 if __name__=='__main__': raise SystemExit(main())

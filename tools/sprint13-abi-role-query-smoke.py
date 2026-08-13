@@ -238,7 +238,7 @@ def role_bits() -> dict[str, int]:
     return out
 
 
-def contract_result(authority: dict[str, Any]) -> dict[str, Any]:
+def contract_result(authority: dict[str, Any], expected_path: Path = EXPECTED) -> dict[str, Any]:
     masks = source_masks(authority)
     bits = role_bits()
     states = {"present": 0, "absent": 0, "unknown": 0}
@@ -268,7 +268,7 @@ def contract_result(authority: dict[str, Any]) -> dict[str, Any]:
         "schema_changed": False,
         "decision": "private_contract_frozen_public_projection_disabled",
     }
-    require(result == load(EXPECTED), "ABI-role contract result differs from expected authority")
+    require(result == load(expected_path.resolve(strict=True)), "ABI-role contract result differs from supplied expected authority")
     return result
 
 
@@ -528,7 +528,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         authority = validate_authority(load(args.authority.resolve(strict=True)))
-        contract = contract_result(authority)
+        contract = contract_result(authority, args.expected)
         if args.action == "run":
             for name in ("analyzer", "result_dir", "source_root", "source_manifest", "expected_candidate_tree"):
                 require(getattr(args, name) is not None, f"--{name.replace('_', '-')} is required for run")

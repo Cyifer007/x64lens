@@ -90,16 +90,15 @@ streaming output caps, and regular-file path/hash/size/mode delivery verificatio
 with exact implied-directory membership. See
 [ADR 0057](0057-identity-bound-cleanup-outcome-complete-batch-and-delivery-custody.md).
 
-ADR 0058 records the remaining Patch 071 correction and the version-3 authority
-used by Patch 072, together with outcome-blind external-natural acquisition and
-the initial native/container private-fact parity protocol. Patch 072's returned
-review rejected current acceptance. ADR 0059 records the first Patch 073
-custody/isolation correction and policy deferral. ADR 0060 records the Patch 074
-correction and superseded closeout candidate. ADR 0061 records the Patch 075
-private static text-relocation tranche, which Patch 076 extended with distinct
-private RPATH/RUNPATH evidence. Patch 076 was superseded by the Patch 077
-correction, Patch 077 by Patch 078, Patch 078 by the Patch 079 corrective and
-private task-value candidate, Patch 079 by Patch 080, and Patch 080 by Patch 081.
-Patches 081 and 082 were not accepted. Independent review of Patch 083 returned
-the bounded corrections now carried by the current Patch 084 implementation
-candidate, pending full local execution and independent acceptance.
+ADR 0058 records the remaining Patch 071 correction and the version-3 authority used by
+Patch 072, together with outcome-blind external-natural acquisition and the initial
+native/container private-fact parity protocol. Patch 072's returned review rejected
+current acceptance. ADR 0059 records the first Patch 073 custody/isolation correction
+and policy deferral. ADR 0060 records the Patch 074 correction and superseded closeout
+candidate. ADR 0061 records the Patch 075 private static text-relocation tranche, which
+Patch 076 extended with distinct private RPATH/RUNPATH evidence. Patch 076 was
+superseded by the Patch 077 correction, Patch 077 by Patch 078, Patch 078 by the Patch
+079 corrective and private task-value candidate, Patch 079 by Patch 080, and Patch 080
+by Patch 081. Patches 081 and 082 were not accepted. Patches 083 and 084 also did not
+complete acceptance; Patch 085 is the current exact-source implementation candidate,
+pending full local execution and independent acceptance.

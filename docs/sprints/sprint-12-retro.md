@@ -462,9 +462,18 @@ retrospective’s semester-completion claim.
 
 The completed semester engineering record remains unchanged. Patch 085 carries
 forward the remaining exact-source acceptance debt from the Patch 084 review.
-It freezes the same twelve natural target hashes and 48 tool executions without
-reroll, layers terminal attribution without favorable reinterpretation, and
-strengthens Git-less source, recovery, lifecycle, ABI-query, and delivery
-authorities. Fresh native, Docker, frozen-replay, parity, producer, strict
+It defines a frozen-input, no-reroll authority over the same twelve natural
+target hashes and 48 execution slots, plus layered terminal-attribution
+denominators without favorable reinterpretation, and strengthens Git-less
+source, recovery, lifecycle, ABI-query, and delivery authorities. Actual replay
+and generated attribution evidence remain pending. Fresh native, Docker, replay,
+parity, producer, strict
 ShellCheck, delivery, and independent acceptance remain separate from the
 retrospective's semester-completion claim.
+
+## Post-semester acceptance continuation
+
+Patch 086 carries the remaining Patch 085 replay, evidence-custody, transaction,
+recovery, and exact-source acceptance corrections into Sprint 13. This does not
+change the Sprint 12 semester engineering scope or retroactively claim acceptance;
+it preserves the evidence boundary while local gates are completed.

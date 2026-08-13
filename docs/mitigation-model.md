@@ -256,25 +256,23 @@ control-flow integrity, safety, or exploitability.
 
 ## Sprint 12 Patch 070 mitigation boundary
 
-Patch 070 changes development-evidence and validation gates only. It adds no
-runtime analyzer module, mitigation state, report field, or schema field. The
-controlled matrix and GNU `readelf` reconciliation remain diagnostic, unfrozen,
-and publication-ineligible. New role-derived PIE/DSO and IBT/SHSTK fields remain
-deferred, the existing coarse `mitigations.pie` field remains unchanged, and
-static GNU properties do not prove runtime CET enforcement.
-Patch 070 acceptance was rejected. Patch 071 corrected the first blocker set.
-Patch 072 carried the remaining corrective prerequisite plus private
-acquisition/parity work, but its returned review rejected current acceptance.
-Patch 073 recorded public policy as `defer`, but its returned review did not
+Patch 070 changes development-evidence and validation gates only. It adds no runtime
+analyzer module, mitigation state, report field, or schema field. The controlled matrix
+and GNU `readelf` reconciliation remain diagnostic, unfrozen, and
+publication-ineligible. New role-derived PIE/DSO and IBT/SHSTK fields remain deferred,
+the existing coarse `mitigations.pie` field remains unchanged, and static GNU properties
+do not prove runtime CET enforcement. Patch 070 acceptance was rejected. Patch 071
+corrected the first blocker set. Patch 072 carried the remaining corrective prerequisite
+plus private acquisition/parity work, but its returned review rejected current
+acceptance. Patch 073 recorded public policy as `defer`, but its returned review did not
 accept the patch. Patch 074 implemented the final custody and parity-protocol
-corrections without changing a mitigation field but was superseded. Patch 075
-introduced private text-relocation evidence, and Patch 076 added distinct
-private RPATH/RUNPATH evidence. Patch 077 required Patch 078; Patch 078's review
-then required the Patch 079 corrective and private task-value candidate, which
-was superseded by Patch 080. Patches 081 and 082 were not accepted. Independent
-review of Patch 083 returned the bounded corrections now carried by the current
-P084 corrective candidate; complete acceptance remains pending against the
-exact P084 source.
+corrections without changing a mitigation field but was superseded. Patch 075 introduced
+private text-relocation evidence, and Patch 076 added distinct private RPATH/RUNPATH
+evidence. Patch 077 required Patch 078; Patch 078's review then required the Patch 079
+corrective and private task-value candidate, which was superseded by Patch 080. Patches
+081 and 082 were not accepted. Patch 083 was not accepted. Patch 084 carried its bounded
+corrections but also was not accepted; Patch 085 is the current exact-source
+implementation candidate.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
 
@@ -314,7 +312,16 @@ Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
 defects around the policy evidence. Static GNU properties remain private
 indicators and do not prove runtime CET enforcement. Corrected actual parity and
-complete Patch 084 acceptance remain pending.
+complete Patch 085 acceptance remain pending.
+
+## Patch 085 mitigation boundary
+
+Patch 085 adds replay and terminal-attribution authorities outside the analyzer;
+it changes no mitigation parser, meaning, public field, schema `0.2.0`, runtime
+CET claim, score, or capacity contract. The predecessor natural result and any
+future replay output remain diagnostic, `frozen=false`, and publication-ineligible
+and authorize
+no parity, prevalence, coverage, performance, RSS, or superiority claim.
 
 ## Sprint 12 Patch 075 private text-relocation evidence
 

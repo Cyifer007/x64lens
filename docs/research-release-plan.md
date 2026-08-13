@@ -415,9 +415,9 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 084 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 085 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 084 acceptance.
+only after complete Patch 085 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -484,7 +484,7 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
 080; Patch 080 was superseded by Patch 081. Preview eligibility still requires
-complete Patch 084 acceptance before any later release-facing capability work.
+complete Patch 085 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -536,3 +536,12 @@ comparison-unqualified diagnostic evidence, and freezes a private ABI-role query
 contract. Preview eligibility still requires fresh native/Docker validation,
 qualified parity, reproducible producer runs, campaign freeze, and accepted
 release artifacts.
+
+## Patch 085 preview-gate note
+
+Patch 085 does not advance the preview gate. It defines exact frozen-input
+replay and layered terminal-attribution authorities, while actual replay and
+independent acceptance remain pending. Any resulting evidence remains
+diagnostic, `frozen=false`, publication-ineligible, and outside the Sprint 15
+confirmatory freeze. Tool version, CLI behavior, schema `0.2.0`, public fields,
+semantics, scores, capacity, and mitigation meanings remain unchanged.

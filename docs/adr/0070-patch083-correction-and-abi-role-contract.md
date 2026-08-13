@@ -2,11 +2,14 @@
 
 ## Status
 
-Accepted as the Patch 084 implementation decision. Exact-source acceptance remains pending the documented native and container gates.
+Accepted as the historical Patch 084 implementation decision. Patch 084 did not complete
+exact-source acceptance; ADR 0071 records the bounded Patch 085 correction and
+evidence-authority decision.
 
 ## Context
 
-Patch 083 completed an outcome-blind natural-coordinate campaign but its review found a bounded set of acceptance defects outside the analyzer runtime:
+Patch 083 completed an outcome-blind natural-coordinate campaign but did not complete
+acceptance because bounded defects remained outside the analyzer runtime:
 
 - a generated ordered-pair binary conflicted with the tracked-source boundary;
 - the campaign's structural-completion option did not distinguish a fully accounted diagnostic result from comparison qualification;

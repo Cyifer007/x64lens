@@ -4,16 +4,16 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts until Patch 085 completes its local acceptance gates.
-> Sprint 13 Patch 085 is the current implementation candidate. It corrects the
-> Patch 084 Git-less source, recovery, lifecycle, ABI-query, natural-campaign,
-> explicit-tree, and delivery findings. It freezes the exact twelve predecessor
-> target hashes and 48 tool executions with no reroll and records layered
-> terminal attribution across 48 execution outcomes, 48 relation outcomes, 36
-> observations, and nine cells. Public output, semantic classes, scores,
-> candidate capacity, and schema `0.2.0` remain unchanged. Fresh native, Docker,
-> frozen-replay, ABI-closure, parity, producer, delivery, and independent
-> acceptance remain pending.
+> and mitigation facts. Sprint 13 Patch 086 is the current implementation
+> candidate. It corrects Patch 085 replay attribution, raw-evidence custody,
+> terminal-result enforcement, source/transaction recovery, ABI expected-result,
+> exact-tree, and delivery findings. It retains the exact twelve no-reroll
+> natural targets, 48 executions, 96 raw streams, nine cells, and 108 controls,
+> and adds a private fixture-derived production-vector equivalence gate with 48
+> internal dispositions, 24 controlled targets, 36 queries, and 96 unchanged-
+> public closures. Public output, semantic classes, scores, candidate capacity,
+> and schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
+> parity, and independent acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -46,15 +46,18 @@
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
 
-## Sprint 13 Patch 085 correction, frozen replay, and terminal attribution
+## Sprint 13 Patch 085 correction, frozen-input replay authority, and terminal attribution
 
 Patch 085 retains the complete P083 natural campaign as diagnostic evidence and
-freezes its exact twelve target hashes, four tool identities, and 48 executions
-for a no-reroll corrective replay. The predecessor result remains zero qualified,
-five insufficient, and four unavailable cells. Replay failure or continued
-unavailability cannot trigger target substitution.
+defines a frozen-input authority over its exact twelve target hashes, five
+retained tool identities, and four execution tools per target for 48 no-reroll
+execution slots. The predecessor result remains 12 targets, 48 executions, nine
+cells, 108 controls, zero qualified, five insufficient, and four unavailable
+cells. The actual corrective replay remains pending; failure or continued
+unavailability cannot trigger target substitution. Any replay output remains
+diagnostic, `frozen=false`, and publication-ineligible.
 
-Terminal attribution remains layered rather than flattened:
+The terminal-attribution authority is layered rather than flattened:
 
 ```text
 execution outcomes: 48
@@ -64,12 +67,12 @@ cells:                9
 precedence mutations:16
 ```
 
-The patch also enforces every lifecycle floor, records an explicit Patch 084
-zero-count delta, requires semantically disjoint ABI development and confirmation
-queries, pins and reauthenticates analyzer and target bytes, and strengthens
-Git-less source and candidate-recovery topology checks. It adds no analyzer
-runtime, public field, semantic class, score, schema, capacity, decoder, or
-concurrency change.
+Frozen-input replay and layered terminal attribution are Patch 085's only new
+evidence authorities. Lifecycle, ABI-query, source, recovery, exact-tree, and
+delivery changes harden existing validation authorities. No tracked file under
+`src/`, `include/`, or `schemas/` changes. Analyzer runtime, CLI behavior, schema
+`0.2.0`, public fields, semantic classes, scores, mitigation meanings, candidate
+capacity, decoder policy, and the one-worker reference profile remain unchanged.
 
 See [ADR 0071](docs/adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md)
 and the [Patch 085 validation record](docs/sprints/sprint-13-patch-085-validation.md).
@@ -99,7 +102,7 @@ schema:                       0.2.0
 natural cells:                0 qualified / 5 insufficient / 4 unavailable
 ABI role queries:             36 private
 unchanged-public closures:    96 disabled-output closures pending fresh build
-P084 acceptance:              pending exact-source local validation
+P084 acceptance:              not accepted; corrections carried by P085
 ```
 
 See [ADR 0070](docs/adr/0070-patch083-correction-and-abi-role-contract.md) and
@@ -396,24 +399,23 @@ See [ADR 0050](docs/adr/0050-fact-first-binary-role-lattice.md) and the
 
 ## Sprint 12 private role and GNU-property checkpoint
 
-Patch 064 introduced the first bounded private binary-role lattice. Patch 065
-carried its corrected role path forward and added private x86 GNU-property facts,
-but validation found descriptor-alignment, overlapping-carrier, corpus-repair,
-ABI, and oracle defects. Patch 066 addressed those findings and added the
-controlled metamorphic preflight. Patch 068 supplied an intermediate custody
-and oracle correction, and Patch 069 authenticated the resulting matrix.
-Patches 070, 071, 072, and 073 were not accepted at their respective first
-returned review boundaries. Patch 073 supplied the first custody/isolation
-correction and recorded the policy deferral. Patch 074 carried the next custody,
-parity-protocol, permission, and authority corrections but was superseded as
-the closeout candidate. Patch 075 introduced private bounded text-relocation
-evidence; Patch 076 added the distinct private search-path tranche, but its
-review required the Patch 077 correction. Patch 077 then required the Patch 078
-entry candidate, whose review required the Patch 079 corrective and private
-task-value candidate, which was superseded by Patch 080. Patch 080's review
-required Patch 081. Patch 082 was not accepted; its findings became correction
-inputs to the historical Patch 083 candidate. Independent review of Patch 083
-returned the bounded corrections now carried by Patch 084.
+Patch 064 introduced the first bounded private binary-role lattice. Patch 065 carried
+its corrected role path forward and added private x86 GNU-property facts, but validation
+found descriptor-alignment, overlapping-carrier, corpus-repair, ABI, and oracle defects.
+Patch 066 addressed those findings and added the controlled metamorphic preflight. Patch
+068 supplied an intermediate custody and oracle correction, and Patch 069 authenticated
+the resulting matrix. Patches 070, 071, 072, and 073 were not accepted at their
+respective first returned review boundaries. Patch 073 supplied the first
+custody/isolation correction and recorded the policy deferral. Patch 074 carried the
+next custody, parity-protocol, permission, and authority corrections but was superseded
+as the closeout candidate. Patch 075 introduced private bounded text-relocation
+evidence; Patch 076 added the distinct private search-path tranche, but its review
+required the Patch 077 correction. Patch 077 then required the Patch 078 entry
+candidate, whose review required the Patch 079 corrective and private task-value
+candidate, which was superseded by Patch 080. Patch 080's review required Patch 081.
+Patch 082 was not accepted; its findings became correction inputs to the historical
+Patch 083 candidate. Patch 083 did not complete acceptance; Patch 084 carried its
+bounded corrections.
 
 GNU property entries are now aligned relative to the property descriptor. Exact
 duplicate physical carriers remain canonicalized, while any non-identical
@@ -984,34 +986,32 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 
 ## Versioning
 
-The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag
-identifies the Sprint 6 integrated checkpoint; Patches 046 through 085 are later
-pre-release work. Patch 079 was the corrective and private task-value candidate;
-it was superseded by Patch 080, and Patch 080 by Patch 081. Patches 081 and 082
-were not accepted. Independent review of Patch 083 returned the bounded
-corrections carried by Patch 084 and now superseded by the current Patch 085 corrective, frozen-replay, and terminal-attribution candidate, pending complete exact-source acceptance. Patch 054 closes
-Sprint 10, Patch 061 closes Sprint 11, and Patch 062 begins Sprint 12
-loader-precision work. Patch 063 adds corrective hardening plus internal overlap
-provenance, and Patch 064 records the measured
-normalization deferral plus an internal role-evidence lattice. Patch 065 carries
-the Patch 064 corrections and adds private bounded GNU-property facts;
-Patch 066 adds the controlled metamorphic preflight, Patch 067 adds private
-fact-probe layout attestation, and Patch 068 adds the separate diagnostic matrix
-with 48 held-out natural objects and 48 controlled metamorphic objects. Patch
-069 carried the corrected corpus and matrix custody boundaries forward and added
-field-scoped GNU `readelf` reconciliation. Patch 070 introduced the first
-evidence-custody correction and whole-batch transaction pilot but was rejected.
-Patch 071 corrected the first rejected Patch 070 blocker set. Patch 072 carried
-the remaining cleanup, process-tree, authority, publication-transition, and
-delivery-completeness correction together with the private acquisition/parity
-gates, but its returned review rejected current acceptance. Patch 073 carried
-the first custody/isolation correction and policy deferral but was not accepted
-at its first returned review boundary. Patch 074 was a superseded closeout
-candidate. Patch 075 introduced private text-relocation evidence, Patch 076
-added distinct private RPATH/RUNPATH evidence, and Patch 077 required the Patch
-078 correction. Patch 078 was superseded by Patch 079. Patch 079 was the
-corrective and private task-value candidate; it was superseded by Patch 080,
-which was superseded by Patch 081. Neither corrective moves a release tag.
+The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag identifies the
+Sprint 6 integrated checkpoint; Patches 046 through 085 are later pre-release work.
+Patch 079 was the corrective and private task-value candidate; it was superseded by
+Patch 080, and Patch 080 by Patch 081. Patches 081 and 082 were not accepted. Patches
+083 and 084 also did not complete acceptance; Patch 085 is the current corrective
+candidate, pending complete exact-source acceptance. Patch 054 closes Sprint 10, Patch
+061 closes Sprint 11, and Patch 062 begins Sprint 12 loader-precision work. Patch 063
+adds corrective hardening plus internal overlap provenance, and Patch 064 records the
+measured normalization deferral plus an internal role-evidence lattice. Patch 065
+carries the Patch 064 corrections and adds private bounded GNU-property facts; Patch 066
+adds the controlled metamorphic preflight, Patch 067 adds private fact-probe layout
+attestation, and Patch 068 adds the separate diagnostic matrix with 48 held-out natural
+objects and 48 controlled metamorphic objects. Patch 069 carried the corrected corpus
+and matrix custody boundaries forward and added field-scoped GNU `readelf`
+reconciliation. Patch 070 introduced the first evidence-custody correction and
+whole-batch transaction pilot but was rejected. Patch 071 corrected the first rejected
+Patch 070 blocker set. Patch 072 carried the remaining cleanup, process-tree, authority,
+publication-transition, and delivery-completeness correction together with the private
+acquisition/parity gates, but its returned review rejected current acceptance. Patch 073
+carried the first custody/isolation correction and policy deferral but was not accepted
+at its first returned review boundary. Patch 074 was a superseded closeout candidate.
+Patch 075 introduced private text-relocation evidence, Patch 076 added distinct private
+RPATH/RUNPATH evidence, and Patch 077 required the Patch 078 correction. Patch 078 was
+superseded by Patch 079. Patch 079 was the corrective and private task-value candidate;
+it was superseded by Patch 080, which was superseded by Patch 081. Neither corrective
+moves a release tag.
 
 Planned release sequence:
 
@@ -1186,9 +1186,9 @@ first surrounding transaction set and closes no public-policy deferral. Patch
 role decision without runtime, public-field, or score projection. Its review
 required Patch 079, which was superseded by Patch 080; Patch 080's review required
 Patch 081. Patch 082 was not accepted; its findings became correction inputs to
-Patch 083. Independent review of Patch 083 then returned the bounded corrections now
-carried by P084. Sprint 13 becomes active only after complete exact-source
-Patch 084 acceptance.
+Patch 083. Patch 083 was not accepted; Patch 084 carried its bounded corrections
+but also was not accepted. Sprint 13 becomes active only after complete exact-
+source Patch 085 acceptance.
 See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
@@ -1209,13 +1209,14 @@ historical
 [ADR 0068](docs/adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md),
 the [historical P082 validation](docs/sprints/sprint-13-patch-082-validation.md),
 the [historical P083 validation](docs/sprints/sprint-13-patch-083-validation.md),
-and the [P084 validation record](docs/sprints/sprint-13-patch-084-validation.md).
+the [historical P084 validation](docs/sprints/sprint-13-patch-084-validation.md),
+and the [current P085 validation](docs/sprints/sprint-13-patch-085-validation.md).
 
-Independent review of Patch 083 returned the bounded corrections now carried by
-the P084 implementation candidate. P084 preserves the retained natural-coordinate
-terminal states and freezes the private ABI-role query contract. It authorizes
-no public field, semantic, score, schema, capacity, decoder, concurrency,
-comparative-coverage, performance, or exploitability change.
+Patch 083 was not accepted. Patch 084 preserved the retained natural-coordinate
+terminal states and froze the private ABI-role query contract, but it also was
+not accepted. Patch 085 carries the current bounded correction. None of these patches
+authorizes a public-field, semantic, score, schema, capacity, decoder,
+concurrency, comparative-coverage, performance, or exploitability change.
 
 [a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
 [a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

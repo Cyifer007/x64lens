@@ -358,7 +358,7 @@ class ProcessResult:
     wall_ns: int
 
 
-def run_bounded(argv: list[str], *, cwd: Path, timeout: int, stdout_limit: int, stderr_limit: int) -> ProcessResult:
+def run_bounded(argv: list[str], *, cwd: Path, timeout: int, stdout_limit: int, stderr_limit: int, env: dict[str, str] | None = None) -> ProcessResult:
     started = time.monotonic_ns()
     process = subprocess.Popen(
         argv,
@@ -368,6 +368,7 @@ def run_bounded(argv: list[str], *, cwd: Path, timeout: int, stdout_limit: int, 
         stderr=subprocess.PIPE,
         start_new_session=True,
         close_fds=True,
+        env=env,
     )
     require(process.stdout is not None and process.stderr is not None, "capture pipes missing")
     selector = selectors.DefaultSelector()

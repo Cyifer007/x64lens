@@ -26,6 +26,8 @@ import errno
 import hashlib
 import json
 import os
+import signal
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 import resource
 import shutil
@@ -53,6 +55,30 @@ _TEST_BEFORE_FINAL_RMTREE_HOOK: Callable[[int, str, int], None] | None = None
 
 class RecoveryError(RuntimeError):
     """Raised when source bytes, topology, identity, or publication disagree."""
+
+
+class CatchableTermination(RecoveryError):
+    """Raised when a catchable termination signal interrupts recovery."""
+
+
+@contextmanager
+def catchable_termination_guard(label: str):
+    """Turn HUP/INT/TERM into recoverable exceptions during mutation."""
+    guarded = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
+    previous = {sig: signal.getsignal(sig) for sig in guarded}
+
+    def handler(signum, _frame):
+        for candidate in guarded:
+            signal.signal(candidate, signal.SIG_IGN)
+        raise CatchableTermination(f"{label} interrupted by {signal.Signals(signum).name}")
+
+    for sig in guarded:
+        signal.signal(sig, handler)
+    try:
+        yield
+    finally:
+        for sig, old in previous.items():
+            signal.signal(sig, old)
 
 
 class StableIdentity(NamedTuple):
@@ -923,11 +949,12 @@ def main() -> int:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--destination", type=Path, required=True)
     args = parser.parse_args()
-    tree, directory_count, file_count, destination = recover(
-        Path(os.path.abspath(args.archive)),
-        Path(os.path.abspath(args.manifest)),
-        args.destination,
-    )
+    with catchable_termination_guard("candidate source recovery"):
+        tree, directory_count, file_count, destination = recover(
+            Path(os.path.abspath(args.archive)),
+            Path(os.path.abspath(args.manifest)),
+            args.destination,
+        )
     print(
         "recover-candidate-source: ok "
         f"tree={tree} derived_tree=1 directories={directory_count} files={file_count} "

@@ -2,15 +2,15 @@
 
 ## Status
 
-Accepted as the historical Patch 083 implementation decision. Independent
-exact-source review of Patch 083 returned the bounded corrections now carried by
-Patch 084; P083 itself was not accepted.
+Accepted as the historical Patch 083 implementation decision. Patch 083 did not
+complete exact-source acceptance. Patch 084 carried its bounded corrections but
+was not accepted; Patch 085 is the current exact-source implementation candidate.
 
 ## Context
 
 Patch 082 established a controlled coordinate-method preflight and a
 three-generation producer authority. The analyzer runtime and public schema
-remained stable, while exact-source review found localized defects in package
+remained stable, while localized acceptance defects remained in package
 consistency, provisional-corpus `.PHONY` inspection, Docker run-root ownership,
 transaction base/path binding, producer source/mode custody, and extreme-umask
 source recovery. The controlled coordinate preflight also could not substitute

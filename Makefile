@@ -67,6 +67,7 @@ DYNAMIC_METADATA_FACT_PROBE_OBJ := $(INTERNAL_TEST_BUILD_DIR)/dynamic-metadata-f
 DYNAMIC_METADATA_FACT_PROBE_BIN := $(INTERNAL_TEST_BUILD_DIR)/dynamic-metadata-fact-probe
 REGISTER_ROLE_FACET_RECONCILIATION_OBJ := $(INTERNAL_TEST_BUILD_DIR)/register-role-facet-reconciliation.o
 REGISTER_ROLE_FACET_RECONCILIATION_BIN := $(INTERNAL_TEST_BUILD_DIR)/register-role-facet-reconciliation
+CANDIDATE_ROLE_VECTOR_PROBE_BIN := $(INTERNAL_TEST_BUILD_DIR)/candidate-role-vector-probe
 TEXTREL_AUTHORITY := ./benchmarks/task-definitions/sprint12-textrel-private-evidence-v1.json
 SEARCH_PATH_AUTHORITY := ./benchmarks/task-definitions/sprint12-search-path-private-evidence-v1.json
 ROLE_PROPERTY_HELDOUT_AUTHORITY := ./benchmarks/task-definitions/sprint12-role-property-heldout-v1.json
@@ -86,6 +87,7 @@ S13_NATURAL_REPLAY_INPUT_DIR ?=
 S13_NATURAL_REPLAY_RESULT_DIR ?=
 S13_NATURAL_ATTRIBUTION_RESULT ?=
 S13_ABI_ROLE_RESULT_DIR ?=
+S13_ABI_ROLE_VECTOR_RESULT_DIR ?=
 ROLE_PROPERTY_PUBLIC_SCHEMA := ./schemas/x64lens-report.schema.json
 
 NASM         ?= nasm
@@ -105,7 +107,7 @@ OBJS         := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .DEFAULT_GOAL := all
 
-.PHONY: sprint13-producer-authority-smoke sprint13-positive-coordinate-anchor-smoke sprint13-natural-coordinate-campaign-smoke sprint13-natural-coordinate-campaign sprint13-natural-coordinate-campaign-structural sprint13-natural-coordinate-campaign-run sprint13-natural-frozen-replay-smoke sprint13-natural-frozen-replay sprint13-natural-terminal-attribution-smoke sprint13-abi-role-query-contract-smoke sprint13-abi-role-query-smoke sprint13-lifecycle-denominator-smoke patch081-corrective-regression-smoke patch082-corrective-regression-smoke patch083-corrective-regression-smoke patch084-corrective-regression-smoke patch082-docker-corrective-regression-smoke sprint13-p082-acceptance-smoke sprint13-p083-acceptance-smoke sprint13-p084-acceptance-smoke sprint13-p085-acceptance-smoke docker-run-root-smoke
+.PHONY: sprint13-producer-authority-smoke sprint13-positive-coordinate-anchor-smoke sprint13-natural-coordinate-campaign-smoke sprint13-natural-coordinate-campaign sprint13-natural-coordinate-campaign-structural sprint13-natural-coordinate-campaign-run sprint13-natural-frozen-replay-smoke sprint13-natural-frozen-replay sprint13-natural-terminal-attribution-smoke sprint13-abi-role-query-contract-smoke sprint13-abi-role-query-smoke sprint13-lifecycle-denominator-smoke patch081-corrective-regression-smoke patch082-corrective-regression-smoke patch083-corrective-regression-smoke patch084-corrective-regression-smoke patch082-docker-corrective-regression-smoke sprint13-p082-acceptance-smoke sprint13-p083-acceptance-smoke sprint13-p084-acceptance-smoke sprint13-p085-acceptance-smoke sprint13-p086-acceptance-smoke patch085-corrective-regression-smoke sprint13-natural-frozen-replay-v2-smoke sprint13-natural-terminal-attribution-v2-smoke sprint13-natural-frozen-replay-v2 sprint13-abi-role-vector-equivalence-contract-smoke sprint13-abi-role-vector-equivalence-smoke docker-run-root-smoke
 
 .PHONY: help all clean test samples bench-smoke bench-scanner-smoke bench-baselines-smoke bench-diagnostic-smoke bench-sprint11-provisional-campaign bench-summary bench-summary-latest checkpoint-demo checkpoint-tag-help public-docs-check public-artifact-content-smoke public-bundle-content-check public-overlay-verify public-overlay-verification-smoke planning-docs-check research-stage-gates-smoke research-roadmap-consistency-smoke sprint10-closeout-smoke sprint11-closeout-smoke sprint12-closeout-smoke sprint12-phdr-validity-smoke sprint12-overlap-provenance-smoke sprint12-overlap-decision-smoke sprint12-binary-role-smoke sprint12-gnu-property-oracle-smoke sprint12-gnu-property-smoke sprint12-role-property-layout-smoke sprint12-dynamic-metadata-layout-smoke sprint12-role-property-metamorphic-smoke sprint12-role-property-heldout-smoke sprint12-role-property-readelf-smoke sprint12-batch-transaction-smoke patch070-corrective-regression-smoke patch069-corrective-regression-smoke patch068-corrective-regression-smoke patch067-corrective-regression-smoke patch066-corrective-regression-smoke patch065-corrective-regression-smoke patch064-corrective-regression-smoke patch063-corrective-regression-smoke patch062-corrective-regression-smoke patch061-corrective-regression-smoke patch054-corrective-regression-smoke patch059-corrective-regression-smoke diagnostic-runner-smoke diagnostic-transaction-smoke runtime-closure-venv-smoke sprint11-below-floor-policy-smoke diagnostic-task-definitions-smoke baseline-output-adapter-smoke sprint11-measurement-plane-smoke sprint11-campaign-plan-smoke sprint11-p060-campaign-smoke sprint11-diagnostic-reference-smoke provisional-corpus-smoke provisional-corpus-ready provisional-corpus-repair-modes clean-provisional-corpus checksum-manifest-path-smoke scanner-smoke validate-gadget-fixture arena-smoke pattern-smoke semantic-smoke json-smoke schema-compat-smoke analyze-smoke system-smoke capacity-smoke malformed-smoke fuzz-mutated-elf-smoke mitigation-matrix-smoke section-label-smoke readelf-comparison-smoke optional-tool-comparison-smoke benchmark-integrity-smoke patch-bundle-hygiene-smoke sprint10-primitive-smoke sprint10-register-transfer-smoke sprint10-stack-adjust-smoke sprint10-memory-smoke sprint10-family-coverage-smoke sprint10-architectural-effects-smoke sprint10-fixture-gate-smoke sprint10-contract-reconciliation-smoke sprint10-score-policy-smoke memory-effect-reconciliation-smoke shellcheck-contract-smoke json-effect-consistency-smoke public-docs-hygiene-smoke decoder-gap-hardening-smoke decoder-gap-smoke decoder-gap-campaign shellcheck-smoke docker-context-hygiene-smoke native-docker-json-parity-smoke validation-smoke sprint-closeout-smoke clean-results check-tools build-tools-check sample-tools-check dev-tools-check diagnostic-tools-check corpus-tools-check baseline-tools-check analysis-tools-check full-tools-check doctor install-dev-deps-ubuntu install-baseline-tools-user install-rustup-user install-ropr-user scaffold-check script-perms-check patch-bundle-hygiene print-vars docker-available-check docker-build docker-shell docker-test docker-validation-smoke ownership-check fix-perms normalize-perms diagrams-check sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-p072-acceptance-smoke sprint12-role-property-public-policy-smoke sprint12-mitigation-competitive-gap-smoke sprint12-p073-acceptance-smoke sprint12-p074-acceptance-smoke sprint12-p075-acceptance-smoke sprint12-dynamic-metadata-layout-smoke sprint12-textrel-readelf-oracle sprint12-textrel-smoke sprint12-continuation-smoke patch075-corrective-regression-smoke patch074-corrective-regression-smoke patch073-corrective-regression-smoke patch072-corrective-regression-smoke patch071-corrective-regression-smoke sprint12-search-path-readelf-oracle sprint12-search-path-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint12-p076-acceptance-smoke sprint12-p077-acceptance-smoke patch076-corrective-regression-smoke patch077-corrective-regression-smoke patch078-corrective-regression-smoke sprint13-register-role-decision-smoke sprint13-register-role-task-value-smoke sprint13-p078-acceptance-smoke sprint13-p079-acceptance-smoke sprint13-p080-acceptance-smoke sprint13-p081-acceptance-smoke sprint13-role-facet-smoke sprint13-role-policy-smoke sprint13-ordered-two-pop-role-task-value-smoke sprint13-score-null-authority-smoke patch079-corrective-regression-smoke patch080-corrective-regression-smoke docker-source-custody-smoke docker-image-authority-smoke
 
@@ -319,6 +321,9 @@ $(REGISTER_ROLE_FACET_RECONCILIATION_OBJ): tests/internal/register-role-facet-re
 
 $(REGISTER_ROLE_FACET_RECONCILIATION_BIN): $(REGISTER_ROLE_FACET_RECONCILIATION_OBJ) $(BUILD_DIR)/candidate_role.o
 	$(LD) $(LDFLAGS) -o $@ $^
+
+$(CANDIDATE_ROLE_VECTOR_PROBE_BIN): tests/internal/candidate-role-vector-probe.c $(BUILD_DIR)/candidate_role.o | $(INTERNAL_TEST_BUILD_DIR)
+	$(CC) -std=c11 -Wall -Wextra -Werror -O2 -no-pie $^ -o $@
 
 $(CANDIDATE_MAPPING_RECONCILIATION_OBJ): tests/internal/candidate-mapping-reconciliation.asm | $(INTERNAL_TEST_BUILD_DIR)
 	$(NASM) $(ASMFLAGS) $< -o $@
@@ -901,6 +906,58 @@ sprint13-natural-coordinate-campaign: sprint13-natural-coordinate-campaign-run
 sprint13-natural-coordinate-campaign-structural: S13_NATURAL_REQUIRE_FLAG=--require-structural-complete
 sprint13-natural-coordinate-campaign-structural: sprint13-natural-coordinate-campaign-run
 
+patch085-corrective-regression-smoke:
+	python3 tools/patch085-corrective-regression-smoke.py
+
+sprint13-natural-frozen-replay-v2-smoke:
+	python3 tools/sprint13-natural-frozen-replay-v2-smoke.py selftest \
+		--authority ./benchmarks/task-definitions/sprint13-natural-frozen-replay-v2.json
+
+
+sprint13-natural-terminal-attribution-v2-smoke:
+	python3 tools/sprint13-natural-terminal-attribution-v2-smoke.py selftest \
+		--authority ./benchmarks/task-definitions/sprint13-natural-frozen-replay-v2.json \
+		--expected ./tests/expected/sprint13-natural-terminal-attribution-v2.json
+
+sprint13-natural-frozen-replay-v2: all sprint13-natural-frozen-replay-v2-smoke sprint13-natural-terminal-attribution-v2-smoke
+	@set -eu; \
+	test -n "$(S13_NATURAL_REPLAY_INPUT_DIR)" || { echo "error: S13_NATURAL_REPLAY_INPUT_DIR is required" >&2; exit 2; }; \
+	test -n "$(S13_NATURAL_REPLAY_RESULT_DIR)" || { echo "error: S13_NATURAL_REPLAY_RESULT_DIR is required" >&2; exit 2; }; \
+	test -n "$(S13_NATURAL_ATTRIBUTION_RESULT)" || { echo "error: S13_NATURAL_ATTRIBUTION_RESULT is required" >&2; exit 2; }; \
+	for tool in "$(ROPGADGET)" "$(ROPPER)" "$(ROPR)"; do command -v "$$tool" >/dev/null 2>&1 || { echo "error: required P086 replay tool is unavailable: $$tool" >&2; exit 127; }; done; \
+	expected_tree="$(S13_EXPECTED_CANDIDATE_TREE)"; \
+	test -n "$$expected_tree" || { echo "error: P086 replay requires an authenticated candidate tree" >&2; exit 2; }; \
+	work="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-p086-replay-source.XXXXXX")"; \
+	work_identity="$$(python3 tools/remove-owned-tree.py --identify "$$work")"; \
+	cleanup() { python3 tools/remove-owned-tree.py --remove "$$work" --identity "$$work_identity"; }; trap cleanup EXIT; \
+	python3 tools/gitless-source-manifest.py create --repo . --root "$$work/source" --manifest "$$work/source-manifest.json" --expected-candidate-tree "$$expected_tree"; \
+	python3 tools/sprint13-natural-frozen-replay-v2-smoke.py run \
+		--authority ./benchmarks/task-definitions/sprint13-natural-frozen-replay-v2.json \
+		--input-dir "$(S13_NATURAL_REPLAY_INPUT_DIR)" --result-dir "$(S13_NATURAL_REPLAY_RESULT_DIR)" \
+		--x64lens ./$(TARGET) --ropgadget "$$(command -v "$(ROPGADGET)")" --ropper "$$(command -v "$(ROPPER)")" --ropr "$$(command -v "$(ROPR)")" \
+		--source-root "$$work/source" --source-manifest "$$work/source-manifest.json" --expected-candidate-tree "$$expected_tree"; \
+	python3 tools/sprint13-natural-terminal-attribution-v2-smoke.py run \
+		--authority ./benchmarks/task-definitions/sprint13-natural-frozen-replay-v2.json \
+		--expected ./tests/expected/sprint13-natural-terminal-attribution-v2.json \
+		--input-dir "$(S13_NATURAL_REPLAY_RESULT_DIR)" --output "$(S13_NATURAL_ATTRIBUTION_RESULT)"
+
+sprint13-abi-role-vector-equivalence-contract-smoke:
+	python3 tools/sprint13-abi-role-vector-equivalence-smoke.py selftest
+
+sprint13-abi-role-vector-equivalence-smoke: all $(CANDIDATE_ROLE_VECTOR_PROBE_BIN) sprint13-abi-role-vector-equivalence-contract-smoke
+	@set -eu; \
+	test -n "$(S13_ABI_ROLE_VECTOR_RESULT_DIR)" || { echo "error: S13_ABI_ROLE_VECTOR_RESULT_DIR is required" >&2; exit 2; }; \
+	expected_tree="$(S13_EXPECTED_CANDIDATE_TREE)"; \
+	test -n "$$expected_tree" || { echo "error: ABI role vector gate requires an authenticated candidate tree" >&2; exit 2; }; \
+	work="$$(mktemp -d "$${TMPDIR:-/tmp}/x64lens-p086-vector-source.XXXXXX")"; \
+	work_identity="$$(python3 tools/remove-owned-tree.py --identify "$$work")"; \
+	cleanup() { python3 tools/remove-owned-tree.py --remove "$$work" --identity "$$work_identity"; }; trap cleanup EXIT; \
+	python3 tools/gitless-source-manifest.py create --repo . --root "$$work/source" --manifest "$$work/source-manifest.json" --expected-candidate-tree "$$expected_tree"; \
+	python3 tools/sprint13-abi-role-vector-equivalence-smoke.py run \
+		--analyzer ./$(TARGET) --probe $(CANDIDATE_ROLE_VECTOR_PROBE_BIN) \
+		--source-root "$$work/source" --source-manifest "$$work/source-manifest.json" --expected-candidate-tree "$$expected_tree" \
+		--result-dir "$(S13_ABI_ROLE_VECTOR_RESULT_DIR)"
+
 sprint13-natural-frozen-replay-smoke:
 	python3 tools/sprint13-natural-frozen-replay-smoke.py selftest \
 		--authority ./benchmarks/task-definitions/sprint13-natural-frozen-replay-v1.json
@@ -1062,6 +1119,7 @@ sprint13-p084-acceptance-smoke: validation-smoke docker-validation-smoke patch08
 # the exact frozen natural targets without reroll and attributes terminal
 # outcomes by layer.  Runtime analyzer, public output, schema, semantics, and
 # score policy remain unchanged.
+sprint13-p085-acceptance-smoke: S13_EXPECTED_CANDIDATE_TREE := b2d2549a4ec311d97e79925035f80d7535867ac0
 sprint13-p085-acceptance-smoke: validation-smoke docker-validation-smoke patch084-corrective-regression-smoke sprint13-lifecycle-denominator-smoke sprint13-abi-role-query-smoke sprint13-natural-frozen-replay sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint13-producer-authority-smoke docker-image-authority-smoke
 	@set -eu; \
 	expected_tree="$(S13_EXPECTED_CANDIDATE_TREE)"; \
@@ -1074,6 +1132,18 @@ sprint13-p085-acceptance-smoke: validation-smoke docker-validation-smoke patch08
 	}
 	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
 	@echo "sprint13-p085-acceptance-smoke: ok patch=85 sprint12=closed sprint13=active frozen-replay=complete terminal-attribution=layered lifecycle-deltas=5 abi-role-queries=36 public-closures=96 public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0"
+
+# Patch 086 closes the P085 replay/oracle, hard-link, catchable-signal,
+# source-custody, ABI-expected, and delivery findings.  It additionally
+# proves private production-vector equivalence without changing public output.
+sprint13-p086-acceptance-smoke: validation-smoke docker-validation-smoke patch085-corrective-regression-smoke sprint13-lifecycle-denominator-smoke sprint13-abi-role-vector-equivalence-smoke sprint13-natural-frozen-replay-v2 sprint12-external-natural-acquisition-smoke sprint12-role-property-environment-parity-smoke sprint12-dynamic-metadata-environment-parity-smoke sprint13-producer-authority-smoke docker-image-authority-smoke
+	@set -eu; \
+	expected_tree="$(S13_EXPECTED_CANDIDATE_TREE)"; \
+	test -n "$$expected_tree" || { echo "error: sprint13-p086-acceptance-smoke requires an authenticated candidate tree" >&2; exit 2; }; \
+	test "$${#expected_tree}" -eq 40 || { echo "error: invalid P086 candidate tree" >&2; exit 2; }
+	@command -v "$(SHELLCHECK)" >/dev/null 2>&1 || { echo "error: sprint13-p086-acceptance-smoke requires $(SHELLCHECK)" >&2; exit 127; }
+	@SHELLCHECK_STRICT=1 $(MAKE) --no-print-directory shellcheck-smoke
+	@echo "sprint13-p086-acceptance-smoke: ok patch=86 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0"
 
 # Patch 070 prerequisite pilot. This validates complete-or-absent batch
 # publication, exact failure positions, cleanup, and signal semantics without
@@ -1658,6 +1728,15 @@ scaffold-check: script-perms-check
 	@test -f tools/docker-image-authority.py
 	@test -f tools/patch079-corrective-regression-smoke.py
 	@test -f tools/sprint13-role-policy-smoke.py
+	@test -f tests/internal/candidate-role-vector-probe.c
+	@test -f benchmarks/task-definitions/sprint13-abi-role-vector-equivalence-v1.json
+	@test -f benchmarks/task-definitions/sprint13-natural-frozen-replay-v2.json
+	@test -f tests/expected/sprint13-abi-role-vector-equivalence-v1.json
+	@test -f tests/expected/sprint13-natural-terminal-attribution-v2.json
+	@test -x tools/patch085-corrective-regression-smoke.py
+	@test -x tools/sprint13-abi-role-vector-equivalence-smoke.py
+	@test -x tools/sprint13-natural-frozen-replay-v2-smoke.py
+	@test -x tools/sprint13-natural-terminal-attribution-v2-smoke.py
 	@test -f include/constants.inc
 	@test -f docs/project-charter.md
 	@test -f docs/contracts/development-contract.md

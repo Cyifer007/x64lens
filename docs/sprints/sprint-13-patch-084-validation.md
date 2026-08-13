@@ -2,8 +2,10 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, ABI-closure,
-campaign, parity, producer, delivery, and independent acceptance gates.
+Historical implementation candidate. Patch 084 did not complete exact-source
+acceptance; Patch 085 carries the bounded corrective and evidence-authority
+tranche. The commands below are retained as historical candidate gates, not as
+evidence that the P084 aggregate executed or passed.
 
 ## Scope
 
@@ -109,7 +111,7 @@ make sprint12-dynamic-metadata-environment-parity-smoke
 
 The immutable source plane must remain root-owned and unwritable to the runtime user. Mutable work remains beneath the separate run root.
 
-## Complete acceptance candidate
+## Historical candidate aggregate
 
 ```bash
 mkdir -p .local/p084-results
@@ -120,7 +122,7 @@ S13_PRODUCER_RESULT_DIR=./.local/p084-results/producer-acceptance \
   make sprint13-p084-acceptance-smoke
 ```
 
-Expected final banner:
+Historical candidate banner (not observed by this record):
 
 ```text
 sprint13-p084-acceptance-smoke: ok patch=84 sprint12=closed sprint13=active natural-coordinate-campaign=terminal-diagnostic abi-role-queries=36 public-closures=96 lifecycle-prefix=preserved public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
@@ -138,4 +140,6 @@ sprint13-p084-acceptance-smoke: ok patch=84 sprint12=closed sprint13=active natu
 
 ## Evidence classification
 
-Static and corrective checks alone do not substitute for a fresh NASM build, strict ShellCheck, Docker execution, parity, or the complete natural campaign. Diagnostic terminal states remain publication-ineligible.
+Patch 084 did not complete these native, Docker, parity, campaign, delivery, and
+independent gates. Static and corrective checks alone do not establish product
+acceptance. Its retained diagnostic terminal states remain publication-ineligible.

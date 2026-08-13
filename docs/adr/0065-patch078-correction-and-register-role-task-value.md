@@ -2,11 +2,10 @@
 
 ## Status
 
-Historical Patch 079 implementation decision. Patch 079 did not complete
-acceptance; it was superseded by Patch 080, and Patch 080 by Patch 081. Patches
-081 and 082 were not accepted. Independent review of Patch 083 returned the
-bounded corrections now carried by the current Patch 084 implementation
-candidate, pending independent exact-source acceptance.
+Historical Patch 079 implementation decision. Patch 079 did not complete acceptance; it
+was superseded by Patch 080, and Patch 080 by Patch 081. Patches 081 and 082 were not
+accepted. Patches 083 and 084 also did not complete acceptance; Patch 085 is the current
+exact-source implementation candidate, pending independent exact-source acceptance.
 
 ## Context
 

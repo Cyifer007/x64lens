@@ -1,0 +1,48 @@
+{
+  "campaign_id": "s13-p086-natural-frozen-replay-v2",
+  "cell_reasons": {
+    "ambiguous": 0,
+    "insufficient": 5,
+    "mismatch": 0,
+    "qualified": 0,
+    "unavailable": 4
+  },
+  "cells": 9,
+  "checksum_complete": true,
+  "decision": "sealed_terminal_layers_attributed_without_reinterpretation",
+  "execution_outcomes": 48,
+  "execution_reasons": {
+    "nonzero_exit": 0,
+    "output_limit": 2,
+    "signal": 0,
+    "success": 41,
+    "timeout": 0,
+    "unsupported": 5
+  },
+  "observation_reasons": {
+    "ambiguous": 0,
+    "file_offset": 0,
+    "insufficient_relation_evidence": 11,
+    "mismatch": 0,
+    "unavailable": 24,
+    "virtual_address": 1
+  },
+  "observations": 36,
+  "patch": 86,
+  "precedence_mutations": 16,
+  "public_fields_added": 0,
+  "raw_streams_verified": 96,
+  "relation_outcomes": 48,
+  "relation_reasons": {
+    "observed": 5,
+    "observed_zero": 19,
+    "parse_error": 17,
+    "unavailable": 7
+  },
+  "schema": "x64lens-sprint13-natural-terminal-attribution-result-v2",
+  "schema_changed": false,
+  "score_changes": 0,
+  "semantic_changes": 0,
+  "sprint": 13,
+  "target_files_verified": 12
+}

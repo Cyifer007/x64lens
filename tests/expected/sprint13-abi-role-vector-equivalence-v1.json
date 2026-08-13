@@ -1,0 +1,20 @@
+{
+  "contradiction_rejections": 16,
+  "controlled_targets": 24,
+  "decision": "private_full_vector_equivalent",
+  "guard_dispositions": 6,
+  "internal_dispositions": 48,
+  "non_pop_zero_masks": 10,
+  "occupied_indices": 24,
+  "patch": 86,
+  "public_closures": 96,
+  "public_fields_added": 0,
+  "queries": 36,
+  "schema": "x64lens-sprint13-abi-role-vector-equivalence-result-v1",
+  "schema_changed": false,
+  "score_changes": 0,
+  "semantic_changes": 0,
+  "sprint": 13,
+  "valid_masks": 16,
+  "vector_matches": 24
+}

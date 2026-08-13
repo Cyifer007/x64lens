@@ -3,17 +3,22 @@
 ## Status
 
 Patch 085 correction, frozen replay, and layered terminal-attribution candidate; activation pending complete Patch 085 acceptance.
-Patch 080 retains `generic_control`, `sysv_call_arguments`, and
-`linux_syscall_arguments` only in the private side-car. Patch 081 records the
-Sprint 12 retrospective and declaratively defers redundant ordered tuple state.
-Patch 082 implements producer-backed tuple/score authority and controlled
-coordinate preflight. Patch 083 completes the outcome-blind natural campaign,
-which remains terminal diagnostic evidence with zero qualified, five
+Here, `frozen replay` names the frozen-input, no-reroll authority; actual replay
+execution remains pending. Patch 080 retains
+`generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` only in the
+private side-car. Patch 081 records the Sprint 12 retrospective and declaratively defers
+redundant ordered tuple state. Patch 082 implements producer-backed tuple/score
+authority and controlled coordinate preflight. Patch 083 completes the outcome-blind
+natural campaign, which remains terminal diagnostic evidence with zero qualified, five
 insufficient, and four unavailable cells. Patch 084 corrects its acceptance
-infrastructure, freezes a private 36-query ABI-role contract and lifecycle
-denominator, and changes no public field, semantic class, score, schema, or
-capacity contract.
-Patch 085 corrects the returned P084 source-custody, recovery, lifecycle, ABI, natural-campaign, explicit-tree, and delivery findings. It freezes the exact twelve predecessor target hashes and 48 tool executions with no reroll and preserves one terminal reason at the execution, relation, observation, and cell layers. It changes no analyzer runtime, public field, semantic class, score, schema, or capacity contract.
+infrastructure, freezes a private 36-query ABI-role contract and lifecycle denominator,
+and changes no public field, semantic class, score, schema, or capacity contract. Patch
+085 corrects the P084 source-custody, recovery, lifecycle, ABI, natural-campaign,
+explicit-tree, and delivery authorities. It defines a frozen-input, no-reroll authority
+over the exact twelve predecessor target hashes and 48 execution slots and defines one
+terminal reason at the execution, relation, observation, and cell layers. The actual
+replay and generated P085 attribution result remain pending. It changes no analyzer
+runtime, public field, semantic class, score, schema, or capacity contract.
 
 ## Sprint goal
 
@@ -67,9 +72,11 @@ general-purpose decoder or chain generator.
    an acceptance gate.
 6. **Patch 083:** correct Patch 082 transaction, corpus, Docker, producer, recovery, and delivery findings; implement the outcome-blind natural coordinate campaign without changing runtime or public facts.
 7. **Patch 084:** correct the P083 transaction, recovery, Docker, natural-authority, source-binding, strict-shell, and delivery findings; freeze the private ABI-role query and lifecycle-denominator contracts.
-8. **Patch 085:** correct P084 acceptance findings, freeze and execute the exact no-reroll natural replay, and retain layered terminal attribution with zero runtime/public/score changes.
-9. **Patch 086:** measure full-vector ABI-role representation equivalence after P085 acceptance without public projection.
-10. **Later evidence-selected patches:** add only bounded families or consumers
+8. **Patch 085:** correct P084 acceptance findings and define exact frozen-input,
+   no-reroll replay and layered terminal-attribution authorities with zero
+   runtime, public, or score changes; actual execution remains an acceptance gate.
+9. **Patch 086:** correct Patch 085 replay, recovery, custody, exact-tree, and delivery findings; seal the replay-to-attribution contract; and measure private full-vector ABI-role equivalence without public projection.
+10. **Patch 087 and later evidence-selected patches:** add only bounded families or consumers
    that demonstrate incremental task value.
 
 ## Acceptance criteria
@@ -82,7 +89,12 @@ general-purpose decoder or chain generator.
 
 ## Handoff
 
-Patch 085 is the current corrective candidate. It owns an exact frozen-target replay over the same twelve target hashes and 48 tool executions, plus layered private terminal attribution with exactly one reason per execution, relation, observation, and cell record. After complete P085 acceptance, Patch 086 may measure full-vector ABI-role representation equivalence. Natural role incidence, charged-memory cost, public projection, score changes, decoder integration, and concurrency remain separate evidence gates.
+Patch 086 is the current corrective and private-equivalence candidate. It seals
+the twelve-target, 48-execution replay result, authenticates 96 raw streams and
+runtime/cache authority, requires exact terminal attribution, and tests the production
+role vector through an independent fixture-derived oracle. Natural role incidence,
+charged-memory cost, public projection, score changes, decoder integration, and
+concurrency remain separate evidence gates.
 
 
 ## Historical Patch 079 boundary

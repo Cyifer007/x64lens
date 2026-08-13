@@ -2,8 +2,9 @@
 
 ## Status
 
-Historical implementation candidate. Independent exact-source review did not
-accept Patch 083 and returned the bounded corrections now carried by Patch 084.
+Historical implementation candidate. Patch 083 did not complete exact-source
+acceptance. Patch 084 carried its bounded corrections but was not accepted;
+Patch 085 is the current exact-source implementation candidate.
 The retained P083 natural campaign is structurally complete but
 comparison-unqualified: twelve targets, 48 executions, nine terminal cells,
 and 108 controls, with zero qualified, five insufficient, and four unavailable
@@ -149,8 +150,9 @@ replace independent exact-source review.
 
 ## Patch 084 handoff
 
-Independent review of Patch 083 returned the bounded corrections now carried by
-the P084 implementation candidate. P084 preserves the retained natural-coordinate
-terminal states and freezes the private ABI-role query contract. It authorizes
+Patch 083 did not complete acceptance. Patch 084 preserved the retained natural-
+coordinate terminal states and froze the private ABI-role query contract, but it
+also was not accepted; Patch 085 carries the current bounded correction. None of
+these historical transitions authorizes
 no public field, semantic, score, schema, capacity, decoder, concurrency,
 comparative-coverage, performance, or exploitability change.

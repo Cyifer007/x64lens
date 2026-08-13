@@ -20,6 +20,8 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import os
+import signal
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 import stat
 import subprocess
@@ -34,6 +36,35 @@ MAX_PATCH_BYTES = 64 * 1024 * 1024
 
 class TransactionError(RuntimeError):
     """Raised when source identity, patch custody, or Git state disagrees."""
+
+
+class CatchableTermination(TransactionError):
+    """Raised when a catchable termination signal interrupts a transaction."""
+
+
+@contextmanager
+def catchable_termination_guard(label: str):
+    """Convert catchable termination into recoverable exceptions.
+
+    Once one signal is observed, all guarded signals are ignored until the
+    transaction's recovery path completes.  Original handlers are restored on
+    exit.  SIGKILL and other uncatchable failures remain outside this contract.
+    """
+    guarded = tuple(sig for sig in (signal.SIGHUP, signal.SIGINT, signal.SIGTERM) if sig is not None)
+    previous = {sig: signal.getsignal(sig) for sig in guarded}
+
+    def handler(signum, _frame):
+        for candidate in guarded:
+            signal.signal(candidate, signal.SIG_IGN)
+        raise CatchableTermination(f"{label} interrupted by {signal.Signals(signum).name}")
+
+    for sig in guarded:
+        signal.signal(sig, handler)
+    try:
+        yield
+    finally:
+        for sig, old in previous.items():
+            signal.signal(sig, old)
 
 
 @dataclass
@@ -71,6 +102,7 @@ class PathState:
     file_type: int = 0
     mode: int = 0
     size: int = 0
+    nlink: int = 0
     oid: str | None = None
 
 
@@ -441,6 +473,7 @@ def path_state(repo: RepoHandle, path: str) -> PathState:
             file_type,
             stat.S_IMODE(initial.st_mode),
             initial.st_size,
+            initial.st_nlink,
             oid,
         )
     finally:
@@ -450,7 +483,7 @@ def path_state(repo: RepoHandle, path: str) -> PathState:
 def state_matches_entry(state: PathState, entry: TreeEntry | None) -> bool:
     if entry is None:
         return not state.exists
-    if not state.exists or state.oid != entry.oid:
+    if not state.exists or state.oid != entry.oid or state.nlink != 1:
         return False
     if entry.mode == "120000":
         return state.file_type == stat.S_IFLNK
@@ -466,10 +499,53 @@ def state_identity_equal(left: PathState, right: PathState) -> bool:
     if not left.exists:
         return True
     return (
-        left.device, left.inode, left.file_type, left.mode, left.size, left.oid
+        left.device, left.inode, left.file_type, left.mode, left.size, left.nlink, left.oid
     ) == (
-        right.device, right.inode, right.file_type, right.mode, right.size, right.oid
+        right.device, right.inode, right.file_type, right.mode, right.size, right.nlink, right.oid
     )
+
+
+def state_owned_with_added_links(current: PathState, expected: PathState) -> bool:
+    """Accept only a link-count increase on the exact retained effect inode.
+
+    This condition is used solely by inverse recovery.  The caller-visible
+    patch pathname is detached before Git restores the desired tree, preserving
+    every foreign alias and its bytes.
+    """
+    return (
+        current.exists and expected.exists
+        and current.device == expected.device
+        and current.inode == expected.inode
+        and current.file_type == expected.file_type == stat.S_IFREG
+        and current.mode == expected.mode
+        and current.size == expected.size
+        and current.oid == expected.oid
+        and current.nlink > expected.nlink >= 1
+    )
+
+
+def detach_owned_hardlink_alias(repo: RepoHandle, path: str, expected: PathState) -> None:
+    current = path_state(repo, path)
+    require(state_owned_with_added_links(current, expected), f"foreign replacement preserved at patch path: {path}")
+    parent_fd, name = _open_parent(repo, path)
+    held_fd = -1
+    try:
+        held_fd = os.open(name, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_fd)
+        held = os.fstat(held_fd)
+        require((held.st_dev, held.st_ino, stat.S_IFMT(held.st_mode)) ==
+                (expected.device, expected.inode, expected.file_type),
+                f"hard-link effect identity changed: {path}")
+        final = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require((final.st_dev, final.st_ino, stat.S_IFMT(final.st_mode), final.st_nlink) ==
+                (current.device, current.inode, current.file_type, current.nlink),
+                f"hard-link effect changed before detach: {path}")
+        os.unlink(name, dir_fd=parent_fd)
+        require(os.fstat(held_fd).st_nlink == current.nlink - 1,
+                f"hard-link alias topology changed during detach: {path}")
+    finally:
+        if held_fd >= 0:
+            os.close(held_fd)
+        os.close(parent_fd)
 
 
 def capture_scope(repo: RepoHandle, paths: Sequence[str]) -> dict[str, PathState]:
@@ -600,7 +676,11 @@ def _scope_safe_for_recovery(
     for path in paths:
         current = path_state(repo, path)
         if effect is not None:
-            require(state_identity_equal(current, effect[path]), f"foreign replacement preserved at patch path: {path}")
+            require(
+                state_identity_equal(current, effect[path])
+                or state_owned_with_added_links(current, effect[path]),
+                f"foreign replacement preserved at patch path: {path}",
+            )
         elif before is not None and state_identity_equal(current, before[path]):
             pass
         else:
@@ -657,6 +737,10 @@ def restore_exact_tree(
             effect=effect,
             allow_index_mode_normalization=allow_index_mode_normalization,
         )
+        if effect is not None:
+            for path in paths:
+                if state_owned_with_added_links(path_state(repo, path), effect[path]):
+                    detach_owned_hardlink_alias(repo, path, effect[path])
         present_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is not None]
         absent_paths = [path for path in paths if tree_entry(repo, desired_tree, path) is None]
         if present_paths:
@@ -1012,23 +1096,25 @@ def main() -> int:
     repo = open_repo(args.repo)
     try:
         if args.action == "apply":
-            apply_patch(
-                repo,
-                raw,
-                branch=args.branch,
-                base_head=args.base_head,
-                base_tree=args.base_tree,
-                candidate_tree=args.candidate_tree,
-            )
+            with catchable_termination_guard("patch application"):
+                apply_patch(
+                    repo,
+                    raw,
+                    branch=args.branch,
+                    base_head=args.base_head,
+                    base_tree=args.base_tree,
+                    candidate_tree=args.candidate_tree,
+                )
         elif args.action == "rollback":
-            rollback_patch(
-                repo,
-                raw,
-                branch=args.branch,
-                base_head=args.base_head,
-                base_tree=args.base_tree,
-                candidate_tree=args.candidate_tree,
-            )
+            with catchable_termination_guard("patch rollback"):
+                rollback_patch(
+                    repo,
+                    raw,
+                    branch=args.branch,
+                    base_head=args.base_head,
+                    base_tree=args.base_tree,
+                    candidate_tree=args.candidate_tree,
+                )
         else:
             mode, _head = candidate_state(
                 repo, args.branch, args.base_head, args.base_tree, args.candidate_tree

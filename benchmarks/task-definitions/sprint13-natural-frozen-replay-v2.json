@@ -1,0 +1,267 @@
+{
+  "adapters": [
+    {
+      "path": "benchmarks/scripts/x64lens-relation-extractor.py",
+      "sha256": "976ed3a4381f3d7988d3365ffbd67d65c9e7a621c26e3163ed693d31d4408f2c"
+    },
+    {
+      "path": "benchmarks/scripts/baseline-output-adapter.py",
+      "sha256": "76121d52af398cc09df84b21870c30f7410fbca8eb94952ff1ac1e4a87aec817"
+    }
+  ],
+  "campaign_id": "s13-p086-natural-frozen-replay-v2",
+  "claim_boundary": {
+    "comparison_qualified": false,
+    "coverage_claim_authorized": false,
+    "performance_claim_authorized": false,
+    "public_fields_added": 0,
+    "publication_claim_authorized": false,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_changes": 0
+  },
+  "evidence_class": "diagnostic",
+  "execution": {
+    "cache_policy": "isolated_empty_home_no_python_bytecode",
+    "execution_denominator": 48,
+    "executions_per_target": 4,
+    "reroll": false,
+    "stderr_limit_bytes": 4194304,
+    "stdout_limit_bytes": 16777216,
+    "timeout_seconds": 120,
+    "tools": [
+      "x64lens",
+      "ropgadget",
+      "ropper",
+      "ropr"
+    ]
+  },
+  "frozen": false,
+  "input_authority": {
+    "cell_counts": {
+      "ambiguous": 0,
+      "insufficient": 5,
+      "mismatch": 0,
+      "qualified": 0,
+      "unavailable": 4
+    },
+    "cells": 9,
+    "controls": 108,
+    "executions": 48,
+    "manifest_sha256": "22222d33b7f34d8340be9a66fe40865fc7fcca2e0682f39281222f9ffa0b7fc7",
+    "selected_targets": 12,
+    "selection_freeze_sha256": "2082d7a48ac5fcad9c804b4a92bf21ac742ad8c934cdef138c367e61510005c1",
+    "source_candidate_tree": "178f1d1c93a5a05fba5a77af2c378e63e5dc017b"
+  },
+  "limitations": [
+    "The replay uses the exact twelve predecessor target hashes and permits no target reroll.",
+    "A replay is diagnostic and cannot authorize comparative coverage, performance, RSS, or publication claims.",
+    "Unavailable or unsupported outcomes remain terminal evidence rather than favorable substitutions.",
+    "The replay seals all selected targets, raw streams, tool/runtime identities, and isolated cache policy before mandatory expected-result attribution."
+  ],
+  "patch": 86,
+  "predecessor_campaign_id": "s13-p083-natural-coordinate-v1",
+  "publication_eligible": false,
+  "result_contract": {
+    "checksum_complete": true,
+    "expected_result_required": true,
+    "raw_streams": 96,
+    "run_records": 48,
+    "target_files": 12
+  },
+  "runtime_authority": {
+    "environment": {
+      "HOME": "isolated_empty_home",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "XDG_CACHE_HOME": "isolated_empty_cache",
+      "XDG_CONFIG_HOME": "isolated_empty_config"
+    },
+    "native_tools": [
+      "x64lens",
+      "ropr"
+    ],
+    "python_distributions": {
+      "ropgadget": "ROPGadget",
+      "ropper": "ropper"
+    },
+    "tool_count": 4
+  },
+  "schema": "x64lens-sprint13-natural-frozen-replay-authority-v2",
+  "selection": [
+    {
+      "binary_package": "containerd.io",
+      "lineage": "containerd.io",
+      "role": "et_exec",
+      "sha256": "09873f2a4ff257ebd91b4aade428f30b8996537d334e5505beabad1eca7d229d",
+      "size_bytes": 8340984,
+      "slot": 1,
+      "target_id": "et_exec-1-00d2610bc3ce"
+    },
+    {
+      "binary_package": "docker-ce",
+      "lineage": "docker-ce",
+      "role": "et_exec",
+      "sha256": "442963ec53563cd97a7290d220ef0b0b3efda3340d2f506f427a4352731500eb",
+      "size_bytes": 765072,
+      "slot": 2,
+      "target_id": "et_exec-2-ec3ff6ae4b33"
+    },
+    {
+      "binary_package": "docker-compose-plugin",
+      "lineage": "docker-compose-plugin",
+      "role": "et_exec",
+      "sha256": "f9ebc6ebdb19d769b793c245a736caaeb198c62587f13b25c660c13b4987f959",
+      "size_bytes": 32564869,
+      "slot": 3,
+      "target_id": "et_exec-3-a24adcbdc2c1"
+    },
+    {
+      "binary_package": "gawk",
+      "lineage": "gawk",
+      "role": "et_exec",
+      "sha256": "9150b42e78b22231bd83131e1db2530a7a7fa0677e189ac7c5cc1520c42c9e88",
+      "size_bytes": 739840,
+      "slot": 4,
+      "target_id": "et_exec-4-bcf68a1acd99"
+    },
+    {
+      "binary_package": "7zip",
+      "lineage": "7zip",
+      "role": "pie_et_dyn",
+      "sha256": "b2a12fa672bc38fc33af43a99fa499533253236feb30e4f755a73fb64f01861d",
+      "size_bytes": 662072,
+      "slot": 1,
+      "target_id": "pie_et_dyn-1-98fa304eb356"
+    },
+    {
+      "binary_package": "accountsservice",
+      "lineage": "accountsservice",
+      "role": "pie_et_dyn",
+      "sha256": "06e0b18b4a226fd455d6af2149fb58c0faf99c0a6b36cd62a19dc938670f1407",
+      "size_bytes": 182712,
+      "slot": 2,
+      "target_id": "pie_et_dyn-2-305026040d69"
+    },
+    {
+      "binary_package": "acl",
+      "lineage": "acl",
+      "role": "pie_et_dyn",
+      "sha256": "0fe405384ec4704bd25e5a0145b8236aad11e213fe887f515fe363699f926d5c",
+      "size_bytes": 18736,
+      "slot": 3,
+      "target_id": "pie_et_dyn-3-2344f08e5102"
+    },
+    {
+      "binary_package": "apg",
+      "lineage": "apg",
+      "role": "pie_et_dyn",
+      "sha256": "c9e15c76b994b80c72ebb2c27fe585c1a0583ce1a5e3fce6ff04d537a460dac8",
+      "size_bytes": 26784,
+      "slot": 4,
+      "target_id": "pie_et_dyn-4-4785977e0e0c"
+    },
+    {
+      "binary_package": "7zip",
+      "lineage": "7zip",
+      "role": "shared_et_dyn",
+      "sha256": "3838b48f126499c92e0d56812ad13f5a64de98e7a54a2aa7a5fb595647e6870b",
+      "size_bytes": 2427344,
+      "slot": 1,
+      "target_id": "shared_et_dyn-1-98fa304eb356"
+    },
+    {
+      "binary_package": "libaa1:amd64",
+      "lineage": "aalib",
+      "role": "shared_et_dyn",
+      "sha256": "b72fd3e55e2b41cb08b2e4dfa2a7f404e93fc76903ab0cad8a81d3273b136864",
+      "size_bytes": 131304,
+      "slot": 2,
+      "target_id": "shared_et_dyn-2-ba64a55cd442"
+    },
+    {
+      "binary_package": "libabsl20220623t64:amd64",
+      "lineage": "abseil",
+      "role": "shared_et_dyn",
+      "sha256": "3afd95f4516436ee42fba279bb79720a92bc236d8a3c361bd80eaf0a8cd5406c",
+      "size_bytes": 14576,
+      "slot": 3,
+      "target_id": "shared_et_dyn-3-c212a1dbedd3"
+    },
+    {
+      "binary_package": "libaccountsservice0:amd64",
+      "lineage": "accountsservice",
+      "role": "shared_et_dyn",
+      "sha256": "7c38f50aa24b2a33332964d5e97b66b28ec0e9d25333d45ea7ea1c90cc88ba62",
+      "size_bytes": 221104,
+      "slot": 4,
+      "target_id": "shared_et_dyn-4-305026040d69"
+    }
+  ],
+  "sprint": 13,
+  "terminal_attribution": {
+    "cell_reasons": [
+      "qualified",
+      "insufficient",
+      "unavailable",
+      "mismatch",
+      "ambiguous"
+    ],
+    "cells": 9,
+    "execution_outcomes": 48,
+    "execution_precedence": [
+      "timeout",
+      "output_limit",
+      "signal",
+      "success",
+      "unsupported",
+      "nonzero_exit"
+    ],
+    "observation_reasons": [
+      "virtual_address",
+      "file_offset",
+      "insufficient_relation_evidence",
+      "unavailable",
+      "mismatch",
+      "ambiguous"
+    ],
+    "observations": 36,
+    "precedence_mutations": 16,
+    "relation_outcomes": 48,
+    "relation_reasons": [
+      "observed",
+      "observed_zero",
+      "parse_error",
+      "unavailable"
+    ]
+  },
+  "tools": {
+    "readelf": {
+      "mode": "0755",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0",
+      "size_bytes": 789280
+    },
+    "ropgadget": {
+      "mode": "0755",
+      "sha256": "23c511334e7755ff9647f5d1e216f0c4aef58f24fc4abf2e78abb099077c5dfd",
+      "size_bytes": 267
+    },
+    "ropper": {
+      "mode": "0755",
+      "sha256": "4d23bf553444e1dab845b5ca39658a05070b9959c52ec1263f1e20cf14fc158a",
+      "size_bytes": 203
+    },
+    "ropr": {
+      "mode": "0755",
+      "sha256": "978994f874d9ecb0c45e212be50412d0bf5b30a897dfd99cda185668920c1b94",
+      "size_bytes": 4495824
+    },
+    "x64lens": {
+      "mode": "0755",
+      "sha256": "39f6af5c7991b6fd7d46b7ac1afb6340164cee14cfcec2d7cd0a2f014bf1222e",
+      "size_bytes": 154544
+    }
+  }
+}

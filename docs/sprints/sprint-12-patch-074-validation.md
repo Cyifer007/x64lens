@@ -7,7 +7,7 @@ not establish complete acceptance. Patch 075 introduced bounded private static
 text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
 and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
 Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations
-are in the [Patch 084 validation record](sprint-13-patch-084-validation.md).
+are in the [Patch 085 validation record](sprint-13-patch-085-validation.md).
 
 ## Purpose
 
@@ -195,19 +195,16 @@ documentation acceptance remain separate gates.
 
 ## Interpretation
 
-At the Patch 074 boundary, passing every acceptance boundary on the same source
-would have supported a bounded claim that Sprint 12's loader and private
-mitigation-evidence work had an explicit implemented-or-deferred disposition and
-an authenticated Sprint 13 handoff. That acceptance was not established, and
-Patch 074 was superseded. Patch 075 introduced private static text-relocation
-evidence, but its review required the Patch 076 correction. Patch 076 implements
-distinct private RPATH/RUNPATH evidence. Patch 078 was superseded by the Patch
-079 corrective and private task-value candidate, which was superseded by Patch 080,
-which was superseded by Patch 081. Patches 081 and 082 were not accepted.
-Independent review of Patch 083 returned the bounded corrections now carried by
-the current P084 corrective candidate. Complete acceptance remains pending
-against the exact P084 source. The
-historical Patch 074 candidate does not close Sprint 12 or support a public
-PIE/DSO, IBT, SHSTK,
-runtime-CET, text-relocation, RPATH/RUNPATH, performance, RSS, coverage, or
-exploitability claim beyond the existing report contract.
+At the Patch 074 boundary, passing every acceptance boundary on the same source would
+have supported a bounded claim that Sprint 12's loader and private mitigation-evidence
+work had an explicit implemented-or-deferred disposition and an authenticated Sprint 13
+handoff. That acceptance was not established, and Patch 074 was superseded. Patch 075
+introduced private static text-relocation evidence, but its review required the Patch
+076 correction. Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch 078
+was superseded by the Patch 079 corrective and private task-value candidate, which was
+superseded by Patch 080, which was superseded by Patch 081. Patches 081 and 082 were not
+accepted. Patches 083 and 084 also did not complete acceptance; Patch 085 is the current
+exact-source implementation candidate. Complete acceptance remains pending against the
+exact P085 source. The historical Patch 074 candidate does not close Sprint 12 or
+support a public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH,
+performance, RSS, coverage, or exploitability claim beyond the existing report contract.

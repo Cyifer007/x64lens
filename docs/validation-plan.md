@@ -2108,17 +2108,17 @@ candidate source.
 
 ## Sprint 13 Patch 078 correction and entry validation
 
-Patch 078 validation combines the Patch 077 corrective regression, exact
-Git-less Docker-source custody, the 16-pattern private register-role authority,
-all historical acceptance gates, fresh native and Docker validation, both
-private parity planes, and final package lifecycle verification. The acceptance
-historical target is `make sprint13-p078-acceptance-smoke`. Patch 079 ran the
-non-causal, deterministically presentation-ordered task-value gate; its
-historical target is `make sprint13-p079-acceptance-smoke`. Patch 080 records the
-LC-08B private-side-car/public-deferral decision. Patches 081 and 082 were not
-accepted. Independent review of Patch 083 returned the bounded corrections now
-carried by the current P084 corrective candidate, whose aggregate owns the
-current acceptance boundary.
+Patch 078 validation combines the Patch 077 corrective regression, exact Git-less
+Docker-source custody, the 16-pattern private register-role authority, all historical
+acceptance gates, fresh native and Docker validation, both private parity planes, and
+final package lifecycle verification. The acceptance historical target is `make
+sprint13-p078-acceptance-smoke`. Patch 079 ran the non-causal, deterministically
+presentation-ordered task-value gate; its historical target is `make
+sprint13-p079-acceptance-smoke`. Patch 080 records the LC-08B
+private-side-car/public-deferral decision. Patches 081 and 082 were not accepted.
+Patches 083 through 085 did not complete acceptance; Patch 086 is the current
+exact-source implementation candidate, whose aggregate owns the current acceptance
+boundary.
 
 ## Historical Sprint 13 Patch 079 correction and task-value validation
 
@@ -2170,13 +2170,13 @@ make sprint13-positive-coordinate-anchor-smoke
 make sprint13-producer-authority-smoke
 ```
 
-The producer target requires NASM and builds three isolated analyzer/fixture
-sets. A later exact-source P082 run completed all three builds. P082 nevertheless
-did not complete the native, Docker, parity, package, delivery, documentation,
-and independent acceptance boundary and was not accepted. P083 subsequently
-required a fresh producer run bound to its own tree; its review returned the
-current P084 candidate, whose acceptance requires a fresh producer run bound to
-the exact P084 tree.
+The producer target requires NASM and builds three isolated analyzer/fixture sets. A
+later exact-source P082 run completed all three builds. P082 nevertheless did not
+complete the native, Docker, parity, package, delivery, documentation, and independent
+acceptance boundary and was not accepted. P083 subsequently required a fresh producer
+run bound to its own tree. Patches 083 and 084 did not complete acceptance; P085 is the
+current candidate, whose acceptance requires a fresh producer run bound to the exact
+P085 tree.
 
 
 ## Sprint 13 Patch 083 validation
@@ -2223,7 +2223,7 @@ behavior remain unchanged.
 Patch 085 must pass the Patch 084 corrective regression, all 24 lifecycle
 floors, the semantically disjoint 36-query ABI contract, no-replace ABI evidence
 publication, exact natural-campaign structure recomputation, the no-reroll
-frozen replay authority, and layered terminal attribution.
+frozen-input replay authority, and layered terminal attribution.
 
 Local acceptance requires a fresh NASM build, complete native and Docker
 validation, strict ShellCheck, three-generation producer authority, the exact

@@ -992,12 +992,14 @@ A future corrective replay must use the same frozen target hashes and preserve
 all unavailable and unsupported outcomes. No reroll is permitted.
 
 
-## Patch 085 frozen replay and terminal-attribution boundary
+## Patch 085 frozen-input replay authority and terminal-attribution boundary
 
-Patch 085 reuses the exact twelve target hashes and 48 tool execution slots from
-the retained natural campaign. Target reroll is prohibited. Replay output is
-diagnostic and remains separate from the Sprint 15-frozen confirmatory
-campaign. A failed, unsupported, timed-out, output-limited, or unavailable
+Patch 085 defines an authority that reuses the exact twelve target hashes and five
+retained tool identities: GNU `readelf` and four execution tools. Each execution
+tool runs once per target, yielding 48 slots. Target reroll is
+prohibited, and actual replay execution remains pending. Any replay output is
+diagnostic, `frozen=false`, publication-ineligible, and separate from the Sprint
+15-frozen confirmatory campaign. A failed, unsupported, timed-out, output-limited, or unavailable
 outcome remains terminal evidence and cannot be replaced with a favorable
 object.
 

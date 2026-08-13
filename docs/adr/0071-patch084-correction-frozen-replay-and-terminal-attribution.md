@@ -1,4 +1,4 @@
-# ADR 0071: Patch 084 Correction, Frozen Natural Replay, and Terminal Attribution
+# ADR 0071: Patch 084 Correction, Frozen-Input Replay Authority, and Terminal Attribution
 
 ## Status
 
@@ -10,8 +10,7 @@ and independent validation gates.
 
 Patch 084 preserved a complete 12-target natural-coordinate campaign and froze
 private ABI-role and lifecycle authorities without changing analyzer runtime
-behavior. Its review found no analyzer assembly, include, schema, public-output,
-semantic-class, or score defect. It did identify bounded defects in Git-less
+behavior. Patch 084 did not complete acceptance: bounded defects remained in Git-less
 source custody, source recovery, fixed-tree acceptance, ABI query isolation and
 publication, natural-campaign target/result authentication, lifecycle-floor
 validation, and delivery evidence.
@@ -35,7 +34,10 @@ with favorable inputs.
 
 ## Decision
 
-Patch 085 is a runtime-neutral correction and evidence patch.
+Patch 085 is a runtime-neutral correction and evidence patch. Source, recovery,
+exact-tree, ABI, lifecycle, and delivery changes harden existing validation
+authorities. Frozen-input replay and layered terminal attribution are its only
+new evidence authorities.
 
 ### Source and recovery custody
 
@@ -54,9 +56,9 @@ back to the caller's current index tree.
 ### ABI-role evidence
 
 The private ABI contract verifies semantic disjointness between 24 development
-and 12 confirmation queries. Its 96 public closures execute a pinned analyzer
-copy, reauthenticate every controlled target before and after each command, and
-publish evidence without replacement.
+and 12 confirmation queries. Its 96 disabled-output unchanged-public command
+closures require a pinned analyzer copy, target reauthentication before and after
+each command, and no-replace evidence publication when the closure runs.
 
 ### Lifecycle evidence
 
@@ -66,9 +68,11 @@ unauthorized.
 
 ### Natural replay and attribution
 
-Patch 085 freezes the exact predecessor target and tool identities and defines a
-no-reroll 48-execution replay. Replay output remains diagnostic and
-publication-ineligible.
+Patch 085 defines a frozen-input authority over the exact predecessor targets and
+five retained tool identities: GNU `readelf` and four execution tools. Each
+execution tool runs once per target, yielding 48 no-reroll slots. Actual replay remains
+pending. Any replay output remains diagnostic, `frozen=false`, and publication-
+ineligible; Sprint 15 remains the confirmatory campaign freeze.
 
 Terminal attribution is layered rather than flattened:
 
@@ -104,11 +108,11 @@ decoder-backed, and scored facts remain separate.
 
 ## Consequences
 
-- The exact frozen-target replay can fail or remain unavailable without target
+- The exact frozen-input replay can fail or remain unavailable without target
   replacement.
 - Terminal outcomes become more interpretable without becoming favorable
   comparison evidence.
-- Docker and local acceptance require one externally authenticated candidate
+- Docker and exact-source acceptance require one externally authenticated candidate
   tree.
 - The retained natural campaign still authorizes no coverage, performance, RSS,
   exploitability, public-role, decoder, or concurrency claim.

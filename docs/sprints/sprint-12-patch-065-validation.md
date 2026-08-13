@@ -25,7 +25,7 @@ next historical candidate boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Use the
-[Patch 084 validation record](sprint-13-patch-084-validation.md) for current
+[Patch 085 validation record](sprint-13-patch-085-validation.md) for current
 validation expectations; the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
@@ -176,21 +176,19 @@ Docker are separate environment strata.
 
 ## Known limitations
 
-GNU-property facts remain private development evidence. They do not prove that
-CET is enabled at runtime, that every indirect branch is protected, or that a
-binary is safe or exploitable. The Patch 068 natural/metamorphic private-fact
-matrix remains diagnostic, unfrozen, and publication-ineligible. Bounded
-external ELF reconciliation was future work at the Patch 065 boundary; the
-Patch 069 candidate added exact `readelf -hW/-lW/-dW/-nW` reconciliation.
-Patch 071 supplied the first evidence-gate correction, and Patch 072 carried
-the remainder and added the environment-parity protocol. Patch 072's returned
-review rejected acceptance. Patch 073 delivered the first custody/isolation
-correction and recorded the public-policy decision as `defer`; Patch 074 was a
-superseded closeout candidate. Patch 075 introduced private static
-text-relocation evidence, but its review required the Patch 076 correction.
-Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch 078's review
-required the Patch 079 corrective and private task-value candidate; Patch 079's
-review required Patch 080. Patches 081 and 082 were not accepted. Independent
-review of Patch 083 returned the bounded corrections now carried by the current
-P084 corrective candidate. Complete acceptance remains pending against the
-exact P084 source.
+GNU-property facts remain private development evidence. They do not prove that CET is
+enabled at runtime, that every indirect branch is protected, or that a binary is safe or
+exploitable. The Patch 068 natural/metamorphic private-fact matrix remains diagnostic,
+unfrozen, and publication-ineligible. Bounded external ELF reconciliation was future
+work at the Patch 065 boundary; the Patch 069 candidate added exact `readelf
+-hW/-lW/-dW/-nW` reconciliation. Patch 071 supplied the first evidence-gate correction,
+and Patch 072 carried the remainder and added the environment-parity protocol. Patch
+072's returned review rejected acceptance. Patch 073 delivered the first
+custody/isolation correction and recorded the public-policy decision as `defer`; Patch
+074 was a superseded closeout candidate. Patch 075 introduced private static
+text-relocation evidence, but its review required the Patch 076 correction. Patch 076
+implements distinct private RPATH/RUNPATH evidence. Patch 078's review required the
+Patch 079 corrective and private task-value candidate; Patch 079's review required Patch
+080. Patches 081 and 082 were not accepted. Patches 083 and 084 also did not complete
+acceptance; Patch 085 is the current exact-source implementation candidate. Complete
+acceptance remains pending against the exact P085 source.

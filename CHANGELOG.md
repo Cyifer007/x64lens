@@ -6,13 +6,37 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 086
+
+- Correct Patch 085 replay/attribution wiring, raw-evidence custody, mandatory expected-result enforcement, denominator validation, ABI expected-authority handling, exact-tree acceptance, and delivery consistency.
+- Preserve foreign hard-link aliases while restoring only the authenticated patch pathname, and convert catchable HUP/INT/TERM interruptions into fail-closed patch, source-recovery, and custody-publication rollback.
+- Add a sealed no-reroll replay contract for 12 targets, 48 execution records, 96 raw streams, isolated HOME/cache state, and authenticated native/Python runtime identities.
+- Add a fixture-derived private ABI-role vector equivalence gate covering 48 internal dispositions, all occupied candidate indices across 24 controlled targets, 36 named queries, and 96 unchanged-public closures.
+- Add no analyzer runtime, public field, semantic class, score, schema, decoder, concurrency, capacity, or output change.
+
 ### Sprint 13 Patch 085
 
-- Correct the Patch 084 Git-less source, recovery, lifecycle, ABI-query, natural-campaign, explicit-tree, and delivery findings without changing analyzer runtime, public fields, semantic classes, scores, schema, or capacity.
-- Enforce all 24 lifecycle denominator floors and retain an explicit Patch 084 zero-count successor delta; event 88 and new canonical identifiers remain unauthorized.
-- Require semantic disjointness between the 24 ABI development and 12 confirmation queries, execute one pinned analyzer copy, reauthenticate every target around every public closure, and publish evidence without replacement.
-- Freeze the exact twelve predecessor natural-target hashes and four tool identities, prohibit reroll, and define the 48-execution corrective replay.
-- Preserve one private terminal reason at each execution, relation, observation, and cell layer; retain the predecessor counts of 41 successes, five bounded unsupported exits, one timeout, one output-limit termination, 48 relation outcomes, 36 observations, and nine cells without reinterpretation.
+- Harden the existing Patch 084 Git-less source, recovery, lifecycle, ABI-query,
+  natural-campaign, exact-tree, and delivery validation authorities. No tracked
+  file under `src/`, `include/`, or `schemas/` changes; analyzer runtime, CLI
+  behavior, schema `0.2.0`, public fields, semantics, scores, mitigation meanings,
+  and capacity remain unchanged.
+- Enforce all 24 lifecycle denominator floors and retain an explicit Patch 084
+  zero-count successor delta; event 88 and new canonical identifiers remain
+  unauthorized.
+- Require each future ABI closure to use 24 development and 12 semantically
+  disjoint confirmation queries, one pinned analyzer copy, per-command target
+  reauthentication, and no-replace evidence publication.
+- Add Patch 085's first new evidence authority: frozen-input, no-reroll replay
+  over the exact twelve predecessor natural-target hashes and five retained tool
+  identities. Four execution tools run once per target for 48 slots. Actual
+  replay remains pending; any output remains diagnostic, `frozen=false`, and
+  publication-ineligible.
+- Add Patch 085's second new evidence authority: one private terminal reason at
+  each execution, relation, observation, and cell layer. Preserve the predecessor
+  counts of 41 successes, five bounded unsupported exits, one timeout, one output-
+  limit termination, 48 relation outcomes, 36 observations, and nine cells without
+  reinterpretation.
 - Keep comparative coverage, performance, RSS, exploitability, public role projection, decoder, and concurrency claims unauthorized.
 
 ### Sprint 13 Patch 084
@@ -32,8 +56,8 @@ The project follows semantic versioning once the first public release is cut.
 - Add the outcome-blind natural coordinate campaign: twelve deterministic installed-package targets, 48 planned target/tool executions, nine cells, and 108 controls, with no reroll and no comparative/publication claim.
 - Add no runtime analyzer, public field, semantic-class, score, schema, capacity, decoder, or worker change.
 - Record Patch 082 as not accepted and make Patch 083 the historical
-  implementation candidate whose independent review returned the bounded
-  corrections carried by Patch 084.
+  implementation candidate that did not complete acceptance; Patch 084 carried
+  its bounded corrections.
 
 ### Sprint 13 Patch 082
 
@@ -134,7 +158,7 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 084 corrective candidate. Patches 081 and 082
+  acceptance of the current Patch 085 corrective candidate. Patches 081 and 082
   were not accepted; their returned findings became correction inputs to the
   next candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
@@ -584,9 +608,9 @@ The project follows semantic versioning once the first public release is cut.
   class, or score. Patch 078 was superseded by Patch 079, Patch 079 by Patch 080,
   and Patch 080 by Patch 081. Patch 081 was not accepted; its validation findings
   were accepted as correction inputs. Patch 083 implemented those corrections,
-  and its review returned the current Patch 084 corrective candidate.
-  Public-field and score deferral remains unchanged, and independent P084
-  acceptance is pending.
+  but Patch 083 and Patch 084 did not complete acceptance. Patch 085 is the
+  current corrective candidate. Public-field and score deferral remains
+  unchanged, and independent P085 acceptance is pending.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
@@ -635,10 +659,9 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate. Patches 081 and 082 were not accepted. Independent review of
-  Patch 083 returned the bounded corrections now carried by the current Patch
-  084 implementation candidate, pending complete exact-source local and
-  independent acceptance.
+  entry candidate. Patches 081 through 084 did not complete acceptance. Patch
+  085 is the current exact-source implementation candidate, pending its native,
+  Docker, replay, parity, delivery, and independent gates.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,
   fixed-length quarantine names, final file/directory/root reauthentication,

@@ -20,12 +20,11 @@ campaign, explicit-tree, and delivery findings. Patch 080's private additive
 role side-car remains unchanged and unprojected.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
-diagnostic. The public-policy authority records `defer`, adds zero fields,
-preserves the coarse `mitigations.pie` meaning, and makes no runtime-CET claim.
-Patch 081 preserves the same public fields, reference profile, private context
-sizes, and candidate-capacity behavior. It adds no PIE reinterpretation or
-runtime-CET claim. Actual qualified parity, the exact frozen replay, and complete Patch 085 acceptance
-remain pending.
+diagnostic. The public-policy authority records `defer`, adds zero fields, preserves the
+coarse `mitigations.pie` meaning, and makes no runtime-CET claim. Patch 081 preserves
+the same public fields, reference profile, private context sizes, and candidate-capacity
+behavior. It adds no PIE reinterpretation or runtime-CET claim. Actual qualified parity,
+frozen-input replay execution, and complete Patch 085 acceptance remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
@@ -251,6 +250,9 @@ P083 natural campaign remains diagnostic and comparison-unqualified.
 
 Patch 085 retains tool version `0.1.0-dev` and schema `0.2.0`. It changes no
 assembly runtime, include contract, public field, semantic class, score, count
-meaning, candidate capacity, decoder profile, or worker policy. Frozen replay,
-terminal attribution, lifecycle, ABI-query, source-custody, recovery, and
-delivery records are private diagnostic or validation authorities.
+meaning, candidate capacity, decoder profile, or worker policy. No tracked file
+under `src/`, `include/`, or `schemas/` changes. Frozen-input replay and layered
+terminal attribution are the only new evidence authorities; lifecycle, ABI-query,
+source, recovery, exact-tree, and delivery changes harden existing authorities.
+Actual replay and generated attribution evidence remain pending; any result is
+diagnostic, `frozen=false`, and publication-ineligible.
