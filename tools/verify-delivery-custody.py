@@ -44,6 +44,8 @@ O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 RENAME_NOREPLACE = 1
 
 # Test-only injection points.  Production callers leave these unset.
+_TEST_AFTER_TEMP_CREATE_EFFECT_HOOK: Callable[[int, str], None] | None = None
+_TEST_AFTER_MANIFEST_LINK_EFFECT_HOOK: Callable[[int, str, str], None] | None = None
 _TEST_AFTER_FILE_HASH_HOOK: Callable[[int, str, str], None] | None = None
 _TEST_AFTER_TREE_SCAN_HOOK: Callable[[Path], None] | None = None
 _TEST_AFTER_MANIFEST_LINK_HOOK: Callable[[int, str, str], None] | None = None
@@ -59,6 +61,17 @@ class CustodyError(RuntimeError):
 
 class CatchableTermination(CustodyError):
     """Raised when a catchable termination signal interrupts publication."""
+
+
+@contextmanager
+def defer_catchable_signals():
+    """Defer HUP/INT/TERM across filesystem effect/bookkeeping pairs."""
+    guarded = {signal.SIGHUP, signal.SIGINT, signal.SIGTERM}
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, guarded)
+    try:
+        yield
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
 
 
 @contextmanager
@@ -715,13 +728,16 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Finger
             pass
         else:
             raise CustodyError("custody manifest already exists")
-        fd = os.open(
-            temporary,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | O_CLOEXEC | O_NOFOLLOW,
-            0o600,
-            dir_fd=parent_fd,
-        )
-        temporary_exists = True
+        with defer_catchable_signals():
+            fd = os.open(
+                temporary,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | O_CLOEXEC | O_NOFOLLOW,
+                0o600,
+                dir_fd=parent_fd,
+            )
+            if _TEST_AFTER_TEMP_CREATE_EFFECT_HOOK is not None:
+                _TEST_AFTER_TEMP_CREATE_EFFECT_HOOK(parent_fd, temporary)
+            temporary_exists = True
         written = 0
         while written < len(raw):
             count = os.write(fd, raw[written:])
@@ -730,9 +746,12 @@ def write_manifest_atomic(root: RootHandle, relative: str, raw: bytes) -> Finger
         os.fsync(fd)
         os.fchmod(fd, 0o444)
         os.fsync(fd)
-        os.link(temporary, name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd,
-                follow_symlinks=False)
-        published_exists = True
+        with defer_catchable_signals():
+            os.link(temporary, name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd,
+                    follow_symlinks=False)
+            if _TEST_AFTER_MANIFEST_LINK_EFFECT_HOOK is not None:
+                _TEST_AFTER_MANIFEST_LINK_EFFECT_HOOK(parent_fd, temporary, name)
+            published_exists = True
         if _TEST_AFTER_MANIFEST_LINK_HOOK is not None:
             _TEST_AFTER_MANIFEST_LINK_HOOK(parent_fd, temporary, name)
         _unlink_owned_name(parent_fd, temporary, fd, "temporary manifest")

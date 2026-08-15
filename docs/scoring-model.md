@@ -233,9 +233,9 @@ Patch 082 does not recalibrate a score. It implements a gate requiring each of t
 exact-pattern score/null cells to agree with the exact catalog and reports from three
 independently built analyzers. A later exact-source P082 run rejected each toggle
 through the catalog and all three producer generations. P083 subsequently required a
-fresh producer run bound to its own tree. Patches 083 and 084 did not complete
-acceptance; P085 is the current candidate, whose acceptance likewise requires a fresh
-producer run bound to the exact P085 tree. Existing scores remain relative utility
+fresh producer run bound to its own tree. Patches 083 through 085 did not complete
+acceptance; P087 is the current candidate, whose acceptance likewise requires a fresh
+producer run bound to the exact P086 tree. Existing scores remain relative utility
 hypotheses, not exploitability values: 14 cells retain numeric scores, 11 retain null,
 and all three private role facets remain null.
 
@@ -245,3 +245,11 @@ Patch 085 adds frozen-input replay and layered terminal-attribution authorities,
 not score evidence. It changes no scoring input, numeric value, null cell, public
 field, semantic class, schema, or runtime path. Diagnostic replay output cannot
 authorize score recalibration, exploitability, superiority, or public-role claims.
+
+## Patch 086 score boundary
+
+Patch 086 corrects replay, attribution, custody, and transaction authorities and
+records private ABI-role vector equivalence. It changes no scoring input, numeric
+value, null cell, public field, semantic class, schema, or runtime path. Neither
+the private vector result nor any later diagnostic replay authorizes score
+recalibration, exploitability, superiority, or public-role claims.

@@ -128,4 +128,4 @@ first custody/isolation correction and policy deferral are recorded in
 the superseded closeout-candidate boundary is recorded in
 [`sprint-12-patch-074-validation.md`](sprint-12-patch-074-validation.md).
 Current validation expectations are in
-[`sprint-13-patch-085-validation.md`](sprint-13-patch-085-validation.md).
+[`sprint-13-patch-086-validation.md`](sprint-13-patch-086-validation.md).

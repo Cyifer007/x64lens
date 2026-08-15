@@ -4,16 +4,18 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts. Sprint 13 Patch 086 is the current implementation
-> candidate. It corrects Patch 085 replay attribution, raw-evidence custody,
-> terminal-result enforcement, source/transaction recovery, ABI expected-result,
-> exact-tree, and delivery findings. It retains the exact twelve no-reroll
-> natural targets, 48 executions, 96 raw streams, nine cells, and 108 controls,
-> and adds a private fixture-derived production-vector equivalence gate with 48
-> internal dispositions, 24 controlled targets, 36 queries, and 96 unchanged-
-> public closures. Public output, semantic classes, scores, candidate capacity,
+> and mitigation facts. Sprint 13 Patch 087 is the current implementation
+> candidate. It closes the Patch 086 transaction-topology, wrapper-signal,
+> source-recovery, custody-publication, replay-runtime, terminal-attribution,
+> ABI-publication/source-binding, documentation, and delivery findings. It
+> retains the exact twelve no-reroll natural targets, 48 executions, 96 raw
+> streams, nine cells, 108 controls, and the private ABI vector contract while
+> pinning five Python package closures and the mandatory terminal distribution.
+> Patch 087 also freezes an eight-fixture, two-profile, 160-execution paired
+> workload/phase experiment authority. The experiment has not run and selects
+> no optimization. Public output, semantic classes, scores, candidate capacity,
 > and schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
-> parity, and independent acceptance remain pending.
+> parity, phase, and independent acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -39,11 +41,81 @@
 > speed, peak-RSS, parity, superiority, prevalence, or normalized-coverage
 > claim.
 >
+> A later Patch 085 diagnostic campaign completed 30/30 conditions and 180/180
+> process rows, but all 60 x64lens measured rows were below its 5,515,395 ns
+> timing floor and 0/9 natural coordinate cells were positive. It remains
+> private, unfrozen, comparison-unqualified, and ineligible for performance,
+> RSS, parity, coverage, superiority, or publication claims.
+>
 > Tool version: `0.1.0-dev`
 >
 > JSON schema version: `0.2.0`
 >
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
+
+## Sprint 13 Patch 087 correction and workload/phase authority
+
+Patch 087 authenticates hard-link topology before base or candidate state
+classification, eliminates package-wrapper commands after the transaction
+helper, closes effect-before-bookkeeping signal windows in source recovery and
+delivery custody, and makes replay and result publication complete-or-absent.
+The replay authority now preserves pipx launcher identity while separately
+pinning the resolved interpreter and five exact Python package-root closures.
+It also retains the complete selection-freeze summary and requires the observed
+terminal distribution rather than weakening the oracle after drift.
+
+The private ABI result is regenerated from the exact Patch 087 source authority
+and published without replacement. A separate measurement-only authority freezes
+8 fixtures, 2 profiles, 16 profile/fixture cells, 16 warmups, 144 measured runs,
+and 160 total executions. Qualification requires at least six fixtures with a
+median at least five timer floors, MAD/median no greater than 0.10, phase-sum
+residual no greater than 0.05, instrumented/reference median no greater than
+1.03, output equality, and no failures. No phase result is claimed yet.
+
+```text
+runtime src/include/schema changes: 0
+public fields added:                 0
+semantic changes:                    0
+score changes:                       0
+schema:                              0.2.0
+workload/phase execution:            deferred
+```
+
+See [ADR 0073](docs/adr/0073-patch086-correction-and-workload-phase-attribution.md)
+and the [Patch 087 validation record](docs/sprints/sprint-13-patch-087-validation.md).
+
+
+## Sprint 13 Patch 086 replay-v2 correction and private vector equivalence
+
+Patch 086 corrects the Patch 085 replay/attribution wiring, raw-member custody,
+mandatory expected-result enforcement, denominator recomputation, ABI expected-
+result authority, exact-tree binding, transaction recovery, interruption
+cleanup, and delivery consistency. The replay-v2 contract binds twelve exact
+predecessor target hashes, four execution tools, 48 execution records, and 96
+raw streams to authenticated runtime and isolated cache authority. Terminal
+attribution must match the required result, and HUP, INT, or TERM during a
+catchable transaction enters fail-closed cleanup. Actual replay execution is
+still pending; the contract does not promote diagnostic evidence to frozen or
+publication evidence.
+
+A separate fixture-derived oracle records private ABI-role vector equivalence
+for 48 internal dispositions and every occupied candidate index across 24
+controlled targets, while retaining 36 named queries and 96 unchanged-public
+closures. This is private equivalence evidence, not decoded validity, natural
+role incidence, task value, public role policy, exploitability, or comparative
+coverage evidence.
+
+```text
+runtime src/include/schema changes: 0
+public fields added:                 0
+semantic changes:                    0
+score changes:                       0
+schema:                              0.2.0
+local replay-v2 result:              pending
+```
+
+See [ADR 0072](docs/adr/0072-patch085-correction-and-abi-role-vector-equivalence.md)
+and the [Patch 086 validation record](docs/sprints/sprint-13-patch-086-validation.md).
 
 
 ## Sprint 13 Patch 085 correction, frozen-input replay authority, and terminal attribution
@@ -102,7 +174,7 @@ schema:                       0.2.0
 natural cells:                0 qualified / 5 insufficient / 4 unavailable
 ABI role queries:             36 private
 unchanged-public closures:    96 disabled-output closures pending fresh build
-P084 acceptance:              not accepted; corrections carried by P085
+P084 acceptance:              not accepted; P085 and P086 also not accepted; P087 current
 ```
 
 See [ADR 0070](docs/adr/0070-patch083-correction-and-abi-role-contract.md) and
@@ -987,11 +1059,11 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag identifies the
-Sprint 6 integrated checkpoint; Patches 046 through 085 are later pre-release work.
+Sprint 6 integrated checkpoint; Patches 046 through 086 are later pre-release work.
 Patch 079 was the corrective and private task-value candidate; it was superseded by
 Patch 080, and Patch 080 by Patch 081. Patches 081 and 082 were not accepted. Patches
-083 and 084 also did not complete acceptance; Patch 085 is the current corrective
-candidate, pending complete exact-source acceptance. Patch 054 closes Sprint 10, Patch
+083 through 086 also did not complete acceptance; Patch 087 is the current corrective and
+workload/phase-authority candidate, pending complete exact-source acceptance. Patch 054 closes Sprint 10, Patch
 061 closes Sprint 11, and Patch 062 begins Sprint 12 loader-precision work. Patch 063
 adds corrective hardening plus internal overlap provenance, and Patch 064 records the
 measured normalization deferral plus an internal role-evidence lattice. Patch 065
@@ -1188,7 +1260,7 @@ required Patch 079, which was superseded by Patch 080; Patch 080's review requir
 Patch 081. Patch 082 was not accepted; its findings became correction inputs to
 Patch 083. Patch 083 was not accepted; Patch 084 carried its bounded corrections
 but also was not accepted. Sprint 13 becomes active only after complete exact-
-source Patch 085 acceptance.
+source Patch 087 acceptance.
 See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
@@ -1210,11 +1282,13 @@ historical
 the [historical P082 validation](docs/sprints/sprint-13-patch-082-validation.md),
 the [historical P083 validation](docs/sprints/sprint-13-patch-083-validation.md),
 the [historical P084 validation](docs/sprints/sprint-13-patch-084-validation.md),
-and the [current P085 validation](docs/sprints/sprint-13-patch-085-validation.md).
+the [historical P085 validation](docs/sprints/sprint-13-patch-085-validation.md),
+and the [current P087 validation](docs/sprints/sprint-13-patch-087-validation.md).
 
 Patch 083 was not accepted. Patch 084 preserved the retained natural-coordinate
 terminal states and froze the private ABI-role query contract, but it also was
-not accepted. Patch 085 carries the current bounded correction. None of these patches
+not accepted. Patch 085 and Patch 086 also did not complete acceptance; Patch 087 carries the
+current bounded correction and workload/phase-attribution authority. None of these patches
 authorizes a public-field, semantic, score, schema, capacity, decoder,
 concurrency, comparative-coverage, performance, or exploitability change.
 

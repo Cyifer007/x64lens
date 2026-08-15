@@ -1681,7 +1681,7 @@ Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
 separate private evidence layer, and Sprint 13 activation remains blocked until
-complete Patch 085 acceptance. Patch 078 was superseded by the Patch 079
+complete Patch 087 acceptance. Patch 078 was superseded by the Patch 079
 corrective candidate; Patch 079 was superseded by Patch 080, whose review required
 Patch 081.
 
@@ -1763,10 +1763,10 @@ retained local run to materialize three independent build roots and consume thei
 analyzer reports in the ordered-pair and score/null policy gates. A later exact-source
 P082 run completed all three builds and validated existing matcher, classifier, and
 scorer output; its records do not become reporter inputs or new candidate side-cars.
-P083 subsequently required a fresh producer run bound to its own tree. Patches 083 and
-084 also did not complete acceptance; Patch 085 is the current exact-source
+P083 subsequently required a fresh producer run bound to its own tree. Patches 083
+through 085 did not complete acceptance; Patch 087 is the current exact-source
 implementation candidate, whose acceptance likewise requires a fresh producer run bound
-to the exact P085 tree.
+to the exact P086 tree.
 
 The controlled coordinate method-discrimination preflight consumes modeled
 mapping facts over six controlled targets only. It neither executes the named
@@ -1810,3 +1810,21 @@ or `schemas/`; CLI behavior, schema `0.2.0`, public fields, semantic classes,
 scores, mitigation meanings, candidate capacity, and the one-worker reference
 profile remain unchanged. Actual replay remains pending, and any replay evidence
 is diagnostic, `frozen=false`, and publication-ineligible.
+
+## Patch 086 replay-v2, recovery, and private vector boundary
+
+Patch 086 changes validation and custody authorities around the unchanged
+analyzer. Replay-v2 binds the same twelve predecessor targets to 48 executions,
+96 raw streams, authenticated runtime, isolated cache authority, recomputed
+denominators, and mandatory terminal expected-result attribution. Catchable
+HUP, INT, and TERM enter fail-closed cleanup, while hard-link recovery preserves
+foreign aliases and restores the authenticated base. These are transaction and
+evidence-plane properties; no completed local replay is claimed.
+
+The private ABI-role vector oracle compares every occupied candidate index
+across 24 controlled targets and retains 48 internal dispositions, 36 named
+queries, and 96 unchanged-public closures. It does not become a runtime
+classifier, reporter input, public role projection, decoder fact, mitigation
+fact, score input, or concurrency profile. Patch 086 changes no file under
+`src/`, `include/`, or `schemas/`, adds no public field or semantic class, and
+preserves schema `0.2.0`.

@@ -16,7 +16,7 @@ private static text-relocation evidence, and Patch 076 implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch 076's review
 required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
 candidate, and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Use the
-[Patch 085 validation record](sprint-13-patch-085-validation.md) for current
+[Patch 086 validation record](sprint-13-patch-086-validation.md) for current
 validation expectations.
 See [ADR 0048](../adr/0048-phdr-validity-and-extended-numbering-boundary.md)
 for the Patch 062 design boundary, the

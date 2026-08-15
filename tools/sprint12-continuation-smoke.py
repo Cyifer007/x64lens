@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 085 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 087 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -50,18 +50,18 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
-            "Sprint 12 retrospective must remain pending P085 acceptance",
+            authority.get("status") == "retrospective_recorded_and_sprint13_p087_candidate_pending_acceptance",
+            "Sprint 12 retrospective must remain pending P087 acceptance",
         )
-        exact_int(authority.get("current_patch"), 85, "current_patch")
+        exact_int(authority.get("current_patch"), 87, "current_patch")
         exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
-        exact_int(authority.get("prior_corrective_patch"), 84, "prior corrective patch")
-        exact_int(authority.get("next_patch"), 86, "next_patch")
+        exact_int(authority.get("prior_corrective_patch"), 86, "prior corrective patch")
+        exact_int(authority.get("next_patch"), 88, "next_patch")
         require(
-            authority.get("next_patch_tranche") == "full-vector-abi-role-representation-equivalence",
+            authority.get("next_patch_tranche") == "execute-paired-workload-phase-attribution-or-next-measurement-first-gate",
             "next tranche",
         )
-        require(authority.get("acceptance_target") == "sprint13-p085-acceptance-smoke", "acceptance target")
+        require(authority.get("acceptance_target") == "sprint13-p087-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
         reference = authority.get("reference_profile")
@@ -342,22 +342,66 @@ def main() -> int:
         exact_bool(preserved.get("raw_exact_semantic_unknown_scored_separation"), True, "fact separation")
         exact_bool(preserved.get("diagnostic_confirmatory_separation"), True, "campaign separation")
 
+        patch086 = authority.get("patch086_boundary")
+        require(isinstance(patch086, dict), "Patch 086 boundary")
+        exact_bool(patch086.get("complete_patch085_correction"), True, "P086 correction")
+        exact_bool(patch086.get("runtime_source_include_schema_change"), False, "P086 runtime boundary")
+        for key, expected in {
+            "replay_v2_targets": 12,
+            "replay_v2_executions": 48,
+            "replay_v2_raw_streams": 96,
+            "abi_vector_internal_dispositions": 48,
+            "abi_vector_controlled_targets": 24,
+            "abi_vector_queries": 36,
+            "abi_vector_public_closures": 96,
+            "public_fields_added": 0,
+            "semantic_changes": 0,
+            "score_changes": 0,
+        }.items():
+            exact_int(patch086.get(key), expected, key)
+
+        patch087 = authority.get("patch087_boundary")
+        require(isinstance(patch087, dict), "Patch 087 boundary")
+        for key in {
+            "complete_patch086_correction",
+            "patch_state_hardlink_topology_rejected",
+            "package_wrapper_helper_is_final_process",
+            "source_recovery_effect_bookkeeping_signal_atomic",
+            "custody_effect_bookkeeping_signal_atomic",
+            "terminal_attribution_atomic_no_replace",
+            "abi_candidate_source_bound",
+        }:
+            exact_bool(patch087.get(key), True, key)
+        exact_bool(patch087.get("runtime_source_include_schema_change"), False, "P087 runtime boundary")
+        exact_bool(patch087.get("schema_change"), False, "P087 schema boundary")
+        for key, expected in {
+            "replay_pinned_python_closures": 5,
+            "workload_phase_fixtures": 8,
+            "workload_phase_profiles": 2,
+            "workload_phase_total_executions": 160,
+            "public_fields_added": 0,
+            "semantic_changes": 0,
+            "score_changes": 0,
+        }.items():
+            exact_int(patch087.get(key), expected, key)
+        require(patch087.get("workload_phase_execution") == "deferred", "P087 phase execution")
+
         for relative in authority.get("required_documents", []):
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 085 corrective, frozen replay, and terminal-attribution candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 085 correction, frozen replay, and layered terminal-attribution candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 087 correction and paired workload/phase-attribution authority candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 087 correction and paired workload/phase-attribution authority candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=85 textrel=private rpath=private runpath=private roles=16 "
+        "patch=87 textrel=private rpath=private runpath=private roles=16 "
         "qualified_private_facets=3 retained_facets=2 role_record_bytes=8 "
         "role_arena_bytes=32768 analysis_arena_bytes=884736 public_fields_added=0 "
-        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=86"
+        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 phase_executions=160 next_patch=88"
     )
     return 0
 

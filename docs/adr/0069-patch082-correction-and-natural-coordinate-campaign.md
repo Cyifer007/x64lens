@@ -3,8 +3,8 @@
 ## Status
 
 Accepted as the historical Patch 083 implementation decision. Patch 083 did not
-complete exact-source acceptance. Patch 084 carried its bounded corrections but
-was not accepted; Patch 085 is the current exact-source implementation candidate.
+complete exact-source acceptance. Patches 084 and 085 also did not complete
+acceptance; Patch 087 is the current exact-source implementation candidate.
 
 ## Context
 

@@ -881,7 +881,7 @@ superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
 the corrective and private task-value candidate; it was superseded by Patch 080,
 which was superseded by Patch 081. Any changed semantic task in Sprint 13 receives
-a new diagnostic campaign identity only after complete Patch 085 acceptance and
+a new diagnostic campaign identity only after complete Patch 087 acceptance and
 the relevant task-value gate.
 
 
@@ -1008,3 +1008,20 @@ observations, and nine cells. Those categories must not be collapsed into a
 single success count or comparative coverage result. The replay authorizes no
 performance, RSS, superiority, publication, public-field, score, decoder, or
 concurrency claim.
+
+## Patch 086 replay-v2 and diagnostic boundary
+
+Patch 086 corrects replay custody, source binding, denominator recomputation,
+mandatory expected-result attribution, transaction recovery, and catchable
+HUP/INT/TERM cleanup. Replay-v2 must seal the same twelve target hashes, 48
+execution records, 96 raw streams, authenticated runtime, and isolated cache
+authority. These are execution requirements, not evidence that local replay
+completed.
+
+The private Patch 085 diagnostic campaign completed 30/30 conditions and
+180/180 process rows, but every one of its 60 x64lens measured rows was below
+the 5,515,395 ns timing floor and 0/9 natural coordinate cells were positive.
+It remains unfrozen and comparison-unqualified. Neither those rows nor the
+private Patch 086 ABI-role vector equivalence supports performance, RSS,
+coverage, parity, superiority, public-role, decoder, concurrency, FORTIFY, or
+exploitability claims.

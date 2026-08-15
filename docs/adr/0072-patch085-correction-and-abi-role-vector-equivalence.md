@@ -6,9 +6,17 @@ Accepted for the Patch 086 implementation candidate. Exact-source acceptance rem
 
 ## Context
 
-Patch 085 preserved the analyzer runtime while adding frozen-target replay and layered terminal-attribution authorities. Its review found that the active Make path supplied replay output to an input-oriented consumer, raw replay members were not fully authenticated by the attribution gate, the expected terminal result was optional, and several denominator fields were trusted rather than recomputed. Independent validation also reproduced hard-link topology and catchable-signal recovery gaps in the patch, source-recovery, and delivery-custody helpers.
+Patch 085 preserved the analyzer runtime while adding frozen-target replay and
+layered terminal-attribution authorities. The active Make path supplied replay
+output to an input-oriented consumer, raw replay members were not fully
+authenticated by the attribution gate, the expected terminal result was
+optional, and several denominator fields were trusted rather than recomputed.
+The correction also covers hard-link topology and catchable-signal recovery
+gaps in the patch, source-recovery, and delivery-custody helpers.
 
-The same review found no reason to add public role fields or alter scores. The next bounded Sprint 13 experiment was a private equivalence check over the candidate-role side-car.
+No evidence authorized public role fields or score changes. The next bounded
+Sprint 13 experiment was a private equivalence check over the candidate-role
+side-car.
 
 ## Decision
 

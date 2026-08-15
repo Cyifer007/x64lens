@@ -269,9 +269,10 @@ acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 085 acceptance remains pending. Sprint
+accepted. Patches 083 through 085 also did not complete acceptance. Independent
+exact-source Patch 087 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 085 acceptance.
+only after complete Patch 087 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -373,3 +374,15 @@ qualified, five insufficient, and four unavailable cells. Actual replay remains
 pending; any replay evidence is diagnostic, `frozen=false`, and publication-
 ineligible. No comparative coverage, performance, RSS, parity, prevalence,
 superiority, exploitability, public-role, decoder, or concurrency claim follows.
+
+## Patch 086 publication boundary
+
+Patch 086 adds no publication result. Replay-v2 defines required sealing,
+runtime/cache custody, and terminal attribution but does not claim completed
+local replay. Fixture-derived ABI-vector equivalence remains private and does
+not authorize public role projection. A separate private P085 diagnostic
+campaign completed 30/30 conditions and 180/180 rows, but all 60 x64lens rows
+were below the 5,515,395 ns floor and 0/9 coordinate cells were positive; it
+remains unfrozen and comparison-unqualified. No performance, RSS, parity,
+coverage, superiority, exploitability, decoder, FORTIFY, concurrency, or
+publication claim follows.

@@ -12,7 +12,7 @@ bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence, but its review required Patch 077. Patch 077's review
 required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 085 validation record](../sprints/sprint-13-patch-085-validation.md).
+[Patch 086 validation record](../sprints/sprint-13-patch-086-validation.md).
 
 ## Context
 

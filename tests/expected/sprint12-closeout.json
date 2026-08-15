@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
-  "closeout_patch": 85,
+  "status": "retrospective_recorded_and_sprint13_p087_candidate_pending_acceptance",
+  "closeout_patch": 87,
   "candidate_patches": [
     62,
     63,
@@ -27,10 +27,12 @@
     82,
     83,
     84,
-    85
+    85,
+    86,
+    87
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p085-acceptance-smoke",
+  "acceptance_target": "sprint13-p087-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -169,7 +171,17 @@
     "natural_structure_recomputed_from_membership": true,
     "explicit_candidate_tree_authority_required": true,
     "frozen_natural_target_reroll_prohibited": true,
-    "terminal_attribution_layered": true
+    "terminal_attribution_layered": true,
+    "patch_state_hardlink_topology_rejected": true,
+    "package_wrapper_helper_is_final_process": true,
+    "source_recovery_effect_bookkeeping_signal_atomic": true,
+    "custody_effect_bookkeeping_signal_atomic": true,
+    "replay_python_launcher_and_package_closures_pinned": true,
+    "replay_selection_freeze_retained": true,
+    "terminal_attribution_atomic_no_replace": true,
+    "abi_result_candidate_source_bound": true,
+    "abi_result_no_replace_retained_checksum": true,
+    "workload_phase_authority_frozen": true
   },
   "deferred_loader_and_mitigation_work": [
     "public-pie-dso-ibt-shstk-projection",
@@ -183,8 +195,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 86,
-    "next_patch_tranche": "full-vector-abi-role-representation-equivalence",
+    "next_patch": 88,
+    "next_patch_tranche": "execute-paired-workload-phase-attribution-or-next-measurement-first-gate",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -262,7 +274,27 @@
     "natural_coordinate_terminal_relation_outcomes": 48,
     "natural_coordinate_terminal_observations": 36,
     "natural_coordinate_terminal_cells": 9,
-    "natural_coordinate_terminal_precedence_mutations": 16
+    "natural_coordinate_terminal_precedence_mutations": 16,
+    "replay_v2_campaign_id": "s13-p087-natural-frozen-replay-v2",
+    "replay_v2_targets": 12,
+    "replay_v2_executions": 48,
+    "replay_v2_raw_streams": 96,
+    "replay_v2_pinned_python_closures": 5,
+    "workload_phase_authority_version": 1,
+    "workload_phase_fixtures": 8,
+    "workload_phase_profiles": 2,
+    "workload_phase_cells": 16,
+    "workload_phase_warmups": 16,
+    "workload_phase_measured_executions": 144,
+    "workload_phase_total_executions": 160,
+    "workload_phase_required_qualified_fixtures": 6,
+    "workload_phase_minimum_floor_multiple": 5,
+    "workload_phase_maximum_mad_ratio": 0.1,
+    "workload_phase_maximum_residual_ratio": 0.05,
+    "workload_phase_maximum_overhead_ratio": 1.03,
+    "workload_phase_private_bytes_max": 65536,
+    "workload_phase_execution": "deferred",
+    "workload_phase_performance_claim_authorized": false
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -291,6 +323,8 @@
     "docs/adr/0070-patch083-correction-and-abi-role-contract.md",
     "docs/sprints/sprint-13-patch-084-validation.md",
     "docs/adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md",
-    "docs/sprints/sprint-13-patch-085-validation.md"
+    "docs/sprints/sprint-13-patch-085-validation.md",
+    "docs/adr/0073-patch086-correction-and-workload-phase-attribution.md",
+    "docs/sprints/sprint-13-patch-087-validation.md"
   ]
 }

@@ -99,6 +99,6 @@ candidate. ADR 0061 records the Patch 075 private static text-relocation tranche
 Patch 076 extended with distinct private RPATH/RUNPATH evidence. Patch 076 was
 superseded by the Patch 077 correction, Patch 077 by Patch 078, Patch 078 by the Patch
 079 corrective and private task-value candidate, Patch 079 by Patch 080, and Patch 080
-by Patch 081. Patches 081 and 082 were not accepted. Patches 083 and 084 also did not
-complete acceptance; Patch 085 is the current exact-source implementation candidate,
-pending full local execution and independent acceptance.
+by Patch 081. Patches 081 through 085 did not complete acceptance. Patch 086 is the
+current exact-source implementation candidate, pending full local execution and
+independent acceptance.

@@ -2,21 +2,25 @@
 
 ## Status
 
-Patch 085 corrective, frozen replay, and terminal-attribution candidate, pending complete acceptance.
-Here, `frozen replay` names the frozen-input, no-reroll authority; actual replay
-execution remains pending. The Sprint 12 engineering scope and repository-facing
-retrospective remain complete. Patch 084 did not complete acceptance; Patch 085 carries
-the bounded corrective tranche and preserves the complete P083 natural campaign as
-terminal diagnostic evidence: twelve targets, 48 executions, 108 controls, zero
-qualified cells, five insufficient cells, and four unavailable cells. Patch 085 retains
-the private 36-query ABI-role contract and the sealed lifecycle denominator without
-changing public output, schema `0.2.0`, semantic classes, scores, or candidate capacity.
+Patch 087 correction and paired workload/phase-attribution authority candidate, pending complete acceptance.
+The Sprint 12 engineering scope and repository-facing retrospective remain
+complete. Patches 084 through 086 did not complete acceptance; Patch 087 carries
+the bounded corrective tranche and preserves the complete P083 natural campaign
+as terminal diagnostic evidence: twelve targets, 48 executions, 108 controls,
+zero qualified cells, five insufficient cells, and four unavailable cells.
+Replay-v2 retains exact target, runtime, package-closure, raw-stream, selection,
+and terminal authority without claiming a completed local replay.
 
-Sprint 12 remains the acceptance authority for its inherited loader and
-mitigation facts until Patch 085 passes fresh native, Docker, both private parity
-planes, strict ShellCheck, delivery integrity, and independent exact-source
+Patch 087 additionally freezes an eight-fixture, two-profile, 160-execution
+paired workload/phase experiment. It has not run and selects no optimization.
+The patch preserves public output, schema `0.2.0`, semantic classes, scores,
+candidate capacity, decoder policy, and the deterministic one-worker profile.
+
+Sprint 12 remains the acceptance authority for inherited loader and mitigation
+facts until Patch 087 passes fresh native, Docker, both private parity planes,
+strict ShellCheck, replay, producer, ABI, delivery, and independent exact-source
 acceptance. The retrospective records completed semester work without claiming
-that these later acceptance gates have already passed.
+that these later gates have already passed.
 
 Related current records:
 - [ADR 0064](../adr/0064-patch077-correction-and-sprint13-register-role-entry.md)
@@ -27,12 +31,10 @@ Related current records:
 - [Patch 081 validation](sprint-13-patch-081-validation.md)
 - [ADR 0068](../adr/0068-patch081-correction-producer-authority-and-coordinate-preflight.md)
 - [Patch 082 validation](sprint-13-patch-082-validation.md)
-- [Patch 083 validation](sprint-13-patch-083-validation.md)
-- [ADR 0070](../adr/0070-patch083-correction-and-abi-role-contract.md)
-- [Patch 084 validation](sprint-13-patch-084-validation.md)
-- [ADR 0071](../adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md)
-- [Patch 085 validation](sprint-13-patch-085-validation.md)
-- [ADR 0069](../adr/0069-patch082-correction-and-natural-coordinate-campaign.md)
+- [ADR 0072](../adr/0072-patch085-correction-and-abi-role-vector-equivalence.md)
+- [Patch 086 validation](sprint-13-patch-086-validation.md)
+- [ADR 0073](../adr/0073-patch086-correction-and-workload-phase-attribution.md)
+- [Patch 087 validation](sprint-13-patch-087-validation.md)
 - [Sprint 12 retrospective](sprint-12-retro.md)
 
 ## Sprint goal
@@ -136,9 +138,13 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Define the frozen-input authority for the exact twelve predecessor hashes
   and 48 no-reroll execution slots, plus execution, relation, observation, and
   cell terminal-attribution denominators.
-- [ ] Execute the actual replay and generated P085 attribution result; any result
+- [ ] Execute the actual replay-v2 and generated P086 attribution result; any result
   remains diagnostic, `frozen=false`, and publication-ineligible.
-- [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck, producer, ABI public-closure, delivery, and independent acceptance for Patch 085.
+- [x] Define the private P086 fixture-derived vector-equivalence authority over
+  48 internal dispositions, 24 controlled targets, 36 queries, and 96 unchanged-
+  public closures without public projection.
+- [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck,
+  producer, replay-v2, delivery, and independent acceptance for Patch 086.
 
 
 ## Patch sequence
@@ -197,6 +203,10 @@ that would otherwise corrupt corpus labels or defensive triage.
     authority findings and define exact frozen-input, no-reroll replay and layered
     terminal-attribution authorities without changing runtime or public facts;
     actual execution remains pending.
+25. **Patch 086:** correct Patch 085 replay, custody, transaction, recovery,
+    ABI expected-result, exact-tree, and delivery boundaries; define replay-v2
+    sealing and mandatory terminal attribution; and record private ABI-vector
+    equivalence without public projection.
 
 
 ## Current continuation disposition
@@ -217,7 +227,7 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After complete Patch 085 acceptance, Sprint 13 continues from its private role,
+After complete Patch 087 acceptance, Sprint 13 continues from its private role,
 task-value, and LC-08B authorities into the next independently selected bounded
 semantic gate.
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify

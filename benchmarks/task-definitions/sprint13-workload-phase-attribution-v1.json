@@ -1,0 +1,118 @@
+{
+  "schema": "x64lens-sprint13-workload-phase-attribution-v1",
+  "sprint": 13,
+  "patch": 87,
+  "evidence_class": "diagnostic",
+  "publication_eligible": false,
+  "purpose": "Freeze a paired reference/instrumented workload and phase-attribution experiment before any optimization or performance claim.",
+  "timer_floor_ns": 6231575,
+  "profiles": [
+    {
+      "id": "reference",
+      "instrumentation": false,
+      "private_instrumentation_bytes": 0
+    },
+    {
+      "id": "instrumented",
+      "instrumentation": true,
+      "private_instrumentation_bytes_max": 65536,
+      "required_phases": [
+        "map_validate",
+        "loader_metadata",
+        "scan_exact",
+        "semantic_effects",
+        "score",
+        "report",
+        "cleanup"
+      ]
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "fixture-gadgets-default",
+      "command": "gadgets",
+      "max_depth": 8,
+      "target_role": "controlled-gadget-catalog"
+    },
+    {
+      "id": "fixture-gadgets-depth4",
+      "command": "gadgets",
+      "max_depth": 4,
+      "target_role": "controlled-gadget-catalog"
+    },
+    {
+      "id": "fixture-analyze-default",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "controlled-gadget-catalog"
+    },
+    {
+      "id": "fixture-ordered-pairs",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "ordered-two-pop-catalog"
+    },
+    {
+      "id": "fixture-minimal-nopie",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "controlled-et-exec"
+    },
+    {
+      "id": "fixture-minimal-pie",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "controlled-pie-et-dyn"
+    },
+    {
+      "id": "fixture-textrel",
+      "command": "mitigations",
+      "max_depth": null,
+      "target_role": "controlled-textrel-metadata"
+    },
+    {
+      "id": "fixture-search-path",
+      "command": "mitigations",
+      "max_depth": null,
+      "target_role": "controlled-search-path-metadata"
+    }
+  ],
+  "execution_plan": {
+    "warmups_per_profile_fixture": 1,
+    "measured_runs_per_profile_fixture": 9,
+    "profile_fixture_cells": 16,
+    "warmup_executions": 16,
+    "measured_executions": 144,
+    "total_executions": 160,
+    "counterbalance": "deterministic-paired-alternation",
+    "cache_policy": "warm-uncontrolled-diagnostic"
+  },
+  "qualification": {
+    "minimum_median_timer_floor_multiple": 5.0,
+    "minimum_qualified_median_ns": 31157875,
+    "maximum_mad_to_median_ratio": 0.10,
+    "maximum_phase_sum_residual_ratio": 0.05,
+    "maximum_instrumented_to_reference_ratio": 1.03,
+    "minimum_qualified_fixtures": 6,
+    "require_normalized_public_output_equality": true,
+    "require_zero_regressions": true,
+    "require_zero_failures": true,
+    "private_instrumentation_bytes_max": 65536
+  },
+  "decision_boundary": {
+    "reporter_batching_considered_only_if_report_share_at_least": 0.20,
+    "scan_prefilter_considered_only_if_scan_share_at_least": 0.40,
+    "no_optimization_selected_by_this_authority": true,
+    "no_performance_claim_authorized": true,
+    "no_public_fields_added": true,
+    "no_semantic_changes": true,
+    "no_score_changes": true,
+    "schema_changed": false
+  },
+  "limitations": [
+    "This authority freezes a diagnostic experiment; it is not an executed measurement result.",
+    "The experiment must use freshly authenticated source, analyzer, target, clock, and environment identities.",
+    "A qualifying phase share may select a later bounded optimization experiment but does not establish comparative superiority.",
+    "All rows remain outside the Sprint 15-frozen confirmatory campaign."
+  ]
+}

@@ -46,6 +46,8 @@ O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 RENAME_NOREPLACE = 1
 
 # Durable regressions inject races only through these hooks.
+_TEST_AFTER_STAGE_MKDIR_EFFECT_HOOK: Callable[[int, str], None] | None = None
+_TEST_AFTER_PUBLISH_RENAME_EFFECT_HOOK: Callable[[int, str], None] | None = None
 _TEST_AFTER_INITIAL_VERIFY_HOOK: Callable[[int, str, int], None] | None = None
 _TEST_BEFORE_PUBLISH_HOOK: Callable[[int, str, str], None] | None = None
 _TEST_AFTER_PUBLISH_HOOK: Callable[[int, str, int], None] | None = None
@@ -59,6 +61,17 @@ class RecoveryError(RuntimeError):
 
 class CatchableTermination(RecoveryError):
     """Raised when a catchable termination signal interrupts recovery."""
+
+
+@contextmanager
+def defer_catchable_signals():
+    """Defer HUP/INT/TERM across filesystem effect/bookkeeping pairs."""
+    guarded = {signal.SIGHUP, signal.SIGINT, signal.SIGTERM}
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, guarded)
+    try:
+        yield
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
 
 
 @contextmanager
@@ -734,11 +747,14 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
             pass
         else:
             raise RecoveryError("destination already exists")
-        mkdir_exact(stage_name, 0o700, dir_fd=parent_handle.fd)
-        stage_created = True
-        unopened_stage_identity = stable(
-            os.stat(stage_name, dir_fd=parent_handle.fd, follow_symlinks=False)
-        )
+        with defer_catchable_signals():
+            mkdir_exact(stage_name, 0o700, dir_fd=parent_handle.fd)
+            if _TEST_AFTER_STAGE_MKDIR_EFFECT_HOOK is not None:
+                _TEST_AFTER_STAGE_MKDIR_EFFECT_HOOK(parent_handle.fd, stage_name)
+            stage_created = True
+            unopened_stage_identity = stable(
+                os.stat(stage_name, dir_fd=parent_handle.fd, follow_symlinks=False)
+            )
         require(unopened_stage_identity.file_type == stat.S_IFDIR, "staging root changed type before open")
         root_fd = os.open(stage_name, os.O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW, dir_fd=parent_handle.fd)
         root_identity = stable(os.fstat(root_fd))
@@ -874,9 +890,12 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
         )
         if _TEST_BEFORE_PUBLISH_HOOK is not None:
             _TEST_BEFORE_PUBLISH_HOOK(parent_handle.fd, stage_name, destination.name)
-        rename_noreplace(parent_handle.fd, stage_name, parent_handle.fd, destination.name)
-        published = True
-        current_name = destination.name
+        with defer_catchable_signals():
+            rename_noreplace(parent_handle.fd, stage_name, parent_handle.fd, destination.name)
+            if _TEST_AFTER_PUBLISH_RENAME_EFFECT_HOOK is not None:
+                _TEST_AFTER_PUBLISH_RENAME_EFFECT_HOOK(parent_handle.fd, destination.name)
+            published = True
+            current_name = destination.name
         if _TEST_AFTER_PUBLISH_HOOK is not None:
             _TEST_AFTER_PUBLISH_HOOK(parent_handle.fd, destination.name, root_fd)
         final_verify(

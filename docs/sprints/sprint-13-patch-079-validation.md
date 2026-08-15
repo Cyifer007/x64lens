@@ -4,9 +4,8 @@
 
 Historical candidate. Patch 078 was superseded by the Patch 079 correction and private
 task-value gate; Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081.
-Patches 081 and 082 were not accepted. Patches 083 and 084 also did not complete
-acceptance; Patch 085 is the current exact-source implementation candidate, pending
-independent exact-source acceptance.
+Patches 081 through 085 did not complete acceptance. Patch 087 is the current exact-
+source implementation candidate, pending independent exact-source acceptance.
 
 ## Scope
 
@@ -150,5 +149,5 @@ sprint13-p079-acceptance-smoke: ok patch=79 sprint12=closed sprint13=active qual
 This was the expected Patch 079 aggregate banner, not independent acceptance or
 chronology authority. Patch 079 did not complete acceptance; its review required
 Patch 080, which was superseded by Patch 081. Sprint 12 closes and Sprint 13
-becomes active only after complete Patch 085 acceptance against the exact
+becomes active only after complete Patch 087 acceptance against the exact
 candidate source.

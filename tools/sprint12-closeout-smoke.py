@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 085 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 087 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -83,13 +83,13 @@ def main() -> int:
         exact_int(closeout.get("schema_version"), 1, "closeout.schema_version")
         exact_int(closeout.get("sprint"), 12, "closeout.sprint")
         require(
-            closeout.get("status") == "retrospective_recorded_and_sprint13_p085_candidate_pending_acceptance",
+            closeout.get("status") == "retrospective_recorded_and_sprint13_p087_candidate_pending_acceptance",
             "closeout status",
         )
-        exact_int(closeout.get("closeout_patch"), 85, "closeout.closeout_patch")
-        require(closeout.get("candidate_patches") == list(range(62, 86)), "Patch sequence must cover 062-085")
+        exact_int(closeout.get("closeout_patch"), 87, "closeout.closeout_patch")
+        require(closeout.get("candidate_patches") == list(range(62, 88)), "Patch sequence must cover 062-087")
         exact_int(closeout.get("next_sprint"), 13, "next sprint")
-        require(closeout.get("acceptance_target") == "sprint13-p085-acceptance-smoke", "acceptance target")
+        require(closeout.get("acceptance_target") == "sprint13-p087-acceptance-smoke", "acceptance target")
         exact_int(stages.get("completed_sprints"), 11, "stages.completed_sprints")
         exact_int(stages.get("active_sprint"), 12, "stages.active_sprint")
 
@@ -182,8 +182,28 @@ def main() -> int:
         require(handoff.get("linux_syscall_r10_role_decision") == "private_additive_linux_syscall_arg4_sidecar_candidate", "r10 decision")
         require(handoff.get("score_null_policy_freeze") == "existing_scores_retained_new_private_facets_unscored", "score/null decision")
         require(handoff.get("public_projection") == "deferred", "public projection")
-        exact_int(handoff.get("next_patch"), 86, "Sprint 13 next patch")
-        require(handoff.get("next_patch_tranche") == "full-vector-abi-role-representation-equivalence", "Sprint 13 next tranche")
+        exact_int(handoff.get("next_patch"), 88, "Sprint 13 next patch")
+        require(handoff.get("next_patch_tranche") == "execute-paired-workload-phase-attribution-or-next-measurement-first-gate", "Sprint 13 next tranche")
+        require(handoff.get("replay_v2_campaign_id") == "s13-p087-natural-frozen-replay-v2", "P087 replay campaign")
+        exact_int(handoff.get("replay_v2_targets"), 12, "P087 replay targets")
+        exact_int(handoff.get("replay_v2_executions"), 48, "P087 replay executions")
+        exact_int(handoff.get("replay_v2_raw_streams"), 96, "P087 replay raw streams")
+        exact_int(handoff.get("replay_v2_pinned_python_closures"), 5, "P087 pinned Python closures")
+        exact_int(handoff.get("workload_phase_authority_version"), 1, "phase authority version")
+        exact_int(handoff.get("workload_phase_fixtures"), 8, "phase fixtures")
+        exact_int(handoff.get("workload_phase_profiles"), 2, "phase profiles")
+        exact_int(handoff.get("workload_phase_cells"), 16, "phase cells")
+        exact_int(handoff.get("workload_phase_warmups"), 16, "phase warmups")
+        exact_int(handoff.get("workload_phase_measured_executions"), 144, "phase measured executions")
+        exact_int(handoff.get("workload_phase_total_executions"), 160, "phase total executions")
+        exact_int(handoff.get("workload_phase_required_qualified_fixtures"), 6, "phase qualified fixtures")
+        exact_int(handoff.get("workload_phase_minimum_floor_multiple"), 5, "phase floor multiple")
+        require(handoff.get("workload_phase_maximum_mad_ratio") == 0.1, "phase MAD ratio")
+        require(handoff.get("workload_phase_maximum_residual_ratio") == 0.05, "phase residual ratio")
+        require(handoff.get("workload_phase_maximum_overhead_ratio") == 1.03, "phase overhead ratio")
+        exact_int(handoff.get("workload_phase_private_bytes_max"), 65536, "phase private bytes")
+        require(handoff.get("workload_phase_execution") == "deferred", "phase execution state")
+        exact_bool(handoff.get("workload_phase_performance_claim_authorized"), False, "phase performance claim")
         exact_bool(handoff.get("diagnostic_restart_on_task_change"), True, "diagnostic restart")
         exact_int(handoff.get("task_value_strata"), 5, "task-value strata")
         exact_int(handoff.get("task_value_tasks"), 60, "task-value tasks")
@@ -300,10 +320,10 @@ def main() -> int:
             require((ROOT / relative).is_file(), f"missing closeout document: {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 085 corrective, frozen replay, and terminal-attribution candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 085 correction, frozen replay, and layered terminal-attribution candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 087 correction and paired workload/phase-attribution authority candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 087 correction and paired workload/phase-attribution authority candidate" in sprint13, "Sprint 13 marker")
         makefile = MAKEFILE.read_text(encoding="utf-8")
-        require("sprint13-p085-acceptance-smoke:" in makefile, "P085 acceptance target")
+        require("sprint13-p087-acceptance-smoke:" in makefile, "P087 acceptance target")
         validation = next((line for line in makefile.splitlines() if line.startswith("validation-smoke:")), "")
         require("patch079-corrective-regression-smoke" in validation, "P079 corrective integration")
         require("sprint13-register-role-decision-smoke" in validation, "Sprint 13 role integration")
@@ -319,16 +339,18 @@ def main() -> int:
         require("sprint13-natural-coordinate-campaign-smoke" in validation, "natural coordinate selftest integration")
         require("sprint13-abi-role-query-contract-smoke" in validation, "ABI role contract integration")
         require("sprint13-lifecycle-denominator-smoke" in validation, "lifecycle denominator integration")
+        require("patch086-corrective-regression-smoke" in validation, "Patch 086 corrective integration")
+        require("sprint13-workload-phase-attribution-smoke" in validation, "P087 phase authority integration")
         require("sprint12-closeout-smoke" in validation, "closeout integration")
     except (OSError, json.JSONDecodeError, CloseoutError) as exc:
         print(f"sprint12-closeout-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
-        "sprint12-closeout-smoke: ok sprint=12 patches=24 "
-        "status=retrospective-recorded-and-sprint13-p085-candidate decision=defer "
+        "sprint12-closeout-smoke: ok sprint=12 patches=26 "
+        "status=retrospective-recorded-and-sprint13-p087-candidate decision=defer "
         "public_fields=0 roles=16 r10=syscall-arg4 qualified_private_facets=3 "
-        "deferred_facets=2 tuple_decision=defer score_changes=0 producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 next_patch=86"
+        "deferred_facets=2 tuple_decision=defer score_changes=0 producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 phase_executions=160 next_patch=88"
     )
     return 0
 

@@ -138,8 +138,8 @@ and later review required the Patch 078 correction.
 Patch 077 did not complete acceptance. Patch 078 corrected its remaining
 blockers, but Patch 078 was superseded by the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review
-required Patch 081. Patches 081 and 082 were not accepted. Patches 083 and 084
-also did not complete acceptance; Patch 085 is the current exact-source
+required Patch 081. Patches 081 through 085 did not complete acceptance; Patch 086 is
+the current exact-source
 implementation candidate. See the
-[Patch 085 validation record](sprint-13-patch-085-validation.md); complete
+[Patch 086 validation record](sprint-13-patch-086-validation.md); complete
 acceptance remains pending against that exact candidate.

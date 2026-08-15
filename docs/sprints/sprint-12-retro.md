@@ -474,6 +474,27 @@ retrospective's semester-completion claim.
 ## Post-semester acceptance continuation
 
 Patch 086 carries the remaining Patch 085 replay, evidence-custody, transaction,
-recovery, and exact-source acceptance corrections into Sprint 13. This does not
-change the Sprint 12 semester engineering scope or retroactively claim acceptance;
-it preserves the evidence boundary while local gates are completed.
+recovery, ABI expected-result, exact-tree, and delivery corrections into Sprint
+13. Replay-v2 defines sealing and mandatory terminal attribution but does not
+claim that local replay completed. The private ABI-vector equivalence record
+does not authorize public role projection. A separate private Patch 085
+diagnostic campaign completed 30/30 conditions and 180/180 rows, but all 60
+x64lens rows were below the 5,515,395 ns floor and 0/9 coordinate cells were
+positive; it remains unfrozen and comparison-unqualified. This does not change
+the Sprint 12 semester engineering scope or retroactively claim acceptance.
+
+## Post-semester Patch 087 acceptance continuation
+
+Patch 087 correction and paired workload/phase-attribution authority candidate
+carries forward the remaining Patch 087 exact-source acceptance debt without
+changing the completed Sprint 12 semester engineering record. It rejects
+hard-linked patch state, removes package-wrapper post-helper signal windows,
+closes source-recovery and custody publication bookkeeping gaps, pins replay
+launcher/interpreter/package closures, publishes terminal and ABI evidence
+complete-or-absent, and binds ABI evidence to the exact candidate source.
+
+The paired workload/phase authority freezes eight fixtures, two profiles, and
+160 executions. It has not run and authorizes no optimization or performance
+claim. Fresh native, Docker, producer, replay, parity, strict ShellCheck,
+delivery, and independent acceptance remain separate from the retrospective's
+semester-completion claim.

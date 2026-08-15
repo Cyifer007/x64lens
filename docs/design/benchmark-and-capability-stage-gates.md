@@ -180,13 +180,13 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 remains the active acceptance authority. Patches 081 and 082 were not
-accepted. Patches 083 and 084 also did not complete acceptance; Patch 085 is the current
-exact-source implementation candidate. Patch 074 was a superseded closeout candidate.
+Sprint 12 remains the active acceptance authority. Patches 081 through 085 did not
+complete acceptance; Patch 087 is the current exact-source implementation candidate.
+Patch 074 was a superseded closeout candidate.
 Patch 075 introduced private text-relocation evidence, Patch 076 added distinct bounded
 RPATH/RUNPATH evidence, and Patch 077 required Patch 078, whose review required Patch
 079. Patch 080 was superseded by Patch 081. Sprint 13 remains planned and activates only
-after complete Patch 085 acceptance. The diagnostic corpus and method remain provisional
+after complete Patch 087 acceptance. The diagnostic corpus and method remain provisional
 until Sprint 15. Sprints 13 and 14 may change capabilities or experimental profiles in
 response to diagnostic evidence; such changes require new diagnostic identities and do
 not contaminate the later frozen campaign.
@@ -318,7 +318,7 @@ text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Patch 078
 corrected the next parity and custody blockers, but its review required the
 Patch 079 corrective and private task-value candidate; Patch 079's review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 085 acceptance remains pending. Any diagnostic campaign after acceptance requires a new
+Patch 087 acceptance remains pending. Any diagnostic campaign after acceptance requires a new
 identifier when its task, capability, schema, or method changes.
 
 

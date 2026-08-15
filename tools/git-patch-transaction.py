@@ -43,6 +43,24 @@ class CatchableTermination(TransactionError):
 
 
 @contextmanager
+def defer_catchable_signals():
+    """Defer HUP/INT/TERM until ownership bookkeeping is complete.
+
+    A catchable signal delivered between a filesystem effect and the Python
+    state update that records ownership can otherwise bypass inverse recovery.
+    Linux delivers any pending signal immediately after the previous mask is
+    restored, at which point the surrounding transaction guard converts it to
+    a recoverable exception.
+    """
+    guarded = {signal.SIGHUP, signal.SIGINT, signal.SIGTERM}
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, guarded)
+    try:
+        yield
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+
+
+@contextmanager
 def catchable_termination_guard(label: str):
     """Convert catchable termination into recoverable exceptions.
 
@@ -772,14 +790,21 @@ def restore_exact_tree(
 
 
 
-def logical_base_state(repo: RepoHandle, branch: str, base_head: str, base_tree: str) -> tuple[str, str]:
-    """Require the exact declared committed base and its clean tree."""
+def logical_base_state(
+    repo: RepoHandle,
+    branch: str,
+    base_head: str,
+    base_tree: str,
+    paths: Sequence[str],
+) -> tuple[str, str]:
+    """Require the exact committed base and single-link patch-path topology."""
     actual_branch, head, head_tree, index_tree = repository_identity(repo)
     require(actual_branch == branch, f"branch mismatch: {actual_branch}")
     require_no_unstaged_or_untracked(repo)
     require(head == base_head, f"base HEAD mismatch: {head}")
     require(head_tree == base_tree, f"base HEAD tree mismatch: {head_tree}")
     require(index_tree == base_tree, f"logical base index tree mismatch: {index_tree}")
+    require(scope_matches_tree(repo, base_tree, paths), "logical base patch-path topology changed")
     return "exact-committed-base", head
 
 
@@ -789,6 +814,7 @@ def candidate_state(
     base_head: str,
     base_tree: str,
     candidate_tree: str,
+    paths: Sequence[str],
 ) -> tuple[str, str]:
     actual_branch, head, head_tree, index_tree = repository_identity(repo)
     require(actual_branch == branch, f"branch mismatch: {actual_branch}")
@@ -796,6 +822,7 @@ def candidate_state(
     require(head == base_head, f"candidate base HEAD mismatch: {head}")
     require(head_tree == base_tree, f"candidate base HEAD tree mismatch: {head_tree}")
     require(index_tree == candidate_tree, f"staged candidate tree mismatch: {index_tree}")
+    require(scope_matches_tree(repo, candidate_tree, paths), "staged candidate patch-path topology changed")
     return "exact-staged-candidate", head
 
 
@@ -950,15 +977,15 @@ def apply_patch(
     base_tree: str,
     candidate_tree: str,
 ) -> str:
+    paths = patch_paths(repo, raw)
     try:
-        mode, original_head = logical_base_state(repo, branch, base_head, base_tree)
+        mode, original_head = logical_base_state(repo, branch, base_head, base_tree, paths)
     except TransactionError as original:
         try:
-            candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+            candidate_state(repo, branch, base_head, base_tree, candidate_tree, paths)
         except TransactionError:
             raise original
         raise AlreadyState("patch is already applied at the exact candidate state")
-    paths = patch_paths(repo, raw)
     before = capture_scope(repo, paths)
     parents = capture_parent_bindings(repo, paths)
     effect: dict[str, PathState] | None = None
@@ -993,12 +1020,13 @@ def apply_patch(
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_APPLY_EFFECT_HOOK", repo)
         reauthenticate_repo(repo)
         require_post_effect_bindings(repo, effect, parents)
-        _observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+        _observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree, paths)
         require(current_head == original_head, "HEAD changed during patch application")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
-        emit_mutation_success(
-            "apply", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
-        )
+        with defer_catchable_signals():
+            emit_mutation_success(
+                "apply", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+            )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -1024,15 +1052,15 @@ def rollback_patch(
     base_tree: str,
     candidate_tree: str,
 ) -> str:
+    paths = patch_paths(repo, raw)
     try:
-        mode, original_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree)
+        mode, original_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree, paths)
     except TransactionError as original:
         try:
-            logical_base_state(repo, branch, base_head, base_tree)
+            logical_base_state(repo, branch, base_head, base_tree, paths)
         except TransactionError:
             raise original
         raise AlreadyState("patch is already rolled back at the exact logical base")
-    paths = patch_paths(repo, raw)
     before = capture_scope(repo, paths)
     parents = capture_parent_bindings(repo, paths)
     effect: dict[str, PathState] | None = None
@@ -1058,12 +1086,13 @@ def rollback_patch(
         invoke_hook("X64LENS_PATCH_TRANSACTION_AFTER_ROLLBACK_EFFECT_HOOK", repo)
         reauthenticate_repo(repo)
         require_post_effect_bindings(repo, effect, parents)
-        _observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree)
+        _observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree, paths)
         require(current_head == original_head, "HEAD changed during patch rollback")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
-        emit_mutation_success(
-            "rollback", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
-        )
+        with defer_catchable_signals():
+            emit_mutation_success(
+                "rollback", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+            )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -1116,8 +1145,9 @@ def main() -> int:
                     candidate_tree=args.candidate_tree,
                 )
         else:
+            paths = patch_paths(repo, raw)
             mode, _head = candidate_state(
-                repo, args.branch, args.base_head, args.base_tree, args.candidate_tree
+                repo, args.branch, args.base_head, args.base_tree, args.candidate_tree, paths
             )
             print(
                 "git-patch-transaction: ok action=verify-applied "

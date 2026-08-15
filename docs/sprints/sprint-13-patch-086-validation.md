@@ -17,8 +17,12 @@ branch: main
 base HEAD: 98019d308020d48767f57333929a7b3313a90f74
 base tree: b2d2549a4ec311d97e79925035f80d7535867ac0
 tracked state: clean
-candidate tree: supplied by the authenticated Patch 086 package
+candidate tree: 9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d
 ```
+
+The exact Patch 086 candidate tree is
+`9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d`. Validation exports that value
+rather than deriving authority from a mutable index.
 
 ## Focused validation
 
@@ -38,10 +42,13 @@ Expected banners include:
 
 ```text
 patch085-corrective-regression-smoke: ok ...
-sprint13-natural-frozen-replay-v2-smoke: ok targets=12 ... executions=48 raw_streams=96 ...
-sprint13-natural-terminal-attribution-v2-smoke: ok ... expected_required=1 ...
-sprint13-abi-role-vector-equivalence-smoke: ok internal_dispositions=48 vectors=N/N targets=24 queries=36 public_closures=96 ...
+sprint13-natural-frozen-replay-v2-smoke: ok targets=12 ... executions=48 raw_streams=96 ... run=deferred
+sprint13-natural-terminal-attribution-v2-smoke: ok ... expected_required=1 run=deferred
+sprint13-abi-role-vector-equivalence-smoke: ok internal_dispositions=48 targets=24 max_indices=98304 queries=36 public_closures=96 run=deferred
 ```
+
+These are contract-only banners. The `vectors=N/N` banner is emitted only by
+the full ABI-vector run below.
 
 ## Native and ABI validation
 
@@ -56,7 +63,7 @@ make validation-smoke
 SHELLCHECK_STRICT=1 make shellcheck-smoke
 
 mkdir -p .local/p086-results
-S13_EXPECTED_CANDIDATE_TREE=<authenticated-p086-tree> \
+S13_EXPECTED_CANDIDATE_TREE=9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d \
 S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p086-results/abi-vector \
   make sprint13-abi-role-vector-equivalence-smoke
 ```
@@ -71,22 +78,24 @@ N/N occupied candidate-index vector matches, N <= 98,304
 96/96 unchanged-public command closures
 ```
 
-## Sealed frozen replay
+## Replay-v2 execution contract
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<authenticated-p086-tree> \
-S13_NATURAL_REPLAY_INPUT_DIR=/path/to/exact-p083-natural-result \
+S13_EXPECTED_CANDIDATE_TREE=9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d \
+S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural \
 S13_NATURAL_REPLAY_RESULT_DIR=./.local/p086-results/frozen-replay \
 S13_NATURAL_ATTRIBUTION_RESULT=./.local/p086-results/terminal-attribution.json \
   make sprint13-natural-frozen-replay-v2
 ```
 
 The replay requires the exact twelve predecessor hashes and four execution tools for 48 executions. The result must seal 96 raw streams, target copies, runtime authority, isolated cache policy, selection freeze, manifest, and complete checksum membership. Terminal attribution must equal the mandatory P086 expected result. No target reroll is permitted.
+This record defines the replay-v2 contract; it does not claim that a local replay
+or terminal-attribution result has completed.
 
 ## Docker and parity validation
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<authenticated-p086-tree> make docker-build
+S13_EXPECTED_CANDIDATE_TREE=9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d make docker-build
 make docker-run-root-smoke
 make docker-source-custody-smoke
 make docker-test
@@ -98,10 +107,10 @@ make sprint12-dynamic-metadata-environment-parity-smoke
 ## Candidate aggregate
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<authenticated-p086-tree> \
+S13_EXPECTED_CANDIDATE_TREE=9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d \
 S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p086-results/abi-vector-acceptance \
 S13_PRODUCER_RESULT_DIR=./.local/p086-results/producer-acceptance \
-S13_NATURAL_REPLAY_INPUT_DIR=/path/to/exact-p083-natural-result \
+S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural \
 S13_NATURAL_REPLAY_RESULT_DIR=./.local/p086-results/frozen-replay-acceptance \
 S13_NATURAL_ATTRIBUTION_RESULT=./.local/p086-results/terminal-attribution-acceptance.json \
   make sprint13-p086-acceptance-smoke
@@ -113,7 +122,8 @@ Expected banner:
 sprint13-p086-acceptance-smoke: ok patch=86 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
 ```
 
-The aggregate is necessary but not sufficient; independent Lane A acceptance remains required.
+The aggregate is necessary but not sufficient; independent exact-source
+acceptance remains required.
 
 ## Failure expectations
 
@@ -127,4 +137,9 @@ The aggregate is necessary but not sufficient; independent Lane A acceptance rem
 
 ## Claim boundary
 
-The P086 results remain diagnostic and publication-ineligible. Vector equivalence is not decoded validity, task value, public role policy, exploitability, or comparative coverage evidence.
+The recorded private ABI-vector equivalence remains diagnostic and
+publication-ineligible. No completed local replay-v2 result is claimed here.
+Any later replay remains diagnostic unless separately frozen and qualified.
+Vector equivalence is not decoded validity, natural role incidence, task value,
+public role policy, exploitability, comparative coverage, performance, RSS, or
+concurrency evidence.

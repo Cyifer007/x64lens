@@ -2,9 +2,10 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, producer, frozen-
-input replay execution, ABI closure, parity, delivery, and independent acceptance
-gates.
+Historical implementation candidate. Patch 085 did not complete exact-source
+acceptance; Patch 086 carries its bounded replay, custody, transaction, recovery,
+exact-tree, and delivery corrections. The commands and banners below preserve
+the P085 candidate contract and do not establish that its replay completed.
 
 ## Scope
 
@@ -141,6 +142,14 @@ This local aggregate banner is necessary but not sufficient. Its chronology
 tokens are candidate assertions; the banner does not itself close Sprint 12,
 activate Sprint 13, establish delivery or source authentication, or replace
 independent exact-source acceptance.
+
+## Later diagnostic boundary
+
+A separate private Patch 085 diagnostic campaign completed 30/30 conditions and
+180/180 process rows. All 60 x64lens measured rows were below the 5,515,395 ns
+timing floor, and 0/9 natural coordinate cells were positive. The result remains
+unfrozen and comparison-unqualified. It does not establish completed replay,
+performance, RSS, parity, coverage, superiority, or publication evidence.
 
 ## Failure expectations
 

@@ -2,23 +2,19 @@
 
 ## Status
 
-Patch 085 correction, frozen replay, and layered terminal-attribution candidate; activation pending complete Patch 085 acceptance.
-Here, `frozen replay` names the frozen-input, no-reroll authority; actual replay
-execution remains pending. Patch 080 retains
-`generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` only in the
-private side-car. Patch 081 records the Sprint 12 retrospective and declaratively defers
-redundant ordered tuple state. Patch 082 implements producer-backed tuple/score
-authority and controlled coordinate preflight. Patch 083 completes the outcome-blind
-natural campaign, which remains terminal diagnostic evidence with zero qualified, five
-insufficient, and four unavailable cells. Patch 084 corrects its acceptance
-infrastructure, freezes a private 36-query ABI-role contract and lifecycle denominator,
-and changes no public field, semantic class, score, schema, or capacity contract. Patch
-085 corrects the P084 source-custody, recovery, lifecycle, ABI, natural-campaign,
-explicit-tree, and delivery authorities. It defines a frozen-input, no-reroll authority
-over the exact twelve predecessor target hashes and 48 execution slots and defines one
-terminal reason at the execution, relation, observation, and cell layers. The actual
-replay and generated P085 attribution result remain pending. It changes no analyzer
-runtime, public field, semantic class, score, schema, or capacity contract.
+Patch 087 correction and paired workload/phase-attribution authority candidate; activation pending complete Patch 087 acceptance. Patch 087 preserves
+Patch 086 replay-v2, terminal-attribution, and private ABI-vector evidence while
+correcting their transaction, runtime, publication, source-binding, and delivery
+surfaces. It freezes eight fixtures, reference and instrumented profiles, and a
+160-execution diagnostic phase experiment but does not claim that experiment ran.
+
+Patch 080 retains `generic_control`, `sysv_call_arguments`, and
+`linux_syscall_arguments` only in the private side-car. Patches 081 through 086
+preserve the zero-gain tuple deferral, complete score/null policy, controlled and
+natural coordinate diagnostics, ABI-role contract, frozen replay, layered
+terminal attribution, and private full-vector equivalence. Public output,
+semantic classes, scores, schema `0.2.0`, capacity, decoder policy, and the
+one-worker reference profile remain unchanged.
 
 ## Sprint goal
 
@@ -48,8 +44,10 @@ general-purpose decoder or chain generator.
 - [x] Freeze 36 private ABI-role queries with 12 source-disjoint confirmations
   and 96 disabled-output closures that must preserve unchanged public text and
   JSON.
-- [ ] Run the P085 96-command unchanged-public closure gate against freshly
-  built exact-source native and container artifacts.
+- [x] Define the P086 fixture-derived private vector-equivalence authority with
+  48 internal dispositions, 24 controlled targets, 36 named queries, and 96
+  unchanged-public closures without projecting private roles.
+- [x] Freeze the P087 paired workload/phase experiment: eight fixtures, two profiles, 160 executions, five-floor qualification, bounded dispersion/residual/overhead, and no optimization selection before execution.
 - [ ] Use Sprint 11-12 diagnostics to select only bounded additional multi-pop, transfer, stack, or memory families that materially affect research tasks.
 - [ ] Add exact fixtures, effects, false-positive boundaries, schema validation, and score decisions for any selected family.
 - [ ] Record unsupported family gaps that remain outside the release scope.
@@ -76,8 +74,8 @@ general-purpose decoder or chain generator.
    no-reroll replay and layered terminal-attribution authorities with zero
    runtime, public, or score changes; actual execution remains an acceptance gate.
 9. **Patch 086:** correct Patch 085 replay, recovery, custody, exact-tree, and delivery findings; seal the replay-to-attribution contract; and measure private full-vector ABI-role equivalence without public projection.
-10. **Patch 087 and later evidence-selected patches:** add only bounded families or consumers
-   that demonstrate incremental task value.
+10. **Patch 087:** correct Patch 086 transaction topology, wrapper signals, recovery/custody publication, replay runtime and closure authority, terminal/ABI publication, exact-source evidence, and delivery; freeze the paired workload/phase-attribution authority without selecting an optimization.
+11. **Patch 088 and later evidence-selected patches:** execute the qualified workload/phase authority when its instrumentation and environment are available, or add only another bounded family or consumer that demonstrates incremental task value.
 
 ## Acceptance criteria
 
@@ -89,12 +87,18 @@ general-purpose decoder or chain generator.
 
 ## Handoff
 
-Patch 086 is the current corrective and private-equivalence candidate. It seals
-the twelve-target, 48-execution replay result, authenticates 96 raw streams and
-runtime/cache authority, requires exact terminal attribution, and tests the production
-role vector through an independent fixture-derived oracle. Natural role incidence,
-charged-memory cost, public projection, score changes, decoder integration, and
-concurrency remain separate evidence gates.
+Patch 087 is the current corrective and measurement-authority candidate. It
+requires a candidate-bound replay, terminal attribution, ABI-vector result,
+producer gate, exact-source Docker and parity evidence, and independent Lane A
+acceptance. The workload/phase authority is frozen but unexecuted. It cannot
+select reporter batching, scan prefiltering, decoder work, concurrency, or any
+performance claim until at least six fixtures satisfy the preregistered floor,
+dispersion, residual, overhead, and public-output-equivalence thresholds.
+
+Patch 088 should execute that authority when the accepted instrumentation seam
+and qualified environment are available. If execution remains environment-
+blocked, the next patch may pursue another Lane C measurement-first tranche but
+must preserve the frozen authority and state the deferral explicitly.
 
 
 ## Historical Patch 079 boundary
@@ -111,5 +115,5 @@ changes, and results could not be pooled across strata.
 
 Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
-projection. Patch 080 was superseded by Patch 081; complete Patch 085 acceptance
+projection. Patch 080 was superseded by Patch 081; complete Patch 087 acceptance
 remains required before the next Sprint 13 tranche.

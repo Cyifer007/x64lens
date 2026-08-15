@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — through Patch 082 corrective candidate
+### Sprint 12: loader and mitigation precision — Patch 087 acceptance continuation
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -186,9 +186,8 @@ later sprints rather than Patch 037:
   corrective and private task-value candidate.
 - [x] Record that Patch 081 was not accepted and that its validation findings
   were accepted as correction inputs to Patch 082.
-- [ ] Complete fresh native, Docker, both parity planes, delivery, full
-  three-build producer execution, and independent acceptance for Patch 082
-  against the same authenticated source tree.
+- [x] Record that Patch 082 did not complete acceptance; later candidates carry
+  its remaining exact-source acceptance debt.
 - [ ] Run the separate comparison-qualification campaign under a new identity
   with positive role-controlled coordinate anchors, complete five-path runtime
   closure, qualified whole-batch work, and process-tree RSS. This is not a
@@ -196,7 +195,10 @@ later sprints rather than Patch 037:
 
 ### Sprint 13: semantic capability completion
 
-- [ ] Patch 086 candidate: seal replay/raw/runtime attribution, close P085 transaction/recovery/custody findings, and validate private ABI-role production vectors without public or score changes.
+- [ ] Complete Patch 087 exact-source acceptance: replay-v2 must seal raw,
+  runtime, cache, and terminal-attribution authority; the private ABI-role
+  vector record adds no public or score change. A completed local replay is not
+  yet claimed.
 
 
 - [x] Freeze a private additive exact-pop role decision for all 16 GPRs.
@@ -720,12 +722,12 @@ private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 085 acceptance remains pending.
+Patch 087 acceptance remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 082 candidate
+### Sprint 12 Patch 073 through Patch 087 continuation
 
 Patch 073 executed the public-policy deferral but was not accepted at its first returned
 review boundary. Patch 074 implemented corrections for the confirmed review findings
@@ -736,7 +738,7 @@ correction. Patch 077 was a Sprint 12 reconciliation candidate; Patch 078 follow
 Sprint 13 entry candidate, and its review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review required
 Patch 081. Patches 081 and 082 were not accepted. Patches 083 and 084 also did not
-complete acceptance; Patch 086 is the current exact-source implementation candidate.
+complete acceptance; Patch 087 is the current exact-source implementation candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -762,7 +764,7 @@ complete acceptance; Patch 086 is the current exact-source implementation candid
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 085 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 087 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -779,9 +781,8 @@ complete acceptance; Patch 086 is the current exact-source implementation candid
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [ ] Complete Patch 083 exact-source native, Docker, parity, delivery,
-  retained three-build producer, natural-campaign, documentation, and
-  independent acceptance before activating Sprint 13.
+- [x] Record that Patch 083 did not complete acceptance; Patch 086 is the
+  current exact-source continuation before full Sprint 13 activation.
 
 
 ### Sprint 13 Patch 078 entry decision
@@ -851,7 +852,7 @@ complete acceptance; Patch 086 is the current exact-source implementation candid
   corrections.
 
 
-### Sprint 13 Patch 085 checkpoint
+### Historical Sprint 13 Patch 085 checkpoint
 
 - [x] Enforce all 24 lifecycle floors and retain an explicit Patch 084 zero-count delta without event 88 or new canonical identifiers.
 - [x] Require semantically disjoint ABI development and confirmation queries, a pinned analyzer copy, per-command target reauthentication, and no-replace evidence publication.
@@ -861,11 +862,38 @@ complete acceptance; Patch 086 is the current exact-source implementation candid
   48 no-reroll slots.
 - [x] Define private terminal attribution over 48 execution outcomes, 48 relation
   outcomes, 36 observations, and nine cells with 16 precedence mutations.
-- [ ] Execute the actual replay and generated P085 attribution result. Any result
-  remains diagnostic, `frozen=false`, and publication-ineligible.
-- [ ] Complete fresh native, Docker, replay, producer, ABI closure, both parity
-  planes, delivery, and independent exact-source acceptance.
-- [ ] After acceptance, measure full-vector ABI-role representation equivalence without public projection or score changes.
+- [x] Record that the P085 replay and generated attribution result did not
+  complete and that P085 did not pass exact-source acceptance.
+- [x] Carry the replay, producer, parity, delivery, and independent acceptance
+  debt into Patch 086.
+- [x] Move private full-vector ABI-role representation equivalence into the P086
+  pre-acceptance authority, without public projection or score changes.
+
+### Historical Sprint 13 Patch 086 checkpoint
+
+- [x] Define replay-v2 over twelve exact target hashes, 48 executions, 96 raw
+  streams, authenticated runtime/cache authority, complete checksum membership,
+  and mandatory terminal attribution.
+- [x] Define fixture-derived private ABI-vector equivalence over 48 internal
+  dispositions, 24 controlled targets, every occupied candidate index, 36 named
+  queries, and 96 unchanged-public closures.
+- [x] Preserve zero runtime `src/include/schema` changes, zero public fields,
+  zero semantic changes, zero score changes, and schema `0.2.0`.
+- [ ] Execute the local replay-v2 result; any result remains diagnostic unless
+  separately frozen and qualified.
+- [ ] Complete fresh native, Docker, replay, producer, both parity planes,
+  delivery, and independent exact-source acceptance.
+
+### Current Sprint 13 Patch 087 checkpoint
+
+- [x] Reject hard-linked patch paths in exact base, candidate, and already-state authentication.
+- [x] Close wrapper, recovery, custody, replay, attribution, and ABI publication signal windows with identity-bound cleanup.
+- [x] Pin the Python interpreter, pipx launcher suffix, five package closures, isolated runtime state, exact raw-stream seal, and mandatory terminal distribution.
+- [x] Regenerate private ABI evidence from the exact Patch 087 source authority with no-replace publication and retained-only checksums.
+- [x] Freeze the paired workload/phase-attribution authority over eight fixtures, two profiles, 16 cells, and 160 counterbalanced executions without selecting an optimization.
+- [x] Preserve zero runtime `src/include/schema` changes, zero public fields, zero semantic changes, zero score changes, and schema `0.2.0`.
+- [ ] Execute fresh native, strict-shell, Docker, producer, replay, both parity planes, ABI, and paired workload/phase gates on the exact candidate tree.
+- [ ] Complete independent Lane A acceptance before Patch 088 or any optimization selection.
 
 ### Historical Sprint 13 Patch 084 checkpoint
 
@@ -878,8 +906,8 @@ complete acceptance; Patch 086 is the current exact-source implementation candid
   confirmations, and define 96 disabled-output closures confirming unchanged
   public text and JSON.
 - [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
-- [x] Record that Patch 084 did not complete acceptance and that Patch 085 owns
-  the current correction and replay/attribution authorities.
+- [x] Record that Patch 084 did not complete acceptance and that Patch 085 then
+  carried the correction and replay/attribution authorities.
 - [x] Preserve the 12-target, 48-execution, nine-cell, 108-control no-reroll
   diagnostic boundary without authorizing public fields, semantics, scores,
   schema or capacity changes, decoder or concurrency work, or comparative

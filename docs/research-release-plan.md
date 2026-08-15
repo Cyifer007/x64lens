@@ -415,9 +415,10 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 085 acceptance remains pending. Sprint
+accepted. Patches 083 through 085 also did not complete acceptance. Independent
+exact-source Patch 087 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 085 acceptance.
+only after complete Patch 087 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -484,7 +485,7 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
 080; Patch 080 was superseded by Patch 081. Preview eligibility still requires
-complete Patch 085 acceptance before any later release-facing capability work.
+complete Patch 087 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -545,3 +546,15 @@ independent acceptance remain pending. Any resulting evidence remains
 diagnostic, `frozen=false`, publication-ineligible, and outside the Sprint 15
 confirmatory freeze. Tool version, CLI behavior, schema `0.2.0`, public fields,
 semantics, scores, capacity, and mitigation meanings remain unchanged.
+
+## Patch 086 preview-gate note
+
+Patch 086 does not advance the preview gate. Replay-v2 defines sealing,
+runtime/cache custody, and mandatory terminal attribution without claiming that
+local replay completed. The fixture-derived ABI-vector result remains private
+and does not authorize role projection. A separate private P085 diagnostic
+campaign completed 30/30 conditions and 180/180 rows, but all 60 x64lens rows
+were below the 5,515,395 ns floor and 0/9 coordinate cells were positive; it
+remains unfrozen and comparison-unqualified. Patch 086 adds no release tag,
+schema change, public field, semantic class, score, decoder validity, FORTIFY
+detection, concurrency benefit, or publication result.

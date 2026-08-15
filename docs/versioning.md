@@ -13,18 +13,18 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 085 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains pending exact-source acceptance while Patch 085
-corrects the Patch 084 source-custody, recovery, lifecycle, ABI-query, natural-
-campaign, explicit-tree, and delivery findings. Patch 080's private additive
-role side-car remains unchanged and unprojected.
+Patch 087 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains pending exact-source acceptance while Patch 087
+corrects the Patch 086 transaction topology, wrapper signals, replay runtime,
+terminal and ABI publication, exact-source evidence, and delivery findings. Patch 080's private additive role
+side-car remains unchanged and unprojected.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields, preserves the
 coarse `mitigations.pie` meaning, and makes no runtime-CET claim. Patch 081 preserves
 the same public fields, reference profile, private context sizes, and candidate-capacity
 behavior. It adds no PIE reinterpretation or runtime-CET claim. Actual qualified parity,
-frozen-input replay execution, and complete Patch 085 acceptance remain pending.
+replay-v2 execution and complete Patch 087 acceptance remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
@@ -220,7 +220,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; independent exact-source Patch 085 acceptance remains
+review required this corrective candidate; independent exact-source Patch 087 acceptance remains
 pending.
 
 
@@ -256,3 +256,13 @@ terminal attribution are the only new evidence authorities; lifecycle, ABI-query
 source, recovery, exact-tree, and delivery changes harden existing authorities.
 Actual replay and generated attribution evidence remain pending; any result is
 diagnostic, `frozen=false`, and publication-ineligible.
+
+## Patch 086 compatibility note
+
+Patch 086 retains tool version `0.1.0-dev` and schema `0.2.0`. It changes no
+runtime `src/`, `include/`, or `schemas/` file, public field, semantic class,
+score, count meaning, candidate capacity, decoder profile, concurrency profile,
+or output contract. Replay-v2 and the private ABI-vector equivalence authority
+are validation evidence, not product or schema versions. No completed local
+replay, public role projection, release tag, FORTIFY fact, or publication result
+is claimed.

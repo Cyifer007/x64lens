@@ -3,8 +3,8 @@
 ## Status
 
 Historical implementation candidate. Patch 083 did not complete exact-source
-acceptance. Patch 084 carried its bounded corrections but was not accepted;
-Patch 085 is the current exact-source implementation candidate.
+acceptance. Patch 084 and Patch 085 also did not complete acceptance; Patch 086
+is the current exact-source implementation candidate.
 The retained P083 natural campaign is structurally complete but
 comparison-unqualified: twelve targets, 48 executions, nine terminal cells,
 and 108 controls, with zero qualified, five insufficient, and four unavailable
