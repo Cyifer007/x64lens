@@ -41,10 +41,10 @@ development evidence; its rows are not preview or publication evidence.
 
 Sprint 12 remains active. Patch 078 was superseded by the Patch 079 corrective
 and private task-value candidate; Patch 079 was superseded by Patch 080,
-which was superseded by Patch 081. Patches 081 through 086 did not complete
-acceptance; Patch 088 is the current exact-source implementation candidate,
+which was superseded by Patch 081. Patches 081 through 087 did not complete
+acceptance; Patch 089 is the current exact-source implementation candidate,
 pending complete independent acceptance. Sprint 13 becomes active only after
-complete Patch 088 acceptance. Loader, mitigation, semantic, and
+complete Patch 089 acceptance. Loader, mitigation, semantic, and
 optional-profile decisions occupy Sprints 12 through 14. The campaign freezes in
 Sprint 15, the preview pilot runs in Sprint 16, and the publication campaign runs
 in Sprint 17.
@@ -415,10 +415,10 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Patches 083 through 086 also did not complete acceptance. Independent
-exact-source Patch 088 acceptance remains pending. Sprint
+accepted. Patches 083 through 087 also did not complete acceptance. Independent
+exact-source Patch 089 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 088 acceptance.
+only after complete Patch 089 acceptance.
 
 The Patch 073 diagnostic campaign retained every x64lens row below its measured
 timer floor and produced zero positive coordinate anchors. It remains
@@ -485,7 +485,7 @@ PIE/DSO, IBT, or SHSTK field.
 Patch 078 was an implementation and closeout-correction candidate, not a
 release candidate. Its review required Patch 079, whose review required Patch
 080; Patch 080 was superseded by Patch 081. Preview eligibility still requires
-complete Patch 088 acceptance before any later release-facing capability work.
+complete Patch 089 acceptance before any later release-facing capability work.
 
 ## Historical Sprint 13 Patch 079 release-gate update
 
@@ -559,10 +559,10 @@ remains unfrozen and comparison-unqualified. Patch 086 adds no release tag,
 schema change, public field, semantic class, score, decoder validity, FORTIFY
 detection, concurrency benefit, or publication result.
 
-## Patch 087 preview-gate note
+## Historical Patch 087 preview-gate note
 
-Patch 087 remains an implementation candidate pending complete exact-source
-acceptance and does not advance the preview gate. Replay-v2,
+Patch 087 did not complete exact-source acceptance, was superseded by Patch 088,
+and did not advance the preview gate. Replay-v2,
 terminal-attribution, ABI-vector, and workload/phase evidence remains private,
 diagnostic, and publication-ineligible. The phase method is frozen but
 unexecuted and selects no optimization. Runtime, schema `0.2.0`, semantic
@@ -570,10 +570,19 @@ classes, scores, candidate capacity, and malformed no-partial-output behavior
 remain unchanged. No speed, RSS, comparative coverage, baseline equivalence,
 exploitability, decoder, concurrency, or release claim follows.
 
-## Patch 088 release-gate note
+## Patch 089 release-gate note
 
-Patch 088 changes no release-facing analyzer or schema fact. Its split-debug
-result remains a diagnostic experiment and does not alter preview or release
-artifacts until a later exact-source product-adoption decision passes. The
-release gate still requires fresh native and Docker validation, parity, corpus
-and campaign freeze, and checksummed reproducible artifacts.
+Patch 089 changes no release-facing analyzer or schema fact. Split-debug remains
+an opt-in diagnostic release experiment only. Production adoption requires a
+fresh exact-source two-build result, path-stable source/debug production without
+post-link rewriting, runtime and companion binding, symbol and behavior
+closure, and a separately justified distribution objective. The retained
+preflight did not establish total-transfer reduction.
+
+The preview gate still requires fresh native and Docker validation, parity,
+corpus and campaign freeze, and checksummed reproducible artifacts.
+
+## Historical Patch 088 release-gate note
+
+Patch 088 introduced the diagnostic split-debug contract but did not complete
+exact-source acceptance or alter preview/release artifacts.

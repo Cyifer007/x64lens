@@ -135,6 +135,15 @@ def validate_authority(value: Any) -> dict[str, Any]:
     return attr.validate_authority(value)
 
 
+def predecessor_authority(authority: dict[str, Any]) -> dict[str, Any]:
+    """Project P088/P089 authority onto the exact P083 predecessor byte identity."""
+    require("tool_identities" in authority["input_authority"],
+            "predecessor tool identity authority is missing")
+    projected = dict(authority)
+    projected["tools"] = authority["input_authority"]["tool_identities"]
+    return projected
+
+
 def validate_adapters(authority: dict[str, Any]) -> None:
     require(len(authority["adapters"]) == 2, "adapter denominator changed")
     for item in authority["adapters"]:
@@ -318,12 +327,8 @@ print(json.dumps(out,sort_keys=True))'''
     observed = json.loads(cp.stdout)
     require(len(observed) == len(expected), "Python package closure denominator changed")
     for requested, actual in zip(expected, observed):
-        for key in ("distribution", "version", "package_root", "closure_policy"):
-            require(actual.get(key) == requested.get(key), f"Python package closure descriptor changed: {key}")
-        require(actual["files"] > 0 and actual["bytes"] > 0
-                and re.fullmatch(r"[0-9a-f]{64}", actual["closure_sha256"])
-                and re.fullmatch(r"[0-9a-f]{64}", actual["record_sha256"]),
-                "Python RECORD closure is incomplete")
+        require(actual == requested,
+                f"Python RECORD closure changed: {requested['distribution']}")
     return observed
 
 def runtime_authority(
@@ -406,7 +411,7 @@ def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str,
     remover = module("s13_p088_replay_remove", REMOVE)
     input_dir = args.input_dir.resolve(strict=True)
     try:
-        attr1.validate_input(input_dir, authority)
+        attr1.validate_input(input_dir, predecessor_authority(authority))
     except BaseException as exc:
         if isinstance(exc, CatchableTermination):
             raise
@@ -596,14 +601,24 @@ def selftest(authority: dict[str, Any]) -> None:
             "P088 replay selftest changed")
     require(selection_summary(authority) == {"selected_count": 12, "role_counts": {"et_exec": 4, "pie_et_dyn": 4, "shared_et_dyn": 4}},
             "selection-freeze summary changed")
+    predecessor = predecessor_authority(authority)
+    require(predecessor["tools"] == authority["input_authority"]["tool_identities"]
+            and predecessor["tools"]["x64lens"]["sha256"]
+            == "39f6af5c7991b6fd7d46b7ac1afb6340164cee14cfcec2d7cd0a2f014bf1222e",
+            "predecessor byte-identity bridge changed")
     require(authority["runtime_authority"]["record_verified_package_closures"] == 5,
             "RECORD-backed Python closure denominator changed")
     for tool, expected in authority["runtime_authority"]["python_launchers"].items():
         require(tool in {"ropgadget", "ropper"} and expected["package_closures"], "missing Python package closure descriptor")
         for closure in expected["package_closures"]:
-            require(set(closure) == {"distribution", "version", "package_root", "closure_policy"}
-                    and closure["closure_policy"] == "importlib_metadata_record_sha256",
-                    "invalid RECORD-backed Python package closure descriptor")
+            require(set(closure) == {
+                "distribution", "version", "package_root", "closure_policy",
+                "files", "bytes", "closure_sha256", "record_sha256",
+            } and closure["closure_policy"] == "importlib_metadata_record_sha256"
+                    and closure["files"] > 0 and closure["bytes"] > 0
+                    and re.fullmatch(r"[0-9a-f]{64}", closure["closure_sha256"])
+                    and re.fullmatch(r"[0-9a-f]{64}", closure["record_sha256"]),
+                    "invalid RECORD-backed Python package closure authority")
     with tempfile.TemporaryDirectory(prefix="x64lens-replay-symlink-selftest-") as raw:
         root = Path(raw)
         final = root / "launcher.py"

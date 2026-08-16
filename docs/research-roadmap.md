@@ -3,7 +3,7 @@
 ## Current checkpoint
 
 Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
-mitigation facts. Patch 088 is the current implementation candidate. Its full
+mitigation facts. Patch 089 is the current implementation candidate. Its full
 producer run, replay-v2 execution, native and Docker gates, parity, delivery,
 and independent exact-source acceptance remain pending. The P083 natural-
 coordinate campaign is already retained as comparison-unqualified diagnostic
@@ -589,7 +589,7 @@ RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
 077 required the Patch 078 entry candidate. Patch 078 was superseded by the
 Patch 079 corrective and private task-value candidate. Patch 079's review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 088 acceptance remains pending before the next Sprint 13 tranche.
+Patch 089 acceptance remains pending before the next Sprint 13 tranche.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -632,7 +632,7 @@ RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076 was superseded by the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 088 acceptance. Patch
+remains planned and activates only after complete Patch 089 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
 4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
 deterministically presentation-ordered task-value gate. Patch 080 records the
@@ -693,8 +693,8 @@ incremental-value gate.
 ## Sprint 13 Patch 082 checkpoint
 
 Patch 082 was not accepted, Patch 083 carried its bounded corrections, and
-Patches 084 through 086 also were not accepted. Patch 088 is the current exact-
-source implementation candidate. P082 retained the private role
+Patches 084 through 088 also were not accepted. Patch 089 is the current
+exact-source implementation candidate. P082 retained the private role
 side-car and ordered-tuple deferral,
 implemented a gate requiring score/null and ordered-pair agreement across three
 independent builds, and added a controlled coordinate method-discrimination
@@ -703,8 +703,8 @@ a separate 30-condition/180-row diagnostic campaign. All 60 x64lens timing rows
 were below its 6,303,525 ns floor and all nine natural coordinate cells had zero
 positive anchors. That result remains diagnostic, unfrozen, and publication-
 ineligible. P083 subsequently required its own exact-tree producer run and
-distinct 12-target natural campaign; fresh P087-bound acceptance evidence
-remains required.
+distinct 12-target natural campaign; fresh evidence bound to the exact P088
+candidate tree remains required.
 
 ## Historical Patch 083 research decision
 
@@ -763,10 +763,10 @@ comparison-unqualified. Neither that campaign nor vector equivalence supports
 performance, RSS, parity, coverage, superiority, exploitability, public-role,
 decoder, FORTIFY, concurrency, or publication claims.
 
-## Patch 087 research decision
+## Historical Patch 087 research decision
 
-Patch 087 remains an implementation candidate pending complete exact-source
-acceptance. Replay-v2, terminal-attribution, ABI-vector, and workload/phase
+Patch 087 did not complete exact-source acceptance and was superseded by Patch
+088. Replay-v2, terminal-attribution, ABI-vector, and workload/phase
 evidence remains private, diagnostic, and publication-ineligible. The paired
 phase method is frozen but unexecuted and selects no optimization. Runtime,
 public schema, semantic classes, scores, candidate capacity, and malformed
@@ -775,11 +775,26 @@ only motivate a separate bounded experiment; it does not authorize speed, RSS,
 comparative coverage, baseline equivalence, exploitability, decoder,
 concurrency, or publication claims.
 
-## Patch 088 research decision
+## Patch 089 research decision
 
-Patch 088 closes the confirmed Patch 087 tooling and delivery findings and runs
-only the bounded split-debug packaging experiment. The frozen workload/phase
-authority remains unexecuted. Patch 089 should reconcile fresh split-debug
-evidence and execute the phase authority when its instrumentation and
-environment are qualified. Decoder and concurrency profiles remain separate
-Sprint 14 decisions.
+Patch 089 implements the smallest cohesive correction for the Patch 088 replay,
+Python-closure, split-debug, workload, recovery, and delivery findings. It
+retains the split-debug work as an opt-in diagnostic release experiment and
+preserves the frozen workload/phase method without claiming either has produced
+a release-facing result.
+
+The split-debug authority now requires exact producer/source binding, distinct
+behavior profiles, unique symbols, complete retained-tree custody, no-replace
+publication, and signal-safe cleanup. Post-link path redaction is not treated as
+path-stable DWARF production, and the absence of total-transfer reduction keeps
+default product adoption unauthorized.
+
+The workload authority still requires a separate qualified execution. Decoder
+and concurrency profiles remain separate Sprint 14 decisions.
+
+## Historical Patch 088 research decision
+
+Patch 088 implemented candidate corrections intended to address Patch 087
+findings and introduced the first bounded split-debug packaging contract. It did
+not complete exact-source acceptance; Patch 089 supersedes its evidence
+oracles without changing analyzer runtime or public output.

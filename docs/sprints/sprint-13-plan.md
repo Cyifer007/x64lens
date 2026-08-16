@@ -2,14 +2,16 @@
 
 ## Status
 
-Patch 088 correction and split-debug packaging experiment candidate; activation pending complete Patch 088 acceptance. Patch 088 preserves
+Patch 089 correction and split-debug/workload evidence candidate; activation pending complete Patch 089 acceptance. Patch 089 preserves
 Patch 086 replay-v2, terminal-attribution, and private ABI-vector evidence while
-correcting their transaction, runtime, publication, source-binding, and delivery
-surfaces. It freezes eight fixtures, reference and instrumented profiles, and a
-160-execution diagnostic phase experiment but does not claim that experiment ran.
+correcting predecessor/current identity, exact Python closures, split-debug
+producer/result custody, workload fixture identity, streaming recovery, and
+delivery surfaces. It retains eight fixtures, reference and instrumented
+profiles, and a 160-execution diagnostic phase experiment but does not claim
+that experiment ran.
 
 Patch 080 retains `generic_control`, `sysv_call_arguments`, and
-`linux_syscall_arguments` only in the private side-car. Patches 081 through 086
+`linux_syscall_arguments` only in the private side-car. Patches 081 through 089
 preserve the zero-gain tuple deferral, complete score/null policy, controlled and
 natural coordinate diagnostics, ABI-role contract, exact no-reroll replay, layered
 terminal attribution, and private full-vector equivalence. Public output,
@@ -23,6 +25,8 @@ general-purpose decoder or chain generator.
 
 ## Planned deliverables
 
+- [x] Correct Patch 088 replay identity/closure, split-debug custody, workload fixture, streaming recovery, and delivery authorities without changing analyzer facts.
+- [x] Retain split-debug only as an opt-in diagnostic release experiment; default adoption, path-stable DWARF, and total-transfer saving remain unproven.
 - [x] Freeze an additive private role decision for all exact single-pop GPR patterns without collapsing generic, call, syscall, syscall-number, or pivot roles.
 - [x] Freeze `r10` as the private Linux syscall argument-4 role, distinct from
   System V call argument-4 `rcx`; Patch 080 retains both mappings privately and
@@ -77,8 +81,13 @@ general-purpose decoder or chain generator.
    runtime, public, or score changes; actual execution remains an acceptance gate.
 9. **Patch 086:** correct Patch 085 replay, recovery, custody, exact-tree, and delivery findings; seal the replay-to-attribution contract; and measure private full-vector ABI-role equivalence without public projection.
 10. **Patch 087:** correct Patch 086 transaction topology, wrapper signals, recovery/custody publication, replay runtime and closure authority, terminal/ABI publication, exact-source evidence, and delivery; freeze the paired workload/phase-attribution authority without selecting an optimization.
-11. **Patch 088:** correct Patch 087 transaction, mode, recovery, replay, ABI-stage, oracle, source-identity, evidence, and delivery findings; execute the bounded two-build split-debug packaging experiment without adopting it as product policy.
-12. **Patch 089 and later evidence-selected patches:** reconcile the fresh split-debug result and execute the workload/phase authority when its instrumentation and environment are available, or add only another bounded family or consumer that demonstrates incremental task value.
+11. **Patch 088:** implement candidate corrections for Patch 087 transaction,
+    mode, recovery, replay, ABI-stage, oracle, source-identity, evidence, and
+    delivery findings; define, wire, and self-test the bounded two-build
+    split-debug packaging experiment without adopting it as product policy; full
+    execution remains pending.
+12. **Patch 089:** correct Patch 088 replay identity, Python closure, split-debug custody, workload fixture, streaming recovery, and delivery findings; retain split-debug as an opt-in diagnostic experiment and keep workload execution pending.
+13. **Patch 090 and later evidence-selected patches:** reconcile fresh P089 split-debug and workload/phase results when their instrumentation and environment are qualified, or pursue only another bounded measurement-first gate.
 
 ## Acceptance criteria
 
@@ -90,7 +99,7 @@ general-purpose decoder or chain generator.
 
 ## Handoff
 
-Patch 088 is the current corrective and packaging-experiment candidate. It
+Patch 089 is the current corrective and evidence-reconciliation candidate. It
 requires candidate-bound replay, terminal attribution, ABI-vector, producer,
 exact-source Docker, parity, split-debug, and independent exact-source acceptance.
 Replay, terminal-attribution, ABI-vector, workload/phase, and split-debug evidence
@@ -100,8 +109,7 @@ Neither authority establishes speed, RSS, comparative coverage, baseline
 equivalence, exploitability, decoder need, concurrency benefit, or an
 optimization choice.
 
-Patch 089 should reconcile the fresh split-debug result and execute the frozen
-workload/phase authority when its accepted instrumentation and environment are
+Patch 090 should reconcile fresh P089 split-debug and workload/phase results when its accepted instrumentation and environment are
 available. If execution remains environment-blocked, the next patch may pursue
 only another bounded measurement-first tranche while preserving the deferral.
 
@@ -120,5 +128,5 @@ changes, and results could not be pooled across strata.
 
 Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
-projection. Patch 080 was superseded by Patch 081; complete Patch 088 acceptance
+projection. Patch 080 was superseded by Patch 081; complete Patch 089 acceptance
 remains required before the next Sprint 13 tranche.

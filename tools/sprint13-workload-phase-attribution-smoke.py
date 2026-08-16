@@ -211,9 +211,22 @@ def qualify(authority: dict[str, Any], result: dict[str, Any]) -> int:
             "private instrumentation cap exceeded")
     records = result["fixtures"]
     require(isinstance(records, list) and len(records) == 8, "result must contain eight fixtures")
+    expected_ids = [fixture["id"] for fixture in authority["fixtures"]]
+    observed_ids = [record.get("id") if isinstance(record, dict) else None for record in records]
+    require(observed_ids == expected_ids and len(set(observed_ids)) == len(expected_ids),
+            "result fixture membership, order, or uniqueness changed")
     q = authority["qualification"]
     qualified = 0
-    for record in records:
+    required_record_keys = {
+        "id", "reference_ns", "instrumented_ns", "reference_median_ns",
+        "reference_mad_ns", "phase_sum_median_ns", "output_equal",
+        "failures", "regressions",
+    }
+    for expected_fixture, record in zip(authority["fixtures"], records):
+        require(isinstance(record, dict) and set(record) == required_record_keys,
+                f"result fixture shape changed: {expected_fixture['id']}")
+        require(record["id"] == expected_fixture["id"],
+                f"result fixture identity changed: {expected_fixture['id']}")
         reference = record["reference_ns"]
         instrumented = record["instrumented_ns"]
         require(len(reference) == 9 and len(instrumented) == 9, "each profile requires nine measured rows")
@@ -288,6 +301,20 @@ def selftest(authority_path: Path, expected_path: Path) -> None:
                 else:
                     raise AuthorityError("result mutation was accepted")
 
+
+    for mutator in (
+        lambda value: value["fixtures"].__setitem__(1, copy.deepcopy(value["fixtures"][0])),
+        lambda value: value["fixtures"][0].__setitem__("id", "fixture-not-authorized"),
+        lambda value: value["fixtures"].reverse(),
+    ):
+        changed = copy.deepcopy(result)
+        mutator(changed)
+        try:
+            qualify(authority, changed)
+        except AuthorityError:
+            mutations += 1
+        else:
+            raise AuthorityError("fixture membership or uniqueness mutation was accepted")
 
     for expected_key in (
         "required_qualified_fixtures",

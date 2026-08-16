@@ -14,7 +14,7 @@ bounded private static text-relocation evidence. Patch 076 preserved that
 private prefix and implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence, but its review required Patch 077. Patch 077's review
 required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 087 validation record](../sprints/sprint-13-patch-087-validation.md).
+[Patch 088 validation record](../sprints/sprint-13-patch-088-validation.md).
 
 ## Context
 
@@ -183,9 +183,9 @@ The Sprint 12 sequence is:
 - Patch 082: historical candidate; not accepted and superseded by Patch 083;
 - Patch 083: historical implementation candidate; not accepted after
   independent exact-source review;
-- Patches 084 through 086: successive historical corrective candidates that did
+- Patches 084 through 088: successive historical corrective candidates that did
   not complete acceptance; and
-- Patch 087: current implementation candidate; complete exact-source acceptance
+- Patch 088: current implementation candidate; complete exact-source acceptance
   remains pending.
 
 External-natural and parity artifacts remain diagnostic, unfrozen, and

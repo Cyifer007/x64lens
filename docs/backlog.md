@@ -195,10 +195,10 @@ later sprints rather than Patch 037:
 
 ### Sprint 13: semantic capability completion
 
-- [ ] Complete Patch 087 exact-source acceptance: replay-v2 must seal raw,
+- [ ] Complete Patch 088 exact-source acceptance: replay-v2 must seal raw,
   runtime, cache, and terminal-attribution authority; the private ABI-role
-  vector record adds no public or score change. A completed local replay is not
-  yet claimed.
+  vector record and split-debug experiment add no public or score change. A
+  completed local replay or split-debug execution is not yet claimed.
 
 
 - [x] Freeze a private additive exact-pop role decision for all 16 GPRs.
@@ -722,7 +722,7 @@ private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 088 acceptance remains pending.
+Patch 089 acceptance remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
@@ -737,7 +737,7 @@ Patch 076 added distinct private RPATH/RUNPATH evidence. Patch 076's review requ
 correction. Patch 077 was a Sprint 12 reconciliation candidate; Patch 078 followed as a
 Sprint 13 entry candidate, and its review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review required
-Patch 081. Patches 081 through 086 did not complete acceptance; Patch 087 is the
+Patch 081. Patches 081 through 088 did not complete acceptance; Patch 089 is the
 current exact-source implementation candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
@@ -764,7 +764,7 @@ current exact-source implementation candidate.
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 088 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 089 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -781,7 +781,7 @@ current exact-source implementation candidate.
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [x] Record that Patches 083 through 087 did not complete acceptance; Patch 088 is the
+- [x] Record that Patches 083 through 088 did not complete acceptance; Patch 089 is the
   current exact-source continuation before full Sprint 13 activation.
 
 
@@ -923,18 +923,20 @@ current exact-source implementation candidate.
 - [x] Freeze the paired workload/phase-attribution authority over eight fixtures, two profiles, 16 cells, and 160 counterbalanced executions without selecting an optimization.
 - [x] Preserve zero runtime `src/include/schema` changes, zero public fields, zero semantic changes, zero score changes, and schema `0.2.0`.
 - [x] Keep replay, terminal-attribution, ABI-vector, and workload/phase evidence private and diagnostic; the frozen phase method remains unexecuted and non-selecting.
-- [ ] Execute fresh native, strict-shell, Docker, producer, replay, both parity
-  planes, ABI, and workload/phase authority-validation gates on the exact
-  candidate tree; this does not execute the phase experiment.
-- [ ] Complete independent exact-source acceptance for Patch 088; no phase result itself authorizes speed, RSS, comparative coverage, baseline equivalence, exploitability, decoder, concurrency, or optimization claims.
+- [x] Record that Patch 087 did not complete its fresh native, strict-shell,
+  Docker, producer, replay, parity, ABI, workload/phase-authority, or independent
+  exact-source gates; Patch 089 carries that acceptance debt. No phase result
+  itself authorizes speed, RSS, comparative coverage, baseline equivalence,
+  exploitability, decoder, concurrency, or optimization claims.
 
-### Current Sprint 13 Patch 088 checkpoint
+### Current Sprint 13 Patch 089 checkpoint
 
-- [x] Correct terminal-success signal handling and exact regular-file mode authority.
-- [x] Include inherited descriptors, ancestor depth, retained-tree descriptors, cleanup peaks, and headroom in source-recovery preflight.
-- [x] Resolve bounded launcher symlink chains and authenticate five Python distributions through RECORD hashes.
-- [x] Normalize analyzer comparison through a checked strip-debug projection while retaining original binary identity.
-- [x] Bind all six workload/phase expected thresholds and close replay/ABI stage cleanup windows.
-- [x] Define and exercise the bounded two-build split-debug contract: sixty behavior executions, thirty pairs, eight controls, twelve symbol resolutions, and fifty-percent minimum size reduction.
+- [x] Separate predecessor replay identity from the current analyzer projection.
+- [x] Require exact hash-bearing Python distribution closures rather than merely well-formed closure metadata.
+- [x] Bind split-debug results to exact producer generations, source tree, retained membership, modes, inode topology, distinct behavior commands, and unique symbols.
+- [x] Reject resealed split-debug substitutions and clean interrupted staging trees.
+- [x] Require the exact ordered eight-fixture workload authority and reject duplicate or unknown fixture IDs.
+- [x] Bound source recovery by per-file, aggregate, and archive ceilings and stream extraction and hashing.
 - [x] Preserve zero runtime, public-field, semantic, score, schema, decoder, concurrency, and capacity changes.
-- [ ] Complete fresh native, strict-shell, Docker, producer, replay, ABI, split-debug, both parity planes, delivery, and independent exact-source acceptance.
+- [x] Retain split-debug only as an opt-in diagnostic release experiment; path-stable DWARF, total-transfer saving, and default adoption remain unproven.
+- [ ] Complete fresh native, strict-shell, Docker, producer, replay, ABI, split-debug, workload, both parity planes, delivery, and independent exact-source acceptance.

@@ -25,7 +25,7 @@ Sprint 12 closeout candidate. Patch 075 introduced bounded private static
 text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
 and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
 Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Use the
-[Patch 087 validation record](sprint-13-patch-087-validation.md) for current
+[Patch 088 validation record](sprint-13-patch-088-validation.md) for current
 validation expectations; the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the

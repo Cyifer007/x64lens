@@ -51,7 +51,29 @@
     "manifest_sha256": "22222d33b7f34d8340be9a66fe40865fc7fcca2e0682f39281222f9ffa0b7fc7",
     "selected_targets": 12,
     "selection_freeze_sha256": "2082d7a48ac5fcad9c804b4a92bf21ac742ad8c934cdef138c367e61510005c1",
-    "source_candidate_tree": "178f1d1c93a5a05fba5a77af2c378e63e5dc017b"
+    "source_candidate_tree": "178f1d1c93a5a05fba5a77af2c378e63e5dc017b",
+    "tool_identities": {
+      "ropgadget": {
+        "mode": "0755",
+        "sha256": "23c511334e7755ff9647f5d1e216f0c4aef58f24fc4abf2e78abb099077c5dfd",
+        "size_bytes": 267
+      },
+      "ropper": {
+        "mode": "0755",
+        "sha256": "4d23bf553444e1dab845b5ca39658a05070b9959c52ec1263f1e20cf14fc158a",
+        "size_bytes": 203
+      },
+      "ropr": {
+        "mode": "0755",
+        "sha256": "978994f874d9ecb0c45e212be50412d0bf5b30a897dfd99cda185668920c1b94",
+        "size_bytes": 4495824
+      },
+      "x64lens": {
+        "mode": "0755",
+        "sha256": "39f6af5c7991b6fd7d46b7ac1afb6340164cee14cfcec2d7cd0a2f014bf1222e",
+        "size_bytes": 154544
+      }
+    }
   },
   "limitations": [
     "The replay uses the exact twelve predecessor target hashes and permits no target reroll.",
@@ -90,15 +112,23 @@
         "invocation_suffix": ".local/share/pipx/venvs/ropgadget/bin/python",
         "package_closures": [
           {
+            "bytes": 128237,
             "closure_policy": "importlib_metadata_record_sha256",
+            "closure_sha256": "65c8178aa6118b81da46409d09dae9edccae8823f8ee77f260372fa9dcda4319",
             "distribution": "ROPGadget",
+            "files": 20,
             "package_root": "ropgadget",
+            "record_sha256": "467904c94224b5c529015be417dd2d37c336d5b638e1762fcffd18ab6d394d34",
             "version": "7.7"
           },
           {
+            "bytes": 10392729,
             "closure_policy": "importlib_metadata_record_sha256",
+            "closure_sha256": "496dcf3f9410bfcbe8bc76e059132c9510ca0788f5499107d2a47279c893a7b0",
             "distribution": "capstone",
+            "files": 58,
             "package_root": "capstone",
+            "record_sha256": "39da1cab084f0a5e318f77ea49765d6adaa8973782eb05d58910104a2f3b65d0",
             "version": "5.0.9"
           }
         ],
@@ -112,21 +142,33 @@
         "invocation_suffix": ".local/share/pipx/venvs/ropper/bin/python",
         "package_closures": [
           {
+            "bytes": 363557,
             "closure_policy": "importlib_metadata_record_sha256",
+            "closure_sha256": "b5372a3222b9086d45db49a11f544d874c810094b8832e5a038cef610bd07c7f",
             "distribution": "ropper",
+            "files": 34,
             "package_root": "ropper",
+            "record_sha256": "0bb311c394d12c9b23b7b123ed939f08d983c98c1625b623b234ec6a5035c48d",
             "version": "1.13.13"
           },
           {
+            "bytes": 10392729,
             "closure_policy": "importlib_metadata_record_sha256",
+            "closure_sha256": "496dcf3f9410bfcbe8bc76e059132c9510ca0788f5499107d2a47279c893a7b0",
             "distribution": "capstone",
+            "files": 58,
             "package_root": "capstone",
+            "record_sha256": "39da1cab084f0a5e318f77ea49765d6adaa8973782eb05d58910104a2f3b65d0",
             "version": "5.0.9"
           },
           {
+            "bytes": 95004,
             "closure_policy": "importlib_metadata_record_sha256",
+            "closure_sha256": "9e01690b77e869818d083bc99cef09184f90827a0850a5d7a7333585330fda10",
             "distribution": "filebytes",
+            "files": 8,
             "package_root": "filebytes",
+            "record_sha256": "f52e024d908ffa839922428b33c7f051622c23f90ea0f72fa0101008aef11df7",
             "version": "0.10.2"
           }
         ],

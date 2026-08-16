@@ -20,53 +20,8 @@ AUTHORITY = ROOT / "benchmarks/task-definitions/sprint13-natural-frozen-replay-v
 EXPECTED = ROOT / "tests/expected/sprint13-natural-terminal-attribution-v2.json"
 TOOLS = ("x64lens", "ropgadget", "ropper", "ropr")
 STATES = ("qualified", "insufficient", "unavailable", "mismatch", "ambiguous")
-PINNED_PYTHON_LAUNCHERS: dict[str, Any] = {
-    "ropgadget": {
-        "invocation_suffix": ".local/share/pipx/venvs/ropgadget/bin/python",
-        "resolved_interpreter": {
-            "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
-            "size_bytes": 8020928,
-            "mode": "0755",
-        },
-        "package_closures": [
-            {
-                "distribution": "ROPGadget", "version": "7.7", "package_root": "ropgadget",
-                "files": 20, "bytes": 128237,
-                "closure_sha256": "65c8178aa6118b81da46409d09dae9edccae8823f8ee77f260372fa9dcda4319",
-            },
-            {
-                "distribution": "capstone", "version": "5.0.9", "package_root": "capstone",
-                "files": 38, "bytes": 10003152,
-                "closure_sha256": "33691cb329bc89ef1828d9967202853d41a78e670a08a43b90497c7eb5acb033",
-            },
-        ],
-    },
-    "ropper": {
-        "invocation_suffix": ".local/share/pipx/venvs/ropper/bin/python",
-        "resolved_interpreter": {
-            "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
-            "size_bytes": 8020928,
-            "mode": "0755",
-        },
-        "package_closures": [
-            {
-                "distribution": "ropper", "version": "1.13.13", "package_root": "ropper",
-                "files": 34, "bytes": 363557,
-                "closure_sha256": "b5372a3222b9086d45db49a11f544d874c810094b8832e5a038cef610bd07c7f",
-            },
-            {
-                "distribution": "capstone", "version": "5.0.9", "package_root": "capstone",
-                "files": 38, "bytes": 10003152,
-                "closure_sha256": "33691cb329bc89ef1828d9967202853d41a78e670a08a43b90497c7eb5acb033",
-            },
-            {
-                "distribution": "filebytes", "version": "0.10.2", "package_root": "filebytes",
-                "files": 7, "bytes": 86137,
-                "closure_sha256": "73ddfadfa6adad8d8bbbed549d58dc358bc6ad500f549e308b19f0a8bae0b02c",
-            },
-        ],
-    },
-}
+PINNED_PYTHON_LAUNCHERS: dict[str, Any] = {'ropgadget': {'invocation_suffix': '.local/share/pipx/venvs/ropgadget/bin/python', 'package_closures': [{'bytes': 128237, 'closure_policy': 'importlib_metadata_record_sha256', 'closure_sha256': '65c8178aa6118b81da46409d09dae9edccae8823f8ee77f260372fa9dcda4319', 'distribution': 'ROPGadget', 'files': 20, 'package_root': 'ropgadget', 'record_sha256': '467904c94224b5c529015be417dd2d37c336d5b638e1762fcffd18ab6d394d34', 'version': '7.7'}, {'bytes': 10392729, 'closure_policy': 'importlib_metadata_record_sha256', 'closure_sha256': '496dcf3f9410bfcbe8bc76e059132c9510ca0788f5499107d2a47279c893a7b0', 'distribution': 'capstone', 'files': 58, 'package_root': 'capstone', 'record_sha256': '39da1cab084f0a5e318f77ea49765d6adaa8973782eb05d58910104a2f3b65d0', 'version': '5.0.9'}], 'resolved_interpreter': {'mode': '0755', 'sha256': '1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118', 'size_bytes': 8020928}}, 'ropper': {'invocation_suffix': '.local/share/pipx/venvs/ropper/bin/python', 'package_closures': [{'bytes': 363557, 'closure_policy': 'importlib_metadata_record_sha256', 'closure_sha256': 'b5372a3222b9086d45db49a11f544d874c810094b8832e5a038cef610bd07c7f', 'distribution': 'ropper', 'files': 34, 'package_root': 'ropper', 'record_sha256': '0bb311c394d12c9b23b7b123ed939f08d983c98c1625b623b234ec6a5035c48d', 'version': '1.13.13'}, {'bytes': 10392729, 'closure_policy': 'importlib_metadata_record_sha256', 'closure_sha256': '496dcf3f9410bfcbe8bc76e059132c9510ca0788f5499107d2a47279c893a7b0', 'distribution': 'capstone', 'files': 58, 'package_root': 'capstone', 'record_sha256': '39da1cab084f0a5e318f77ea49765d6adaa8973782eb05d58910104a2f3b65d0', 'version': '5.0.9'}, {'bytes': 95004, 'closure_policy': 'importlib_metadata_record_sha256', 'closure_sha256': '9e01690b77e869818d083bc99cef09184f90827a0850a5d7a7333585330fda10', 'distribution': 'filebytes', 'files': 8, 'package_root': 'filebytes', 'record_sha256': 'f52e024d908ffa839922428b33c7f051622c23f90ea0f72fa0101008aef11df7', 'version': '0.10.2'}], 'resolved_interpreter': {'mode': '0755', 'sha256': '1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118', 'size_bytes': 8020928}}}
+
 
 
 class AttributionError(RuntimeError):
@@ -186,6 +141,8 @@ def validate_package_closures(authority: dict[str, Any]) -> None:
     require(runtime["tool_count"] == 4 and runtime["record_verified_package_closures"] == 5,
             "runtime closure denominator changed")
     launchers = runtime["python_launchers"]
+    require(launchers == PINNED_PYTHON_LAUNCHERS,
+            "Python launcher or RECORD-closure authority changed")
     require(set(launchers) == {"ropgadget", "ropper"}, "Python launcher authority changed")
     count = 0
     for tool, record in launchers.items():
@@ -195,9 +152,16 @@ def validate_package_closures(authority: dict[str, Any]) -> None:
         require(set(interpreter) == {"sha256", "size_bytes", "mode"} and interpreter["mode"] == "0755",
                 "resolved interpreter authority changed")
         for closure in record["package_closures"]:
-            require(set(closure) == {"distribution", "version", "package_root", "closure_policy"}
-                    and closure["closure_policy"] == "importlib_metadata_record_sha256",
-                    "Python RECORD closure descriptor changed")
+            require(set(closure) == {
+                "distribution", "version", "package_root", "closure_policy",
+                "files", "bytes", "closure_sha256", "record_sha256",
+            } and closure["closure_policy"] == "importlib_metadata_record_sha256",
+                    "Python RECORD closure authority changed")
+            require(type(closure["files"]) is int and closure["files"] > 0
+                    and type(closure["bytes"]) is int and closure["bytes"] > 0
+                    and len(closure["closure_sha256"]) == 64
+                    and len(closure["record_sha256"]) == 64,
+                    "Python RECORD closure authority is incomplete")
             count += 1
     require(count == 5, "Python RECORD closure denominator changed")
 
@@ -227,11 +191,23 @@ def validate_authority(value: Any) -> dict[str, Any]:
             and execution["tools"] == list(TOOLS) and execution["reroll"] is False,
             "execution authority changed")
     input_authority = value["input_authority"]
+    require(set(input_authority) == {
+        "manifest_sha256", "selection_freeze_sha256", "source_candidate_tree",
+        "selected_targets", "executions", "cells", "controls", "cell_counts",
+        "tool_identities",
+    }, "predecessor input authority shape changed")
     require(type(input_authority["executions"]) is int and input_authority["executions"] == 48
             and input_authority["selected_targets"] == 12 and input_authority["cells"] == 9
             and input_authority["controls"] == 108,
             "predecessor denominator authority changed")
     require(sum(input_authority["cell_counts"].values()) == 9, "predecessor cell counts changed")
+    require(set(input_authority["tool_identities"]) == set(TOOLS),
+            "predecessor tool identity membership changed")
+    for tool, identity in input_authority["tool_identities"].items():
+        require(set(identity) == {"sha256", "size_bytes", "mode"}
+                and type(identity["size_bytes"]) is int and identity["size_bytes"] > 0
+                and identity["mode"] == "0755" and len(identity["sha256"]) == 64,
+                f"predecessor tool identity authority changed: {tool}")
     terminal = value["terminal_attribution"]
     require(terminal["execution_outcomes"] == 48 and terminal["relation_outcomes"] == 48
             and terminal["observations"] == 36 and terminal["cells"] == 9
@@ -334,13 +310,8 @@ def validate_result(root: Path, authority: dict[str, Any], authority_sha256: str
             require(len(observed_closures) == len(expected_launcher["package_closures"]),
                     f"Python package closure denominator changed: {tool}")
             for requested, observed in zip(expected_launcher["package_closures"], observed_closures):
-                for key in ("distribution", "version", "package_root", "closure_policy"):
-                    require(observed.get(key) == requested.get(key),
-                            f"Python package closure changed: {tool}/{key}")
-                require(observed.get("files", 0) > 0 and observed.get("bytes", 0) > 0
-                        and len(observed.get("closure_sha256", "")) == 64
-                        and len(observed.get("record_sha256", "")) == 64,
-                        f"Python RECORD closure incomplete: {tool}")
+                require(observed == requested,
+                        f"Python RECORD closure changed: {tool}/{requested['distribution']}")
             resolved = runtime["tools"][tool]["interpreter"]["resolved_interpreter"]
             for key in ("sha256", "size_bytes", "mode"):
                 require(resolved[key] == expected_launcher["resolved_interpreter"][key],
@@ -485,6 +456,7 @@ def selftest(authority: dict[str, Any]) -> None:
         raise AttributionError("false replay denominator accepted")
     mutated = json.loads(json.dumps(authority))
     mutated["runtime_authority"]["python_launchers"]["ropgadget"]["package_closures"][0]["closure_policy"] = "mutable_filesystem_walk"
+    # The exact RECORD and closure digests are authority, not merely well-formed output.
     try:
         validate_authority(mutated)
     except AttributionError:

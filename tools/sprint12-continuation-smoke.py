@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Patch 088 Sprint 12 retrospective and Sprint 13 continuation authority."""
+"""Validate the Patch 089 Sprint 12 retrospective and Sprint 13 continuation authority."""
 from __future__ import annotations
 
 import json
@@ -50,18 +50,18 @@ def main() -> int:
         exact_int(authority.get("schema_version"), 1, "schema_version")
         exact_int(authority.get("sprint"), 12, "sprint")
         require(
-            authority.get("status") == "retrospective_recorded_and_sprint13_p088_candidate_pending_acceptance",
-            "Sprint 12 retrospective must remain pending P088 acceptance",
+            authority.get("status") == "retrospective_recorded_and_sprint13_p089_candidate_pending_acceptance",
+            "Sprint 12 retrospective must remain pending P089 acceptance",
         )
-        exact_int(authority.get("current_patch"), 88, "current_patch")
+        exact_int(authority.get("current_patch"), 89, "current_patch")
         exact_int(authority.get("superseded_closeout_patch"), 78, "superseded closeout")
-        exact_int(authority.get("prior_corrective_patch"), 87, "prior corrective patch")
-        exact_int(authority.get("next_patch"), 89, "next_patch")
+        exact_int(authority.get("prior_corrective_patch"), 88, "prior corrective patch")
+        exact_int(authority.get("next_patch"), 90, "next_patch")
         require(
-            authority.get("next_patch_tranche") == "reconcile-split-debug-and-execute-workload-phase-or-next-measurement-first-gate",
+            authority.get("next_patch_tranche") == "execute-p089-fresh-split-debug-and-workload-phase-measurements-or-next-qualified-gate",
             "next tranche",
         )
-        require(authority.get("acceptance_target") == "sprint13-p088-acceptance-smoke", "acceptance target")
+        require(authority.get("acceptance_target") == "sprint13-p089-acceptance-smoke", "acceptance target")
         require(stages.get("completed_sprints") == 11 and stages.get("active_sprint") == 12, "stage chronology")
 
         reference = authority.get("reference_profile")
@@ -418,22 +418,61 @@ def main() -> int:
         }.items():
             exact_int(patch088.get(key), expected, key)
 
+        patch089 = authority.get("patch089_boundary")
+        require(isinstance(patch089, dict), "Patch 089 boundary")
+        for key in {
+            "complete_patch088_correction",
+            "replay_predecessor_tool_identity_separate",
+            "replay_python_record_closures_exact",
+            "split_debug_result_tree_exact_custody",
+            "split_debug_producer_independence_bound",
+            "split_debug_behavior_profiles_distinct",
+            "split_debug_known_symbols_unique",
+            "split_debug_signal_cleanup",
+            "workload_fixture_ids_exact_unique",
+            "source_recovery_streaming_limits",
+            "source_recovery_type_errors_normalized",
+            "split_debug_opt_in_release_experiment",
+            "split_debug_post_link_path_redaction",
+        }:
+            exact_bool(patch089.get(key), True, key)
+        for key in {
+            "runtime_source_include_schema_change",
+            "split_debug_path_stable_dwarf",
+            "split_debug_total_transfer_reduction",
+            "split_debug_product_adoption",
+            "schema_change",
+        }:
+            exact_bool(patch089.get(key), False, key)
+        for key, expected in {
+            "split_debug_authority_version": 2,
+            "split_debug_builds": 2,
+            "split_debug_behavior_executions": 60,
+            "split_debug_behavior_pairs": 30,
+            "split_debug_companion_controls": 8,
+            "split_debug_symbol_resolutions": 12,
+            "public_fields_added": 0,
+            "semantic_changes": 0,
+            "score_changes": 0,
+        }.items():
+            exact_int(patch089.get(key), expected, key)
+
         for relative in authority.get("required_documents", []):
             require((ROOT / relative).is_file(), f"missing {relative}")
         sprint12 = (ROOT / "docs/sprints/sprint-12-plan.md").read_text(encoding="utf-8")
         sprint13 = (ROOT / "docs/sprints/sprint-13-plan.md").read_text(encoding="utf-8")
-        require("Patch 088 correction and split-debug packaging experiment candidate" in sprint12, "Sprint 12 marker")
-        require("Patch 088 correction and split-debug packaging experiment candidate" in sprint13, "Sprint 13 marker")
+        require("Patch 089 correction and split-debug/workload evidence candidate" in sprint12, "Sprint 12 marker")
+        require("Patch 089 correction and split-debug/workload evidence candidate" in sprint13, "Sprint 13 marker")
     except (OSError, json.JSONDecodeError, Error) as exc:
         print(f"sprint12-continuation-smoke: error: {exc}", file=sys.stderr)
         return 1
 
     print(
         "sprint12-continuation-smoke: ok sprint=12 status=closeout-correction "
-        "patch=88 textrel=private rpath=private runpath=private roles=16 "
+        "patch=89 textrel=private rpath=private runpath=private roles=16 "
         "qualified_private_facets=3 retained_facets=2 role_record_bytes=8 "
         "role_arena_bytes=32768 analysis_arena_bytes=884736 public_fields_added=0 "
-        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 phase_executions=160 split_debug_builds=2 split_debug_executions=60 product_adoption=0 next_patch=89"
+        "semantic_changes=0 score_changes=0 tuple_decision=defer producer_generations=3 coordinate_anchors=18 natural_campaign=terminal-zero-qualified abi_role_queries=36 lifecycle_events=87 phase_executions=160 split_debug_builds=2 split_debug_executions=60 path_stable=0 total_transfer_reduction=0 product_adoption=0 next_patch=90"
     )
     return 0
 

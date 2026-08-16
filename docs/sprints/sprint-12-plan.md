@@ -2,24 +2,24 @@
 
 ## Status
 
-Patch 088 correction and split-debug packaging experiment candidate, pending complete acceptance.
+Patch 089 correction and split-debug/workload evidence candidate, pending complete acceptance.
 The Sprint 12 engineering scope and repository-facing retrospective remain
-complete. Patches 084 through 087 did not complete acceptance; Patch 088 carries
+complete. Patches 084 through 088 did not complete acceptance; Patch 089 carries
 the bounded corrective tranche and preserves the complete P083 natural campaign
 as terminal diagnostic evidence: twelve targets, 48 executions, 108 controls,
 zero qualified cells, five insufficient cells, and four unavailable cells.
 Replay-v2 retains exact target, runtime, distribution-closure, raw-stream,
 selection, and terminal authority without claiming a completed local replay.
 
-Patch 088 preserves the eight-fixture, two-profile, 160-execution paired
-workload/phase authority and adds a diagnostic two-build split-debug packaging
-experiment. The experiment does not adopt product packaging. Public output,
+Patch 089 preserves the eight-fixture, two-profile, 160-execution paired
+workload/phase authority and hardens the diagnostic two-build split-debug
+experiment. The experiment remains opt-in and does not adopt product packaging. Public output,
 schema `0.2.0`, semantic classes, scores, candidate capacity, decoder policy,
 and the deterministic one-worker profile remain unchanged.
 
 Sprint 12 remains the acceptance authority for inherited loader and mitigation
-facts until Patch 088 passes fresh native, Docker, both private parity planes,
-strict ShellCheck, replay, producer, ABI, split-debug, delivery, and independent
+facts until Patch 089 passes fresh native, Docker, both private parity planes,
+strict ShellCheck, replay, producer, ABI, split-debug, workload, delivery, and independent
 exact-source acceptance. The retrospective records completed semester work
 without claiming that these later gates have already passed.
 
@@ -38,6 +38,8 @@ Related current records:
 - [Patch 087 validation](sprint-13-patch-087-validation.md)
 - [ADR 0074](../adr/0074-patch087-correction-and-split-debug-packaging-experiment.md)
 - [Patch 088 validation](sprint-13-patch-088-validation.md)
+- [ADR 0075](../adr/0075-patch088-correction-and-p089-evidence-gates.md)
+- [Patch 089 validation](sprint-13-patch-089-validation.md)
 - [Sprint 12 retrospective](sprint-12-retro.md)
 
 ## Sprint goal
@@ -141,7 +143,7 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Define the frozen-input authority for the exact twelve predecessor hashes
   and 48 no-reroll execution slots, plus execution, relation, observation, and
   cell terminal-attribution denominators.
-- [ ] Execute the actual replay-v2 and generated P087 terminal-attribution
+- [ ] Execute the actual replay-v2 and generated P088 terminal-attribution
   result; any result remains private, diagnostic, `frozen=false`, and
   publication-ineligible.
 - [x] Define the private P086 fixture-derived vector-equivalence authority over
@@ -150,8 +152,8 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Freeze the private P087 workload/phase method without executing it or
   selecting an optimization.
 - [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck,
-  producer, replay-v2, ABI, delivery, workload/phase authority validation, and
-  independent exact-source acceptance for Patch 087.
+  producer, replay-v2, ABI, split-debug, delivery, workload/phase authority
+  validation, and independent exact-source acceptance for Patch 088.
 
 
 ## Patch sequence
@@ -219,6 +221,11 @@ that would otherwise corrupt corpus labels or defensive triage.
     replay runtime and package closures; and freeze the private, unexecuted,
     non-selecting workload/phase method without changing runtime or public
     contracts.
+27. **Patch 088:** implement candidate corrections for the Patch 087 transaction,
+    mode, recovery, replay, ABI-stage, oracle, source-identity, evidence, and
+    delivery findings; define, wire, and self-test the bounded two-build
+    split-debug packaging experiment without adopting it as product policy; full
+    execution remains pending.
 
 
 ## Current continuation disposition
@@ -239,7 +246,7 @@ performance/coverage claims:          not authorized
 
 ## Handoff
 
-After complete Patch 088 acceptance, Sprint 13 continues from its private role,
+After complete Patch 089 acceptance, Sprint 13 continues from its private role,
 task-value, and LC-08B authorities into the next independently selected bounded
 semantic gate.
 `generic_control`, `sysv_call_arguments`, and `linux_syscall_arguments` qualify

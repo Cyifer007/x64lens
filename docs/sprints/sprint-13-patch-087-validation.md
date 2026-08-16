@@ -2,15 +2,16 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, replay, producer,
-parity, ABI, delivery, and independent acceptance gates.
+Historical implementation candidate. Patch 087 did not complete exact-source
+acceptance and was superseded by Patch 088.
 
 ## Scope
 
-Patch 087 corrects Patch 086 transaction topology, wrapper signal handling,
+Patch 087 implemented candidate corrections for Patch 086 transaction topology,
+wrapper signal handling,
 source-recovery and custody publication, replay runtime authority, terminal
 attribution, ABI publication/source binding, documentation, and loose-delivery
-findings. It also freezes a paired workload and phase-attribution authority.
+findings. It also froze a paired workload and phase-attribution authority.
 
 No tracked file under `src/`, `include/`, or `schemas/` changes. The runtime,
 public schema, semantic classes, and scores remain unchanged. Tool version
@@ -106,7 +107,7 @@ make sprint12-role-property-environment-parity-smoke
 make sprint12-dynamic-metadata-environment-parity-smoke
 ```
 
-## Candidate aggregate
+## Historical candidate aggregate
 
 ```bash
 S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 \
@@ -118,8 +119,8 @@ S13_NATURAL_ATTRIBUTION_RESULT=./.local/p087-results/terminal-attribution-accept
   make sprint13-p087-acceptance-smoke
 ```
 
-A successful future exact-source run would emit this banner; the banner shown
-here is an expectation, not evidence of completion or acceptance:
+The historical aggregate defined this expected banner; it is not evidence of
+completion or acceptance:
 
 ```text
 sprint13-p087-acceptance-smoke: ok patch=87 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private workload-phase-authority=frozen public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
@@ -127,7 +128,7 @@ sprint13-p087-acceptance-smoke: ok patch=87 sprint12=closed sprint13=active froz
 
 ## Workload and phase authority
 
-The Patch 087 authority freezes eight fixtures, reference and instrumented
+The Patch 087 authority froze eight fixtures, reference and instrumented
 profiles, one warmup and nine measured runs per profile/fixture, and 160 total
 executions. Qualification requires:
 
@@ -163,4 +164,5 @@ private, diagnostic, and publication-ineligible. The workload/phase method is
 frozen but unexecuted and selects no optimization. Patch 087 does not claim
 comparative speed, RSS, comparative coverage, baseline equivalence, public role
 evidence, score improvement, exploitability, decoder need, or concurrency
-benefit. Independent exact-source acceptance remains mandatory.
+benefit. Patch 087 did not complete independent exact-source acceptance; Patch
+088 carries the current acceptance boundary.

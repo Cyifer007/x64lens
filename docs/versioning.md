@@ -13,10 +13,10 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 087 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains pending exact-source acceptance while Patch 087
-corrects the Patch 086 transaction topology, wrapper signals, replay runtime,
-terminal and ABI publication, exact-source evidence, and delivery findings. Patch 080's private additive role
+Patch 088 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains pending exact-source acceptance while Patch 088
+implements candidate corrections intended to address the Patch 087 transaction,
+replay, ABI-stage, oracle, evidence, and delivery findings. Patch 080's private additive role
 side-car remains unchanged and unprojected.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
@@ -24,7 +24,7 @@ diagnostic. The public-policy authority records `defer`, adds zero fields, prese
 coarse `mitigations.pie` meaning, and makes no runtime-CET claim. Patch 081 preserves
 the same public fields, reference profile, private context sizes, and candidate-capacity
 behavior. It adds no PIE reinterpretation or runtime-CET claim. Actual qualified parity,
-replay-v2 execution and complete Patch 088 acceptance remain pending.
+replay-v2 execution and complete Patch 089 acceptance remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
@@ -220,7 +220,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; independent exact-source Patch 088 acceptance remains
+review required this corrective candidate; independent exact-source Patch 089 acceptance remains
 pending.
 
 
@@ -267,10 +267,11 @@ are validation evidence, not product or schema versions. No completed local
 replay, public role projection, release tag, FORTIFY fact, or publication result
 is claimed.
 
-## Patch 087 compatibility note
+## Historical Patch 087 compatibility note
 
-Patch 087 is an implementation candidate pending complete exact-source
-acceptance. It retains tool version `0.1.0-dev`, schema `0.2.0`, runtime
+Patch 087 was an implementation candidate that did not complete exact-source
+acceptance and was superseded by Patch 088. It retained tool version
+`0.1.0-dev`, schema `0.2.0`, runtime
 behavior, public fields, semantic classes, scores, count meanings, candidate
 capacity, malformed no-partial-output behavior, decoder policy, and the
 one-worker reference profile. Replay, terminal-attribution, ABI-vector, and
@@ -279,7 +280,15 @@ frozen but unexecuted and non-selecting; it authorizes no speed, RSS,
 comparative coverage, baseline equivalence, exploitability, decoder,
 concurrency, release, or publication claim.
 
-## Patch 088 compatibility note
+## Patch 089 compatibility note
+
+Patch 089 retains tool version `0.1.0-dev` and schema `0.2.0`. It adds no CLI,
+public field, semantic class, score, count meaning, or compatibility change.
+Replay, split-debug, workload, recovery, and delivery changes are private
+orchestration and evidence-contract corrections. Split-debug remains an opt-in
+diagnostic release experiment and is not a current release artifact.
+
+## Historical Patch 088 compatibility note
 
 Patch 088 retains tool version `0.1.0-dev` and schema `0.2.0`. It adds no CLI,
 public field, semantic, score, count, or compatibility change. Split-debug

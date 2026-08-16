@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted as the historical Patch 085 implementation decision. Patches 085 and
-086 did not complete acceptance. Patch 088 is the current implementation
+Accepted as the historical Patch 085 implementation decision. Patches 085
+through 087 did not complete acceptance. Patch 089 is the current implementation
 candidate pending complete exact-source acceptance.
 
 ## Context

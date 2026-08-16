@@ -233,9 +233,11 @@ Patch 082 does not recalibrate a score. It implements a gate requiring each of t
 exact-pattern score/null cells to agree with the exact catalog and reports from three
 independently built analyzers. A later exact-source P082 run rejected each toggle
 through the catalog and all three producer generations. P083 subsequently required a
-fresh producer run bound to its own tree. Patches 083 through 086 did not complete
+fresh producer run bound to its own tree. Patches 083 through 087 did not complete
 acceptance; P088 is the current candidate, whose acceptance likewise requires a fresh
-producer run bound to the exact P087 candidate tree. Existing scores remain relative utility
+producer run bound to the exact candidate tree recorded by the
+[Patch 088 source preconditions](sprints/sprint-13-patch-088-validation.md#source-preconditions).
+Existing scores remain relative utility
 hypotheses, not exploitability values: 14 cells retain numeric scores, 11 retain null,
 and all three private role facets remain null.
 
@@ -254,10 +256,11 @@ value, null cell, public field, semantic class, schema, or runtime path. Neither
 the private vector result nor any later diagnostic replay authorizes score
 recalibration, exploitability, superiority, or public-role claims.
 
-## Patch 087 score boundary
+## Historical Patch 087 score boundary
 
-Patch 087 is an implementation candidate pending complete exact-source
-acceptance. It changes no scoring input, numeric value, null cell, public field,
+Patch 087 was an implementation candidate that did not complete exact-source
+acceptance and was superseded by Patch 088. It changed no scoring input, numeric
+value, null cell, public field,
 semantic class, schema, capacity, or runtime path. Replay, terminal-attribution,
 ABI-vector, and workload/phase evidence remains private and diagnostic. The
 paired phase method is frozen but unexecuted and selects no optimization; even a
@@ -268,6 +271,7 @@ concurrency claims.
 ## Patch 088 score boundary
 
 Patch 088 assigns no new score and does not recalibrate an existing score.
-Packaging size, debug-companion resolution, and behavior parity are not scoring
-facts. All three private role facets remain score-null pending their separate
+Packaging size, debug-companion resolution, and
+frozen-matrix exit-status/stdout/stderr agreement are not scoring facts. All
+three private role facets remain score-null pending their separate
 score-policy gate.

@@ -13,7 +13,7 @@ distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its
 review required Patch 077, whose review required Patch 078. Patch 078's review
 required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080.
 Current validation expectations are in the
-[Patch 087 validation record](../sprints/sprint-13-patch-087-validation.md).
+[Patch 088 validation record](../sprints/sprint-13-patch-088-validation.md).
 
 ## Context
 

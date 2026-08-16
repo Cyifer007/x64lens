@@ -8,20 +8,20 @@ Accepted as the Patch 088 implementation decision; exact-source acceptance remai
 
 Patch 087 preserved the analyzer runtime and froze a paired workload/phase experiment, but independent review found bounded defects in transaction completion, exact permission-state handling, source-recovery descriptor preflight, replay launcher and Python-distribution custody, analyzer identity across checkout paths, expected-threshold validation, stage cleanup, evidence sealing, and delivery metadata.
 
-The same review found no basis for another analyzer feature. The only strategic proposal ready for bounded execution was a two-build split-debug packaging experiment. The current executable has no GNU build ID, so the experiment must use SHA-256, `.gnu_debuglink` filename and CRC, exact symbol controls, and complete behavior parity rather than assuming build-ID pairing.
+The same review found no basis for another analyzer feature. The only strategic proposal ready for bounded execution was a two-build split-debug packaging experiment. The current executable has no GNU build ID, so the experiment must use SHA-256, `.gnu_debuglink` filename and CRC, exact symbol controls, and exit-status/stdout/stderr agreement across the frozen fifteen-profile matrix for each build rather than assuming build-ID pairing.
 
 ## Decision
 
 Patch 088:
 
-1. closes the confirmed Patch 087 transaction, recovery, replay, ABI-stage, oracle, evidence, and delivery findings;
+1. implements candidate corrections intended to address the Patch 087 transaction, recovery, replay, ABI-stage, oracle, evidence, and delivery findings;
 2. keeps the analyzer, includes, schema, semantic classes, scores, capacity, and public reports unchanged;
 3. normalizes replay analyzer identity through a checked GNU `objcopy --strip-debug` projection while retaining the original source-binary identity;
-4. resolves bounded pipx launcher symlink chains and authenticates Python distributions through immutable `importlib.metadata` RECORD hashes rather than mutable package-tree walks;
-5. executes a diagnostic two-build split-debug experiment with sixty behavior executions, thirty matched behavior pairs, eight companion controls, and twelve symbol-resolution checks; and
+4. resolves bounded pipx launcher symlink chains, derives five Python distribution closures from hash-bearing `importlib.metadata` `RECORD` rows, verifies current files against those rows, and records `RECORD` and closure digests rather than relying on mutable package-tree walks;
+5. adds an executable diagnostic two-build split-debug experiment contract with sixty behavior executions, thirty matched behavior pairs, eight companion controls, and twelve symbol-resolution checks; and
 6. does not adopt split-debug packaging as product policy.
 
-The experiment requires at least fifty-percent runtime-size reduction in each build, no behavior disagreement, successful debug-companion resolution, rejection of missing or CRC-mismatched companions, no local-path leakage, and a complete explanation of between-build differences. Because the current build lacks a GNU build ID, SHA-256 and `.gnu_debuglink` CRC are the identity authorities for this experiment.
+The experiment requires a runtime-size reduction of at least fifty percent in each build, exit-status/stdout/stderr agreement across the frozen fifteen-profile matrix for both builds, successful debug-companion resolution, rejection of missing or CRC-mismatched companions, and no configured `/tmp/`, `/home/`, or `/mnt/` prefix in packaged bytes or checked resolution locations. Normalized runtime and companion bytes must match across builds; any difference rejects the experiment. Because the current build lacks a GNU build ID, SHA-256 and `.gnu_debuglink` CRC are the identity authorities for this experiment.
 
 ## Preserved boundaries
 
@@ -35,7 +35,7 @@ The experiment requires at least fifty-percent runtime-size reduction in each bu
 
 ## Consequences
 
-Patch 088 can be accepted only after fresh native, Docker, producer, replay, ABI, parity, split-debug, strict-lint, and independent Lane A gates pass against the exact candidate tree. The retained split-debug result is diagnostic and artifact-backed when it consumes predecessor producer builds; it is not a fresh Patch 088 build result and does not authorize product packaging changes.
+Patch 088 can be accepted only after fresh native, Docker, producer, replay, ABI, parity, split-debug, strict-lint, and independent exact-source acceptance gates pass against the exact candidate tree. Any retained split-debug result, once produced, remains diagnostic; it must consume producer builds bound to the authenticated candidate tree and does not authorize product packaging changes.
 
 ## Follow-up
 

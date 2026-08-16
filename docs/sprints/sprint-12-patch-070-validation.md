@@ -12,8 +12,8 @@ evidence, and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required the Patch 079 corrective and
 private task-value candidate, which was superseded by Patch 080; Patch 080's
-review required Patch 081. Patches 081 through 086 did not complete acceptance;
-Patch 088 is the current candidate. The batch pilot, private-fact matrix, and `readelf`
+review required Patch 081. Patches 081 through 087 did not complete acceptance;
+Patch 089 is the current candidate. The batch pilot, private-fact matrix, and `readelf`
 reconciliation remain diagnostic, unfrozen, and publication-ineligible.
 Qualified native/container parity also remains pending.
 
@@ -128,4 +128,4 @@ first custody/isolation correction and policy deferral are recorded in
 the superseded closeout-candidate boundary is recorded in
 [`sprint-12-patch-074-validation.md`](sprint-12-patch-074-validation.md).
 Current validation expectations are in
-[`sprint-13-patch-087-validation.md`](sprint-13-patch-087-validation.md).
+[`sprint-13-patch-088-validation.md`](sprint-13-patch-088-validation.md).

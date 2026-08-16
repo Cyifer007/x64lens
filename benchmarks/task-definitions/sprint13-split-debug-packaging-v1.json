@@ -1,45 +1,216 @@
 {
-  "schema": "x64lens-sprint13-split-debug-packaging-v1",
-  "sprint": 13,
-  "patch": 88,
-  "experiment_id": "s13-p088-c02-split-debug-packaging-v1",
-  "evidence_class": "diagnostic",
-  "publication_eligible": false,
-  "product_adoption_authorized": false,
-  "builds": 2,
-  "packaging": {
-    "runtime_filename": "x64lens",
-    "companion_filename": "x64lens.debug",
-    "objcopy_operations": ["--only-keep-debug", "--strip-all", "--add-gnu-debuglink=x64lens.debug"],
-    "local_path_prefixes_rejected": ["/tmp/", "/home/", "/mnt/"],
-    "minimum_runtime_size_reduction": 0.5,
-    "build_id_policy": "must_be_absent_for_current_experiment",
-    "between_build_policy": "runtime_and_companion_bytes_equal_after_local_path_redaction"
-  },
   "behavior_profiles": [
-    {"id":"version","args":["version"],"target":null},
-    {"id":"help","args":["help"],"target":null},
-    {"id":"info_effects","args":["info"],"target":"effects"},
-    {"id":"info_pairs","args":["info"],"target":"pairs"},
-    {"id":"mitigations_effects","args":["mitigations"],"target":"effects"},
-    {"id":"mitigations_pairs","args":["mitigations"],"target":"pairs"},
-    {"id":"gadgets_text_depth4_effects","args":["gadgets","--max-depth","4"],"target":"effects"},
-    {"id":"gadgets_text_depth4_pairs","args":["gadgets","--max-depth","4"],"target":"pairs"},
-    {"id":"gadgets_json_depth4_effects","args":["gadgets","--format","json","--max-depth","4"],"target":"effects"},
-    {"id":"gadgets_json_depth4_pairs","args":["gadgets","--format","json","--max-depth","4"],"target":"pairs"},
-    {"id":"analyze_text_depth4_effects","args":["analyze","--max-depth","4"],"target":"effects"},
-    {"id":"analyze_text_depth4_pairs","args":["analyze","--max-depth","4"],"target":"pairs"},
-    {"id":"analyze_json_depth4_effects","args":["analyze","--format","json","--max-depth","4"],"target":"effects"},
-    {"id":"analyze_json_depth4_pairs","args":["analyze","--format","json","--max-depth","4"],"target":"pairs"},
-    {"id":"gadgets_json_depth8_pairs","args":["gadgets","--format","json","--max-depth","8"],"target":"pairs"}
+    {
+      "args": [
+        "version"
+      ],
+      "id": "version",
+      "target": null
+    },
+    {
+      "args": [
+        "help"
+      ],
+      "id": "help",
+      "target": null
+    },
+    {
+      "args": [
+        "info"
+      ],
+      "id": "info_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "info"
+      ],
+      "id": "info_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "mitigations"
+      ],
+      "id": "mitigations_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "mitigations"
+      ],
+      "id": "mitigations_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "gadgets",
+        "--max-depth",
+        "4"
+      ],
+      "id": "gadgets_text_depth4_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "gadgets",
+        "--max-depth",
+        "4"
+      ],
+      "id": "gadgets_text_depth4_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "gadgets",
+        "--format",
+        "json",
+        "--max-depth",
+        "4"
+      ],
+      "id": "gadgets_json_depth4_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "gadgets",
+        "--format",
+        "json",
+        "--max-depth",
+        "4"
+      ],
+      "id": "gadgets_json_depth4_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "analyze",
+        "--max-depth",
+        "4"
+      ],
+      "id": "analyze_text_depth4_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "analyze",
+        "--max-depth",
+        "4"
+      ],
+      "id": "analyze_text_depth4_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "analyze",
+        "--format",
+        "json",
+        "--max-depth",
+        "4"
+      ],
+      "id": "analyze_json_depth4_effects",
+      "target": "effects"
+    },
+    {
+      "args": [
+        "analyze",
+        "--format",
+        "json",
+        "--max-depth",
+        "4"
+      ],
+      "id": "analyze_json_depth4_pairs",
+      "target": "pairs"
+    },
+    {
+      "args": [
+        "gadgets",
+        "--format",
+        "json",
+        "--max-depth",
+        "8"
+      ],
+      "id": "gadgets_json_depth8_pairs",
+      "target": "pairs"
+    }
   ],
-  "known_symbols": ["x64lens_analysis_summary_mark_complete","x64lens_command_analyze","x64lens_arena_init","x64lens_command_gadgets","x64lens_command_info","_start"],
-  "required_denominators": {"behavior_executions":60,"behavior_pairs":30,"companion_controls":8,"symbol_resolutions":12},
-  "companion_controls": ["build1_debuglink_name_crc","build2_debuglink_name_crc","build1_symbol_resolution","build2_symbol_resolution","companion_absent_rejected","companion_crc_mismatch_rejected","cross_build_substitution_rejected_before_normalization","runtime_core_has_no_debuglink"],
-  "public_boundary": {"public_fields_added":0,"semantic_changes":0,"score_changes":0,"schema_changed":false,"runtime_product_adoption":false},
+  "builds": 2,
+  "companion_controls": [
+    "build1_debuglink_name_crc",
+    "build2_debuglink_name_crc",
+    "build1_symbol_resolution",
+    "build2_symbol_resolution",
+    "companion_absent_rejected",
+    "companion_crc_mismatch_rejected",
+    "cross_build_substitution_rejected_before_normalization",
+    "runtime_core_has_no_debuglink"
+  ],
+  "evidence_class": "diagnostic",
+  "experiment_id": "s13-p089-c02-split-debug-packaging-v2",
+  "known_symbols": [
+    "x64lens_analysis_summary_mark_complete",
+    "x64lens_command_analyze",
+    "x64lens_arena_init",
+    "x64lens_command_gadgets",
+    "x64lens_command_info",
+    "_start"
+  ],
   "limitations": [
-    "This is a packaging experiment and does not alter the reference analyzer runtime contract.",
+    "This is an opt-in packaging experiment and does not alter the reference analyzer runtime contract.",
+    "The current experiment still uses bounded post-link path redaction; path-stable DWARF without rewriting remains required before production adoption.",
+    "Runtime plus debug-companion transfer size must be measured separately from runtime-tier shrinkage; this patch authorizes no total-transfer saving claim.",
     "The current analyzer has no GNU build ID; identity uses SHA-256 plus .gnu_debuglink filename and CRC controls.",
     "A passing experiment does not authorize product adoption, public fields, semantic changes, score changes, decoder integration, or concurrency."
-  ]
+  ],
+  "packaging": {
+    "between_build_policy": "runtime_and_companion_bytes_equal_after_bounded_post_link_path_redaction",
+    "build_id_policy": "must_be_absent_for_current_experiment",
+    "companion_filename": "x64lens.debug",
+    "local_path_prefixes_rejected": [
+      "/tmp/",
+      "/home/",
+      "/mnt/"
+    ],
+    "minimum_runtime_size_reduction": 0.5,
+    "objcopy_operations": [
+      "--only-keep-debug",
+      "--strip-all",
+      "--add-gnu-debuglink=x64lens.debug"
+    ],
+    "path_stable_dwarf_required_for_adoption": true,
+    "post_link_path_redaction": true,
+    "runtime_filename": "x64lens",
+    "total_transfer_reduction_required_for_adoption": true
+  },
+  "patch": 89,
+  "producer_authority": {
+    "build_commands": [
+      "make clean",
+      "make -j1",
+      "make -j1 samples"
+    ],
+    "generation_count": 3,
+    "schema": "x64lens-sprint13-producer-authority-v1",
+    "selected_generations": [
+      1,
+      2
+    ]
+  },
+  "product_adoption_authorized": false,
+  "public_boundary": {
+    "public_fields_added": 0,
+    "runtime_product_adoption": false,
+    "schema_changed": false,
+    "score_changes": 0,
+    "semantic_changes": 0
+  },
+  "publication_eligible": false,
+  "required_denominators": {
+    "behavior_executions": 60,
+    "behavior_pairs": 30,
+    "companion_controls": 8,
+    "symbol_resolutions": 12
+  },
+  "schema": "x64lens-sprint13-split-debug-packaging-v2",
+  "sprint": 13
 }

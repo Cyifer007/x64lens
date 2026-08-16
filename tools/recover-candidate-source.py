@@ -39,6 +39,9 @@ from typing import Any, BinaryIO, Callable, NamedTuple
 BUFFER_SIZE = 1024 * 1024
 MAX_SOURCE_FILES = 4096
 MAX_SOURCE_DIRECTORIES = 1024
+MAX_SOURCE_FILE_BYTES = 64 * 1024 * 1024
+MAX_SOURCE_TOTAL_BYTES = 512 * 1024 * 1024
+MAX_SOURCE_ARCHIVE_BYTES = 1024 * 1024 * 1024
 MIN_FD_HEADROOM = 64
 O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
 O_DIRECTORY = getattr(os, "O_DIRECTORY", 0)
@@ -195,7 +198,8 @@ def strict(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return out
 
 
-def safe(raw: str) -> str:
+def safe(raw: Any) -> str:
+    require(isinstance(raw, str), f"member path must be a string: {type(raw).__name__}")
     path = PurePosixPath(raw)
     require(
         raw
@@ -251,6 +255,13 @@ def same_path_object(parent_fd: int, name: str, fd: int, label: str) -> os.stat_
 
 def git_object(kind: bytes, payload: bytes) -> str:
     return hashlib.sha1(kind + b" " + str(len(payload)).encode("ascii") + b"\0" + payload).hexdigest()
+
+
+def git_blob_hasher(size: int) -> Any:
+    require(type(size) is int and 0 <= size <= MAX_SOURCE_FILE_BYTES, "invalid bounded Git blob size")
+    digest = hashlib.sha1()
+    digest.update(b"blob " + str(size).encode("ascii") + b"\0")
+    return digest
 
 
 def load_regular_bytes(path: Path, label: str, limit: int) -> bytes:
@@ -376,10 +387,14 @@ def parse_manifest(value: dict[str, Any]) -> tuple[dict[str, int], dict[str, dic
             and all(char in "0123456789abcdef" for char in item["sha256"]),
             f"invalid digest: {path}",
         )
-        require(type(item["size_bytes"]) is int and item["size_bytes"] >= 0, f"invalid size: {path}")
+        require(type(item["size_bytes"]) is int and 0 <= item["size_bytes"] <= MAX_SOURCE_FILE_BYTES,
+                f"invalid or over-capacity size: {path}")
         files[path] = item
     require(len(directories) <= MAX_SOURCE_DIRECTORIES, "source directory capacity exceeded")
     require(len(files) <= MAX_SOURCE_FILES, "source file capacity exceeded")
+    total_bytes = sum(item["size_bytes"] for item in files.values())
+    require(total_bytes <= MAX_SOURCE_TOTAL_BYTES,
+            f"source aggregate byte capacity exceeded: {total_bytes} > {MAX_SOURCE_TOTAL_BYTES}")
     require(ordered_directories == sorted(ordered_directories) and list(files) == sorted(files),
             "manifest paths must be sorted")
     all_dirs = {"", *directories}
@@ -458,19 +473,29 @@ def rename_noreplace(old_parent: int, old: str, new_parent: int, new: str) -> No
         raise OSError(error, os.strerror(error), new)
 
 
-def hash_fd(fd: int) -> tuple[str, int, bytes | None]:
+def hash_fd(fd: int, expected_size: int | None = None) -> tuple[str, int, str]:
+    observed_size = os.fstat(fd).st_size
+    if expected_size is None:
+        expected_size = observed_size
+    else:
+        require(type(expected_size) is int and expected_size == observed_size,
+                "declared file size differs from descriptor size")
+    require(type(expected_size) is int and 0 <= expected_size <= MAX_SOURCE_FILE_BYTES,
+            "invalid bounded file size")
     os.lseek(fd, 0, os.SEEK_SET)
     digest = hashlib.sha256()
-    git_payload = bytearray()
+    git_digest = git_blob_hasher(expected_size)
     total = 0
     while True:
         chunk = os.read(fd, BUFFER_SIZE)
         if not chunk:
             break
-        digest.update(chunk)
-        git_payload.extend(chunk)
         total += len(chunk)
-    return digest.hexdigest(), total, bytes(git_payload)
+        require(total <= expected_size, "file exceeds declared bounded size while hashing")
+        digest.update(chunk)
+        git_digest.update(chunk)
+    require(total == expected_size, "file size changed while hashing")
+    return digest.hexdigest(), total, git_digest.hexdigest()
 
 
 def open_archive(path: Path) -> tuple[int, BinaryIO]:
@@ -478,6 +503,7 @@ def open_archive(path: Path) -> tuple[int, BinaryIO]:
     metadata = os.fstat(fd)
     require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
             "source archive must be one regular non-hard-linked file")
+    require(metadata.st_size <= MAX_SOURCE_ARCHIVE_BYTES, "source archive exceeds bounded size")
     return fd, os.fdopen(os.dup(fd), "rb", closefd=True)
 
 
@@ -522,15 +548,14 @@ def final_verify(
                 f"file topology changed: {path}")
         require(stat.S_IMODE(before.st_mode) == record.mode, f"file mode changed: {path}")
         before_fingerprint = file_fingerprint(before)
-        observed, size, payload = hash_fd(record.fd)
+        observed, size, observed_oid = hash_fd(record.fd)
         after = same_path_object(record.parent_fd, record.name, record.fd, f"file {path}")
         require(
             file_fingerprint(after) == before_fingerprint,
             f"file topology or metadata changed while hashing: {path}",
         )
         require(observed == record.sha256 and size == record.size, f"file bytes changed: {path}")
-        assert payload is not None
-        require(git_object(b"blob", payload) == record.git_oid, f"Git blob identity changed: {path}")
+        require(observed_oid == record.git_oid, f"Git blob identity changed: {path}")
 
 
 def _snapshot_cleanup_records(root_fd: int) -> tuple[
@@ -842,7 +867,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         expected["git_oid"],
                     )
                     digest = hashlib.sha256()
-                    git_payload = bytearray()
+                    git_digest = git_blob_hasher(expected["size_bytes"])
                     total = 0
                     try:
                         while True:
@@ -852,7 +877,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                             total += len(chunk)
                             require(total <= expected["size_bytes"], f"TAR member exceeds declared size: {name}")
                             digest.update(chunk)
-                            git_payload.extend(chunk)
+                            git_digest.update(chunk)
                             view = memoryview(chunk)
                             while view:
                                 written = os.write(fd, view)
@@ -866,7 +891,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         require(stable(current_stat) == opened and current_stat.st_nlink == 1,
                                 f"recovered file identity changed: {name}")
                         observed_sha = digest.hexdigest()
-                        observed_oid = git_object(b"blob", bytes(git_payload))
+                        observed_oid = git_digest.hexdigest()
                         require(observed_sha == expected["sha256"], f"file SHA-256 disagrees: {name}")
                         require(observed_oid == expected["git_oid"], f"Git blob identity disagrees: {name}")
                         seen_files.add(name)

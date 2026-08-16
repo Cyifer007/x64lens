@@ -180,13 +180,13 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 remains the active acceptance authority. Patches 081 through 086 did not
-complete acceptance; Patch 088 is the current exact-source implementation candidate.
+Sprint 12 remains the active acceptance authority. Patches 081 through 087 did not
+complete acceptance; Patch 089 is the current exact-source implementation candidate.
 Patch 074 was a superseded closeout candidate.
 Patch 075 introduced private text-relocation evidence, Patch 076 added distinct bounded
 RPATH/RUNPATH evidence, and Patch 077 required Patch 078, whose review required Patch
 079. Patch 080 was superseded by Patch 081. Sprint 13 remains planned and activates only
-after complete Patch 088 acceptance. The diagnostic corpus and method remain provisional
+after complete Patch 089 acceptance. The diagnostic corpus and method remain provisional
 until Sprint 15. Sprints 13 and 14 may change capabilities or experimental profiles in
 response to diagnostic evidence; such changes require new diagnostic identities and do
 not contaminate the later frozen campaign.
@@ -318,7 +318,7 @@ text-relocation evidence, and distinct private RPATH/RUNPATH evidence. Patch 078
 corrected the next parity and custody blockers, but its review required the
 Patch 079 corrective and private task-value candidate; Patch 079's review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 088 acceptance remains pending. Any diagnostic campaign after acceptance requires a new
+Patch 089 acceptance remains pending. Any diagnostic campaign after acceptance requires a new
 identifier when its task, capability, schema, or method changes.
 
 
@@ -326,8 +326,8 @@ identifier when its task, capability, schema, or method changes.
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 remains active. Patches 081 through 086 did not complete acceptance;
-Patch 088 is the current exact-source candidate pending complete independent
+Sprint 12 remains active. Patches 081 through 087 did not complete acceptance;
+Patch 089 is the current exact-source candidate pending complete independent
 acceptance. The overlap, PIE/DSO, and GNU-
 property gates are `resolved`:
 overlap by measured deferral, and role/property projection by retained private
@@ -362,10 +362,11 @@ requires agreement across three independent build roots, but full retained
 execution remains pending local validation. Neither gate freezes a campaign,
 authorizes a public field, or adds a semantic family.
 
-## Patch 087 frozen-method boundary
+## Historical Patch 087 frozen-method boundary
 
-Patch 087 is an implementation candidate pending complete exact-source
-acceptance. It changes no analyzer runtime, public schema, semantic class, score,
+Patch 087 was an implementation candidate that did not complete exact-source
+acceptance and was superseded by Patch 088. It changed no analyzer runtime,
+public schema, semantic class, score,
 candidate-capacity, malformed-input, decoder, or one-worker contract. Replay,
 terminal-attribution, ABI-vector, and workload/phase evidence remains private,
 diagnostic, and publication-ineligible. The paired phase method is frozen but
@@ -377,7 +378,9 @@ concurrency claims.
 ## Patch 088 split-debug capability gate
 
 The split-debug study is a packaging experiment, not a runtime capability gate.
-Admission requires two independent builds, complete behavior parity, companion
-resolution and rejection controls, path-leakage rejection, and at least
-fifty-percent size reduction in both builds. Product adoption requires a later
-separate decision after fresh exact-source evidence.
+Admission requires two independent builds; exact exit-status/stdout/stderr
+agreement across the frozen fifteen-profile matrix for each build; companion
+resolution and rejection controls; rejection of configured `/tmp/`, `/home/`,
+and `/mnt/` prefixes in packaged bytes and checked resolution locations; and a
+runtime-size reduction of at least fifty percent in both builds. Product adoption requires a
+later separate decision after fresh exact-source evidence.

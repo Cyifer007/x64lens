@@ -484,16 +484,15 @@ positive; it remains unfrozen and comparison-unqualified. Patch 086 did not
 complete exact-source acceptance. This does not change the Sprint 12 semester
 engineering scope or retroactively claim acceptance.
 
-## Post-semester Patch 087 acceptance continuation
+## Historical post-semester Patch 087 acceptance continuation
 
-Patch 087 correction and paired workload/phase-attribution authority candidate
-carries forward the Patch 086 review findings and current exact-source
-acceptance debt without changing the completed Sprint 12 semester engineering
-record. It rejects
-hard-linked patch state, removes package-wrapper post-helper signal windows,
-closes source-recovery and custody publication bookkeeping gaps, pins replay
-launcher/interpreter/package closures, publishes terminal and ABI evidence
-complete-or-absent, and binds ABI evidence to the exact candidate source.
+The Patch 087 correction and paired workload/phase-attribution authority
+candidate carried forward the Patch 086 review findings without changing the
+completed Sprint 12 semester engineering record. It implemented candidate
+corrections for hard-linked patch state, package-wrapper signal windows,
+source-recovery and custody publication, replay launcher/interpreter/package
+closures, terminal and ABI publication, and ABI source binding. Patch 087 did
+not complete exact-source acceptance and was superseded by Patch 088.
 
 The private diagnostic paired workload/phase authority freezes a method over
 eight fixtures, two profiles, and 160 planned executions. It has not run and
@@ -504,11 +503,13 @@ decoder, or concurrency claim follows. Fresh native, Docker, producer, replay,
 parity, strict ShellCheck, delivery, and independent acceptance remain separate
 from the retrospective's semester-completion claim.
 
-## Post-semester Patch 088 acceptance continuation
+## Post-semester Patch 089 acceptance continuation
 
-Patch 088 carries exact-source acceptance work forward without changing the
-Sprint 12 loader or mitigation product facts. It corrects transaction, recovery,
-replay, ABI-stage, oracle, evidence, and delivery authorities discovered during
-Patch 087 review. Its only new experiment is a diagnostic two-build split-debug
-packaging study. No public mitigation field, runtime semantic class, score,
-schema, decoder, concurrency, or release claim changes.
+Patch 089 carries exact-source acceptance work forward without changing the
+Sprint 12 loader or mitigation product facts. It corrects replay identity and
+Python closure custody, split-debug producer/result authority, workload fixture
+identity, streaming recovery limits, documentation, and delivery closure.
+Split-debug remains an opt-in diagnostic release experiment: path-stable DWARF,
+total-transfer reduction, and default product adoption are not established. No
+public mitigation field, runtime semantic class, score, schema, decoder,
+concurrency, or release claim changes.

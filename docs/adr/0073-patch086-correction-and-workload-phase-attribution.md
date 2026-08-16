@@ -2,8 +2,9 @@
 
 ## Status
 
-Decision accepted for inclusion in the Patch 087 implementation candidate.
-Exact-source product acceptance remains pending.
+Decision accepted for inclusion in the historical Patch 087 implementation
+candidate. Patch 087 did not complete exact-source acceptance and was
+superseded by Patch 088.
 
 ## Context
 
@@ -62,9 +63,7 @@ equivalence, exploitability, decoder, concurrency, or resource superiority.
 
 ## Consequences
 
-Patch 087 remains an implementation candidate pending fresh native,
-strict-shell, Docker, producer, replay,
-external-natural, parity, ABI, package, and independent acceptance gates. After
-acceptance, Patch 088 may execute the paired workload/phase authority. If the
-required instrumentation or workload qualification is unavailable, a separate
-measurement-first tranche may proceed without altering the frozen authority.
+Patch 087 did not complete its fresh native, strict-shell, Docker, producer,
+replay, external-natural, parity, ABI, package, or independent acceptance gates.
+Patch 089 carries the current acceptance boundary and keeps the paired
+workload/phase authority frozen and unexecuted.

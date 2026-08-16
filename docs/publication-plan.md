@@ -269,10 +269,10 @@ acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Patches 083 through 086 also did not complete acceptance. Independent
-exact-source Patch 088 acceptance remains pending. Sprint
+accepted. Patches 083 through 087 also did not complete acceptance. Independent
+exact-source Patch 089 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 088 acceptance.
+only after complete Patch 089 acceptance.
 
 The Patch 073 diagnostic campaign had every x64lens row below the timer floor
 and zero positive coordinate anchors. It remains diagnostic, unfrozen, and
@@ -387,10 +387,10 @@ remains unfrozen and comparison-unqualified. No performance, RSS, parity,
 coverage, superiority, exploitability, decoder, FORTIFY, concurrency, or
 publication claim follows.
 
-## Patch 087 publication boundary
+## Historical Patch 087 publication boundary
 
-Patch 087 remains an implementation candidate pending complete exact-source
-acceptance and adds no publication result. Replay-v2, terminal-attribution,
+Patch 087 did not complete exact-source acceptance and was superseded by Patch
+088. It added no publication result. Replay-v2, terminal-attribution,
 ABI-vector, and paired workload/phase evidence remains private, diagnostic, and
 publication-ineligible. The phase method is frozen but unexecuted and selects no
 optimization. Runtime, public schema, semantic classes, scores, candidate

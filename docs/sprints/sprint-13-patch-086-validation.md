@@ -3,8 +3,9 @@
 ## Status
 
 Historical implementation candidate. Patch 086 did not complete exact-source
-acceptance; Patch 087 carries its bounded transaction, replay, publication,
-source-binding, delivery, and workload/phase-authority corrections.
+acceptance. Patch 087 carried bounded transaction, replay, publication,
+source-binding, delivery, and workload/phase-authority corrections but likewise
+did not complete acceptance; Patch 088 is current.
 
 ## Scope
 

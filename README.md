@@ -4,19 +4,18 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts. Sprint 13 Patch 088 is the current implementation
-> candidate. It closes the Patch 087 transaction-completion, exact-mode,
-> source-recovery descriptor, replay launcher/distribution, analyzer-projection,
-> workload-oracle, ABI-stage, source-identity, evidence-ledger, documentation,
-> and delivery findings. It retains the exact twelve no-reroll natural targets,
-> 48 executions, 96 raw streams, nine cells, 108 controls, the private ABI
-> vector contract, and the frozen paired workload/phase method. Patch 088 also
-> adds a bounded two-build split-debug packaging experiment with sixty behavior
-> executions, thirty matched pairs, eight companion controls, and twelve symbol
-> resolutions. The experiment is diagnostic and does not authorize product
-> adoption. Public output, semantic classes, scores, candidate capacity, and
-> schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
-> parity, split-debug, and independent acceptance remain pending.
+> and mitigation facts. Sprint 13 Patch 089 is the current implementation
+> candidate. It corrects Patch 088 replay identity and Python closure custody,
+> split-debug producer/result authority, workload fixture identity, streaming
+> source recovery, documentation, and delivery findings. Patch 089 preserves
+> the exact twelve no-reroll targets, 48 replay executions, 96 raw streams,
+> private ABI-vector authority, and the eight-fixture/two-profile workload
+> method. Split-debug remains an opt-in diagnostic release experiment: the
+> retained preflight uses post-link path redaction, is not path-stable DWARF,
+> did not establish total-transfer reduction, and does not authorize default
+> product adoption. Public output, semantic classes, scores, candidate capacity,
+> and schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
+> parity, split-debug, workload, and independent acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -54,22 +53,51 @@
 >
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
-## Sprint 13 Patch 088 correction and split-debug packaging experiment
+## Sprint 13 Patch 089 correction and evidence reconciliation
 
-Patch 088 completes the bounded Patch 087 correction while preserving all
-analyzer and public contracts. Guarded patch transactions now commit terminal
-success before any success banner can become externally visible, reject
-noncanonical regular-file modes, and remain signal-safe. Candidate-source
+Patch 089 separates predecessor replay identity from the current analyzer
+projection and requires exact hash-bearing Python distribution closures. It
+strengthens split-debug result custody across producer generation, source tree,
+behavior commands, known symbols, retained membership, file modes, inode
+uniqueness, interruption cleanup, and no-replace publication. The workload
+method now requires the exact eight ordered fixture identities, and candidate
+source recovery streams bounded files instead of buffering them whole.
+
+```text
+runtime src/include/schema changes: 0
+public fields added:                 0
+semantic changes:                    0
+score changes:                       0
+schema:                              0.2.0
+split-debug authority version:       2
+split-debug opt-in experiment:       yes
+path-stable DWARF:                   no
+total-transfer reduction:            not established
+split-debug product adoption:        not authorized
+```
+
+See [ADR 0075](docs/adr/0075-patch088-correction-and-p089-evidence-gates.md)
+and the [Patch 089 validation record](docs/sprints/sprint-13-patch-089-validation.md).
+
+
+## Historical Sprint 13 Patch 088 correction and split-debug packaging experiment
+
+Patch 088 implements the bounded Patch 087 candidate corrections while
+preserving all analyzer and public contracts. Guarded patch transactions commit
+terminal success before any success banner can become externally visible,
+reject noncanonical regular-file modes, and discard catchable `SIGHUP`,
+`SIGINT`, and `SIGTERM` during terminal success publication. Candidate-source
 recovery accounts for inherited, ancestor, retained-tree, and cleanup descriptor
 peaks before mutation. Replay accepts bounded pipx launcher symlink chains,
-authenticates Python distributions through immutable RECORD members, and
-compares analyzer builds through a checked strip-debug projection while
-retaining each original binary identity separately.
+derives five Python distribution closures from hash-bearing `RECORD` rows,
+verifies current files against those rows, and records `RECORD` and closure
+digests. It compares analyzer builds through a checked strip-debug projection
+while retaining each original binary identity separately.
 
 The split-debug experiment consumes two independent producer builds and requires
 sixty behavior executions, thirty paired comparisons, eight companion controls,
-twelve symbol resolutions, and at least fifty-percent runtime-size reduction per
-build. The current executable has no GNU build ID, so the experiment uses
+twelve symbol resolutions, and a runtime-size reduction of at least fifty
+percent per build. The current executable has no GNU build ID, so the experiment uses
 SHA-256 plus `.gnu_debuglink` filename and CRC authority. A diagnostic result
 may inform a later packaging decision but does not change the reference binary,
 release artifacts, or public output.
@@ -87,20 +115,20 @@ See [ADR 0074](docs/adr/0074-patch087-correction-and-split-debug-packaging-exper
 and the [Patch 088 validation record](docs/sprints/sprint-13-patch-088-validation.md).
 
 
-## Sprint 13 Patch 087 correction and workload/phase authority
+## Historical Sprint 13 Patch 087 correction and workload/phase authority
 
-Patch 087 authenticates hard-link topology before base or candidate state
-classification, eliminates package-wrapper commands after the transaction
-helper, closes effect-before-bookkeeping signal windows in source recovery and
-delivery custody, and makes replay and result publication complete-or-absent.
-The replay authority now preserves pipx launcher identity while separately
-pinning the resolved interpreter and five exact Python package-root closures.
-It also retains the complete selection-freeze summary and requires the observed
-terminal distribution rather than weakening the oracle after drift.
+Patch 087 introduced candidate corrections for hard-link topology,
+package-wrapper signal windows, source-recovery and delivery publication, replay, and
+result publication. Its replay authority preserved pipx launcher identity while
+separately pinning the resolved interpreter and five Python package-root
+closures. It also retained the complete selection-freeze summary and required
+the observed terminal distribution rather than weakening the oracle after
+drift. Patch 087 did not complete exact-source acceptance and was superseded by
+Patch 088.
 
-The candidate requires private ABI evidence regenerated from the exact Patch 087
-source authority and published without replacement. A separate private,
-diagnostic measurement authority freezes
+The historical candidate required private ABI evidence regenerated from its
+exact source authority and published without replacement. A separate private,
+diagnostic measurement authority froze
 8 fixtures, 2 profiles, 16 profile/fixture cells, 16 warmups, 144 measured runs,
 and 160 total executions. Qualification requires at least six fixtures with a
 median at least five timer floors, MAD/median no greater than 0.10, phase-sum
@@ -212,7 +240,7 @@ schema:                       0.2.0
 natural cells:                0 qualified / 5 insufficient / 4 unavailable
 ABI role queries:             36 private
 unchanged-public closures:    96 disabled-output closures pending fresh build
-P084 acceptance:              not accepted; P085 and P086 also not accepted; P088 current
+P084 acceptance:              not accepted; P085 through P088 also not accepted; P089 current
 ```
 
 See [ADR 0070](docs/adr/0070-patch083-correction-and-abi-role-contract.md) and
@@ -1097,11 +1125,12 @@ See [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md), [`docs/design/be
 ## Versioning
 
 The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag identifies the
-Sprint 6 integrated checkpoint; Patches 046 through 086 are later pre-release work.
+Sprint 6 integrated checkpoint; Patches 046 through 088 are later pre-release work.
 Patch 079 was the corrective and private task-value candidate; it was superseded by
 Patch 080, and Patch 080 by Patch 081. Patches 081 and 082 were not accepted. Patches
-083 through 086 also did not complete acceptance; Patch 088 is the current corrective and
-workload/phase-authority candidate, pending complete exact-source acceptance. Patch 054 closes Sprint 10, Patch
+083 through 088 also did not complete acceptance; Patch 089 is the current
+corrective and split-debug experiment candidate, pending complete exact-source
+acceptance. Patch 054 closes Sprint 10, Patch
 061 closes Sprint 11, and Patch 062 begins Sprint 12 loader-precision work. Patch 063
 adds corrective hardening plus internal overlap provenance, and Patch 064 records the
 measured normalization deferral plus an internal role-evidence lattice. Patch 065
@@ -1297,8 +1326,9 @@ role decision without runtime, public-field, or score projection. Its review
 required Patch 079, which was superseded by Patch 080; Patch 080's review required
 Patch 081. Patch 082 was not accepted; its findings became correction inputs to
 Patch 083. Patch 083 was not accepted; Patch 084 carried its bounded corrections
-but also was not accepted. Sprint 13 becomes active only after complete exact-
-source Patch 087 acceptance.
+but also was not accepted. Patches 085 through 087 likewise did not complete
+acceptance.
+Sprint 13 becomes active only after complete exact-source Patch 089 acceptance.
 See
 [ADR 0060](docs/adr/0060-patch073-correction-and-sprint12-closeout.md), the
 historical
@@ -1322,12 +1352,14 @@ the [historical P083 validation](docs/sprints/sprint-13-patch-083-validation.md)
 the [historical P084 validation](docs/sprints/sprint-13-patch-084-validation.md),
 the [historical P085 validation](docs/sprints/sprint-13-patch-085-validation.md),
 the [historical P086 validation](docs/sprints/sprint-13-patch-086-validation.md),
-and the [current P087 validation](docs/sprints/sprint-13-patch-087-validation.md).
+the [historical P087 validation](docs/sprints/sprint-13-patch-087-validation.md),
+and the [current P089 validation](docs/sprints/sprint-13-patch-089-validation.md).
 
 Patch 083 was not accepted. Patch 084 preserved the retained natural-coordinate
 terminal states and froze the private ABI-role query contract, but it also was
-not accepted. Patch 085 and Patch 086 also did not complete acceptance; Patch 087 carries the
-current bounded correction and workload/phase-attribution authority. None of these patches
+not accepted. Patches 085 through 087 also did not complete acceptance; Patch
+088 carries the current bounded corrections and split-debug experiment. None of
+these patches
 authorizes a public-field, semantic, score, schema, capacity, decoder,
 concurrency, comparative-coverage, baseline-equivalence, performance, RSS, or
 exploitability change.
