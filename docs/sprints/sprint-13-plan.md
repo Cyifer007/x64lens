@@ -2,7 +2,7 @@
 
 ## Status
 
-Patch 087 correction and paired workload/phase-attribution authority candidate; activation pending complete Patch 087 acceptance. Patch 087 preserves
+Patch 088 correction and split-debug packaging experiment candidate; activation pending complete Patch 088 acceptance. Patch 088 preserves
 Patch 086 replay-v2, terminal-attribution, and private ABI-vector evidence while
 correcting their transaction, runtime, publication, source-binding, and delivery
 surfaces. It freezes eight fixtures, reference and instrumented profiles, and a
@@ -11,7 +11,7 @@ surfaces. It freezes eight fixtures, reference and instrumented profiles, and a
 Patch 080 retains `generic_control`, `sysv_call_arguments`, and
 `linux_syscall_arguments` only in the private side-car. Patches 081 through 086
 preserve the zero-gain tuple deferral, complete score/null policy, controlled and
-natural coordinate diagnostics, ABI-role contract, frozen replay, layered
+natural coordinate diagnostics, ABI-role contract, exact no-reroll replay, layered
 terminal attribution, and private full-vector equivalence. Public output,
 semantic classes, scores, schema `0.2.0`, capacity, decoder policy, and the
 one-worker reference profile remain unchanged.
@@ -47,7 +47,9 @@ general-purpose decoder or chain generator.
 - [x] Define the P086 fixture-derived private vector-equivalence authority with
   48 internal dispositions, 24 controlled targets, 36 named queries, and 96
   unchanged-public closures without projecting private roles.
-- [x] Freeze the P087 paired workload/phase experiment: eight fixtures, two profiles, 160 executions, five-floor qualification, bounded dispersion/residual/overhead, and no optimization selection before execution.
+- [x] Freeze the P087 paired workload/phase method: eight fixtures, two
+  profiles, 160 planned executions, five-floor qualification, bounded
+  dispersion/residual/overhead, and no optimization selection.
 - [ ] Use Sprint 11-12 diagnostics to select only bounded additional multi-pop, transfer, stack, or memory families that materially affect research tasks.
 - [ ] Add exact fixtures, effects, false-positive boundaries, schema validation, and score decisions for any selected family.
 - [ ] Record unsupported family gaps that remain outside the release scope.
@@ -75,7 +77,8 @@ general-purpose decoder or chain generator.
    runtime, public, or score changes; actual execution remains an acceptance gate.
 9. **Patch 086:** correct Patch 085 replay, recovery, custody, exact-tree, and delivery findings; seal the replay-to-attribution contract; and measure private full-vector ABI-role equivalence without public projection.
 10. **Patch 087:** correct Patch 086 transaction topology, wrapper signals, recovery/custody publication, replay runtime and closure authority, terminal/ABI publication, exact-source evidence, and delivery; freeze the paired workload/phase-attribution authority without selecting an optimization.
-11. **Patch 088 and later evidence-selected patches:** execute the qualified workload/phase authority when its instrumentation and environment are available, or add only another bounded family or consumer that demonstrates incremental task value.
+11. **Patch 088:** correct Patch 087 transaction, mode, recovery, replay, ABI-stage, oracle, source-identity, evidence, and delivery findings; execute the bounded two-build split-debug packaging experiment without adopting it as product policy.
+12. **Patch 089 and later evidence-selected patches:** reconcile the fresh split-debug result and execute the workload/phase authority when its instrumentation and environment are available, or add only another bounded family or consumer that demonstrates incremental task value.
 
 ## Acceptance criteria
 
@@ -87,18 +90,20 @@ general-purpose decoder or chain generator.
 
 ## Handoff
 
-Patch 087 is the current corrective and measurement-authority candidate. It
-requires a candidate-bound replay, terminal attribution, ABI-vector result,
-producer gate, exact-source Docker and parity evidence, and independent Lane A
-acceptance. The workload/phase authority is frozen but unexecuted. It cannot
-select reporter batching, scan prefiltering, decoder work, concurrency, or any
-performance claim until at least six fixtures satisfy the preregistered floor,
-dispersion, residual, overhead, and public-output-equivalence thresholds.
+Patch 088 is the current corrective and packaging-experiment candidate. It
+requires candidate-bound replay, terminal attribution, ABI-vector, producer,
+exact-source Docker, parity, split-debug, and independent exact-source acceptance.
+Replay, terminal-attribution, ABI-vector, workload/phase, and split-debug evidence
+remains private and diagnostic. The workload/phase method remains frozen but
+unexecuted. The split-debug experiment does not adopt a product packaging mode.
+Neither authority establishes speed, RSS, comparative coverage, baseline
+equivalence, exploitability, decoder need, concurrency benefit, or an
+optimization choice.
 
-Patch 088 should execute that authority when the accepted instrumentation seam
-and qualified environment are available. If execution remains environment-
-blocked, the next patch may pursue another Lane C measurement-first tranche but
-must preserve the frozen authority and state the deferral explicitly.
+Patch 089 should reconcile the fresh split-debug result and execute the frozen
+workload/phase authority when its accepted instrumentation and environment are
+available. If execution remains environment-blocked, the next patch may pursue
+only another bounded measurement-first tranche while preserving the deferral.
 
 
 ## Historical Patch 079 boundary
@@ -115,5 +120,5 @@ changes, and results could not be pooled across strata.
 
 Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
-projection. Patch 080 was superseded by Patch 081; complete Patch 087 acceptance
+projection. Patch 080 was superseded by Patch 081; complete Patch 088 acceptance
 remains required before the next Sprint 13 tranche.

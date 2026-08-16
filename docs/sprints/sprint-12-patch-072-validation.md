@@ -10,7 +10,7 @@ candidate. Patch 075 introduced bounded private static text-relocation evidence,
 and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are
-in the [Patch 086 validation record](sprint-13-patch-086-validation.md).
+in the [Patch 087 validation record](sprint-13-patch-087-validation.md).
 Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes
@@ -19,7 +19,7 @@ no runtime assembly, include, or JSON schema file.
 Retained diagnostic evidence completed the external-natural acquisition but did
 not include a fresh native runtime build. Retained same-host parity evidence is
 logic-only, not native/container parity. Corrected native/container parity and
-complete Patch 087 acceptance remain pending.
+complete Patch 088 acceptance remain pending.
 
 ## Source precondition
 
@@ -193,4 +193,4 @@ RPATH/RUNPATH evidence, but its review required Patch 077. Patch 077 was a
 reconciliation candidate. Patch 078 corrected its remaining blockers, but its
 review required the Patch 079 corrective and private task-value candidate, whose
 review required Patch 080, which was superseded by Patch 081. Patch 081 was not
-accepted; complete Patch 087 acceptance remains pending, so Sprint 12 remains open.
+accepted; complete Patch 088 acceptance remains pending, so Sprint 12 remains open.

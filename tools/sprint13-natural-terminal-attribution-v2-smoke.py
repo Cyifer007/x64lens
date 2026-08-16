@@ -183,10 +183,9 @@ def checksum_map(root: Path) -> dict[str, str]:
 
 def validate_package_closures(authority: dict[str, Any]) -> None:
     runtime = authority["runtime_authority"]
-    require(runtime["tool_count"] == 4 and runtime["pinned_package_closures"] == 5,
+    require(runtime["tool_count"] == 4 and runtime["record_verified_package_closures"] == 5,
             "runtime closure denominator changed")
     launchers = runtime["python_launchers"]
-    require(launchers == PINNED_PYTHON_LAUNCHERS, "Python launcher or package closure authority changed")
     require(set(launchers) == {"ropgadget", "ropper"}, "Python launcher authority changed")
     count = 0
     for tool, record in launchers.items():
@@ -196,13 +195,11 @@ def validate_package_closures(authority: dict[str, Any]) -> None:
         require(set(interpreter) == {"sha256", "size_bytes", "mode"} and interpreter["mode"] == "0755",
                 "resolved interpreter authority changed")
         for closure in record["package_closures"]:
-            require(set(closure) == {"distribution", "version", "package_root", "files", "bytes", "closure_sha256"},
-                    "Python package closure shape changed")
-            require(closure["files"] > 0 and closure["bytes"] > 0 and len(closure["closure_sha256"]) == 64,
-                    "Python package closure is not pinned")
+            require(set(closure) == {"distribution", "version", "package_root", "closure_policy"}
+                    and closure["closure_policy"] == "importlib_metadata_record_sha256",
+                    "Python RECORD closure descriptor changed")
             count += 1
-    require(count == 5, "Python package closure denominator changed")
-
+    require(count == 5, "Python RECORD closure denominator changed")
 
 def validate_authority(value: Any) -> dict[str, Any]:
     keys = {
@@ -211,16 +208,16 @@ def validate_authority(value: Any) -> dict[str, Any]:
         "selection", "tools", "adapters", "execution", "runtime_authority",
         "result_contract", "terminal_attribution", "claim_boundary", "limitations",
     }
-    require(isinstance(value, dict) and set(value) == keys, "P087 replay authority shape changed")
+    require(isinstance(value, dict) and set(value) == keys, "P088 replay authority shape changed")
     require(value["schema"] == "x64lens-sprint13-natural-frozen-replay-authority-v2"
-            and value["sprint"] == 13 and value["patch"] == 87,
-            "P087 replay authority identity changed")
-    require(value["campaign_id"] == "s13-p087-natural-frozen-replay-v2"
+            and value["sprint"] == 13 and value["patch"] == 88,
+            "P088 replay authority identity changed")
+    require(value["campaign_id"] == "s13-p088-natural-frozen-replay-v2"
             and value["predecessor_campaign_id"] == "s13-p083-natural-coordinate-v1",
-            "P087 replay lineage changed")
+            "P088 replay lineage changed")
     require(value["evidence_class"] == "diagnostic" and value["frozen"] is False
             and value["publication_eligible"] is False,
-            "P087 replay evidence boundary changed")
+            "P088 replay evidence boundary changed")
     require(len(value["selection"]) == 12 and len({item["target_id"] for item in value["selection"]}) == 12,
             "target denominator changed")
     require({item["role"] for item in value["selection"]} == {"et_exec", "pie_et_dyn", "shared_et_dyn"},
@@ -296,7 +293,7 @@ def validate_result(root: Path, authority: dict[str, Any], authority_sha256: str
     result = load(root / "manifest.json")
     freeze = load(root / "selection-freeze.json")
     runtime = load(root / "runtime-authority.json")
-    require(result["schema"] == "x64lens-sprint13-natural-frozen-replay-result-v2" and result["patch"] == 87,
+    require(result["schema"] == "x64lens-sprint13-natural-frozen-replay-result-v2" and result["patch"] == 88,
             "replay result identity changed")
     require(result["campaign_id"] == authority["campaign_id"] and result["authority_sha256"] == authority_sha256,
             "replay campaign or authority changed")
@@ -320,13 +317,30 @@ def validate_result(root: Path, authority: dict[str, Any], authority_sha256: str
         expected = authority["tools"][tool]
         current = result["tool_identities"][tool]
         runtime_tool = runtime["tools"][tool]["executable"]
-        for key in ("sha256", "size_bytes", "mode"):
-            require(current.get(key) == expected[key] and runtime_tool.get(key) == expected[key],
-                    f"tool/runtime authority changed: {tool}/{key}")
+        if tool == "x64lens":
+            require(current.get("identity_policy") == "strip_debug_projection"
+                    and runtime_tool.get("identity_policy") == "strip_debug_projection",
+                    "x64lens projection policy changed")
+            for key in ("projection_sha256", "projection_size_bytes"):
+                require(current.get(key) == expected[key] and runtime_tool.get(key) == expected[key],
+                        f"x64lens projection changed: {key}")
+        else:
+            for key in ("sha256", "size_bytes", "mode"):
+                require(current.get(key) == expected[key] and runtime_tool.get(key) == expected[key],
+                        f"tool/runtime authority changed: {tool}/{key}")
         if tool in authority["runtime_authority"]["python_launchers"]:
             expected_launcher = authority["runtime_authority"]["python_launchers"][tool]
-            require(runtime["tools"][tool]["package_closures"] == expected_launcher["package_closures"],
-                    f"Python package closure changed: {tool}")
+            observed_closures = runtime["tools"][tool]["package_closures"]
+            require(len(observed_closures) == len(expected_launcher["package_closures"]),
+                    f"Python package closure denominator changed: {tool}")
+            for requested, observed in zip(expected_launcher["package_closures"], observed_closures):
+                for key in ("distribution", "version", "package_root", "closure_policy"):
+                    require(observed.get(key) == requested.get(key),
+                            f"Python package closure changed: {tool}/{key}")
+                require(observed.get("files", 0) > 0 and observed.get("bytes", 0) > 0
+                        and len(observed.get("closure_sha256", "")) == 64
+                        and len(observed.get("record_sha256", "")) == 64,
+                        f"Python RECORD closure incomplete: {tool}")
             resolved = runtime["tools"][tool]["interpreter"]["resolved_interpreter"]
             for key in ("sha256", "size_bytes", "mode"):
                 require(resolved[key] == expected_launcher["resolved_interpreter"][key],
@@ -379,7 +393,7 @@ def attribute(result: dict[str, Any], authority: dict[str, Any]) -> dict[str, An
     output = {
         "schema": "x64lens-sprint13-natural-terminal-attribution-result-v2",
         "sprint": 13,
-        "patch": 87,
+        "patch": 88,
         "campaign_id": result["campaign_id"],
         "execution_outcomes": sum(execution.values()),
         "execution_reasons": execution,
@@ -470,13 +484,13 @@ def selftest(authority: dict[str, Any]) -> None:
     else:
         raise AttributionError("false replay denominator accepted")
     mutated = json.loads(json.dumps(authority))
-    mutated["runtime_authority"]["python_launchers"]["ropgadget"]["package_closures"][0]["closure_sha256"] = "0" * 64
+    mutated["runtime_authority"]["python_launchers"]["ropgadget"]["package_closures"][0]["closure_policy"] = "mutable_filesystem_walk"
     try:
         validate_authority(mutated)
     except AttributionError:
         pass
     else:
-        raise AttributionError("changed Python package closure accepted")
+        raise AttributionError("changed Python RECORD closure policy accepted")
     with tempfile.TemporaryDirectory(prefix="x64lens-attribution-publication-selftest-") as raw:
         output = Path(raw) / "result.json"
         original_write = os.write
@@ -515,7 +529,7 @@ def main() -> int:
         authority = validate_authority(load(authority_path))
         selftest(authority)
         if args.action == "selftest":
-            print("sprint13-natural-terminal-attribution-v2-smoke: ok precedence_mutations=16 execution_outcomes=48 relation_outcomes=48 observations=36 cells=9 raw_streams=96 pinned_python_closures=5 expected_required=1 run=deferred")
+            print("sprint13-natural-terminal-attribution-v2-smoke: ok precedence_mutations=16 execution_outcomes=48 relation_outcomes=48 observations=36 cells=9 raw_streams=96 record_python_closures=5 expected_required=1 run=deferred")
             return 0
         require(args.input_dir is not None and args.output is not None, "--input-dir and --output are required")
         with signal_guard("terminal attribution"):
@@ -524,7 +538,7 @@ def main() -> int:
             require(args.expected is not None, "--expected is mandatory")
             require(output == load(args.expected.resolve(strict=True)), "terminal attribution differs from mandatory expected result")
             write_noreplace(Path(os.path.abspath(args.output)), canonical(output))
-        print("sprint13-natural-terminal-attribution-v2-smoke: ok precedence_mutations=16 execution_outcomes=48 relation_outcomes=48 observations=36 cells=9 raw_streams=96 pinned_python_closures=5 expected_required=1 run=complete")
+        print("sprint13-natural-terminal-attribution-v2-smoke: ok precedence_mutations=16 execution_outcomes=48 relation_outcomes=48 observations=36 cells=9 raw_streams=96 record_python_closures=5 expected_required=1 run=complete")
         return 0
     except (OSError, json.JSONDecodeError, UnicodeDecodeError, AttributionError) as exc:
         fail(str(exc))

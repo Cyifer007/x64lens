@@ -125,7 +125,7 @@ def validate_authority(value: Any) -> dict[str, Any]:
     }
     require(isinstance(value, dict) and set(value) == keys, "vector authority shape changed")
     require(value["schema"] == "x64lens-sprint13-abi-role-vector-equivalence-authority-v1"
-            and value["sprint"] == 13 and value["patch"] == 87,
+            and value["sprint"] == 13 and value["patch"] == 88,
             "vector authority identity changed")
     require(value["internal_dispositions"] == {
         "valid": 16,
@@ -226,6 +226,24 @@ def full_vectors(probe: Path, authority: dict[str, Any], abi_root: Path, work: P
 
 
 def selftest(authority: dict[str, Any]) -> None:
+    with tempfile.TemporaryDirectory(prefix="x64lens-abi-stage-signal-selftest-") as raw:
+        parent = Path(raw)
+        stage: Path | None = None
+        try:
+            with signal_guard("ABI stage signal selftest"):
+                try:
+                    with defer_catchable_signals():
+                        stage = Path(tempfile.mkdtemp(prefix=".abi.stage.", dir=parent))
+                    os.kill(os.getpid(), signal.SIGTERM)
+                except BaseException:
+                    if stage is not None and stage.exists():
+                        shutil.rmtree(stage, ignore_errors=True)
+                    raise
+        except CatchableTermination:
+            pass
+        else:
+            raise VectorError("ABI stage signal selftest did not terminate")
+        require(stage is not None and not stage.exists(), "ABI signal left staging residue")
     allowed = 0x3F3F01
     for item in authority["valid_pop_cases"]:
         require(item["expected_role_mask"] & ~allowed == 0, "oracle mask exceeds allowed role domain")
@@ -280,12 +298,12 @@ def run(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str, Any]:
             "vector result path unavailable")
     stage: Path | None = None
     current: Path | None = None
-    with defer_catchable_signals():
-        stage = Path(tempfile.mkdtemp(prefix=f".{result_dir.name}.stage.", dir=result_dir.parent))
-        current = stage
-    work = stage / "work"
-    work.mkdir(mode=0o700)
     try:
+        with defer_catchable_signals():
+            stage = Path(tempfile.mkdtemp(prefix=f".{result_dir.name}.stage.", dir=result_dir.parent))
+            current = stage
+        work = stage / "work"
+        work.mkdir(mode=0o700)
         abi_root = stage / "abi-closures"
         namespace = SimpleNamespace(
             analyzer=args.analyzer,
@@ -307,7 +325,7 @@ def run(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str, Any]:
         result = {
             "schema": "x64lens-sprint13-abi-role-vector-equivalence-result-v1",
             "sprint": 13,
-            "patch": 87,
+            "patch": 88,
             "internal_dispositions": sum(internal.values()),
             **internal,
             "controlled_targets": 24,

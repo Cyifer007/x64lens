@@ -471,30 +471,44 @@ parity, producer, strict
 ShellCheck, delivery, and independent acceptance remain separate from the
 retrospective's semester-completion claim.
 
-## Post-semester acceptance continuation
+## Historical post-semester Patch 086 acceptance continuation
 
-Patch 086 carries the remaining Patch 085 replay, evidence-custody, transaction,
+Patch 086 carried the remaining Patch 085 replay, evidence-custody, transaction,
 recovery, ABI expected-result, exact-tree, and delivery corrections into Sprint
 13. Replay-v2 defines sealing and mandatory terminal attribution but does not
 claim that local replay completed. The private ABI-vector equivalence record
 does not authorize public role projection. A separate private Patch 085
 diagnostic campaign completed 30/30 conditions and 180/180 rows, but all 60
 x64lens rows were below the 5,515,395 ns floor and 0/9 coordinate cells were
-positive; it remains unfrozen and comparison-unqualified. This does not change
-the Sprint 12 semester engineering scope or retroactively claim acceptance.
+positive; it remains unfrozen and comparison-unqualified. Patch 086 did not
+complete exact-source acceptance. This does not change the Sprint 12 semester
+engineering scope or retroactively claim acceptance.
 
 ## Post-semester Patch 087 acceptance continuation
 
 Patch 087 correction and paired workload/phase-attribution authority candidate
-carries forward the remaining Patch 087 exact-source acceptance debt without
-changing the completed Sprint 12 semester engineering record. It rejects
+carries forward the Patch 086 review findings and current exact-source
+acceptance debt without changing the completed Sprint 12 semester engineering
+record. It rejects
 hard-linked patch state, removes package-wrapper post-helper signal windows,
 closes source-recovery and custody publication bookkeeping gaps, pins replay
 launcher/interpreter/package closures, publishes terminal and ABI evidence
 complete-or-absent, and binds ABI evidence to the exact candidate source.
 
-The paired workload/phase authority freezes eight fixtures, two profiles, and
-160 executions. It has not run and authorizes no optimization or performance
-claim. Fresh native, Docker, producer, replay, parity, strict ShellCheck,
-delivery, and independent acceptance remain separate from the retrospective's
-semester-completion claim.
+The private diagnostic paired workload/phase authority freezes a method over
+eight fixtures, two profiles, and 160 planned executions. It has not run and
+selects no optimization. Runtime, public schema, semantic classes, scores,
+candidate capacity, and malformed no-partial-output behavior remain unchanged;
+no speed, RSS, comparative coverage, baseline equivalence, exploitability,
+decoder, or concurrency claim follows. Fresh native, Docker, producer, replay,
+parity, strict ShellCheck, delivery, and independent acceptance remain separate
+from the retrospective's semester-completion claim.
+
+## Post-semester Patch 088 acceptance continuation
+
+Patch 088 carries exact-source acceptance work forward without changing the
+Sprint 12 loader or mitigation product facts. It corrects transaction, recovery,
+replay, ABI-stage, oracle, evidence, and delivery authorities discovered during
+Patch 087 review. Its only new experiment is a diagnostic two-build split-debug
+packaging study. No public mitigation field, runtime semantic class, score,
+schema, decoder, concurrency, or release claim changes.

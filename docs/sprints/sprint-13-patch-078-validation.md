@@ -4,7 +4,7 @@
 
 Historical candidate. Patch 078 was superseded by the Patch 079 corrective and private
 task-value candidate; Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081.
-Patches 081 through 085 did not complete acceptance. Patch 087 is the current exact-
+Patches 081 through 086 did not complete acceptance. Patch 088 is the current exact-
 source implementation candidate, pending independent exact-source acceptance.
 
 ## Purpose

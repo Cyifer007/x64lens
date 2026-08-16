@@ -80,10 +80,10 @@ REQUIRED_TEXT = {
         "Final corpus freeze",
     ),
     "docs/sprints/sprint-12-plan.md": (
-        "Patch 087 correction and paired workload/phase-attribution authority candidate, pending complete acceptance",
+        "Patch 088 correction and split-debug packaging experiment candidate, pending complete acceptance",
     ),
     "docs/sprints/sprint-13-plan.md": (
-        "Patch 087 correction and paired workload/phase-attribution authority candidate; activation pending complete Patch 087 acceptance",
+        "Patch 088 correction and split-debug packaging experiment candidate; activation pending complete Patch 088 acceptance",
         "Patch 087",
     ),
     "docs/benchmark-methodology.md": (

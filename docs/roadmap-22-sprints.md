@@ -14,7 +14,7 @@ versions, commands, and task definitions are frozen.
 ## Current checkpoint
 
 Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
-mitigation facts. Patch 087 is the current implementation candidate. Sprint 13
+mitigation facts. Patch 088 is the current implementation candidate. Sprint 13
 becomes fully active only after every Patch 087 exact-source native, Docker,
 replay-v2, parity, producer, private ABI-vector, delivery, documentation, and independent
 acceptance gate passes against one candidate tree.
@@ -39,8 +39,8 @@ retains the complete 25-pattern score/null partition. Patch 082 implements
 producer-backed validation for those retained decisions. Patch 083 corrected the
 remaining P082 acceptance infrastructure and implemented the outcome-blind
 natural-coordinate campaign. Patch 083 was not accepted. Patch 084 carried its bounded
-corrections but was not accepted, and Patch 085 also did not complete
-acceptance; Patch 087 is the current exact-source implementation candidate.
+corrections but was not accepted, and Patches 085 and 086 also did not complete
+acceptance; Patch 088 is the current exact-source implementation candidate.
 P084 preserves the retained natural-coordinate terminal states and freezes
 the private ABI-role query contract. It authorizes no public fields, semantics, scores,
 schema or capacity changes, decoder or concurrency work, or comparative coverage,
@@ -263,8 +263,8 @@ introduced bounded private static text-relocation evidence, and Patch 076 added 
 private RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077 then
 required Patch 078, whose review required the Patch 079 corrective and private
 task-value candidate, whose review required Patch 080; Patch 080 was superseded by Patch
-081. Patches 081 and 082 were not accepted. Patches 083 through 085 also did not complete
-acceptance; Patch 087 is the current exact-source implementation candidate, pending
+081. Patches 081 through 086 did not complete
+acceptance; Patch 088 is the current exact-source implementation candidate, pending
 complete local and independent acceptance. None of these patches advances the Sprint 15
 freeze, adds a public mitigation field, or changes the dependency-free one-worker
 reference profile.
@@ -314,7 +314,7 @@ Patch 077 was a Sprint 12 reconciliation candidate. It preserved
 the implemented private textrel/RPATH/RUNPATH facts, corrected their surrounding
 transactions and oracles, and added no public field. Its review required Patch
 078, whose review in turn required Patch 079; Patch 079's review required Patch
-080, which was superseded by Patch 081. Independent exact-source Patch 086
+080, which was superseded by Patch 081. Independent exact-source Patch 087
 acceptance is still required before Sprint 13 activation;
 the confirmatory campaign remains frozen only in Sprint 15.
 
@@ -355,6 +355,21 @@ coordinate evidence and a frozen role consumer remain required before the next
 semantic or comparative decision. Sprint 15 remains the confirmatory campaign
 freeze.
 
+## Historical Sprint 13 Patch 083 checkpoint
+
+Patch 083 was a corrective and diagnostic-campaign candidate. It implemented the
+outcome-blind natural coordinate campaign selected after the controlled
+preflight while preserving all runtime and public contracts. Natural results
+remain diagnostic; Sprint 15 still owns campaign freeze.
+
+## Historical Sprint 13 Patch 084 checkpoint
+
+Patch 084 was a corrective and private-contract candidate that did not complete
+acceptance. It preserves the complete P083 natural campaign as zero-qualified terminal
+diagnostic evidence, separates structural completion from comparison qualification,
+binds Docker and natural evidence to the exact candidate tree, and freezes a private
+36-query ABI-role contract plus the sealed lifecycle denominator. It adds no public
+field, semantic class, score, schema, capacity, decoder, or concurrency change.
 
 ## Historical Sprint 13 Patch 085 checkpoint
 
@@ -366,10 +381,10 @@ terminal-attribution denominators. The predecessor remains nine cells, 108
 controls, zero qualified, five insufficient, and four unavailable cells. It
 changes no public field, semantic class, score, schema, capacity, decoder profile,
 or worker policy. Its actual replay did not complete, and the candidate was not
-accepted; Patch 086 carries the replay, producer, Docker, parity, and
+accepted; Patch 086 carried the replay, producer, Docker, parity, and
 independent-acceptance debt.
 
-## Sprint 13 Patch 086 checkpoint
+## Historical Sprint 13 Patch 086 checkpoint
 
 Patch 086 defined the replay-v2 correction and private ABI-vector
 equivalence candidate; its review required Patch 087. Replay-v2 defines sealing for twelve exact targets, 48
@@ -381,30 +396,23 @@ queries, and 96 unchanged-public closures. No runtime source, public field,
 semantic class, score, schema, decoder, concurrency, capacity, or output
 contract changes.
 
-
 ## Sprint 13 Patch 087 checkpoint
 
-Patch 087 is the current transaction/replay/publication correction and paired
+Patch 088 is the current transaction/replay/publication correction and paired
 workload/phase-attribution authority candidate. It preserves replay-v2's twelve
 targets, forty-eight executions, ninety-six raw streams, and private ABI-vector
 contract while pinning Python runtime closures and complete result publication.
-It freezes eight fixtures, two profiles, and 160 diagnostic executions, but no
-phase timing result or optimization is claimed. Public output, semantics,
-scores, schema `0.2.0`, candidate capacity, decoder policy, and the one-worker
-reference profile remain unchanged.
+It freezes a private diagnostic method over eight fixtures, two profiles, and
+160 planned executions; the method has not run and selects no optimization.
+Public output, semantics, scores, schema `0.2.0`, candidate capacity, malformed
+no-partial-output behavior, decoder policy, and the one-worker reference profile
+remain unchanged. No speed, RSS, comparative coverage, baseline equivalence,
+exploitability, decoder, or concurrency claim follows.
 
-## Historical Sprint 13 Patch 084 checkpoint
+## Sprint 13 Patch 088 checkpoint
 
-Patch 084 was a corrective and private-contract candidate that did not complete
-acceptance. It preserves the complete P083 natural campaign as zero-qualified terminal
-diagnostic evidence, separates structural completion from comparison qualification,
-binds Docker and natural evidence to the exact candidate tree, and freezes a private
-36-query ABI-role contract plus the sealed lifecycle denominator. It adds no public
-field, semantic class, score, schema, capacity, decoder, or concurrency change.
-
-## Historical Sprint 13 Patch 083 checkpoint
-
-Patch 083 was a corrective and diagnostic-campaign candidate. It implemented the
-outcome-blind natural coordinate campaign selected after the controlled
-preflight while preserving all runtime and public contracts. Natural results
-remain diagnostic; Sprint 15 still owns campaign freeze.
+Patch 088 is the current exact-source corrective and split-debug experiment
+candidate. It adds no analyzer or public-contract change. Acceptance requires
+fresh native, Docker, producer, replay, ABI, parity, split-debug, strict-lint,
+and independent review evidence. Patch 089 owns result reconciliation and the
+next measurement-first decision.

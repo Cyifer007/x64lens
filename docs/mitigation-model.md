@@ -270,7 +270,7 @@ corrections without changing a mitigation field but was superseded. Patch 075 in
 private text-relocation evidence, and Patch 076 added distinct private RPATH/RUNPATH
 evidence. Patch 077 required Patch 078; Patch 078's review then required the Patch 079
 corrective and private task-value candidate, which was superseded by Patch 080. Patches
-081 through 085 did not complete acceptance. Patch 087 is the current exact-source
+081 through 086 did not complete acceptance. Patch 088 is the current exact-source
 implementation candidate.
 
 ## Sprint 12 Patch 072 external-natural and parity gate
@@ -311,25 +311,7 @@ Patch 074 preserves this deferral, adds zero mitigation fields, and implements
 corrections for the selection, delivery, parity, permission, and negative-oracle
 defects around the policy evidence. Static GNU properties remain private
 indicators and do not prove runtime CET enforcement. Corrected actual parity and
-complete Patch 087 acceptance remain pending.
-
-## Patch 085 mitigation boundary
-
-Patch 085 adds replay and terminal-attribution authorities outside the analyzer;
-it changes no mitigation parser, meaning, public field, schema `0.2.0`, runtime
-CET claim, score, or capacity contract. The predecessor natural result and any
-future replay output remain diagnostic, `frozen=false`, and publication-ineligible
-and authorize
-no parity, prevalence, coverage, performance, RSS, or superiority claim.
-
-## Patch 086 mitigation boundary
-
-Patch 086 corrects authorities outside the analyzer and records private ABI-role
-vector equivalence. It changes no mitigation detector, parser, public field,
-meaning, schema, runtime CET claim, score, or capacity contract. Replay-v2 has
-not completed locally, and neither its contract nor the private vector result
-authorizes a FORTIFY-detection, mitigation-prevalence, coverage, performance,
-RSS, superiority, or exploitability claim.
+complete Patch 088 acceptance remain pending.
 
 ## Sprint 12 Patch 075 private text-relocation evidence
 
@@ -386,3 +368,32 @@ and coordinate authorities validate development evidence around existing facts.
 Private PIE/DSO, GNU-property, text-relocation, RPATH, and RUNPATH facts remain
 unprojected; static evidence does not establish runtime CET enforcement or
 exploitability.
+
+## Historical Patch 085 mitigation boundary
+
+Patch 085 adds replay and terminal-attribution authorities outside the analyzer;
+it changes no mitigation parser, meaning, public field, schema `0.2.0`, runtime
+CET claim, score, or capacity contract. The predecessor natural result and any
+future replay output remain diagnostic, `frozen=false`, and publication-
+ineligible and authorize no parity, prevalence, coverage, performance, RSS, or
+superiority claim.
+
+## Historical Patch 086 mitigation boundary
+
+Patch 086 corrects authorities outside the analyzer and records private ABI-role
+vector equivalence. It changes no mitigation detector, parser, public field,
+meaning, schema, runtime CET claim, score, or capacity contract. Replay-v2 did
+not complete for that candidate, and neither its contract nor the private vector
+result authorizes FORTIFY detection, mitigation prevalence, coverage,
+performance, RSS, superiority, or exploitability claims.
+
+## Patch 087 mitigation boundary
+
+Patch 087 is an implementation candidate pending complete exact-source
+acceptance. It changes no mitigation producer, public field, schema meaning,
+semantic class, score, candidate capacity, or malformed no-partial-output
+contract. Replay, terminal-attribution, ABI-vector, and workload/phase evidence
+remains private and diagnostic; none is a mitigation or runtime-enforcement
+fact. The phase method is frozen but unexecuted and selects no optimization. It
+authorizes no speed, RSS, comparative coverage, baseline equivalence,
+exploitability, decoder, concurrency, or publication claim.

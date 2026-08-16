@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted as the Patch 085 implementation decision. Product acceptance remains
-subject to the exact-source native, Docker, parity, replay, producer, delivery,
-and independent validation gates.
+Accepted as the historical Patch 085 implementation decision. Patches 085 and
+086 did not complete acceptance. Patch 088 is the current implementation
+candidate pending complete exact-source acceptance.
 
 ## Context
 

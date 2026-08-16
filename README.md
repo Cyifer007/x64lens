@@ -4,18 +4,19 @@
 
 > Status: Sprints 1 through 12 are recorded as completed engineering work.
 > Sprint 12 remains the exact-source acceptance authority for inherited loader
-> and mitigation facts. Sprint 13 Patch 087 is the current implementation
-> candidate. It closes the Patch 086 transaction-topology, wrapper-signal,
-> source-recovery, custody-publication, replay-runtime, terminal-attribution,
-> ABI-publication/source-binding, documentation, and delivery findings. It
-> retains the exact twelve no-reroll natural targets, 48 executions, 96 raw
-> streams, nine cells, 108 controls, and the private ABI vector contract while
-> pinning five Python package closures and the mandatory terminal distribution.
-> Patch 087 also freezes an eight-fixture, two-profile, 160-execution paired
-> workload/phase experiment authority. The experiment has not run and selects
-> no optimization. Public output, semantic classes, scores, candidate capacity,
-> and schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
-> parity, phase, and independent acceptance remain pending.
+> and mitigation facts. Sprint 13 Patch 088 is the current implementation
+> candidate. It closes the Patch 087 transaction-completion, exact-mode,
+> source-recovery descriptor, replay launcher/distribution, analyzer-projection,
+> workload-oracle, ABI-stage, source-identity, evidence-ledger, documentation,
+> and delivery findings. It retains the exact twelve no-reroll natural targets,
+> 48 executions, 96 raw streams, nine cells, 108 controls, the private ABI
+> vector contract, and the frozen paired workload/phase method. Patch 088 also
+> adds a bounded two-build split-debug packaging experiment with sixty behavior
+> executions, thirty matched pairs, eight companion controls, and twelve symbol
+> resolutions. The experiment is diagnostic and does not authorize product
+> adoption. Public output, semantic classes, scores, candidate capacity, and
+> schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
+> parity, split-debug, and independent acceptance remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -53,6 +54,39 @@
 >
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
 
+## Sprint 13 Patch 088 correction and split-debug packaging experiment
+
+Patch 088 completes the bounded Patch 087 correction while preserving all
+analyzer and public contracts. Guarded patch transactions now commit terminal
+success before any success banner can become externally visible, reject
+noncanonical regular-file modes, and remain signal-safe. Candidate-source
+recovery accounts for inherited, ancestor, retained-tree, and cleanup descriptor
+peaks before mutation. Replay accepts bounded pipx launcher symlink chains,
+authenticates Python distributions through immutable RECORD members, and
+compares analyzer builds through a checked strip-debug projection while
+retaining each original binary identity separately.
+
+The split-debug experiment consumes two independent producer builds and requires
+sixty behavior executions, thirty paired comparisons, eight companion controls,
+twelve symbol resolutions, and at least fifty-percent runtime-size reduction per
+build. The current executable has no GNU build ID, so the experiment uses
+SHA-256 plus `.gnu_debuglink` filename and CRC authority. A diagnostic result
+may inform a later packaging decision but does not change the reference binary,
+release artifacts, or public output.
+
+```text
+runtime src/include/schema changes: 0
+public fields added:                 0
+semantic changes:                    0
+score changes:                       0
+schema:                              0.2.0
+split-debug product adoption:        not authorized
+```
+
+See [ADR 0074](docs/adr/0074-patch087-correction-and-split-debug-packaging-experiment.md)
+and the [Patch 088 validation record](docs/sprints/sprint-13-patch-088-validation.md).
+
+
 ## Sprint 13 Patch 087 correction and workload/phase authority
 
 Patch 087 authenticates hard-link topology before base or candidate state
@@ -64,13 +98,15 @@ pinning the resolved interpreter and five exact Python package-root closures.
 It also retains the complete selection-freeze summary and requires the observed
 terminal distribution rather than weakening the oracle after drift.
 
-The private ABI result is regenerated from the exact Patch 087 source authority
-and published without replacement. A separate measurement-only authority freezes
+The candidate requires private ABI evidence regenerated from the exact Patch 087
+source authority and published without replacement. A separate private,
+diagnostic measurement authority freezes
 8 fixtures, 2 profiles, 16 profile/fixture cells, 16 warmups, 144 measured runs,
 and 160 total executions. Qualification requires at least six fixtures with a
 median at least five timer floors, MAD/median no greater than 0.10, phase-sum
 residual no greater than 0.05, instrumented/reference median no greater than
-1.03, output equality, and no failures. No phase result is claimed yet.
+1.03, output equality, and no failures. The method is frozen, but it has not run,
+selects no optimization, and cannot itself authorize a performance claim.
 
 ```text
 runtime src/include/schema changes: 0
@@ -79,6 +115,8 @@ semantic changes:                    0
 score changes:                       0
 schema:                              0.2.0
 workload/phase execution:            deferred
+candidate capacity:                  4,096; candidate 4,097 fails before stdout
+malformed output:                    no partial stdout
 ```
 
 See [ADR 0073](docs/adr/0073-patch086-correction-and-workload-phase-attribution.md)
@@ -174,7 +212,7 @@ schema:                       0.2.0
 natural cells:                0 qualified / 5 insufficient / 4 unavailable
 ABI role queries:             36 private
 unchanged-public closures:    96 disabled-output closures pending fresh build
-P084 acceptance:              not accepted; P085 and P086 also not accepted; P087 current
+P084 acceptance:              not accepted; P085 and P086 also not accepted; P088 current
 ```
 
 See [ADR 0070](docs/adr/0070-patch083-correction-and-abi-role-contract.md) and
@@ -1062,7 +1100,7 @@ The current development version remains `0.1.0-dev`. The `v0.1.0-dev` tag identi
 Sprint 6 integrated checkpoint; Patches 046 through 086 are later pre-release work.
 Patch 079 was the corrective and private task-value candidate; it was superseded by
 Patch 080, and Patch 080 by Patch 081. Patches 081 and 082 were not accepted. Patches
-083 through 086 also did not complete acceptance; Patch 087 is the current corrective and
+083 through 086 also did not complete acceptance; Patch 088 is the current corrective and
 workload/phase-authority candidate, pending complete exact-source acceptance. Patch 054 closes Sprint 10, Patch
 061 closes Sprint 11, and Patch 062 begins Sprint 12 loader-precision work. Patch 063
 adds corrective hardening plus internal overlap provenance, and Patch 064 records the
@@ -1283,6 +1321,7 @@ the [historical P082 validation](docs/sprints/sprint-13-patch-082-validation.md)
 the [historical P083 validation](docs/sprints/sprint-13-patch-083-validation.md),
 the [historical P084 validation](docs/sprints/sprint-13-patch-084-validation.md),
 the [historical P085 validation](docs/sprints/sprint-13-patch-085-validation.md),
+the [historical P086 validation](docs/sprints/sprint-13-patch-086-validation.md),
 and the [current P087 validation](docs/sprints/sprint-13-patch-087-validation.md).
 
 Patch 083 was not accepted. Patch 084 preserved the retained natural-coordinate
@@ -1290,7 +1329,8 @@ terminal states and froze the private ABI-role query contract, but it also was
 not accepted. Patch 085 and Patch 086 also did not complete acceptance; Patch 087 carries the
 current bounded correction and workload/phase-attribution authority. None of these patches
 authorizes a public-field, semantic, score, schema, capacity, decoder,
-concurrency, comparative-coverage, performance, or exploitability change.
+concurrency, comparative-coverage, baseline-equivalence, performance, RSS, or
+exploitability change.
 
 [a61]: docs/adr/0061-private-dynamic-metadata-and-text-relocation-evidence.md
 [a62]: docs/adr/0062-distinct-private-rpath-runpath-evidence.md

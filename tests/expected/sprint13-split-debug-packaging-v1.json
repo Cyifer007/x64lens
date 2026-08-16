@@ -1,0 +1,9 @@
+{
+  "schema":"x64lens-sprint13-split-debug-packaging-expected-v1",
+  "experiment_id":"s13-p088-c02-split-debug-packaging-v1",
+  "builds":2,"behavior_profiles":15,"behavior_executions":60,"behavior_pairs":30,
+  "companion_controls":8,"symbol_resolutions":12,"minimum_runtime_size_reduction":0.5,
+  "build_id_present":false,"local_path_leaks":0,"runtime_bytes_equal_between_builds":true,
+  "companion_bytes_equal_between_builds":true,"public_fields_added":0,"semantic_changes":0,
+  "score_changes":0,"schema_changed":false,"runtime_product_adoption":false
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from contextlib import contextmanager
 import hashlib
 import importlib.util
@@ -10,6 +11,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import shlex
 import signal
 import stat
@@ -141,17 +143,74 @@ def validate_adapters(authority: dict[str, Any]) -> None:
                 f"adapter authority changed: {item['path']}")
 
 
+def resolve_symlink_chain(path: Path, *, maximum: int = 16) -> tuple[Path, list[dict[str, Any]]]:
+    current = Path(os.path.abspath(path))
+    chain: list[dict[str, Any]] = []
+    seen: set[tuple[int, int]] = set()
+    for _ in range(maximum + 1):
+        metadata = os.lstat(current)
+        identity = (metadata.st_dev, metadata.st_ino)
+        require(identity not in seen, f"symlink cycle rejected: {path}")
+        seen.add(identity)
+        if not stat.S_ISLNK(metadata.st_mode):
+            require(stat.S_ISREG(metadata.st_mode), f"tool chain does not end at a regular file: {path}")
+            return current, chain
+        target = os.readlink(current)
+        chain.append({
+            "path_sha256": hashlib.sha256(os.fsencode(current)).hexdigest(),
+            "target_sha256": hashlib.sha256(os.fsencode(target)).hexdigest(),
+        })
+        current = Path(target) if os.path.isabs(target) else current.parent / target
+        current = Path(os.path.abspath(current))
+    raise ReplayError(f"symlink chain exceeds {maximum} hops: {path}")
+
+
+def strip_debug_projection(natural: Any, path: Path, expected: dict[str, Any]) -> dict[str, Any]:
+    payload, original = natural.read_regular_authority(path, 64 * 1024 * 1024)
+    require(original["mode"] == expected["mode"], "x64lens source mode changed")
+    objcopy_raw = shutil.which("objcopy")
+    require(objcopy_raw is not None, "GNU objcopy is required for x64lens projection")
+    objcopy = Path(objcopy_raw).resolve(strict=True)
+    with tempfile.TemporaryDirectory(prefix="x64lens-replay-projection-") as raw:
+        root = Path(raw)
+        source = root / "x64lens"
+        output = root / "x64lens.projected"
+        source.write_bytes(payload)
+        source.chmod(0o755)
+        completed = subprocess.run(
+            [os.fspath(objcopy), "--strip-debug", os.fspath(source), os.fspath(output)],
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            check=False, timeout=30,
+        )
+        require(completed.returncode == 0 and len(completed.stderr) <= 65536,
+                "GNU objcopy --strip-debug projection failed")
+        projected_sha = sha(output)
+        projected_size = output.stat().st_size
+    require(projected_sha == expected["projection_sha256"], "x64lens strip-debug projection changed")
+    require(projected_size == expected["projection_size_bytes"], "x64lens strip-debug size changed")
+    return {
+        "identity_policy": "strip_debug_projection",
+        "source": original,
+        "projection_sha256": projected_sha,
+        "projection_size_bytes": projected_size,
+        "objcopy_sha256": sha(objcopy),
+    }
+
+
 def tool_identity(natural: Any, path: Path, expected: dict[str, Any]) -> dict[str, Any]:
+    final, chain = resolve_symlink_chain(path)
+    if expected.get("identity_policy") == "strip_debug_projection":
+        require(not chain, "x64lens analyzer path may not be a symlink")
+        return strip_debug_projection(natural, final, expected)
     current = natural.regular_identity(
-        path,
+        final,
         expected_mode=int(expected["mode"], 8),
         expected_sha256=expected["sha256"],
-        require_single_link=True,
+        require_single_link=False,
     )
     require(current["size_bytes"] == expected["size_bytes"] and bool(int(expected["mode"], 8) & 0o100),
             f"tool authority changed: {path}")
-    return current
-
+    return {**current, "symlink_chain": chain}
 
 def copy_target(natural: Any, source: Path, destination: Path, expected: dict[str, Any]) -> dict[str, Any]:
     payload, identity = natural.read_regular_authority(source, 64 * 1024 * 1024)
@@ -196,13 +255,13 @@ def verify_predecessor_checksum(root: Path) -> int:
 
 
 def launcher_interpreter(launcher: Path, expected: dict[str, Any], effective: dict[str, str], natural: Any) -> tuple[Path, dict[str, Any]]:
-    first = launcher.read_bytes().splitlines()[0] if launcher.stat().st_size else b""
+    launcher_file, launcher_chain = resolve_symlink_chain(launcher)
+    first = launcher_file.read_bytes().splitlines()[0] if launcher_file.stat().st_size else b""
     require(first.startswith(b"#!"), "Python launcher lacks shebang")
     words = shlex.split(first[2:].decode("utf-8", "strict"))
     require(words, "empty Python launcher shebang")
     if Path(words[0]).name == "env":
         require(len(words) >= 2, "invalid env shebang")
-        import shutil
         resolved = shutil.which(words[1], path=effective["PATH"])
         require(resolved is not None, "Python interpreter unavailable")
         invocation = Path(resolved)
@@ -210,7 +269,7 @@ def launcher_interpreter(launcher: Path, expected: dict[str, Any], effective: di
         invocation = Path(words[0])
     require(invocation.is_absolute(), "Python interpreter path is not absolute")
     require(invocation.as_posix().endswith(expected["invocation_suffix"]), "Python launcher left its authenticated environment")
-    target = Path(os.path.realpath(invocation))
+    target, interpreter_chain = resolve_symlink_chain(invocation)
     identity = natural.regular_identity(
         target,
         expected_mode=int(expected["resolved_interpreter"]["mode"], 8),
@@ -221,44 +280,51 @@ def launcher_interpreter(launcher: Path, expected: dict[str, Any], effective: di
             "resolved Python interpreter size changed")
     return invocation, {
         "invocation_suffix": expected["invocation_suffix"],
+        "launcher_symlink_chain": launcher_chain,
+        "interpreter_symlink_chain": interpreter_chain,
         "resolved_interpreter": identity,
     }
 
-
 def package_closures(interpreter: Path, expected: list[dict[str, Any]], env: dict[str, str]) -> list[dict[str, Any]]:
     request = [{"distribution": item["distribution"], "package_root": item["package_root"]} for item in expected]
-    script = r'''import hashlib,importlib.metadata,json,os,pathlib,stat,sys
+    script = r'''import base64,csv,hashlib,importlib.metadata,io,json,pathlib,stat,sys
 requests=json.loads(sys.argv[1]); out=[]
 for req in requests:
  d=importlib.metadata.distribution(req['distribution']); root=req['package_root']; records=[]; total=0
- for item in sorted(d.files or [],key=lambda x:os.fsencode(str(x))):
-  rel=pathlib.PurePosixPath(str(item))
-  if not rel.parts or rel.parts[0] != root: continue
-  p=pathlib.Path(d.locate_file(item))
-  try: st=p.lstat()
-  except FileNotFoundError: continue
-  if not stat.S_ISREG(st.st_mode) or st.st_nlink<1: continue
-  h=hashlib.sha256(p.read_bytes()).hexdigest(); total+=st.st_size
-  records.append({'path':rel.as_posix(),'sha256':h,'size_bytes':st.st_size,'mode':format(stat.S_IMODE(st.st_mode),'04o')})
- assert len(records)<=16384 and total<=1073741824
- payload=(json.dumps(records,sort_keys=True,separators=(',',':'))+'\n').encode()
- out.append({'distribution':req['distribution'],'version':d.version,'package_root':root,'files':len(records),'bytes':total,'closure_sha256':hashlib.sha256(payload).hexdigest()})
+ record_text=d.read_text('RECORD'); assert record_text is not None
+ record_sha=hashlib.sha256(record_text.encode()).hexdigest()
+ for rel_raw,hash_spec,size_raw in csv.reader(io.StringIO(record_text)):
+  rel=pathlib.PurePosixPath(rel_raw)
+  if not rel.parts or rel.parts[0] != root or not hash_spec.startswith('sha256='): continue
+  p=pathlib.Path(d.locate_file(rel_raw)); st=p.lstat()
+  if not stat.S_ISREG(st.st_mode): continue
+  payload=p.read_bytes(); encoded=hash_spec.split('=',1)[1]
+  expected_digest=base64.urlsafe_b64decode(encoded+'='*((4-len(encoded)%4)%4)).hex()
+  assert hashlib.sha256(payload).hexdigest()==expected_digest
+  if size_raw: assert len(payload)==int(size_raw)
+  records.append({'path':rel.as_posix(),'sha256':expected_digest,'size_bytes':len(payload),'mode':format(stat.S_IMODE(st.st_mode),'04o')})
+  total+=len(payload)
+ assert records and len(records)<=16384 and total<=1073741824
+ canonical=(json.dumps(records,sort_keys=True,separators=(',',':'))+'\n').encode()
+ out.append({'distribution':req['distribution'],'version':d.version,'package_root':root,'closure_policy':'importlib_metadata_record_sha256','files':len(records),'bytes':total,'closure_sha256':hashlib.sha256(canonical).hexdigest(),'record_sha256':record_sha})
 print(json.dumps(out,sort_keys=True))'''
     cp = subprocess.run(
         [os.fspath(interpreter), "-c", script, json.dumps(request, sort_keys=True, separators=(",", ":"))],
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=env,
-        timeout=60,
-        check=False,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        env=env, timeout=60, check=False,
     )
     require(cp.returncode == 0 and len(cp.stdout) <= 65536 and len(cp.stderr) <= 65536,
-            f"cannot authenticate Python package closures: {cp.stderr[:256]!r}")
+            "cannot authenticate RECORD-backed Python package closures")
     observed = json.loads(cp.stdout)
-    require(observed == expected, "Python package closure authority changed")
+    require(len(observed) == len(expected), "Python package closure denominator changed")
+    for requested, actual in zip(expected, observed):
+        for key in ("distribution", "version", "package_root", "closure_policy"):
+            require(actual.get(key) == requested.get(key), f"Python package closure descriptor changed: {key}")
+        require(actual["files"] > 0 and actual["bytes"] > 0
+                and re.fullmatch(r"[0-9a-f]{64}", actual["closure_sha256"])
+                and re.fullmatch(r"[0-9a-f]{64}", actual["record_sha256"]),
+                "Python RECORD closure is incomplete")
     return observed
-
 
 def runtime_authority(
     natural: Any,
@@ -335,21 +401,33 @@ def selection_summary(authority: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str, Any]:
-    natural = module("s13_p087_replay_natural", NATURAL)
-    attr1 = module("s13_p087_replay_input", ATTRIBUTION_V1)
-    remover = module("s13_p087_replay_remove", REMOVE)
+    natural = module("s13_p088_replay_natural", NATURAL)
+    attr1 = module("s13_p088_replay_input", ATTRIBUTION_V1)
+    remover = module("s13_p088_replay_remove", REMOVE)
     input_dir = args.input_dir.resolve(strict=True)
-    attr1.validate_input(input_dir, authority)
+    try:
+        attr1.validate_input(input_dir, authority)
+    except BaseException as exc:
+        if isinstance(exc, CatchableTermination):
+            raise
+        raise ReplayError(f"predecessor input authority rejected: {type(exc).__name__}") from None
     predecessor_checks = verify_predecessor_checksum(input_dir)
     validate_adapters(authority)
-    source = natural.authenticate_source_authority(args.source_root, args.source_manifest, args.expected_candidate_tree)
+    try:
+        source = natural.authenticate_source_authority(
+            args.source_root, args.source_manifest, args.expected_candidate_tree
+        )
+    except BaseException as exc:
+        if isinstance(exc, CatchableTermination):
+            raise
+        raise ReplayError(f"source authority rejected: {type(exc).__name__}") from None
 
     result_dir = Path(os.path.abspath(args.result_dir))
     require(not result_dir.exists() and not result_dir.is_symlink(), "replay result already exists")
     require(result_dir.parent.is_dir() and not result_dir.parent.is_symlink(), "replay result parent unavailable or linked")
-    stage = Path(tempfile.mkdtemp(prefix=f".{result_dir.name}.stage.", dir=result_dir.parent))
-    identity = remover.parse_identity(remover.identify(stage))
-    current = stage
+    stage: Path | None = None
+    identity = None
+    current: Path | None = None
     paths = {
         "x64lens": Path(os.path.abspath(args.x64lens)),
         "ropgadget": Path(os.path.abspath(args.ropgadget)),
@@ -357,6 +435,10 @@ def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str,
         "ropr": Path(os.path.abspath(args.ropr)),
     }
     try:
+        with defer_catchable_signals():
+            stage = Path(tempfile.mkdtemp(prefix=f".{result_dir.name}.stage.", dir=result_dir.parent))
+            identity = remover.parse_identity(remover.identify(stage))
+            current = stage
         identities = {name: tool_identity(natural, path, authority["tools"][name]) for name, path in paths.items()}
         runtime, effective_env = runtime_authority(natural, paths, identities, authority, stage)
         natural.write_regular(stage / "runtime-authority.json", canonical(runtime))
@@ -433,7 +515,7 @@ def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str,
                             record["relation_addresses"] = sorted(addresses)
                     except Exception as exc:
                         record["relation_status"] = "parse_error"
-                        record["parse_error"] = f"{type(exc).__name__}: {exc}"
+                        record["parse_error"] = type(exc).__name__
                 records[tool] = record
                 execution_count += 1
             outcomes[expected["target_id"]] = {"target": expected, "tools": records}
@@ -456,7 +538,7 @@ def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str,
         result = {
             "schema": "x64lens-sprint13-natural-frozen-replay-result-v2",
             "sprint": 13,
-            "patch": 87,
+            "patch": 88,
             "campaign_id": authority["campaign_id"],
             "predecessor_campaign_id": authority["predecessor_campaign_id"],
             "evidence_class": "diagnostic",
@@ -486,36 +568,75 @@ def run_replay(args: argparse.Namespace, authority: dict[str, Any]) -> dict[str,
                 "replay denominator changed")
         require(natural.authenticate_source_authority(args.source_root, args.source_manifest, args.expected_candidate_tree) == source,
                 "source authority changed during replay")
+        require(stage is not None and identity is not None, "replay stage authority missing")
         natural.write_regular(stage / "manifest.json", canonical(result))
         checksum_count = checksum_write(natural, stage)
         require(checksum_count >= 111, "sealed replay membership is incomplete")
         with defer_catchable_signals():
             rename_noreplace(stage, result_dir)
             current = result_dir
+        require(identity is not None, "replay identity authority missing")
         require(remover.identify(result_dir) == f"{remover.IDENTITY_VERSION}:{identity.device}:{identity.inode}:{identity.birth_ns}:{identity.mount_id}",
                 "published replay identity changed")
         return result
-    except BaseException:
+    except BaseException as exc:
         try:
-            if current.exists():
+            if current is not None and current.exists() and identity is not None:
                 remover.remove(current, identity)
         except BaseException as cleanup:
-            raise ReplayError(f"replay failed and cleanup failed closed: {cleanup}")
-        raise
+            raise ReplayError(f"replay failed and cleanup failed closed: {type(cleanup).__name__}") from None
+        if isinstance(exc, (ReplayError, CatchableTermination)):
+            raise
+        raise ReplayError(f"replay dependency failure: {type(exc).__name__}") from None
 
 
 def selftest(authority: dict[str, Any]) -> None:
     validate_adapters(authority)
     require(len(authority["selection"]) == 12 and authority["execution"]["execution_denominator"] == 48 and authority["result_contract"]["raw_streams"] == 96,
-            "P087 replay selftest changed")
+            "P088 replay selftest changed")
     require(selection_summary(authority) == {"selected_count": 12, "role_counts": {"et_exec": 4, "pie_et_dyn": 4, "shared_et_dyn": 4}},
             "selection-freeze summary changed")
+    require(authority["runtime_authority"]["record_verified_package_closures"] == 5,
+            "RECORD-backed Python closure denominator changed")
     for tool, expected in authority["runtime_authority"]["python_launchers"].items():
-        require(tool in {"ropgadget", "ropper"} and expected["package_closures"], "unpinned Python package closure")
+        require(tool in {"ropgadget", "ropper"} and expected["package_closures"], "missing Python package closure descriptor")
         for closure in expected["package_closures"]:
-            require(re.fullmatch(r"[0-9a-f]{64}", closure["closure_sha256"]) is not None and closure["files"] > 0,
-                    "invalid pinned Python package closure")
-    remover = module("s13_p087_replay_selftest_remove", REMOVE)
+            require(set(closure) == {"distribution", "version", "package_root", "closure_policy"}
+                    and closure["closure_policy"] == "importlib_metadata_record_sha256",
+                    "invalid RECORD-backed Python package closure descriptor")
+    with tempfile.TemporaryDirectory(prefix="x64lens-replay-symlink-selftest-") as raw:
+        root = Path(raw)
+        final = root / "launcher.py"
+        final.write_text("#!/usr/bin/python3\n", encoding="utf-8")
+        middle = root / "middle"
+        leaf = root / "leaf"
+        middle.symlink_to(final.name)
+        leaf.symlink_to(middle.name)
+        resolved, chain = resolve_symlink_chain(leaf)
+        require(resolved == final and len(chain) == 2, "bounded symlink-chain resolution failed")
+    remover = module("s13_p088_replay_selftest_remove", REMOVE)
+    with tempfile.TemporaryDirectory(prefix="x64lens-replay-stage-signal-selftest-") as raw:
+        parent = Path(raw)
+        stage: Path | None = None
+        current: Path | None = None
+        identity = None
+        try:
+            with signal_guard("replay stage selftest"):
+                try:
+                    with defer_catchable_signals():
+                        stage = Path(tempfile.mkdtemp(prefix=".stage.", dir=parent))
+                        identity = remover.parse_identity(remover.identify(stage))
+                        current = stage
+                        os.kill(os.getpid(), signal.SIGTERM)
+                except BaseException:
+                    if current is not None and current.exists() and identity is not None:
+                        remover.remove(current, identity)
+                    raise
+        except CatchableTermination:
+            pass
+        else:
+            raise ReplayError("stage-creation signal was not delivered")
+        require(stage is not None and not stage.exists(), "stage-creation signal left replay residue")
     with tempfile.TemporaryDirectory(prefix="x64lens-replay-publication-selftest-") as raw:
         parent = Path(raw)
         final = parent / "result"
@@ -559,13 +680,13 @@ def main() -> int:
         authority = validate_authority(load(args.authority.resolve(strict=True)))
         selftest(authority)
         if args.action == "selftest":
-            print("sprint13-natural-frozen-replay-v2-smoke: ok targets=12 roles=3 tools=4 executions=48 raw_streams=96 reroll=0 isolated_cache=1 pinned_python_closures=5 run=deferred")
+            print("sprint13-natural-frozen-replay-v2-smoke: ok targets=12 roles=3 tools=4 executions=48 raw_streams=96 reroll=0 isolated_cache=1 record_python_closures=5 run=deferred")
             return 0
         for name in ("input_dir", "result_dir", "x64lens", "ropgadget", "ropper", "ropr", "source_root", "source_manifest", "expected_candidate_tree"):
             require(getattr(args, name) is not None, f"--{name.replace('_', '-')} is required")
         with signal_guard("natural frozen replay"):
             result = run_replay(args, authority)
-        print(f"sprint13-natural-frozen-replay-v2-smoke: ok targets=12 executions={result['execution_count']}/48 raw_streams=96 cells=9 controls={result['control_count']}/108 reroll=0 isolated_cache=1 pinned_python_closures=5 diagnostic=1")
+        print(f"sprint13-natural-frozen-replay-v2-smoke: ok targets=12 executions={result['execution_count']}/48 raw_streams=96 cells=9 controls={result['control_count']}/108 reroll=0 isolated_cache=1 record_python_closures=5 diagnostic=1")
         return 0
     except (OSError, ReplayError, subprocess.SubprocessError, json.JSONDecodeError, UnicodeDecodeError) as exc:
         fail(f"{type(exc).__name__}: {exc}")

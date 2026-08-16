@@ -9,7 +9,7 @@
       "sha256": "76121d52af398cc09df84b21870c30f7410fbca8eb94952ff1ac1e4a87aec817"
     }
   ],
-  "campaign_id": "s13-p087-natural-frozen-replay-v2",
+  "campaign_id": "s13-p088-natural-frozen-replay-v2",
   "claim_boundary": {
     "comparison_qualified": false,
     "coverage_claim_authorized": false,
@@ -58,9 +58,10 @@
     "A replay is diagnostic and cannot authorize comparative coverage, performance, RSS, or publication claims.",
     "Unavailable or unsupported outcomes remain terminal evidence rather than favorable substitutions.",
     "The replay seals all selected targets, raw streams, tool/runtime identities, and isolated cache policy before mandatory expected-result attribution.",
-    "Python launchers retain their pipx invocation environment, and five versioned package-root closures are authority-pinned."
+    "Python package closures are derived only from importlib.metadata RECORD rows carrying authenticated SHA-256 digests; mutable caches and hashless layout files are excluded.",
+    "The x64lens runtime identity uses a deterministic GNU objcopy --strip-debug projection so local DWARF build paths do not change the authenticated runtime closure."
   ],
-  "patch": 87,
+  "patch": 88,
   "predecessor_campaign_id": "s13-p083-natural-coordinate-v1",
   "publication_eligible": false,
   "result_contract": {
@@ -84,24 +85,19 @@
       "x64lens",
       "ropr"
     ],
-    "pinned_package_closures": 5,
     "python_launchers": {
       "ropgadget": {
         "invocation_suffix": ".local/share/pipx/venvs/ropgadget/bin/python",
         "package_closures": [
           {
-            "bytes": 128237,
-            "closure_sha256": "65c8178aa6118b81da46409d09dae9edccae8823f8ee77f260372fa9dcda4319",
+            "closure_policy": "importlib_metadata_record_sha256",
             "distribution": "ROPGadget",
-            "files": 20,
             "package_root": "ropgadget",
             "version": "7.7"
           },
           {
-            "bytes": 10003152,
-            "closure_sha256": "33691cb329bc89ef1828d9967202853d41a78e670a08a43b90497c7eb5acb033",
+            "closure_policy": "importlib_metadata_record_sha256",
             "distribution": "capstone",
-            "files": 38,
             "package_root": "capstone",
             "version": "5.0.9"
           }
@@ -116,26 +112,20 @@
         "invocation_suffix": ".local/share/pipx/venvs/ropper/bin/python",
         "package_closures": [
           {
-            "bytes": 363557,
-            "closure_sha256": "b5372a3222b9086d45db49a11f544d874c810094b8832e5a038cef610bd07c7f",
+            "closure_policy": "importlib_metadata_record_sha256",
             "distribution": "ropper",
-            "files": 34,
             "package_root": "ropper",
             "version": "1.13.13"
           },
           {
-            "bytes": 10003152,
-            "closure_sha256": "33691cb329bc89ef1828d9967202853d41a78e670a08a43b90497c7eb5acb033",
+            "closure_policy": "importlib_metadata_record_sha256",
             "distribution": "capstone",
-            "files": 38,
             "package_root": "capstone",
             "version": "5.0.9"
           },
           {
-            "bytes": 86137,
-            "closure_sha256": "73ddfadfa6adad8d8bbbed549d58dc358bc6ad500f549e308b19f0a8bae0b02c",
+            "closure_policy": "importlib_metadata_record_sha256",
             "distribution": "filebytes",
-            "files": 7,
             "package_root": "filebytes",
             "version": "0.10.2"
           }
@@ -147,6 +137,7 @@
         }
       }
     },
+    "record_verified_package_closures": 5,
     "tool_count": 4
   },
   "schema": "x64lens-sprint13-natural-frozen-replay-authority-v2",
@@ -319,9 +310,10 @@
       "size_bytes": 4495824
     },
     "x64lens": {
+      "identity_policy": "strip_debug_projection",
       "mode": "0755",
-      "sha256": "39f6af5c7991b6fd7d46b7ac1afb6340164cee14cfcec2d7cd0a2f014bf1222e",
-      "size_bytes": 154544
+      "projection_sha256": "5075c6482940d5ee6353795f9c52a29550e3718fa7da1937a1a8fb7ab0dac42e",
+      "projection_size_bytes": 133712
     }
   }
 }

@@ -41,7 +41,7 @@
     24,
     25
   ],
-  "patch": 87,
+  "patch": 88,
   "publication_eligible": false,
   "purpose": "Compare production candidate-role vectors with an independent fixture-derived oracle without changing public output, semantics, scores, or schema.",
   "schema": "x64lens-sprint13-abi-role-vector-equivalence-authority-v1",

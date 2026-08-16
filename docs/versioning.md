@@ -24,7 +24,7 @@ diagnostic. The public-policy authority records `defer`, adds zero fields, prese
 coarse `mitigations.pie` meaning, and makes no runtime-CET claim. Patch 081 preserves
 the same public fields, reference profile, private context sizes, and candidate-capacity
 behavior. It adds no PIE reinterpretation or runtime-CET claim. Actual qualified parity,
-replay-v2 execution and complete Patch 087 acceptance remain pending.
+replay-v2 execution and complete Patch 088 acceptance remain pending.
 
 Measurements after Patch 082 require a distinct diagnostic campaign identity
 and remain separate from Sprint 11 rows. The confirmatory corpus and method do
@@ -220,7 +220,7 @@ property, semantic class, candidate count, or score.
 
 Patch 081 retains tool version `0.1.0-dev` and schema `0.2.0`. No public field,
 required property, count meaning, semantic class, or score changes. Patch 080's
-review required this corrective candidate; independent exact-source Patch 087 acceptance remains
+review required this corrective candidate; independent exact-source Patch 088 acceptance remains
 pending.
 
 
@@ -266,3 +266,22 @@ or output contract. Replay-v2 and the private ABI-vector equivalence authority
 are validation evidence, not product or schema versions. No completed local
 replay, public role projection, release tag, FORTIFY fact, or publication result
 is claimed.
+
+## Patch 087 compatibility note
+
+Patch 087 is an implementation candidate pending complete exact-source
+acceptance. It retains tool version `0.1.0-dev`, schema `0.2.0`, runtime
+behavior, public fields, semantic classes, scores, count meanings, candidate
+capacity, malformed no-partial-output behavior, decoder policy, and the
+one-worker reference profile. Replay, terminal-attribution, ABI-vector, and
+workload/phase evidence remains private and diagnostic. The phase method is
+frozen but unexecuted and non-selecting; it authorizes no speed, RSS,
+comparative coverage, baseline equivalence, exploitability, decoder,
+concurrency, release, or publication claim.
+
+## Patch 088 compatibility note
+
+Patch 088 retains tool version `0.1.0-dev` and schema `0.2.0`. It adds no CLI,
+public field, semantic, score, count, or compatibility change. Split-debug
+artifacts belong to a diagnostic packaging experiment and are not current
+release artifacts.

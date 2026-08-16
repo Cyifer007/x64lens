@@ -1,0 +1,45 @@
+{
+  "schema": "x64lens-sprint13-split-debug-packaging-v1",
+  "sprint": 13,
+  "patch": 88,
+  "experiment_id": "s13-p088-c02-split-debug-packaging-v1",
+  "evidence_class": "diagnostic",
+  "publication_eligible": false,
+  "product_adoption_authorized": false,
+  "builds": 2,
+  "packaging": {
+    "runtime_filename": "x64lens",
+    "companion_filename": "x64lens.debug",
+    "objcopy_operations": ["--only-keep-debug", "--strip-all", "--add-gnu-debuglink=x64lens.debug"],
+    "local_path_prefixes_rejected": ["/tmp/", "/home/", "/mnt/"],
+    "minimum_runtime_size_reduction": 0.5,
+    "build_id_policy": "must_be_absent_for_current_experiment",
+    "between_build_policy": "runtime_and_companion_bytes_equal_after_local_path_redaction"
+  },
+  "behavior_profiles": [
+    {"id":"version","args":["version"],"target":null},
+    {"id":"help","args":["help"],"target":null},
+    {"id":"info_effects","args":["info"],"target":"effects"},
+    {"id":"info_pairs","args":["info"],"target":"pairs"},
+    {"id":"mitigations_effects","args":["mitigations"],"target":"effects"},
+    {"id":"mitigations_pairs","args":["mitigations"],"target":"pairs"},
+    {"id":"gadgets_text_depth4_effects","args":["gadgets","--max-depth","4"],"target":"effects"},
+    {"id":"gadgets_text_depth4_pairs","args":["gadgets","--max-depth","4"],"target":"pairs"},
+    {"id":"gadgets_json_depth4_effects","args":["gadgets","--format","json","--max-depth","4"],"target":"effects"},
+    {"id":"gadgets_json_depth4_pairs","args":["gadgets","--format","json","--max-depth","4"],"target":"pairs"},
+    {"id":"analyze_text_depth4_effects","args":["analyze","--max-depth","4"],"target":"effects"},
+    {"id":"analyze_text_depth4_pairs","args":["analyze","--max-depth","4"],"target":"pairs"},
+    {"id":"analyze_json_depth4_effects","args":["analyze","--format","json","--max-depth","4"],"target":"effects"},
+    {"id":"analyze_json_depth4_pairs","args":["analyze","--format","json","--max-depth","4"],"target":"pairs"},
+    {"id":"gadgets_json_depth8_pairs","args":["gadgets","--format","json","--max-depth","8"],"target":"pairs"}
+  ],
+  "known_symbols": ["x64lens_analysis_summary_mark_complete","x64lens_command_analyze","x64lens_arena_init","x64lens_command_gadgets","x64lens_command_info","_start"],
+  "required_denominators": {"behavior_executions":60,"behavior_pairs":30,"companion_controls":8,"symbol_resolutions":12},
+  "companion_controls": ["build1_debuglink_name_crc","build2_debuglink_name_crc","build1_symbol_resolution","build2_symbol_resolution","companion_absent_rejected","companion_crc_mismatch_rejected","cross_build_substitution_rejected_before_normalization","runtime_core_has_no_debuglink"],
+  "public_boundary": {"public_fields_added":0,"semantic_changes":0,"score_changes":0,"schema_changed":false,"runtime_product_adoption":false},
+  "limitations": [
+    "This is a packaging experiment and does not alter the reference analyzer runtime contract.",
+    "The current analyzer has no GNU build ID; identity uses SHA-256 plus .gnu_debuglink filename and CRC controls.",
+    "A passing experiment does not authorize product adoption, public fields, semantic changes, score changes, decoder integration, or concurrency."
+  ]
+}

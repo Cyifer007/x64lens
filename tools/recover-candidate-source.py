@@ -159,6 +159,25 @@ def require(condition: bool, message: str) -> None:
         raise RecoveryError(message)
 
 
+def open_fd_count() -> int:
+    """Return the current process descriptor population without retaining it."""
+    try:
+        return sum(1 for name in os.listdir("/proc/self/fd") if name.isdigit())
+    except OSError:
+        return 16
+
+
+def recovery_fd_requirement(destination: Path, directory_count: int, file_count: int) -> int:
+    """Bound the full retained-descriptor and cleanup peak before mutation."""
+    absolute = Path(os.path.abspath(os.fspath(destination)))
+    ancestor_count = max(1, len(absolute.parent.parts) - 1)
+    current = open_fd_count()
+    retained_tree = 1 + directory_count + file_count
+    authority_inputs = 4  # TAR, manifest, destination parent, and root.
+    cleanup_peak = 4 + min(directory_count + file_count, 8)
+    return current + ancestor_count + retained_tree + authority_inputs + cleanup_peak + MIN_FD_HEADROOM
+
+
 def mkdir_exact(name: str, mode: int, *, dir_fd: int) -> None:
     """Create one directory with a usable exact initial mode under any umask."""
     previous = os.umask(0)
@@ -721,12 +740,15 @@ def cleanup_unopened_stage(parent: ParentHandle, name: str, opened: StableIdenti
 def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple[str, int, int, Path]:
     value = load_manifest(manifest_path)
     directories, files, derived_tree = parse_manifest(value)
+    destination = Path(os.path.abspath(os.fspath(destination)))
     soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     if soft != resource.RLIM_INFINITY:
-        required = len(directories) + len(files) + MIN_FD_HEADROOM + 16
-        require(soft >= required, f"file-descriptor limit cannot retain the source tree: {soft} < {required}")
+        required = recovery_fd_requirement(destination, len(directories), len(files))
+        require(
+            soft >= required,
+            f"file-descriptor limit cannot retain and clean the source tree: {soft} < {required}",
+        )
 
-    destination = Path(os.path.abspath(os.fspath(destination)))
     safe_component(destination.name, "destination basename")
     parent_handle = open_parent_chain(destination)
     stage_name = f".x64lens-recovery-stage.{os.getpid()}.{os.urandom(16).hex()}"

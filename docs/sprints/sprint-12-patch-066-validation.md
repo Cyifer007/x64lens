@@ -21,7 +21,7 @@ historical boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Current validation expectations are in the
-[Patch 086 validation record](sprint-13-patch-086-validation.md); the
+[Patch 087 validation record](sprint-13-patch-087-validation.md); the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its

@@ -142,7 +142,7 @@ def validate_authority(a: dict[str, Any]) -> None:
             "limitations must remain explicit")
 
 
-def validate_expected(e: dict[str, Any]) -> None:
+def validate_expected(e: dict[str, Any], authority: dict[str, Any]) -> None:
     required = {
         "schema", "sprint", "patch", "decision", "fixtures", "profiles",
         "profile_fixture_cells", "warmup_executions", "measured_executions",
@@ -166,6 +166,20 @@ def validate_expected(e: dict[str, Any]) -> None:
             and e["score_changes"] == 0 and e["schema_changed"] is False,
             "public/runtime boundary drift")
     require(e["publication_eligible"] is False, "expected result must remain diagnostic")
+    qualification = authority["qualification"]
+    expected_thresholds = {
+        "required_qualified_fixtures": "minimum_qualified_fixtures",
+        "minimum_qualified_median_ns": "minimum_qualified_median_ns",
+        "maximum_mad_to_median_ratio": "maximum_mad_to_median_ratio",
+        "maximum_phase_sum_residual_ratio": "maximum_phase_sum_residual_ratio",
+        "maximum_instrumented_to_reference_ratio": "maximum_instrumented_to_reference_ratio",
+        "private_instrumentation_bytes_max": "private_instrumentation_bytes_max",
+    }
+    for expected_key, authority_key in expected_thresholds.items():
+        require(
+            e[expected_key] == qualification[authority_key],
+            f"expected policy threshold disagrees with authority: {expected_key}",
+        )
 
 
 def synthetic_result(authority: dict[str, Any]) -> dict[str, Any]:
@@ -228,7 +242,7 @@ def selftest(authority_path: Path, expected_path: Path) -> None:
     authority = load_json(authority_path)
     expected = load_json(expected_path)
     validate_authority(authority)
-    validate_expected(expected)
+    validate_expected(expected, authority)
     result = synthetic_result(authority)
     require(qualify(authority, result) == 8, "valid synthetic result did not qualify")
 
@@ -273,6 +287,25 @@ def selftest(authority_path: Path, expected_path: Path) -> None:
                     mutations += 1
                 else:
                     raise AuthorityError("result mutation was accepted")
+
+
+    for expected_key in (
+        "required_qualified_fixtures",
+        "minimum_qualified_median_ns",
+        "maximum_mad_to_median_ratio",
+        "maximum_phase_sum_residual_ratio",
+        "maximum_instrumented_to_reference_ratio",
+        "private_instrumentation_bytes_max",
+    ):
+        changed = copy.deepcopy(expected)
+        value = changed[expected_key]
+        changed[expected_key] = value + 1 if isinstance(value, int) else value + 0.01
+        try:
+            validate_expected(changed, authority)
+        except AuthorityError:
+            mutations += 1
+        else:
+            raise AuthorityError(f"expected threshold mutation was accepted: {expected_key}")
 
     print(
         "sprint13-workload-phase-attribution-smoke: ok "

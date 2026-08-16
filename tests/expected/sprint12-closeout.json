@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "sprint": 12,
-  "status": "retrospective_recorded_and_sprint13_p087_candidate_pending_acceptance",
-  "closeout_patch": 87,
+  "status": "retrospective_recorded_and_sprint13_p088_candidate_pending_acceptance",
+  "closeout_patch": 88,
   "candidate_patches": [
     62,
     63,
@@ -29,10 +29,11 @@
     84,
     85,
     86,
-    87
+    87,
+    88
   ],
   "next_sprint": 13,
-  "acceptance_target": "sprint13-p087-acceptance-smoke",
+  "acceptance_target": "sprint13-p088-acceptance-smoke",
   "reference_profile": {
     "tool_version": "0.1.0-dev",
     "report_schema": "0.2.0",
@@ -195,8 +196,8 @@
     "score_null_policy_freeze": "existing_scores_retained_new_private_facets_unscored",
     "public_projection": "deferred",
     "bounded_family_additions": "measurement_gated",
-    "next_patch": 88,
-    "next_patch_tranche": "execute-paired-workload-phase-attribution-or-next-measurement-first-gate",
+    "next_patch": 89,
+    "next_patch_tranche": "reconcile-split-debug-and-execute-workload-phase-or-next-measurement-first-gate",
     "diagnostic_restart_on_task_change": true,
     "task_value_strata": 5,
     "task_value_tasks": 60,
@@ -294,7 +295,15 @@
     "workload_phase_maximum_overhead_ratio": 1.03,
     "workload_phase_private_bytes_max": 65536,
     "workload_phase_execution": "deferred",
-    "workload_phase_performance_claim_authorized": false
+    "workload_phase_performance_claim_authorized": false,
+    "split_debug_authority_version": 1,
+    "split_debug_builds": 2,
+    "split_debug_behavior_executions": 60,
+    "split_debug_behavior_pairs": 30,
+    "split_debug_companion_controls": 8,
+    "split_debug_symbol_resolutions": 12,
+    "split_debug_minimum_runtime_reduction": 0.5,
+    "split_debug_product_adoption": false
   },
   "required_closeout_documents": [
     "docs/adr/0060-patch073-correction-and-sprint12-closeout.md",
@@ -325,6 +334,8 @@
     "docs/adr/0071-patch084-correction-frozen-replay-and-terminal-attribution.md",
     "docs/sprints/sprint-13-patch-085-validation.md",
     "docs/adr/0073-patch086-correction-and-workload-phase-attribution.md",
-    "docs/sprints/sprint-13-patch-087-validation.md"
+    "docs/sprints/sprint-13-patch-087-validation.md",
+    "docs/adr/0074-patch087-correction-and-split-debug-packaging-experiment.md",
+    "docs/sprints/sprint-13-patch-088-validation.md"
   ]
 }

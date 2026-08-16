@@ -2,8 +2,10 @@
 
 ## Status
 
-Accepted as the Patch 080 implementation decision. Product acceptance remains
-pending the complete native, Docker, parity, and independent validation gates.
+Accepted as the historical Patch 080 implementation decision. Patch 080 was
+superseded by Patch 081, and Patches 081 through 086 did not complete
+acceptance. Patch 088 is the current implementation candidate pending complete
+exact-source acceptance.
 
 ## Context
 

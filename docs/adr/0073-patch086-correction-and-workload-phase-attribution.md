@@ -2,13 +2,14 @@
 
 ## Status
 
-Accepted for the Patch 087 implementation candidate. Exact-source acceptance remains pending.
+Decision accepted for inclusion in the Patch 087 implementation candidate.
+Exact-source product acceptance remains pending.
 
 ## Context
 
 Patch 086 preserved the analyzer runtime while adding replay-v2 sealing and a
-private ABI-role vector-equivalence result. Review confirmed that the runtime
-analyzer remained stable, but several acceptance surfaces were incomplete:
+private ABI-role vector-equivalence result. It did not complete exact-source
+acceptance because several acceptance surfaces remained incomplete:
 
 - base and candidate states could be classified without authenticating changed-path hard-link topology;
 - package wrappers retained a post-helper signal window;
@@ -34,7 +35,7 @@ Patch 087 implements one cohesive corrective and measurement-design boundary:
 5. Require the replay result to retain the complete selection-freeze summary, isolated runtime policy, twelve target identities, forty-eight execution records, and ninety-six raw streams.
 6. Publish terminal attribution and ABI evidence through complete-or-absent no-replace transactions.
 7. Regenerate private ABI evidence from the exact Patch 087 candidate source authority.
-8. Freeze an eight-fixture, two-profile, 160-execution workload and phase-attribution experiment before selecting any optimization.
+8. Freeze an eight-fixture, two-profile workload and phase-attribution method over 160 planned executions without selecting any optimization.
 
 The phase authority requires a retained median of at least five timer floors,
 MAD/median no greater than 0.10, phase-sum residual no greater than 0.05,
@@ -52,16 +53,18 @@ decoder-backed, and scored facts remain distinct.
 
 ## Evidence classification
 
-Replay, attribution, ABI-vector, and workload/phase artifacts remain private,
-diagnostic, mutable, and publication-ineligible. The phase authority is a
-preregistered method, not an executed timing result. A later qualifying phase
-share may select a bounded experiment, but it does not establish performance or
-resource superiority.
+Replay, terminal-attribution, and ABI-vector artifacts remain private,
+diagnostic, mutable, and publication-ineligible. The private workload/phase
+authority is a frozen method, not an executed timing result. Even a later
+qualified result may only motivate a separate bounded experiment; it does not
+select an optimization or establish speed, RSS, comparative coverage, baseline
+equivalence, exploitability, decoder, concurrency, or resource superiority.
 
 ## Consequences
 
-Patch 087 proceeds to fresh native, strict-shell, Docker, producer, replay,
+Patch 087 remains an implementation candidate pending fresh native,
+strict-shell, Docker, producer, replay,
 external-natural, parity, ABI, package, and independent acceptance gates. After
-acceptance, Patch 088 may execute the paired workload/phase authority or select
-another measurement-first tranche when the required instrumentation or workload
-qualification is unavailable.
+acceptance, Patch 088 may execute the paired workload/phase authority. If the
+required instrumentation or workload qualification is unavailable, a separate
+measurement-first tranche may proceed without altering the frozen authority.

@@ -1961,7 +1961,7 @@ Patch 076 implemented distinct private RPATH/RUNPATH evidence. Patch 076's
 review required Patch 077. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081. Sprint 13 remains an
-entry candidate and becomes active only after complete Patch 087 acceptance.
+entry candidate and becomes active only after complete Patch 088 acceptance.
 
 
 ## Historical Sprint 12 Patch 074 closeout validation
@@ -2022,7 +2022,7 @@ added distinct private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 087 acceptance remains pending. These patches add no public
+accepted. Independent exact-source Patch 088 acceptance remains pending. These patches add no public
 mitigation field, preserve schema
 `0.2.0`, do not reinterpret public PIE output, and make no runtime-CET claim.
 Program headers remain executable authority; section headers remain optional
@@ -2068,9 +2068,9 @@ remain separate; none substitutes for another. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Independent exact-source Patch 087 acceptance remains pending. Sprint
+accepted. Independent exact-source Patch 088 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
-only after complete Patch 087 acceptance.
+only after complete Patch 088 acceptance.
 
 ## Sprint 12 Patch 077 historical final reconciliation validation
 
@@ -2102,9 +2102,10 @@ sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=p
 Patch 077 did not complete acceptance and was superseded by Patch 078. Patches
 078 through 080 were likewise superseded by successive corrective candidates.
 Patch 081 was not accepted; its validation findings were accepted as correction
-inputs implemented by Patch 082. Sprint 13 activation remains pending until the
-P084 full local aggregate and independent acceptance pass against the exact
-candidate source.
+inputs implemented by Patch 082. Patches 083 through 086 also did not complete
+acceptance. Sprint 13 activation remains pending until the Patch 088 aggregate
+and independent acceptance pass against candidate tree
+`47a4ee9868914abc1736ed1ccc76515c0d46f676`.
 
 ## Sprint 13 Patch 078 correction and entry validation
 
@@ -2116,7 +2117,7 @@ sprint13-p078-acceptance-smoke`. Patch 079 ran the non-causal, deterministically
 presentation-ordered task-value gate; its historical target is `make
 sprint13-p079-acceptance-smoke`. Patch 080 records the LC-08B
 private-side-car/public-deferral decision. Patches 081 and 082 were not accepted.
-Patches 083 through 086 did not complete acceptance; Patch 087 is the current
+Patches 083 through 086 did not complete acceptance; Patch 088 is the current
 exact-source implementation candidate, whose aggregate owns the current acceptance
 boundary.
 
@@ -2174,9 +2175,9 @@ The producer target requires NASM and builds three isolated analyzer/fixture set
 later exact-source P082 run completed all three builds. P082 nevertheless did not
 complete the native, Docker, parity, package, delivery, documentation, and independent
 acceptance boundary and was not accepted. P083 subsequently required a fresh producer
-run bound to its own tree. Patches 083 through 085 did not complete acceptance; P086 is
-the current candidate, whose acceptance requires a fresh producer run bound to the
-exact P086 tree.
+run bound to its own tree. Patches 083 through 086 did not complete acceptance;
+P088 is the current candidate, whose acceptance requires a fresh producer run
+bound to candidate tree `47a4ee9868914abc1736ed1ccc76515c0d46f676`.
 
 
 ## Sprint 13 Patch 083 validation
@@ -2242,47 +2243,11 @@ make sprint13-natural-terminal-attribution-smoke
 Patch 085 did not complete acceptance. Its replay and attribution contracts are
 historical inputs to the Patch 086 correction below.
 
-## Sprint 13 Patch 087 validation
+## Historical Sprint 13 Patch 086 validation
 
-Patch 087 retains the Patch 086 runtime and public contracts while correcting
-transaction topology, wrapper signals, source-recovery and custody publication,
-replay runtime/package closure authority, terminal attribution, ABI result
-publication/source binding, and delivery closure.
-
-Focused cloud/local-independent gates:
-
-```bash
-make patch086-corrective-regression-smoke
-make sprint13-natural-frozen-replay-v2-smoke
-make sprint13-natural-terminal-attribution-v2-smoke
-make sprint13-abi-role-vector-equivalence-contract-smoke
-make sprint13-workload-phase-attribution-smoke
-```
-
-The workload/phase gate validates the frozen 8-fixture, 2-profile,
-160-execution authority and mutation oracles only. Actual phase execution
-requires a fresh authenticated instrumented profile and remains diagnostic.
-
-Complete exact-source acceptance:
-
-```bash
-S13_EXPECTED_CANDIDATE_TREE=<candidate-tree> S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p087-results/abi-vector S13_PRODUCER_RESULT_DIR=./.local/p087-results/producer S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural S13_NATURAL_REPLAY_RESULT_DIR=./.local/p087-results/replay S13_NATURAL_ATTRIBUTION_RESULT=./.local/p087-results/attribution.json   make sprint13-p087-acceptance-smoke
-```
-
-Expected final banner:
-
-```text
-sprint13-p087-acceptance-smoke: ok patch=87 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private workload-phase-authority=frozen public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
-```
-
-Candidate 4,097 and malformed-input no-partial-output contracts remain
-unchanged. Independent Lane A acceptance is still required.
-
-## Sprint 13 Patch 086 validation
-
-Patch 086 must pass the Patch 085 corrective regression, replay-v2 contract,
+Patch 086 required the Patch 085 corrective regression, replay-v2 contract,
 mandatory terminal-attribution-v2 contract, and private ABI-role vector
-equivalence contract before full execution. The focused contract checks are:
+equivalence contract before full execution. Its focused contract checks were:
 
 ```bash
 make patch085-corrective-regression-smoke
@@ -2305,3 +2270,67 @@ retains 48 internal dispositions, 24 controlled targets, all occupied candidate-
 index vector matches, 36 named queries, and 96 unchanged-public closures. These
 results add no public field, semantic class, score, schema, decoder, concurrency,
 FORTIFY-detection, performance, RSS, coverage, parity, or exploitability claim.
+Patch 086 did not complete exact-source acceptance; Patch 087 carries its
+bounded corrections.
+
+## Current Sprint 13 Patch 087 validation
+
+Patch 087 is the implementation candidate at tree
+`47a4ee9868914abc1736ed1ccc76515c0d46f676`, pending complete exact-source
+acceptance. It retains the Patch 086 runtime and public contracts while
+correcting transaction topology, wrapper signals, source-recovery and custody
+publication, replay runtime/package closure authority, terminal attribution,
+ABI result publication/source binding, and delivery closure.
+
+Focused candidate gates:
+
+```bash
+make patch086-corrective-regression-smoke
+make sprint13-natural-frozen-replay-v2-smoke
+make sprint13-natural-terminal-attribution-v2-smoke
+make sprint13-abi-role-vector-equivalence-contract-smoke
+make sprint13-workload-phase-attribution-smoke
+```
+
+These contract gates define private diagnostic replay, terminal-attribution,
+ABI-vector, and workload/phase authorities; they do not record full execution.
+The eight-fixture, two-profile, 160-execution workload/phase method is frozen but
+unexecuted and selects no optimization.
+
+Candidate aggregate:
+
+```bash
+S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 \
+S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p087-results/abi-vector \
+S13_PRODUCER_RESULT_DIR=./.local/p087-results/producer \
+S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural \
+S13_NATURAL_REPLAY_RESULT_DIR=./.local/p087-results/replay \
+S13_NATURAL_ATTRIBUTION_RESULT=./.local/p087-results/attribution.json \
+  make sprint13-p087-acceptance-smoke
+```
+
+A successful future exact-source run would emit this banner; the text below is
+an expectation, not evidence of completion or acceptance:
+
+```text
+sprint13-p087-acceptance-smoke: ok patch=87 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private workload-phase-authority=frozen public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
+```
+
+Candidate capacity remains 4,096; candidate 4,097 returns exit code 6 before
+stdout, and malformed-input failures emit no partial stdout. Runtime, public
+schema, semantic classes, and scores remain unchanged. A later qualified phase
+result may only motivate a separate bounded experiment; it does not authorize
+speed, RSS, comparative coverage, baseline equivalence, exploitability, decoder,
+concurrency, or optimization claims. Independent exact-source acceptance remains
+required.
+
+## Current Sprint 13 Patch 088 validation
+
+Patch 088 adds `make patch087-corrective-regression-smoke`,
+`make sprint13-split-debug-packaging-contract-smoke`,
+`make sprint13-split-debug-packaging-smoke`, and
+`make sprint13-p088-acceptance-smoke`. The contract smoke is cloud-safe. The
+full split-debug and acceptance targets require a fresh producer build, NASM,
+strict ShellCheck, Docker, replay, ABI, external-natural, and both parity
+planes. A clean committed source may derive the producer tree from `HEAD^{tree}`;
+a staged or non-clean source must provide the authenticated tree explicitly.

@@ -16,7 +16,7 @@ bounded private static text-relocation evidence, and Patch 076 implemented
 distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch
 076's review required Patch 077. Patch 077 was superseded by Patch 078, whose
 review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are recorded in the
-[Patch 086 validation record](sprint-13-patch-086-validation.md). The
+[Patch 087 validation record](sprint-13-patch-087-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves that
 historical boundary; the
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves its
@@ -157,7 +157,8 @@ Patch 072 supplies the remainder plus acquisition and parity gates. Patch 075
 introduced private static text-relocation evidence, but its review required the
 Patch 076 correction. Patch 076 implements distinct private RPATH/RUNPATH
 evidence; complete acceptance and qualified native/container parity remain
-pending against the Patch 083 candidate. Patch 081 was not accepted. The public-policy
+pending against the Patch 087 candidate. Patches 081 through 086 did not
+complete acceptance. The public-policy
 decision,
 positive
 coordinate anchors, whole-batch

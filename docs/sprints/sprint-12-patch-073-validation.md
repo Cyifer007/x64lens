@@ -9,7 +9,7 @@ bounded private static text-relocation evidence, and Patch 076 implemented
 distinct private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence. Patch
 076's review required Patch 077. Patch 077 was superseded by Patch 078, whose
 review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 086 validation record](sprint-13-patch-086-validation.md).
+[Patch 087 validation record](sprint-13-patch-087-validation.md).
 
 ## Purpose
 
@@ -172,11 +172,11 @@ static text-relocation evidence, but its review required the Patch 076
 correction. Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch
 078's review required the Patch 079 corrective and private task-value candidate;
 Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081. Patches 081
-and 082 were not accepted. Patches 083 through 085 did not complete acceptance;
-Patch 087 is the current exact-source implementation candidate. Complete
-acceptance remains pending against the exact P086 source.
+and 082 were not accepted. Patches 083 through 086 did not complete acceptance;
+Patch 088 is the current exact-source implementation candidate. Complete
+acceptance remains pending against the exact P087 source.
 Current validation expectations are in the
-[Patch 086 validation record](sprint-13-patch-086-validation.md). Patch 079's
+[Patch 087 validation record](sprint-13-patch-087-validation.md). Patch 079's
 non-causal, deterministically presentation-ordered task gate qualified only
 private task-value evidence. Patch 080 retains three facets privately and defers
 public-field and score projection.

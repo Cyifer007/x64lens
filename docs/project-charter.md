@@ -159,7 +159,7 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 ## Current implementation stage
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance authority.
-Patches 081 through 085 did not complete acceptance; Patch 087 is the current exact-
+Patches 081 through 086 did not complete acceptance; Patch 088 is the current exact-
 source implementation candidate, pending full local execution and independent
 acceptance. Patch 080 supplied the private register-role
 side-car but did not complete acceptance; it was superseded by Patch 081. Patch 074 was
@@ -175,7 +175,7 @@ PIE-versus-DSO identity, and GNU-property evidence. Patch 075 introduced private
 fields, but its review required Patch 077. Patch 077 then required Patch 078, whose
 review required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081. Sprint 13 remains planned and
-activates only after complete Patch 087 acceptance. Sprint 15 freezes the confirmatory
+activates only after complete Patch 088 acceptance. Sprint 15 freezes the confirmatory
 method; Sprint 16 produces the preview campaign, Sprint 17 runs publication-grade
 trials, and Sprint 22 is the first research- release gate.
 
@@ -191,9 +191,9 @@ executable authority, 4,096-candidate fail-closed behavior, and schema `0.2.0`. 
 role/property, text-relocation, and RPATH/RUNPATH evidence remains outside public
 reports, and the role/property policy remains `defer`. Patch 078 required the Patch 079
 corrective and private task-value candidate, which was superseded by Patch 080; Patch
-080 was superseded by Patch 081. Patches 081 through 085 did not complete acceptance;
-Patch 087 is the current exact-source implementation candidate. Sprint 13 remains an
-entry candidate and becomes active only after complete Patch 087 acceptance, without a
+080 was superseded by Patch 081. Patches 081 through 086 did not complete acceptance;
+Patch 088 is the current exact-source implementation candidate. Sprint 13 remains an
+entry candidate and becomes active only after complete Patch 088 acceptance, without a
 release tag or confirmatory campaign
 freeze.
 
@@ -246,3 +246,11 @@ six targets and 18 modeled cell observations. Full retained three-build
 execution, natural comparison evidence, and independent acceptance remain
 pending. These are evidence and delivery improvements, not new public analysis
 capabilities.
+
+## Patch 088 implementation stage
+
+Patch 088 is the current exact-source correction and split-debug experiment
+candidate. It preserves the dependency-free decoder-free one-worker analyzer and
+adds no public field, semantic class, score, schema, decoder, or concurrency
+change. Exact-source acceptance remains required before the next Sprint 13
+tranche.

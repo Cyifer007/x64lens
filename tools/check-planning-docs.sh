@@ -234,10 +234,10 @@ grep -Eq '^(Closed|Complete)' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 is not marked closed or complete'
 grep -Eq '^(Closed|Complete)' docs/sprints/sprint-11-plan.md \
     || fail 'Sprint 11 is not marked closed or complete'
-grep -q '^Patch 087 correction and paired workload/phase-attribution authority candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
-    || fail 'Sprint 12 is not marked as the Patch 087 corrective and phase-authority candidate'
-grep -q '^Patch 087 correction and paired workload/phase-attribution authority candidate; activation pending complete Patch 087 acceptance' docs/sprints/sprint-13-plan.md \
-    || fail 'Sprint 13 is not marked as the Patch 087 correction and phase-authority candidate'
+grep -q '^Patch 088 correction and split-debug packaging experiment candidate, pending complete acceptance' docs/sprints/sprint-12-plan.md \
+    || fail 'Sprint 12 is not marked as the Patch 088 corrective and split-debug candidate'
+grep -q '^Patch 088 correction and split-debug packaging experiment candidate; activation pending complete Patch 088 acceptance' docs/sprints/sprint-13-plan.md \
+    || fail 'Sprint 13 is not marked as the Patch 088 correction and split-debug candidate'
 grep -q 'Patch 046' docs/sprints/sprint-10-plan.md \
     || fail 'Sprint 10 plan does not record the Patch 046 entry boundary'
 grep -q 'Patch 047' docs/sprints/sprint-10-plan.md \

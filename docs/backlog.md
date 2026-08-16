@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — Patch 087 acceptance continuation
+### Sprint 12: loader and mitigation precision — Patch 088 acceptance continuation
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -722,12 +722,12 @@ private static text-relocation evidence, and Patch 076 added distinct private
 RPATH/RUNPATH evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required Patch 079; Patch 079 review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 087 acceptance remains pending.
+Patch 088 acceptance remains pending.
 Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 087 continuation
+### Sprint 12 Patch 073 through Patch 088 continuation
 
 Patch 073 executed the public-policy deferral but was not accepted at its first returned
 review boundary. Patch 074 implemented corrections for the confirmed review findings
@@ -737,8 +737,8 @@ Patch 076 added distinct private RPATH/RUNPATH evidence. Patch 076's review requ
 correction. Patch 077 was a Sprint 12 reconciliation candidate; Patch 078 followed as a
 Sprint 13 entry candidate, and its review required the Patch 079 corrective and private
 task-value candidate, which was superseded by Patch 080; Patch 080's review required
-Patch 081. Patches 081 and 082 were not accepted. Patches 083 and 084 also did not
-complete acceptance; Patch 087 is the current exact-source implementation candidate.
+Patch 081. Patches 081 through 086 did not complete acceptance; Patch 087 is the
+current exact-source implementation candidate.
 
 - [x] Advance delivery custody to descriptor-retained schema v3 and reject late
   subtree mutation, hardlinks, symlink ancestors, special files, undeclared
@@ -764,7 +764,7 @@ complete acceptance; Patch 087 is the current exact-source implementation candid
   review required the Patch 077 correction.
 - [x] Carry Patch 077 findings into the Patch 078 corrective and entry candidate.
 - [x] Record that Patch 078 required the Patch 079 corrective candidate.
-- [ ] Complete Patch 087 acceptance only after its implementation aggregate,
+- [ ] Complete Patch 088 acceptance only after its implementation aggregate,
   qualified Docker parity, package/source authentication, exact delivery
   rehearsal, and independent exact-source acceptance pass on the same
   source.
@@ -781,7 +781,7 @@ complete acceptance; Patch 087 is the current exact-source implementation candid
 - [x] Add tracked complete private dynamic-metadata parity.
 - [x] Implement the Patch 077 correction for patch/recovery/custody/permission,
   comparator, parity, Docker-build, and private failure-prefix authorities.
-- [x] Record that Patch 083 did not complete acceptance; Patch 086 is the
+- [x] Record that Patches 083 through 087 did not complete acceptance; Patch 088 is the
   current exact-source continuation before full Sprint 13 activation.
 
 
@@ -851,6 +851,36 @@ complete acceptance; Patch 087 is the current exact-source implementation candid
 - [x] Record that Patch 082 was not accepted and Patch 083 carried its bounded
   corrections.
 
+### Historical Sprint 13 Patch 083 checkpoint
+
+- [x] Exact committed base and check-to-effect patch-path binding.
+- [x] Post-effect status publication covered by inverse recovery.
+- [x] Complete `.PHONY` declaration oracle and all-umask source staging.
+- [x] Exact-tree and exact-mode three-generation producer custody.
+- [x] Non-root Docker run-root lifecycle while `/work` remains pristine.
+- [x] Outcome-blind natural coordinate campaign implementation and 108-control self-test.
+- [x] Complete and retain the natural campaign with twelve selected role targets;
+  its zero-qualified result remains diagnostic and comparison-unqualified.
+- [x] Record that Patch 083 was not accepted and Patch 084 carried its bounded
+  corrections.
+
+### Historical Sprint 13 Patch 084 checkpoint
+
+- [x] Correct post-effect repository/parent rebinding and corrupt-recovery residue.
+- [x] Bind Docker source construction and natural evidence to the exact candidate tree.
+- [x] Keep authenticated Docker source read-only to the runtime user.
+- [x] Separate natural structural completion from nine-cell comparison qualification.
+- [x] Retain the complete P083 result: 12 targets, 48 executions, 108 controls, zero qualified, five insufficient, four unavailable cells.
+- [x] Freeze 36 private ABI-role queries, including 12 source-disjoint
+  confirmations, and define 96 disabled-output closures confirming unchanged
+  public text and JSON.
+- [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
+- [x] Record that Patch 084 did not complete acceptance and that Patch 085 then
+  carried the correction and replay/attribution authorities.
+- [x] Preserve the 12-target, 48-execution, nine-cell, 108-control no-reroll
+  diagnostic boundary without authorizing public fields, semantics, scores,
+  schema or capacity changes, decoder or concurrency work, or comparative
+  coverage, performance, or exploitability claims.
 
 ### Historical Sprint 13 Patch 085 checkpoint
 
@@ -884,7 +914,7 @@ complete acceptance; Patch 087 is the current exact-source implementation candid
 - [ ] Complete fresh native, Docker, replay, producer, both parity planes,
   delivery, and independent exact-source acceptance.
 
-### Current Sprint 13 Patch 087 checkpoint
+### Historical Sprint 13 Patch 087 checkpoint
 
 - [x] Reject hard-linked patch paths in exact base, candidate, and already-state authentication.
 - [x] Close wrapper, recovery, custody, replay, attribution, and ABI publication signal windows with identity-bound cleanup.
@@ -892,36 +922,19 @@ complete acceptance; Patch 087 is the current exact-source implementation candid
 - [x] Regenerate private ABI evidence from the exact Patch 087 source authority with no-replace publication and retained-only checksums.
 - [x] Freeze the paired workload/phase-attribution authority over eight fixtures, two profiles, 16 cells, and 160 counterbalanced executions without selecting an optimization.
 - [x] Preserve zero runtime `src/include/schema` changes, zero public fields, zero semantic changes, zero score changes, and schema `0.2.0`.
-- [ ] Execute fresh native, strict-shell, Docker, producer, replay, both parity planes, ABI, and paired workload/phase gates on the exact candidate tree.
-- [ ] Complete independent Lane A acceptance before Patch 088 or any optimization selection.
+- [x] Keep replay, terminal-attribution, ABI-vector, and workload/phase evidence private and diagnostic; the frozen phase method remains unexecuted and non-selecting.
+- [ ] Execute fresh native, strict-shell, Docker, producer, replay, both parity
+  planes, ABI, and workload/phase authority-validation gates on the exact
+  candidate tree; this does not execute the phase experiment.
+- [ ] Complete independent exact-source acceptance for Patch 088; no phase result itself authorizes speed, RSS, comparative coverage, baseline equivalence, exploitability, decoder, concurrency, or optimization claims.
 
-### Historical Sprint 13 Patch 084 checkpoint
+### Current Sprint 13 Patch 088 checkpoint
 
-- [x] Correct post-effect repository/parent rebinding and corrupt-recovery residue.
-- [x] Bind Docker source construction and natural evidence to the exact candidate tree.
-- [x] Keep authenticated Docker source read-only to the runtime user.
-- [x] Separate natural structural completion from nine-cell comparison qualification.
-- [x] Retain the complete P083 result: 12 targets, 48 executions, 108 controls, zero qualified, five insufficient, four unavailable cells.
-- [x] Freeze 36 private ABI-role queries, including 12 source-disjoint
-  confirmations, and define 96 disabled-output closures confirming unchanged
-  public text and JSON.
-- [x] Preserve the sealed P079 lifecycle prefix: 20 roots, 30 leaves, 29 aliases, two folds, 15 tombstones, 161 lineage records, 87 events.
-- [x] Record that Patch 084 did not complete acceptance and that Patch 085 then
-  carried the correction and replay/attribution authorities.
-- [x] Preserve the 12-target, 48-execution, nine-cell, 108-control no-reroll
-  diagnostic boundary without authorizing public fields, semantics, scores,
-  schema or capacity changes, decoder or concurrency work, or comparative
-  coverage, performance, or exploitability claims.
-
-### Historical Sprint 13 Patch 083 checkpoint
-
-- [x] Exact committed base and check-to-effect patch-path binding.
-- [x] Post-effect status publication covered by inverse recovery.
-- [x] Complete `.PHONY` declaration oracle and all-umask source staging.
-- [x] Exact-tree and exact-mode three-generation producer custody.
-- [x] Non-root Docker run-root lifecycle while `/work` remains pristine.
-- [x] Outcome-blind natural coordinate campaign implementation and 108-control self-test.
-- [x] Complete and retain the natural campaign with twelve selected role targets;
-  its zero-qualified result remains diagnostic and comparison-unqualified.
-- [x] Record that Patch 083 was not accepted and Patch 084 carried its bounded
-  corrections.
+- [x] Correct terminal-success signal handling and exact regular-file mode authority.
+- [x] Include inherited descriptors, ancestor depth, retained-tree descriptors, cleanup peaks, and headroom in source-recovery preflight.
+- [x] Resolve bounded launcher symlink chains and authenticate five Python distributions through RECORD hashes.
+- [x] Normalize analyzer comparison through a checked strip-debug projection while retaining original binary identity.
+- [x] Bind all six workload/phase expected thresholds and close replay/ABI stage cleanup windows.
+- [x] Define and exercise the bounded two-build split-debug contract: sixty behavior executions, thirty pairs, eight controls, twelve symbol resolutions, and fifty-percent minimum size reduction.
+- [x] Preserve zero runtime, public-field, semantic, score, schema, decoder, concurrency, and capacity changes.
+- [ ] Complete fresh native, strict-shell, Docker, producer, replay, ABI, split-debug, both parity planes, delivery, and independent exact-source acceptance.

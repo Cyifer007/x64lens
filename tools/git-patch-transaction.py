@@ -32,6 +32,7 @@ O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
 O_DIRECTORY = getattr(os, "O_DIRECTORY", 0)
 O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
 MAX_PATCH_BYTES = 64 * 1024 * 1024
+_TERMINAL_SUCCESS_COMMITTED = False
 
 
 class TransactionError(RuntimeError):
@@ -81,8 +82,51 @@ def catchable_termination_guard(label: str):
     try:
         yield
     finally:
-        for sig, old in previous.items():
-            signal.signal(sig, old)
+        if not _TERMINAL_SUCCESS_COMMITTED:
+            for sig, old in previous.items():
+                signal.signal(sig, old)
+
+
+def publish_terminal_success(
+    repo: "RepoHandle",
+    action: str,
+    *,
+    mode: str,
+    base_tree: str,
+    candidate_tree: str,
+) -> None:
+    """Publish one terminal status under a narrow signal-ignored window.
+
+    The repository mutation is not terminal until the complete success record is
+    written. Catchable signals are blocked while their transaction handlers are
+    replaced with ``SIG_IGN`` and are then discarded during the final hook and
+    status write. If publication fails, the handlers are restored before the
+    exception reaches the inverse-recovery path.
+    """
+    global _TERMINAL_SUCCESS_COMMITTED
+    guarded = {signal.SIGHUP, signal.SIGINT, signal.SIGTERM}
+    previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, guarded)
+    previous_handlers = {sig: signal.getsignal(sig) for sig in guarded}
+    try:
+        for sig in guarded:
+            signal.signal(sig, signal.SIG_IGN)
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+
+    try:
+        invoke_hook("X64LENS_PATCH_TRANSACTION_BEFORE_STATUS_HOOK", repo)
+        emit_mutation_success(
+            action, mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+        )
+    except BaseException:
+        restore_mask = signal.pthread_sigmask(signal.SIG_BLOCK, guarded)
+        try:
+            for sig, old in previous_handlers.items():
+                signal.signal(sig, old)
+        finally:
+            signal.pthread_sigmask(signal.SIG_SETMASK, restore_mask)
+        raise
+    _TERMINAL_SUCCESS_COMMITTED = True
 
 
 @dataclass
@@ -507,8 +551,8 @@ def state_matches_entry(state: PathState, entry: TreeEntry | None) -> bool:
         return state.file_type == stat.S_IFLNK
     if state.file_type != stat.S_IFREG:
         return False
-    expected_exec = entry.mode == "100755"
-    return bool(state.mode & stat.S_IXUSR) == expected_exec
+    expected_mode = 0o755 if entry.mode == "100755" else 0o644
+    return state.mode == expected_mode
 
 
 def state_identity_equal(left: PathState, right: PathState) -> bool:
@@ -1023,10 +1067,9 @@ def apply_patch(
         _observed_mode, current_head = candidate_state(repo, branch, base_head, base_tree, candidate_tree, paths)
         require(current_head == original_head, "HEAD changed during patch application")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
-        with defer_catchable_signals():
-            emit_mutation_success(
-                "apply", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
-            )
+        publish_terminal_success(
+            repo, "apply", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+        )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -1089,10 +1132,9 @@ def rollback_patch(
         _observed_mode, current_head = logical_base_state(repo, branch, base_head, base_tree, paths)
         require(current_head == original_head, "HEAD changed during patch rollback")
         require_patch_scope_matches_trees(repo, raw, base_tree, candidate_tree)
-        with defer_catchable_signals():
-            emit_mutation_success(
-                "rollback", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
-            )
+        publish_terminal_success(
+            repo, "rollback", mode=mode, base_tree=base_tree, candidate_tree=candidate_tree
+        )
     except BaseException as exc:
         recovery = recover_after_effect(
             repo,
@@ -1110,6 +1152,8 @@ def rollback_patch(
 
 
 def main() -> int:
+    global _TERMINAL_SUCCESS_COMMITTED
+    _TERMINAL_SUCCESS_COMMITTED = False
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("apply", "rollback", "verify-applied"))
     parser.add_argument("--repo", type=Path, required=True)

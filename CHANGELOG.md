@@ -6,16 +6,29 @@ The project follows semantic versioning once the first public release is cut.
 
 ## Unreleased
 
+### Sprint 13 Patch 088
+
+- Record Patch 088 as an implementation candidate pending complete exact-source acceptance; this entry does not record product acceptance.
+- Close Patch 087 transaction terminal-success, exact regular-file mode, source-recovery descriptor, replay launcher/distribution, analyzer-projection, workload-threshold, ABI-stage, source-identity, evidence-ledger, and delivery findings.
+- Resolve bounded pipx launcher symlink chains and authenticate Python package closures through immutable distribution RECORD members rather than mutable package-tree walks.
+- Normalize replay analyzer comparison through a checked GNU `objcopy --strip-debug` projection while retaining the original binary identity and source provenance.
+- Add a two-build diagnostic split-debug packaging experiment with sixty behavior executions, thirty paired comparisons, eight companion controls, twelve symbol resolutions, and a fifty-percent minimum runtime-size-reduction gate.
+- Use SHA-256 plus `.gnu_debuglink` filename and CRC authority because the current build has no GNU build ID.
+- Preserve the frozen workload/phase authority without claiming it has run or selected an optimization.
+- Add no analyzer runtime, public field, semantic class, score, schema, decoder, concurrency, capacity, or output change; split-debug product adoption remains unauthorized.
+
 ### Sprint 13 Patch 087
 
+- Record Patch 087 as an implementation candidate pending complete exact-source acceptance; this entry does not record product acceptance.
 - Reject hard-linked patch paths before base, candidate, verify-applied, or already-state classification.
 - Execute package apply and rollback helpers as the wrapper process, eliminating post-helper signal windows.
 - Close source-recovery and custody effect-before-bookkeeping signal windows and retain complete-or-absent publication.
 - Pin pipx launcher identity, the resolved Python interpreter, and five exact package-root closures for replay-v2.
 - Retain the complete selection-freeze summary and require the observed 48-execution terminal distribution over 96 sealed raw streams.
 - Publish terminal attribution and candidate-bound ABI-vector evidence through no-replace transactions with retained-member checksum closure.
-- Freeze an eight-fixture, two-profile, 160-execution paired workload/phase experiment authority; execution and optimization selection remain deferred.
-- Add no analyzer runtime, public field, semantic class, score, schema, decoder, concurrency, capacity, or output change.
+- Keep replay-v2, terminal-attribution, ABI-vector, and paired workload/phase authorities private and diagnostic.
+- Freeze the eight-fixture, two-profile paired workload/phase method over 160 planned executions; execution remains deferred and the method selects no optimization.
+- Add no analyzer runtime, public field, semantic class, score, schema, decoder, concurrency, capacity, or output change, and authorize no speed, RSS, comparative-coverage, baseline-equivalence, or exploitability claim.
 
 ### Sprint 13 Patch 086
 
@@ -170,7 +183,7 @@ The project follows semantic versioning once the first public release is cut.
   boundary, read-only/nonexecuted targets, the dependency-free decoder-free
   one-worker reference, and public role/property deferral. Sprint 12 closure
   and the Sprint 13 semantic-capability handoff remain conditional on complete
-  acceptance of the current Patch 087 corrective candidate. Patches 081 and 082
+  acceptance of the current Patch 088 corrective candidate. Patches 081 and 082
   were not accepted; their returned findings became correction inputs to the
   next candidate.
 - Delivery custody schema `x64lens-delivery-custody-v3`, inode-bound
@@ -620,9 +633,9 @@ The project follows semantic versioning once the first public release is cut.
   class, or score. Patch 078 was superseded by Patch 079, Patch 079 by Patch 080,
   and Patch 080 by Patch 081. Patch 081 was not accepted; its validation findings
   were accepted as correction inputs. Patch 083 implemented those corrections,
-  but Patches 083 through 085 did not complete acceptance. Patch 086 is the
+  but Patches 083 through 086 did not complete acceptance. Patch 087 is the
   current corrective candidate. Public-field and score deferral remains
-  unchanged, and independent P086 acceptance is pending.
+  unchanged, and independent P087 acceptance is pending.
 
 - Sprint 12 Patch 077 pinned patch bytes across check and mutation, made source
   recovery and delivery cleanup descriptor-bound with no-replace publication,
@@ -671,8 +684,8 @@ The project follows semantic versioning once the first public release is cut.
   superseded as the closeout candidate. Patch 075 introduced the private
   text-relocation tranche, and Patch 076 added distinct private RPATH/RUNPATH
   evidence. Patch 077 required the Patch 078 closeout correction and Sprint 13
-  entry candidate. Patches 081 through 085 did not complete acceptance. Patch
-  086 is the current exact-source implementation candidate, pending its native,
+  entry candidate. Patches 081 through 086 did not complete acceptance. Patch
+  087 is the current exact-source implementation candidate, pending its native,
   Docker, replay, parity, delivery, and independent gates.
 
 - Patch 072 corrective prerequisites: generation-aware `statx` cleanup tokens,

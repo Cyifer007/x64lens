@@ -12,10 +12,10 @@ source-recovery and custody publication, replay runtime authority, terminal
 attribution, ABI publication/source binding, documentation, and loose-delivery
 findings. It also freezes a paired workload and phase-attribution authority.
 
-No tracked file under `src/`, `include/`, or `schemas/` changes. Tool version
-`0.1.0-dev`, schema `0.2.0`, public output, semantic classes, scores, candidate
-capacity, deterministic ordering, and the decoder-free one-worker reference
-profile remain unchanged.
+No tracked file under `src/`, `include/`, or `schemas/` changes. The runtime,
+public schema, semantic classes, and scores remain unchanged. Tool version
+`0.1.0-dev`, schema `0.2.0`, public output, candidate capacity, deterministic
+ordering, and the decoder-free one-worker reference profile remain unchanged.
 
 ## Source preconditions
 
@@ -23,13 +23,14 @@ profile remain unchanged.
 branch: main
 base HEAD: c6d1465e674aa04e61e06c80ec0dc3d719dfeba8
 base tree: 9e8d5a3fb0c27e6596d3e1d4475ae2a34ef6466d
+candidate HEAD: e5b3d6d6bd27acd3f4e41c3a2acbb231a6b9fc2b
 tracked state: clean
-candidate tree: supplied by the authenticated Patch 087 package and runbook
+candidate tree: 47a4ee9868914abc1736ed1ccc76515c0d46f676
 ```
 
-The candidate tree is supplied externally through
-`S13_EXPECTED_CANDIDATE_TREE`; the Makefile does not attempt to derive its own
-authority from a mutable index.
+This record identifies the reviewed Patch 087 implementation candidate exactly.
+Acceptance callers must export that immutable tree through
+`S13_EXPECTED_CANDIDATE_TREE`; a mutable index is not source authority.
 
 ## Focused validation
 
@@ -56,6 +57,9 @@ sprint13-abi-role-vector-equivalence-smoke: ok ... candidate_source_bound=1 no_r
 sprint13-workload-phase-attribution-smoke: ok fixtures=8 profiles=2 ... executions=160 ... execution=deferred
 ```
 
+These contract-only banners define private diagnostic authorities; they do not
+record replay, terminal-attribution, ABI-vector, or workload/phase execution.
+
 ## Native validation
 
 ```bash
@@ -74,11 +78,11 @@ SHELLCHECK_STRICT=1 make shellcheck-smoke
 ```bash
 mkdir -p .local/p087-results
 
-S13_EXPECTED_CANDIDATE_TREE=<candidate-tree> \
+S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 \
 S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p087-results/abi-vector \
   make sprint13-abi-role-vector-equivalence-smoke
 
-S13_EXPECTED_CANDIDATE_TREE=<candidate-tree> \
+S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 \
 S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural \
 S13_NATURAL_REPLAY_RESULT_DIR=./.local/p087-results/frozen-replay \
 S13_NATURAL_ATTRIBUTION_RESULT=./.local/p087-results/terminal-attribution.json \
@@ -93,7 +97,7 @@ Target rerolling is prohibited.
 ## Docker and parity validation
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<candidate-tree> make docker-build
+S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 make docker-build
 make docker-run-root-smoke
 make docker-source-custody-smoke
 make docker-test
@@ -105,7 +109,7 @@ make sprint12-dynamic-metadata-environment-parity-smoke
 ## Candidate aggregate
 
 ```bash
-S13_EXPECTED_CANDIDATE_TREE=<candidate-tree> \
+S13_EXPECTED_CANDIDATE_TREE=47a4ee9868914abc1736ed1ccc76515c0d46f676 \
 S13_ABI_ROLE_VECTOR_RESULT_DIR=./.local/p087-results/abi-vector-acceptance \
 S13_PRODUCER_RESULT_DIR=./.local/p087-results/producer-acceptance \
 S13_NATURAL_REPLAY_INPUT_DIR=./.local/p083-results/natural-structural \
@@ -114,7 +118,8 @@ S13_NATURAL_ATTRIBUTION_RESULT=./.local/p087-results/terminal-attribution-accept
   make sprint13-p087-acceptance-smoke
 ```
 
-Expected banner:
+A successful future exact-source run would emit this banner; the banner shown
+here is an expectation, not evidence of completion or acceptance:
 
 ```text
 sprint13-p087-acceptance-smoke: ok patch=87 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private workload-phase-authority=frozen public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
@@ -127,7 +132,7 @@ profiles, one warmup and nine measured runs per profile/fixture, and 160 total
 executions. Qualification requires:
 
 ```text
-median >= 5 × 6,231,575 ns
+median >= 5 × retained timer floor
 MAD / median <= 0.10
 phase-sum residual <= 0.05
 instrumented / reference median <= 1.03
@@ -137,9 +142,10 @@ normalized public output equality
 zero failures and regressions
 ```
 
-The cloud selftest validates the authority and mutation oracles only. Full
-execution remains a separate diagnostic run and cannot authorize a performance
-claim.
+The contract-only smoke validates the frozen method and mutation oracles. Full
+execution remains a separate private diagnostic run. Qualification may motivate
+a later bounded experiment, but cannot itself select an optimization or
+authorize a performance claim.
 
 ## Failure expectations
 
@@ -147,12 +153,14 @@ claim.
 - HUP, INT, or TERM during owned publication enters cleanup without owned residue.
 - Package apply and rollback wrappers have no command after the transaction helper.
 - Replay runtime, package closures, source, target, tool, raw-stream, and terminal expectations are exact.
-- Candidate 4,097 still returns exit code 6 before stdout.
+- Candidate capacity remains 4,096; candidate 4,097 returns exit code 6 before stdout.
 - Malformed parser failures still emit no partial stdout.
 
 ## Claim boundary
 
-Patch 087 does not claim an executed phase result, comparative speed, RSS
-superiority, coverage equivalence, public role evidence, score improvement,
-decoder need, concurrency benefit, or exploitability. Independent Lane A
-acceptance remains mandatory.
+Replay, terminal-attribution, ABI-vector, and workload/phase evidence remains
+private, diagnostic, and publication-ineligible. The workload/phase method is
+frozen but unexecuted and selects no optimization. Patch 087 does not claim
+comparative speed, RSS, comparative coverage, baseline equivalence, public role
+evidence, score improvement, exploitability, decoder need, or concurrency
+benefit. Independent exact-source acceptance remains mandatory.

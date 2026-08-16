@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, replay, producer, parity, delivery, and independent acceptance gates.
+Historical implementation candidate. Patch 086 did not complete exact-source
+acceptance; Patch 087 carries its bounded transaction, replay, publication,
+source-binding, delivery, and workload/phase-authority corrections.
 
 ## Scope
 
@@ -122,8 +124,8 @@ Expected banner:
 sprint13-p086-acceptance-smoke: ok patch=86 sprint12=closed sprint13=active frozen-replay=sealed terminal-attribution=expected abi-vector-equivalence=private public-fields-added=0 semantic-changes=0 score-changes=0 schema=0.2.0
 ```
 
-The aggregate is necessary but not sufficient; independent exact-source
-acceptance remains required.
+This was the Patch 086 candidate aggregate, not an acceptance result. Patch 086
+did not complete independent exact-source acceptance.
 
 ## Failure expectations
 
@@ -139,7 +141,8 @@ acceptance remains required.
 
 The recorded private ABI-vector equivalence remains diagnostic and
 publication-ineligible. No completed local replay-v2 result is claimed here.
-Any later replay remains diagnostic unless separately frozen and qualified.
+The replay selection is exact and no-reroll, while any replay evidence remains
+private, diagnostic, `frozen=false`, and publication-ineligible.
 Vector equivalence is not decoded validity, natural role incidence, task value,
 public role policy, exploitability, comparative coverage, performance, RSS, or
 concurrency evidence.

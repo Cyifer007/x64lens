@@ -1,5 +1,5 @@
 {
-  "campaign_id": "s13-p087-natural-frozen-replay-v2",
+  "campaign_id": "s13-p088-natural-frozen-replay-v2",
   "cell_reasons": {
     "ambiguous": 0,
     "insufficient": 8,
@@ -28,7 +28,7 @@
     "virtual_address": 2
   },
   "observations": 36,
-  "patch": 87,
+  "patch": 88,
   "precedence_mutations": 16,
   "public_fields_added": 0,
   "raw_streams_verified": 96,

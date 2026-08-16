@@ -13,7 +13,7 @@ private prefix without changing the runtime lattice and implemented distinct
 private `DT_RPATH` and `DT_RUNPATH` carrier/value evidence, but its review
 required the Patch 077 correction. Patch 078 then became the Sprint 13 entry
 candidate, and its review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are in the
-[Patch 086 validation record](../sprints/sprint-13-patch-086-validation.md).
+[Patch 087 validation record](../sprints/sprint-13-patch-087-validation.md).
 
 ## Context
 

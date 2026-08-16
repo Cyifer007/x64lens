@@ -233,9 +233,9 @@ Patch 082 does not recalibrate a score. It implements a gate requiring each of t
 exact-pattern score/null cells to agree with the exact catalog and reports from three
 independently built analyzers. A later exact-source P082 run rejected each toggle
 through the catalog and all three producer generations. P083 subsequently required a
-fresh producer run bound to its own tree. Patches 083 through 085 did not complete
-acceptance; P087 is the current candidate, whose acceptance likewise requires a fresh
-producer run bound to the exact P086 tree. Existing scores remain relative utility
+fresh producer run bound to its own tree. Patches 083 through 086 did not complete
+acceptance; P088 is the current candidate, whose acceptance likewise requires a fresh
+producer run bound to the exact P087 candidate tree. Existing scores remain relative utility
 hypotheses, not exploitability values: 14 cells retain numeric scores, 11 retain null,
 and all three private role facets remain null.
 
@@ -253,3 +253,21 @@ records private ABI-role vector equivalence. It changes no scoring input, numeri
 value, null cell, public field, semantic class, schema, or runtime path. Neither
 the private vector result nor any later diagnostic replay authorizes score
 recalibration, exploitability, superiority, or public-role claims.
+
+## Patch 087 score boundary
+
+Patch 087 is an implementation candidate pending complete exact-source
+acceptance. It changes no scoring input, numeric value, null cell, public field,
+semantic class, schema, capacity, or runtime path. Replay, terminal-attribution,
+ABI-vector, and workload/phase evidence remains private and diagnostic. The
+paired phase method is frozen but unexecuted and selects no optimization; even a
+qualified result cannot itself authorize score recalibration, speed, RSS,
+comparative coverage, baseline equivalence, exploitability, decoder, or
+concurrency claims.
+
+## Patch 088 score boundary
+
+Patch 088 assigns no new score and does not recalibrate an existing score.
+Packaging size, debug-companion resolution, and behavior parity are not scoring
+facts. All three private role facets remain score-null pending their separate
+score-policy gate.

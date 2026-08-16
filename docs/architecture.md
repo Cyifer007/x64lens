@@ -1681,7 +1681,7 @@ Private malformed/unsupported snapshots are defined as deterministic parse
 prefixes. They do not become public negatives or change public mitigation
 policy. Program headers remain executable authority, dynamic metadata remains a
 separate private evidence layer, and Sprint 13 activation remains blocked until
-complete Patch 087 acceptance. Patch 078 was superseded by the Patch 079
+complete Patch 088 acceptance. Patch 078 was superseded by the Patch 079
 corrective candidate; Patch 079 was superseded by Patch 080, whose review required
 Patch 081.
 
@@ -1764,9 +1764,9 @@ analyzer reports in the ordered-pair and score/null policy gates. A later exact-
 P082 run completed all three builds and validated existing matcher, classifier, and
 scorer output; its records do not become reporter inputs or new candidate side-cars.
 P083 subsequently required a fresh producer run bound to its own tree. Patches 083
-through 085 did not complete acceptance; Patch 087 is the current exact-source
+through 086 did not complete acceptance; Patch 088 is the current exact-source
 implementation candidate, whose acceptance likewise requires a fresh producer run bound
-to the exact P086 tree.
+to candidate tree `47a4ee9868914abc1736ed1ccc76515c0d46f676`.
 
 The controlled coordinate method-discrimination preflight consumes modeled
 mapping facts over six controlled targets only. It neither executes the named
@@ -1828,3 +1828,32 @@ classifier, reporter input, public role projection, decoder fact, mitigation
 fact, score input, or concurrency profile. Patch 086 changes no file under
 `src/`, `include/`, or `schemas/`, adds no public field or semantic class, and
 preserves schema `0.2.0`.
+
+## Patch 087 transaction and frozen-method boundary
+
+Patch 087 changes transaction, recovery, custody, replay, attribution, ABI
+publication, and diagnostic-method authorities around the same analyzer
+architecture. It changes no file under `src/`, `include/`, or `schemas/` and adds
+no runtime path, public schema field, semantic class, score, decoder fact,
+concurrency profile, or candidate-capacity change. Candidate capacity remains
+4,096, and malformed failures remain complete-before-report with no partial
+stdout. Program headers and file-backed `PT_LOAD + PF_X` ranges remain executable
+authority; raw, exact-suffix, semantic-exact, unknown, future decoder-backed, and
+scored facts remain distinct.
+
+Replay-v2, terminal-attribution, ABI-vector, and workload/phase evidence remains
+private, diagnostic, and publication-ineligible. The workload/phase method is
+frozen but unexecuted and selects no optimization. A later qualified result may
+only motivate a separate bounded experiment; it does not authorize speed, RSS,
+comparative coverage, baseline equivalence, exploitability, decoder, or
+concurrency claims. Patch 087 remains an implementation candidate pending
+complete exact-source acceptance.
+
+## Patch 088 corrective and packaging-experiment boundary
+
+Patch 088 changes transaction, recovery, replay, ABI-stage, oracle, evidence,
+and delivery tooling only. No tracked `src/`, `include/`, or schema file changes.
+The split-debug experiment consumes independent producer builds outside the
+analyzer pipeline and cannot select executable regions, alter candidates,
+classify semantics, assign scores, or format reports. The reference runtime and
+all module boundaries remain unchanged.

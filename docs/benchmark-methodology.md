@@ -881,7 +881,7 @@ superiority, parity, normalized coverage, or mitigation prevalence, or promote
 a Sprint 11-12 diagnostic row into the Sprint 15-frozen campaign. Patch 079 was
 the corrective and private task-value candidate; it was superseded by Patch 080,
 which was superseded by Patch 081. Any changed semantic task in Sprint 13 receives
-a new diagnostic campaign identity only after complete Patch 087 acceptance and
+a new diagnostic campaign identity only after complete Patch 088 acceptance and
 the relevant task-value gate.
 
 
@@ -1025,3 +1025,26 @@ It remains unfrozen and comparison-unqualified. Neither those rows nor the
 private Patch 086 ABI-role vector equivalence supports performance, RSS,
 coverage, parity, superiority, public-role, decoder, concurrency, FORTIFY, or
 exploitability claims.
+
+## Patch 087 paired workload/phase method boundary
+
+Patch 087 is an implementation candidate pending complete exact-source
+acceptance. Its replay-v2, terminal-attribution, ABI-vector, and workload/phase
+authorities remain private diagnostic evidence. The paired method freezes eight
+fixtures, two profiles, and 160 planned executions, but it has not run and
+selects no optimization. Qualification may only motivate a separate bounded
+experiment; it does not authorize speed, RSS, comparative coverage, baseline
+equivalence, exploitability, decoder, concurrency, or publication claims.
+Runtime, schema `0.2.0`, semantic classes, scores, candidate capacity, and
+malformed no-partial-output behavior remain unchanged.
+
+## Patch 088 split-debug diagnostic methodology
+
+Patch 088 defines a two-build packaging experiment with fifteen behavior
+profiles per build, sixty total behavior executions, thirty matched behavior
+pairs, eight companion controls, and twelve symbol resolutions. Each runtime
+must shrink by at least fifty percent relative to its unstripped producer while
+preserving behavior. SHA-256 and `.gnu_debuglink` CRC identify the artifacts
+because the current build lacks a GNU build ID. The result is diagnostic, does
+not replace runtime benchmarks, and cannot authorize performance, RSS, coverage,
+or product-adoption claims.

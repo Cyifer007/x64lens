@@ -3,7 +3,7 @@
 ## Current checkpoint
 
 Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
-mitigation facts. Patch 087 is the current implementation candidate. Its full
+mitigation facts. Patch 088 is the current implementation candidate. Its full
 producer run, replay-v2 execution, native and Docker gates, parity, delivery,
 and independent exact-source acceptance remain pending. The P083 natural-
 coordinate campaign is already retained as comparison-unqualified diagnostic
@@ -589,7 +589,7 @@ RPATH/RUNPATH evidence, but its review required the Patch 077 correction. Patch
 077 required the Patch 078 entry candidate. Patch 078 was superseded by the
 Patch 079 corrective and private task-value candidate. Patch 079's review
 required Patch 080, which was superseded by Patch 081. Independent exact-source
-Patch 087 acceptance remains pending before the next Sprint 13 tranche.
+Patch 088 acceptance remains pending before the next Sprint 13 tranche.
 
 
 ## Sprint 12 Patch 072 external-natural and parity checkpoint
@@ -632,7 +632,7 @@ RPATH/RUNPATH evidence were not Patch 074 runtime output. Patch 075 introduced
 bounded private static text-relocation evidence, and Patch 076 implements
 distinct private RPATH/RUNPATH evidence. Neither adds a public field or runtime-
 CET claim. Patch 076 was superseded by the Patch 077 correction. Sprint 13
-remains planned and activates only after complete Patch 087 acceptance. Patch
+remains planned and activates only after complete Patch 088 acceptance. Patch
 078 freezes private additive exact-pop roles, including Linux syscall argument
 4 in `r10` and System V call argument 4 in `rcx`. Patch 079 executed the
 deterministically presentation-ordered task-value gate. Patch 080 records the
@@ -693,7 +693,7 @@ incremental-value gate.
 ## Sprint 13 Patch 082 checkpoint
 
 Patch 082 was not accepted, Patch 083 carried its bounded corrections, and
-Patches 084 and 085 also were not accepted. Patch 087 is the current exact-
+Patches 084 through 086 also were not accepted. Patch 088 is the current exact-
 source implementation candidate. P082 retained the private role
 side-car and ordered-tuple deferral,
 implemented a gate requiring score/null and ordered-pair agreement across three
@@ -703,40 +703,17 @@ a separate 30-condition/180-row diagnostic campaign. All 60 x64lens timing rows
 were below its 6,303,525 ns floor and all nine natural coordinate cells had zero
 positive anchors. That result remains diagnostic, unfrozen, and publication-
 ineligible. P083 subsequently required its own exact-tree producer run and
-distinct 12-target natural campaign; fresh P086-bound acceptance evidence
+distinct 12-target natural campaign; fresh P087-bound acceptance evidence
 remains required.
 
+## Historical Patch 083 research decision
 
-## Historical Patch 085 research decision
-
-Patch 085 defines a frozen-input authority over the exact twelve P083 natural
-target hashes and five retained tool identities. GNU `readelf` is retained for
-authentication; four execution tools run once per target, yielding 48 slots under
-the no-reroll rule. It defines layered attribution for 48 execution outcomes, 48
-relation outcomes, 36 observations, and nine cells. The predecessor remains 12
-targets, 48 executions, nine cells, 108 controls, zero qualified, five
-insufficient, and four unavailable cells.
-
-The P085 replay did not complete, and P085 was not accepted. It authorizes no
-comparative coverage, performance, RSS, exploitability, public role field,
-score, decoder, or concurrency claim. Patch 086 carries the replay correction
-and private full-vector ABI-role representation-equivalence authority.
-
-## Patch 086 research decision
-
-Patch 086 defines replay-v2 sealing for twelve exact predecessor target hashes,
-48 execution records, 96 raw streams, authenticated runtime/cache authority,
-complete checksum membership, and mandatory terminal attribution. No completed
-local replay is claimed. A fixture-derived oracle records private ABI-role
-vector equivalence over 48 internal dispositions, 24 controlled targets, every
-occupied candidate index, 36 named queries, and 96 unchanged-public closures.
-
-A separate private P085 diagnostic campaign completed 30/30 conditions and
-180/180 rows, but all 60 x64lens measured rows were below its 5,515,395 ns
-floor and 0/9 natural coordinate cells were positive. It remains unfrozen and
-comparison-unqualified. Neither that campaign nor vector equivalence supports
-performance, RSS, parity, coverage, superiority, exploitability, public-role,
-decoder, FORTIFY, concurrency, or publication claims.
+Patch 083 selected the outcome-blind natural coordinate campaign rather than a
+new runtime semantic family. Its retained result is structurally complete but
+comparison-unqualified: twelve selected package objects, 48 tool executions,
+nine terminal cells, 108 controls, zero qualified, five insufficient, and four
+unavailable. Public role projection, score changes, decoder admission, and
+concurrency remain separate gates.
 
 ## Historical Patch 084 research decision
 
@@ -753,13 +730,56 @@ unchanged public text and JSON. The contract freezes the distinction between Sys
 argument 4 (`rcx`) and Linux syscall argument 4 (`r10`) without changing runtime
 semantics, public output, or scores. Patch 085 defined the first frozen-input replay
 and layered private terminal-attribution authorities but did not complete acceptance;
-Patch 086 carries the corrected replay-v2 and private vector boundary.
+Patch 086 carried the corrected replay-v2 and private vector boundary.
 
-## Historical Patch 083 research decision
+## Historical Patch 085 research decision
 
-Patch 083 selected the outcome-blind natural coordinate campaign rather than a
-new runtime semantic family. Its retained result is structurally complete but
-comparison-unqualified: twelve selected package objects, 48 tool executions,
-nine terminal cells, 108 controls, zero qualified, five insufficient, and four
-unavailable. Public role projection, score changes, decoder admission, and
-concurrency remain separate gates.
+Patch 085 defines a frozen-input authority over the exact twelve P083 natural
+target hashes and five retained tool identities. GNU `readelf` is retained for
+authentication; four execution tools run once per target, yielding 48 slots under
+the no-reroll rule. It defines layered attribution for 48 execution outcomes, 48
+relation outcomes, 36 observations, and nine cells. The predecessor remains 12
+targets, 48 executions, nine cells, 108 controls, zero qualified, five
+insufficient, and four unavailable cells.
+
+The P085 replay did not complete, and P085 was not accepted. It authorizes no
+comparative coverage, performance, RSS, exploitability, public role field,
+score, decoder, or concurrency claim. Patch 086 carried the replay correction
+and private full-vector ABI-role representation-equivalence authority.
+
+## Historical Patch 086 research decision
+
+Patch 086 defines replay-v2 sealing for twelve exact predecessor target hashes,
+48 execution records, 96 raw streams, authenticated runtime/cache authority,
+complete checksum membership, and mandatory terminal attribution. No completed
+local replay is claimed. A fixture-derived oracle records private ABI-role
+vector equivalence over 48 internal dispositions, 24 controlled targets, every
+occupied candidate index, 36 named queries, and 96 unchanged-public closures.
+
+A separate private P085 diagnostic campaign completed 30/30 conditions and
+180/180 rows, but all 60 x64lens measured rows were below its 5,515,395 ns
+floor and 0/9 natural coordinate cells were positive. It remains unfrozen and
+comparison-unqualified. Neither that campaign nor vector equivalence supports
+performance, RSS, parity, coverage, superiority, exploitability, public-role,
+decoder, FORTIFY, concurrency, or publication claims.
+
+## Patch 087 research decision
+
+Patch 087 remains an implementation candidate pending complete exact-source
+acceptance. Replay-v2, terminal-attribution, ABI-vector, and workload/phase
+evidence remains private, diagnostic, and publication-ineligible. The paired
+phase method is frozen but unexecuted and selects no optimization. Runtime,
+public schema, semantic classes, scores, candidate capacity, and malformed
+no-partial-output behavior remain unchanged. Even a later qualified result may
+only motivate a separate bounded experiment; it does not authorize speed, RSS,
+comparative coverage, baseline equivalence, exploitability, decoder,
+concurrency, or publication claims.
+
+## Patch 088 research decision
+
+Patch 088 closes the confirmed Patch 087 tooling and delivery findings and runs
+only the bounded split-debug packaging experiment. The frozen workload/phase
+authority remains unexecuted. Patch 089 should reconcile fresh split-debug
+evidence and execute the phase authority when its instrumentation and
+environment are qualified. Decoder and concurrency profiles remain separate
+Sprint 14 decisions.
