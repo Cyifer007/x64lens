@@ -509,7 +509,19 @@ Patch 089 carries exact-source acceptance work forward without changing the
 Sprint 12 loader or mitigation product facts. It corrects replay identity and
 Python closure custody, split-debug producer/result authority, workload fixture
 identity, streaming recovery limits, documentation, and delivery closure.
-Split-debug remains an opt-in diagnostic release experiment: path-stable DWARF,
-total-transfer reduction, and default product adoption are not established. No
+Split-debug remains an opt-in diagnostic release experiment: the retained P088
+runtime tier shrank 66.09%, but runtime plus companion produced no total-transfer
+saving, post-link redaction did not establish path-stable DWARF, and default
+product adoption is not authorized. The retained P088 campaign had every
+x64lens timing below floor and no coordinate cell with a positive anchor. No
 public mitigation field, runtime semantic class, score, schema, decoder,
 concurrency, or release claim changes.
+
+Cloud evidence validates only the frozen workload/phase authority and rejection
+oracles; the experiment remains unexecuted. Fresh NASM/native, Docker, replay,
+split-debug, workload, both parity planes, and independent exact-source gates
+remain required against the exact P089 tree.
+
+## Post-semester acceptance continuity
+
+Patch 090 continues exact-source acceptance hardening in Sprint 13 without changing the Sprint 12 loader and mitigation implementation. It strengthens evidence and delivery authorities and does not revise the semester's completed engineering scope.

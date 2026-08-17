@@ -26,7 +26,8 @@ general-purpose decoder or chain generator.
 ## Planned deliverables
 
 - [x] Correct Patch 088 replay identity/closure, split-debug custody, workload fixture, streaming recovery, and delivery authorities without changing analyzer facts.
-- [x] Retain split-debug only as an opt-in diagnostic release experiment; default adoption, path-stable DWARF, and total-transfer saving remain unproven.
+- [x] Retain split-debug only as an opt-in diagnostic release experiment; the P088 runtime tier shrank 66.09%, but total-transfer saving, path-stable DWARF, and default adoption remain unproven.
+- [x] Classify the retained P088 campaign as comparison-unqualified because every x64lens timing was below floor and no coordinate cell had a positive anchor.
 - [x] Freeze an additive private role decision for all exact single-pop GPR patterns without collapsing generic, call, syscall, syscall-number, or pivot roles.
 - [x] Freeze `r10` as the private Linux syscall argument-4 role, distinct from
   System V call argument-4 `rcx`; Patch 080 retains both mappings privately and
@@ -100,11 +101,13 @@ general-purpose decoder or chain generator.
 ## Handoff
 
 Patch 089 is the current corrective and evidence-reconciliation candidate. It
-requires candidate-bound replay, terminal attribution, ABI-vector, producer,
-exact-source Docker, parity, split-debug, and independent exact-source acceptance.
+requires a fresh NASM/native build and candidate-bound replay, terminal
+attribution, ABI-vector, producer, exact-source Docker, both parity planes,
+split-debug, workload, delivery, and independent exact-source acceptance.
 Replay, terminal-attribution, ABI-vector, workload/phase, and split-debug evidence
 remains private and diagnostic. The workload/phase method remains frozen but
-unexecuted. The split-debug experiment does not adopt a product packaging mode.
+unexecuted; cloud evidence validates only its authority and rejection oracles.
+The split-debug experiment does not adopt a product packaging mode.
 Neither authority establishes speed, RSS, comparative coverage, baseline
 equivalence, exploitability, decoder need, concurrency benefit, or an
 optimization choice.
@@ -130,3 +133,5 @@ Patch 080 records the LC-08B decision for only the qualified private facets: it
 retains them in a private additive side-car while deferring public and score
 projection. Patch 080 was superseded by Patch 081; complete Patch 089 acceptance
 remains required before the next Sprint 13 tranche.
+
+The artifact-backed preflight qualified fewer than 6/8 fixtures and selects retirement of phase instrumentation for the current workload set. Fresh local execution remains an acceptance confirmation rather than authorization to proceed with the paired matrix.

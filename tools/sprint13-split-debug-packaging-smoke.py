@@ -247,7 +247,14 @@ def validate_producer(manifest_path: Path, root: Path, source_tree: str, authori
     selected = [item for item in generations if item["generation"] in contract["selected_generations"]]
     require([item["generation"] for item in selected] == contract["selected_generations"],
             "selected producer generations changed")
-    return {**producer, "selected": selected}
+    source_manifest_path = root / producer["source_manifest"]["path"]
+    return {
+        **producer,
+        "selected": selected,
+        "_manifest_sha256": sha(manifest_path),
+        "_source_manifest_sha256": sha(source_manifest_path),
+        "_source_manifest_path": source_manifest_path,
+    }
 
 
 def elf_sections(path: Path) -> dict[str, tuple[int, int]]:
@@ -385,6 +392,8 @@ def behavior(authority: dict[str, Any], build: int, unstripped: Path, runtime: P
             raw_root = retained / "raw" / profile["id"]
             stdout = write_file(raw_root / f"{variant}.stdout", cp.stdout, 0o444)
             stderr = write_file(raw_root / f"{variant}.stderr", cp.stderr, 0o444)
+            stdout["path"] = f"build-{build}/raw/{profile['id']}/{variant}.stdout"
+            stderr["path"] = f"build-{build}/raw/{profile['id']}/{variant}.stderr"
             rows.append({"profile": profile["id"], "variant": variant, "args": args,
                          "exit_code": cp.returncode, "stdout": stdout, "stderr": stderr})
             executions += 1
@@ -394,7 +403,7 @@ def behavior(authority: dict[str, Any], build: int, unstripped: Path, runtime: P
                 f"behavior closure mismatch: build {build}/{profile['id']}")
         pairs_count += 1
     descriptor = write_file(retained / "behavior.json", canonical(rows), 0o444)
-    descriptor["path"] = (retained / "behavior.json").name
+    descriptor["path"] = f"build-{build}/behavior.json"
     return executions, pairs_count, descriptor
 
 
@@ -426,7 +435,8 @@ def directory_authority(root: Path) -> list[dict[str, Any]]:
 
 def retained_authority(root: Path) -> list[dict[str, Any]]:
     return [descriptor(path, root) for path in sorted(
-        (item for item in root.rglob("*") if item.is_file() and item.name not in {"manifest.json", "SHA256SUMS.txt"}),
+        (item for item in root.rglob("*") if item.is_file()
+         and item.relative_to(root).as_posix() not in {"manifest.json", "SHA256SUMS.txt"}),
         key=lambda item: item.relative_to(root).as_posix())]
 
 
@@ -487,7 +497,84 @@ def verify_result_tree(result_dir: Path, result: dict[str, Any]) -> None:
     require(declared == actual, "result checksum closure changed")
 
 
-def validate_result(result: dict[str, Any], expected: dict[str, Any], tree: str) -> None:
+def _retained_descriptor_map(result: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    records = result.get("retained_members")
+    require(isinstance(records, list), "retained member authority missing")
+    out: dict[str, dict[str, Any]] = {}
+    for record in records:
+        require(isinstance(record, dict) and set(record) == {"path", "sha256", "size_bytes", "mode"},
+                "retained member descriptor changed")
+        path = safe_rel(record["path"])
+        require(path not in out, f"duplicate retained member descriptor: {path}")
+        out[path] = record
+    return out
+
+
+def _verify_result_member(root: Path, records: dict[str, dict[str, Any]], path: str,
+                          *, mode: str | None = None) -> Path:
+    require(path in records, f"retained result member missing: {path}")
+    member = root / path
+    metadata = os.lstat(member)
+    record = records[path]
+    require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
+            f"unsafe retained result member: {path}")
+    require(metadata.st_size == record["size_bytes"] and sha(member) == record["sha256"],
+            f"retained result member bytes changed: {path}")
+    observed_mode = f"{stat.S_IMODE(metadata.st_mode):04o}"
+    require(observed_mode == record["mode"] and (mode is None or observed_mode == mode),
+            f"retained result member mode changed: {path}")
+    return member
+
+
+def _validate_behavior(root: Path, records: dict[str, dict[str, Any]], build: int,
+                       descriptor_record: dict[str, Any], authority: dict[str, Any]) -> None:
+    expected_path = f"build-{build}/behavior.json"
+    require(descriptor_record.get("path") == expected_path,
+            f"behavior descriptor path changed: build {build}")
+    path = _verify_result_member(root, records, expected_path, mode="0444")
+    require(descriptor_record.get("sha256") == records[expected_path]["sha256"]
+            and descriptor_record.get("size_bytes") == records[expected_path]["size_bytes"]
+            and descriptor_record.get("mode") == "0444",
+            f"behavior descriptor disagrees with retained bytes: build {build}")
+    rows = load(path)
+    require(isinstance(rows, list) and len(rows) == 30,
+            f"behavior row denominator changed: build {build}")
+    expected_profiles = {item["id"]: item for item in authority["behavior_profiles"]}
+    observed: dict[str, set[str]] = {key: set() for key in expected_profiles}
+    for row in rows:
+        require(isinstance(row, dict) and set(row) == {
+            "profile", "variant", "args", "exit_code", "stdout", "stderr"
+        }, f"behavior row shape changed: build {build}")
+        profile_id = row["profile"]
+        require(profile_id in expected_profiles and row["variant"] in {"unstripped", "runtime"},
+                f"unknown behavior row: build {build}")
+        require(row["variant"] not in observed[profile_id],
+                f"duplicate behavior variant: build {build}/{profile_id}")
+        observed[profile_id].add(row["variant"])
+        profile = expected_profiles[profile_id]
+        expected_args = list(profile["args"])
+        if profile["target"] is not None:
+            expected_args.append("effects" if profile["target"] == "effects" else "pairs")
+        require(row["args"] == expected_args,
+                f"behavior command changed: build {build}/{profile_id}/{row['variant']}")
+        require(type(row["exit_code"]) is int,
+                f"behavior exit state changed: build {build}/{profile_id}/{row['variant']}")
+        for stream_name in ("stdout", "stderr"):
+            stream = row[stream_name]
+            expected_stream = f"build-{build}/raw/{profile_id}/{row['variant']}.{stream_name}"
+            require(isinstance(stream, dict) and stream.get("path") == expected_stream,
+                    f"behavior stream path changed: {expected_stream}")
+            _verify_result_member(root, records, expected_stream, mode="0444")
+            require(stream.get("sha256") == records[expected_stream]["sha256"]
+                    and stream.get("size_bytes") == records[expected_stream]["size_bytes"]
+                    and stream.get("mode") == "0444",
+                    f"behavior stream descriptor changed: {expected_stream}")
+    require(all(value == {"unstripped", "runtime"} for value in observed.values()),
+            f"behavior profile closure changed: build {build}")
+
+
+def validate_result(result: dict[str, Any], expected: dict[str, Any], tree: str,
+                    root: Path, authority: dict[str, Any], producer_expected: dict[str, Any]) -> None:
     required = {"schema", "sprint", "patch", "experiment_id", "evidence_class", "publication_eligible",
                 "product_adoption_authorized", "source_candidate_tree", "producer_manifest_sha256",
                 "producer_source_manifest_sha256", "tools", "build_results", "companion_controls", "summary",
@@ -497,20 +584,107 @@ def validate_result(result: dict[str, Any], expected: dict[str, Any], tree: str)
             and result["source_candidate_tree"] == tree, "result identity changed")
     require(result["evidence_class"] == "diagnostic" and result["publication_eligible"] is False
             and result["product_adoption_authorized"] is False, "result evidence boundary changed")
+    records = _retained_descriptor_map(result)
+
+    producer_manifest_path = _verify_result_member(root, records, "producer/manifest.json", mode="0444")
+    source_manifest_path = _verify_result_member(root, records, "producer/source-manifest.json", mode="0444")
+    require(sha(producer_manifest_path) == result["producer_manifest_sha256"]
+            == producer_expected["_manifest_sha256"],
+            "retained producer manifest digest changed")
+    require(sha(source_manifest_path) == result["producer_source_manifest_sha256"]
+            == producer_expected["_source_manifest_sha256"],
+            "retained producer source-manifest digest changed")
+    require(producer_manifest_path.read_bytes() == (producer_expected["_source_manifest_path"].parent / "manifest.json").read_bytes(),
+            "retained producer manifest bytes changed")
+    require(source_manifest_path.read_bytes() == producer_expected["_source_manifest_path"].read_bytes(),
+            "retained producer source-manifest bytes changed")
+    producer = load(producer_manifest_path)
+    source_manifest = load(source_manifest_path)
+    require(producer.get("schema") == authority["producer_authority"]["schema"]
+            and producer.get("generation_count") == 3
+            and producer.get("source_candidate_tree") == tree,
+            "retained producer authority changed")
+    require(producer.get("source_manifest_sha256") == result["producer_source_manifest_sha256"],
+            "producer/source manifest binding changed")
+    require(source_manifest.get("candidate_tree") == tree,
+            "retained source manifest candidate tree changed")
+    generations = producer.get("generations")
+    require(isinstance(generations, list) and [item.get("generation") for item in generations] == [1, 2, 3],
+            "retained producer generation authority changed")
+    require(generations == producer_expected["generations"],
+            "retained producer generation records changed")
+    selected = generations[:2]
+
+    tools = result["tools"]
+    require(isinstance(tools, dict) and set(tools) == {"objcopy", "nm", "addr2line"},
+            "result tool authority changed")
+    for name, record in tools.items():
+        require(isinstance(record, dict) and set(record) == {
+            "sha256", "size_bytes", "mode", "version_sha256"
+        } and record["mode"] == "0755" and type(record["size_bytes"]) is int and record["size_bytes"] > 0
+                and re.fullmatch(r"[0-9a-f]{64}", record["sha256"]) is not None
+                and re.fullmatch(r"[0-9a-f]{64}", record["version_sha256"]) is not None,
+                f"result tool authority incomplete: {name}")
+
     builds = result["build_results"]
     require(isinstance(builds, list) and len(builds) == 2 and [item["generation"] for item in builds] == [1, 2]
+            and [item["build"] for item in builds] == [1, 2]
             and len({item["producer_build_id"] for item in builds}) == 2,
             "result build independence changed")
-    for item in builds:
-        require(item["source_candidate_tree"] == tree
+    known_symbols = authority["known_symbols"]
+    runtime_payloads: list[bytes] = []
+    companion_payloads: list[bytes] = []
+    for item, generation in zip(builds, selected):
+        build = item["build"]
+        require(item["producer_build_id"] == generation["build_id"]
+                and item["source_candidate_tree"] == tree
                 and item["source_manifest_sha256"] == result["producer_source_manifest_sha256"]
-                and item["build_commands"] == ["make clean", "make -j1", "make -j1 samples"],
+                and item["build_commands"] == authority["producer_authority"]["build_commands"],
                 "result source/build provenance changed")
-        require(len(item["symbol_resolutions"]) == 6
-                and len({row["symbol"] for row in item["symbol_resolutions"]}) == 6,
-                "result symbol denominator or uniqueness changed")
+        producer_analyzer = _verify_result_member(
+            root, records, f"producer/generation-{build}/x64lens", mode="0555")
+        require(sha(producer_analyzer) == generation["analyzer"]["sha256"] == item["unstripped_sha256"]
+                and producer_analyzer.stat().st_size == generation["analyzer"]["size_bytes"] == item["unstripped_size_bytes"],
+                f"producer analyzer binding changed: build {build}")
+        runtime_path = f"build-{build}/x64lens"
+        companion_path = f"build-{build}/x64lens.debug"
+        runtime = _verify_result_member(root, records, runtime_path, mode="0555")
+        companion = _verify_result_member(root, records, companion_path, mode="0444")
+        runtime_payloads.append(runtime.read_bytes())
+        companion_payloads.append(companion.read_bytes())
+        require(item["runtime"] == {"path": runtime_path, "sha256": sha(runtime),
+                "size_bytes": runtime.stat().st_size, "mode": "0555"},
+                f"runtime descriptor changed: build {build}")
+        require(item["companion"] == {"path": companion_path, "sha256": sha(companion),
+                "size_bytes": companion.stat().st_size, "mode": "0444"},
+                f"companion descriptor changed: build {build}")
+        _validate_behavior(root, records, build, item["behavior"], authority)
         require(item["behavior_executions"] == 30 and item["behavior_pairs"] == 15,
                 "result behavior denominator changed")
+        symbols = item["symbol_resolutions"]
+        require(isinstance(symbols, list) and [row.get("symbol") for row in symbols] == known_symbols,
+                f"result symbol membership/order changed: build {build}")
+        addresses: set[str] = set()
+        for row in symbols:
+            require(set(row) == {"symbol", "address", "location"}
+                    and re.fullmatch(r"0x[0-9a-f]{16}", row["address"]) is not None
+                    and isinstance(row["location"], str) and row["location"]
+                    and not any(prefix.decode() in row["location"] for prefix in LOCAL_PREFIXES),
+                    f"result symbol resolution changed: build {build}/{row.get('symbol')}")
+            require(row["address"] not in addresses, f"duplicate symbol address: build {build}")
+            addresses.add(row["address"])
+
+    require(runtime_payloads[0] == runtime_payloads[1],
+            "retained runtime bytes disagree between builds")
+    require(companion_payloads[0] == companion_payloads[1],
+            "retained companion bytes disagree between builds")
+
+    controls = result["companion_controls"]
+    require(isinstance(controls, list) and len(controls) == 8
+            and len({row.get("id") for row in controls}) == 8
+            and {row.get("id") for row in controls} == set(authority["companion_controls"])
+            and all(set(row) == {"id", "passed"} and row["passed"] is True for row in controls),
+            "companion-control authority changed")
     summary = result["summary"]
     for key in ("builds", "behavior_executions", "behavior_pairs", "companion_controls",
                 "symbol_resolutions", "local_path_leaks"):
@@ -527,7 +701,6 @@ def validate_result(result: dict[str, Any], expected: dict[str, Any], tree: str)
             "adoption prerequisite state changed")
     require(result["public_boundary"] == {"public_fields_added": 0, "runtime_product_adoption": False,
             "schema_changed": False, "score_changes": 0, "semantic_changes": 0}, "public boundary changed")
-
 
 def safe_remove_stage(stage: Path, opened: tuple[int, int] | None) -> None:
     if not stage.exists():
@@ -553,8 +726,31 @@ def run_experiment(authority_path: Path, expected_path: Path, producer_root: Pat
         with signal_guard("split-debug experiment"):
             with defer_catchable_signals():
                 stage = Path(tempfile.mkdtemp(prefix=".p089-split-debug-stage.", dir=result_dir.parent))
+                stage.chmod(0o755)
                 st = os.lstat(stage)
                 stage_identity = (st.st_dev, st.st_ino)
+            producer_retained = stage / "producer"
+            producer_retained.mkdir(mode=0o755)
+            producer_manifest_copy = producer_retained / "manifest.json"
+            producer_manifest_copy.write_bytes(producer_manifest_path.read_bytes())
+            producer_manifest_copy.chmod(0o444)
+            source_manifest_source = producer_root / producer["source_manifest"]["path"]
+            source_manifest_copy = producer_retained / "source-manifest.json"
+            source_manifest_copy.write_bytes(source_manifest_source.read_bytes())
+            source_manifest_copy.chmod(0o444)
+            require(sha(producer_manifest_copy) == sha(producer_manifest_path),
+                    "retained producer manifest changed while copying")
+            require(sha(source_manifest_copy) == producer["source_manifest_sha256"],
+                    "retained producer source manifest changed while copying")
+            for generation in producer["selected"]:
+                retained_generation = producer_retained / f"generation-{generation['generation']}"
+                retained_generation.mkdir(mode=0o755)
+                analyzer_source = verify_member(producer_root, generation["analyzer"], True)
+                analyzer_copy = retained_generation / "x64lens"
+                shutil.copyfile(analyzer_source, analyzer_copy)
+                analyzer_copy.chmod(0o555)
+                require(sha(analyzer_copy) == generation["analyzer"]["sha256"],
+                        "retained producer analyzer changed while copying")
             with tempfile.TemporaryDirectory(prefix="x64lens-p089-split-debug-") as raw:
                 workspace = Path(raw)
                 build_results: list[dict[str, Any]] = []
@@ -604,8 +800,10 @@ def run_experiment(authority_path: Path, expected_path: Path, producer_root: Pat
                         "source_manifest_sha256": generation["source_manifest_sha256"],
                         "build_commands": generation["build_commands"],
                         "unstripped_sha256": sha(analyzer), "unstripped_size_bytes": unstripped_size,
-                        "runtime": {"sha256": sha(runtime), "size_bytes": runtime_size, "mode": "0555"},
-                        "companion": {"sha256": sha(debug), "size_bytes": companion_size, "mode": "0444"},
+                        "runtime": {"path": f"build-{index}/x64lens", "sha256": sha(runtime),
+                                    "size_bytes": runtime_size, "mode": "0555"},
+                        "companion": {"path": f"build-{index}/x64lens.debug", "sha256": sha(debug),
+                                      "size_bytes": companion_size, "mode": "0444"},
                         "behavior": behavior_descriptor, "runtime_size_reduction": reduction,
                         "total_transfer_reduction": total_reduction, "debuglink_crc32": first["crc"],
                         "redacted_local_path_strings": first["redactions"], "symbol_resolutions": resolutions,
@@ -659,7 +857,7 @@ def run_experiment(authority_path: Path, expected_path: Path, producer_root: Pat
                 # Freeze final retained topology before writing the self-describing manifest.
                 result["retained_directories"] = directory_authority(stage)
                 result["retained_members"] = retained_authority(stage)
-                validate_result(result, expected, source_tree)
+                validate_result(result, expected, source_tree, stage, authority, producer)
                 write_file(stage / "manifest.json", canonical(result), 0o444)
                 checksums(stage)
                 verify_result_tree(stage, result)
@@ -667,7 +865,7 @@ def run_experiment(authority_path: Path, expected_path: Path, producer_root: Pat
                     rename_noreplace(stage, result_dir)
                     stage = None
                 published = load(result_dir / "manifest.json")
-                validate_result(published, expected, source_tree)
+                validate_result(published, expected, source_tree, result_dir, authority, producer)
                 verify_result_tree(result_dir, published)
                 return published
     finally:
@@ -675,10 +873,12 @@ def run_experiment(authority_path: Path, expected_path: Path, producer_root: Pat
             safe_remove_stage(stage, stage_identity)
 
 
-def verify(authority_path: Path, expected_path: Path, result_dir: Path, source_tree: str) -> dict[str, Any]:
+def verify(authority_path: Path, expected_path: Path, result_dir: Path, source_tree: str,
+           producer_root: Path, producer_manifest_path: Path) -> dict[str, Any]:
     authority = load(authority_path); expected = load(expected_path); validate_authority(authority, expected)
+    producer = validate_producer(producer_manifest_path, producer_root, source_tree, authority)
     result = load(result_dir / "manifest.json")
-    validate_result(result, expected, source_tree)
+    validate_result(result, expected, source_tree, result_dir, authority, producer)
     verify_result_tree(result_dir, result)
     return result
 
@@ -717,7 +917,9 @@ def selftest(authority_path: Path, expected_path: Path) -> None:
             with signal_guard("split stage selftest"):
                 with defer_catchable_signals():
                     stage = Path(tempfile.mkdtemp(prefix=".p089-split-debug-stage.", dir=parent))
+                    stage.chmod(0o755)
                     st = os.lstat(stage); identity = (st.st_dev, st.st_ino)
+                    require(stat.S_IMODE(st.st_mode) == 0o755, "split-debug stage mode changed")
                 os.kill(os.getpid(), signal.SIGTERM)
         except CatchableTermination:
             if stage is not None and stage.exists():
@@ -741,9 +943,10 @@ def main() -> int:
         if action != "selftest":
             item.add_argument("--result-dir", type=Path, required=True)
             item.add_argument("--expected-source-tree", required=True)
-        if action == "run":
+        if action in {"run", "verify"}:
             item.add_argument("--producer-root", type=Path, required=True)
             item.add_argument("--producer-manifest", type=Path, required=True)
+        if action == "run":
             item.add_argument("--objcopy", default="objcopy")
             item.add_argument("--nm", default="nm")
             item.add_argument("--addr2line", default="addr2line")
@@ -759,7 +962,11 @@ def main() -> int:
               f"symbol_resolutions=12 minimum_reduction={result['summary']['minimum_runtime_size_reduction']:.6f} "
               "path_stable_dwarf=0 product_adoption=0")
     else:
-        result = verify(args.authority, args.expected, args.result_dir, args.expected_source_tree)
+        result = verify(
+            args.authority, args.expected, args.result_dir.resolve(strict=True),
+            args.expected_source_tree, args.producer_root.resolve(strict=True),
+            args.producer_manifest.resolve(strict=True),
+        )
         print("sprint13-split-debug-packaging-smoke: ok mode=verify builds=2 behavior_executions="
               f"{result['summary']['behavior_executions']} companion_controls=8 symbol_resolutions=12 "
               "retained_members_verified=1 product_adoption=0")

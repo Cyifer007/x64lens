@@ -18,7 +18,7 @@ schema `0.2.0`, semantic classes, scores, candidate capacity, decoder policy,
 and the deterministic one-worker profile remain unchanged.
 
 Sprint 12 remains the acceptance authority for inherited loader and mitigation
-facts until Patch 089 passes fresh native, Docker, both private parity planes,
+facts until Patch 089 passes fresh NASM/native, Docker, both private parity planes,
 strict ShellCheck, replay, producer, ABI, split-debug, workload, delivery, and independent
 exact-source acceptance. The retrospective records completed semester work
 without claiming that these later gates have already passed.
@@ -143,7 +143,7 @@ that would otherwise corrupt corpus labels or defensive triage.
 - [x] Define the frozen-input authority for the exact twelve predecessor hashes
   and 48 no-reroll execution slots, plus execution, relation, observation, and
   cell terminal-attribution denominators.
-- [ ] Execute the actual replay-v2 and generated P088 terminal-attribution
+- [ ] Execute the actual replay-v2 and generated P089 terminal-attribution
   result; any result remains private, diagnostic, `frozen=false`, and
   publication-ineligible.
 - [x] Define the private P086 fixture-derived vector-equivalence authority over
@@ -151,9 +151,9 @@ that would otherwise corrupt corpus labels or defensive triage.
   public closures without public projection.
 - [x] Freeze the private P087 workload/phase method without executing it or
   selecting an optimization.
-- [ ] Complete fresh native, Docker, both parity planes, strict ShellCheck,
+- [ ] Complete fresh NASM/native, Docker, both parity planes, strict ShellCheck,
   producer, replay-v2, ABI, split-debug, delivery, workload/phase authority
-  validation, and independent exact-source acceptance for Patch 088.
+  validation, and independent exact-source acceptance for Patch 089.
 
 
 ## Patch sequence

@@ -10,7 +10,7 @@ candidate. Patch 075 introduced bounded private static text-relocation evidence,
 and Patch 076 implemented distinct private `DT_RPATH` and `DT_RUNPATH`
 carrier/value evidence. Patch 076 was superseded by Patch 077. Patch 077's
 review required Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are
-in the [Patch 088 validation record](sprint-13-patch-088-validation.md).
+in the [Patch 089 validation record](sprint-13-patch-089-validation.md).
 Patch 072 addressed the remaining confirmed Patch 071 tooling and
 delivery prerequisites and implemented the planned outcome-blind
 external-natural acquisition plus same-byte environment-parity gate. It changes

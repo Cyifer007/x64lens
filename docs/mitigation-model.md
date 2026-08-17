@@ -270,7 +270,7 @@ corrections without changing a mitigation field but was superseded. Patch 075 in
 private text-relocation evidence, and Patch 076 added distinct private RPATH/RUNPATH
 evidence. Patch 077 required Patch 078; Patch 078's review then required the Patch 079
 corrective and private task-value candidate, which was superseded by Patch 080. Patches
-081 through 087 did not complete acceptance. Patch 089 is the current exact-source
+081 through 088 did not complete acceptance. Patch 089 is the current exact-source
 implementation candidate.
 
 ## Sprint 12 Patch 072 external-natural and parity gate

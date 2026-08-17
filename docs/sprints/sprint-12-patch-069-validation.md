@@ -14,7 +14,7 @@ text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
 and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
 Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations are
 recorded in the
-[Patch 088 validation record](sprint-13-patch-088-validation.md). The
+[Patch 089 validation record](sprint-13-patch-089-validation.md). The
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary. The
 [Patch 071 validation record](sprint-12-patch-071-validation.md) preserves that

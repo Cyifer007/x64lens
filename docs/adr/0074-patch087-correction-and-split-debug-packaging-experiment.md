@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted as the Patch 088 implementation decision; exact-source acceptance remains pending.
+Accepted as the historical Patch 088 implementation decision. Patch 088 did
+not complete exact-source acceptance and was superseded by Patch 089.
 
 ## Context
 
@@ -35,8 +36,14 @@ The experiment requires a runtime-size reduction of at least fifty percent in ea
 
 ## Consequences
 
-Patch 088 can be accepted only after fresh native, Docker, producer, replay, ABI, parity, split-debug, strict-lint, and independent exact-source acceptance gates pass against the exact candidate tree. Any retained split-debug result, once produced, remains diagnostic; it must consume producer builds bound to the authenticated candidate tree and does not authorize product packaging changes.
+Patch 088 did not complete the required exact-source gates. Its retained
+split-debug result remains diagnostic: it consumed producer builds bound to the
+authenticated candidate tree and does not authorize product packaging changes.
 
 ## Follow-up
 
-After Patch 088 acceptance, the next patch should reconcile the fresh split-debug result and execute the already frozen workload/phase authority when its accepted instrumentation and environment are available. Other measurement proposals remain separate gates.
+Patch 089 reconciles the retained split-debug result and preserves the already
+frozen workload/phase authority as unexecuted. Fresh NASM/native, Docker,
+replay, split-debug, workload, parity, and independent exact-source gates remain
+required against the exact Patch 089 tree. Other measurement proposals remain
+separate gates.

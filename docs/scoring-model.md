@@ -233,10 +233,10 @@ Patch 082 does not recalibrate a score. It implements a gate requiring each of t
 exact-pattern score/null cells to agree with the exact catalog and reports from three
 independently built analyzers. A later exact-source P082 run rejected each toggle
 through the catalog and all three producer generations. P083 subsequently required a
-fresh producer run bound to its own tree. Patches 083 through 087 did not complete
-acceptance; P088 is the current candidate, whose acceptance likewise requires a fresh
+fresh producer run bound to its own tree. Patches 083 through 088 did not complete
+acceptance; P089 is the current candidate, whose acceptance likewise requires a fresh
 producer run bound to the exact candidate tree recorded by the
-[Patch 088 source preconditions](sprints/sprint-13-patch-088-validation.md#source-preconditions).
+[Patch 089 source preconditions](sprints/sprint-13-patch-089-validation.md#source-preconditions).
 Existing scores remain relative utility
 hypotheses, not exploitability values: 14 cells retain numeric scores, 11 retain null,
 and all three private role facets remain null.
@@ -268,10 +268,18 @@ qualified result cannot itself authorize score recalibration, speed, RSS,
 comparative coverage, baseline equivalence, exploitability, decoder, or
 concurrency claims.
 
-## Patch 088 score boundary
+## Historical Patch 088 score boundary
 
 Patch 088 assigns no new score and does not recalibrate an existing score.
 Packaging size, debug-companion resolution, and
 frozen-matrix exit-status/stdout/stderr agreement are not scoring facts. All
 three private role facets remain score-null pending their separate
 score-policy gate.
+
+## Patch 089 score boundary
+
+Patch 089 changes no scoring input, numeric score, or null disposition.
+Split-debug packaging observations and the frozen, unexecuted workload/phase
+authority remain diagnostic evidence, not scoring facts. Fresh exact-source
+acceptance remains required as recorded in the
+[Patch 089 validation record](sprints/sprint-13-patch-089-validation.md).

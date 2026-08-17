@@ -3,8 +3,8 @@
 ## Status
 
 Decision accepted for inclusion in the historical Patch 086 implementation
-candidate. Patches 086 and 087 did not complete exact-source acceptance; Patch
-088 is the current implementation candidate.
+candidate. Patches 086 through 088 did not complete exact-source acceptance;
+Patch 089 is the current implementation candidate.
 
 ## Context
 

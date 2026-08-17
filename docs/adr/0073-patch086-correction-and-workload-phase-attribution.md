@@ -63,7 +63,8 @@ equivalence, exploitability, decoder, concurrency, or resource superiority.
 
 ## Consequences
 
-Patch 087 did not complete its fresh native, strict-shell, Docker, producer,
-replay, external-natural, parity, ABI, package, or independent acceptance gates.
+Patches 087 and 088 did not complete their fresh native, strict-shell, Docker,
+producer, replay, external-natural, parity, ABI, package, or independent
+acceptance gates.
 Patch 089 carries the current acceptance boundary and keeps the paired
 workload/phase authority frozen and unexecuted.

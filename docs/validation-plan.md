@@ -2102,10 +2102,10 @@ sprint12-p077-acceptance-smoke: ok sprint=12 status=closeout-candidate textrel=p
 Patch 077 did not complete acceptance and was superseded by Patch 078. Patches
 078 through 080 were likewise superseded by successive corrective candidates.
 Patch 081 was not accepted; its validation findings were accepted as correction
-inputs implemented by Patch 082. Patches 083 through 087 also did not complete
-acceptance. Sprint 13 activation remains pending until the Patch 088 aggregate
+inputs implemented by Patch 082. Patches 083 through 088 also did not complete
+acceptance. Sprint 13 activation remains pending until the Patch 089 aggregate
 and independent acceptance pass against the exact candidate tree recorded by
-the [Patch 088 source preconditions](sprints/sprint-13-patch-088-validation.md#source-preconditions).
+the [Patch 089 source preconditions](sprints/sprint-13-patch-089-validation.md#source-preconditions).
 
 ## Sprint 13 Patch 078 correction and entry validation
 
@@ -2117,7 +2117,7 @@ sprint13-p078-acceptance-smoke`. Patch 079 ran the non-causal, deterministically
 presentation-ordered task-value gate; its historical target is `make
 sprint13-p079-acceptance-smoke`. Patch 080 records the LC-08B
 private-side-car/public-deferral decision. Patches 081 and 082 were not accepted.
-Patches 083 through 087 did not complete acceptance; Patch 089 is the current
+Patches 083 through 088 did not complete acceptance; Patch 089 is the current
 exact-source implementation candidate, whose aggregate owns the current acceptance
 boundary.
 
@@ -2175,10 +2175,10 @@ The producer target requires NASM and builds three isolated analyzer/fixture set
 later exact-source P082 run completed all three builds. P082 nevertheless did not
 complete the native, Docker, parity, package, delivery, documentation, and independent
 acceptance boundary and was not accepted. P083 subsequently required a fresh producer
-run bound to its own tree. Patches 083 through 087 did not complete acceptance;
-P088 is the current candidate, whose acceptance requires a fresh producer run
+run bound to its own tree. Patches 083 through 088 did not complete acceptance;
+P089 is the current candidate, whose acceptance requires a fresh producer run
 bound to the exact candidate tree recorded by the
-[P088 source preconditions](sprints/sprint-13-patch-088-validation.md#source-preconditions).
+[P089 source preconditions](sprints/sprint-13-patch-089-validation.md#source-preconditions).
 
 
 ## Sprint 13 Patch 083 validation
@@ -2271,9 +2271,9 @@ retains 48 internal dispositions, 24 controlled targets, all occupied candidate-
 index vector matches, 36 named queries, and 96 unchanged-public closures. These
 results add no public field, semantic class, score, schema, decoder, concurrency,
 FORTIFY-detection, performance, RSS, coverage, parity, or exploitability claim.
-Patch 086 did not complete exact-source acceptance. Patch 087 carried bounded
-candidate corrections but likewise did not complete acceptance; Patch 088 is
-current.
+Patch 086 did not complete exact-source acceptance. Patches 087 and 088 carried
+bounded candidate corrections but likewise did not complete acceptance; Patch
+089 is current.
 
 ## Historical Sprint 13 Patch 087 validation
 
@@ -2346,3 +2346,7 @@ ShellCheck, Docker, replay, ABI, external-natural acquisition, both parity
 planes, split-debug, and workload authorities. A clean committed source may
 derive the producer tree from `HEAD^{tree}`; a staged or non-clean source must
 provide the authenticated tree explicitly.
+
+## Sprint 13 Patch 090 validation
+
+Patch 090 adds `make patch089-corrective-regression-smoke`, `make sprint13-workload-reference-preflight-contract-smoke`, and `make sprint13-p090-acceptance-smoke`. The reference preflight retains 80 executions and requires exact source, analyzer, target, stream, denominator, and terminal-state custody. Its rows are not reusable in phase-attribution measurement.

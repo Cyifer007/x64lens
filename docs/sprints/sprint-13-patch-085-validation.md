@@ -3,8 +3,8 @@
 ## Status
 
 Historical implementation candidate. Patch 085 did not complete exact-source
-acceptance. Patches 086 and 087 carried successive bounded corrections but also
-did not complete acceptance; Patch 089 is the current implementation candidate.
+acceptance. Patches 086 through 088 carried successive bounded corrections but
+also did not complete acceptance; Patch 089 is the current implementation candidate.
 The commands and banners below
 preserve the P085 candidate contract and do not establish that its replay
 completed.

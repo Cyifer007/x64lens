@@ -180,7 +180,7 @@ make research-stage-gates-smoke
 
 ## Current stage during Sprint 12
 
-Sprint 12 remains the active acceptance authority. Patches 081 through 087 did not
+Sprint 12 remains the active acceptance authority. Patches 081 through 088 did not
 complete acceptance; Patch 089 is the current exact-source implementation candidate.
 Patch 074 was a superseded closeout candidate.
 Patch 075 introduced private text-relocation evidence, Patch 076 added distinct bounded
@@ -326,7 +326,7 @@ identifier when its task, capability, schema, or method changes.
 
 The Patch 074 stage authority recorded twelve completed sprints and Sprint 13
 active, but Patch 074 was superseded before that became project chronology.
-Sprint 12 remains active. Patches 081 through 087 did not complete acceptance;
+Sprint 12 remains active. Patches 081 through 088 did not complete acceptance;
 Patch 089 is the current exact-source candidate pending complete independent
 acceptance. The overlap, PIE/DSO, and GNU-
 property gates are `resolved`:
@@ -375,7 +375,7 @@ motivate a separate bounded experiment; it does not authorize speed, RSS,
 comparative coverage, baseline equivalence, exploitability, decoder, or
 concurrency claims.
 
-## Patch 088 split-debug capability gate
+## Historical Patch 088 split-debug capability gate
 
 The split-debug study is a packaging experiment, not a runtime capability gate.
 Admission requires two independent builds; exact exit-status/stdout/stderr
@@ -384,3 +384,11 @@ resolution and rejection controls; rejection of configured `/tmp/`, `/home/`,
 and `/mnt/` prefixes in packaged bytes and checked resolution locations; and a
 runtime-size reduction of at least fifty percent in both builds. Product adoption requires a
 later separate decision after fresh exact-source evidence.
+
+## Patch 089 evidence gate
+
+Patch 089 admits no runtime capability, schema, semantic class, or score change.
+Split-debug remains an opt-in diagnostic experiment, and cloud evidence validates
+only the frozen, unexecuted workload/phase authority and rejection oracles.
+Fresh NASM/native, Docker, replay, split-debug, workload, both parity planes, and
+independent exact-source gates remain required against the exact P089 tree.

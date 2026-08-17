@@ -37,6 +37,7 @@ MAX_DIRECTORIES = 256
 # manifest.  Create reserves the manifest slot before publication.
 MAX_PAYLOAD_FILES = 511
 MAX_FILES = MAX_PAYLOAD_FILES + 1
+MAX_MANIFEST_BYTES = 8 * 1024 * 1024
 MIN_FD_HEADROOM = 64
 FD_TRANSACTION_OVERHEAD = 12
 O_CLOEXEC = getattr(os, "O_CLOEXEC", 0)
@@ -550,21 +551,30 @@ def scan_tree(
         raise
 
 
-def read_observed_file(observed: FileObservation) -> bytes:
+def read_observed_file(observed: FileObservation, *, maximum: int | None = None) -> bytes:
+    if maximum is not None:
+        require(observed.size_bytes <= maximum,
+                f"file exceeds bounded read size: {observed.path}")
     os.lseek(observed.fd, 0, os.SEEK_SET)
-    chunks: list[bytes] = []
+    raw = bytearray()
     total = 0
-    while True:
-        chunk = os.read(observed.fd, BUFFER_SIZE)
-        if not chunk:
-            break
-        chunks.append(chunk)
-        total += len(chunk)
+    digest = hashlib.sha256()
+    try:
+        while True:
+            chunk = os.read(observed.fd, BUFFER_SIZE)
+            if not chunk:
+                break
+            total += len(chunk)
+            if maximum is not None:
+                require(total <= maximum, f"file exceeds bounded read size: {observed.path}")
+            digest.update(chunk)
+            raw.extend(chunk)
+    except MemoryError as exc:
+        raise CustodyError(f"bounded file read exhausted memory: {observed.path}") from exc
     require(total == observed.size_bytes, f"file size changed between authenticated reads: {observed.path}")
-    raw = b"".join(chunks)
-    require(hashlib.sha256(raw).hexdigest() == observed.sha256,
+    require(digest.hexdigest() == observed.sha256,
             f"file bytes changed between authenticated reads: {observed.path}")
-    return raw
+    return bytes(raw)
 
 
 def validate_directory(raw: Any, index: int) -> dict[str, Any]:
@@ -829,7 +839,7 @@ def verify_open_root(root_handle: RootHandle, relative: str) -> dict[str, Any]:
     try:
         observation = scan_tree(root_handle, relative)
         require(observation.manifest is not None, "custody manifest is missing")
-        raw = read_observed_file(observation.manifest)
+        raw = read_observed_file(observation.manifest, maximum=MAX_MANIFEST_BYTES)
         value = strict_json_loads(raw.decode("utf-8"))
         require(isinstance(value, dict), "delivery manifest must be an object")
         require(set(value) == {"schema_id", "root_label", "root", "manifest", "directories", "files"},
@@ -905,6 +915,7 @@ def create(root: Path, manifest: Path, label: str) -> dict[str, Any]:
             "files": [item.manifest_entry() for item in observation.files],
         }
         raw = (json.dumps(value, indent=2, sort_keys=False) + "\n").encode("utf-8")
+        require(len(raw) <= MAX_MANIFEST_BYTES, "generated custody manifest exceeds bounded size")
         observation.close(keep_root=True)
         observation = None
         published = write_manifest_atomic(root_handle, relative, raw)

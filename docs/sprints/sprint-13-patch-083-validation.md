@@ -152,8 +152,8 @@ replace independent exact-source review.
 
 Patch 083 did not complete acceptance. Patch 084 preserved the retained natural-
 coordinate terminal states and froze the private ABI-role query contract, but it
-also was not accepted. Patches 085 through 087 carried successive corrections
-and also did not complete acceptance; Patch 088 is current. None of these historical
+also was not accepted. Patches 085 through 088 carried successive corrections
+and also did not complete acceptance; Patch 089 is current. None of these historical
 transitions authorizes a public field, semantic, score, schema, capacity,
 decoder, concurrency, comparative-coverage, performance, or exploitability
 change.

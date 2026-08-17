@@ -5,7 +5,7 @@
 Recorded as the Patch 078 implementation decision. Patch 078 did not complete
 acceptance; Patch 079 supplied the resulting corrective and private task-value
 candidate. Patch 079 was superseded by Patch 080, and Patch 080 by Patch 081. Patches
-081 through 087 did not complete acceptance. Patch 089 is the current exact-source
+081 through 088 did not complete acceptance. Patch 089 is the current exact-source
 implementation candidate, pending independent exact-source acceptance.
 
 ## Context

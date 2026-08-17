@@ -41,7 +41,7 @@ development evidence; its rows are not preview or publication evidence.
 
 Sprint 12 remains active. Patch 078 was superseded by the Patch 079 corrective
 and private task-value candidate; Patch 079 was superseded by Patch 080,
-which was superseded by Patch 081. Patches 081 through 087 did not complete
+which was superseded by Patch 081. Patches 081 through 088 did not complete
 acceptance; Patch 089 is the current exact-source implementation candidate,
 pending complete independent acceptance. Sprint 13 becomes active only after
 complete Patch 089 acceptance. Loader, mitigation, semantic, and
@@ -415,7 +415,7 @@ distinct bounded private RPATH/RUNPATH evidence. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Patches 083 through 087 also did not complete acceptance. Independent
+accepted. Patches 083 through 088 also did not complete acceptance. Independent
 exact-source Patch 089 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
 only after complete Patch 089 acceptance.
@@ -577,10 +577,17 @@ an opt-in diagnostic release experiment only. Production adoption requires a
 fresh exact-source two-build result, path-stable source/debug production without
 post-link rewriting, runtime and companion binding, symbol and behavior
 closure, and a separately justified distribution objective. The retained
-preflight did not establish total-transfer reduction.
+preflight reduced the runtime tier by 66.09%, but runtime plus companion produced
+no total-transfer saving and post-link redaction did not establish path-stable
+DWARF. In the retained P088 campaign, every x64lens timing was below floor and no
+coordinate cell had a positive anchor. Neither result supports performance, RSS,
+parity, coverage, superiority, publication, or production adoption.
 
-The preview gate still requires fresh native and Docker validation, parity,
-corpus and campaign freeze, and checksummed reproducible artifacts.
+Cloud evidence validates only the frozen workload/phase authority and rejection
+oracles; the experiment remains unexecuted. The preview gate still requires
+fresh NASM/native and Docker validation, replay, split-debug, workload, both
+parity planes, corpus and campaign freeze, and checksummed reproducible
+artifacts against the exact P089 tree.
 
 ## Historical Patch 088 release-gate note
 

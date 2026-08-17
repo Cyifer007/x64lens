@@ -142,7 +142,7 @@ later sprints rather than Patch 037:
 - [x] Diagnostic rows isolated from future frozen campaigns.
 - [x] Patch 061 transaction/accounting correction, below-floor protocol, operator guide, retrospective, machine-readable closeout, and Sprint 12 handoff.
 
-### Sprint 12: loader and mitigation precision — Patch 088 acceptance continuation
+### Sprint 12: loader and mitigation precision — Patch 089 acceptance continuation
 
 - [x] Validate `p_align`, load congruence, virtual ranges, executable entrypoint
   containment, and explicit structurally valid extended-numbering unsupported
@@ -195,7 +195,7 @@ later sprints rather than Patch 037:
 
 ### Sprint 13: semantic capability completion
 
-- [ ] Complete Patch 088 exact-source acceptance: replay-v2 must seal raw,
+- [ ] Complete Patch 089 exact-source acceptance: replay-v2 must seal raw,
   runtime, cache, and terminal-attribution authority; the private ABI-role
   vector record and split-debug experiment add no public or score change. A
   completed local replay or split-debug execution is not yet claimed.
@@ -727,7 +727,7 @@ Positive coordinate
 anchors and complete runtime closure for all five task paths remain separate
 qualification gates.
 
-### Sprint 12 Patch 073 through Patch 088 continuation
+### Sprint 12 Patch 073 through Patch 089 continuation
 
 Patch 073 executed the public-policy deferral but was not accepted at its first returned
 review boundary. Patch 074 implemented corrections for the confirmed review findings
@@ -939,4 +939,13 @@ current exact-source implementation candidate.
 - [x] Bound source recovery by per-file, aggregate, and archive ceilings and stream extraction and hashing.
 - [x] Preserve zero runtime, public-field, semantic, score, schema, decoder, concurrency, and capacity changes.
 - [x] Retain split-debug only as an opt-in diagnostic release experiment; path-stable DWARF, total-transfer saving, and default adoption remain unproven.
-- [ ] Complete fresh native, strict-shell, Docker, producer, replay, ABI, split-debug, workload, both parity planes, delivery, and independent exact-source acceptance.
+- [x] Retain the P088 observation as diagnostic only: 66.09% runtime-tier shrinkage, no total-transfer saving, and no path-stable DWARF.
+- [x] Classify the retained P088 campaign as comparison-unqualified because every x64lens timing was below floor and no coordinate cell had a positive anchor.
+- [ ] Complete fresh NASM/native, strict-shell, Docker, producer, replay, ABI, split-debug, workload, both parity planes, delivery, and independent exact-source acceptance.
+
+### Sprint 13 Patch 090
+
+- [x] Correct Patch 089 producer/split-result, replay-command, archive-reauthentication, bounded-manifest/helper, and delivery authorities.
+- [x] Freeze an eight-fixture, 80-execution reference-only workload preflight.
+- [x] Artifact-backed preflight qualified fewer than 6/8 fixtures; retire the paired phase-attribution matrix for the current workload set unless fresh exact-source evidence contradicts the result.
+- [ ] Keep split-debug product adoption, public role projection, score changes, decoder integration, and concurrency behind separate gates.

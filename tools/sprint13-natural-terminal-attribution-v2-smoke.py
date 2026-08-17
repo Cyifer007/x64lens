@@ -111,6 +111,43 @@ def safe_rel(value: str) -> str:
     return path.as_posix()
 
 
+def validate_execution_argv(tool: str, target_id: str, record: dict[str, Any]) -> None:
+    """Authenticate the recorded command shape without relying on host paths."""
+    argv = record.get("argv")
+    require(isinstance(argv, list) and all(isinstance(item, str) and item for item in argv),
+            f"invalid recorded argv: {target_id}/{tool}")
+    require(all("\x00" not in item for item in argv), f"NUL in recorded argv: {target_id}/{tool}")
+    expected_names = {
+        "x64lens": "x64lens",
+        "ropgadget": "ropgadget",
+        "ropper": "ropper",
+        "ropr": "ropr",
+    }
+    require(Path(argv[0]).name.lower() == expected_names[tool],
+            f"recorded executable name changed: {target_id}/{tool}")
+    if tool == "x64lens":
+        require(len(argv) == 7 and argv[1:6] == ["gadgets", "--format", "json", "--max-depth", "4"],
+                f"recorded x64lens command changed: {target_id}")
+        target = argv[6]
+    elif tool == "ropgadget":
+        require(len(argv) == 9 and argv[1] == "--binary"
+                and argv[3:] == ["--depth", "5", "--only", "pop|ret", "--nojop", "--nosys",],
+                f"recorded ROPgadget command changed: {target_id}")
+        target = argv[2]
+    elif tool == "ropper":
+        require(len(argv) == 9 and argv[1] == "--file"
+                and argv[3:] == ["--nocolor", "--single", "--type", "rop", "--inst-count", "5"],
+                f"recorded Ropper command changed: {target_id}")
+        target = argv[2]
+    else:
+        require(len(argv) == 8 and argv[1:7] == ["--colour", "false", "--max-instr", "5", "--nojop", "--nosys"],
+                f"recorded ropr command changed: {target_id}")
+        target = argv[7]
+    target_path = PurePosixPath(target)
+    require(target_path.name == target_id and target_path.parent.name == "targets",
+            f"recorded target path changed: {target_id}/{tool}")
+
+
 def checksum_map(root: Path) -> dict[str, str]:
     path = root / "SHA256SUMS.txt"
     require(path.is_file() and not path.is_symlink(), "replay checksum manifest missing")
@@ -325,6 +362,7 @@ def validate_result(root: Path, authority: dict[str, Any], authority_sha256: str
         require(set(outcome["tools"]) == set(TOOLS), f"tool membership changed: {target_id}")
         for tool, record in outcome["tools"].items():
             observed.add((target_id, tool))
+            validate_execution_argv(tool, target_id, record)
             for stream in ("stdout", "stderr"):
                 rel = safe_rel(record[stream]["path"])
                 require(rel in checks and rel.startswith(f"runs/{target_id}/{tool}/"), f"unsealed raw stream: {rel}")

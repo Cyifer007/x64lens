@@ -1764,7 +1764,7 @@ analyzer reports in the ordered-pair and score/null policy gates. A later exact-
 P082 run completed all three builds and validated existing matcher, classifier, and
 scorer output; its records do not become reporter inputs or new candidate side-cars.
 P083 subsequently required a fresh producer run bound to its own tree. Patches 083
-through 087 did not complete acceptance; Patch 089 is the current exact-source
+through 088 did not complete acceptance; Patch 089 is the current exact-source
 implementation candidate, whose acceptance likewise requires a fresh producer run
 bound to the exact candidate tree recorded by the
 [Patch 089 source preconditions](sprints/sprint-13-patch-089-validation.md#source-preconditions).
@@ -1850,7 +1850,7 @@ comparative coverage, baseline equivalence, exploitability, decoder, or
 concurrency claims. Patch 087 did not complete exact-source acceptance and was
 superseded by Patch 088.
 
-## Patch 088 corrective and packaging-experiment boundary
+## Historical Patch 088 corrective and packaging-experiment boundary
 
 Patch 088 changes transaction, recovery, replay, ABI-stage, oracle, evidence,
 and delivery tooling only. No tracked `src/`, `include/`, or schema file changes.
@@ -1858,3 +1858,12 @@ The split-debug experiment consumes independent producer builds outside the
 analyzer pipeline and cannot select executable regions, alter candidates,
 classify semantics, assign scores, or format reports. The reference runtime and
 all module boundaries remain unchanged.
+
+## Patch 089 architecture boundary
+
+Patch 089 changes replay, Python-closure, split-debug, workload, recovery, and
+delivery evidence authorities without changing analyzer runtime, schema `0.2.0`,
+semantic classes, scores, capacity, or module ownership. Split-debug remains an
+opt-in diagnostic experiment, and the workload/phase authority remains frozen
+and unexecuted. Fresh exact-source gates are recorded in the
+[Patch 089 validation record](sprints/sprint-13-patch-089-validation.md).

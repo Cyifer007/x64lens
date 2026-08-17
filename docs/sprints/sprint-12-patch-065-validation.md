@@ -25,7 +25,7 @@ next historical candidate boundary, and the
 next historical candidate boundary, and the
 [Patch 070 validation record](sprint-12-patch-070-validation.md) preserves the
 rejected boundary. Use the
-[Patch 088 validation record](sprint-13-patch-088-validation.md) for current
+[Patch 089 validation record](sprint-13-patch-089-validation.md) for current
 validation expectations; the
 [Patch 073 validation record](sprint-12-patch-073-validation.md) preserves the
 first custody/isolation correction and policy-deferral boundary; the
@@ -191,4 +191,4 @@ implements distinct private RPATH/RUNPATH evidence. Patch 078's review required 
 Patch 079 corrective and private task-value candidate; Patch 079's review required Patch
 080. Patches 081 through 088 did not complete acceptance. Patch 089 is the current
 exact-source implementation candidate. Complete acceptance remains pending against
-the exact P088 source.
+the exact P089 source.

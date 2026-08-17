@@ -38,7 +38,7 @@ P082 acceptance:             not accepted; superseded by P083
   not to Patch 081 or Patch 082 as a product checkpoint.
 - **Historical handoff** applied to the distinct P083 natural campaign and P083
   exact-source review, not to historical P082 acceptance. Later corrections
-  superseded that candidate; P088 is current.
+  superseded that candidate; P089 is current.
 
 ## Focused commands
 

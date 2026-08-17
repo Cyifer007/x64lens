@@ -1039,7 +1039,7 @@ equivalence, exploitability, decoder, concurrency, or publication claims.
 Runtime, schema `0.2.0`, semantic classes, scores, candidate capacity, and
 malformed no-partial-output behavior remain unchanged.
 
-## Patch 088 split-debug diagnostic methodology
+## Historical Patch 088 split-debug diagnostic methodology
 
 Patch 088 defines a two-build packaging experiment with fifteen behavior
 profiles per build, sixty total behavior executions, thirty matched behavior
@@ -1050,3 +1050,19 @@ and `.gnu_debuglink` CRC identify the artifacts
 because the current build lacks a GNU build ID. The result is diagnostic, does
 not replace runtime benchmarks, and cannot authorize performance, RSS, coverage,
 or product-adoption claims.
+
+## Patch 089 evidence-method boundary
+
+Patch 089 retains the P088 split-debug observation as diagnostic: the runtime
+tier shrank 66.09%, but runtime plus companion produced no total-transfer saving,
+and post-link redaction did not establish path-stable DWARF. The retained P088
+campaign had every x64lens timing below floor and no coordinate cell with a
+positive anchor, so it is not comparison-qualified. Cloud evidence validates
+only the frozen workload/phase authority and its rejection oracles; the
+experiment remains unexecuted. Fresh NASM/native, Docker, replay, split-debug,
+workload, both parity planes, and independent exact-source gates remain required
+against the exact P089 tree.
+
+## Patch 090 reference-workload preflight
+
+The Patch 090 preflight contains eight fixed fixtures, one warmup and nine measured executions per fixture. At least six fixtures must exceed five times the authenticated timing floor with MAD/median at most `0.10`. The 80 rows are selection evidence only and are never reused in the later paired 160-run phase-attribution experiment.

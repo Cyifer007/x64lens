@@ -321,14 +321,21 @@ def validate_manifest(path: Path, expected_candidate_tree: str) -> dict[str, Any
     require(value["generation_count"] == GENERATION_COUNT, "producer generation denominator changed")
     generations = value["generations"]
     require(isinstance(generations, list) and len(generations) == GENERATION_COUNT, "producer generations are incomplete")
+    require([item.get("generation") for item in generations] == [1, 2, 3],
+            "producer generation order changed")
     ids = [item.get("build_id") for item in generations]
-    require(len(set(ids)) == GENERATION_COUNT, "producer build generations are not independent")
+    require(ids == [f"p082-independent-build-{index}" for index in range(1, 4)],
+            "producer build generations are not independently identified")
     require(all(item.get("source_candidate_tree") == value["source_candidate_tree"] for item in generations), "producer source trees disagree")
     require(all(item.get("source_manifest_sha256") == value["source_manifest_sha256"] for item in generations), "producer source manifests disagree")
     fact_hashes = {item.get("normalized_fact_sha256") for item in generations}
     require(fact_hashes == {value["normalized_fact_sha256"]}, "producer normalized facts disagree")
     root = path.parent
+    seen_paths: set[str] = set()
+    seen_inodes: set[tuple[int, int]] = set()
     for item in generations:
+        generation = item["generation"]
+        prefix = f"generation-{generation}/"
         expected_modes = {
             "analyzer": 0o555,
             "effects_fixture": 0o444,
@@ -342,11 +349,20 @@ def validate_manifest(path: Path, expected_candidate_tree: str) -> dict[str, Any
             require(isinstance(record, dict) and isinstance(record.get("path"), str), f"producer record missing: {key}")
             relative = PurePosixPath(record["path"])
             require(not relative.is_absolute() and ".." not in relative.parts, f"unsafe producer path: {record['path']}")
+            require(record["path"].startswith(prefix),
+                    f"producer generation member escaped its independent root: {record['path']}")
+            require(record["path"] not in seen_paths, f"producer member path reused: {record['path']}")
+            seen_paths.add(record["path"])
             member = root / relative
             require(member.is_file() and not member.is_symlink(), f"producer member missing: {record['path']}")
-            require(sha256_file(member) == record["sha256"] and member.stat().st_size == record["size_bytes"], f"producer member identity changed: {record['path']}")
+            metadata = member.stat()
+            require(metadata.st_nlink == 1, f"producer member is hard linked: {record['path']}")
+            inode = (metadata.st_dev, metadata.st_ino)
+            require(inode not in seen_inodes, f"producer generations alias one inode: {record['path']}")
+            seen_inodes.add(inode)
+            require(sha256_file(member) == record["sha256"] and metadata.st_size == record["size_bytes"], f"producer member identity changed: {record['path']}")
             require(record.get("mode") == f"{expected_mode:04o}", f"producer recorded mode changed: {record['path']}")
-            require(stat.S_IMODE(member.stat().st_mode) == expected_mode, f"producer member mode changed: {record['path']}")
+            require(stat.S_IMODE(metadata.st_mode) == expected_mode, f"producer member mode changed: {record['path']}")
     require(value["public_boundary"] == {
         "runtime_records_added": 0,
         "public_fields_added": 0,

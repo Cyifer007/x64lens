@@ -7,7 +7,7 @@ not establish complete acceptance. Patch 075 introduced bounded private static
 text-relocation evidence, and Patch 076 implemented distinct private `DT_RPATH`
 and `DT_RUNPATH` carrier/value evidence. Patch 076 was superseded by Patch 077.
 Patch 077 was superseded by Patch 078, whose review required the Patch 079 corrective and private task-value candidate, which was superseded by Patch 080. Current validation expectations
-are in the [Patch 088 validation record](sprint-13-patch-088-validation.md).
+are in the [Patch 089 validation record](sprint-13-patch-089-validation.md).
 
 ## Purpose
 
@@ -202,9 +202,9 @@ handoff. That acceptance was not established, and Patch 074 was superseded. Patc
 introduced private static text-relocation evidence, but its review required the Patch
 076 correction. Patch 076 implements distinct private RPATH/RUNPATH evidence. Patch 078
 was superseded by the Patch 079 corrective and private task-value candidate, which was
-superseded by Patch 080, which was superseded by Patch 081. Patches 081 through 087 did
+superseded by Patch 080, which was superseded by Patch 081. Patches 081 through 088 did
 not complete acceptance. Patch 089 is the current exact-source implementation candidate.
-Complete acceptance remains pending against the exact P088 source. The historical Patch
+Complete acceptance remains pending against the exact P089 source. The historical Patch
 074 candidate does not close Sprint 12 or
 support a public PIE/DSO, IBT, SHSTK, runtime-CET, text-relocation, RPATH/RUNPATH,
 performance, RSS, coverage, or exploitability claim beyond the existing report contract.

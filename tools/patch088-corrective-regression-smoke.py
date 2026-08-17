@@ -100,6 +100,7 @@ def split_checks() -> tuple[int, int, int, int]:
         checksums.chmod(0o444)
         split.verify_result_tree(root, result)
         payload.chmod(0o644); payload.write_bytes(b"substitute"); payload.chmod(0o444)
+        checksums.chmod(0o644)
         checksums.write_text(f"{sha(manifest)}  manifest.json\n{sha(payload)}  payload\n", encoding="utf-8")
         checksums.chmod(0o444)
         expect_failure(lambda: split.verify_result_tree(root, result), "resealed split artifact substitution")

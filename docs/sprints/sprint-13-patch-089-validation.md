@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation candidate pending exact-source native, Docker, producer, replay, parity, ABI, split-debug, workload, delivery, and independent acceptance gates.
+Implementation candidate pending exact-source fresh NASM/native, Docker,
+producer, replay, both parity planes, ABI, split-debug, workload, delivery, and
+independent acceptance gates.
 
 ## Scope
 
@@ -15,9 +17,13 @@ No tracked file under `src/`, `include/`, or `schemas/` changes. Tool version `0
 | Role | Commit | Tree |
 |---|---|---|
 | Patch 089 base | `cf149850b04aeb72fbd32c049128c71bf4b60bde` | `5abf83e13f5b182d624b998ce888ec330e6789b9` |
-| Patch 089 candidate | recorded by the final source-identity authority | recorded by the final source-identity authority |
+| Reviewed Patch 089 input candidate | `c451dc9fccc69ea607cf112ab4b10f94dba17d2a` | `45959a8ce6cc48515553eff6f8e999487f41d4d0` |
 
-The guarded application path requires branch `main`, the exact base HEAD and tree, a clean index and worktree, and the authenticated patch digest. Candidate-source recovery is a mutually exclusive application path.
+The guarded application path requires branch `main`, the exact base HEAD and
+tree, a clean index and worktree, and the authenticated patch digest.
+Candidate-source recovery is a mutually exclusive application path. Any
+Markdown correction produces a new proposed tree, whose identity must be
+recorded by the final source-identity authority before exact-source acceptance.
 
 ## Focused validation
 
@@ -84,7 +90,10 @@ S13_SPLIT_DEBUG_RESULT_DIR=./.local/p089-results/split-debug \
 
 The result must authenticate two independent producer generations, sixty distinct behavior executions, thirty pairs, eight companion controls, twelve unique symbol resolutions, exact retained membership, canonical modes, unique inode topology, no-replace publication, and signal-safe cleanup.
 
-A passing experiment remains opt-in diagnostic evidence. Post-link path redaction is not path-stable DWARF production, and product adoption remains false.
+A passing experiment remains opt-in diagnostic evidence. In the retained Patch
+088 result, the runtime tier shrank 66.09%, but runtime plus companion produced
+no total-transfer saving, and post-link path redaction did not establish
+path-stable DWARF. Product adoption remains false.
 
 ## Workload/phase execution
 
@@ -96,7 +105,10 @@ The authority freezes eight distinct fixtures, two profiles, sixteen cells, sixt
 make sprint13-workload-phase-attribution-smoke
 ```
 
-The focused target validates the authority and rejection oracles. A measured phase result requires the separate qualified run path and does not follow from selftest success.
+Cloud evidence validates only the frozen authority and its rejection oracles.
+The workload/phase experiment remains unexecuted. A measured phase result
+requires the separate qualified run path and does not follow from selftest
+success.
 
 ## Docker, ABI, and parity validation
 
@@ -138,3 +150,8 @@ The banner is an expectation until the exact-source local run completes.
 ## Claim boundary
 
 Patch 089 adds no performance, RSS, comparative-coverage, baseline-equivalence, exploitability, public-role, score, decoder, concurrency, or production-packaging claim. Split-debug and workload/phase remain diagnostic experimental authorities.
+
+The retained Patch 088 diagnostic campaign completed 30/30 conditions and
+180/180 process rows, but all 60 x64lens timings were below the 5,894,690 ns
+floor and 0/9 coordinate cells had a positive anchor. It authorizes no
+performance, RSS, parity, coverage, superiority, or publication claim.

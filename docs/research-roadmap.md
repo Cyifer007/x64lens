@@ -703,7 +703,7 @@ a separate 30-condition/180-row diagnostic campaign. All 60 x64lens timing rows
 were below its 6,303,525 ns floor and all nine natural coordinate cells had zero
 positive anchors. That result remains diagnostic, unfrozen, and publication-
 ineligible. P083 subsequently required its own exact-tree producer run and
-distinct 12-target natural campaign; fresh evidence bound to the exact P088
+distinct 12-target natural campaign; fresh evidence bound to the exact P089
 candidate tree remains required.
 
 ## Historical Patch 083 research decision
@@ -785,12 +785,16 @@ a release-facing result.
 
 The split-debug authority now requires exact producer/source binding, distinct
 behavior profiles, unique symbols, complete retained-tree custody, no-replace
-publication, and signal-safe cleanup. Post-link path redaction is not treated as
-path-stable DWARF production, and the absence of total-transfer reduction keeps
-default product adoption unauthorized.
+publication, and signal-safe cleanup. The retained observation reduced the
+runtime tier by 66.09%, but runtime plus companion produced no total-transfer
+saving, post-link path redaction did not establish path-stable DWARF, and default
+product adoption remains unauthorized. The retained P088 campaign had every
+x64lens timing below floor and no coordinate cell with a positive anchor; no
+performance, RSS, parity, coverage, superiority, or publication claim follows.
 
-The workload authority still requires a separate qualified execution. Decoder
-and concurrency profiles remain separate Sprint 14 decisions.
+Cloud evidence validates only the frozen workload authority and its rejection
+oracles; the experiment remains unexecuted and requires a separate qualified
+run. Decoder and concurrency profiles remain separate Sprint 14 decisions.
 
 ## Historical Patch 088 research decision
 
@@ -798,3 +802,7 @@ Patch 088 implemented candidate corrections intended to address Patch 087
 findings and introduced the first bounded split-debug packaging contract. It did
 not complete exact-source acceptance; Patch 089 supersedes its evidence
 oracles without changing analyzer runtime or public output.
+
+## Patch 090 diagnostic checkpoint
+
+Patch 090 preserves the reference analyzer and runs only a reference-workload qualification preflight after correcting Patch 089 authorities. A qualifying preflight permits a separate paired phase-attribution experiment; it does not itself authorize an optimization or a research claim.

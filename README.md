@@ -14,8 +14,9 @@
 > retained preflight uses post-link path redaction, is not path-stable DWARF,
 > did not establish total-transfer reduction, and does not authorize default
 > product adoption. Public output, semantic classes, scores, candidate capacity,
-> and schema `0.2.0` remain unchanged. Fresh native, Docker, replay, producer,
-> parity, split-debug, workload, and independent acceptance remain pending.
+> and schema `0.2.0` remain unchanged. Fresh NASM/native, Docker, producer,
+> replay, ABI, split-debug, workload, both parity planes, delivery, and
+> independent acceptance against the exact Patch 089 tree remain pending.
 
 >
 > The initial partial-tool diagnostic checkpoint accounted for 30 planned
@@ -47,11 +48,23 @@
 > private, unfrozen, comparison-unqualified, and ineligible for performance,
 > RSS, parity, coverage, superiority, or publication claims.
 >
+> The retained Patch 088 diagnostic campaign also completed 30/30 conditions
+> and 180/180 process rows, but all 60 x64lens measured rows were below its
+> 5,894,690 ns timing floor and 0/9 coordinate cells had a positive anchor. It
+> supports no performance, RSS, parity, coverage, superiority, or publication
+> claim.
+>
 > Tool version: `0.1.0-dev`
 >
 > JSON schema version: `0.2.0`
 >
 > Canonical roadmap: [`docs/roadmap-22-sprints.md`](docs/roadmap-22-sprints.md). Sprint 15 freezes the campaign, Sprint 16 produces the preview candidate, Sprint 17 runs the publication campaign, and Sprint 22 is the first research-release gate.
+
+## Current development candidate
+
+Sprint 13 Patch 090 is the current implementation candidate. It corrects Patch 089 evidence and delivery authorities and adds a bounded reference-only workload qualification preflight. The analyzer runtime, public schema `0.2.0`, semantic classes, scores, and candidate capacity are unchanged. Exact-source native, Docker, parity, and independent acceptance remain pending.
+
+The latest diagnostic campaign established a `5,894,690 ns` reliable single-process floor; all 60 measured x64lens rows were below that floor and all nine natural coordinate cells lacked positive anchors. No comparative performance or coverage claim is authorized.
 
 ## Sprint 13 Patch 089 correction and evidence reconciliation
 
@@ -75,6 +88,12 @@ path-stable DWARF:                   no
 total-transfer reduction:            not established
 split-debug product adoption:        not authorized
 ```
+
+The retained Patch 088 split-debug observation reduced the runtime tier from
+155,600 bytes to 52,760 bytes, a 66.09% shrinkage. The 103,632-byte companion
+made the combined transfer 156,392 bytes, so it produced no total-transfer
+saving. Post-link path redaction did not establish path-stable DWARF. This is
+diagnostic evidence only, not production adoption authority.
 
 See [ADR 0075](docs/adr/0075-patch088-correction-and-p089-evidence-gates.md)
 and the [Patch 089 validation record](docs/sprints/sprint-13-patch-089-validation.md).
@@ -1326,7 +1345,7 @@ role decision without runtime, public-field, or score projection. Its review
 required Patch 079, which was superseded by Patch 080; Patch 080's review required
 Patch 081. Patch 082 was not accepted; its findings became correction inputs to
 Patch 083. Patch 083 was not accepted; Patch 084 carried its bounded corrections
-but also was not accepted. Patches 085 through 087 likewise did not complete
+but also was not accepted. Patches 085 through 088 likewise did not complete
 acceptance.
 Sprint 13 becomes active only after complete exact-source Patch 089 acceptance.
 See
@@ -1357,9 +1376,8 @@ and the [current P089 validation](docs/sprints/sprint-13-patch-089-validation.md
 
 Patch 083 was not accepted. Patch 084 preserved the retained natural-coordinate
 terminal states and froze the private ABI-role query contract, but it also was
-not accepted. Patches 085 through 087 also did not complete acceptance; Patch
-088 carries the current bounded corrections and split-debug experiment. None of
-these patches
+not accepted. Patches 085 through 088 also did not complete acceptance; Patch
+089 is the current corrective candidate. None of these patches
 authorizes a public-field, semantic, score, schema, capacity, decoder,
 concurrency, comparative-coverage, baseline-equivalence, performance, RSS, or
 exploitability change.

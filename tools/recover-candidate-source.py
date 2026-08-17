@@ -498,13 +498,45 @@ def hash_fd(fd: int, expected_size: int | None = None) -> tuple[str, int, str]:
     return digest.hexdigest(), total, git_digest.hexdigest()
 
 
-def open_archive(path: Path) -> tuple[int, BinaryIO]:
-    fd = os.open(path, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
-    metadata = os.fstat(fd)
-    require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
-            "source archive must be one regular non-hard-linked file")
-    require(metadata.st_size <= MAX_SOURCE_ARCHIVE_BYTES, "source archive exceeds bounded size")
-    return fd, os.fdopen(os.dup(fd), "rb", closefd=True)
+def open_archive(path: Path) -> tuple[int, BinaryIO, FileFingerprint]:
+    """Open and authenticate the source archive without leaking on rejection."""
+    fd = -1
+    duplicate = -1
+    try:
+        fd = os.open(path, os.O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
+        metadata = os.fstat(fd)
+        require(stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1,
+                "source archive must be one regular non-hard-linked file")
+        require(metadata.st_size <= MAX_SOURCE_ARCHIVE_BYTES, "source archive exceeds bounded size")
+        opened = file_fingerprint(metadata)
+        visible = os.stat(path, follow_symlinks=False)
+        require(file_fingerprint(visible) == opened, "source archive pathname differs from opened descriptor")
+        duplicate = os.dup(fd)
+        stream = os.fdopen(duplicate, "rb", closefd=True)
+        duplicate = -1
+        return fd, stream, opened
+    except BaseException:
+        if duplicate >= 0:
+            try:
+                os.close(duplicate)
+            except OSError:
+                pass
+        if fd >= 0:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        raise
+
+
+def reauthenticate_archive(path: Path, fd: int, opened: FileFingerprint) -> None:
+    """Bind the final recovery result to the same single-link archive object."""
+    descriptor = os.fstat(fd)
+    visible = os.stat(path, follow_symlinks=False)
+    require(file_fingerprint(descriptor) == opened, "source archive descriptor changed during recovery")
+    require(file_fingerprint(visible) == opened, "source archive pathname changed during recovery")
+    require(stat.S_ISREG(descriptor.st_mode) and descriptor.st_nlink == 1,
+            "source archive topology changed during recovery")
 
 
 def expected_children(directories: dict[str, int], files: dict[str, dict[str, Any]]) -> dict[str, tuple[str, ...]]:
@@ -786,6 +818,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
     file_records: dict[str, FileRecord] = {}
     archive_fd = -1
     archive_file: BinaryIO | None = None
+    archive_identity: FileFingerprint | None = None
     try:
         reauthenticate_parent(parent_handle)
         try:
@@ -810,7 +843,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
         seen_directories: set[str] = set()
         seen_files: set[str] = set()
 
-        archive_fd, archive_file = open_archive(archive_path)
+        archive_fd, archive_file, archive_identity = open_archive(archive_path)
         with tarfile.open(fileobj=archive_file, mode="r:*") as archive:
             for member in archive:
                 raw_name = member.name[:-1] if member.name.endswith("/") else member.name
@@ -904,6 +937,8 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
                         raise
                 else:
                     raise RecoveryError(f"unsupported TAR member type: {name}")
+        require(archive_identity is not None, "source archive identity was not retained")
+        reauthenticate_archive(archive_path, archive_fd, archive_identity)
         require(seen_directories == set(directories), "source directory membership changed")
         require(seen_files == set(files), "source file membership changed")
         os.fchmod(root_fd, 0o755)
@@ -935,6 +970,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
             directory_records,
             file_records,
         )
+        reauthenticate_archive(archive_path, archive_fd, archive_identity)
         if _TEST_BEFORE_PUBLISH_HOOK is not None:
             _TEST_BEFORE_PUBLISH_HOOK(parent_handle.fd, stage_name, destination.name)
         with defer_catchable_signals():
@@ -957,6 +993,7 @@ def recover(archive_path: Path, manifest_path: Path, destination: Path) -> tuple
             file_records,
         )
         os.fsync(parent_handle.fd)
+        reauthenticate_archive(archive_path, archive_fd, archive_identity)
         return derived_tree, len(directories), len(files), destination
     except BaseException as exc:
         cleanup_error: BaseException | None = None

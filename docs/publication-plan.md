@@ -269,7 +269,7 @@ acceptance gates complete on the same source. Patch 076's review required the
 Patch 077 correction. Patch 077 was superseded by Patch 078, whose review
 required the Patch 079 corrective and private task-value candidate, whose review
 required Patch 080; Patch 080 was superseded by Patch 081, which was not
-accepted. Patches 083 through 087 also did not complete acceptance. Independent
+accepted. Patches 083 through 088 also did not complete acceptance. Independent
 exact-source Patch 089 acceptance remains pending. Sprint
 13 remains an entry candidate and activates
 only after complete Patch 089 acceptance.
@@ -398,10 +398,24 @@ capacity, and malformed no-partial-output behavior remain unchanged. No speed,
 RSS, comparative coverage, baseline equivalence, exploitability, decoder, or
 concurrency claim follows.
 
-## Patch 088 publication boundary
+## Historical Patch 088 publication boundary
 
 The two-build split-debug experiment may be described only as diagnostic
 packaging evidence. A report must retain both producer identities, runtime and
 companion hashes, `.gnu_debuglink` CRCs, behavior closures, symbol controls,
 size reductions, and limitations. It does not authorize a release-packaging
 change or a runtime/performance claim.
+
+## Patch 089 publication boundary
+
+Patch 089 retains the P088 split-debug observation as diagnostic evidence: the
+runtime tier shrank 66.09%, but runtime plus companion produced no total-transfer
+saving, and post-link redaction did not establish path-stable DWARF. The retained
+P088 campaign also had every x64lens timing below floor and no positive coordinate
+anchor. Neither observation authorizes performance, RSS, parity, coverage,
+superiority, publication, or production-packaging claims.
+
+Cloud evidence validates only the frozen workload/phase authority and rejection
+oracles; the experiment remains unexecuted. Fresh NASM/native, Docker, replay,
+split-debug, workload, both parity planes, and independent exact-source gates
+remain required against the exact P089 tree.

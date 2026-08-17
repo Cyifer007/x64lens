@@ -164,5 +164,5 @@ private, diagnostic, and publication-ineligible. The workload/phase method is
 frozen but unexecuted and selects no optimization. Patch 087 does not claim
 comparative speed, RSS, comparative coverage, baseline equivalence, public role
 evidence, score improvement, exploitability, decoder need, or concurrency
-benefit. Patch 087 did not complete independent exact-source acceptance; Patch
-088 carries the current acceptance boundary.
+benefit. Patches 087 and 088 did not complete independent exact-source
+acceptance; Patch 089 carries the current acceptance boundary.

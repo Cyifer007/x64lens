@@ -1,0 +1,116 @@
+{
+  "schema": "x64lens-sprint13-workload-reference-preflight-authority-v1",
+  "sprint": 13,
+  "patch": 90,
+  "experiment_id": "s13-p090-c01-reference-workload-preflight-v1",
+  "evidence_class": "diagnostic",
+  "publication_eligible": false,
+  "purpose": "Screen eight fixed reference workloads before any seven-phase instrumentation is added.",
+  "predecessor_authority": {
+    "path": "benchmarks/task-definitions/sprint13-workload-phase-attribution-v1.json",
+    "sample_reuse_permitted": false,
+    "paired_matrix_execution_count": 160
+  },
+  "timer_floor": {
+    "source_campaign": "s13-p089-real-20260816t143543z",
+    "timer_floor_ns": 5894690,
+    "qualification_multiple": 5,
+    "minimum_median_ns": 29473450
+  },
+  "fixtures": [
+    {
+      "id": "reference-gadgets-catalog-depth8",
+      "command": "gadgets",
+      "max_depth": 8,
+      "target_role": "controlled-gadget-catalog",
+      "target_path": "tests/bin/gadgets"
+    },
+    {
+      "id": "reference-capacity-gadgets-depth8",
+      "command": "gadgets",
+      "max_depth": 8,
+      "target_role": "exact-capacity-gadget-report",
+      "target_path": "tests/bin/gadgets_capacity_exact"
+    },
+    {
+      "id": "reference-capacity-analyze-depth8",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "exact-capacity-integrated-report",
+      "target_path": "tests/bin/gadgets_capacity_exact"
+    },
+    {
+      "id": "reference-ordered-pairs-analyze",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "ordered-two-pop-catalog",
+      "target_path": "tests/bin/gadgets_sprint13_ordered_pairs"
+    },
+    {
+      "id": "reference-effects-analyze",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "sprint10-effect-catalog",
+      "target_path": "tests/bin/gadgets_sprint10_effects"
+    },
+    {
+      "id": "reference-et-exec-analyze",
+      "command": "analyze",
+      "max_depth": 8,
+      "target_role": "controlled-et-exec",
+      "target_path": "tests/bin/minimal_nopie"
+    },
+    {
+      "id": "reference-pie-mitigations",
+      "command": "mitigations",
+      "max_depth": null,
+      "target_role": "controlled-pie-et-dyn-mitigation",
+      "target_path": "tests/bin/minimal_pie_canary"
+    },
+    {
+      "id": "reference-execstack-mitigations",
+      "command": "mitigations",
+      "max_depth": null,
+      "target_role": "controlled-execstack-mitigation",
+      "target_path": "tests/bin/minimal_execstack"
+    }
+  ],
+  "execution": {
+    "warmups_per_fixture": 1,
+    "measured_runs_per_fixture": 9,
+    "fixture_cells": 8,
+    "warmup_executions": 8,
+    "measured_executions": 72,
+    "total_executions": 80,
+    "order": "deterministic-rotating-counterbalance",
+    "timeout_seconds": 60,
+    "stdout_limit_bytes": 16777216,
+    "stderr_limit_bytes": 1048576,
+    "cache_policy": "warm-uncontrolled-diagnostic"
+  },
+  "qualification": {
+    "minimum_qualified_fixtures": 6,
+    "minimum_median_ns": 29473450,
+    "maximum_mad_to_median_ratio": 0.1,
+    "require_zero_failures": true,
+    "require_stable_stdout": true,
+    "require_stable_stderr": true
+  },
+  "decision_boundary": {
+    "proceed_only_to_fresh_paired_160_run_matrix": true,
+    "preflight_rows_reusable_in_paired_matrix": false,
+    "retire_phase_instrumentation_if_threshold_not_met": true,
+    "no_optimization_selected": true,
+    "no_performance_claim_authorized": true,
+    "no_public_fields_added": true,
+    "no_semantic_changes": true,
+    "no_score_changes": true,
+    "schema_changed": false
+  },
+  "limitations": [
+    "The preflight screens workload suitability and is not a performance comparison.",
+    "Rows are diagnostic and cannot be reused in the later paired phase matrix.",
+    "Warm uncontrolled cache state is retained as an explicit limitation.",
+    "A passing preflight authorizes measurement only, not an optimization or product claim."
+  ]
+}

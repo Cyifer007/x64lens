@@ -79,6 +79,7 @@ def validate_authority(a: dict[str, Any]) -> None:
     fixtures = a["fixtures"]
     require(isinstance(fixtures, list) and len(fixtures) == 8, "expected eight fixtures")
     fixture_ids = []
+    fixture_semantics: list[tuple[str, int | None, str]] = []
     for index, fixture in enumerate(fixtures):
         require(isinstance(fixture, dict), f"fixture {index} must be an object")
         require(set(fixture) == {"id", "command", "max_depth", "target_role"},
@@ -91,7 +92,10 @@ def validate_authority(a: dict[str, Any]) -> None:
             require(type(fixture["max_depth"]) is int and fixture["max_depth"] in {4, 8},
                     f"fixture {index} invalid max-depth")
         fixture_ids.append(fixture["id"])
+        fixture_semantics.append((fixture["command"], fixture["max_depth"], fixture["target_role"]))
     require(len(set(fixture_ids)) == 8, "fixture IDs must be unique")
+    require(len(set(fixture_semantics)) == 8,
+            "fixture command/max-depth/target-role tuples must be unique")
 
     plan = a["execution_plan"]
     require(isinstance(plan, dict), "execution_plan must be an object")

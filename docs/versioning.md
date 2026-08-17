@@ -13,11 +13,11 @@ Tool behavior can change while preserving the schema. Machine-readable contract 
 
 ## Current version and roadmap state
 
-Patch 088 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
-moves. Sprint 12 remains pending exact-source acceptance while Patch 088
-implements candidate corrections intended to address the Patch 087 transaction,
-replay, ABI-stage, oracle, evidence, and delivery findings. Patch 080's private additive role
-side-car remains unchanged and unprojected.
+Patch 089 retains tool version `0.1.0-dev` and schema `0.2.0`; no release tag
+moves. Sprint 12 remains pending exact-source acceptance while Patch 089
+implements evidence-authority corrections for replay, Python closures,
+split-debug custody, workload identity, and source recovery. Patch 080's private
+additive role side-car remains unchanged and unprojected.
 
 Sprint 12’s internal role/property and GNU-property evidence remains private and
 diagnostic. The public-policy authority records `defer`, adds zero fields, preserves the

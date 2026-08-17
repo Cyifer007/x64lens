@@ -3,7 +3,7 @@
 ## Status
 
 Accepted as the historical Patch 080 implementation decision. Patch 080 was
-superseded by Patch 081, and Patches 081 through 087 did not complete
+superseded by Patch 081, and Patches 081 through 088 did not complete
 acceptance. Patch 089 is the current implementation candidate pending complete
 exact-source acceptance.
 

@@ -159,7 +159,7 @@ Diagnostic benchmarking begins before feature freeze so runtime, RSS, output-sco
 ## Current implementation stage
 
 Sprints 1 through 11 are complete. Sprint 12 remains the active acceptance authority.
-Patches 081 through 087 did not complete acceptance; Patch 089 is the current
+Patches 081 through 088 did not complete acceptance; Patch 089 is the current
 exact-source implementation candidate, pending full local execution and independent
 acceptance. Patch 080 supplied the private register-role
 side-car but did not complete acceptance; it was superseded by Patch 081. Patch 074 was
@@ -191,7 +191,7 @@ executable authority, 4,096-candidate fail-closed behavior, and schema `0.2.0`. 
 role/property, text-relocation, and RPATH/RUNPATH evidence remains outside public
 reports, and the role/property policy remains `defer`. Patch 078 required the Patch 079
 corrective and private task-value candidate, which was superseded by Patch 080; Patch
-080 was superseded by Patch 081. Patches 081 through 087 did not complete acceptance;
+080 was superseded by Patch 081. Patches 081 through 088 did not complete acceptance;
 Patch 089 is the current exact-source implementation candidate. Sprint 13 remains an
 entry candidate and becomes active only after complete Patch 089 acceptance, without a
 release tag or confirmatory campaign

@@ -15,10 +15,10 @@ versions, commands, and task definitions are frozen.
 
 Sprints 1 through 12 are recorded as completed engineering work. Sprint 12 remains the exact-source acceptance authority for its inherited loader and
 mitigation facts. Patch 089 is the current implementation candidate. Sprint 13
-becomes fully active only after every Patch 088 exact-source native, Docker,
-replay-v2, parity, producer, private ABI-vector, split-debug, delivery,
-documentation, and independent
-acceptance gate passes against one candidate tree.
+becomes fully active only after every Patch 089 exact-source fresh NASM/native,
+Docker, replay-v2, both parity planes, producer, private ABI-vector, split-debug,
+workload, delivery, documentation, and independent acceptance gate passes
+against one candidate tree.
 
 Sprint 12 delivered bounded ordinary-PHDR validity, explicit extended-numbering
 outcomes, executable-overlap contributor provenance and measured normalization
@@ -40,7 +40,7 @@ retains the complete 25-pattern score/null partition. Patch 082 implements
 producer-backed validation for those retained decisions. Patch 083 corrected the
 remaining P082 acceptance infrastructure and implemented the outcome-blind
 natural-coordinate campaign. Patch 083 was not accepted. Patch 084 carried its bounded
-corrections but was not accepted, and Patches 085 through 087 also did not complete
+corrections but was not accepted, and Patches 085 through 088 also did not complete
 acceptance; Patch 089 is the current exact-source implementation candidate.
 P084 preserves the retained natural-coordinate terminal states and freezes
 the private ABI-role query contract. It authorizes no public fields, semantics, scores,
@@ -264,7 +264,7 @@ introduced bounded private static text-relocation evidence, and Patch 076 added 
 private RPATH/RUNPATH evidence. Patch 076's review required Patch 077. Patch 077 then
 required Patch 078, whose review required the Patch 079 corrective and private
 task-value candidate, whose review required Patch 080; Patch 080 was superseded by Patch
-081. Patches 081 through 087 did not complete
+081. Patches 081 through 088 did not complete
 acceptance; Patch 089 is the current exact-source implementation candidate, pending
 complete local and independent acceptance. None of these patches advances the Sprint 15
 freeze, adds a public mitigation field, or changes the dependency-free one-worker
@@ -315,7 +315,7 @@ Patch 077 was a Sprint 12 reconciliation candidate. It preserved
 the implemented private textrel/RPATH/RUNPATH facts, corrected their surrounding
 transactions and oracles, and added no public field. Its review required Patch
 078, whose review in turn required Patch 079; Patch 079's review required Patch
-080, which was superseded by Patch 081. Independent exact-source Patch 088
+080, which was superseded by Patch 081. Independent exact-source Patch 089
 acceptance is still required before Sprint 13 activation;
 the confirmatory campaign remains frozen only in Sprint 15.
 
@@ -421,9 +421,18 @@ recovery through streaming limits. It adds no analyzer or public-contract
 change.
 
 Split-debug remains an opt-in diagnostic release experiment. The retained
-method uses post-link path redaction, is not path-stable DWARF, did not establish
-total-transfer reduction, and does not authorize default product adoption.
-Acceptance requires fresh native, Docker, producer, replay, ABI, parity,
-split-debug, workload, strict-lint, and independent review evidence. Patch 090
+observation reduced the runtime tier by 66.09%, but runtime plus companion
+produced no total-transfer saving, post-link redaction did not establish
+path-stable DWARF, and default product adoption is not authorized. In the
+retained Patch 088 campaign, every x64lens timing was below floor and no
+coordinate cell had a positive anchor; no performance, RSS, parity, coverage,
+superiority, or publication claim follows. Acceptance requires fresh
+NASM/native, Docker, producer, replay, ABI, both parity planes, split-debug,
+workload, delivery, strict-lint, and independent review evidence against the
+exact P089 tree. Patch 090
 owns reconciliation of fresh P089 measurements or the next evidence-qualified
 bounded experiment.
+
+## Patch 090 diagnostic checkpoint
+
+Patch 090 preserves the reference analyzer and runs only a reference-workload qualification preflight after correcting Patch 089 authorities. A qualifying preflight permits a separate paired phase-attribution experiment; it does not itself authorize an optimization or a research claim.

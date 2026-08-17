@@ -26,7 +26,10 @@ Patch 089:
 
 The diagnostic experiment retains two independent builds, sixty behavior executions, thirty behavior pairs, eight companion controls, and twelve symbol resolutions. A runtime-tier size reduction of at least fifty percent remains required.
 
-The current method uses bounded post-link path redaction. It is not path-stable DWARF production, and the runtime plus companion did not establish a total-transfer reduction in the retained preflight. Therefore:
+The retained observation reduced the runtime tier from 155,600 bytes to 52,760
+bytes, a 66.09% shrinkage. Its 103,632-byte companion made the combined transfer
+156,392 bytes, so it did not save total-transfer bytes. The method uses bounded
+post-link path redaction and did not establish path-stable DWARF. Therefore:
 
 ```text
 opt-in release experiment: allowed after fresh acceptance evidence
@@ -34,6 +37,12 @@ production/default adoption: not authorized
 path-stable DWARF claim: not authorized
 total-transfer saving claim: not authorized
 ```
+
+## Workload/phase interpretation
+
+Cloud evidence validates only the frozen eight-fixture, two-profile
+workload/phase authority and its rejection oracles. The 160-execution experiment
+remains unexecuted and selects no optimization.
 
 ## Preserved boundaries
 
@@ -48,7 +57,15 @@ total-transfer saving claim: not authorized
 
 ## Consequences
 
-Patch 089 improves trust in replay, package, workload, and recovery evidence without manufacturing a performance, coverage, RSS, exploitability, or packaging-adoption claim. Fresh native, Docker, replay, split-debug, workload, parity, and independent acceptance remain required before the candidate can be accepted.
+Patch 089 improves trust in replay, package, workload, and recovery evidence
+without manufacturing a performance, coverage, RSS, exploitability, or
+packaging-adoption claim. In the retained Patch 088 campaign, all 60 x64lens
+timings were below the 5,894,690 ns floor and 0/9 coordinate cells had a
+positive anchor; no performance, RSS, parity, coverage, superiority, or
+publication claim follows. Fresh NASM/native, Docker, producer, replay, ABI,
+split-debug, workload, both parity planes, delivery, and independent acceptance
+remain required against the exact Patch 089 tree before the candidate can be
+accepted.
 
 ## Validation
 
